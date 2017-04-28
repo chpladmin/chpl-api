@@ -21,7 +21,10 @@ public interface NotificationDAO {
 	public boolean hasNotificationType(NotificationTypeDTO type, Set<GrantedPermission> permissions);
 	public List<NotificationTypeDTO> getAllNotificationTypes(Set<GrantedPermission> permissions);
 	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappings(Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
+	public RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(
+			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
 	public RecipientDTO findRecipientByEmail(String email);
+	public RecipientDTO getRecipientById(Long id);
 	public RecipientDTO updateRecipient(RecipientDTO updatedRecipient) throws EntityNotFoundException;
 	public void deleteNotificationMapping(RecipientDTO recipient, NotificationTypeDTO notificationType, CertificationBodyDTO acb);
 }

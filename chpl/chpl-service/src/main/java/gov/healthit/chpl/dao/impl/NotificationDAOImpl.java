@@ -121,13 +121,35 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 			}
 		}
 		
-		List<RecipientWithSubscriptionsEntity> allMappings = findAllRecipientsAndNotifications(authorityNames, acbIds);
+		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(null, authorityNames, acbIds);
 		List<RecipientWithSubscriptionsDTO> results = new ArrayList<RecipientWithSubscriptionsDTO>();
 		for(RecipientWithSubscriptionsEntity mapping : allMappings) {
 			RecipientWithSubscriptionsDTO dto = new RecipientWithSubscriptionsDTO(mapping);
 			results.add(dto);
 		}
 		return results;
+	}
+	
+	public RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(
+			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs) {
+		List<String> authorityNames = new ArrayList<String>();
+		if(permissions != null) {
+			for(GrantedPermission perm : permissions) {
+				authorityNames.add(perm.getAuthority());
+			}
+		}
+		List<Long> acbIds = new ArrayList<Long>();
+		if(acbs != null) {
+			for(CertificationBodyDTO acb : acbs) {
+				acbIds.add(acb.getId());
+			}
+		}
+		
+		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(recipientId, authorityNames, acbIds);
+		if(allMappings != null && allMappings.size() > 0) {
+			return new RecipientWithSubscriptionsDTO(allMappings.get(0));
+		}
+		return null;
 	}
 	
 	public RecipientDTO findRecipientByEmail(String email) {
@@ -137,6 +159,21 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 				+ "AND UPPER(recip.email) = :email",
 				NotificationRecipientEntity.class);
 		query.setParameter("email", email.toUpperCase());
+		
+		List<NotificationRecipientEntity> matchedRecipients = query.getResultList();
+		if(matchedRecipients.size() > 0) {
+			return new RecipientDTO(matchedRecipients.get(0));
+		}
+		return null;
+	}
+	
+	public RecipientDTO getRecipientById(Long id) {
+		Query query = entityManager.createQuery("SELECT recip "
+				+ "FROM NotificationRecipientEntity recip "
+				+ "WHERE recip.deleted <> true "
+				+ "AND recip.id = :id",
+				NotificationRecipientEntity.class);
+		query.setParameter("id", id);
 		
 		List<NotificationRecipientEntity> matchedRecipients = query.getResultList();
 		if(matchedRecipients.size() > 0) {
@@ -186,7 +223,7 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		entityManager.clear();
 	}
 	
-	private List<RecipientWithSubscriptionsEntity> findAllRecipientsAndNotifications(List<String> authorityNames, List<Long> acbIds) {
+	private List<RecipientWithSubscriptionsEntity> findRecipientsWithNotifications(Long recipId, List<String> authorityNames, List<Long> acbIds) {
 		String hql = "SELECT DISTINCT recip " 
 				+ "FROM RecipientWithSubscriptionsEntity recip "
 				+ "LEFT OUTER JOIN FETCH recip.subscriptions subs "
@@ -195,6 +232,9 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 				+ "LEFT OUTER JOIN FETCH nt.permissions perms " 
 				+ "LEFT OUTER JOIN FETCH perms.permission perm "
 				+ "WHERE recip.deleted <> true ";
+		if(recipId != null) {
+			hql += " AND recip.id = :recipId ";
+		}
 		if(authorityNames != null && authorityNames.size() > 0) {
 			hql += " AND perm.authority IN (:authorities) ";
 		}
@@ -203,6 +243,9 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		}
 		
 		Query query = entityManager.createQuery(hql, RecipientWithSubscriptionsEntity.class);
+		if(recipId != null) {
+			query.setParameter("recipId", recipId);
+		}
 		if(authorityNames != null && authorityNames.size() > 0) {
 			query.setParameter("authorities", authorityNames);
 		}

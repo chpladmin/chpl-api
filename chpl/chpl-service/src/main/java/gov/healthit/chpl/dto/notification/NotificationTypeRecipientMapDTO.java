@@ -6,7 +6,7 @@ import gov.healthit.chpl.entity.notification.NotificationTypeRecipientMapEntity;
 public class NotificationTypeRecipientMapDTO {
 	private Long id;
 	private RecipientDTO recipient;
-	private SubscriptionDTO notification;
+	private SubscriptionDTO subscription;
 	
 	public NotificationTypeRecipientMapDTO() {}
 	
@@ -19,23 +19,23 @@ public class NotificationTypeRecipientMapDTO {
 			this.recipient.setId(entity.getRecipientId());
 		}
 		
-		SubscriptionDTO notification = new SubscriptionDTO();
+		SubscriptionDTO subscription = new SubscriptionDTO();
 		if(entity.getNotificationType() != null) {
-			notification.setNotificationType(new NotificationTypeDTO(entity.getNotificationType()));
+			subscription.setNotificationType(new NotificationTypeDTO(entity.getNotificationType()));
 		} else {
 			NotificationTypeDTO notificationType = new NotificationTypeDTO();
 			notificationType.setId(entity.getNotificationTypeId());
-			notification.setNotificationType(notificationType);
+			subscription.setNotificationType(notificationType);
 		}
 		
 		if(entity.getAcb() != null) {
-			notification.setAcb(new CertificationBodyDTO(entity.getAcb()));
+			subscription.setAcb(new CertificationBodyDTO(entity.getAcb()));
 		} else if(entity.getAcbId() != null) {
 			CertificationBodyDTO acb = new CertificationBodyDTO();
 			acb.setId(entity.getAcbId());
-			notification.setAcb(acb);
+			subscription.setAcb(acb);
 		}
-		this.notification = notification;
+		this.subscription = subscription;
 	}
 
 	public Long getId() {
@@ -54,12 +54,12 @@ public class NotificationTypeRecipientMapDTO {
 		this.recipient = recipient;
 	}
 
-	public SubscriptionDTO getNotification() {
-		return notification;
+	public SubscriptionDTO getSubscription() {
+		return subscription;
 	}
 
-	public void setNotification(SubscriptionDTO notification) {
-		this.notification = notification;
+	public void setSubscription(SubscriptionDTO subscription) {
+		this.subscription = subscription;
 	}
 
 }

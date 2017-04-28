@@ -3,10 +3,12 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -15,8 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.domain.notification.Recipient;
 import gov.healthit.chpl.domain.notification.Subscription;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
+import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
+import gov.healthit.chpl.dto.notification.SubscriptionDTO;
 import gov.healthit.chpl.manager.NotificationManager;
 import gov.healthit.chpl.web.controller.results.NotificationRecipientResults;
 import io.swagger.annotations.Api;
@@ -49,22 +55,88 @@ public class NotificationController {
 	}
 	
 	@ApiOperation(value = "Update the email address of a recipient with the specified id keeping all subscriptions the same")
-	@RequestMapping(value = "recipients/{recipientId}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/recipients/{recipientId}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody Recipient updateAllRecipients(@PathVariable("recipientId") Long id,
 			@RequestParam(value="email", required=true) String newEmailAddress) {
-		RecipientDTO recip = new RecipientDTO();
-		recip.setEmailAddress(newEmailAddress);
-		notificationManager.updateRecipient(toUpdate);
-		List<RecipientWithSubscriptionsDTO> foundSubs = notificationManager.getAll();
-		
-		List<Recipient> resultRecips = new ArrayList<Recipient>();
-		for(RecipientWithSubscriptionsDTO foundSub : foundSubs) {
-			Recipient recip = new Recipient(foundSub);
-			resultRecips.add(recip);
+		RecipientDTO updatedRecip = notificationManager.updateRecipient(id, newEmailAddress);
+		return new Recipient(updatedRecip);
+	}
+	
+	@ApiOperation(value = "Add subscription(s) to a recipient; will create the recipient in the system if they do not already exist.")
+	@RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public @ResponseBody Recipient addSubscriptions(@RequestBody Recipient recipientToAdd) 
+		throws InvalidArgumentsException {
+		if(recipientToAdd.getSubscriptions() == null || recipientToAdd.getSubscriptions().size() == 0) {
+			throw new InvalidArgumentsException("At least one subscription must be included with the request.");
+		}
+		if(recipientToAdd.getId() == null && StringUtils.isEmpty(recipientToAdd.getEmail())) {
+			throw new InvalidArgumentsException("A recipient id or email address is required to create a new subscription.");
 		}
 		
-		NotificationRecipientResults results = new NotificationRecipientResults();
-		results.setResults(resultRecips);
-		return results;
+		for(Subscription subscriptionToAdd : recipientToAdd.getSubscriptions()) {
+			NotificationTypeRecipientMapDTO dtoToAdd = new NotificationTypeRecipientMapDTO();
+			RecipientDTO recip = new RecipientDTO();
+			recip.setId(recipientToAdd.getId());
+			recip.setEmailAddress(recipientToAdd.getEmail());
+			dtoToAdd.setRecipient(recip);
+			SubscriptionDTO sub = new SubscriptionDTO();
+			if(subscriptionToAdd.getAcb() != null) {
+				CertificationBodyDTO acbDto = new CertificationBodyDTO();
+				acbDto.setId(subscriptionToAdd.getAcb().getId());
+				acbDto.setName(subscriptionToAdd.getAcb().getName());
+				sub.setAcb(acbDto);
+			}
+			if(subscriptionToAdd.getNotificationType() == null || subscriptionToAdd.getNotificationType().getId() == null) {
+				throw new InvalidArgumentsException("A notification type id is required for all subscriptions to be created.");
+			} else {
+				NotificationTypeDTO typeDto = new NotificationTypeDTO();
+				typeDto.setId(subscriptionToAdd.getNotificationType().getId());
+				sub.setNotificationType(typeDto);
+			}
+			dtoToAdd.setSubscription(sub);
+			notificationManager.addRecipientNotificationMap(dtoToAdd);
+		}
+		RecipientWithSubscriptionsDTO dtoResult = notificationManager.getAllForRecipient(recipientToAdd.getId());
+		Recipient result = new Recipient(dtoResult);
+		return result;
+	}
+	
+	@ApiOperation(value = "Remove subscription(s) for a recipient.")
+	@RequestMapping(value = "/remove", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public @ResponseBody Recipient removeSubscriptions(@RequestBody Recipient recipientSubsToRemove) 
+		throws InvalidArgumentsException {
+		if(recipientSubsToRemove.getSubscriptions() == null || recipientSubsToRemove.getSubscriptions().size() == 0) {
+			throw new InvalidArgumentsException("At least one subscription must be included with the request.");
+		}
+		if(recipientSubsToRemove.getId() == null) {
+			throw new InvalidArgumentsException("A recipient id is required to remove any subscription.");
+		}
+		
+		for(Subscription subscriptionToRemove : recipientSubsToRemove.getSubscriptions()) {
+			NotificationTypeRecipientMapDTO dtoToRemove = new NotificationTypeRecipientMapDTO();
+			RecipientDTO recip = new RecipientDTO();
+			recip.setId(recipientSubsToRemove.getId());
+			recip.setEmailAddress(recipientSubsToRemove.getEmail());
+			dtoToRemove.setRecipient(recip);
+			SubscriptionDTO sub = new SubscriptionDTO();
+			if(subscriptionToRemove.getAcb() != null) {
+				CertificationBodyDTO acbDto = new CertificationBodyDTO();
+				acbDto.setId(subscriptionToRemove.getAcb().getId());
+				acbDto.setName(subscriptionToRemove.getAcb().getName());
+				sub.setAcb(acbDto);
+			}
+			if(subscriptionToRemove.getNotificationType() == null || subscriptionToRemove.getNotificationType().getId() == null) {
+				throw new InvalidArgumentsException("A notification type id is required for any subscription to be removed.");
+			} else {
+				NotificationTypeDTO typeDto = new NotificationTypeDTO();
+				typeDto.setId(subscriptionToRemove.getNotificationType().getId());
+				sub.setNotificationType(typeDto);
+			}
+			dtoToRemove.setSubscription(sub);
+			notificationManager.deleteRecipientNotificationMap(dtoToRemove);
+		}
+		RecipientWithSubscriptionsDTO dtoResult = notificationManager.getAllForRecipient(recipientSubsToRemove.getId());
+		Recipient result = new Recipient(dtoResult);
+		return result;
 	}
 }

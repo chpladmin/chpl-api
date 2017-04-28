@@ -190,6 +190,17 @@ public class NotificationDAOTest extends TestCase {
 		assertEquals(email, result.getEmailAddress());
 	}
 	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void findRecipientById() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Long id = -1L;
+		RecipientDTO result = notificationDao.getRecipientById(id);
+		assertNotNull(result);
+		assertEquals(id.longValue(), result.getId().longValue());
+	}
+	
 	@Test(expected = PersistenceException.class)
 	@Transactional
 	@Rollback(true)
@@ -218,6 +229,17 @@ public class NotificationDAOTest extends TestCase {
 				fail("Found recipient with unexpected id " + result.getId().intValue());
 			}
 		}
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void findRecipientSubscriptionsByIdWithAdminCredentials() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Long id = -1L;
+		RecipientWithSubscriptionsDTO result = notificationDao.getAllNotificationMappingsForRecipient(id, adminUser.getPermissions(), null);
+		assertNotNull(result);
+		assertEquals(2, result.getSubscriptions().size());
 	}
 	
 	@Test
@@ -291,13 +313,13 @@ public class NotificationDAOTest extends TestCase {
 		assertNotNull(createdMapping.getRecipient());
 		assertEquals(createdRecipId.longValue(), createdMapping.getRecipient().getId().longValue());
 		assertEquals(email, createdMapping.getRecipient().getEmailAddress());
-		assertNotNull(createdMapping.getNotification());
-		assertNull(createdMapping.getNotification().getAcb());
-		assertNotNull(createdMapping.getNotification().getNotificationType());
-		assertNotNull(createdMapping.getNotification().getNotificationType().getId());
-		assertNotNull(createdMapping.getNotification().getNotificationType().getName());
-		assertNotNull(createdMapping.getNotification().getNotificationType().getDescription());
-		assertEquals(type.getId().longValue(), createdMapping.getNotification().getNotificationType().getId().longValue());
+		assertNotNull(createdMapping.getSubscription());
+		assertNull(createdMapping.getSubscription().getAcb());
+		assertNotNull(createdMapping.getSubscription().getNotificationType());
+		assertNotNull(createdMapping.getSubscription().getNotificationType().getId());
+		assertNotNull(createdMapping.getSubscription().getNotificationType().getName());
+		assertNotNull(createdMapping.getSubscription().getNotificationType().getDescription());
+		assertEquals(type.getId().longValue(), createdMapping.getSubscription().getNotificationType().getId().longValue());
 		
 		queriedRecipients = notificationDao.getAllNotificationMappings(adminUser.getPermissions(), null);
 		assertNotNull(queriedRecipients);
@@ -351,15 +373,15 @@ public class NotificationDAOTest extends TestCase {
 		assertNotNull(createdMapping.getRecipient());
 		assertEquals(createdRecipId.longValue(), createdMapping.getRecipient().getId().longValue());
 		assertEquals(email, createdMapping.getRecipient().getEmailAddress());
-		assertNotNull(createdMapping.getNotification());
-		assertNotNull(createdMapping.getNotification().getAcb());
-		assertEquals(acb.getId(), createdMapping.getNotification().getAcb().getId());
-		assertNotNull(createdMapping.getNotification().getAcb().getName());
-		assertNotNull(createdMapping.getNotification().getNotificationType());
-		assertNotNull(createdMapping.getNotification().getNotificationType().getId());
-		assertNotNull(createdMapping.getNotification().getNotificationType().getName());
-		assertNotNull(createdMapping.getNotification().getNotificationType().getDescription());
-		assertEquals(acbNotificationType.getId().longValue(), createdMapping.getNotification().getNotificationType().getId().longValue());
+		assertNotNull(createdMapping.getSubscription());
+		assertNotNull(createdMapping.getSubscription().getAcb());
+		assertEquals(acb.getId(), createdMapping.getSubscription().getAcb().getId());
+		assertNotNull(createdMapping.getSubscription().getAcb().getName());
+		assertNotNull(createdMapping.getSubscription().getNotificationType());
+		assertNotNull(createdMapping.getSubscription().getNotificationType().getId());
+		assertNotNull(createdMapping.getSubscription().getNotificationType().getName());
+		assertNotNull(createdMapping.getSubscription().getNotificationType().getDescription());
+		assertEquals(acbNotificationType.getId().longValue(), createdMapping.getSubscription().getNotificationType().getId().longValue());
 	
 		queriedRecipients = notificationDao.getAllNotificationMappings(testUser3.getPermissions(), acbs);
 		assertNotNull(queriedRecipients);

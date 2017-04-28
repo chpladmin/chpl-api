@@ -118,7 +118,7 @@ public class NotificationManagerTest extends TestCase {
 		notification.setAcb(null);
 		NotificationTypeDTO type = adminNotificationTypes.get(0);
 		notification.setNotificationType(type);
-		mapping.setNotification(notification);
+		mapping.setSubscription(notification);
 		
 		NotificationTypeRecipientMapDTO addedMapping = notificationManager.addRecipientNotificationMap(mapping);
 		assertNotNull(addedMapping);
@@ -156,7 +156,7 @@ public class NotificationManagerTest extends TestCase {
 		notification.setAcb(null);
 		NotificationTypeDTO type = adminNotificationTypes.get(0);
 		notification.setNotificationType(type);
-		mapping.setNotification(notification);
+		mapping.setSubscription(notification);
 		
 		NotificationTypeRecipientMapDTO addedMapping = notificationManager.addRecipientNotificationMap(mapping);
 		assertNotNull(addedMapping);
@@ -183,7 +183,7 @@ public class NotificationManagerTest extends TestCase {
 		notification.setAcb(acb);
 		NotificationTypeDTO type = acbNotificationTypes.get(0);
 		notification.setNotificationType(type);
-		mapping.setNotification(notification);
+		mapping.setSubscription(notification);
 		
 		NotificationTypeRecipientMapDTO addedMapping = notificationManager.addRecipientNotificationMap(mapping);
 		assertNotNull(addedMapping);
@@ -222,7 +222,7 @@ public class NotificationManagerTest extends TestCase {
 		notification.setAcb(acb);
 		NotificationTypeDTO type = acbNotificationTypes.get(0);
 		notification.setNotificationType(type);
-		mapping.setNotification(notification);
+		mapping.setSubscription(notification);
 		
 		notificationManager.addRecipientNotificationMap(mapping);
 	}
@@ -254,7 +254,7 @@ public class NotificationManagerTest extends TestCase {
 			}
 		}
 		notification.setNotificationType(adminOnlyNotificationType);
-		mapping.setNotification(notification);
+		mapping.setSubscription(notification);
 		
 		notificationManager.addRecipientNotificationMap(mapping);
 	}
@@ -274,7 +274,7 @@ public class NotificationManagerTest extends TestCase {
 		notification.setAcb(acb);
 		NotificationTypeDTO type = acbNotificationTypes.get(0);
 		notification.setNotificationType(type);
-		mapping.setNotification(notification);
+		mapping.setSubscription(notification);
 		
 		notificationManager.addRecipientNotificationMap(mapping);
 	}
@@ -294,9 +294,85 @@ public class NotificationManagerTest extends TestCase {
 		notification.setAcb(acb);
 		NotificationTypeDTO type = acbNotificationTypes.get(0);
 		notification.setNotificationType(type);
-		mapping.setNotification(notification);
+		mapping.setSubscription(notification);
 		
 		notificationManager.addRecipientNotificationMap(mapping);
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getAllNotificationsAsAdminUser() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		List<RecipientWithSubscriptionsDTO> notifications = notificationManager.getAll();
+
+		assertNotNull(notifications);
+		assertEquals(2, notifications.size());
+		for(RecipientWithSubscriptionsDTO result : notifications) {
+			switch(result.getId().intValue()) {
+			case -1:
+				assertEquals(2, result.getSubscriptions().size());
+				break;
+			case -2:
+				assertEquals(3, result.getSubscriptions().size());
+				break;
+			default:
+				fail("Found recipient with unexpected id " + result.getId().intValue());
+			}
+		}
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getAllNotificationsAsAcbUser() {
+		SecurityContextHolder.getContext().setAuthentication(acbUser);
+		List<RecipientWithSubscriptionsDTO> notifications = notificationManager.getAll();
+
+		assertNotNull(notifications);
+		assertEquals(1, notifications.size());
+		assertEquals(-2, notifications.get(0).getId().longValue());
+		assertEquals(2, notifications.get(0).getSubscriptions().size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getNotificationsForUserAsAdminUser() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Long recipId = -1L;
+		RecipientWithSubscriptionsDTO notification = notificationManager.getAllForRecipient(recipId);
+		assertNotNull(notification);
+		assertEquals(recipId.longValue(), notification.getId().longValue());
+		assertEquals(2, notification.getSubscriptions().size());
+		
+		recipId = -2L;
+		notification = notificationManager.getAllForRecipient(recipId);
+		assertNotNull(notification);
+		assertEquals(recipId.longValue(), notification.getId().longValue());
+		assertEquals(3, notification.getSubscriptions().size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getNotificationsForUserWithAcbSubscriptionsAsAcbUser() {
+		SecurityContextHolder.getContext().setAuthentication(acbUser);
+		Long recipId = -2L;
+		RecipientWithSubscriptionsDTO notification = notificationManager.getAllForRecipient(recipId);
+		assertNotNull(notification);
+		assertEquals(recipId.longValue(), notification.getId().longValue());
+		assertEquals(2, notification.getSubscriptions().size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getNotificationsForUserWithoutAcbSubscriptionsAsAcbUser() {
+		SecurityContextHolder.getContext().setAuthentication(acbUser);
+		Long recipId = -1L;
+		RecipientWithSubscriptionsDTO notification = notificationManager.getAllForRecipient(recipId);
+		assertNull(notification);
 	}
 	
 	@Test
@@ -330,7 +406,7 @@ public class NotificationManagerTest extends TestCase {
 		
 		NotificationTypeRecipientMapDTO toDelete = new NotificationTypeRecipientMapDTO();
 		toDelete.setRecipient(recipToDelete);
-		toDelete.setNotification(subToDelete);
+		toDelete.setSubscription(subToDelete);
 		notificationManager.deleteRecipientNotificationMap(toDelete);
 		
 		List<RecipientWithSubscriptionsDTO> queriedRecipients = notificationManager.getAll();

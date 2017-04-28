@@ -8,7 +8,9 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
 public interface NotificationManager {
 	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping);
+	public RecipientDTO updateRecipient(Long recipientId, String newEmailAddress);
 	public RecipientDTO updateRecipient(RecipientDTO toUpdate);
 	public List<RecipientWithSubscriptionsDTO> getAll();
+	public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId);
 	public void deleteRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping);
 }
