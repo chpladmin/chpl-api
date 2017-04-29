@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -767,7 +768,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "PRIVACY AND SECURITY FRAMEWORK":
-						cert.setPrivacySecurityFramework(firstRow.get(currIndex++).trim().replace(",", ";").replace("; ", ";"));
+						cert.setPrivacySecurityFramework(CertificationResult.formatPrivacyAndSecurityFramework(firstRow.get(currIndex++)));
 						break;
 					case "API DOCUMENTATION LINK":
 						cert.setApiDocumentation(firstRow.get(currIndex++).trim());

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
 public class CertificationResult implements Serializable {
@@ -201,5 +203,30 @@ public class CertificationResult implements Serializable {
 
 	public void setG2MacraMeasures(List<MacraMeasure> g2MacraMeasures) {
 		this.g2MacraMeasures = g2MacraMeasures;
+	}
+	
+	public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework){
+		if(StringUtils.isNotEmpty(privacyAndSecurityFramework)){
+			privacyAndSecurityFramework = privacyAndSecurityFramework.replace(",", ";");
+			if(privacyAndSecurityFramework.contains(";")){
+				String approach1 = null;
+				String approach2 = null;
+				Integer counter = 0;
+				for(String str : privacyAndSecurityFramework.split(";", 2)){
+					if(counter == 0){
+						approach1 = str.trim();
+					}
+					else{
+						approach2 = str.trim();
+					}
+					counter++;
+				}
+				StringBuilder fmtPrivacyAndSecurityFramework = new StringBuilder();
+				fmtPrivacyAndSecurityFramework.append(approach1 + ";" + approach2);
+				privacyAndSecurityFramework = fmtPrivacyAndSecurityFramework.toString();
+				return privacyAndSecurityFramework;
+			}
+		}
+		return privacyAndSecurityFramework.trim();
 	}
 }
