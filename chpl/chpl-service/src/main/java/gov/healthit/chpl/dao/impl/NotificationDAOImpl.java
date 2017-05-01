@@ -289,27 +289,28 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		return query.getResultList();
 	}
 	
-	private List<NotificationTypeRecipientMapEntity> findNotificationMapping(Long notificationTypeId, Long recipientId, Long acbId) {
-		String hql = "SELECT DISTINCT recip " 
-				+ "FROM NotificationTypeRecipientMapEntity recip "
-				+ "LEFT OUTER JOIN FETCH recip.recipient "
-				+ "LEFT OUTER JOIN FETCH recip.acb "
-				+ "LEFT OUTER JOIN FETCH recip.notificationType "
-				+ "WHERE recip.deleted <> true ";
-				//+ "AND recip.notificationTypeId = :notificationTypeId ";
+	private List<NotificationTypeRecipientMapEntity> findNotificationMapping(Long recipientId, Long notificationTypeId, Long acbId) {
+		String hql = "SELECT DISTINCT mapping " 
+				+ "FROM NotificationTypeRecipientMapEntity mapping "
+				+ "LEFT OUTER JOIN FETCH mapping.recipient recipient "
+				+ "LEFT OUTER JOIN FETCH mapping.acb acb "
+				+ "LEFT OUTER JOIN FETCH mapping.notificationType type "
+				+ "WHERE mapping.deleted <> true "
+				+ "AND type.id = :notificationTypeId ";
 		if(recipientId != null) {
-			hql += " AND recip.recipient.id = :recipientId ";
+			hql += " AND recipient.id = :recipientId ";
 		} else {
-			hql += " AND recip.recipientId IS NULL ";
+			hql += " AND mapping.recipientId IS NULL ";
 		}
+		
 		if(acbId != null) {
-			hql += " AND recip.acbId = :acbId";
+			hql += " AND acb.id = :acbId";
 		} else {
-			hql += "AND recip.acbId IS NULL";
+			hql += "AND mapping.acbId IS NULL";
 		}
 		
 		Query query = entityManager.createQuery(hql, NotificationTypeRecipientMapEntity.class);
-		//query.setParameter("notificationTypeId", notificationTypeId);
+		query.setParameter("notificationTypeId", notificationTypeId);
 		if(recipientId != null) {
 			query.setParameter("recipientId", recipientId);
 		}

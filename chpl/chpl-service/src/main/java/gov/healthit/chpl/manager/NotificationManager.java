@@ -12,6 +12,7 @@ public interface NotificationManager {
 	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping);
 	public RecipientDTO updateRecipient(Long recipientId, String newEmailAddress);
 	public RecipientDTO updateRecipient(RecipientDTO toUpdate);
+	public boolean recipientEmailExists(String email);
 	public List<RecipientWithSubscriptionsDTO> getAll();
 	public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId);
 	public void deleteRecipient(Long recipientId) throws EntityNotFoundException;

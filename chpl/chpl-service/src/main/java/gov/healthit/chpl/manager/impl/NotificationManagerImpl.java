@@ -72,6 +72,12 @@ public class NotificationManagerImpl implements NotificationManager {
 	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
+	public boolean recipientEmailExists(String email) {
+		return (notificationDao.findRecipientByEmail(email) == null ? false : true);
+	}
+	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	@Transactional
 	public List<RecipientWithSubscriptionsDTO> getAll() {
 		List<CertificationBodyDTO> acbs = null;
 		if(!Util.isUserRoleAdmin()) {
