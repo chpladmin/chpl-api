@@ -16,4 +16,26 @@ public enum PrivacyAndSecurityFrameworkConcept implements Serializable {
 		return name;
 	}
 
+	public static PrivacyAndSecurityFrameworkConcept getValue(String concept) {
+		PrivacyAndSecurityFrameworkConcept result = null;
+		PrivacyAndSecurityFrameworkConcept[] possibleValues = values();
+		for(int i = 0; i < possibleValues.length && result == null; i++) {
+			if(concept.equalsIgnoreCase(possibleValues[i].getName())) {
+				result = possibleValues[i];
+			}
+		}
+		return result;
+	}
+
+	public static String getFormattedValues() {
+		StringBuilder buf = new StringBuilder();
+		PrivacyAndSecurityFrameworkConcept[] possibleValues = values();
+		for(int i = 0; i < possibleValues.length; i++) {
+			if(buf.length() > 0) {
+				buf.append(", ");
+			}
+			buf.append("'").append(possibleValues[i].getName()).append("'");
+		}
+		return buf.toString();
+	}
 }
