@@ -2,6 +2,8 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +19,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
+import gov.healthit.chpl.dto.notification.SubscriptionDTO;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.NotificationManager;
 
@@ -97,5 +100,33 @@ public class NotificationManagerImpl implements NotificationManager {
 		}
 		
 		notificationDao.deleteNotificationMapping(mapping.getRecipient(), mapping.getSubscription().getNotificationType(), mapping.getSubscription().getAcb());		
+	}
+	
+	/**
+	 * Deletes the recipient as far as the current user would be aware of.
+	 * If the recipient has subscriptions that the current user does not have access to,
+	 * leave those and leave the recipient but delete any subscriptions that the
+	 * current user does have access to. If the recipient is not associated with any
+	 * other subscriptions in the system (regardless of current user permissions)
+	 * delete the recipient email address as well.
+	 * @param recipientId
+	 */
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	@Transactional
+	public void deleteRecipient(Long recipientId) throws EntityNotFoundException {
+		RecipientDTO recip = notificationDao.getRecipientById(recipientId);
+		if(recip == null) {
+			throw new EntityNotFoundException("No recipient exists with id " + recipientId);
+		}
+		List<CertificationBodyDTO> acbs = null;
+		if(!Util.isUserRoleAdmin()) {
+			acbs = acbManager.getAllForUser(true);
+		}
+		//get only the subscriptions the current user should know about and delete those
+		RecipientWithSubscriptionsDTO fullRecip = notificationDao.getAllNotificationMappingsForRecipient(recipientId, Util.getCurrentUser().getPermissions(), acbs);
+		for(SubscriptionDTO sub : fullRecip.getSubscriptions()) {
+			//if the recip has no other subscriptions, dao will take care of deleting it
+			notificationDao.deleteNotificationMapping(recip, sub.getNotificationType(), sub.getAcb());
+		}
 	}
 }
