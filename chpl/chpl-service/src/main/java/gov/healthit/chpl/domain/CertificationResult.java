@@ -10,6 +10,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
 public class CertificationResult implements Serializable {
 	private static final long serialVersionUID = -4917413876078419868L;
+	public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
 	private String number;
 	private String title;
 	private Boolean success;
@@ -206,27 +207,18 @@ public class CertificationResult implements Serializable {
 	}
 	
 	public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework){
-		if(StringUtils.isNotEmpty(privacyAndSecurityFramework)){
-			privacyAndSecurityFramework = privacyAndSecurityFramework.replace(",", ";");
-			if(privacyAndSecurityFramework.contains(";")){
-				String approach1 = null;
-				String approach2 = null;
-				Integer counter = 0;
-				for(String str : privacyAndSecurityFramework.split(";", 2)){
-					if(counter == 0){
-						approach1 = str.trim();
-					}
-					else{
-						approach2 = str.trim();
-					}
-					counter++;
-				}
-				StringBuilder fmtPrivacyAndSecurityFramework = new StringBuilder();
-				fmtPrivacyAndSecurityFramework.append(approach1 + ";" + approach2);
-				privacyAndSecurityFramework = fmtPrivacyAndSecurityFramework.toString();
-				return privacyAndSecurityFramework;
-			}
+		if(StringUtils.isEmpty(privacyAndSecurityFramework)) {
+			return privacyAndSecurityFramework;
 		}
-		return privacyAndSecurityFramework.trim();
+		privacyAndSecurityFramework = privacyAndSecurityFramework.replace(",", PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+		StringBuilder result = new StringBuilder();
+		String[] frameworks = privacyAndSecurityFramework.split(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+		for(int i = 0; i < frameworks.length; i++) {
+			if(result.length() > 0) {
+				result.append(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+			}
+			result.append(frameworks[i].trim());
+		}
+		return result.toString();
 	}
 }
