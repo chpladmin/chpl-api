@@ -28,7 +28,7 @@ public class NotificationManagerImpl implements NotificationManager {
 	@Autowired NotificationDAO notificationDao;
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.notification.acb, admin))")
+			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
 	@Transactional
 	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping) {
 		if(! notificationDao.hasNotificationType(mapping.getSubscription().getNotificationType(), Util.getCurrentUser().getPermissions())) {
@@ -89,7 +89,7 @@ public class NotificationManagerImpl implements NotificationManager {
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.notification.acb, admin))")
+			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
 	@Transactional
 	public void deleteRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping) {
 		if(! notificationDao.hasNotificationType(mapping.getSubscription().getNotificationType(), Util.getCurrentUser().getPermissions())) {
