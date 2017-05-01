@@ -12,6 +12,7 @@ public class NotificationTypeDTO {
 	private Long id;
 	private String name;
 	private String description;
+	private Boolean requiresAcb;
 	private List<UserPermissionDTO> permissions;
 	
 	public NotificationTypeDTO() {
@@ -23,6 +24,7 @@ public class NotificationTypeDTO {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.description = entity.getDescription();
+		this.requiresAcb = entity.getRequiresAcb();
 		if(entity.getPermissions() != null && entity.getPermissions().size() > 0) {
 			for(NotificationPermissionEntity notifPerm : entity.getPermissions()) {
 				UserPermissionDTO perm = new UserPermissionDTO(notifPerm.getPermission());
@@ -61,5 +63,13 @@ public class NotificationTypeDTO {
 
 	public void setPermissions(List<UserPermissionDTO> permissions) {
 		this.permissions = permissions;
+	}
+
+	public Boolean getRequiresAcb() {
+		return requiresAcb;
+	}
+
+	public void setRequiresAcb(Boolean requiresAcb) {
+		this.requiresAcb = requiresAcb;
 	}
 }

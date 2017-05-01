@@ -37,6 +37,9 @@ public class NotificationTypeEntity {
 	@Column(name = "description")
 	private String description;
 	
+	@Column(name = "requires_acb")
+	private Boolean requiresAcb;
+	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "notificationTypeId"  )
 	@Basic( optional = false )
 	@Column( name = "notification_type_id", nullable = false  )
@@ -117,6 +120,14 @@ public class NotificationTypeEntity {
 
 	public void setPermissions(Set<NotificationPermissionEntity> permissions) {
 		this.permissions = permissions;
+	}
+
+	public Boolean getRequiresAcb() {
+		return requiresAcb;
+	}
+
+	public void setRequiresAcb(Boolean requiresAcb) {
+		this.requiresAcb = requiresAcb;
 	}
 
 }

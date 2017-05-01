@@ -1,23 +1,16 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.crypto.dsig.keyinfo.KeyValue;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.domain.Authority;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
@@ -55,6 +48,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestTool;
+import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -125,13 +119,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
-	public Set<DescriptiveModel> getNotificationTypes() {
+	public Set<NotificationType> getNotificationTypes() {
 		List<NotificationTypeDTO> notificationTypes = notificationDao.getAllNotificationTypes(Util.getCurrentUser().getPermissions());
-		Set<DescriptiveModel> notificationTypeNames = new HashSet<DescriptiveModel>();
+		Set<NotificationType> results = new HashSet<NotificationType>();
 		for(NotificationTypeDTO dto : notificationTypes) {
-			notificationTypeNames.add(new DescriptiveModel(dto.getId(), dto.getName(), dto.getDescription()));
+			results.add(new NotificationType(dto));
 		}
-		return notificationTypeNames;
+		return results;
 	}
 
 	@Transactional

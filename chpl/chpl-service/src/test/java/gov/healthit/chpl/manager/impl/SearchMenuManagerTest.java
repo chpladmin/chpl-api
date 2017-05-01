@@ -38,6 +38,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
+import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -556,18 +557,31 @@ public class SearchMenuManagerTest {
 	@Test
 	public void testGetNotificationTypesForAdminUser() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Set<DescriptiveModel> results = searchMenuManager.getNotificationTypes();
+		Set<NotificationType> results = searchMenuManager.getNotificationTypes();
 		assertNotNull(results);
 		assertEquals(4, results.size());
+		for(NotificationType nt : results) {
+			assertNotNull(nt.getId());
+			assertNotNull(nt.getName());
+			assertNotNull(nt.getDescription());
+			assertNotNull(nt.getRequiresAcb());
+		}
 	}
 	
 	@Transactional
 	@Test
 	public void testGetNotificationTypesForAcbUser() {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
-		Set<DescriptiveModel> results = searchMenuManager.getNotificationTypes();
+		Set<NotificationType> results = searchMenuManager.getNotificationTypes();
 		assertNotNull(results);
 		assertEquals(2, results.size());
+		for(NotificationType nt : results) {
+			assertNotNull(nt.getId());
+			assertNotNull(nt.getName());
+			assertNotNull(nt.getDescription());
+			assertNotNull(nt.getRequiresAcb());
+			assertTrue(nt.getRequiresAcb().booleanValue());
+		}
 	}
 	
 	@Transactional

@@ -55,10 +55,74 @@ public class NotificationController {
 	}
 	
 	@ApiOperation(value = "Update the email address of a recipient with the specified id keeping all subscriptions the same")
-	@RequestMapping(value = "/recipients/{recipientId}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public @ResponseBody Recipient updateAllRecipients(@PathVariable("recipientId") Long id,
-			@RequestParam(value="email", required=true) String newEmailAddress) {
-		RecipientDTO updatedRecip = notificationManager.updateRecipient(id, newEmailAddress);
+	@RequestMapping(value = "/recipients/{recipientId}/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	public @ResponseBody Recipient updateAllRecipients(@PathVariable("recipientId") Long recipientId,
+			@RequestBody Recipient updatedRecipient) {
+		//updates email and recipient metadata
+		RecipientDTO updatedRecip = notificationManager.updateRecipient(recipientId, updatedRecipient.getEmail());
+		
+		//get the current subscriptions
+		RecipientWithSubscriptionsDTO existingRecipient = notificationManager.getAllForRecipient(recipientId);
+		
+		//figure out what subscriptions need to be deleted
+		List<SubscriptionDTO> subsToRemove = new ArrayList<SubscriptionDTO>();
+		List<SubscriptionDTO> existingSubs = existingRecipient.getSubscriptions();
+		for(SubscriptionDTO existingSub : existingSubs) {
+			boolean stillExists;
+			for(Subscription updatedSub : updatedRecipient.getSubscriptions()) {
+				if(updatedSub.getNotificationType().getId().longValue() == existingSub.getNotificationType().getId().longValue() 
+					&& 
+					((updatedSub.getAcb() == null && existingSub.getAcb() == null) ||
+					 (updatedSub.getAcb().getId().longValue() == existingSub.getAcb().getId().longValue()))) {
+					stillExists = true;
+				}
+			}
+			
+			if(!stillExists) {
+				subsToRemove.add(existingSub);
+			}
+		}
+		
+		for(SubscriptionDTO subToRemove : subsToRemove) {
+			NotificationTypeRecipientMapDTO delMapping = new NotificationTypeRecipientMapDTO();
+			delMapping.setRecipient(updatedRecip);
+			delMapping.setSubscription(subToRemove);
+			notificationManager.removeRecipientNotificationMap(delMapping);
+		}
+		
+		//figure out what subscriptions need to be added
+		List<SubscriptionDTO> subsToAdd = new ArrayList<SubscriptionDTO>();
+		for(Subscription updatedSub : updatedRecipient.getSubscriptions()) {
+			boolean alreadyExists = false;
+			for(SubscriptionDTO existingSub : existingSubs) {
+				if(updatedSub.getNotificationType().getId().longValue() == existingSub.getNotificationType().getId().longValue() 
+					&& 
+					((updatedSub.getAcb() == null && existingSub.getAcb() == null) ||
+					 (updatedSub.getAcb().getId().longValue() == existingSub.getAcb().getId().longValue()))) {
+					alreadyExists = true;
+					}
+			}
+			if(!alreadyExists) {
+				SubscriptionDTO toAdd = new SubscriptionDTO();
+				if(updatedSub.getAcb() != null) {
+					CertificationBodyDTO acb = new CertificationBodyDTO();
+					acb.setId(updatedSub.getAcb().getId());
+					toAdd.setAcb(acb);
+				}
+				NotificationTypeDTO type = new NotificationTypeDTO();
+				type.setId(updatedSub.getNotificationType().getId());
+				toAdd.setNotificationType(type);
+				subsToAdd.add(toAdd);
+			}
+		}
+		
+		for(SubscriptionDTO subToAdd : subsToAdd) {
+			NotificationTypeRecipientMapDTO newMapping = new NotificationTypeRecipientMapDTO();
+			newMapping.setRecipient(updatedRecip);
+			newMapping.setSubscription(subToAdd);
+			notificationManager.addRecipientNotificationMap(newMapping);
+		}
+		
 		return new Recipient(updatedRecip);
 	}
 	

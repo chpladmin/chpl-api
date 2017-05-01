@@ -1,17 +1,22 @@
 package gov.healthit.chpl.domain.notification;
 
+import org.springframework.util.StringUtils;
+
+import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 
 public class NotificationType {
 	private Long id;
 	private String name;
 	private String description;
+	private Boolean requiresAcb;
 	
 	public NotificationType() {}
 	public NotificationType(NotificationTypeDTO dto) {
 		this.id = dto.getId();
 		this.name = dto.getName();
 		this.description = dto.getDescription();
+		this.requiresAcb = dto.getRequiresAcb();
 	}
 	public Long getId() {
 		return id;
@@ -30,5 +35,11 @@ public class NotificationType {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	public Boolean getRequiresAcb() {
+		return requiresAcb;
+	}
+	public void setRequiresAcb(Boolean requiresAcb) {
+		this.requiresAcb = requiresAcb;
 	}
 }
