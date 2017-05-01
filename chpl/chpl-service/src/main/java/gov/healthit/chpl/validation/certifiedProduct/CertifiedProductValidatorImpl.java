@@ -187,7 +187,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		
 		for(PendingCertificationResultDTO cr : product.getCertificationCriterion()){
 			if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
-				String formattedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim().replace(",", ";").replace("; ", ";");
+				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cr.getPrivacySecurityFramework());
 				if(!formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName())
 						&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName())
 						&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName())){
@@ -343,7 +343,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			
 			for(CertificationResult cr : product.getCertificationResults()){
 				if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
-					String formattedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim().replace(",", ";").replace("; ", ";");
+					String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cr.getPrivacySecurityFramework());
 					if(!formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName())
 							&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName())
 							&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName())){
