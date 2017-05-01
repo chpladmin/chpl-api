@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.domain.notification.Recipient;
 import gov.healthit.chpl.domain.notification.Subscription;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -140,10 +141,10 @@ public class NotificationController {
 		return new Recipient(recipToReturn);
 	}
 	
-	@ApiOperation(value = "Add subscription(s) to a recipient; will create the recipient in the system if they do not already exist.")
+	@ApiOperation(value = "Creates a new recipient with any subscriptions included in the request body. At least 1 subscription is required.")
 	@RequestMapping(value = "/recipients/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody Recipient createRecipient(@RequestBody Recipient recipientToAdd) 
-		throws InvalidArgumentsException {
+		throws InvalidArgumentsException, EntityCreationException {
 		if(recipientToAdd.getSubscriptions() == null || recipientToAdd.getSubscriptions().size() == 0) {
 			throw new InvalidArgumentsException("At least one subscription must be included with the request.");
 		}
@@ -154,6 +155,9 @@ public class NotificationController {
 			throw new InvalidArgumentsException("The email address '" + recipientToAdd.getEmail() + "' is already in the system.");
 		}
 		
+		RecipientDTO recipientDto = new RecipientDTO();
+		recipientDto.setEmailAddress(recipientToAdd.getEmail());
+		RecipientDTO added = notificationManager.createRecipient(recipientDto);
 		for(Subscription subscriptionToAdd : recipientToAdd.getSubscriptions()) {
 			NotificationTypeRecipientMapDTO dtoToAdd = new NotificationTypeRecipientMapDTO();
 			RecipientDTO recip = new RecipientDTO();
@@ -177,7 +181,7 @@ public class NotificationController {
 			dtoToAdd.setSubscription(sub);
 			notificationManager.addRecipientNotificationMap(dtoToAdd);
 		}
-		RecipientWithSubscriptionsDTO dtoResult = notificationManager.getAllForRecipient(recipientToAdd.getId());
+		RecipientWithSubscriptionsDTO dtoResult = notificationManager.getAllForRecipient(added.getId());
 		if(dtoResult != null) {
 			return new Recipient(dtoResult);
 		} 
@@ -187,7 +191,7 @@ public class NotificationController {
 	
 	@ApiOperation(value = "Remove subscription(s) for a recipient.")
 	@RequestMapping(value = "/recipients/{recipientId}/delete", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-	public void deleteRecipient(@PathVariable("recipientId") Long recipientId) 
+	public @ResponseBody void deleteRecipient(@PathVariable("recipientId") Long recipientId) 
 		throws InvalidArgumentsException {
 		try {
 			notificationManager.deleteRecipient(recipientId);

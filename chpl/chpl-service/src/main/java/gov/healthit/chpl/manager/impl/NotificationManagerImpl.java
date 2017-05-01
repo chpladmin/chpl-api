@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
@@ -30,10 +31,27 @@ public class NotificationManagerImpl implements NotificationManager {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired NotificationDAO notificationDao;
 	
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	@Transactional
+	public RecipientDTO createRecipient(RecipientDTO toCreate) throws EntityCreationException {
+		RecipientDTO result = null;
+		if(toCreate != null && !StringUtils.isBlank(toCreate.getEmailAddress())) {
+			String email = toCreate.getEmailAddress().trim();
+			logger.debug("Looking for existing recipient with email address " + email);
+			if(notificationDao.findRecipientByEmail(email) != null) {
+				throw new EntityCreationException("Recipient with email " + email.trim() + " already exists.");
+			} else {
+				result = notificationDao.createRecipientEmailAddress(email);
+			}
+		} 
+		return result;
+	}
+	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
 	@Transactional
-	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping) {
+	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping) 
+		throws EntityNotFoundException {
 		if(! notificationDao.hasNotificationType(mapping.getSubscription().getNotificationType(), Util.getCurrentUser().getPermissions())) {
 			throw new AccessDeniedException("User " + Util.getUsername() + " does not have permission to create notification with type " + mapping.getSubscription().getNotificationType().getName());
 		}
@@ -46,9 +64,7 @@ public class NotificationManagerImpl implements NotificationManager {
 			logger.debug("Looking for existing recipient with email address " + email);
 			recipient = notificationDao.findRecipientByEmail(email);
 			if(recipient == null) {
-				logger.debug("Did not find existing recipient with email address " + email + "... creating new recipient.");
-				recipient = notificationDao.createRecipientEmailAddress(mapping.getRecipient().getEmailAddress().trim());
-				logger.debug("Created recipient with email address " + email + " and id " + recipient.getId());
+				throw new EntityNotFoundException("No recipient with email address " + email + " exists.");
 			}
 		} 
 				

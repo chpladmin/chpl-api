@@ -27,6 +27,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -106,13 +107,14 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createNotificationAsAdminUser() {
+	public void createNotificationAsAdminUser() throws EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<RecipientWithSubscriptionsDTO> origRecipMappings = notificationManager.getAll();
 
 		NotificationTypeRecipientMapDTO mapping = new NotificationTypeRecipientMapDTO();
 		RecipientDTO recip = new RecipientDTO();
 		recip.setEmailAddress("test@ainq.com");
+		recip = notificationManager.createRecipient(recip);
 		mapping.setRecipient(recip);
 		SubscriptionDTO notification = new SubscriptionDTO();
 		notification.setAcb(null);
@@ -170,7 +172,8 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createNotificationAsAcbAdminUserForAllowedAcb() throws EntityRetrievalException {
+	public void createNotificationAsAcbAdminUserForAllowedAcb() 
+			throws EntityRetrievalException, EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(acbUser);
 		List<RecipientWithSubscriptionsDTO> origRecipMappings = notificationManager.getAll();
 		CertificationBodyDTO acb = acbDao.getById(-1L);
@@ -178,6 +181,7 @@ public class NotificationManagerTest extends TestCase {
 		NotificationTypeRecipientMapDTO mapping = new NotificationTypeRecipientMapDTO();
 		RecipientDTO recip = new RecipientDTO();
 		recip.setEmailAddress("test@ainq.com");
+		recip = notificationManager.createRecipient(recip);
 		mapping.setRecipient(recip);
 		SubscriptionDTO notification = new SubscriptionDTO();
 		notification.setAcb(acb);
