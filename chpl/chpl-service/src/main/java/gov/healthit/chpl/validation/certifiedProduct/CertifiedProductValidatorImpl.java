@@ -185,21 +185,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.getErrorMessages().add(ex.getMessage());
 		}
 		
-		for(PendingCertificationResultDTO cr : product.getCertificationCriterion()){
-			if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
-				String formattedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim().replace(",", ";").replace("; ", ";");
-				if(!formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName())
-						&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName())
-						&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName())){
-					product.getErrorMessages().add("Certification " + cr.getNumber() + " contains Privacy and Security Framework value '" + 
-						formattedPrivacyAndSecurityFramework + "' which must match either '" + 
-							PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName() + "', '" + 
-							PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName() + "', or '" +
-							PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName() + "'");
-				}
-			}
-		}
-		
 		if(!validateProductCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
 		}
@@ -262,6 +247,17 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
+				if(foundPrivacyAndSecurityFramework == null){
+					product.getErrorMessages().add("Certification " + cert.getNumber() + 
+							" contains Privacy and Security Framework value '" + 
+							formattedPrivacyAndSecurityFramework + "' which must match one of " +
+							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+				}
+			}
+			
 			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 				for(PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
 					if(!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
@@ -341,22 +337,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 			
-			for(CertificationResult cr : product.getCertificationResults()){
-				if(!StringUtils.isEmpty(cr.getPrivacySecurityFramework())){
-					String formattedPrivacyAndSecurityFramework = cr.getPrivacySecurityFramework().trim().replace(",", ";").replace("; ", ";");
-					if(!formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName())
-							&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName())
-							&& !formattedPrivacyAndSecurityFramework.equalsIgnoreCase(PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName())){
-						product.getErrorMessages().add("Certification " + cr.getNumber() + 
-								" contains Privacy and Security Framework value '" + 
-								formattedPrivacyAndSecurityFramework + "' which must match either '" + 
-								PrivacyAndSecurityFrameworkConcept.APPROACH_1.getName() + "', '" + 
-								PrivacyAndSecurityFrameworkConcept.APPROACH_2.getName() + "', or '" +
-								PrivacyAndSecurityFrameworkConcept.APPROACH_1_AND_2.getName() + "'");
-					}
-				}
-			}
-			
 			SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
 			idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			try {
@@ -385,6 +365,17 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
+				if(foundPrivacyAndSecurityFramework == null){
+					product.getErrorMessages().add("Certification " + cert.getNumber() + 
+							" contains Privacy and Security Framework value '" + 
+							formattedPrivacyAndSecurityFramework + "' which must match one of " +
+							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+				}
+			}
+			
 			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 				for(CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
 					if(asDto.getCertifiedProductId() == null && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {
