@@ -530,7 +530,7 @@ public class CertifiedProductControllerTest {
 			assertNotNull(e);
 			Boolean hasError = false;
 			for(String error : e.getErrorMessages()){
-				if(error.equalsIgnoreCase("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'")){
+				if(error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework")){
 					hasError = true;
 				}
 			}
@@ -745,7 +745,7 @@ public class CertifiedProductControllerTest {
 		
 		Boolean hasError = false;
 		for(String error : pcpDTO.getErrorMessages()){
-			if(error.equalsIgnoreCase("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2' which must match either 'Approach 1', 'Approach 2', or 'Approach 1;Approach 2'")){
+			if(error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2'")){
 				hasError = true;
 			}
 		}
