@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
@@ -11,6 +12,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -35,6 +38,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
+import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -547,5 +551,43 @@ public class SearchMenuManagerTest {
 				+ " millis or " + elapsedSecs + " seconds");
 		
 		assertTrue("firstResult should not match secondResult", firstResult.size() != secondResult.size());
+	}
+	
+	@Transactional
+	@Test
+	public void testGetNotificationTypesForAdminUser() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Set<NotificationType> results = searchMenuManager.getNotificationTypes();
+		assertNotNull(results);
+		assertEquals(4, results.size());
+		for(NotificationType nt : results) {
+			assertNotNull(nt.getId());
+			assertNotNull(nt.getName());
+			assertNotNull(nt.getDescription());
+			assertNotNull(nt.getRequiresAcb());
+		}
+	}
+	
+	@Transactional
+	@Test
+	public void testGetNotificationTypesForAcbUser() {
+		SecurityContextHolder.getContext().setAuthentication(testUser3);
+		Set<NotificationType> results = searchMenuManager.getNotificationTypes();
+		assertNotNull(results);
+		assertEquals(2, results.size());
+		for(NotificationType nt : results) {
+			assertNotNull(nt.getId());
+			assertNotNull(nt.getName());
+			assertNotNull(nt.getDescription());
+			assertNotNull(nt.getRequiresAcb());
+			assertTrue(nt.getRequiresAcb().booleanValue());
+		}
+	}
+	
+	@Transactional
+	@Test(expected = AuthenticationCredentialsNotFoundException.class)
+	public void testGetNotificationTypesAllowedForUnauthenticatedUser() {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		searchMenuManager.getNotificationTypes();
 	}
 }

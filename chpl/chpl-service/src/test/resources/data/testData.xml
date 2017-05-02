@@ -1071,47 +1071,6 @@
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
 
-	<user_permission user_permission_id="-2" name="ADMIN"
-		description="This permission confers administrative privileges to its owner."
-		authority="ROLE_ADMIN" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="1" name="USER_CREATOR"
-		description="This permission allows a user to create other users"
-		authority="ROLE_USER_CREATOR" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="2" name="ACB_ADMIN"
-		description="This permission gives a user write access to their ACBs."
-		authority="ROLE_ACB_ADMIN" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="3" name="ACB_STAFF"
-		description="This permission gives a user read access to their ACBs"
-		authority="ROLE_ACB_STAFF" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="4" name="ATL_ADMIN"
-		description="This permission gives a user write access to their ATLs."
-		authority="ROLE_ATL_ADMIN" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="5" name="ATL_STAFF"
-		description="This permission gives a user read access to their ATLs."
-		authority="ROLE_ATL_STAFF" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="6" name="CMS_STAFF"
-		description="This permission gives a user read access to CMS reports."
-		authority="ROLE_CMS_STAFF" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="7" name="ONC_STAFF"
-		description="This permission gives a user access to the CMS Download file and report navigation section. It denies editing of Users/Products/CPs/ACBs/etc. No user invitation ability."
-		authority="ROLE_ONC_STAFF" creation_date="2016-10-14 12:43:00.015"
-		last_modified_date="2016-10-14 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-
 	<surveillance_type id="1" name="Reactive"
 		creation_date="2017-01-06 10:31:41.257" last_modified_date="2017-01-06 10:31:41.257"
 		last_modified_user="-1" deleted="FALSE" />
@@ -1503,4 +1462,37 @@
 		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
 		deleted="FALSE"></api_key_activity>
 
+	<notification_recipient id="-1" email="katy@ainq.com" 
+		creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_recipient id="-2" email="andrew@ainq.com" 
+		creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+		
+	<!-- onc subscriptions -->
+	<notification_type_recipient_map id="-1" recipient_id="-1"
+		notification_type_id="3" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_type_recipient_map id="-2" recipient_id="-1"
+		notification_type_id="4" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+		
+	<!-- acb subscriptions -->
+	<notification_type_recipient_map id="-3" recipient_id="-2"
+		notification_type_id="1" acb_id="-1" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_type_recipient_map id="-4" recipient_id="-2"
+		notification_type_id="2" acb_id="-1" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_type_recipient_map id="-5" recipient_id="-2"
+		notification_type_id="1" acb_id="-2" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	
 </dataset>
