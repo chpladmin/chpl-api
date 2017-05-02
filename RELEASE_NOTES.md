@@ -1,10 +1,5 @@
 # Release Notes
 
-### OCD-1449
-* Add notifications service to allow registration, getting, and deleting of email subscriptions
-* Add /data/notification_types service to send back the types of notifications a logged-in user may work with
-
----
 
 ## Version TBD
 _Date TBD_
@@ -17,6 +12,8 @@ Surveillance by ONC-ACB
 ### Features Added
 * Limit activity searches to a configurable max date range (currently set to 60 days)
 * Validate the privacy and security framework users enter for listing criteria
+* Add notifications service to allow registration, getting, and deleting of email subscriptions
+* Add /data/notification_types service to send back the types of notifications a logged-in user may work with
 
 ---
 
