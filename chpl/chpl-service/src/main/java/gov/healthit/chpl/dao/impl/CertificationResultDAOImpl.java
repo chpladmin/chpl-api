@@ -1011,7 +1011,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		Query query = entityManager.createQuery( "SELECT tp "
 				+ "FROM CertificationResultTestProcedureEntity tp "
 				+ "LEFT OUTER JOIN FETCH tp.testProcedure "
-				+ "where (NOT tp.deleted = true) AND (certification_result_id = :certificationResultId) ", 
+				+ "WHERE (NOT tp.deleted = true) "
+				+ "AND (certification_result_id = :certificationResultId) ", 
 				CertificationResultTestProcedureEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		
@@ -1072,7 +1073,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				+ "FROM CertificationResultTestFunctionalityEntity crtf "
 				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
 				+ "JOIN FETCH tf.certificationEdition edition "
-				+ "where (NOT crtf.deleted = true) "
+				+ "WHERE (NOT crtf.deleted = true) "
 				+ "AND (crtf.certificationResultId = :certificationResultId) "
 				+ "AND (crtf.testFunctionalityId = :testFunctionalityId)", 
 				CertificationResultTestFunctionalityEntity.class );
@@ -1095,7 +1096,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				+ "FROM CertificationResultTestFunctionalityEntity crtf "
 				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
 				+ "JOIN FETCH tf.certificationEdition edition "
-				+ "where (NOT crtf.deleted = true) AND (crtf.id = :entityid) ", 
+				+ "WHERE (NOT crtf.deleted = true) "
+				+ "AND (crtf.id = :entityid) ", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationResultTestFunctionalityEntity> result = query.getResultList();
@@ -1111,7 +1113,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				+ "FROM CertificationResultTestFunctionalityEntity crtf "
 				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
 				+ "JOIN FETCH tf.certificationEdition edition "
-				+ "where (NOT crtf.deleted = true) "
+				+ "WHERE (NOT crtf.deleted = true) "
 				+ "AND (crtf.certificationResultId = :certificationResultId) ", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
