@@ -368,7 +368,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
 									pendingFuncMap.getNumber(), product.getCertificationEditionId());
 							if(foundTestFunc == null || foundTestFunc.getId() == null) {
-								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + pendingFuncMap.getNumber() + "' for edition " + product.getCertificationEditionId() + ".");
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + pendingFuncMap.getNumber() + "'.");
 							}
 						}
 					}
@@ -742,7 +742,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						if(funcMap.getTestFunctionalityId() == null) {
 							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(funcMap.getName(), new Long(product.getCertificationEdition().get("id").toString()));
 							if(foundTestFunc == null || foundTestFunc.getId() == null) {
-								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + funcMap.getName() + "' for edition " + product.getCertificationEdition().get("id").toString() + ".");
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + funcMap.getName() + "'.");
 							}
 						}
 					}
