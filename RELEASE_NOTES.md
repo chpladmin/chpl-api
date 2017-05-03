@@ -14,6 +14,7 @@ Surveillance by ONC-ACB
 * Validate the privacy and security framework users enter for listing criteria
 * Add notifications service to allow registration, getting, and deleting of email subscriptions
 * Add /data/notification_types service to send back the types of notifications a logged-in user may work with
+* Add certification edition to test functionality and check that the right edition of test functionality is used during listing edit and upload.
 
 ---
 

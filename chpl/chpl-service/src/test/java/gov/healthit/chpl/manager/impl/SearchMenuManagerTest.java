@@ -38,6 +38,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
+import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
@@ -589,5 +590,18 @@ public class SearchMenuManagerTest {
 	public void testGetNotificationTypesAllowedForUnauthenticatedUser() {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		searchMenuManager.getNotificationTypes();
+	}
+	
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void getTestFunctionality_hasEditions() {
+		Set<TestFunctionality> tfs = searchMenuManager.getTestFunctionality();
+		assertNotNull(tfs);
+		assertTrue(tfs.size() > 0);
+		for(TestFunctionality tf : tfs) {
+			assertNotNull(tf.getYear());
+			assertTrue(tf.getYear().equals("2014") || tf.getYear().equals("2015"));
+		}
 	}
 }
