@@ -50,6 +50,7 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceSearchOptions;
+import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
@@ -719,7 +720,7 @@ public class SearchViewController {
 	@RequestMapping(value="/data/test_functionality", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody SearchOption getTestFunctionality() {
-		Set<KeyValueModel> data = searchMenuManager.getTestFunctionality();
+		Set<TestFunctionality> data = searchMenuManager.getTestFunctionality();
 		SearchOption result = new SearchOption();
 		result.setExpandable(false);
 		result.setData(data);

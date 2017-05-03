@@ -47,6 +47,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -268,13 +269,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<KeyValueModel> getTestFunctionality() {
+	public Set<TestFunctionality> getTestFunctionality() {
 		
 		List<TestFunctionalityDTO> dtos = this.testFuncDao.findAll();
-		Set<KeyValueModel> testFuncs = new HashSet<KeyValueModel>();
+		Set<TestFunctionality> testFuncs = new HashSet<TestFunctionality>();
 		
 		for (TestFunctionalityDTO dto : dtos) {
-			testFuncs.add(new KeyValueModel(dto.getId(), dto.getNumber(), dto.getName()));
+			testFuncs.add(new TestFunctionality(dto));
 		}
 		
 		return testFuncs;

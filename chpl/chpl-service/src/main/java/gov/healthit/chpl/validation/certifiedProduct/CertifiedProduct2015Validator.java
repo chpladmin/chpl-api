@@ -365,9 +365,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
 					for(PendingCertificationResultTestFunctionalityDTO pendingFuncMap : cert.getTestFunctionality()) {
 						if(pendingFuncMap.getTestFunctionalityId() == null) {
-							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumber(pendingFuncMap.getNumber());
+							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
+									pendingFuncMap.getNumber(), product.getCertificationEditionId());
 							if(foundTestFunc == null || foundTestFunc.getId() == null) {
-								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + pendingFuncMap.getNumber() + "'.");
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + pendingFuncMap.getNumber() + "' for edition " + product.getCertificationEditionId() + ".");
 							}
 						}
 					}
@@ -739,9 +740,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
 					for(CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {
 						if(funcMap.getTestFunctionalityId() == null) {
-							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumber(funcMap.getName());
+							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(funcMap.getName(), new Long(product.getCertificationEdition().get("id").toString()));
 							if(foundTestFunc == null || foundTestFunc.getId() == null) {
-								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + funcMap.getName() + "'.");
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + funcMap.getName() + "' for edition " + product.getCertificationEdition().get("id").toString() + ".");
 							}
 						}
 					}

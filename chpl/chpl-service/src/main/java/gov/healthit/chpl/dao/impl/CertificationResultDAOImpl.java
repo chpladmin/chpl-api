@@ -1043,7 +1043,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	
 	public CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(CertificationResultTestFunctionalityDTO dto) throws EntityCreationException {
 		CertificationResultTestFunctionalityEntity mapping = new CertificationResultTestFunctionalityEntity();
-		mapping = new CertificationResultTestFunctionalityEntity();
 		mapping.setCertificationResultId(dto.getCertificationResultId());
 		mapping.setTestFunctionalityId(dto.getTestFunctionalityId());
 		mapping.setCreationDate(new Date());
@@ -1069,12 +1068,13 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	
 	@Override
 	public CertificationResultTestFunctionalityDTO lookupTestFunctionalityMapping(Long certificationResultId, Long testFunctionalityId){
-		Query query = entityManager.createQuery( "SELECT tf "
-				+ "FROM CertificationResultTestFunctionalityEntity tf "
-				+ "LEFT OUTER JOIN FETCH tf.testFunctionality "
-				+ "where (NOT tf.deleted = true) "
-				+ "AND (tf.certificationResultId = :certificationResultId) "
-				+ "AND (tf.testFunctionalityId = :testFunctionalityId)", 
+		Query query = entityManager.createQuery( "SELECT crtf "
+				+ "FROM CertificationResultTestFunctionalityEntity crtf "
+				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
+				+ "JOIN FETCH tf.certificationEdition edition "
+				+ "where (NOT crtf.deleted = true) "
+				+ "AND (crtf.certificationResultId = :certificationResultId) "
+				+ "AND (crtf.testFunctionalityId = :testFunctionalityId)", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		query.setParameter("testFunctionalityId", testFunctionalityId);
@@ -1091,10 +1091,11 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	private CertificationResultTestFunctionalityEntity getCertificationResultTestFunctionalityById(Long id) {
 		CertificationResultTestFunctionalityEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT tf "
-				+ "FROM CertificationResultTestFunctionalityEntity tf "
-				+ "LEFT OUTER JOIN FETCH tf.testFunctionality "
-				+ "where (NOT tf.deleted = true) AND (tf.id = :entityid) ", 
+		Query query = entityManager.createQuery( "SELECT crtf "
+				+ "FROM CertificationResultTestFunctionalityEntity crtf "
+				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
+				+ "JOIN FETCH tf.certificationEdition edition "
+				+ "where (NOT crtf.deleted = true) AND (crtf.id = :entityid) ", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationResultTestFunctionalityEntity> result = query.getResultList();
@@ -1106,11 +1107,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	}
 	
 	private List<CertificationResultTestFunctionalityEntity> getTestFunctionalityForCertification(Long certificationResultId){
-		Query query = entityManager.createQuery( "SELECT tf "
-				+ "FROM CertificationResultTestFunctionalityEntity tf "
-				+ "LEFT OUTER JOIN FETCH tf.testFunctionality "
-				+ "where (NOT tf.deleted = true) "
-				+ "AND (certification_result_id = :certificationResultId) ", 
+		Query query = entityManager.createQuery( "SELECT crtf "
+				+ "FROM CertificationResultTestFunctionalityEntity crtf "
+				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
+				+ "JOIN FETCH tf.certificationEdition edition "
+				+ "where (NOT crtf.deleted = true) "
+				+ "AND (crtf.certificationResultId = :certificationResultId) ", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		

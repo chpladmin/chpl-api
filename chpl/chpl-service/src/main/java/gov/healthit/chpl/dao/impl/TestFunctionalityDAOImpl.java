@@ -92,10 +92,10 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 	}
 	
 	@Override
-	public TestFunctionalityDTO getByNumber(String number) {
+	public TestFunctionalityDTO getByNumberAndEdition(String number, Long editionId) {
 		
 		TestFunctionalityDTO dto = null;
-		List<TestFunctionalityEntity> entities = getEntitiesByNumber(number);
+		List<TestFunctionalityEntity> entities = getEntitiesByNumberAndYear(number, editionId);
 		
 		if (entities != null && entities.size() > 0){
 			dto = new TestFunctionalityDTO(entities.get(0));
@@ -153,13 +153,19 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		return entity;
 	}
 	
-	private List<TestFunctionalityEntity> getEntitiesByNumber(String number) {
+	private List<TestFunctionalityEntity> getEntitiesByNumberAndYear(String number, Long editionId) {
 		
 		TestFunctionalityEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from TestFunctionalityEntity where "
-				+ "(NOT deleted = true) AND (UPPER(number) = :number) ", TestFunctionalityEntity.class );
+		Query query = entityManager.createQuery( "SELECT tf "
+				+ "FROM TestFunctionalityEntity tf "
+				+ "JOIN FETCH tf.certificationEdition edition "
+				+ "WHERE tf.deleted <> true "
+				+ "AND UPPER(tf.number) = :number "
+				+ "AND edition.id = :editionId ", TestFunctionalityEntity.class );
 		query.setParameter("number", number.toUpperCase());
+		query.setParameter("editionId", editionId);
+		
 		return query.getResultList();
 	}
 }

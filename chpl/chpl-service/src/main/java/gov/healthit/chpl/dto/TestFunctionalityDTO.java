@@ -9,6 +9,7 @@ public class TestFunctionalityDTO implements Serializable {
 	private Long id;
 	private String name;
 	private String number;
+	private String year;
 	
 	public TestFunctionalityDTO(){}
 	
@@ -16,6 +17,9 @@ public class TestFunctionalityDTO implements Serializable {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.number = entity.getNumber();
+		if(entity.getCertificationEdition() != null) {
+			this.year = entity.getCertificationEdition().getYear();
+		}
 	}
 
 	public Long getId() {
@@ -40,5 +44,13 @@ public class TestFunctionalityDTO implements Serializable {
 
 	public void setNumber(String number) {
 		this.number = number;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
 	}
 }

@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
@@ -64,7 +65,7 @@ public class CertificationResultManagerImpl implements
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public CertificationResultDTO update(Long acbId, CertificationResultDTO toUpdate) throws EntityRetrievalException, EntityCreationException {
+	public CertificationResultDTO update(Long acbId, CertifiedProductDTO listing, CertificationResultDTO toUpdate) throws EntityRetrievalException, EntityCreationException {
 		CertificationResultDTO updated = certResultDAO.update(toUpdate);
 		
 		List<CertificationResultUcdProcessDTO> sed = updateSed(toUpdate);
@@ -91,7 +92,7 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultTestProcedureDTO> procs = updateTestProcedures(toUpdate);
 		updated.setTestProcedures(procs);
 		
-		List<CertificationResultTestFunctionalityDTO> func = updateTestFunctionality(toUpdate);
+		List<CertificationResultTestFunctionalityDTO> func = updateTestFunctionality(toUpdate, listing.getCertificationEditionId());
 		updated.setTestFunctionality(func);
 		
 		List<CertificationResultTestTaskDTO> tasks = updateTestTasks(toUpdate);
@@ -489,7 +490,7 @@ public class CertificationResultManagerImpl implements
 		return certResultDAO.getTestProceduresForCertificationResult(toUpdate.getId());
 	}
 	
-	private List<CertificationResultTestFunctionalityDTO> updateTestFunctionality(CertificationResultDTO toUpdate) 
+	private List<CertificationResultTestFunctionalityDTO> updateTestFunctionality(CertificationResultDTO toUpdate, Long editionId) 
 			throws EntityRetrievalException, EntityCreationException {
 		//update test functionality mappings
 		List<CertificationResultTestFunctionalityDTO> existingTestFunctionality = certResultDAO.getTestFunctionalityForCertificationResult(toUpdate.getId());
@@ -502,7 +503,8 @@ public class CertificationResultManagerImpl implements
 				testFunc = testFunctionalityDAO.getById(newTestFuncMapping.getTestFunctionalityId());
 			}
 			if(testFunc == null && !StringUtils.isEmpty(newTestFuncMapping.getTestFunctionalityNumber())) {
-				testFunc = testFunctionalityDAO.getByNumber(newTestFuncMapping.getTestFunctionalityNumber());
+				testFunc = testFunctionalityDAO.getByNumberAndEdition(
+						newTestFuncMapping.getTestFunctionalityNumber(), editionId);
 			}
 			
 			if(testFunc != null) {

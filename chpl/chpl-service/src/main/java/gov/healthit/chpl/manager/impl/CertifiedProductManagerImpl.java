@@ -554,16 +554,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 							funcDto.setCertificationResultId(createdCert.getId());
 							certDao.addTestFunctionalityMapping(funcDto);
 						} else {
-							//check again for a matching test tool because the uesr could have edited
+							//check again for a matching test tool because the user could have edited
 							//it since upload
-							TestFunctionalityDTO match = testFuncDao.getByNumber(func.getNumber());
+							TestFunctionalityDTO match = testFuncDao.getByNumberAndEdition(func.getNumber(), pendingCp.getCertificationEditionId());
 							if(match != null) {
 								CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
 								funcDto.setTestFunctionalityId(match.getId());
 								funcDto.setCertificationResultId(createdCert.getId());
 								certDao.addTestFunctionalityMapping(funcDto);
 							} else {
-								logger.error("Could not insert test functionality with null id. Number was " + func.getNumber());
+								logger.error("Could not insert test functionality with null id. Number was " + func.getNumber() + " and edition id " + pendingCp.getCertificationEditionId());
 							}
 						}
 					}
@@ -1527,7 +1527,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 						}
 					}
 					
-					certResultManager.update(acbId, oldResult);
+					certResultManager.update(acbId, productDto, oldResult);
 					break;
 				}
 			}
