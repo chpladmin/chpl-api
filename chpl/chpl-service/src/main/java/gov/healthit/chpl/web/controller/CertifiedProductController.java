@@ -81,9 +81,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	@Autowired CertifiedProductManager cpManager;
-	@Autowired ContactDAO contactDao;
 	@Autowired PendingCertifiedProductManager pcpManager;
-	@Autowired PendingCertifiedProductDAO pendingCPDao;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
@@ -339,9 +337,10 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody String deletePendingCertifiedProduct(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
+	public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long id) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, 
+			EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
-		validatePendingCPAlreadyConfirmedOrRejected(id);
 		pcpManager.deletePendingCertifiedProduct(acbs, id);
 		return "{\"success\" : true }";
 	}
@@ -356,29 +355,30 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, 
+		EntityRetrievalException, JsonProcessingException, ObjectMissingValidationException {
 		
 		String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
 		if(StringUtils.isEmpty(acbIdStr)) {
 			throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
 		}
-		
-		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
-		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
-		if(validator != null) {
-			validator.validate(pcpDto);
-		}
-		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
-			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
-		}
-		validatePendingCPAlreadyConfirmedOrRejected(pendingCp.getId());
-		
 		Long acbId = new Long(acbIdStr);
-		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
-		pcpManager.confirm(acbId, pendingCp.getId());
-		
-		CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-		return result;
+		if(pcpManager.isPendingListingAvailableForUpdate(acbId, pendingCp.getId())) {
+			PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
+			CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
+			if(validator != null) {
+				validator.validate(pcpDto);
+			}
+			if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
+				throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
+			}
+			
+			CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
+			pcpManager.confirm(acbId, pendingCp.getId());
+			CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
+			return result;
+		}
+		return null;
 	}
 	
 	@ApiOperation(value="DEPRECATED. Upload a file to update the number of meaningful use users for each CHPL Product Number", 
@@ -518,14 +518,5 @@ public class CertifiedProductController {
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
 		results.getPendingCertifiedProducts().addAll(uploadedProducts);
 		return results;
-	}
-	
-	private void validatePendingCPAlreadyConfirmedOrRejected(Long id) throws EntityRetrievalException, ObjectMissingValidationException{
-		PendingCertifiedProductDTO pcpDTO = pendingCPDao.findById(id, true);
-		if(pcpDTO.getDeleted()){
-			ContactDTO contactDTO = contactDao.getById(pcpDTO.getLastModifiedUser());
-			Contact contact = new Contact(contactDTO);
-			throw new ObjectMissingValidationException("Pending Certified Product with id " + pcpDTO.getId() + " has already been confirmed/rejected.", contact);
-		}
 	}
 }

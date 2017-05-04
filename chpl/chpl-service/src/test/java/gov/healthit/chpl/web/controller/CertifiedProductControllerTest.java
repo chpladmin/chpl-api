@@ -22,7 +22,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -968,11 +967,14 @@ public class CertifiedProductControllerTest {
 	 * @throws EntityRetrievalException 
 	 * @throws JsonProcessingException 
 	 */
+	@Transactional
+	@Rollback(true)
+	@Test
 	public void test_rejectPendingCP_isAlreadyDeleted_returnsBadRequest() throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Boolean hasError = false;
 		try{
-			certifiedProductController.deletePendingCertifiedProduct(-1L);
+			certifiedProductController.rejectPendingCertifiedProduct(-1L);
 		} catch (ObjectMissingValidationException e){
 			for(String error : e.getErrorMessages()){
 				if(error.contains("has already been confirmed/rejected")){

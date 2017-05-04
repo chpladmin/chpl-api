@@ -1,7 +1,5 @@
 package gov.healthit.chpl.web.controller.exception;
 
-import java.util.HashSet;
-
 import gov.healthit.chpl.domain.Contact;
 
 public class ObjectMissingValidationException extends ValidationException {
@@ -9,12 +7,14 @@ public class ObjectMissingValidationException extends ValidationException {
 	
 	private Contact contact;
 
-	public ObjectMissingValidationException(String message, Contact lastModifiedUser) { 
+	public ObjectMissingValidationException() {
+		super();
+	}
+	
+	public ObjectMissingValidationException(String message, Contact contact) { 
 		super(); 
-		errorMessages = new HashSet<String>();
 		errorMessages.add(message);
-		warningMessages = new HashSet<String>();
-		setContact(lastModifiedUser);
+		setContact(contact);
 	}
 
 	public Contact getContact() {
