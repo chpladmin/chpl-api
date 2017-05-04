@@ -6,11 +6,13 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -38,6 +40,8 @@ import gov.healthit.chpl.entity.PendingTestTaskEntity;
 
 @Repository(value="pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements PendingCertifiedProductDAO {
+	
+	@Autowired ContactDAO contactDao;
 	
 	@Override
 	@Transactional
@@ -256,22 +260,18 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 
 	@Override
 	@Transactional
-	public void delete(Long pendingProductId) throws EntityRetrievalException {
-		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
-		if(entity == null) {
-			throw new EntityRetrievalException("No pending certified product exists with id " + pendingProductId);
-		}
+	public void delete(Long pendingProductId, Boolean checkIfDeletedEntityExists) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity;
+		entity = getEntityById(pendingProductId, checkIfDeletedEntityExists);
 		entity.setDeleted(true);
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		
 		entityManager.persist(entity);
 	}
-	
 
 	@Override
-	public void updateStatus(Long pendingProductId, CertificationStatusDTO status) throws EntityRetrievalException {
-		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
+	public void updateStatus(Long pendingProductId, CertificationStatusDTO status, Boolean includeDeleted) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity = getEntityById(pendingProductId, includeDeleted);
 		if(entity == null) {
 			throw new EntityRetrievalException("No pending certified product exists with id " + pendingProductId);
 		}
@@ -306,8 +306,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		return dtos;
 	}
 	
-	public PendingCertifiedProductDTO findById(Long pcpId) throws EntityRetrievalException {
-		PendingCertifiedProductEntity entity = getEntityById(pcpId);
+	public PendingCertifiedProductDTO findById(Long pcpId, Boolean includeDeleted) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity = getEntityById(pcpId, includeDeleted);
 		if(entity == null) {
 			return null;
 		}
@@ -349,13 +349,21 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		
 	}
 	
-	private PendingCertifiedProductEntity getEntityById(Long entityId) throws EntityRetrievalException {
+	private PendingCertifiedProductEntity getEntityById(Long entityId, Boolean includeDeleted) throws EntityRetrievalException {
 		
 		PendingCertifiedProductEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
-				+ " where (pending_certified_product_id = :entityid) "
-				+ " and (not pcp.deleted = true)", PendingCertifiedProductEntity.class );
+		StringBuilder queryString = new StringBuilder();
+		queryString.append("SELECT pcp from PendingCertifiedProductEntity pcp "
+				+ " where (pending_certified_product_id = :entityid) ");
+		if(includeDeleted){
+			queryString.append(" and (pcp.deleted = true)");
+		} else{
+			queryString.append(" and (not pcp.deleted = true)");
+		}
+		
+		Query query = entityManager.createQuery(queryString.toString(), PendingCertifiedProductEntity.class);
+				
 		query.setParameter("entityid", entityId);
 		List<PendingCertifiedProductEntity> result = query.getResultList();
 		
@@ -365,6 +373,10 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		
 		if (result.size() > 0){
 			entity = result.get(0);
+		}
+		
+		if(entity == null) {
+			throw new EntityRetrievalException("No pending certified product exists with id " + entityId);
 		}
 		
 		return entity;

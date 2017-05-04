@@ -1,5 +1,9 @@
 # Release Notes
 
+##OCD-1404
+* Return exception with last modified user's contact info when deleting or confirming a pending Certified Product that has already been deleted or confirmed
+
+---
 
 ## Version TBD
 _Date TBD_

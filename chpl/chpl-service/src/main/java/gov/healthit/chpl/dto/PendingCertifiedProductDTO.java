@@ -46,6 +46,8 @@ public class PendingCertifiedProductDTO implements Serializable {
     private Long certificationBodyId;    
     private Long productClassificationId;
     private Long testingLabId;
+    private Boolean deleted;
+    private Long lastModifiedUser;
     private Set<String> errorMessages;
     private Set<String> warningMessages;
     
@@ -429,6 +431,8 @@ public class PendingCertifiedProductDTO implements Serializable {
 		this.id = entity.getId();
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.testingLabId = entity.getTestingLabId();
+		this.deleted = entity.getDeleted();
+		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.developerId = entity.getDeveloperId();
 		//this.developerAddress = new AddressDTO(entity.getDeveloperAddress());
 		this.productId = entity.getProductId();
@@ -880,5 +884,21 @@ public class PendingCertifiedProductDTO implements Serializable {
 
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
 	}
 }

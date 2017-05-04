@@ -37,17 +37,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -60,6 +64,8 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
@@ -75,7 +81,9 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	@Autowired CertifiedProductManager cpManager;
+	@Autowired ContactDAO contactDao;
 	@Autowired PendingCertifiedProductManager pcpManager;
+	@Autowired PendingCertifiedProductDAO pendingCPDao;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
@@ -320,7 +328,7 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending/{pcpId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) 
-			throws EntityRetrievalException, EntityNotFoundException, AccessDeniedException {
+			throws EntityRetrievalException, EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 		PendingCertifiedProductDetails details = pcpManager.getById(acbs, pcpId);	
 		return details;
@@ -331,8 +339,9 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody String deletePendingCertifiedProduct(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public @ResponseBody String deletePendingCertifiedProduct(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		validatePendingCPAlreadyConfirmedOrRejected(id);
 		pcpManager.deletePendingCertifiedProduct(acbs, id);
 		return "{\"success\" : true }";
 	}
@@ -362,6 +371,7 @@ public class CertifiedProductController {
 		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
 			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
 		}
+		validatePendingCPAlreadyConfirmedOrRejected(pendingCp.getId());
 		
 		Long acbId = new Long(acbIdStr);
 		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
@@ -508,5 +518,14 @@ public class CertifiedProductController {
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
 		results.getPendingCertifiedProducts().addAll(uploadedProducts);
 		return results;
+	}
+	
+	private void validatePendingCPAlreadyConfirmedOrRejected(Long id) throws EntityRetrievalException, ObjectMissingValidationException{
+		PendingCertifiedProductDTO pcpDTO = pendingCPDao.findById(id, true);
+		if(pcpDTO.getDeleted()){
+			ContactDTO contactDTO = contactDao.getById(pcpDTO.getLastModifiedUser());
+			Contact contact = new Contact(contactDTO);
+			throw new ObjectMissingValidationException("Pending Certified Product with id " + pcpDTO.getId() + " has already been confirmed/rejected.", contact);
+		}
 	}
 }
