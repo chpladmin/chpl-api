@@ -977,7 +977,7 @@ public class CertifiedProductControllerTest {
 			certifiedProductController.rejectPendingCertifiedProduct(-1L);
 		} catch (ObjectMissingValidationException e){
 			for(String error : e.getErrorMessages()){
-				if(error.contains("has already been confirmed/rejected")){
+				if(error.contains("has already been confirmed or rejected")){
 					hasError = true;
 				}
 			}
@@ -1010,7 +1010,7 @@ public class CertifiedProductControllerTest {
 			certifiedProductController.confirmPendingCertifiedProduct(pcpDetails);
 		} catch (ObjectMissingValidationException e){
 			for(String error : e.getErrorMessages()){
-				if(error.contains("has already been confirmed/rejected")){
+				if(error.contains("has already been confirmed or rejected")){
 					hasError = true;
 				}
 			}

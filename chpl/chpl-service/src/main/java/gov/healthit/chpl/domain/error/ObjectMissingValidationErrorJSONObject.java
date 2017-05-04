@@ -9,6 +9,7 @@ public class ObjectMissingValidationErrorJSONObject implements Serializable {
 	private static final long serialVersionUID = -2186304673031903240L;
 	private Collection<String> errorMessages;
 	private Collection<String> warningMessages;
+	private String objectId;
 	private Contact contact;
 	
 	public Collection<String> getErrorMessages() {
@@ -28,5 +29,11 @@ public class ObjectMissingValidationErrorJSONObject implements Serializable {
 	}
 	public void setContact(Contact contact) {
 		this.contact = contact;
+	}
+	public String getObjectId() {
+		return objectId;
+	}
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
 	}
 }

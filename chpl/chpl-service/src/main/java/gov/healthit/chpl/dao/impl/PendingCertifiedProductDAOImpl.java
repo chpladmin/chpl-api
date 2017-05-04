@@ -290,7 +290,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		}
 		return dtos;
 	}
-	
+
 	public PendingCertifiedProductDTO findById(Long pcpId, boolean includeDeleted) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = getEntityById(pcpId, includeDeleted);
 		if(entity == null) {

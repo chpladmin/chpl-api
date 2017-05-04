@@ -46,6 +46,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Contact;
+import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -65,6 +66,7 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFa
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
@@ -342,6 +344,35 @@ public class CertifiedProductController {
 			EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 		pcpManager.deletePendingCertifiedProduct(acbs, id);
+		return "{\"success\" : true }";
+	}
+	
+	@ApiOperation(value="Reject several pending certified products.", 
+			notes="Marks a list of pending certified products as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB for each pending certified product is required.")
+	@RequestMapping(value="/pending//reject", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, 
+			EntityNotFoundException, AccessDeniedException, InvalidArgumentsException, 
+			ObjectsMissingValidationException {
+		if(idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
+			throw new InvalidArgumentsException("At least one id must be provided for rejection.");
+		}
+		
+		ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		for(Long id : idList.getIds()) {
+			try {
+				pcpManager.deletePendingCertifiedProduct(acbs, id);
+			} catch(ObjectMissingValidationException ex) {
+				possibleExceptions.getExceptions().add(ex);
+			}
+		}
+		
+		if(possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
+			throw possibleExceptions;
+		}
 		return "{\"success\" : true }";
 	}
 	

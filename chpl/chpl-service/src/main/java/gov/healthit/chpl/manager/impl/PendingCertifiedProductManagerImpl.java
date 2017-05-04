@@ -195,7 +195,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	}
 	
 	
-	//@Override
+	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
@@ -205,7 +205,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		return isPendingListingAvailableForUpdate(acbId, pendingCp);
 	}
 	
-	//@Override
+	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
@@ -216,6 +216,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
 			alreadyDeletedEx.getErrorMessages().add("This pending certified product has already been confirmed or rejected by another user.");
 			alreadyDeletedEx.setContact(contactDTO != null ? new Contact(contactDTO) : null);
+			alreadyDeletedEx.setObjectId(pendingCp.getUniqueId());
 			throw alreadyDeletedEx;
 		}
 		return pendingCp != null;
