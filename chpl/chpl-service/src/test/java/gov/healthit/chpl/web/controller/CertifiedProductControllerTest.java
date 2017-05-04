@@ -47,6 +47,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -56,6 +57,7 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -982,6 +984,40 @@ public class CertifiedProductControllerTest {
 				}
 			}
 			assertTrue(e.getContact() != null);
+		}
+		assertTrue(hasError);
+	}
+	
+	/**
+	 * GIVEN a user is on the Pending CPs page
+	 * WHEN they bulk reject a pending CP(s) that was already deleted because it was rejected or confirmed
+	 * THEN the API returns a 400 BAD REQUEST with the lastModifiedUser's Contact info
+	 * @throws EntityCreationException 
+	 * @throws EntityRetrievalException 
+	 * @throws JsonProcessingException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_bulkRejectPendingCP_isAlreadyDeleted_returnsBadRequest() 
+			throws JsonProcessingException, EntityRetrievalException, EntityCreationException, InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		Boolean hasError = false;
+		IdListContainer bulkIds = new IdListContainer();
+		bulkIds.getIds().add(-1L);
+		try{
+			certifiedProductController.rejectPendingCertifiedProducts(bulkIds);
+		} catch (ObjectsMissingValidationException e){
+			assertNotNull(e.getExceptions());
+			assertEquals(1, e.getExceptions().size());
+			for(ObjectMissingValidationException ex : e.getExceptions()){
+				assertEquals(1, ex.getErrorMessages().size());
+				if(ex.getErrorMessages().iterator().next().contains("has already been confirmed or rejected")){
+					hasError = true;
+				}
+				assertNotNull(ex.getContact());
+				assertNotNull(ex.getObjectId());
+			}
 		}
 		assertTrue(hasError);
 	}
