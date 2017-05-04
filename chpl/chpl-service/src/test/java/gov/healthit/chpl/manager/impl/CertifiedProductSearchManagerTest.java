@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.caching.CacheUpdater;
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.CacheUpdater;
 import gov.healthit.chpl.caching.CacheUtil;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;

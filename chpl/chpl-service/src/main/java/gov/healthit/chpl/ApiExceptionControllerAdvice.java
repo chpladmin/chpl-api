@@ -15,13 +15,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ValidationErrorJSONObject;
+import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorJSONObject;
+import gov.healthit.chpl.domain.error.ObjectsMissingValidationErrorJSONObject;
+import gov.healthit.chpl.domain.error.ValidationErrorJSONObject;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.web.controller.CertificationBodyAccessException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.ValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 
 @ControllerAdvice
@@ -88,6 +92,33 @@ public class ApiExceptionControllerAdvice {
 		error.setErrorMessages(e.getErrorMessages());
 		error.setWarningMessages(e.getWarningMessages());
 		return new ResponseEntity<ValidationErrorJSONObject>(error, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(ObjectsMissingValidationException.class)
+	public ResponseEntity<ObjectsMissingValidationErrorJSONObject> exception(ObjectsMissingValidationException e) {
+		ObjectsMissingValidationErrorJSONObject errorContainer = new ObjectsMissingValidationErrorJSONObject();
+		if(e.getExceptions() != null) {
+			for(ObjectMissingValidationException currEx : e.getExceptions()) {
+				ObjectMissingValidationErrorJSONObject error = new ObjectMissingValidationErrorJSONObject();
+				error.setErrorMessages(currEx.getErrorMessages());
+				error.setWarningMessages(currEx.getWarningMessages());
+				error.setContact(currEx.getContact());
+				error.setObjectId(currEx.getObjectId());
+				errorContainer.getErrors().add(error);
+			}
+		}
+		
+		return new ResponseEntity<ObjectsMissingValidationErrorJSONObject>(errorContainer, HttpStatus.BAD_REQUEST);
+	}
+	
+	@ExceptionHandler(ObjectMissingValidationException.class)
+	public ResponseEntity<ObjectMissingValidationErrorJSONObject> exception(ObjectMissingValidationException e) {
+		ObjectMissingValidationErrorJSONObject error = new ObjectMissingValidationErrorJSONObject();
+		error.setErrorMessages(e.getErrorMessages());
+		error.setWarningMessages(e.getWarningMessages());
+		error.setContact(e.getContact());
+		error.setObjectId(e.getObjectId());
+		return new ResponseEntity<ObjectMissingValidationErrorJSONObject>(error, HttpStatus.BAD_REQUEST);
 	}
 	
 	@ExceptionHandler(CertificationBodyAccessException.class)
