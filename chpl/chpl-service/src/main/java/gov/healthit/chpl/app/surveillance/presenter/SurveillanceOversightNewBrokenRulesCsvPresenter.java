@@ -34,6 +34,7 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
+		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
 	}
 	
 	@Override
@@ -59,6 +60,7 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 			String capApprovalResultStr = rowValues.get(CAP_APPROVE_COL_OFFSET);
 			String capStartResultStr = rowValues.get(CAP_START_COL_OFFSET);
 			String capCompletedResultStr = rowValues.get(CAP_COMPLETE_COL_OFFSET);
+			String capClosedResultStr = rowValues.get(CAP_CLOSED_COL_OFFSET);
 			
 			if(formattedToday.equals(longSuspensionResultStr)) {
 				if(!rowChplProductNumber.equals(currChplProductNumber)) {
@@ -77,6 +79,10 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 			}
 			if(formattedToday.equals(capCompletedResultStr))	{
 				newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, newBrokenRulesCounts.get(SurveillanceOversightRule.CAP_NOT_COMPLETED)+1);
+				includeRow = true;
+			}
+			if(formattedToday.equals(capClosedResultStr))	{
+				newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, newBrokenRulesCounts.get(SurveillanceOversightRule.CAP_NOT_CLOSED)+1);
 				includeRow = true;
 			}
 			
