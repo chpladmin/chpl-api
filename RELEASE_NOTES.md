@@ -1,7 +1,9 @@
 # Release Notes
 
-## OCD-1404
+## Version TBD
+_Date TBD_
 * Return exception with last modified user's contact info when deleting or confirming a pending Certified Product that has already been deleted or confirmed
+* Add surveillance rule when a Listing has an open Non-conformity and status of "Withdrawn by..."
 
 ---
 
@@ -9,8 +11,8 @@
 _8 May 2017_
 
 ### Major features
-_backwards compatibility breaking changes_
-* Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under 
+_Backwards compatibility breaking changes_
+* Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under
 Surveillance by ONC-ACB
 
 ### Features Added
@@ -42,7 +44,7 @@ _24 April 2017_
 _10 April 2017_
 
 ### Features Added
-* Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed" 
+* Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed"
 * Show error to ONC-ACB during upload and edit for a Surveillance Activity nonconformity that violates business rules for "Corrective Action Plan End Date"
 * Add statusEvents field to developers to track past status changes (Active, Suspended by Onc, etc) and the date on which each status change occurred. Provide create, read, update, and delete API functionality for developer status changes.
 * Add decertificationDate to the data returned in the banned developers API call.
@@ -288,10 +290,7 @@ _30 August 2016_
 * Added a new service certification_ids/all to generate JSON with two fields - the certification ID and the date created. This includes all certification IDS ever and could be large.
 * Change all /activity calls that used to accept a lastNDays parameter to accept start and end parameters instead. Start and end are longs and treated as timestamps. (Not backwards compatible)
 * Set up log4j2 and set hopefully appropriate log levels
-* TO DO DURING THE RELEASE: change the questionable activity email recipients to just be the ONC_CHPL@hhs.gov email (i.e. remove onc.certification@hhs.gov)
-* TO DO DURING THE RELEASE: create a file (can call it cleantomcat) in /etc/cron.daily and chmod a+x the file. Contents of the file are listed as a comment in OCD-811. The command deletes files that have not been written to since X days ago. The number near the end of the command is X.
 * Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
-
 * Do not allow 170.315 (d)(3) to mark GAP as true
 * Added 'responsibleUser' field with all user data for /activity reports
 * Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains

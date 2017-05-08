@@ -20,6 +20,7 @@ public class RuleComplianceCalculator {
 	@Autowired private CapApprovalComplianceChecker capApproval;
 	@Autowired private CapStartedComplianceChecker capStarted;
 	@Autowired private CapCompletedComplianceChecker capCompleted;
+	@Autowired private CapClosedComplianceChecker capClosed;
 		
 	public RuleComplianceCalculator() {
 	}
@@ -48,7 +49,12 @@ public class RuleComplianceCalculator {
 			capCompletedResult.setRule(capCompleted.getRuleChecked());
 			capCompletedResult.setDateBroken(capCompleted.check(cp, surv, nc));
 			survRuleResults.add(capCompletedResult);
-		}
+
+            OversightRuleResult capClosedResult = new OversightRuleResult();
+			capClosedResult.setRule(capClosed.getRuleChecked());
+			capClosedResult.setDateBroken(capClosed.check(cp, surv, nc));
+			survRuleResults.add(capClosedResult);
+        }
 		return survRuleResults;
 	}
 
