@@ -1,11 +1,10 @@
 # Release Notes
 
-
-## Version TBD
-_Date TBD_
+## Version 10.0.0
+_8 May 2017_
 
 ### Major features
- (backwards compatibility breaking changes)
+_backwards compatibility breaking changes_
 * Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under 
 Surveillance by ONC-ACB
 
