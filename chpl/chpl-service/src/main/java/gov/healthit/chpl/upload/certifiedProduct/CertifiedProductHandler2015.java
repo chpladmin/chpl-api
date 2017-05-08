@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -767,7 +768,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "PRIVACY AND SECURITY FRAMEWORK":
-						cert.setPrivacySecurityFramework(firstRow.get(currIndex++).trim());
+						cert.setPrivacySecurityFramework(CertificationResult.formatPrivacyAndSecurityFramework(firstRow.get(currIndex++)));
 						break;
 					case "API DOCUMENTATION LINK":
 						cert.setApiDocumentation(firstRow.get(currIndex++).trim());
@@ -777,7 +778,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						currIndex++;
 						break;
 					case "FUNCTIONALITY TESTED":
-						parseTestFunctionality(cert, currIndex);
+						parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
 						currIndex++;
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G1":
@@ -850,13 +851,13 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		}
 	}
 	
-	private void parseTestFunctionality(PendingCertificationResultEntity cert, int tfColumn) {
+	private void parseTestFunctionality(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int tfColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tfValue = row.get(tfColumn).trim();
 			if(!StringUtils.isEmpty(tfValue)) {
 				PendingCertificationResultTestFunctionalityEntity tfEntity = new PendingCertificationResultTestFunctionalityEntity();
 				tfEntity.setTestFunctionalityNumber(tfValue);
-				TestFunctionalityDTO tf = testFunctionalityDao.getByNumber(tfValue);
+				TestFunctionalityDTO tf = testFunctionalityDao.getByNumberAndEdition(tfValue, listing.getCertificationEditionId());
 				if(tf != null) {
 					tfEntity.setTestFunctionalityId(tf.getId());
 				}

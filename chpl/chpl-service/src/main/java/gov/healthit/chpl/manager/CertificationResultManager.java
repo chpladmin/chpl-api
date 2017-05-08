@@ -15,10 +15,11 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 
 public interface CertificationResultManager {
 	
-	public CertificationResultDTO update(Long acbId, CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
+	public CertificationResultDTO update(Long acbId, CertifiedProductDTO listing, CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
 
 	
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(

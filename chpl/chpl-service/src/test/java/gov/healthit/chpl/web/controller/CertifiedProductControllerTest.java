@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -15,13 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,6 +43,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -60,7 +59,6 @@ import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFa
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
 public class CertifiedProductControllerTest {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductControllerTest.class);
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -196,7 +194,9 @@ public class CertifiedProductControllerTest {
 		updateRequest.setIcs(false); // Inherited Status = product.getIcs();
 		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -208,7 +208,9 @@ public class CertifiedProductControllerTest {
 		
 		updateRequest.setIcs(true);
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -229,7 +231,9 @@ public class CertifiedProductControllerTest {
 		updateRequest.setCertificationEdition(certificationEdition2014);
 		updateRequest.setIcs(false);
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -241,7 +245,9 @@ public class CertifiedProductControllerTest {
 		
 		updateRequest.setIcs(true);
 		try {
-			certifiedProductController.updateCertifiedProduct(updateRequest);
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
 		} catch (InvalidArgumentsException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -429,6 +435,517 @@ public class CertifiedProductControllerTest {
 		// ICS is false, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. No mismatch = error message
 		assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
 					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+	}
+	
+	/** 
+	 * GIVEN A user edits a certified product
+	 * WHEN they view their pending products
+	 * THEN they should see errors if any privacy and security framework values do not match one of "Approach 1", "Approach 2", "Approach 1;Approach 2"
+	 * (Note: Validation should be generous with case and whitespace)
+	 * @throws IOException 
+	 * @throws ValidationException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_badValueShowsError() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
+		updateRequest.setCertificationDate(1440090840000L);
+		updateRequest.setId(1L);
+		Map<String, Object> certStatus = new HashMap<String, Object>();
+		certStatus.put("name", "Active");
+		updateRequest.setCertificationStatus(certStatus);
+		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
+		CertificationResult cr = new CertificationResult();
+		cr.setAdditionalSoftware(null);
+		cr.setApiDocumentation(null);
+		cr.setG1Success(false);
+		cr.setG2Success(false);
+		cr.setGap(null);
+		cr.setNumber("170.314 (g)(4)");
+		cr.setPrivacySecurityFramework("Approach 1 Approach 2"); // bad value
+		cr.setSed(null);
+		cr.setSuccess(true);
+		cr.setTestDataUsed(null);
+		cr.setTestFunctionality(null);
+		cr.setTestProcedures(null);
+		cr.setTestStandards(null);
+		cr.setTestTasks(null);
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(2L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		cr.setTestToolsUsed(crttList);
+		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
+		cr.setUcdProcesses(null);
+		certificationResults.add(cr);
+		updateRequest.setCertificationResults(certificationResults);
+		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
+		CQMResultDetails cqm = new CQMResultDetails();
+		Set<String> versions = new HashSet<String>();
+		versions.add("v0");
+		versions.add("v1");
+		versions.add("v2");
+		versions.add("v3");
+		versions.add("v4");
+		versions.add("v5");
+		cqm.setAllVersions(versions);
+		cqm.setCmsId("CMS60");
+		List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
+		cqm.setCriteria(cqmResultCertifications);
+		cqm.setDescription("Acute myocardial infarction (AMI) patients with ST-segment elevation on the ECG closest to arrival time receiving "
+				+ "fibrinolytic therapy during the hospital visit"); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setNumber(null);
+		cqm.setSuccess(true);
+		Set<String> successVersions = new HashSet<String>();
+		successVersions.add("v2");
+		successVersions.add("v3");
+		cqm.setSuccessVersions(successVersions);
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqms.add(cqm);
+		updateRequest.setCqmResults(cqms);
+		Map<String, Object> certificationEdition = new HashMap<String, Object>();
+		String certEdition = "2015";
+		certificationEdition.put("name", certEdition);
+		updateRequest.setCertificationEdition(certificationEdition);
+		updateRequest.setIcs(true); // Inherited Status = product.getIcs();
+		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
+		try {
+			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+			listingUpdateRequest.setListing(updateRequest);
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
+		} catch (InvalidArgumentsException e) {
+			e.printStackTrace();
+		} 
+		catch (ValidationException e) {
+			assertNotNull(e);
+			Boolean hasError = false;
+			for(String error : e.getErrorMessages()){
+				if(error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework")){
+					hasError = true;
+				}
+			}
+			assertTrue(hasError);
+		}
+	}
+	
+	/** 
+	 * GIVEN A user edits a certified product with a privacy and security framework value of " Approach 1 ,  Approach 2 "
+	 * WHEN they view their pending products
+	 * THEN the security framework value is formatted to remove whitespaces
+	 * (Note: Validation should be generous with case and whitespace)
+	 * @throws IOException 
+	 * @throws ValidationException 
+	 * @throws InvalidArgumentsException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_handlesWhitespaces() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException, InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(" Approach 1 ,  Approach 2 ");
+		assertEquals("Approach 1;Approach 2", formattedPrivacyAndSecurityFramework);
+		
+		formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(" Approach 1   Approach 2 ");
+		assertEquals("Approach 1   Approach 2", formattedPrivacyAndSecurityFramework);
+		
+		formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(" Approach 1   ");
+		assertEquals("Approach 1", formattedPrivacyAndSecurityFramework);
+		
+		formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework("  Approach 2   ");
+		assertEquals("Approach 2", formattedPrivacyAndSecurityFramework);
+		
+		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
+		updateRequest.setCertificationDate(1440090840000L);
+		updateRequest.setId(1L);
+		Map<String, Object> certStatus = new HashMap<String, Object>();
+		certStatus.put("name", "Active");
+		updateRequest.setCertificationStatus(certStatus);
+		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
+		CertificationResult cr = new CertificationResult();
+		cr.setAdditionalSoftware(null);
+		cr.setApiDocumentation(null);
+		cr.setG1Success(false);
+		cr.setG2Success(false);
+		cr.setGap(null);
+		cr.setNumber("170.314 (g)(4)");
+		cr.setPrivacySecurityFramework(" Approach 1 ,  Approach 2 "); // bad value
+		cr.setSed(null);
+		cr.setSuccess(true);
+		cr.setTestDataUsed(null);
+		cr.setTestFunctionality(null);
+		cr.setTestProcedures(null);
+		cr.setTestStandards(null);
+		cr.setTestTasks(null);
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(2L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		cr.setTestToolsUsed(crttList);
+		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
+		cr.setUcdProcesses(null);
+		certificationResults.add(cr);
+		updateRequest.setCertificationResults(certificationResults);
+		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
+		CQMResultDetails cqm = new CQMResultDetails();
+		Set<String> versions = new HashSet<String>();
+		versions.add("v0");
+		versions.add("v1");
+		versions.add("v2");
+		versions.add("v3");
+		versions.add("v4");
+		versions.add("v5");
+		cqm.setAllVersions(versions);
+		cqm.setCmsId("CMS60");
+		List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
+		cqm.setCriteria(cqmResultCertifications);
+		cqm.setDescription("Acute myocardial infarction (AMI) patients with ST-segment elevation on the ECG closest to arrival time receiving "
+				+ "fibrinolytic therapy during the hospital visit"); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setNumber(null);
+		cqm.setSuccess(true);
+		Set<String> successVersions = new HashSet<String>();
+		successVersions.add("v2");
+		successVersions.add("v3");
+		cqm.setSuccessVersions(successVersions);
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqms.add(cqm);
+		updateRequest.setCqmResults(cqms);
+		Map<String, Object> certificationEdition = new HashMap<String, Object>();
+		String certEdition = "2015";
+		certificationEdition.put("name", certEdition);
+		updateRequest.setCertificationEdition(certificationEdition);
+		updateRequest.setIcs(true); // Inherited Status = product.getIcs();
+		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
+		ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
+		listingUpdateRequest.setListing(updateRequest);
+		try{
+			certifiedProductController.updateCertifiedProduct(listingUpdateRequest);
+		}
+		catch (InvalidArgumentsException e) {
+			e.printStackTrace();
+		} 
+		catch (ValidationException e) {
+			assertNotNull(e);
+			Boolean hasError = false;
+			for(String error : e.getErrorMessages()){
+				if(error.contains("Privacy and Security Framework")){
+					hasError = true;
+				}
+			}
+			assertFalse(hasError);
+		}
+		
+	}
+	
+	/** 
+	 * GIVEN A user edits a certified product
+	 * WHEN they view their pending products
+	 * THEN they should see errors if any privacy and security framework values do not match one of "Approach 1", "Approach 2", "Approach 1;Approach 2"
+	 * (Note: Validation should be generous with case and whitespace)
+	 * @throws IOException 
+	 * @throws ParseException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updatePendingCertifiedProductDTO_privacyAndSecurityFramework_badValueShowsError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
+		String certDateString = "11-09-2016";
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		Date inputDate = dateFormat.parse(certDateString);
+		pcpDTO.setCertificationDate(inputDate);
+		pcpDTO.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(1L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		List<PendingCertificationResultDTO> pcrDTOs = new ArrayList<PendingCertificationResultDTO>();
+		PendingCertificationResultDTO pcpCertResultDTO1 = new PendingCertificationResultDTO();
+		pcpCertResultDTO1.setPendingCertifiedProductId(1L);
+		pcpCertResultDTO1.setId(1L);
+		pcpCertResultDTO1.setAdditionalSoftware(null);
+		pcpCertResultDTO1.setApiDocumentation(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setGap(null);
+		pcpCertResultDTO1.setNumber("170.314 (g)(4)");
+		pcpCertResultDTO1.setPrivacySecurityFramework("Approach 1 Approach 2");
+		pcpCertResultDTO1.setSed(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setTestData(null);
+		pcpCertResultDTO1.setTestFunctionality(null);
+		pcpCertResultDTO1.setTestProcedures(null);
+		pcpCertResultDTO1.setTestStandards(null);
+		pcpCertResultDTO1.setTestTasks(null);
+		pcpCertResultDTO1.setMeetsCriteria(true);
+		List<PendingCertificationResultTestToolDTO> pcprttdtoList = new ArrayList<PendingCertificationResultTestToolDTO>();
+		PendingCertificationResultTestToolDTO pcprttdto1 = new PendingCertificationResultTestToolDTO();
+		pcprttdto1.setId(2L);
+		pcprttdto1.setName("Transport Test Tool");
+		pcprttdto1.setPendingCertificationResultId(1L);
+		pcprttdto1.setTestToolId(2L);
+		pcprttdto1.setVersion(null);
+		PendingCertificationResultTestToolDTO pcprttdto2 = new PendingCertificationResultTestToolDTO();
+		pcprttdto2.setId(3L);
+		pcprttdto2.setName("Transport Test Tool");
+		pcprttdto2.setPendingCertificationResultId(1L);
+		pcprttdto2.setTestToolId(3L);
+		pcprttdto2.setVersion(null);
+		pcprttdtoList.add(pcprttdto1);
+		pcprttdtoList.add(pcprttdto2);
+		pcpCertResultDTO1.setTestTools(pcprttdtoList);
+		pcrDTOs.add(pcpCertResultDTO1);
+		pcpDTO.setCertificationCriterion(pcrDTOs);
+		List<PendingCqmCriterionDTO> cqmCriterionDTOList = new ArrayList<PendingCqmCriterionDTO>();
+		PendingCqmCriterionDTO cqm = new PendingCqmCriterionDTO();
+		cqm.setVersion("v0");;
+		cqm.setCmsId("CMS60");
+		cqm.setCqmCriterionId(0L);
+		cqm.setCqmNumber(null); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqmCriterionDTOList.add(cqm);
+		pcpDTO.setCqmCriterion(cqmCriterionDTOList);
+		String certEdition = "2015";
+		pcpDTO.setCertificationEdition(certEdition);
+		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
+		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
+		pcpDTO.setUniqueId("15.07.07.2642.EIC04.36.0.1.160402");
+		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		
+		Boolean hasError = false;
+		for(String error : pcpDTO.getErrorMessages()){
+			if(error.startsWith("Certification 170.314 (g)(4) contains Privacy and Security Framework value 'Approach 1 Approach 2'")){
+				hasError = true;
+			}
+		}
+		assertTrue(hasError);
+	}
+	
+	/** 
+	 * GIVEN A user edits a certified product
+	 * WHEN they view their pending products
+	 * WHEN the user edits the privacy and security framework value to be 'Approach 1, Approach 2'
+	 * THEN they should see no error for the privacy and security framework value
+	 * (Note: Validation should be generous with case and whitespace)
+	 * @throws IOException 
+	 * @throws ParseException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updatePendingCertifiedProductDTO_privacyAndSecurityFramework_validValueShowsNoError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
+		String certDateString = "11-09-2016";
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		Date inputDate = dateFormat.parse(certDateString);
+		pcpDTO.setCertificationDate(inputDate);
+		pcpDTO.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(1L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		List<PendingCertificationResultDTO> pcrDTOs = new ArrayList<PendingCertificationResultDTO>();
+		PendingCertificationResultDTO pcpCertResultDTO1 = new PendingCertificationResultDTO();
+		pcpCertResultDTO1.setPendingCertifiedProductId(1L);
+		pcpCertResultDTO1.setId(1L);
+		pcpCertResultDTO1.setAdditionalSoftware(null);
+		pcpCertResultDTO1.setApiDocumentation(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setGap(null);
+		pcpCertResultDTO1.setNumber("170.314 (g)(4)");
+		pcpCertResultDTO1.setPrivacySecurityFramework("Approach 1, Approach 2");
+		pcpCertResultDTO1.setSed(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setTestData(null);
+		pcpCertResultDTO1.setTestFunctionality(null);
+		pcpCertResultDTO1.setTestProcedures(null);
+		pcpCertResultDTO1.setTestStandards(null);
+		pcpCertResultDTO1.setTestTasks(null);
+		pcpCertResultDTO1.setMeetsCriteria(true);
+		List<PendingCertificationResultTestToolDTO> pcprttdtoList = new ArrayList<PendingCertificationResultTestToolDTO>();
+		PendingCertificationResultTestToolDTO pcprttdto1 = new PendingCertificationResultTestToolDTO();
+		pcprttdto1.setId(2L);
+		pcprttdto1.setName("Transport Test Tool");
+		pcprttdto1.setPendingCertificationResultId(1L);
+		pcprttdto1.setTestToolId(2L);
+		pcprttdto1.setVersion(null);
+		PendingCertificationResultTestToolDTO pcprttdto2 = new PendingCertificationResultTestToolDTO();
+		pcprttdto2.setId(3L);
+		pcprttdto2.setName("Transport Test Tool");
+		pcprttdto2.setPendingCertificationResultId(1L);
+		pcprttdto2.setTestToolId(3L);
+		pcprttdto2.setVersion(null);
+		pcprttdtoList.add(pcprttdto1);
+		pcprttdtoList.add(pcprttdto2);
+		pcpCertResultDTO1.setTestTools(pcprttdtoList);
+		pcrDTOs.add(pcpCertResultDTO1);
+		pcpDTO.setCertificationCriterion(pcrDTOs);
+		List<PendingCqmCriterionDTO> cqmCriterionDTOList = new ArrayList<PendingCqmCriterionDTO>();
+		PendingCqmCriterionDTO cqm = new PendingCqmCriterionDTO();
+		cqm.setVersion("v0");;
+		cqm.setCmsId("CMS60");
+		cqm.setCqmCriterionId(0L);
+		cqm.setCqmNumber(null); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqmCriterionDTOList.add(cqm);
+		pcpDTO.setCqmCriterion(cqmCriterionDTOList);
+		String certEdition = "2015";
+		pcpDTO.setCertificationEdition(certEdition);
+		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
+		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
+		pcpDTO.setUniqueId("15.07.07.2642.EIC04.36.0.1.160402");
+		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		
+		Boolean hasError = false;
+		for(String error : pcpDTO.getErrorMessages()){
+			if(error.contains("Privacy and Security Framework")){
+				hasError = true;
+			}
+		}
+		assertFalse(hasError);
+	}
+	
+	/** 
+	 * GIVEN A user edits a certified product
+	 * WHEN they view their pending products
+	 * WHEN the user edits the privacy and security framework value to be ' Approach 1 ,  Approach 2 '
+	 * THEN they should see no error for the privacy and security framework value
+	 * (Note: Validation should be generous with case and whitespace)
+	 * @throws IOException 
+	 * @throws ParseException 
+	 * @throws JSONException 
+	 */
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void test_updatePendingCertifiedProductDTO_privacyAndSecurityFramework_handlesWhitespace() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
+		String certDateString = "11-09-2016";
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		Date inputDate = dateFormat.parse(certDateString);
+		pcpDTO.setCertificationDate(inputDate);
+		pcpDTO.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
+		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
+		CertificationResultTestTool crtt = new CertificationResultTestTool();
+		crtt.setId(1L);
+		crtt.setRetired(true);
+		crtt.setTestToolId(2L);
+		crtt.setTestToolName("Transport Test Tool");
+		crttList.add(crtt);
+		List<PendingCertificationResultDTO> pcrDTOs = new ArrayList<PendingCertificationResultDTO>();
+		PendingCertificationResultDTO pcpCertResultDTO1 = new PendingCertificationResultDTO();
+		pcpCertResultDTO1.setPendingCertifiedProductId(1L);
+		pcpCertResultDTO1.setId(1L);
+		pcpCertResultDTO1.setAdditionalSoftware(null);
+		pcpCertResultDTO1.setApiDocumentation(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setGap(null);
+		pcpCertResultDTO1.setNumber("170.314 (g)(4)");
+		pcpCertResultDTO1.setPrivacySecurityFramework(" Approach 1 ,  Approach 2 ");
+		pcpCertResultDTO1.setSed(null);
+		pcpCertResultDTO1.setG1Success(false);
+		pcpCertResultDTO1.setG2Success(false);
+		pcpCertResultDTO1.setTestData(null);
+		pcpCertResultDTO1.setTestFunctionality(null);
+		pcpCertResultDTO1.setTestProcedures(null);
+		pcpCertResultDTO1.setTestStandards(null);
+		pcpCertResultDTO1.setTestTasks(null);
+		pcpCertResultDTO1.setMeetsCriteria(true);
+		List<PendingCertificationResultTestToolDTO> pcprttdtoList = new ArrayList<PendingCertificationResultTestToolDTO>();
+		PendingCertificationResultTestToolDTO pcprttdto1 = new PendingCertificationResultTestToolDTO();
+		pcprttdto1.setId(2L);
+		pcprttdto1.setName("Transport Test Tool");
+		pcprttdto1.setPendingCertificationResultId(1L);
+		pcprttdto1.setTestToolId(2L);
+		pcprttdto1.setVersion(null);
+		PendingCertificationResultTestToolDTO pcprttdto2 = new PendingCertificationResultTestToolDTO();
+		pcprttdto2.setId(3L);
+		pcprttdto2.setName("Transport Test Tool");
+		pcprttdto2.setPendingCertificationResultId(1L);
+		pcprttdto2.setTestToolId(3L);
+		pcprttdto2.setVersion(null);
+		pcprttdtoList.add(pcprttdto1);
+		pcprttdtoList.add(pcprttdto2);
+		pcpCertResultDTO1.setTestTools(pcprttdtoList);
+		pcrDTOs.add(pcpCertResultDTO1);
+		pcpDTO.setCertificationCriterion(pcrDTOs);
+		List<PendingCqmCriterionDTO> cqmCriterionDTOList = new ArrayList<PendingCqmCriterionDTO>();
+		PendingCqmCriterionDTO cqm = new PendingCqmCriterionDTO();
+		cqm.setVersion("v0");;
+		cqm.setCmsId("CMS60");
+		cqm.setCqmCriterionId(0L);
+		cqm.setCqmNumber(null); 
+		cqm.setDomain(null);
+		cqm.setId(0L);
+		cqm.setNqfNumber("0164");
+		cqm.setTitle("Fibrinolytic Therapy Received Within 30 Minutes of Hospital Arrival");
+		cqm.setTypeId(2L);
+		cqmCriterionDTOList.add(cqm);
+		pcpDTO.setCqmCriterion(cqmCriterionDTOList);
+		String certEdition = "2015";
+		pcpDTO.setCertificationEdition(certEdition);
+		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
+		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
+		pcpDTO.setUniqueId("15.07.07.2642.EIC04.36.0.1.160402");
+		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
+		if(validator != null) {
+			validator.validate(pcpDTO);
+		}
+		
+		Boolean hasError = false;
+		for(String error : pcpDTO.getErrorMessages()){
+			if(error.contains("Privacy and Security Framework")){
+				hasError = true;
+			}
+		}
+		assertFalse(hasError);
 	}
 	
 	/** 

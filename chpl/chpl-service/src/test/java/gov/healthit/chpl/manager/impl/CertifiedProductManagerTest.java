@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -115,8 +116,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
-		CertifiedProductSearchDetails cpDetails = null;
-		cpManager.update(1L, cp, cpDetails);
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		cpManager.update(1L, cp, toUpdate);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -140,8 +141,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			CertifiedProductSearchDetails cpDetails = null;
-			cpManager.update(1L, cp, cpDetails);
+			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+			cpManager.update(1L, cp, toUpdate);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -169,8 +170,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			CertifiedProductSearchDetails cpDetails = null;
-			cpManager.update(1L, cp, cpDetails);
+			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+			cpManager.update(1L, cp, toUpdate);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -189,15 +190,16 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Test
 	@Transactional(readOnly=false)
 	@Rollback(true)
-	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReview() throws EntityRetrievalException,
+	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithDeveloperBan() throws EntityRetrievalException,
 		EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
-		CertifiedProductSearchDetails cpDetails = null;
-		cpManager.update(1L, cp, cpDetails);
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setBanDeveloper(true);
+		cpManager.update(1L, cp, toUpdate);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -212,6 +214,35 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Test
 	@Transactional(readOnly=false)
 	@Rollback(true)
+	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithoutDeveloperBan() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+		assertNotNull(stat);
+		
+		DeveloperDTO beforeDev = devManager.getById(-1L);
+		assertNotNull(beforeDev);
+		DeveloperStatusEventDTO beforeStatus = beforeDev.getStatus();
+		assertNotNull(beforeStatus);
+		assertNotNull(beforeStatus.getId());
+		
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		cp.setCertificationStatusId(stat.getId());
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setBanDeveloper(false);
+		cpManager.update(1L, cp, toUpdate);
+		
+		DeveloperDTO afterDev = devManager.getById(-1L);
+		assertNotNull(afterDev);
+		DeveloperStatusEventDTO afterStatus = afterDev.getStatus();
+		assertNotNull(afterStatus);
+		assertNotNull(afterStatus.getId());
+		assertEquals(beforeStatus.getId().longValue(), afterStatus.getId().longValue());
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
 	public void testAdminUserChangeStatusToTerminatedByOnc() throws EntityRetrievalException,
 		EntityCreationException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -219,8 +250,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
-		CertifiedProductSearchDetails cpDetails = null;
-		cpManager.update(1L, cp, cpDetails);
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		cpManager.update(1L, cp, toUpdate);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -244,8 +275,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			CertifiedProductSearchDetails cpDetails = null;
-			cpManager.update(1L, cp, cpDetails);
+			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+			cpManager.update(1L, cp, toUpdate);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -467,7 +498,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
 		
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
-		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC08.36.1.1.160402", 20L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC13.36.1.1.160402", 20L);
 		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.EIC10.99.1.1.160403", 30L);
 		muuSet.add(u1);
 		muuSet.add(u2);
@@ -476,7 +507,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
 		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC08.36.1.1.160402"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC13.36.1.1.160402"));
 		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 		assertTrue(results.getErrors().get(0).getError() != null);
 		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.EIC10.99.1.1.160403"));

@@ -4,10 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
 public class CertificationResult implements Serializable {
 	private static final long serialVersionUID = -4917413876078419868L;
+	public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
 	private String number;
 	private String title;
 	private Boolean success;
@@ -201,5 +204,21 @@ public class CertificationResult implements Serializable {
 
 	public void setG2MacraMeasures(List<MacraMeasure> g2MacraMeasures) {
 		this.g2MacraMeasures = g2MacraMeasures;
+	}
+	
+	public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework){
+		if(StringUtils.isEmpty(privacyAndSecurityFramework)) {
+			return privacyAndSecurityFramework;
+		}
+		privacyAndSecurityFramework = privacyAndSecurityFramework.replace(",", PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+		StringBuilder result = new StringBuilder();
+		String[] frameworks = privacyAndSecurityFramework.split(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+		for(int i = 0; i < frameworks.length; i++) {
+			if(result.length() > 0) {
+				result.append(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+			}
+			result.append(frameworks[i].trim());
+		}
+		return result.toString();
 	}
 }

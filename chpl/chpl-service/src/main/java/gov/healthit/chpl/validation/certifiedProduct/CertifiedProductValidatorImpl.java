@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -246,6 +247,17 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
+				if(foundPrivacyAndSecurityFramework == null){
+					product.getErrorMessages().add("Certification " + cert.getNumber() + 
+							" contains Privacy and Security Framework value '" + 
+							formattedPrivacyAndSecurityFramework + "' which must match one of " +
+							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+				}
+			}
+			
 			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 				for(PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
 					if(!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
@@ -353,6 +365,17 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
+				if(foundPrivacyAndSecurityFramework == null){
+					product.getErrorMessages().add("Certification " + cert.getNumber() + 
+							" contains Privacy and Security Framework value '" + 
+							formattedPrivacyAndSecurityFramework + "' which must match one of " +
+							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+				}
+			}
+			
 			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 				for(CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
 					if(asDto.getCertifiedProductId() == null && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {

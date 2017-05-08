@@ -328,7 +328,7 @@
 		last_modified_date="2015-08-20 13:15:00" deleted="false"
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="1" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36"
+		product_code="EIC09" certified_date_code="160402" version_code="36"
 		acb_certification_id="abcdef" testing_lab_id="-1" />
 	<certified_product certified_product_id="3"
 		certification_edition_id="1" product_version_id="3"
@@ -338,7 +338,7 @@
 		last_modified_date="2015-08-20 13:15:00" deleted="false"
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="1" testing_lab_id="-1" ics_code="1"
-		additional_software_code="1" product_code="EIC08" certified_date_code="160402"
+		additional_software_code="1" product_code="EIC10" certified_date_code="160402"
 		version_code="36" acb_certification_id="abcdef" />
 	<certified_product certified_product_id="4"
 		certification_edition_id="1" product_version_id="9"
@@ -348,7 +348,7 @@
 		last_modified_date="2015-08-20 13:15:00" deleted="false"
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="1" testing_lab_id="-1" ics_code="1"
-		additional_software_code="1" product_code="EIC08" certified_date_code="160402"
+		additional_software_code="1" product_code="EIC11" certified_date_code="160402"
 		version_code="36" acb_certification_id="abcdef" />
 	<certified_product certified_product_id="5"
 		certification_edition_id="3" product_version_id="5"
@@ -359,7 +359,7 @@
 		last_modified_date="2015-08-20 13:15:00" deleted="false"
 		practice_type_id="1" product_classification_type_id="1"
 		certification_status_id="1" qms="true" testing_lab_id="-1" ics_code="1"
-		additional_software_code="1" product_code="EIC08" certified_date_code="160402"
+		additional_software_code="1" product_code="EIC12" certified_date_code="160402"
 		version_code="36" />
 	<certified_product certified_product_id="6"
 		certification_edition_id="3" product_version_id="6"
@@ -370,7 +370,7 @@
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="1" meaningful_use_users="12" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC13" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="7"
 		certification_edition_id="1" product_version_id="7"
 		certification_body_id="-1"
@@ -380,7 +380,7 @@
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="1" meaningful_use_users="13" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC14" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="8"
 		certification_edition_id="2" product_version_id="8"
 		certification_body_id="-2"
@@ -390,7 +390,7 @@
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="2" meaningful_use_users="14" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC15" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="9"
 		certification_edition_id="3" product_version_id="4"
 		certification_body_id="-2"
@@ -400,7 +400,7 @@
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="3" meaningful_use_users="15" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC16" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="10"
 		certification_edition_id="3" product_version_id="10"
 		certification_body_id="-2"
@@ -409,7 +409,7 @@
 		last_modified_date="2016-08-20 13:15:00" acb_certification_id="abcdef"
 		deleted="false" practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="4" meaningful_use_users="16" testing_lab_id="-1"
-		ics_code="0" additional_software_code="1" product_code="EIC08"
+		ics_code="0" additional_software_code="1" product_code="EIC17"
 		certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="11"
 		certification_edition_id="3" product_version_id="11"
@@ -419,7 +419,7 @@
 		last_modified_date="2016-08-20 13:15:00" deleted="true"
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="5" ics_code="1" additional_software_code="1"
-		acb_certification_id="abcdef" product_code="EIC08"
+		acb_certification_id="abcdef" product_code="EIC18"
 		certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="12"
 		certification_edition_id="3" product_version_id="12"
@@ -430,7 +430,7 @@
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="6" meaningful_use_users="18" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC19" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="13"
 		certification_edition_id="3" product_version_id="13"
 		certification_body_id="-2"
@@ -440,7 +440,7 @@
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="3" meaningful_use_users="19"
 		acb_certification_id="abcdef" testing_lab_id="-1" ics_code="1"
-		additional_software_code="1" product_code="EIC08" certified_date_code="160402"
+		additional_software_code="1" product_code="EIC20" certified_date_code="160402"
 		version_code="36" />
 	<certified_product certified_product_id="14"
 		certification_edition_id="3" product_version_id="14"
@@ -451,7 +451,7 @@
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="3" meaningful_use_users="20" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC21" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="15"
 		certification_edition_id="3" product_version_id="15"
 		certification_body_id="-4"
@@ -461,7 +461,7 @@
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="3" meaningful_use_users="21" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC22" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="16"
 		certification_edition_id="3" product_version_id="16"
 		certification_body_id="-5"
@@ -471,7 +471,7 @@
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="3" meaningful_use_users="22" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC23" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="17"
 		certification_edition_id="3" product_version_id="16"
 		certification_body_id="-6"
@@ -481,7 +481,7 @@
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="9" meaningful_use_users="23" testing_lab_id="-1"
 		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
-		product_code="EIC08" certified_date_code="160402" version_code="36" />
+		product_code="EIC24" certified_date_code="160402" version_code="36" />
 
 	<certified_product_qms_standard
 		certified_product_qms_standard_id="1" certified_product_id="1"
@@ -575,11 +575,6 @@
 		certification_result_id="1" certified_product_id="2" justification="you need it"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-
-	<test_functionality test_functionality_id="1" name="(a)(1)"
-		number="(1)(2)" creation_date="2015-08-20 13:14:00"
-		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
-		deleted="false" />
 
 	<certification_result_test_functionality
 		certification_result_test_functionality_id="1"
@@ -1071,47 +1066,6 @@
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
 
-	<user_permission user_permission_id="-2" name="ADMIN"
-		description="This permission confers administrative privileges to its owner."
-		authority="ROLE_ADMIN" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="1" name="USER_CREATOR"
-		description="This permission allows a user to create other users"
-		authority="ROLE_USER_CREATOR" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="2" name="ACB_ADMIN"
-		description="This permission gives a user write access to their ACBs."
-		authority="ROLE_ACB_ADMIN" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="3" name="ACB_STAFF"
-		description="This permission gives a user read access to their ACBs"
-		authority="ROLE_ACB_STAFF" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="4" name="ATL_ADMIN"
-		description="This permission gives a user write access to their ATLs."
-		authority="ROLE_ATL_ADMIN" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="5" name="ATL_STAFF"
-		description="This permission gives a user read access to their ATLs."
-		authority="ROLE_ATL_STAFF" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="6" name="CMS_STAFF"
-		description="This permission gives a user read access to CMS reports."
-		authority="ROLE_CMS_STAFF" creation_date="2015-08-26 12:43:00.015"
-		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-	<user_permission user_permission_id="7" name="ONC_STAFF"
-		description="This permission gives a user access to the CMS Download file and report navigation section. It denies editing of Users/Products/CPs/ACBs/etc. No user invitation ability."
-		authority="ROLE_ONC_STAFF" creation_date="2016-10-14 12:43:00.015"
-		last_modified_date="2016-10-14 12:43:00.015" last_modified_user="-1"
-		deleted="FALSE" />
-
 	<surveillance_type id="1" name="Reactive"
 		creation_date="2017-01-06 10:31:41.257" last_modified_date="2017-01-06 10:31:41.257"
 		last_modified_user="-1" deleted="FALSE" />
@@ -1503,4 +1457,37 @@
 		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
 		deleted="FALSE"></api_key_activity>
 
+	<notification_recipient id="-1" email="katy@ainq.com" 
+		creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_recipient id="-2" email="andrew@ainq.com" 
+		creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+		
+	<!-- onc subscriptions -->
+	<notification_type_recipient_map id="-1" recipient_id="-1"
+		notification_type_id="3" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_type_recipient_map id="-2" recipient_id="-1"
+		notification_type_id="4" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+		
+	<!-- acb subscriptions -->
+	<notification_type_recipient_map id="-3" recipient_id="-2"
+		notification_type_id="1" acb_id="-1" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_type_recipient_map id="-4" recipient_id="-2"
+		notification_type_id="2" acb_id="-1" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_type_recipient_map id="-5" recipient_id="-2"
+		notification_type_id="1" acb_id="-2" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	
 </dataset>

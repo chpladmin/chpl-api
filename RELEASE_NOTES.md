@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 10.0.0
+_8 May 2017_
+
+### Major features
+_backwards compatibility breaking changes_
+* Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under 
+Surveillance by ONC-ACB
+
+### Features Added
+* Limit activity searches to a configurable max date range (currently set to 60 days)
+* Validate the privacy and security framework users enter for listing criteria
+* Add notifications service to allow registration, getting, and deleting of email subscriptions
+* Add /data/notification_types service to send back the types of notifications a logged-in user may work with
+* Add certification edition to test functionality and check that the right edition of test functionality is used during listing edit and upload.
+
+---
+
 ## Version 9.1.0
 _24 April 2017_
 

@@ -5,26 +5,27 @@ import java.util.List;
 
 public class Statistics implements Serializable {
 	private static final long serialVersionUID = 6977674702447513779L;
-	Long totalDevelopers;
-	Long totalDevelopersWith2014Listings;
-	Long totalDevelopersWith2015Listings;
-	Long totalCertifiedProducts;
-	Long totalCPsActive2014Listings;
-	Long totalCPsActive2015Listings;
-	Long totalCPsActiveListings;
-	Long totalListings;
-	Long totalActive2014Listings;
-	Long totalActive2015Listings;
-	List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody;
-	Long total2014Listings;
-	Long total2015Listings;
-	Long total2011Listings;
-	Long totalSurveillanceActivities;
-	Long totalOpenSurveillanceActivities;
-	Long totalClosedSurveillanceActivities;
-	Long totalNonConformities;
-	Long totalOpenNonconformities;
-	Long totalClosedNonconformities;
+	private DateRange dateRange;
+	private Long totalDevelopers;
+	private Long totalDevelopersWith2014Listings;
+	private Long totalDevelopersWith2015Listings;
+	private Long totalCertifiedProducts;
+	private Long totalCPsActive2014Listings;
+	private Long totalCPsActive2015Listings;
+	private Long totalCPsActiveListings;
+	private Long totalListings;
+	private Long totalActive2014Listings;
+	private Long totalActive2015Listings;
+	private List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody;
+	private Long total2014Listings;
+	private Long total2015Listings;
+	private Long total2011Listings;
+	private Long totalSurveillanceActivities;
+	private Long totalOpenSurveillanceActivities;
+	private Long totalClosedSurveillanceActivities;
+	private Long totalNonConformities;
+	private Long totalOpenNonconformities;
+	private Long totalClosedNonconformities;
 	
 	public Statistics(){}
 	
@@ -91,11 +92,9 @@ public class Statistics implements Serializable {
 	public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody() {
 		return totalActiveListingsByCertifiedBody;
 	}
-
 	public void setTotalActiveListingsByCertifiedBody(List<CertifiedBodyStatistics> totalActiveListingsByCertifiedBody) {
 		this.totalActiveListingsByCertifiedBody = totalActiveListingsByCertifiedBody;
 	}
-
 	public Long getTotal2014Listings() {
 		return total2014Listings;
 	}
@@ -149,6 +148,14 @@ public class Statistics implements Serializable {
 	}
 	public void setTotalClosedNonconformities(Long totalClosedNonconformities) {
 		this.totalClosedNonconformities = totalClosedNonconformities;
+	}
+
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 	
 }

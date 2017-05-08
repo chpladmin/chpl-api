@@ -10,7 +10,8 @@ public class CertificationResultTestFunctionality implements Serializable {
 	private Long testFunctionalityId;
 	private String description;
 	private String name;
-
+	private String year;
+	
 	public CertificationResultTestFunctionality() {
 		super();
 	}
@@ -20,6 +21,7 @@ public class CertificationResultTestFunctionality implements Serializable {
 		this.testFunctionalityId = dto.getTestFunctionalityId();
 		this.description = dto.getTestFunctionalityName();
 		this.name = dto.getTestFunctionalityNumber();
+		this.year = dto.getTestFunctionalityEdition();
 	}
 	
 	public Long getId() {
@@ -52,6 +54,14 @@ public class CertificationResultTestFunctionality implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
 	}
 
 }

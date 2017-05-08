@@ -58,7 +58,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	 */
 	@Override
 	public Long getTotalCertifiedProducts(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(productName, developerName) FROM CertifiedProductDetailsEntity "
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
 				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());

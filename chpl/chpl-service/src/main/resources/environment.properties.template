@@ -6,18 +6,21 @@ springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
 questionableActivityEmail=theonc.certification@hhs.gov;onc_chpl@hhs.gov
 questionableActivityThresholdDays=0
-summaryEmail=dlucas@ainq.com
-summaryEmailName=summaryStatistics.csv
-summaryEmailPeriodInDays=7
+maxActivityRangeInDays=60
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
 
+#chpl/app/statistics/SummaryStatistics properties
+summaryEmail=chpl@ainq.com
+summaryEmailName=summaryStatistics.csv
+summaryEmailPeriodInDays=7
+
 #oversight email properties 
-oversightEmailDailyTo=kekey@ainq.com
+oversightEmailDailyTo=chpl@ainq.com
 oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
 oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
-oversightEmailWeeklyTo=kekey@ainq.com
+oversightEmailWeeklyTo=chpl@ainq.com
 oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
 oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
 suspendedDaysAllowed=30

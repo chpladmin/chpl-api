@@ -45,7 +45,6 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.AccurateAsOfDate;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import junit.framework.TestCase;
 
@@ -109,11 +108,11 @@ public class MeaningfulUseControllerTest extends TestCase {
 		MeaningfulUseUser meaningfulUseUser1 = new MeaningfulUseUser("CHP-024050", 10L); // MeaningfulUseUser 0
 		MeaningfulUseUser meaningfulUseUser2 = new MeaningfulUseUser("CHP-024051", 20L); // MeaningfulUseUser 1
 		MeaningfulUseUser meaningfulUseUser3 = new MeaningfulUseUser(" CHP-024052 ", 30L); // MeaningfulUseUser 2
-		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser(" 15.01.01.1009.EIC08.36.1.1.160402 ", 40L); // MeaningfulUseUser 3
+		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser(" 15.01.01.1009.EIC13.36.1.1.160402 ", 40L); // MeaningfulUseUser 3
 		MeaningfulUseUser meaningfulUseUser5 = new MeaningfulUseUser("wrongChplProductNumber", 50L); // Errors 0
 		MeaningfulUseUser meaningfulUseUser6 = new MeaningfulUseUser(" CHPL-024053 ", 60L); // Errors 1
 		MeaningfulUseUser meaningfulUseUser7 = new MeaningfulUseUser("15.02.03.9876.AB01.01.0.1.123456", 70L); // Errors 2
-		MeaningfulUseUser meaningfulUseUser8 = new MeaningfulUseUser("15.01.01.1009.EIC08.36.1.1.160402", 70L); // Errors 3 (because duplicate of MeaningfulUseUser 3
+		MeaningfulUseUser meaningfulUseUser8 = new MeaningfulUseUser("15.01.01.1009.EIC13.36.1.1.160402", 70L); // Errors 3 (because duplicate of MeaningfulUseUser 3
 		logger.info("Created 8 of MeaningfulUseUser to be updated in the database");
 		
 		List<MeaningfulUseUser> meaningfulUseUserList = new ArrayList<MeaningfulUseUser>();
@@ -185,13 +184,9 @@ public class MeaningfulUseControllerTest extends TestCase {
 				assertEquals(30, muu.getNumberOfUsers().longValue());
 				assertEquals(3, muu.getCertifiedProductId().longValue());
 			}
-			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
+			else if(muu.getProductNumber().equals("15.01.01.1009.EIC13.36.1.1.160402")){
 				assertEquals(40, muu.getNumberOfUsers().longValue());
-				assertEquals(5, muu.getCertifiedProductId().longValue());
-			}
-			else if(muu.getProductNumber().equals("14.01.01.1009.EIC08.36.1.1.160402")){
-				assertEquals(50, muu.getNumberOfUsers().longValue());
-				assertEquals(1, muu.getCertifiedProductId().longValue());
+				assertEquals(6, muu.getCertifiedProductId().longValue());
 			}
 		}
 		
@@ -212,7 +207,7 @@ public class MeaningfulUseControllerTest extends TestCase {
 				assertNotNull(muu.getError());
 				hasError=true;
 			}
-			else if(muu.getProductNumber().equals("15.01.01.1009.EIC08.36.1.1.160402")){
+			else if(muu.getProductNumber().equals("15.01.01.1009.EIC13.36.1.1.160402")){
 				assertEquals(70, muu.getNumberOfUsers().longValue());
 				assertNotNull(muu.getError());
 				hasError=true;

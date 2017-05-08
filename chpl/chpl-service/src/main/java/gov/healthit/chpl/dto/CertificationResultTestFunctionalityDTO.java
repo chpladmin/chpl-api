@@ -11,6 +11,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
 	private Long testFunctionalityId;
 	private String testFunctionalityName;
 	private String testFunctionalityNumber;
+	private String testFunctionalityEdition;
 	private Boolean deleted;
 	
 	public CertificationResultTestFunctionalityDTO(){}
@@ -22,6 +23,9 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
 		if(entity.getTestFunctionality() != null) {
 			this.testFunctionalityName = entity.getTestFunctionality().getName();
 			this.testFunctionalityNumber = entity.getTestFunctionality().getNumber();
+			if(entity.getTestFunctionality().getCertificationEdition() != null) {
+				this.testFunctionalityEdition = entity.getTestFunctionality().getCertificationEdition().getYear();
+			}
 		}
 		this.deleted = entity.getDeleted();
 	}
@@ -72,6 +76,14 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
 
 	public void setTestFunctionalityNumber(String testFunctionalityNumber) {
 		this.testFunctionalityNumber = testFunctionalityNumber;
+	}
+
+	public String getTestFunctionalityEdition() {
+		return testFunctionalityEdition;
+	}
+
+	public void setTestFunctionalityEdition(String testFunctionalityEdition) {
+		this.testFunctionalityEdition = testFunctionalityEdition;
 	}
 
 }

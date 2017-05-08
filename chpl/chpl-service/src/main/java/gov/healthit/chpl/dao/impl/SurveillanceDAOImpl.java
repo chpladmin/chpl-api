@@ -346,10 +346,10 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				if(reqToDelete.getNonconformities() != null) {
 					for(SurveillanceNonconformityEntity ncToDelete : reqToDelete.getNonconformities()) {
 						if(ncToDelete.getDocuments() != null) {
-							for(SurveillanceNonconformityDocumentationEntity docsToDelete : ncToDelete.getDocuments()) {
-								docsToDelete.setDeleted(true);
-								docsToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-								entityManager.merge(ncToDelete);
+							for(SurveillanceNonconformityDocumentationEntity docToDelete : ncToDelete.getDocuments()) {
+								docToDelete.setDeleted(true);
+								docToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+								entityManager.merge(docToDelete);
 								entityManager.flush();
 							}
 						}
