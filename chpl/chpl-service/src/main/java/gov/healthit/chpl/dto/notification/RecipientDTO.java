@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dto.notification;
 
 import gov.healthit.chpl.entity.notification.NotificationRecipientEntity;
-import gov.healthit.chpl.entity.notification.NotificationTypeEntity;
 
 public class RecipientDTO {
 	private Long id;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.entity.UserPermissionEntity;
 import gov.healthit.chpl.entity.notification.NotificationPermissionEntity;
 import gov.healthit.chpl.entity.notification.NotificationTypeEntity;
 
