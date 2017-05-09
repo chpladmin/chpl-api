@@ -26,8 +26,8 @@ public class RecipientWithSubscriptionsEntity {
 	@Column(name = "email")
 	private String email;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "recipientId" )
-	@Column( name = "recipient_id", nullable = false  )
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "recipientId")
+	@Column(name = "recipient_id", nullable = false)
 	@Where(clause="deleted <> 'true'")
 	private Set<NotificationTypeRecipientMapEntity> subscriptions = new HashSet<NotificationTypeRecipientMapEntity>();
 	
