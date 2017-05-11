@@ -23,11 +23,11 @@ capStartDaysAllowed=10
 
 #oversight daily email properties
 oversightEmailDailySubject=Daily Surveillance Broken Rules Alert(LOCAL)
-oversightEmailDailyHtmlMessage=
-oversightEmailDailyFileName=
+oversightEmailDailyHtmlMessage=<h3>ONC Daily Surveillance Report</h3>
+oversightEmailDailyFileName=surveillance-oversight-daily-report.csv
 oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day</p>
 
-oversightEmailAcbDailyHtmlMessage=
+oversightEmailAcbDailyHtmlMessage=<h3>ONC-ACB Daily Surveillance Report</h3>
 
 #oversight weekly email properties
 oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert(LOCAL)
