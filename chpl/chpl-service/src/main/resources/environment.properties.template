@@ -16,22 +16,26 @@ summaryEmail=chpl@ainq.com
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
-#oversight email properties 
-oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
-oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
-oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
-oversightEmailWeeklyHtmlMessage=<h3>ONC Weekly Surveillance Report</h3>
-oversightEmailWeeklyFileName=surveillance-oversight-weekly-report.csv
-oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
-oversightEmailAcbDailySubject=Weekly Surveillance Broken Rules Alert(LOCAL)
-oversightEmailAcbDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day for ACB.</p>
-oversightEmailAcbWeeklySubject=Daily Surveillance Broken Rules Alert(LOCAL)
-oversightEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly Surveillance Report</h3>
-oversightEmailAcbWeeklyFileName=surveillance-oversight-weekly-report-for-acb.csv
-oversightEmailAcbWeeklyNoContent=<p>No surveillance oversight rules are broken for ACB.</p>
+#oversight email properties
 suspendedDaysAllowed=30
 capApprovalDaysAllowed=75
 capStartDaysAllowed=10
+
+#oversight daily email properties
+oversightEmailDailySubject=Daily Surveillance Broken Rules Alert(LOCAL)
+oversightEmailDailyHtmlMessage=
+oversightEmailDailyFileName=
+oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day</p>
+
+oversightEmailAcbDailyHtmlMessage=
+
+#oversight weekly email properties
+oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert(LOCAL)
+oversightEmailWeeklyHtmlMessage=<h3>ONC Weekly Surveillance Report</h3>
+oversightEmailWeeklyFileName=surveillance-oversight-weekly-report.csv
+oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken</p>
+
+oversightEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly Surveillance Report</h3>
 
 #chpl-service download jar properties
 dbDriverClass=org.postgresql.Driver

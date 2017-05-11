@@ -24,7 +24,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.app.surveillance.presenter.SurveillanceOversightAllBrokenRulesCsvPresenter;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -131,7 +130,7 @@ public class SurveillanceOversightReportWeeklyApp {
                     if(notificationType.getName().equalsIgnoreCase(NotificationTypeConcept.ONC_ACB_WEEKLY_SURVEILLANCE_BROKEN_RULES.getName())){
                     	List<CertifiedProductSearchDetails> acbSpecificCps = new ArrayList<CertifiedProductSearchDetails>();
                     	for(CertifiedProductSearchDetails cpDetails : allCertifiedProductDetails){
-                    		if(subscription.getAcb().getAcbCode().equalsIgnoreCase(cpDetails.getAcbCertificationId())){
+                    		if(subscription.getAcb().getAcbCode().equalsIgnoreCase(cpDetails.getCertifyingBody().get("code").toString())){
                     			acbSpecificCps.add(cpDetails);
                     		}
                     	}
