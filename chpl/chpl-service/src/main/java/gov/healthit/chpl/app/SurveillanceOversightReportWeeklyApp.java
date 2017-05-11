@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -75,23 +77,15 @@ public class SurveillanceOversightReportWeeklyApp {
 		ctx.addDataSource(props.getProperty("dataSourceName"),props.getProperty("dataSourceConnection"), 
 				 props.getProperty("dataSourceUsername"), props.getProperty("dataSourcePassword"));
 		 
-		JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-		 
 		//init spring classes
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		SurveillanceOversightReportWeeklyApp app = new SurveillanceOversightReportWeeklyApp();
-		app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
-		app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		app.setNotificationDAO((NotificationDAO)context.getBean("notificationDAO"));
-		app.setCertificationBodyDAO((CertificationBodyDAO)context.getBean("certificationBodyDAO"));
-		app.setPresenter((SurveillanceOversightAllBrokenRulesCsvPresenter)context.getBean("surveillanceOversightAllBrokenRulesCsvPresenter"));
-		app.getPresenter().setProps(props);
-		app.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
+		oversightApp.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
+		oversightApp.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
+		oversightApp.setNotificationDAO((NotificationDAO)context.getBean("notificationDAO"));
+		oversightApp.setCertificationBodyDAO((CertificationBodyDAO)context.getBean("certificationBodyDAO"));
+		oversightApp.setPresenter((SurveillanceOversightAllBrokenRulesCsvPresenter)context.getBean("surveillanceOversightAllBrokenRulesCsvPresenter"));
+		oversightApp.getPresenter().setProps(props);
+		oversightApp.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
 		 
 		//specify where to store files
         String downloadFolderPath;
@@ -105,10 +99,12 @@ public class SurveillanceOversightReportWeeklyApp {
         	downloadFolder.mkdirs();
         }
 		
-		List<CertificationBodyDTO> acbs = app.getCertificationBodyDAO().findAll(false);
-		List<RecipientWithSubscriptionsDTO> recipientSubscriptions = app.getNotificationDAO().getAllNotificationMappings(adminUser.getPermissions(), acbs);
+		List<CertificationBodyDTO> acbs = oversightApp.getCertificationBodyDAO().findAll(false);
+		Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+		permissions.add(new GrantedPermission("ROLE_ADMIN"));
+		List<RecipientWithSubscriptionsDTO> recipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappings(permissions, acbs);
 		
-		oversightApp.sendWeeklyRecipientSubscriptionEmails(recipientSubscriptions, props, downloadFolder, app);
+		oversightApp.sendWeeklyRecipientSubscriptionEmails(recipientSubscriptions, props, downloadFolder, oversightApp);
         
         context.close();
 	}
