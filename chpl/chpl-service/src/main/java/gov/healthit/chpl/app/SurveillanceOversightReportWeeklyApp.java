@@ -104,19 +104,19 @@ public class SurveillanceOversightReportWeeklyApp {
 		permissions.add(new GrantedPermission("ROLE_ADMIN"));
 		List<RecipientWithSubscriptionsDTO> recipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappings(permissions, acbs);
 		
-		oversightApp.sendWeeklyRecipientSubscriptionEmails(recipientSubscriptions, props, downloadFolder, oversightApp);
+		oversightApp.sendWeeklyRecipientSubscriptionEmails(recipientSubscriptions, props, downloadFolder);
         
         context.close();
 	}
 	
-	private void sendWeeklyRecipientSubscriptionEmails(List<RecipientWithSubscriptionsDTO> recipientSubscriptions, Properties props, File downloadFolder, SurveillanceOversightReportWeeklyApp app) throws IOException, AddressException, MessagingException {
+	private void sendWeeklyRecipientSubscriptionEmails(List<RecipientWithSubscriptionsDTO> recipientSubscriptions, Properties props, File downloadFolder) throws IOException, AddressException, MessagingException {
 		String surveillanceReportFilename = null;
         String htmlMessage = null;
         String subject = null;
         File surveillanceReportFile = null;
         CertifiedProductDownloadResponse acbSpecificCpsDownloadResponse = new CertifiedProductDownloadResponse();
         
-        List<CertifiedProductSearchDetails> allCertifiedProductDetails = app.getAllCertifiedProductSearchDetails(app);
+        List<CertifiedProductSearchDetails> allCertifiedProductDetails = this.getAllCertifiedProductSearchDetails();
 		CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();
 		allCps.setProducts(allCertifiedProductDetails);
         
@@ -143,7 +143,7 @@ public class SurveillanceOversightReportWeeklyApp {
                         	surveillanceReportFile.delete();
                         }
                     	acbSpecificCpsDownloadResponse.setProducts(acbSpecificCps);
-                    	app.getPresenter().presentAsFile(surveillanceReportFile, acbSpecificCpsDownloadResponse);
+                    	this.getPresenter().presentAsFile(surveillanceReportFile, acbSpecificCpsDownloadResponse);
                     	subject = subscription.getAcb().getName() + " " + props.getProperty("oversightEmailAcbWeeklySubject");
                     	htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
                     } else if(notificationType.getName().equalsIgnoreCase(NotificationTypeConcept.ONC_WEEKLY_SURVEILLANCE_BROKEN_RULES.getName())){
@@ -154,14 +154,14 @@ public class SurveillanceOversightReportWeeklyApp {
                         } else {
                         	surveillanceReportFile.delete();
                         }
-                    	app.getPresenter().presentAsFile(surveillanceReportFile, allCps);
+                    	this.getPresenter().presentAsFile(surveillanceReportFile, allCps);
                     	subject = props.getProperty("oversightEmailWeeklySubject");
                     	htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
                     }
                     
                     String[] toEmail = {rwsDTO.getEmail()};
                     
-                    Map<SurveillanceOversightRule, Integer> brokenRules = app.getPresenter().getAllBrokenRulesCounts();
+                    Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
                    
                     //were any rules broken?
                     boolean anyRulesBroken = false;
@@ -185,18 +185,18 @@ public class SurveillanceOversightReportWeeklyApp {
                     
                     List<File> files = new ArrayList<File>();
                     files.add(surveillanceReportFile);
-                    app.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
+                    this.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
         		}	
         	}
         }
 	}
 	
-	private List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails(SurveillanceOversightReportWeeklyApp app){
-      List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findWithSurveillance();
+	private List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails(){
+      List<CertifiedProductDetailsDTO> allCertifiedProducts = this.getCertifiedProductDAO().findWithSurveillance();
       List<CertifiedProductSearchDetails> allCertifiedProductDetails = new ArrayList<CertifiedProductSearchDetails>(allCertifiedProducts.size());
 		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
 			try {
-				CertifiedProductSearchDetails product = app.getCpdManager().getCertifiedProductDetails(currProduct.getId());
+				CertifiedProductSearchDetails product = this.getCpdManager().getCertifiedProductDetails(currProduct.getId());
 				allCertifiedProductDetails.add(product);
 			} catch(EntityRetrievalException ex) {
 				logger.error("Could not certified product details for certified product " + currProduct.getId());
