@@ -16,17 +16,19 @@ summaryEmail=chpl@ainq.com
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
-#chpl-app Surveillance Oversight Report Properties
-weeklyAlertSubject=Weekly Surveillance Broken Rules Alert (DEV)
-dailyAlertSubject=Daily Surveillance Broken Rules Alert (DEV)
-
 #oversight email properties 
-oversightEmailDailyTo=chpl@ainq.com
 oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
 oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
-oversightEmailWeeklyTo=chpl@ainq.com
 oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
+oversightEmailWeeklyHtmlMessage=<h3>ONC Weekly Surveillance Report</h3>
+oversightEmailWeeklyFileName=surveillance-oversight-weekly-report.csv
 oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
+oversightEmailAcbDailySubject=Weekly Surveillance Broken Rules Alert(LOCAL)
+oversightEmailAcbDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day for ACB.</p>
+oversightEmailAcbWeeklySubject=Daily Surveillance Broken Rules Alert(LOCAL)
+oversightEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly Surveillance Report</h3>
+oversightEmailAcbWeeklyFileName=surveillance-oversight-weekly-report-for-acb.csv
+oversightEmailAcbWeeklyNoContent=<p>No surveillance oversight rules are broken for ACB.</p>
 suspendedDaysAllowed=30
 capApprovalDaysAllowed=75
 capStartDaysAllowed=10
