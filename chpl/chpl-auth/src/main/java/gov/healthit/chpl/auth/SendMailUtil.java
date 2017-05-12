@@ -280,9 +280,11 @@ public class SendMailUtil {
 
 	/**
 	 * Send an email using the given properties and list of files to attach.
-	 * Also uses the toEmail, subject and htmlMessage
+	 * Uses the toEmail if non-null or the bccEmail if non-null. Also uses the
+	 * subject and htmlMessage
 	 * 
 	 * @param toEmail
+	 * @param bccEmail
 	 * @param subject
 	 * @param htmlMessage
 	 * @param files
@@ -355,7 +357,7 @@ public class SendMailUtil {
 					bccAddresses[i] = bccEmailaddress;
 				}
 				msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
-				logger.debug("Sending email to " + Arrays.toString(bccEmail));
+				logger.debug("Sending email bcc to " + Arrays.toString(bccEmail));
 			} catch (MessagingException ex) {
 				logger.fatal("Invalid Email Address: " + Arrays.toString(bccEmail), ex);
 				throw ex;

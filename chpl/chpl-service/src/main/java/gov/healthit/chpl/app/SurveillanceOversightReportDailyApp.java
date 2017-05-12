@@ -203,7 +203,7 @@ public class SurveillanceOversightReportDailyApp {
     	htmlMessage = props.getProperty("oversightEmailDailyHtmlMessage");
     	String[] bccEmail = oncDailyEmails.toArray(new String[oncDailyEmails.size()]);
         
-        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
+        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getNewBrokenRulesCounts();
        
         //were any rules broken?
         boolean anyRulesBroken = false;
@@ -256,7 +256,7 @@ public class SurveillanceOversightReportDailyApp {
         	String[] bccEmail = entry.getValue().toArray(new String[entry.getValue().size()]);
             
         	// Get broken rules for email body
-            Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
+            Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getNewBrokenRulesCounts();
            
             //were any rules broken?
             boolean anyRulesBroken = false;
