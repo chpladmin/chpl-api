@@ -155,7 +155,7 @@ public class SurveillanceOversightReportWeeklyApp {
     	this.getPresenter().presentAsFile(surveillanceReportFile, cpList);
     	subject = props.getProperty("oversightEmailWeeklySubject");
     	htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
-    	String[] toEmail = oncWeeklyEmails.toArray(new String[oncWeeklyEmails.size()]);
+    	String[] bccEmail = oncWeeklyEmails.toArray(new String[oncWeeklyEmails.size()]);
         
         Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
        
@@ -181,7 +181,7 @@ public class SurveillanceOversightReportWeeklyApp {
         
         List<File> files = new ArrayList<File>();
         files.add(surveillanceReportFile);
-        this.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
+        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
 	}
 	
 	private void sendAcbWeeklyRecipientSubscriptionEmails(Map<CertificationBodyDTO, Set<String>> acbEmailMap, Properties props, File downloadFolder, Map<CertificationBodyDTO, CertifiedProductDownloadResponse> acbDownloadMap) throws IOException, AddressException, MessagingException {
@@ -201,17 +201,13 @@ public class SurveillanceOversightReportWeeklyApp {
             } else {
             	surveillanceReportFile.delete();
             }
-            // Generate this ACB's download file
-            for(Map.Entry<CertificationBodyDTO, CertifiedProductDownloadResponse> acbDownloadMapEntry : acbDownloadMap.entrySet()){
-            	if(acbDownloadMapEntry.getKey().getAcbCode().equalsIgnoreCase(entry.getKey().getAcbCode())){
-            		this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMapEntry.getValue());
-            		files.add(surveillanceReportFile);
-            	}
-            }
+            // Generate this ACB's download file  	
+            this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(entry.getKey()));
+    		files.add(surveillanceReportFile);	
         	
         	subject = entry.getKey().getName() + " " + props.getProperty("oversightEmailWeeklySubject");
         	htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
-        	String[] toEmail = entry.getValue().toArray(new String[entry.getValue().size()]);
+        	String[] bccEmail = entry.getValue().toArray(new String[entry.getValue().size()]);
             
         	// Get broken rules for email body
             Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
@@ -236,7 +232,7 @@ public class SurveillanceOversightReportWeeklyApp {
             	htmlMessage += "</ul>";
             }
             
-            this.getMailUtils().sendEmail(toEmail, subject, htmlMessage, files, props);
+            this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
         }
 	}
 	

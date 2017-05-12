@@ -4,6 +4,7 @@
 _Date TBD_
 * Return exception with last modified user's contact info when deleting or confirming a pending Certified Product that has already been deleted or confirmed
 * Add surveillance rule when a Listing has an open Non-conformity and status of "Withdrawn by..."
+* Add daily/weekly surveillance trigger emails that use notification subscriptions and are specific to ACB
 
 ---
 
