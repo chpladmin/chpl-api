@@ -29,7 +29,7 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 public class SurveillanceOversightReportDailyApp extends SurveillanceOversightReportApp {
 	private SurveillanceOversightNewBrokenRulesCsvPresenter presenter;
     
-	public static void main( String[] args ) throws Exception {
+	public static void main(String[] args) throws Exception {
 		SurveillanceOversightReportDailyApp oversightApp = new SurveillanceOversightReportDailyApp();
 		Properties props = oversightApp.getProperties();
 		oversightApp.setLocalContext(props);
@@ -78,11 +78,6 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
 		
 		surveillanceReportFilename = props.getProperty("oversightEmailDailyFileName");
     	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
-        if(!surveillanceReportFile.exists()) {
-        	surveillanceReportFile.createNewFile();
-        } else {
-        	surveillanceReportFile.delete();
-        }
     	this.getPresenter().presentAsFile(surveillanceReportFile, cpList);
     	subject = props.getProperty("oversightEmailDailySubject");
     	htmlMessage = props.getProperty("oversightEmailDailyHtmlMessage");
@@ -127,11 +122,7 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
         	String fmtAcbName = entry.getKey().getName().replaceAll("\\W", "").toLowerCase();
         	surveillanceReportFilename = fmtAcbName + "-" + props.getProperty("oversightEmailDailyFileName");
         	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
-            if(!surveillanceReportFile.exists()) {
-            	surveillanceReportFile.createNewFile();
-            } else {
-            	surveillanceReportFile.delete();
-            }
+        	
             // Generate this ACB's download file  	
             this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(entry.getKey()));
     		files.add(surveillanceReportFile);	

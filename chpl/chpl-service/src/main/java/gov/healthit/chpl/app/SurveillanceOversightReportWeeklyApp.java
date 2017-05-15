@@ -34,7 +34,7 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
     	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
     
-	public static void main( String[] args ) throws Exception {
+	public static void main(String[] args) throws Exception {
 		SurveillanceOversightReportWeeklyApp oversightApp = new SurveillanceOversightReportWeeklyApp();
 		Properties props = oversightApp.getProperties();
 		oversightApp.setLocalContext(props);
@@ -83,11 +83,6 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 		
 		surveillanceReportFilename = props.getProperty("oversightEmailWeeklyFileName");
     	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
-        if(!surveillanceReportFile.exists()) {
-        	surveillanceReportFile.createNewFile();
-        } else {
-        	surveillanceReportFile.delete();
-        }
     	this.getPresenter().presentAsFile(surveillanceReportFile, cpList);
     	subject = props.getProperty("oversightEmailWeeklySubject");
     	htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
@@ -132,11 +127,7 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
         	String fmtAcbName = entry.getKey().getName().replaceAll("\\W", "").toLowerCase();
         	surveillanceReportFilename = fmtAcbName + "-" + props.getProperty("oversightEmailWeeklyFileName");
         	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
-            if(!surveillanceReportFile.exists()) {
-            	surveillanceReportFile.createNewFile();
-            } else {
-            	surveillanceReportFile.delete();
-            }
+        	
             // Generate this ACB's download file  	
             this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(entry.getKey()));
     		files.add(surveillanceReportFile);	
