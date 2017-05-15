@@ -1,8 +1,5 @@
 package gov.healthit.chpl.domain.notification;
 
-import org.springframework.util.StringUtils;
-
-import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 
 public class NotificationType {
