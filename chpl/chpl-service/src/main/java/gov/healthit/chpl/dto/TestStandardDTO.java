@@ -9,6 +9,8 @@ public class TestStandardDTO implements Serializable {
 	private Long id;
 	private String description;
 	private String name;
+	private Long certificationEditionId;
+	private String year;
 	
 	public TestStandardDTO(){}
 	
@@ -16,6 +18,10 @@ public class TestStandardDTO implements Serializable {
 		this.id = entity.getId();
 		this.description = entity.getDescription();
 		this.name = entity.getName();
+		this.certificationEditionId = entity.getCertificationEditionId();
+		if(entity.getCertificationEdition() != null) {
+			this.year = entity.getCertificationEdition().getYear();
+		}
 	}
 
 	public Long getId() {
@@ -40,5 +46,21 @@ public class TestStandardDTO implements Serializable {
 
 	public void setName(String number) {
 		this.name = number;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	public Long getCertificationEditionId() {
+		return certificationEditionId;
+	}
+
+	public void setCertificationEditionId(Long certificationEditionId) {
+		this.certificationEditionId = certificationEditionId;
 	}
 }

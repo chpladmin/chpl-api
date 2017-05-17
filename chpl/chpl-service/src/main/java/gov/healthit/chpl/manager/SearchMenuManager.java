@@ -10,6 +10,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.notification.NotificationType;
 
 public interface SearchMenuManager {
@@ -28,7 +29,7 @@ public interface SearchMenuManager {
 	public Set<KeyValueModel> getEducationTypes();
 	public Set<KeyValueModel> getAgeRanges();
 	public Set<TestFunctionality> getTestFunctionality();
-	public Set<KeyValueModel> getTestStandards();
+	public Set<TestStandard> getTestStandards();
 	public Set<KeyValueModel> getTestTools();
 	public Set<KeyValueModel> getDeveloperStatuses();
 	public Set<KeyValueModel> getSurveillanceTypes();

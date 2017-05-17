@@ -48,6 +48,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestFunctionality;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -353,15 +354,18 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return standards;
 	}
 
+	@Transactional
 	@Override
-	public Set<KeyValueModel> getTestStandards() {
-		List<TestStandardDTO> dtos = testStandardDao.findAll();
-		Set<KeyValueModel> std = new HashSet<KeyValueModel>();
+	public Set<TestStandard> getTestStandards() {
 		
-		for(TestStandardDTO dto : dtos) {
-			std.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
+		List<TestStandardDTO> dtos = this.testStandardDao.findAll();
+		Set<TestStandard> testStds = new HashSet<TestStandard>();
+		
+		for (TestStandardDTO dto : dtos) {
+			testStds.add(new TestStandard(dto));
 		}
-		return std;
+		
+		return testStds;
 	}
 	
 	@Override

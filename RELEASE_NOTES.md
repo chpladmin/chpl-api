@@ -5,6 +5,10 @@ _Date TBD_
 * Return exception with last modified user's contact info when deleting or confirming a pending Certified Product that has already been deleted or confirmed
 * Add surveillance rule when a Listing has an open Non-conformity and status of "Withdrawn by..."
 * Add daily/weekly surveillance trigger emails that use notification subscriptions and are specific to ACB
+* Update /data/test_standards to include certification edition
+* Disallow duplicate test standards per certification criterion.
+* Check for exisitng test standard in the listing's edition before adding a new one (eliminates repeated entries in the database and keeps the selection dropdowns manageable).
+* Update all test standard entities, dtos, and domain objects to include certification edition.
 * Use error message file for error messages and support internationalization.
 
 ---

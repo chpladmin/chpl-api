@@ -74,7 +74,7 @@ public class CertificationResultManagerImpl implements
 		List<CertificationResultAdditionalSoftwareDTO> addSoft = updateAdditionalSoftware(toUpdate);
 		updated.setAdditionalSoftware(addSoft);
 		
-		List<CertificationResultTestStandardDTO> stds = updateTestStandards(toUpdate);
+		List<CertificationResultTestStandardDTO> stds = updateTestStandards(listing, toUpdate);
 		updated.setTestStandards(stds);
 		
 		List<CertificationResultTestToolDTO> tools = updateTestTools(toUpdate);
@@ -201,7 +201,7 @@ public class CertificationResultManagerImpl implements
 		return certResultDAO.getAdditionalSoftwareForCertificationResult(toUpdate.getId());
 	}
 	
-	private List<CertificationResultTestStandardDTO> updateTestStandards(CertificationResultDTO toUpdate)
+	private List<CertificationResultTestStandardDTO> updateTestStandards(CertifiedProductDTO listing, CertificationResultDTO toUpdate)
 		throws EntityCreationException, EntityRetrievalException {
 		//update test standard mappings
 		List<CertificationResultTestStandardDTO> existingTestStandards = certResultDAO.getTestStandardsForCertificationResult(toUpdate.getId());
@@ -214,12 +214,13 @@ public class CertificationResultManagerImpl implements
 				testStd = testStandardDAO.getById(newTestStd.getTestStandardId());
 			}
 			if(testStd == null && !StringUtils.isEmpty(newTestStd.getTestStandardName())) {
-				testStd = testStandardDAO.getByNumber(newTestStd.getTestStandardName());
+				testStd = testStandardDAO.getByNumberAndEdition(newTestStd.getTestStandardName(), listing.getCertificationEditionId());
 			}
 			if(testStd == null) {
 				TestStandardDTO testStandardToCreate = new TestStandardDTO();
 				testStandardToCreate.setName(newTestStd.getTestStandardName());
 				testStandardToCreate.setDescription(newTestStd.getTestStandardDescription());
+				testStandardToCreate.setCertificationEditionId(listing.getCertificationEditionId());
 				testStd = testStandardDAO.create(testStandardToCreate);
 			}
 			newTestStd.setTestStandardId(testStd.getId()); 
@@ -227,8 +228,16 @@ public class CertificationResultManagerImpl implements
 			CertificationResultTestStandardDTO existingMapping = certResultDAO.
 					lookupTestStandardMapping(newTestStd.getCertificationResultId(), newTestStd.getTestStandardId());
 			if(existingMapping == null) {
+				boolean alreadyBeingAdded = false;
+				for(CertificationResultTestStandardDTO testStandardToAdd : testStandardsToAdd) {
+					if(testStandardToAdd.getTestStandardId().longValue() == newTestStd.getTestStandardId().longValue()) {
+						alreadyBeingAdded = true;
+					}
+				}
 				//if the mapping doesn't exist between this std and this product, add it
-				testStandardsToAdd.add(newTestStd);
+				if(!alreadyBeingAdded) {
+					testStandardsToAdd.add(newTestStd);
+				}
 			} 
 		}
 				
