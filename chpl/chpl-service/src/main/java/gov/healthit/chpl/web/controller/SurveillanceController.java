@@ -21,6 +21,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
@@ -63,7 +67,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="surveillance")
 @RestController
 @RequestMapping("/surveillance")
-public class SurveillanceController {
+public class SurveillanceController implements MessageSourceAware {
 	
 	private static final Logger logger = LogManager.getLogger(SurveillanceController.class);
 	private static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
@@ -72,6 +76,7 @@ public class SurveillanceController {
 	private static final String SUBELEMENT_INDICATOR = "Subelement";
 	
 	@Autowired Environment env;
+	@Autowired MessageSource messageSource;
 	@Autowired
 	private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 	@Autowired
@@ -671,7 +676,7 @@ public class SurveillanceController {
 			try {
 				surveilledProduct = cpManager.getById(pendingSurv.getCertifiedProduct().getId());
 			} catch(EntityRetrievalException ex) {
-				pendingSurv.getErrorMessages().add("Unexpected error looking up certified product with id " + pendingSurv.getCertifiedProduct().getId());
+				pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.certifiedProductIdNotFound"), LocaleContextHolder.getLocale()), pendingSurv.getCertifiedProduct().getId()));
 				logger.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
 			} 
 			
@@ -679,10 +684,10 @@ public class SurveillanceController {
 				try {
 					acbManager.getById(surveilledProduct.getCertificationBodyId());
 				} catch(EntityRetrievalException ex) {
-					pendingSurv.getErrorMessages().add("Unexpected error looking up certification body with id " + surveilledProduct.getCertificationBodyId());
+					pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.certificationBodyIdNotFound"), LocaleContextHolder.getLocale()), surveilledProduct.getCertificationBodyId()));
 					logger.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
 				} catch(AccessDeniedException denied) {
-					pendingSurv.getErrorMessages().add("User does not have permission to add surveillance to " + pendingSurv.getCertifiedProduct().getChplProductNumber());
+					pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.addSurveillancePermissionDenied"), LocaleContextHolder.getLocale()), pendingSurv.getCertifiedProduct().getChplProductNumber()));
 					logger.error("User " + Util.getCurrentUser().getSubjectName() + 
 							" does not have access to the ACB with id " + 
 							surveilledProduct.getCertificationBodyId());
@@ -690,6 +695,10 @@ public class SurveillanceController {
 			} 
 		}
 	}
-	
+
+	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
 }

@@ -9,6 +9,7 @@ _Date TBD_
 * Disallow duplicate test standards per certification criterion.
 * Check for exisitng test standard in the listing's edition before adding a new one (eliminates repeated entries in the database and keeps the selection dropdowns manageable).
 * Update all test standard entities, dtos, and domain objects to include certification edition.
+* Use error message file for error messages and support internationalization.
 
 ---
 
