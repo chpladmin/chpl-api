@@ -339,18 +339,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			
 			SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
 			idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-			try {
-				Date idDate = idDateFormat.parse(certifiedDateCode);
-				if(product.getCertificationDate() == null || 
-						idDate.getTime() != product.getCertificationDate().longValue()) {
-					
-					//change the certified date code to match the new certification date
-					String desiredCertificationDateCode = idDateFormat.format(product.getCertificationDate());
-					updateChplProductNumber(product, CERTIFIED_DATE_CODE_INDEX, desiredCertificationDateCode);
-					productIdChanged = true;
-				}
-			} catch (ParseException pex) {
-				product.getErrorMessages().add("Could not parse the certification date part of the product id: " + certifiedDateCode);
+			String desiredCertificationDateCode = idDateFormat.format(product.getCertificationDate());
+			if(!certifiedDateCode.equals(desiredCertificationDateCode)) {
+				//change the certified date code to match the new certification date
+				updateChplProductNumber(product, CERTIFIED_DATE_CODE_INDEX, desiredCertificationDateCode);
+				productIdChanged = true;
 			}
 		}
 		
