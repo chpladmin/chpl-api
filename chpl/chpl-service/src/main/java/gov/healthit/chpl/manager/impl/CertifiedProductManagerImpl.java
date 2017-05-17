@@ -590,15 +590,29 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					for(PendingCertificationResultTestStandardDTO std : certResult.getTestStandards()) {
 						CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
 						if(std.getTestStandardId() == null) {
-							TestStandardDTO ts = new TestStandardDTO();
-							ts.setName(std.getName());
-							ts = testStandardDao.create(ts);
-							stdDto.setTestStandardId(ts.getId());
+							//try to look up by name and edition
+							TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(
+									std.getName(), pendingCp.getCertificationEditionId());
+							if(foundTestStandard == null) {
+								//if not found create a new test standard
+								TestStandardDTO ts = new TestStandardDTO();
+								ts.setName(std.getName());
+								ts.setCertificationEditionId(pendingCp.getCertificationEditionId());
+								ts = testStandardDao.create(ts);
+								stdDto.setTestStandardId(ts.getId());
+							} else {
+								stdDto.setTestStandardId(foundTestStandard.getId());
+							}
 						} else {
 							stdDto.setTestStandardId(std.getTestStandardId());
 						}
 						stdDto.setCertificationResultId(createdCert.getId());
-						certDao.addTestStandardMapping(stdDto);
+						//make sure this isn't a duplicate test standard for this criteria
+						CertificationResultTestStandardDTO existingMapping = certDao.
+								lookupTestStandardMapping(stdDto.getCertificationResultId(), stdDto.getTestStandardId());
+						if(existingMapping == null) {
+							certDao.addTestStandardMapping(stdDto);
+						}
 					}
 				}
 				

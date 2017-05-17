@@ -37,6 +37,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.domain.TestFunctionality;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
@@ -600,6 +601,19 @@ public class SearchMenuManagerTest {
 		for(TestFunctionality tf : tfs) {
 			assertNotNull(tf.getYear());
 			assertTrue(tf.getYear().equals("2014") || tf.getYear().equals("2015"));
+		}
+	}
+	
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void getTestStandards_hasEditions() {
+		Set<TestStandard> testStandards = searchMenuManager.getTestStandards();
+		assertNotNull(testStandards);
+		assertTrue(testStandards.size() > 0);
+		for(TestStandard testStandard : testStandards) {
+			assertNotNull(testStandard.getYear());
+			assertTrue(testStandard.getYear().equals("2014") || testStandard.getYear().equals("2015"));
 		}
 	}
 }
