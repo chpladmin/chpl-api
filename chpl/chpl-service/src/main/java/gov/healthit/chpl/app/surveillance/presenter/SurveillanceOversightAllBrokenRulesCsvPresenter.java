@@ -194,7 +194,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		this.allBrokenRulesCounts = allBrokenRulesCounts;
 	}
 	
-	public void resetBrokenRulesCounts(){
+	public void clear(){
 		allBrokenRulesCounts.clear();
 		allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
