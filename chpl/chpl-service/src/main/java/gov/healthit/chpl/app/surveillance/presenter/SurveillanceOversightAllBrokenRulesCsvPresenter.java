@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -32,7 +30,6 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  */
 @Component("surveillanceOversightAllBrokenRulesCsvPresenter")
 public class SurveillanceOversightAllBrokenRulesCsvPresenter extends SurveillanceReportCsvPresenter {
-	private static final Logger logger = LogManager.getLogger(SurveillanceOversightAllBrokenRulesCsvPresenter.class);
 	
 	private Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts;
 	
@@ -195,5 +192,14 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 
 	public void setAllBrokenRulesCounts(Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts) {
 		this.allBrokenRulesCounts = allBrokenRulesCounts;
+	}
+	
+	public void resetBrokenRulesCounts(){
+		allBrokenRulesCounts.clear();
+		allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
 	}
 }
