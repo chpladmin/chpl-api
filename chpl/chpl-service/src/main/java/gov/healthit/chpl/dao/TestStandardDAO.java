@@ -10,5 +10,4 @@ public interface TestStandardDAO {
 	public List<TestStandardDTO> findAll();
 	public TestStandardDTO getByNumberAndEdition(String number, Long editionId);
 	public TestStandardDTO getById(Long id) throws EntityRetrievalException;
-	public TestStandardDTO getByNumber(String name);
 }
