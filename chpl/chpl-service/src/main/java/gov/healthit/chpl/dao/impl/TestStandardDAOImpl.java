@@ -73,17 +73,6 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	}
 	
 	@Override
-	public TestStandardDTO getByNumber(String name) {
-		TestStandardDTO dto = null;
-		List<TestStandardEntity> entities = getEntitiesByNumber(name);
-		
-		if (entities != null && entities.size() > 0){
-			dto = new TestStandardDTO(entities.get(0));
-		}
-		return dto;
-	}
-	
-	@Override
 	public List<TestStandardDTO> findAll() {
 		List<TestStandardEntity> entities = getAllEntities();
 		List<TestStandardDTO> dtos = new ArrayList<TestStandardDTO>();
@@ -127,31 +116,27 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		return entity;
 	}
 	
-	
-	private List<TestStandardEntity> getEntitiesByNumber(String number) {
-		Query query = entityManager.createQuery( "SELECT ts "
-				+ "FROM TestStandardEntity ts "
-				+ "JOIN FETCH ts.certificationEdition "
-				+ "WHERE (NOT ts.deleted = true) "
-				+ "AND (UPPER(ts.name) = :number) ", TestStandardEntity.class );
-		query.setParameter("number", number.toUpperCase());
-		List<TestStandardEntity> result = query.getResultList();
-		
-		return result;
-	}
-	
 	private List<TestStandardEntity> getEntitiesByNumberAndYear(String number, Long editionId) {
 		TestStandardEntity entity = null;
-			
-		Query query = entityManager.createQuery( "SELECT ts "
+		String tsQuery = "SELECT ts "
 				+ "FROM TestStandardEntity ts "
 				+ "JOIN FETCH ts.certificationEdition edition "
 				+ "WHERE ts.deleted <> true "
 				+ "AND UPPER(ts.name) = :number "
-				+ "AND edition.id = :editionId ", TestStandardEntity.class );
+				+ "AND edition.id = :editionId ";
+		Query query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
 		query.setParameter("number", number.toUpperCase());
 		query.setParameter("editionId", editionId);
 		
-		return query.getResultList();
+		List<TestStandardEntity> matches = query.getResultList();
+		if(matches == null || matches.size() == 0) {
+			//if this didn't find anything try again with spaces removed from the number
+			query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
+			String numberWithoutSpaces = number.replaceAll("\\s", "");
+			query.setParameter("number", numberWithoutSpaces.toUpperCase());
+			query.setParameter("editionId", editionId);
+			matches = query.getResultList();
+		}
+		return matches;
 	}
 }
