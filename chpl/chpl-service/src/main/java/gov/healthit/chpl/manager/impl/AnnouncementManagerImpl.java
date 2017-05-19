@@ -15,7 +15,7 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.AnnouncementDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.AnnouncementManager;

@@ -14,7 +14,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.entity.ActivityEntity;
 

@@ -41,7 +41,6 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
@@ -50,6 +49,7 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
+import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -74,7 +74,7 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
-@Service
+@Service("searchMenuManager")
 public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Autowired

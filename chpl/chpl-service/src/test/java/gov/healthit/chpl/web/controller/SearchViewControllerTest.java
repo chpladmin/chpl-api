@@ -266,6 +266,29 @@ public class SearchViewControllerTest extends TestCase {
 		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
 	}
 	
+	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification start and end date
+	 * 
+	 * Expected Result: Completes without error and returns some SearchResponse records
+	 */
+	@Transactional
+	@Test
+	public void test_advancedSearch_refineByCertificationStartAndEndDate_CompletesWithoutError() 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		SearchRequest searchFilters = new SearchRequest();
+		searchFilters.setPageNumber(0);
+		searchFilters.setPageSize(50);
+		searchFilters.setOrderBy("developer");
+		searchFilters.setSortDescending(true);
+		searchFilters.setCertificationDateStart("2015-08-01");
+		searchFilters.setCertificationDateEnd("2015-08-31");
+		
+		SearchResponse searchResponse = new SearchResponse();
+		searchResponse = searchViewController.advancedSearch(searchFilters);
+		assertEquals(Integer.valueOf(12), Integer.valueOf(searchResponse.getRecordCount()));
+	}
+	
 	@Transactional 
 	@Test
 	public void test_basicSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() 
