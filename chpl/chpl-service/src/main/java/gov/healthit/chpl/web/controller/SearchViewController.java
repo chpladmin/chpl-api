@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
@@ -73,6 +76,7 @@ import io.swagger.annotations.ApiOperation;
 public class SearchViewController {
 	
 	@Autowired Environment env;
+	@Autowired MessageSource messageSource;
 	
 	@Autowired
 	private SearchMenuManager searchMenuManager;
@@ -193,11 +197,13 @@ public class SearchViewController {
 			produces="application/xml")
 	public void download(@RequestParam(value="edition", required=false) String edition, 
 			@RequestParam(value="format", defaultValue="xml", required=false) String format,
+			@RequestParam(value="definition", defaultValue="false", required=false) Boolean isDefinition,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {	
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
 		File downloadFile = new File(downloadFileLocation);
 		if(!downloadFile.exists() || !downloadFile.canRead()) {
-			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+			response.getWriter().write(
+					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noReadPermission"), LocaleContextHolder.getLocale()), downloadFileLocation));
 			return;
 		}
 		
@@ -205,7 +211,8 @@ public class SearchViewController {
 			//find the most recent file in the directory and use that
 			File[] children = downloadFile.listFiles();
 			if(children == null || children.length == 0) {
-				response.getWriter().write("No files for download were found in directory " + downloadFileLocation);
+				response.getWriter().write(
+						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.noFilesExist"), LocaleContextHolder.getLocale()), downloadFileLocation));
 				return;
 			} else {
 				if(!StringUtils.isEmpty(edition)) {
@@ -224,24 +231,48 @@ public class SearchViewController {
 					format = "xml";
 				}
 				
-				File newestFileWithFormat = null;
-				for(int i = 0; i < children.length; i++) {
+				if(isDefinition != null && isDefinition.booleanValue() == true) {
+					String absolutePath = null;
+					if(format.equals("xml")) {
+						String schemaFilename = env.getProperty("schemaXmlName");
+						absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
+					} else if(edition.equals("2014")) {
+						String schemaFilename = env.getProperty("schemaCsv2014Name");
+						absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
+					} else if(edition.equals("2015")) {
+						String schemaFilename = env.getProperty("schemaCsv2015Name");
+						absolutePath = downloadFile.getAbsolutePath() + File.separator + schemaFilename;
+					}
 					
-					if(children[i].getName().matches("^chpl-" + edition + "-.+\\." + format+"$")) {
-						if(newestFileWithFormat == null) {
-							newestFileWithFormat = children[i];
-						} else {
-							if(children[i].lastModified() > newestFileWithFormat.lastModified()) {
+					if(!StringUtils.isEmpty(absolutePath)) {
+						downloadFile = new File(absolutePath);
+						if(!downloadFile.exists()) {
+							response.getWriter().write(
+									String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.schemaFileNotFound"), LocaleContextHolder.getLocale()), absolutePath));
+							return;
+						}
+					}
+				} else {
+					File newestFileWithFormat = null;
+					for(int i = 0; i < children.length; i++) {
+						
+						if(children[i].getName().matches("^chpl-" + edition + "-.+\\." + format+"$")) {
+							if(newestFileWithFormat == null) {
 								newestFileWithFormat = children[i];
+							} else {
+								if(children[i].lastModified() > newestFileWithFormat.lastModified()) {
+									newestFileWithFormat = children[i];
+								}
 							}
 						}
 					}
-				}
-				if(newestFileWithFormat != null) {
-					downloadFile = newestFileWithFormat;
-				} else {
-					response.getWriter().write("Downloadable files exist, but none were found for certification edition " + edition + " and format " + format);
-					return;
+					if(newestFileWithFormat != null) {
+						downloadFile = newestFileWithFormat;
+					} else {
+						response.getWriter().write(
+								String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.fileWithEditionAndFormatNotFound"), LocaleContextHolder.getLocale()), edition, format));
+						return;
+					}
 				}
 			}
 		}

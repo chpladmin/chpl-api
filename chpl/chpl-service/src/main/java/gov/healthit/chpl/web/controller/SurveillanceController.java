@@ -485,24 +485,42 @@ public class SurveillanceController implements MessageSourceAware {
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="text/csv")
 	public void download(@RequestParam(value="type", required=false, defaultValue="") String type,
+			@RequestParam(value="definition", defaultValue="false", required=false) Boolean isDefinition,
 			HttpServletRequest request, HttpServletResponse response) throws IOException {
 
 		File downloadFile = null;
-		try {
-			if(type.equalsIgnoreCase("all")) {
-				downloadFile = survManager.getDownloadFile("surveillance-all.csv");
-			} else if(type.equalsIgnoreCase("basic")) {
-				downloadFile = survManager.getProtectedDownloadFile("surveillance-basic-report.csv");
-			} else {
-				downloadFile = survManager.getDownloadFile("surveillance-with-nonconformities.csv");
+		if(isDefinition != null && isDefinition.booleanValue() == true) {
+			String downloadFolderLocation = env.getProperty("downloadFolderPath");
+			File downloadFolder = new File(downloadFolderLocation);
+			String schemaFilename = env.getProperty("schemaSurveillanceName");
+			String absolutePath = downloadFolder.getAbsolutePath() + File.separator + schemaFilename;
+			if(!StringUtils.isEmpty(absolutePath)) {
+				downloadFile = new File(absolutePath);
+				if(!downloadFile.exists()) {
+					response.getWriter().write(
+							String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.schemaFileNotFound"), LocaleContextHolder.getLocale()), absolutePath));
+					return;
+				}
 			}
-		} catch(IOException ex) {
-			response.getWriter().append(ex.getMessage());
-			return;
-		}
 
+		} else {
+			try {
+				if(type.equalsIgnoreCase("all")) {
+					downloadFile = survManager.getDownloadFile("surveillance-all.csv");
+				} else if(type.equalsIgnoreCase("basic")) {
+					downloadFile = survManager.getProtectedDownloadFile("surveillance-basic-report.csv");
+				} else {
+					downloadFile = survManager.getDownloadFile("surveillance-with-nonconformities.csv");
+				}
+			} catch(IOException ex) {
+				response.getWriter().append(ex.getMessage());
+				return;
+			}
+		}
+		
 		if(downloadFile == null) {
-			response.getWriter().append("There was an error getting the file requested.");
+			response.getWriter().append(
+					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.schemaFileGeneralError"), LocaleContextHolder.getLocale())));
 			return;
 		}
 		
