@@ -10,6 +10,7 @@ _Date TBD_
 * Check for exisitng test standard in the listing's edition before adding a new one (eliminates repeated entries in the database and keeps the selection dropdowns manageable).
 * Update all test standard entities, dtos, and domain objects to include certification edition.
 * Use error message file for error messages and support internationalization.
+* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGED XML FILE FORMAT.
 
 ---
 
