@@ -774,7 +774,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						cert.setApiDocumentation(firstRow.get(currIndex++).trim());
 						break;
 					case "STANDARD TESTED AGAINST":
-						parseTestStandards(cert, currIndex);
+						parseTestStandards(pendingCertifiedProduct, cert, currIndex);
 						currIndex++;
 						break;
 					case "FUNCTIONALITY TESTED":
@@ -836,13 +836,13 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		return cert;
 	}
 	
-	private void parseTestStandards(PendingCertificationResultEntity cert, int tsColumn) {
+	private void parseTestStandards(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int tsColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tsValue = row.get(tsColumn).trim();
 			if(!StringUtils.isEmpty(tsValue)) {
 				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
 				tsEntity.setTestStandardName(tsValue);
-				TestStandardDTO ts = testStandardDao.getByNumber(tsValue);
+				TestStandardDTO ts = testStandardDao.getByNumberAndEdition(tsValue, listing.getCertificationEditionId());
 				if(ts != null) {
 					tsEntity.setTestStandardId(ts.getId());
 				}
