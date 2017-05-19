@@ -22,10 +22,10 @@ public class CertifiedProduct implements Serializable {
 	@XmlElement(required = true)
     private String chplProductNumber;
 	
-	@XmlElement(required = true)
+	@XmlElement(required = false, nillable=true)
 	private String lastModifiedDate;
 	
-	@XmlElement(required = true)
+	@XmlElement(required = false, nillable=true)
 	private String edition;
 	
 	public CertifiedProduct() {}

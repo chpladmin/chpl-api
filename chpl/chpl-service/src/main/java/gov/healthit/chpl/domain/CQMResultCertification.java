@@ -20,7 +20,7 @@ public class CQMResultCertification implements Serializable {
 	@XmlElement(required = true)
 	private Long certificationId;
 	
-	@XmlElement(required = true)
+	@XmlElement(required = false, nillable=true)
 	private String certificationNumber;
 
 	public CQMResultCertification(){

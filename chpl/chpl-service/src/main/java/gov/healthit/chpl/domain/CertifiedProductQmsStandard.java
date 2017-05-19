@@ -20,7 +20,7 @@ public class CertifiedProductQmsStandard implements Serializable {
 	@XmlElement(required = true)
 	private Long qmsStandardId;
 	
-	@XmlElement(required = true)
+	@XmlElement(required = false, nillable=true)
 	private String qmsStandardName;
 	
 	@XmlElement(required = false, nillable=true)
