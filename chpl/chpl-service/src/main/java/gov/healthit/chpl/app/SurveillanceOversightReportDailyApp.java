@@ -122,6 +122,7 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
         	String fmtAcbName = entry.getKey().getName().replaceAll("\\W", "").toLowerCase();
         	surveillanceReportFilename = fmtAcbName + "-" + props.getProperty("oversightEmailDailyFileName");
         	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
+        	this.getPresenter().clear();
         	
             // Generate this ACB's download file  	
             this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(entry.getKey()));
