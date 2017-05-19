@@ -4,34 +4,91 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
 import org.apache.commons.lang.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResult implements Serializable {
 	private static final long serialVersionUID = -4917413876078419868L;
 	public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
-	private String number;
-	private String title;
-	private Boolean success;
-	private Boolean gap;
-	private Boolean sed;
-	private Boolean g1Success;
-	private Boolean g2Success;
-	private String apiDocumentation;
-	private String privacySecurityFramework;
-	private List<MacraMeasure> allowedMacraMeasures;
-
 	
+	@XmlElement(required = true)
+	private String number;
+	
+	@XmlElement(required = true)
+	private String title;
+	
+	@XmlElement(required = true)
+	private Boolean success;
+	
+	@XmlElement(required = false, nillable=true)
+	private Boolean gap;
+	
+	@XmlElement(required = false, nillable=true)
+	private Boolean sed;
+	
+	@XmlElement(required = false, nillable=true)
+	private Boolean g1Success;
+	
+	@XmlElement(required = false, nillable=true)
+	private Boolean g2Success;
+	
+	@XmlElement(required = false, nillable=true)
+	private String apiDocumentation;
+	
+	@XmlElement(required = false, nillable=true)
+	private String privacySecurityFramework;
+	
+	@XmlTransient
+	private List<MacraMeasure> allowedMacraMeasures;
+	
+	@XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
+	@XmlElement(name = "ucdProcess")
 	private List<CertificationResultUcdProcess> ucdProcesses;
+	
+	@XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
+	@XmlElement(name = "testFunctionality")
 	private List<CertificationResultTestFunctionality> testFunctionality;
+	
+	@XmlElementWrapper(name = "testProcedures", nillable = true, required = false)
+	@XmlElement(name = "testProcedure")
 	private List<CertificationResultTestProcedure> testProcedures;
+	
+	@XmlElementWrapper(name = "testDataList", nillable = true, required = false)
+	@XmlElement(name = "testData")
 	private List<CertificationResultTestData> testDataUsed;
+	
+	@XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
+	@XmlElement(name = "additionalSoftware")
 	private List<CertificationResultAdditionalSoftware> additionalSoftware;
+	
+	@XmlElementWrapper(name = "testStandards", nillable = true, required = false)
+	@XmlElement(name = "testStandard")
 	private List<CertificationResultTestStandard> testStandards;
+	
+	@XmlElementWrapper(name = "testTools", nillable = true, required = false)
+	@XmlElement(name = "testTool")
 	private List<CertificationResultTestTool> testToolsUsed;
+	
+	@XmlElementWrapper(name = "g1MacraMeasures", nillable = true, required = false)
+	@XmlElement(name = "macraMeasure")
 	private List<MacraMeasure> g1MacraMeasures;
+	
+	@XmlElementWrapper(name = "g2MacraMeasures", nillable = true, required = false)
+	@XmlElement(name = "macraMeasure")
 	private List<MacraMeasure> g2MacraMeasures;
+	
+	@XmlElementWrapper(name = "testTasks", nillable = true, required = false)
+	@XmlElement(name = "testTask")
 	private List<CertificationResultTestTask> testTasks;
 	
 	public CertificationResult(){

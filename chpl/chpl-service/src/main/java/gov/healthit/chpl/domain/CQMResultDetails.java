@@ -6,24 +6,57 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlType;
+
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CQMResultDetails implements Serializable {
 	private static final long serialVersionUID = -7077008682408284325L;
+	
+	@XmlElement(required = false, nillable=true)
 	private Long id;
+	
+	@XmlElement(required = false, nillable=true)
 	private String number;
+	
+	@XmlElement(required = false, nillable=true)
 	private String cmsId;
+	
+	@XmlElement(required = false, nillable=true)
 	private String title;
+	
+	@XmlElement(required = false, nillable=true)
 	private String description;
+	
+	@XmlElement(required = false, nillable=true)
 	private String nqfNumber;
+	
+	@XmlElement(required = false, nillable=true)
 	private Long typeId;
+	
+	@XmlElement(required = false, nillable=true)
 	private String domain;
+	
+	@XmlElement(required = false, nillable=true)
 	private Boolean success;
+	
+	@XmlElement(required = false, nillable=true)
 	private Set<String> successVersions;
+	
+	@XmlElement(required = false, nillable=true)
 	private Set<String> allVersions;
+	
+	@XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
+	@XmlElement(name = "criteria")
 	private List<CQMResultCertification> criteria;
 	
 	public CQMResultDetails(){

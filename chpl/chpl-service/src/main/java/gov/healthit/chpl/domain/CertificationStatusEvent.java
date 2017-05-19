@@ -2,13 +2,33 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationStatusEvent implements Serializable {
 	private static final long serialVersionUID = -2498656549844148886L;
+	
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlElement(required = true)
 	private Long eventDate;
+	
+	@XmlElement(required = true)
 	private Long certificationStatusId;
+	
+	@XmlElement(required = true)
 	private String certificationStatusName;
+
+	@XmlTransient
 	private Long lastModifiedUser;
+	
+	@XmlTransient
 	private Long lastModifiedDate;
 	
 	public CertificationStatusEvent(){}

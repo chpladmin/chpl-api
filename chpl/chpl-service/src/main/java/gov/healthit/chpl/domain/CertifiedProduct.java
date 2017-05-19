@@ -2,15 +2,30 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProduct implements Serializable {
 	private static final long serialVersionUID = -6634520925641244762L;
+	
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlElement(required = true)
     private String chplProductNumber;
+	
+	@XmlElement(required = true)
 	private String lastModifiedDate;
+	
+	@XmlElement(required = true)
 	private String edition;
 	
 	public CertifiedProduct() {}

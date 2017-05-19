@@ -79,9 +79,9 @@ public class DownloadableResourceCreatorApp {
         //overwrite the existing download file
         List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
         //List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findWithSurveillance();
-		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
-		//for(int i = 1; i < 10; i++) {
-			//CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
+		//for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
+		for(int i = 1; i < 10; i++) {
+			CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
 			try {
 				
 				CertifiedProductSearchDetails product = app.getCpdManager().getCertifiedProductDetails(currProduct.getId());
@@ -95,7 +95,7 @@ public class DownloadableResourceCreatorApp {
 					CertifiedProductDownloadResponse yearResult = new CertifiedProductDownloadResponse();
 					resultMap.put(certificationYear, yearResult);
 				}
-				((CertifiedProductDownloadResponse)resultMap.get(certificationYear)).getProducts().add(product);
+				((CertifiedProductDownloadResponse)resultMap.get(certificationYear)).getListings().add(product);
 				
 			} catch(EntityRetrievalException ex) {
 				logger.error("Could not certified product details for certified product " + currProduct.getId());
@@ -152,8 +152,8 @@ public class DownloadableResourceCreatorApp {
         CertifiedProductDownloadResponse allResults = new CertifiedProductDownloadResponse();
         for(String year : resultMap.keySet()) { 
         	CertifiedProductDownloadResponse result = resultMap.get(year);
-        	allResults.getProducts().addAll(result.getProducts());
-        	result.getProducts().clear();
+        	allResults.getListings().addAll(result.getListings());
+        	result.getListings().clear();
         }
         
         //write out an xml file with all product data

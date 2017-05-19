@@ -53,7 +53,7 @@ public abstract class SurveillanceOversightReportApp extends App {
 					acbCpSearchDetails.add(cpDetail);
 				}
 			}
-			cpDlResponse.setProducts(acbCpSearchDetails);
+			cpDlResponse.setListings(acbCpSearchDetails);
 			certificationDownloadResponse.put(cbDTO, cpDlResponse);
 		}
 		return certificationDownloadResponse;

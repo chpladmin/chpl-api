@@ -2,16 +2,34 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationCriterion implements Serializable {
 	private static final long serialVersionUID = 5732322243572571895L;
 	
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlElement(required = true)
 	private String number;
+	
+	@XmlElement(required = true)
 	private String title;
+	
+	@XmlElement(required = true)
 	private Long certificationEditionId;
+	
+	@XmlElement(required = false, nillable=true)
 	private String certificationEdition;
+	
+	@XmlElement(required = false, nillable=true)
 	private String description;
 	
 	public CertificationCriterion() {}

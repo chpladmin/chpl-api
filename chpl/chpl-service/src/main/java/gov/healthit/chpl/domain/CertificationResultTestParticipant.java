@@ -2,29 +2,59 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestParticipant implements Serializable {
 	private static final long serialVersionUID = -5404897845633867927L;
 
 	private static final Logger logger = LogManager.getLogger(CertificationResultTestParticipant.class);
 
+	@XmlElement(required = true)
 	private Long id;
 	private String uniqueId;
+	
+	@XmlElement(required = true)
 	private Long testParticipantId;
+	
+	@XmlElement(required = false, nillable=true)
 	private String gender;
+	
+	@XmlElement(required = false, nillable=true)
 	private Long educationTypeId;
+	
+	@XmlElement(required = false, nillable=true)
 	private String educationTypeName;
+	
+	@XmlElement(required = false, nillable=true)
 	private Long ageRangeId;
+	
+	@XmlElement(required = false, nillable=true)
 	private String ageRange;
+	
+	@XmlElement(required = false, nillable=true)
 	private String occupation;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer professionalExperienceMonths;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer computerExperienceMonths;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer productExperienceMonths;
+	
+	@XmlElement(required = false, nillable=true)
 	private String assistiveTechnologyNeeds;
 
 	public CertificationResultTestParticipant() {

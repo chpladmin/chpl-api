@@ -57,7 +57,7 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 			// Get full set of data to send in ONC email
 			List<CertifiedProductSearchDetails> allCertifiedProductDetails = oversightApp.getAllCertifiedProductSearchDetails();
 			CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();
-			allCps.setProducts(allCertifiedProductDetails);
+			allCps.setListings(allCertifiedProductDetails);
 			// Get Certification-specific set of data to send in emails
 			Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadMap = oversightApp.getCertificationDownloadResponse(allCertifiedProductDetails, acbs);
 			

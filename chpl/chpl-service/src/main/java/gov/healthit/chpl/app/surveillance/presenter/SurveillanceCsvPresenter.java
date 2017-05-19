@@ -46,7 +46,7 @@ public class SurveillanceCsvPresenter {
 			csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 			csvPrinter.printRecord(generateHeaderValues());
 			
-			for(CertifiedProductSearchDetails cp : cpList.getProducts()) {
+			for(CertifiedProductSearchDetails cp : cpList.getListings()) {
 				if(cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
 					for(Surveillance currSurveillance : cp.getSurveillance()) {
 						List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
