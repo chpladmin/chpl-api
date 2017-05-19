@@ -127,9 +127,10 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
         	String fmtAcbName = entry.getKey().getName().replaceAll("\\W", "").toLowerCase();
         	surveillanceReportFilename = fmtAcbName + "-" + props.getProperty("oversightEmailWeeklyFileName");
         	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
+        	this.getPresenter().clear();
         	
             // Generate this ACB's download file  	
-            this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(entry.getKey()));
+        	this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(entry.getKey()));
     		files.add(surveillanceReportFile);	
         	
         	subject = entry.getKey().getName() + " " + props.getProperty("oversightEmailWeeklySubject");
