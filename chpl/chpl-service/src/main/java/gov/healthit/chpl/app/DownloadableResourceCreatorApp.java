@@ -79,9 +79,9 @@ public class DownloadableResourceCreatorApp {
         //overwrite the existing download file
         List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
         //List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findWithSurveillance();
-		//for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
-		for(int i = 1; i < 10; i++) {
-			CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
+		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
+		//for(int i = 1; i < 10; i++) {
+			//CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
 			try {
 				
 				CertifiedProductSearchDetails product = app.getCpdManager().getCertifiedProductDetails(currProduct.getId());
