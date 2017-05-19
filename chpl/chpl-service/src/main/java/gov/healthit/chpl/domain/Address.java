@@ -2,16 +2,37 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.AddressDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Address implements Serializable {
 	private static final long serialVersionUID = 7978604053959537664L;
+	
+	@XmlElement(required = true)
 	private Long addressId;
+	
+	@XmlElement(required = true)
 	private String line1;
+
+	@XmlElement(required = false, nillable=true)
 	private String line2;
+	
+	@XmlElement(required = true)
 	private String city;
+	
+	@XmlElement(required = true)
 	private String state;
+	
+	@XmlElement(required = true)
 	private String zipcode;
+	
+	@XmlElement(required = true)
 	private String country;
 	
 	public Address() {}

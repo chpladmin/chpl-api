@@ -4,22 +4,51 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Developer implements Serializable {
 	private static final long serialVersionUID = 7341544844577617247L;
+	
+	@XmlElement(required = true)
 	private Long developerId;
+	
+	@XmlElement(required = true)
 	private String developerCode;
+	
+	@XmlElement(required = true)
 	private String name;
+	
+	@XmlElement(required = false, nillable=true)
 	private String website;
+	
+	@XmlElement(required = false, nillable=true)
 	private Address address;
+	
+	@XmlElement(required = false, nillable=true)
 	private Contact contact;
+	
+	@XmlElement(required = false, nillable=true)
 	private String lastModifiedDate;
+	
+	@XmlElement(required = false, nillable=true)
 	private Boolean deleted;
+	
+	@XmlElement(required = false, nillable=true)
 	private List<TransparencyAttestationMap> transparencyAttestations;
+	
+	@XmlElement(required = false, nillable=true)
 	private List<DeveloperStatusEvent> statusEvents;
+	
+	@XmlElement(required = false, nillable=true)
 	private DeveloperStatus status;
 	
 	public Developer() {

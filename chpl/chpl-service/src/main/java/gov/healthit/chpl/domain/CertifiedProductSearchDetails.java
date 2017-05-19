@@ -9,51 +9,202 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductSearchDetails implements Serializable {
 	private static final long serialVersionUID = 2903219171127034775L;
+	
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlElement(required = true)
     private String chplProductNumber;
+	
+	@XmlElement(required = false, nillable=true)
     private String reportFileLocation;
+	
+	@XmlElement(required = false, nillable=true)
     private String sedReportFileLocation;
+	
+	@XmlElement(required = false, nillable=true)
     private String sedIntendedUserDescription;
+	
+	@XmlElement(required = false, nillable=true)
     private Date sedTestingEnd;
+	
+	@XmlElement(required = true)
     private String acbCertificationId;
+	
+	/**
+	 * Classification type id and name
+	 */
+	@XmlElement(required = false, nillable=true)
     private Map<String, Object> classificationType = new HashMap<String, Object>();
+	
+	/**
+	 * If there was previously a different certifying body managing this listing this is their name.
+	 */
+	@XmlElement(required = false, nillable=true)
     private String otherAcb;
+	
+	/**
+	 * Current certification status id, name, and date
+	 */
+	@XmlElement(required = true)
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
+	
+	@XmlElement(required = true)
     private Developer developer;
+	
+	@XmlElement(required = true)
     private Product product;
+
+	@XmlElement(required = true)
     private ProductVersion version;
+	
+	/**
+	 * Certification edition id and year.
+	 */
+	@XmlElement(required = true)
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
+	
+	/**
+	 * Practice type ID and Name if applicable to the edition.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
+	
+	/**
+	 * Certifying body id and name
+	 */
+	@XmlElement(required = true)
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
+	
+	/**
+	 * Testing lab id and name
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Map<String, Object> testingLab = new HashMap<String, Object>();
+	
+	/**
+	 * Certification date represented in milliseconds since epoch
+	 */
+	@XmlElement(required = true)
 	private Long certificationDate;
+
+	/**
+	 * Decertification date represented in milliseconds since epoch
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Long decertificationDate;
+	
+	/**
+	 * Number of certification criteria this listing attests to.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer countCerts;
+	/**
+	 * Number of cqms this listing attests to.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer countCqms;
+	
+	/**
+	 * Total count of open+closed surveillance for this listing.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer countSurveillance;
+	
+	/**
+	 * Total count of open surveillance for this listing.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer countOpenSurveillance;
+	
+	/**
+	 * Total count of closed surveillance for this listing.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer countClosedSurveillance;
+	
+	/**
+	 * Total count of open nonconformities for this listing.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer countOpenNonconformities;
+	
+	/**
+	 * Total count of closed nonconformities for this listing.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer countClosedNonconformities;
-	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
+	
+	/**
+	 * ICS status of the listings.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Boolean ics;
+	
+	@XmlElement(required = false, nillable=true)
 	private Boolean accessibilityCertified;
+	
+	@XmlElement(required = false, nillable=true)
 	private String productAdditionalSoftware;
+	
+	@XmlElement(required = false, nillable=true)
 	private String transparencyAttestation;
+	
+	@XmlElement(required = false, nillable=true)
 	private String transparencyAttestationUrl;
-	private Long lastModifiedDate;
+	
+	/**
+	 * Number of meaningful use users for this listing as uploaded by the certifying body.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Long numMeaningfulUse;
 	
+	@XmlElement(required = true)
+	private Long lastModifiedDate;
+	
+	@XmlElementWrapper(name = "surveillanceList", nillable = true, required = false)
+	@XmlElement(name = "surveillance")
+	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
+	
+	@XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
+	@XmlElement(name = "accessibilityStandard")
 	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
+	
+	@XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
+	@XmlElement(name = "targetedUser")
 	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
+	
+	@XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
+	@XmlElement(name = "qmsStandard")
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
+	
+	@XmlElementWrapper(name = "certificationResults", nillable = true, required = false)
+	@XmlElement(name = "certificationResult")
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
+	
+	@XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
+	@XmlElement(name = "cqmResult")
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
+	
+	@XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
+	@XmlElement(name = "certificationEvent")
 	private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 	
+	@XmlTransient
 	private Set<String> warningMessages = new HashSet<String>();
+	
+	@XmlTransient
 	private Set<String> errorMessages = new HashSet<String>();
 	
 	public Long getId() {

@@ -6,19 +6,50 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Surveillance implements Serializable {
 	private static final long serialVersionUID = 7018071250912371691L;
+	
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlElement(required = false, nillable=true)
 	private String surveillanceIdToReplace;
+	
+	@XmlElement(required = true)
 	private String friendlyId;
+	
+	@XmlElement(required = true)
 	private CertifiedProduct certifiedProduct;
+	
+	@XmlElement(required = true)
 	private Date startDate;
+	
+	@XmlElement(required = false, nillable=true)
 	private Date endDate;
+	
+	@XmlElement(required = true)
 	private SurveillanceType type;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer randomizedSitesUsed;
+	
+	@XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
+	@XmlElement(name = "requirement")
 	private Set<SurveillanceRequirement> requirements;
+	
+	@XmlElement(required = false, nillable=true)
 	private String authority;
 	
+	@XmlTransient
 	private Set<String> errorMessages;
 	
 	public Surveillance() {

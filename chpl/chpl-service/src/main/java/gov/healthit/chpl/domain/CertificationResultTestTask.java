@@ -4,34 +4,78 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlType;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestTask implements Serializable {
 	private static final long serialVersionUID = -5239080984125704737L;
 
 	private static final Logger logger = LogManager.getLogger(CertificationResultTestTask.class);
 
+	@XmlElement(required = true)
 	private Long id;
+
+	@XmlElement(required = false, nillable=true)
 	private String uniqueId;
+	
+	@XmlElement(required = true)
 	private Long testTaskId;
+	
+	@XmlElement(required = false, nillable=true)
 	private String description;
+	
+	@XmlElement(required = false, nillable=true)
 	private Float taskSuccessAverage;
+	
+	@XmlElement(required = false, nillable=true)
 	private Float taskSuccessStddev;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer taskPathDeviationObserved;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer taskPathDeviationOptimal;
+	
+	@XmlElement(required = false, nillable=true)
 	private Long taskTimeAvg;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeStddev;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeDeviationObservedAvg;
+	
+	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeDeviationOptimalAvg;
+	
+	@XmlElement(required = false, nillable=true)
 	private Float taskErrors;
+	
+	@XmlElement(required = false, nillable=true)
 	private Float taskErrorsStddev;
+	
+	@XmlElement(required = false, nillable=true)
 	private String taskRatingScale;
+	
+	@XmlElement(required = false, nillable=true)
 	private Float taskRating;
+	
+	@XmlElement(required = false, nillable=true)
 	private Float taskRatingStddev;
+	
+	@XmlElementWrapper(name = "participants", nillable = true, required = false)
+	@XmlElement(name = "participant")
 	private List<CertificationResultTestParticipant> testParticipants;
 
 	public CertificationResultTestTask() {

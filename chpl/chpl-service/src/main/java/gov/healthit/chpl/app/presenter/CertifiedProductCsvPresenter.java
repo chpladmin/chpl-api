@@ -36,7 +36,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 			csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 			csvPrinter.printRecord(generateHeaderValues());
 			
-			for(CertifiedProductSearchDetails data : cpList.getProducts()) {
+			for(CertifiedProductSearchDetails data : cpList.getListings()) {
 				List<String> rowValue = generateRowValue(data);
 				csvPrinter.printRecord(rowValue);
 			}
