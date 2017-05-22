@@ -27,29 +27,31 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 	private static final Logger logger = LogManager.getLogger(SurveillanceOversightNewBrokenRulesCsvPresenter.class);
 
 	private Map<SurveillanceOversightRule, Integer> newBrokenRulesCounts;
-	
+
 	public SurveillanceOversightNewBrokenRulesCsvPresenter() {
+        //clear();
 		newBrokenRulesCounts = new HashMap<SurveillanceOversightRule, Integer>();
 		newBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
+		newBrokenRulesCounts.put(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE, 0);
 	}
-	
+
 	@Override
 	protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<List<String>> results = super.generateMultiRowValue(data, surv);
-		
+
 		//we only want to include surveillance rows that
 		//broke one or more rules in the last day
 		Iterator<List<String>> rowValueIter = results.iterator();
 		Date today = new Date();
 		LocalDateTime brokenToday = LocalDateTime.ofInstant(
-				Instant.ofEpochMilli(today.getTime()), 
+				Instant.ofEpochMilli(today.getTime()),
 			    ZoneId.systemDefault());
 		String formattedToday = dateFormatter.format(brokenToday);
-		
+
 		String currChplProductNumber = "";
 		while(rowValueIter.hasNext()) {
 			boolean includeRow = false;
@@ -61,7 +63,8 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 			String capStartResultStr = rowValues.get(CAP_START_COL_OFFSET);
 			String capCompletedResultStr = rowValues.get(CAP_COMPLETE_COL_OFFSET);
 			String capClosedResultStr = rowValues.get(CAP_CLOSED_COL_OFFSET);
-			
+			String nonconformityOpenCapCompleteResultStr = rowValues.get(NONCONFORMITY_OPEN_CAP_COMPLETE_COL_OFFSET);
+
 			if(formattedToday.equals(longSuspensionResultStr)) {
 				if(!rowChplProductNumber.equals(currChplProductNumber)) {
 					currChplProductNumber = rowChplProductNumber;
@@ -85,12 +88,16 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 				newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, newBrokenRulesCounts.get(SurveillanceOversightRule.CAP_NOT_CLOSED)+1);
 				includeRow = true;
 			}
-			
+			if(formattedToday.equals(nonconformityOpenCapCompleteResultStr))	{
+				newBrokenRulesCounts.put(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE, newBrokenRulesCounts.get(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE)+1);
+				includeRow = true;
+			}
+
 			if(!includeRow) {
 				rowValueIter.remove();
 			}
 		}
-		
+
 		return results;
 	}
 
@@ -101,13 +108,14 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 	public void setNewBrokenRulesCounts(Map<SurveillanceOversightRule, Integer> newBrokenRulesCounts) {
 		this.newBrokenRulesCounts = newBrokenRulesCounts;
 	}
-	
+
 	public void clear(){
-		newBrokenRulesCounts.clear();
+		newBrokenRulesCounts.clear();// = new HashMap<SurveillanceOversightRule, Integer>();
 		newBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
+		newBrokenRulesCounts.put(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE, 0);
 	}
 }

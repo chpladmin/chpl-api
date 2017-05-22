@@ -20,6 +20,7 @@ summaryEmailPeriodInDays=7
 suspendedDaysAllowed=30
 capApprovalDaysAllowed=75
 capStartDaysAllowed=10
+ncOpenCapClosedDaysAllowed=45
 
 #oversight daily email properties
 oversightEmailDailySubject=Daily Surveillance Broken Rules Alert(LOCAL)
