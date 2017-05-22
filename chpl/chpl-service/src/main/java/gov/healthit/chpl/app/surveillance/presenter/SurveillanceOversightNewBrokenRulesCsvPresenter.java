@@ -29,7 +29,6 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 	private Map<SurveillanceOversightRule, Integer> newBrokenRulesCounts;
 
 	public SurveillanceOversightNewBrokenRulesCsvPresenter() {
-        //clear();
 		newBrokenRulesCounts = new HashMap<SurveillanceOversightRule, Integer>();
 		newBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
@@ -110,7 +109,7 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 	}
 
 	public void clear(){
-		newBrokenRulesCounts.clear();// = new HashMap<SurveillanceOversightRule, Integer>();
+		newBrokenRulesCounts.clear();
 		newBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
 		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);

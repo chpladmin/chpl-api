@@ -1427,7 +1427,7 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_updateSurveillance_violatesCAPEndDate_blankResolution_returnsError()
+	public void test_updateSurveillance_violatesNonconformityClosed_blankResolution_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
@@ -1468,7 +1468,7 @@ public class SurveillanceControllerTest {
 			surveillanceController.updateSurveillance(surv);
 		} catch(ValidationException e){ 
 			assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(), 
-					"Resolution is required"));
+					"Resolution description is required"));
 		}
 	}
 	
@@ -1680,7 +1680,7 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Test
 	@Rollback
-	public void test_createSurveillance_violatesCAPEndDate_blankResolution_returnsError()
+	public void test_createSurveillance_violatesNonconformityClosed_blankResolution_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
@@ -1721,133 +1721,7 @@ public class SurveillanceControllerTest {
 			surveillanceController.createSurveillance(surv);
 		} catch(ValidationException e){ 
 			assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(), 
-					"Resolution is required"));
-		}
-	}
-	
-	/** 
-	 * Given I am authenticated as ACB Admin
-	 * Given I have authority on the ACB
-	 * When I create a surveillance activity containing a nonconformity with a CAP End Date and Status = 'Open'
-	 * Then the validator returns an error
-	 * @throws ValidationException 
-	 * @throws EntityRetrievalException
-	 * @throws JsonProcessingException
-	 * @throws EntityCreationException
-	 * @throws InvalidArgumentsException
-	 * @throws ValidationException
-	 * @throws SurveillanceAuthorityAccessDeniedException 
-	 * @throws UserPermissionRetrievalException 
-	 * @throws CertificationBodyAccessException 
-	 */
-	@Transactional 
-	@Test
-	@Rollback
-	public void test_createSurveillance_violatesCAPEndDate_openStatus_returnsError()
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
-		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
-		Surveillance surv = new Surveillance();
-		
-		CertifiedProductDTO cpDto = cpDao.getById(1L);
-		CertifiedProduct cp = new CertifiedProduct();
-		cp.setId(cpDto.getId());
-		cp.setChplProductNumber(cp.getChplProductNumber());
-		cp.setEdition(cp.getEdition());
-		surv.setCertifiedProduct(cp);
-		surv.setStartDate(new Date());
-		surv.setRandomizedSitesUsed(10);
-		SurveillanceType type = survDao.findSurveillanceType("Randomized");
-		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
-		
-		SurveillanceRequirement req = new SurveillanceRequirement();
-		req.setRequirement("170.314 (a)(1)");
-		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
-		req.setType(reqType);
-		SurveillanceResultType resType = survDao.findSurveillanceResultType("Non-Conformity");
-		req.setResult(resType);
-		
-		List<SurveillanceNonconformity> ncs = new ArrayList<SurveillanceNonconformity>();
-		SurveillanceNonconformity nc = new SurveillanceNonconformity();
-		nc.setNonconformityType("170.523 (k)(1)");
-		SurveillanceNonconformityStatus survNcStatus = new SurveillanceNonconformityStatus();
-		survNcStatus.setName("Open");
-		nc.setStatus(survNcStatus);
-		nc.setCapEndDate(new Date());
-		ncs.add(nc);
-		req.setNonconformities(ncs);
-		
-		surv.getRequirements().add(req);
-		
-		try {
-			surveillanceController.createSurveillance(surv);
-		} catch(ValidationException e){ 
-			assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(), 
-					"Corrective Action Plan End Date cannot be completed for requirement"));
-		}
-	}
-	
-	/** 
-	 * Given I am authenticated as ACB Admin
-	 * Given I have authority on the ACB
-	 * When I update a surveillance activity containing a nonconformity with a CAP End Date and Status = 'Open'
-	 * Then the validator returns an error
-	 * @throws ValidationException 
-	 * @throws EntityRetrievalException
-	 * @throws JsonProcessingException
-	 * @throws EntityCreationException
-	 * @throws InvalidArgumentsException
-	 * @throws ValidationException
-	 * @throws SurveillanceAuthorityAccessDeniedException 
-	 * @throws UserPermissionRetrievalException 
-	 * @throws CertificationBodyAccessException 
-	 */
-	@Transactional 
-	@Test
-	@Rollback
-	public void test_updateSurveillance_violatesCAPEndDate_openStatus_returnsError()
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
-		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
-		Surveillance surv = new Surveillance();
-		
-		CertifiedProductDTO cpDto = cpDao.getById(1L);
-		CertifiedProduct cp = new CertifiedProduct();
-		cp.setId(cpDto.getId());
-		cp.setChplProductNumber(cp.getChplProductNumber());
-		cp.setEdition(cp.getEdition());
-		surv.setCertifiedProduct(cp);
-		surv.setStartDate(new Date());
-		surv.setRandomizedSitesUsed(10);
-		SurveillanceType type = survDao.findSurveillanceType("Randomized");
-		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
-		
-		SurveillanceRequirement req = new SurveillanceRequirement();
-		req.setRequirement("170.314 (a)(1)");
-		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
-		req.setType(reqType);
-		SurveillanceResultType resType = survDao.findSurveillanceResultType("Non-Conformity");
-		req.setResult(resType);
-		
-		List<SurveillanceNonconformity> ncs = new ArrayList<SurveillanceNonconformity>();
-		SurveillanceNonconformity nc = new SurveillanceNonconformity();
-		nc.setNonconformityType("170.523 (k)(1)");
-		SurveillanceNonconformityStatus survNcStatus = new SurveillanceNonconformityStatus();
-		survNcStatus.setName("Open");
-		nc.setStatus(survNcStatus);
-		nc.setCapEndDate(new Date());
-		ncs.add(nc);
-		req.setNonconformities(ncs);
-		
-		surv.getRequirements().add(req);
-		
-		try {
-			surveillanceController.updateSurveillance(surv);
-		} catch(ValidationException e){ 
-			assertTrue(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(), 
-					"Corrective Action Plan End Date cannot be completed for requirement"));
+					"Resolution description is required"));
 		}
 	}
 	

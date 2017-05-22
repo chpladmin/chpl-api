@@ -45,7 +45,6 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 	@Autowired private RuleComplianceCalculator ruleCalculator;
 
 	public SurveillanceOversightAllBrokenRulesCsvPresenter() {
-        //clear();
 		allBrokenRulesCounts = new HashMap<SurveillanceOversightRule, Integer>();
 		allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
