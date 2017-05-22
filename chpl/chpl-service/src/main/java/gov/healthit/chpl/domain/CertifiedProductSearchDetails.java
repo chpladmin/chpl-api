@@ -21,10 +21,19 @@ import javax.xml.bind.annotation.XmlType;
 public class CertifiedProductSearchDetails implements Serializable {
 	private static final long serialVersionUID = 2903219171127034775L;
 	
+	/**
+	 * The internal ID of a listing.
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
 	@XmlElement(required = true)
+	/**
+	 * CHPL Product Number. Format can vary by edition. 2011 and many 2014 editions listings 
+	 * can have CHP-12345 formatted numbers. 2014 and future editions may have a 9-part unique
+	 * identifier.
+	 *  
+	 */
     private String chplProductNumber;
 	
 	@XmlElement(required = false, nillable=true)
