@@ -3,13 +3,10 @@
 ## Version TBD
 _Date TBD_
 
-### Major features
-
 ### Minor features
 * Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGES XML FILE FORMAT.
 * Allow corrective action plan resolution to be blank even when the end date is filled in.
-
-### Bug fixes
+* Added surveillance trigger for Open Nonconformity with closed CAP > 45 days prior
 
 ---
 
