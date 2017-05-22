@@ -293,8 +293,6 @@ public class SurveillanceValidator implements MessageSourceAware {
 
 						if(nc.getStatus() == null) {
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.nonConformityStatusNotFound"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
-
-							surv.getErrorMessages().add("Nonconformity status is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
 						} else if(nc.getStatus().getId() == null || nc.getStatus().getId().longValue() <= 0) {
 							SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType(nc.getStatus().getName());
 							if(ncStatus == null) {
