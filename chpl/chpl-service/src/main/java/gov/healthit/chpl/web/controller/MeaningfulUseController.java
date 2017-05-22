@@ -33,6 +33,7 @@ import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.MeaningfulUseManager;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

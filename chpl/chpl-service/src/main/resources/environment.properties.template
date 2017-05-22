@@ -16,16 +16,26 @@ summaryEmail=chpl@ainq.com
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
-#oversight email properties 
-oversightEmailDailyTo=chpl@ainq.com
-oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
-oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
-oversightEmailWeeklyTo=chpl@ainq.com
-oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
-oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
+#oversight email properties
 suspendedDaysAllowed=30
 capApprovalDaysAllowed=75
 capStartDaysAllowed=10
+
+#oversight daily email properties
+oversightEmailDailySubject=Daily Surveillance Broken Rules Alert(LOCAL)
+oversightEmailDailyHtmlMessage=<h3>ONC Daily Surveillance Report</h3>
+oversightEmailDailyFileName=surveillance-oversight-daily-report.csv
+oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day</p>
+
+oversightEmailAcbDailyHtmlMessage=<h3>ONC-ACB Daily Surveillance Report</h3>
+
+#oversight weekly email properties
+oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert(LOCAL)
+oversightEmailWeeklyHtmlMessage=<h3>ONC Weekly Surveillance Report</h3>
+oversightEmailWeeklyFileName=surveillance-oversight-weekly-report.csv
+oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken</p>
+
+oversightEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly Surveillance Report</h3>
 
 #chpl-service download jar properties
 dbDriverClass=org.postgresql.Driver

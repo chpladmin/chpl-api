@@ -6,14 +6,15 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
-import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
@@ -38,6 +39,8 @@ import gov.healthit.chpl.entity.PendingTestTaskEntity;
 
 @Repository(value="pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements PendingCertifiedProductDAO {
+	
+	@Autowired ContactDAO contactDao;
 	
 	@Override
 	@Transactional
@@ -257,32 +260,14 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 	@Override
 	@Transactional
 	public void delete(Long pendingProductId) throws EntityRetrievalException {
-		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
-		if(entity == null) {
-			throw new EntityRetrievalException("No pending certified product exists with id " + pendingProductId);
-		}
+		PendingCertifiedProductEntity entity;
+		entity = getEntityById(pendingProductId, true);
 		entity.setDeleted(true);
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		
-		entityManager.persist(entity);
-	}
-	
-
-	@Override
-	public void updateStatus(Long pendingProductId, CertificationStatusDTO status) throws EntityRetrievalException {
-		PendingCertifiedProductEntity entity = getEntityById(pendingProductId);
-		if(entity == null) {
-			throw new EntityRetrievalException("No pending certified product exists with id " + pendingProductId);
-		}
-		entity.setStatus(status.getId());
-		entity.setLastModifiedDate(new Date());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		
 		entityManager.persist(entity);
 	}
 
-	
 	public List<PendingCertifiedProductDTO> findAll() {
 		List<PendingCertifiedProductEntity> entities = getAllEntities();
 		List<PendingCertifiedProductDTO> dtos = new ArrayList<>();
@@ -305,9 +290,9 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		}
 		return dtos;
 	}
-	
-	public PendingCertifiedProductDTO findById(Long pcpId) throws EntityRetrievalException {
-		PendingCertifiedProductEntity entity = getEntityById(pcpId);
+
+	public PendingCertifiedProductDTO findById(Long pcpId, boolean includeDeleted) throws EntityRetrievalException {
+		PendingCertifiedProductEntity entity = getEntityById(pcpId, includeDeleted);
 		if(entity == null) {
 			return null;
 		}
@@ -349,21 +334,19 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		
 	}
 	
-	private PendingCertifiedProductEntity getEntityById(Long entityId) throws EntityRetrievalException {
-		
+	private PendingCertifiedProductEntity getEntityById(Long entityId, boolean includeDeleted) throws EntityRetrievalException {
 		PendingCertifiedProductEntity entity = null;
+		String hql = "SELECT DISTINCT pcp from PendingCertifiedProductEntity pcp "
+				+ " where pcp.id = :entityid";
+		if(!includeDeleted){
+			hql += " and pcp.deleted <> true";
+		}
 		
-		Query query = entityManager.createQuery( "SELECT pcp from PendingCertifiedProductEntity pcp "
-				+ " where (pending_certified_product_id = :entityid) "
-				+ " and (not pcp.deleted = true)", PendingCertifiedProductEntity.class );
+		Query query = entityManager.createQuery(hql, PendingCertifiedProductEntity.class);
 		query.setParameter("entityid", entityId);
 		List<PendingCertifiedProductEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
-		}
-		
-		if (result.size() > 0){
+		if(result.size() > 0) {
 			entity = result.get(0);
 		}
 		

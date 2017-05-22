@@ -582,11 +582,6 @@
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
-	<test_standard test_standard_id="1" name="Standard 1.1"
-		number="(1)(2)" creation_date="2015-08-20 13:14:00"
-		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
-		deleted="false" />
-
 	<certification_result_test_standard
 		certification_result_test_standard_id="1" certification_result_id="1"
 		test_standard_id="1" creation_date="2015-08-20 13:14:00"
@@ -1065,6 +1060,42 @@
 		signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
+
+	<pending_certified_product pending_certified_product_id="-1" unique_id="14.01.01.1009.FU01.05.1.0.160331" record_status="New" practice_type="Ambulatory" 
+       testing_lab_name="My Testing Lab" vendor_name="Test Developer 1" product_name="Test Product 1" product_version="5.3.1.1" 
+       certification_edition="2014" acb_certification_id="150080R04" certification_body_name="ICSA Labs" 
+       product_classification_name="Modular EHR" product_classification_module=" " certification_date="2016-03-31 00:00:00" 
+       vendor_street_address="9920 Jefferson Blvd." vendor_city="Culver City" vendor_state="CA" vendor_zip_code="90232" 
+       vendor_website="http://nanthealth.com/" vendor_email="jhodson@nantworks.com" vendor_contact_name="Jen Hodson" vendor_phone="(562) 397-3639" 
+       vendor_transparency_attestation="Affirmative" vendor_transparency_attestation_url="''" 
+       accessibility_certified="true" test_report_url="https://icsalabs.s3.amazonaws.com/TRS/2014-EHRA243047-2016-0328-00.pdf" sed_report_file_location="''" 
+       sed_intended_user_description=" " sed_testing_end="2016-07-07 15:49:23.117772" ics="true" practice_type_id="1" 
+       vendor_id="-1" vendor_address_id="-1" vendor_contact_id="-1" product_id="-1" 
+       product_version_id="1722" certification_edition_id="2" certification_body_id="-1" 
+       product_classification_id="1" testing_lab_id="-1" creation_date="2016-04-01 23:46:27.707" last_modified_date="2016-06-07 15:49:23.117772" 
+       last_modified_user="-3" deleted="true" certification_status_id="3" /> 
+    <pending_certified_product pending_certified_product_id="-2" unique_id="15.04.04.2315.SESD.02.0.0.170217" record_status="New" practice_type="Ambulatory" 
+       testing_lab_name="Drummond Group" vendor_name="Secure Exchange Solutions" product_name="SES Direct" product_version="Version 2.0" 
+       certification_edition="2015" acb_certification_id="15.04.04.2315.SESD.02.0.0.170217" certification_body_name="Drummond Group" 
+       product_classification_name="Complete EHR" product_classification_module=" " certification_date="2016-03-31 00:00:00" 
+       vendor_street_address="9920 Jefferson Blvd." vendor_city="Culver City" vendor_state="CA" vendor_zip_code="90232" 
+       vendor_website="http://nanthealth.com/" vendor_email="jhodson@nantworks.com" vendor_contact_name="Jen Hodson" vendor_phone="(562) 397-3639" 
+       vendor_transparency_attestation="Affirmative" vendor_transparency_attestation_url="''" 
+       accessibility_certified="true" test_report_url="https://icsalabs.s3.amazonaws.com/TRS/2014-EHRA243047-2016-0328-00.pdf" sed_report_file_location="''" 
+       sed_intended_user_description=" " sed_testing_end="2016-07-07 15:49:23.117772" ics="true" practice_type_id="1" 
+       vendor_id="-1" vendor_address_id="-1" vendor_contact_id="-1" product_id="-1" 
+       product_version_id="1722" certification_edition_id="2" certification_body_id="-1" 
+       product_classification_id="1" testing_lab_id="-1" creation_date="2016-04-01 23:46:27.707" last_modified_date="2016-06-07 15:49:23.117772" 
+       last_modified_user="-3" deleted="false" certification_status_id="3" />
+       
+    <pending_certification_result pending_certification_result_id="-1" certification_criterion_id="116"
+       pending_certified_product_id="-1" meets_criteria="TRUE" gap="FALSE" sed="FALSE" g1_success="FALSE"
+       g2_success="FALSE" api_documentation=" " privacy_security_framework="Approach 1" creation_date="2016-04-01 23:46:27.721"
+       last_modified_date="2017-04-27 11:15:54.086" last_modified_user="-3" deleted="FALSE" />
+       
+    <pending_certification_result_test_procedure pending_certification_result_test_procedure_id="-1" pending_certification_result_id="-1" 
+       test_procedure_id="1" test_procedure_version="1.1.0.1" creation_date="2016-04-01 23:46:27.721" last_modified_date="2017-04-27 11:15:54.086"
+       last_modified_user="-3" deleted="FALSE" />
 
 	<surveillance_type id="1" name="Reactive"
 		creation_date="2017-01-06 10:31:41.257" last_modified_date="2017-01-06 10:31:41.257"

@@ -10,21 +10,22 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.notification.RecipientDTO;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
+import gov.healthit.chpl.dto.notification.RecipientDTO;
+import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.notification.NotificationRecipientEntity;
 import gov.healthit.chpl.entity.notification.NotificationTypeEntity;
 import gov.healthit.chpl.entity.notification.NotificationTypeRecipientMapEntity;
 import gov.healthit.chpl.entity.notification.RecipientWithSubscriptionsEntity;
 
-@Repository("notificationDAOImpl")
+@Repository("notificationDAO")
 public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO {
 	private static final Logger logger = LogManager.getLogger(NotificationDAOImpl.class);
 
@@ -107,6 +108,7 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		return results;	
 	}
 
+	@Transactional
 	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappings(Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs) {
 		List<String> authorityNames = new ArrayList<String>();
 		if(permissions != null) {

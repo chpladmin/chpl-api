@@ -5,8 +5,6 @@ import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
-import org.springframework.stereotype.Component;
-
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
@@ -14,7 +12,6 @@ import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
-@Component("notificationDAO")
 public interface NotificationDAO {
 	public RecipientDTO createRecipientEmailAddress(String emailAddress);
 	public NotificationTypeRecipientMapDTO createNotificationMapping(RecipientDTO recipient, NotificationTypeDTO type, CertificationBodyDTO acb);

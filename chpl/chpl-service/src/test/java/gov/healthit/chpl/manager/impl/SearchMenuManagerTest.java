@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
@@ -12,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
@@ -39,6 +37,7 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.domain.TestFunctionality;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
@@ -602,6 +601,19 @@ public class SearchMenuManagerTest {
 		for(TestFunctionality tf : tfs) {
 			assertNotNull(tf.getYear());
 			assertTrue(tf.getYear().equals("2014") || tf.getYear().equals("2015"));
+		}
+	}
+	
+	@Transactional
+	@Rollback(true)
+	@Test
+	public void getTestStandards_hasEditions() {
+		Set<TestStandard> testStandards = searchMenuManager.getTestStandards();
+		assertNotNull(testStandards);
+		assertTrue(testStandards.size() > 0);
+		for(TestStandard testStandard : testStandards) {
+			assertNotNull(testStandard.getYear());
+			assertTrue(testStandard.getYear().equals("2014") || testStandard.getYear().equals("2015"));
 		}
 	}
 }

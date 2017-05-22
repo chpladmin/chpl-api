@@ -24,6 +24,7 @@ import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
@@ -32,10 +33,12 @@ import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -47,6 +50,7 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFa
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 @Service
 public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
@@ -56,6 +60,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 	
+	@Autowired ContactDAO contactDao;
 	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
 	@Autowired CertificationBodyManager acbManager;
@@ -81,7 +86,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id) 
 			throws EntityNotFoundException, EntityRetrievalException, AccessDeniedException {
 		
-		PendingCertifiedProductDTO pendingCp = pcpDao.findById(id);
+		PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, false);
 		if(pendingCp == null) {
 			throw new EntityNotFoundException("Could not find pending certified product with id " + id);
 		}
@@ -103,23 +108,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		validate(pendingCp);
 
 		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
-		addAllVersionsToCmsCriterion(pcpDetails);
-		addAllMeasuresToCertificationCriteria(pcpDetails);
-		
-		return pcpDetails;
-	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public PendingCertifiedProductDetails getById(Long acbId, Long id) throws EntityRetrievalException {
-		PendingCertifiedProductDTO dto = pcpDao.findById(id);
-		updateCertResults(dto);
-		validate(dto);
-
-		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(dto);
 		addAllVersionsToCmsCriterion(pcpDetails);
 		addAllMeasuresToCertificationCriteria(pcpDetails);
 		
@@ -167,12 +155,12 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
 	public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId) 
 			throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, 
-			AccessDeniedException, JsonProcessingException {
+			AccessDeniedException, JsonProcessingException, ObjectMissingValidationException {
 		
-		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId);
+		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
 		if(pendingCp == null) {
 			throw new EntityNotFoundException("Could not find pending certified product with id " + pendingProductId);
-		}
+		} 
 		boolean userHasAcbPermissions = false;
 		for(CertificationBodyDTO acb : userAcbs) {
 			if(acb.getId() != null && 
@@ -181,31 +169,15 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 				userHasAcbPermissions = true;
 			}
 		}
-		
 		if(!userHasAcbPermissions) {
 			throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
 		}
 		
-		pcpDao.delete(pendingProductId);
-		
-		String activityMsg = "Pending certified product "+pendingCp.getProductName()+" has been rejected.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, null);
-	}
-	
-	@Override
-	@Transactional
-	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries=true)
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void deletePendingCertifiedProduct(Long acbId, Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
-		pcpDao.delete(pendingProductId);
-		
-		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been rejected.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, null);
-
-		
+		if(isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
+			pcpDao.delete(pendingProductId);
+			String activityMsg = "Pending certified product "+pendingCp.getProductName()+" has been rejected.";
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, null);	
+		}
 	}
 	
 	@Override
@@ -214,13 +186,40 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public void confirm(Long acbId, Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		PendingCertifiedProductDTO pendingCpDto = pcpDao.findById(pendingProductId);
+		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
 		pcpDao.delete(pendingProductId);
 		
-		String activityMsg = "Pending certified product "+pendingCpDto.getProductName()+" has been confirmed.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, pendingCpDto, pendingCpDto);
+		String activityMsg = "Pending certified product "+pendingCp.getProductName()+" has been confirmed.";
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, pendingCp);
 		
+	}
+	
+	
+	@Override
+	@Transactional
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	public boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
+	throws EntityRetrievalException, ObjectMissingValidationException {
+		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
+		return isPendingListingAvailableForUpdate(acbId, pendingCp);
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp) 
+	throws EntityRetrievalException, ObjectMissingValidationException {
+		if(pendingCp.getDeleted().booleanValue() == true) {
+			ContactDTO contactDTO = contactDao.getById(pendingCp.getLastModifiedUser());
+			ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
+			alreadyDeletedEx.getErrorMessages().add("This pending certified product has already been confirmed or rejected by another user.");
+			alreadyDeletedEx.setContact(contactDTO != null ? new Contact(contactDTO) : null);
+			alreadyDeletedEx.setObjectId(pendingCp.getUniqueId());
+			throw alreadyDeletedEx;
+		}
+		return pendingCp != null;
 	}
 	
 	private void updateCertResults(PendingCertifiedProductDTO dto) {

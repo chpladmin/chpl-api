@@ -3,9 +3,9 @@ package gov.healthit.chpl.domain.notification;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.dto.notification.SubscriptionDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
+import gov.healthit.chpl.dto.notification.SubscriptionDTO;
 
 public class Recipient {
 	private Long id;

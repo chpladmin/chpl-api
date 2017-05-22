@@ -1,11 +1,11 @@
-package gov.healthit.chpl.web.controller;
+package gov.healthit.chpl.web.controller.exception;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class ValidationException extends Exception {
-	private Set<String> errorMessages;
-	private Set<String> warningMessages;
+	protected Set<String> errorMessages;
+	protected Set<String> warningMessages;
 	
 	private static final long serialVersionUID = 1L;
 	public ValidationException() { 
@@ -47,6 +47,5 @@ public class ValidationException extends Exception {
 	public void setWarningMessages(Set<String> warningMessages) {
 		this.warningMessages = warningMessages;
 	}
-
 
 }

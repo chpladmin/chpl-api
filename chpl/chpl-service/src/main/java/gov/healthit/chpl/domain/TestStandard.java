@@ -1,19 +1,22 @@
-package gov.healthit.chpl.domain.notification;
+package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
+import java.io.Serializable;
 
-public class NotificationType {
+import gov.healthit.chpl.dto.TestStandardDTO;
+
+public class TestStandard implements Serializable {
+	private static final long serialVersionUID = 620315627813875501L;
 	private Long id;
 	private String name;
 	private String description;
-	private Boolean requiresAcb;
+	private String year;
 	
-	public NotificationType() {}
-	public NotificationType(NotificationTypeDTO dto) {
+	public TestStandard() {}
+	public TestStandard(TestStandardDTO dto) {
 		this.id = dto.getId();
 		this.name = dto.getName();
 		this.description = dto.getDescription();
-		this.requiresAcb = dto.getRequiresAcb();
+		this.year = dto.getYear();
 	}
 	public Long getId() {
 		return id;
@@ -33,10 +36,10 @@ public class NotificationType {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Boolean getRequiresAcb() {
-		return requiresAcb;
+	public String getYear() {
+		return year;
 	}
-	public void setRequiresAcb(Boolean requiresAcb) {
-		this.requiresAcb = requiresAcb;
+	public void setYear(String year) {
+		this.year = year;
 	}
 }

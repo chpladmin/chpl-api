@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -32,7 +30,6 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  */
 @Component("surveillanceOversightAllBrokenRulesCsvPresenter")
 public class SurveillanceOversightAllBrokenRulesCsvPresenter extends SurveillanceReportCsvPresenter {
-	private static final Logger logger = LogManager.getLogger(SurveillanceOversightAllBrokenRulesCsvPresenter.class);
 	
 	private Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts;
 	
@@ -41,7 +38,8 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 	protected static final int CAP_APPROVE_COL_OFFSET = 13;
 	protected static final int CAP_START_COL_OFFSET = 14;
 	protected static final int CAP_COMPLETE_COL_OFFSET = 15;
-	protected static final int NONCONFORMITY_STATUS_COL_OFFSET = 17;
+	protected static final int CAP_CLOSED_COL_OFFSET = 16;
+	protected static final int NONCONFORMITY_STATUS_COL_OFFSET = 18;
 	
 	@Autowired private RuleComplianceCalculator ruleCalculator;
 	
@@ -51,6 +49,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
 	}
 	
 	@Override
@@ -60,6 +59,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		result.add(CAP_APPROVE_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle());
 		result.add(CAP_START_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_STARTED.getTitle());
 		result.add(CAP_COMPLETE_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle());
+		result.add(CAP_CLOSED_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_CLOSED.getTitle());
 		result.add(NONCONFORMITY_STATUS_COL_OFFSET, "Nonconformity Status");
 		return result;
 	}
@@ -80,6 +80,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 			String capApprovalResultStr = rowValues.get(CAP_APPROVE_COL_OFFSET);
 			String capStartResultStr = rowValues.get(CAP_START_COL_OFFSET);
 			String capCompletedResultStr = rowValues.get(CAP_COMPLETE_COL_OFFSET);
+			String capClosedResultStr = rowValues.get(CAP_CLOSED_COL_OFFSET);
 			
 			if(!StringUtils.isEmpty(longSuspensionResultStr)) {
 				if(!rowChplProductNumber.equals(currChplProductNumber)) {
@@ -98,6 +99,10 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 			}
 			if(!StringUtils.isEmpty(capCompletedResultStr))	{
 				allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, allBrokenRulesCounts.get(SurveillanceOversightRule.CAP_NOT_COMPLETED)+1);
+				includeRow = true;
+			}
+			if(!StringUtils.isEmpty(capClosedResultStr))	{
+				allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, allBrokenRulesCounts.get(SurveillanceOversightRule.CAP_NOT_CLOSED)+1);
 				includeRow = true;
 			}
 		
@@ -138,8 +143,9 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		ncFields.add(1, "");
 		ncFields.add(2, "");
 		ncFields.add(3, "");
+		ncFields.add(4, "");
 		//no nonconformity was found so there is no status
-		ncFields.add(5, "");
+		ncFields.add(6, "");
 		return ncFields;
 	}
 	
@@ -165,10 +171,12 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 				ncFields.add(2, dateBrokenStr);
 			} else if(currResult.getRule() == SurveillanceOversightRule.CAP_NOT_COMPLETED) {
 				ncFields.add(3, dateBrokenStr);
+			} else if(currResult.getRule() == SurveillanceOversightRule.CAP_NOT_CLOSED) {
+				ncFields.add(4, dateBrokenStr);
 			}
 		}
 		
-		ncFields.add(5, nc.getStatus().getName());
+		ncFields.add(6, nc.getStatus().getName());
 		return ncFields;
 	}
 	
@@ -184,5 +192,14 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 
 	public void setAllBrokenRulesCounts(Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts) {
 		this.allBrokenRulesCounts = allBrokenRulesCounts;
+	}
+	
+	public void clear(){
+		allBrokenRulesCounts.clear();
+		allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
 	}
 }
