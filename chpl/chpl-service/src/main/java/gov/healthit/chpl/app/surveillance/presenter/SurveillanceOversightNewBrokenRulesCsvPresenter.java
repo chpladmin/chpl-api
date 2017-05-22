@@ -101,4 +101,13 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
 	public void setNewBrokenRulesCounts(Map<SurveillanceOversightRule, Integer> newBrokenRulesCounts) {
 		this.newBrokenRulesCounts = newBrokenRulesCounts;
 	}
+	
+	public void clear(){
+		newBrokenRulesCounts.clear();
+		newBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
+		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_APPROVED, 0);
+		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
+		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
+		newBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
+	}
 }

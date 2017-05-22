@@ -276,7 +276,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 	@Bean
     public ReloadableResourceBundleMessageSource messageSource(){
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
+        messageSource.setBasename("classpath:/errors.test");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

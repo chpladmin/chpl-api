@@ -67,6 +67,42 @@ public class TestStandardDAOTest extends TestCase {
 	
 	@Test
 	@Transactional
+	public void findByNumberAndEditionCaseInsensitive() {
+		String number = "170.210(H)";
+		Long editionId = 2L;
+		TestStandardDTO foundTs = tsDao.getByNumberAndEdition(number, editionId);
+		assertNotNull(foundTs);
+		assertEquals("170.210(h)", foundTs.getName());
+		assertEquals(editionId.longValue(), foundTs.getCertificationEditionId().longValue());
+		assertEquals("2014", foundTs.getYear());
+	}
+	
+	@Test
+	@Transactional
+	public void findByNumberAndEditionWithSpaces() {
+		String number = "170.210 (h)";
+		Long editionId = 2L;
+		TestStandardDTO foundTs = tsDao.getByNumberAndEdition(number, editionId);
+		assertNotNull(foundTs);
+		assertEquals("170.210(h)", foundTs.getName());
+		assertEquals(editionId.longValue(), foundTs.getCertificationEditionId().longValue());
+		assertEquals("2014", foundTs.getYear());
+	}
+	
+	@Test
+	@Transactional
+	public void findByNumberAndEditionWithBadCaseAndSpaces() {
+		String number = "170.210 (H)  ";
+		Long editionId = 2L;
+		TestStandardDTO foundTs = tsDao.getByNumberAndEdition(number, editionId);
+		assertNotNull(foundTs);
+		assertEquals("170.210(h)", foundTs.getName());
+		assertEquals(editionId.longValue(), foundTs.getCertificationEditionId().longValue());
+		assertEquals("2014", foundTs.getYear());
+	}
+	
+	@Test
+	@Transactional
 	public void findNoTestStandardByNumberAndEdition() {
 		String number = "BOGUS";
 		Long editionId = 2L;
