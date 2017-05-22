@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Major features
+
+### Minor features
+* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGES XML FILE FORMAT.
+* Allow corrective action plan resolution to be blank even when the end date is filled in.
+
+### Bug fixes
+
+---
+
 ## Version 10.1.0
 _22 May 2017_
 
@@ -12,7 +25,6 @@ _22 May 2017_
 * Check for exisitng test standard in the listing's edition before adding a new one (eliminates repeated entries in the database and keeps the selection dropdowns manageable).
 * Update all test standard entities, dtos, and domain objects to include certification edition.
 * Use error message file for error messages and support internationalization.
-* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGED XML FILE FORMAT.
 
 ---
 
