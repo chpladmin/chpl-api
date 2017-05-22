@@ -6,7 +6,8 @@ _Date TBD_
 ### Major features
 
 ### Minor features
-* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGED XML FILE FORMAT.
+* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGES XML FILE FORMAT.
+* Allow corrective action plan resolution to be blank even when the end date is filled in.
 
 ### Bug fixes
 

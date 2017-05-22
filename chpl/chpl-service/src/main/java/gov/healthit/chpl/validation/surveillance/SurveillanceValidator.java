@@ -142,6 +142,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 				surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.randomizedSitesNotApplicable"), LocaleContextHolder.getLocale()), surv.getType().getName()));
 			}
 		}
+				
 		List<CertificationResultDetailsDTO> certResults = null;
 		if(surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
 			try {
@@ -291,6 +292,8 @@ public class SurveillanceValidator implements MessageSourceAware {
 						}
 
 						if(nc.getStatus() == null) {
+							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.nonConformityStatusNotFound"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
+
 							surv.getErrorMessages().add("Nonconformity status is required for requirement " + req.getRequirement() + ", nonconformity " + nc.getNonconformityType());
 						} else if(nc.getStatus().getId() == null || nc.getStatus().getId().longValue() <= 0) {
 							SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType(nc.getStatus().getName());
@@ -311,7 +314,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 						if(!StringUtils.isEmpty(nc.getCapApprovalDate()) && StringUtils.isEmpty(nc.getCapMustCompleteDate())){
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPMustCompleteIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
-						
+
 						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())){
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPStartIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
@@ -322,14 +325,6 @@ public class SurveillanceValidator implements MessageSourceAware {
 						
 						if(!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate()) && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0){
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPEndNotGreaterThanDateCAPStart"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
-						}
-						
-						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getResolution())){
-							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.resolutionIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
-						}
-						
-						if(!StringUtils.isEmpty(nc.getCapEndDate()) && nc.getStatus().getName().equalsIgnoreCase("Open")){
-							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPEndCannotBeCompletedWhenStatusOpen"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
 
 						if(nc.getDateOfDetermination() == null) {
@@ -371,9 +366,11 @@ public class SurveillanceValidator implements MessageSourceAware {
 							if(StringUtils.isEmpty(nc.getResolution())) {
 								surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.resolutionDescriptionIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 							}
-						}
-						if(nc.getStatus() != null && nc.getStatus().getName() != null &&
+						} else if(nc.getStatus() != null && nc.getStatus().getName() != null &&
 								nc.getStatus().getName().equalsIgnoreCase("Open")) {
+							if(!StringUtils.isEmpty(nc.getResolution())) {
+								surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.resolutionDescriptionNotApplicable"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
+							}
                             requiresCloseDate = false;
                         }
 					}
