@@ -68,7 +68,7 @@ public class UpdateCertificationStatusApp extends App {
 		// Get Map<CertifiedProductDTO, ListingUpdateRequest> for update
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = updateCertStatus.getListingUpdateRequests(listings, updatedCertificationStatus, props, token);
 		// Update each listing's certification status to 'Withdrawn by Developer'
-		updateCertStatus.updateListingsCertificationStatus(2L, listingUpdatesMap, token, props);
+		updateCertStatus.updateListingsCertificationStatus(cbDTO.getId(), listingUpdatesMap, token, props);
 	}
 
 	@Override
