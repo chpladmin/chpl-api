@@ -30,19 +30,20 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  */
 @Component("surveillanceOversightAllBrokenRulesCsvPresenter")
 public class SurveillanceOversightAllBrokenRulesCsvPresenter extends SurveillanceReportCsvPresenter {
-	
+
 	private Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts;
-	
+
 	protected static final int CHPL_PRODUCT_OFFSET = 3;
 	protected static final int LONG_SUSPENSION_COL_OFFSET = 12;
 	protected static final int CAP_APPROVE_COL_OFFSET = 13;
 	protected static final int CAP_START_COL_OFFSET = 14;
 	protected static final int CAP_COMPLETE_COL_OFFSET = 15;
 	protected static final int CAP_CLOSED_COL_OFFSET = 16;
-	protected static final int NONCONFORMITY_STATUS_COL_OFFSET = 18;
-	
+	protected static final int NONCONFORMITY_OPEN_CAP_COMPLETE_COL_OFFSET = 17;
+	protected static final int NONCONFORMITY_STATUS_COL_OFFSET = 19;
+
 	@Autowired private RuleComplianceCalculator ruleCalculator;
-	
+
 	public SurveillanceOversightAllBrokenRulesCsvPresenter() {
 		allBrokenRulesCounts = new HashMap<SurveillanceOversightRule, Integer>();
 		allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
@@ -50,8 +51,9 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE, 0);
 	}
-	
+
 	@Override
 	protected List<String> generateHeaderValues() {
 		List<String> result = super.generateHeaderValues();
@@ -60,6 +62,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		result.add(CAP_START_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_STARTED.getTitle());
 		result.add(CAP_COMPLETE_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle());
 		result.add(CAP_CLOSED_COL_OFFSET, SurveillanceOversightRule.CAP_NOT_CLOSED.getTitle());
+		result.add(NONCONFORMITY_OPEN_CAP_COMPLETE_COL_OFFSET, SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle());
 		result.add(NONCONFORMITY_STATUS_COL_OFFSET, "Nonconformity Status");
 		return result;
 	}
@@ -67,13 +70,13 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 	@Override
 	protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<List<String>> results = super.generateMultiRowValue(data, surv);
-		
+
 		//we only want to include surveillance rows that broke one or more rules
 		String currChplProductNumber = "";
 		Iterator<List<String>> rowValueIter = results.iterator();
 		while(rowValueIter.hasNext()) {
 			boolean includeRow = false;
-			
+
 			List<String> rowValues = rowValueIter.next();
 			String rowChplProductNumber = rowValues.get(CHPL_PRODUCT_OFFSET);
 			String longSuspensionResultStr = rowValues.get(LONG_SUSPENSION_COL_OFFSET);
@@ -81,7 +84,8 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 			String capStartResultStr = rowValues.get(CAP_START_COL_OFFSET);
 			String capCompletedResultStr = rowValues.get(CAP_COMPLETE_COL_OFFSET);
 			String capClosedResultStr = rowValues.get(CAP_CLOSED_COL_OFFSET);
-			
+			String nonconformityOpenCapCompleteResultStr = rowValues.get(NONCONFORMITY_OPEN_CAP_COMPLETE_COL_OFFSET);
+
 			if(!StringUtils.isEmpty(longSuspensionResultStr)) {
 				if(!rowChplProductNumber.equals(currChplProductNumber)) {
 					currChplProductNumber = rowChplProductNumber;
@@ -105,15 +109,19 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 				allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, allBrokenRulesCounts.get(SurveillanceOversightRule.CAP_NOT_CLOSED)+1);
 				includeRow = true;
 			}
-		
+			if(!StringUtils.isEmpty(nonconformityOpenCapCompleteResultStr))	{
+				allBrokenRulesCounts.put(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE, allBrokenRulesCounts.get(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE)+1);
+				includeRow = true;
+			}
+
 			if(!includeRow) {
 				rowValueIter.remove();
 			}
 		}
-		
+
 		return results;
 	}
-	
+
 	protected List<SurveillanceNonconformity> getNonconformities(SurveillanceRequirement req) {
 		List<SurveillanceNonconformity> openNonconformities = new ArrayList<SurveillanceNonconformity>();
 		for(SurveillanceNonconformity nonconformity : req.getNonconformities()) {
@@ -123,43 +131,44 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		}
 		return openNonconformities;
 	}
-	
+
 	@Override
 	protected List<String> getNoNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<String> ncFields = super.getNoNonconformityFields(data, surv);
 		List<OversightRuleResult> oversightResult = ruleCalculator.calculateCompliance(data, surv, null);
-		
+
 		if(oversightResult != null && oversightResult.size() > 0 &&
 			oversightResult.get(0) != null && oversightResult.get(0).getDateBroken() != null) {
 			LocalDateTime dateBroken = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(oversightResult.get(0).getDateBroken().getTime()), 
+					Instant.ofEpochMilli(oversightResult.get(0).getDateBroken().getTime()),
 				    ZoneId.systemDefault());
 			ncFields.add(0, dateFormatter.format(dateBroken));
 		} else {
 			ncFields.add(0, "");
 		}
-		
+
 		//no CAPs on this row so these next rules are all n/a
 		ncFields.add(1, "");
 		ncFields.add(2, "");
 		ncFields.add(3, "");
 		ncFields.add(4, "");
+		ncFields.add(5, "");
 		//no nonconformity was found so there is no status
-		ncFields.add(6, "");
+		ncFields.add(7, "");
 		return ncFields;
 	}
-	
+
 	@Override
 	protected List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv, SurveillanceNonconformity nc) {
-		List<String> ncFields = super.getNonconformityFields(data, surv, nc);		
+		List<String> ncFields = super.getNonconformityFields(data, surv, nc);
 		List<OversightRuleResult> oversightResult = ruleCalculator.calculateCompliance(data, surv, nc);
 		//oversightResult.addAll(ruleCalculator.calculateCompliance(data, surv, nc));
-		
+
 		for(OversightRuleResult currResult : oversightResult) {
 			String dateBrokenStr = "";
 			if(currResult.getDateBroken() != null) {
 				LocalDateTime dateBroken = LocalDateTime.ofInstant(
-						Instant.ofEpochMilli(currResult.getDateBroken().getTime()), 
+						Instant.ofEpochMilli(currResult.getDateBroken().getTime()),
 					    ZoneId.systemDefault());
 				dateBrokenStr = dateFormatter.format(dateBroken);
 			}
@@ -173,13 +182,15 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 				ncFields.add(3, dateBrokenStr);
 			} else if(currResult.getRule() == SurveillanceOversightRule.CAP_NOT_CLOSED) {
 				ncFields.add(4, dateBrokenStr);
+			} else if(currResult.getRule() == SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE) {
+				ncFields.add(5, dateBrokenStr);
 			}
 		}
-		
-		ncFields.add(6, nc.getStatus().getName());
+
+		ncFields.add(7, nc.getStatus().getName());
 		return ncFields;
 	}
-	
+
 	@Override
 	public void setProps(Properties props) {
 		super.setProps(props);
@@ -193,7 +204,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 	public void setAllBrokenRulesCounts(Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts) {
 		this.allBrokenRulesCounts = allBrokenRulesCounts;
 	}
-	
+
 	public void clear(){
 		allBrokenRulesCounts.clear();
 		allBrokenRulesCounts.put(SurveillanceOversightRule.LONG_SUSPENSION, 0);
@@ -201,5 +212,6 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_STARTED, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_COMPLETED, 0);
 		allBrokenRulesCounts.put(SurveillanceOversightRule.CAP_NOT_CLOSED, 0);
+		allBrokenRulesCounts.put(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE, 0);
 	}
 }
