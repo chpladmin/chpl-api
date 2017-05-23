@@ -205,7 +205,9 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		DeveloperDTO after = getById(developer.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", beforeDev, after);
-		checkSuspiciousActivity(beforeDev, after);
+		if(!Boolean.parseBoolean(env.getProperty("disableSuspiciousActivityEmails"))){
+			checkSuspiciousActivity(beforeDev, after);
+		}
 		return after;
 	}
 	

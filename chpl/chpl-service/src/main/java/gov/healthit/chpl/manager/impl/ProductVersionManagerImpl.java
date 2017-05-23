@@ -134,7 +134,9 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		ProductVersionEntity result = dao.update(dto);
 		ProductVersionDTO after = new ProductVersionDTO(result);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, after.getId(), "Product Version "+dto.getVersion()+" updated for product "+dto.getProductId(), before, after);
-		checkSuspiciousActivity(before, after);
+		if(!Boolean.parseBoolean(env.getProperty("disableSuspiciousActivityEmails"))){
+			checkSuspiciousActivity(before, after);
+		}
 		return after;
 	}
 	

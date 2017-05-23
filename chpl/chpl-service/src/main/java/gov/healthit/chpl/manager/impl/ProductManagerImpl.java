@@ -153,7 +153,7 @@ public class ProductManagerImpl implements ProductManager {
 		
 		String activityMsg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, result);
-		if(lookForSuspiciousActivity) {
+		if(lookForSuspiciousActivity && !Boolean.parseBoolean(env.getProperty("disableSuspiciousActivityEmails"))) {
 			checkSuspiciousActivity(beforeDTO, result);
 		}
 		return result;
