@@ -31,7 +31,6 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.concept.CertificationBodyConcept;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -41,6 +40,8 @@ import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component("updateCertificationStatusApp")
 public class UpdateCertificationStatusApp extends App {
+	private static final String CERTIFICATION_NAME = "CCHIT"; 
+	
     private CertificationBodyDAO certificationBodyDAO;
 	private CertifiedProductDAO certifiedProductDAO;
 	private SearchMenuManager searchMenuManager;
@@ -56,7 +57,7 @@ public class UpdateCertificationStatusApp extends App {
 		updateCertStatus.initiateSpringBeans(context, props);
 		
 		// Get Certification Body for CCHIT
-		CertificationBodyDTO cbDTO = updateCertStatus.getCertificationBody(CertificationBodyConcept.CERTIFICATION_BODY_CCHIT.getName());
+		CertificationBodyDTO cbDTO = updateCertStatus.getCertificationBody(CERTIFICATION_NAME);
 		// Get certification edition for year 2014
 		KeyValueModel certificationEdition = updateCertStatus.getCertificationEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear());
 		// Get Map<String, Object> certificationStatus for "Withdrawn by Developer"
