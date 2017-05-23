@@ -1,5 +1,11 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Minor features
+* Create application to update certification status to 'Withdrawn by Developer' for CCHIT's 2014 edition retired listings
+
 ## Version 10.1.0
 _22 May 2017_
 
