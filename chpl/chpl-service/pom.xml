@@ -372,6 +372,7 @@
             <configuration>
             	<clearOutputDir>true</clearOutputDir>
             	<verbose>true</verbose>
+            	<createJavaDocAnnotations>true</createJavaDocAnnotations>
 				<sources>
 					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductDownloadResponse.java</source>
 				</sources>
