@@ -9,6 +9,8 @@ _Date TBD_
 * Allow corrective action plan resolution to be blank even when the end date is filled in.
 * Added surveillance trigger for Open Nonconformity with closed CAP > 45 days prior
 
+---
+
 ## Version 10.1.0
 _22 May 2017_
 
