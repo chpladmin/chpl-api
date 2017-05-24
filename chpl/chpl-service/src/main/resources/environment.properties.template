@@ -5,6 +5,8 @@ authenticate=/auth/authenticate
 getCertifiedProductDetails=/certified_products/%s/details
 updateCertifiedProduct=/certified_products/update
 refreshToken=/auth/keep_alive
+tokenRefreshDelayInMillis=900000
+tokenExpirationTimeInMillis=1800000
 apiKey=12345a123456abc1abc1234a12ab1234
 
 #chpl-service properties

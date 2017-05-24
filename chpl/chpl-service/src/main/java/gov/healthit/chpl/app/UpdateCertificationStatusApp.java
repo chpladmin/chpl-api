@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.client.fluent.Request;
@@ -23,8 +21,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -67,20 +63,11 @@ public class UpdateCertificationStatusApp extends App {
 		// Get all listings certified by CCHIT with 2014 edition and 'Retired' (216 total according to spreadsheet/DB)
 		List<CertifiedProductDTO> listings = updateCertStatus.getListings(cbDTO.getName(), certificationEdition, CertificationStatusType.Retired);
 		// Get authentication token for REST call to API
-		String token = updateCertStatus.getToken(props);
-		// refresh token every 15 mins because it expires every 30 mins
-		TimerTask refreshToken = new TimerTask() {
-			@Override
-			public void run() {
-				updateCertStatus.refreshToken(token, props);
-			}
-		};
-		Timer timer = new Timer("tokenTimer");
-		timer.scheduleAtFixedRate(refreshToken, 60*15*1000, 60*60*8*1000); // refresh token every 15 minutes for up to 8 hours
+		Token token = new Token(props);
 		// Get Map<CertifiedProductDTO, ListingUpdateRequest> for update
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = updateCertStatus.getListingUpdateRequests(listings, updatedCertificationStatus, props, token);
 		// Update each listing's certification status to 'Withdrawn by Developer'
-		updateCertStatus.updateListingsCertificationStatus(cbDTO.getId(), listingUpdatesMap, token, props);
+		updateCertStatus.updateListingsCertificationStatus(cbDTO.getId(), listingUpdatesMap, props, token);
 	}
 
 	@Override
@@ -105,7 +92,7 @@ public class UpdateCertificationStatusApp extends App {
 		return cps;
 	}
 
-	private void updateListingsCertificationStatus(Long acbId, Map<CertifiedProductDTO, ListingUpdateRequest> cpUpdateMap, String token, Properties props) throws JsonProcessingException, EntityRetrievalException, EntityCreationException{
+	private void updateListingsCertificationStatus(Long acbId, Map<CertifiedProductDTO, ListingUpdateRequest> cpUpdateMap, Properties props, Token token) throws JsonProcessingException, EntityRetrievalException, EntityCreationException{
 		for(CertifiedProductDTO cpDTO : cpUpdateMap.keySet()){
 			String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("updateCertifiedProduct");
 			logger.info("Making REST HTTP POST call to " + url +
@@ -119,7 +106,7 @@ public class UpdateCertificationStatusApp extends App {
 						.version(HttpVersion.HTTP_1_1)
 						.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
 						.addHeader("API-key", props.getProperty("apiKey"))
-						.addHeader("Authorization", "Bearer " + token)
+						.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
 						.bodyString(json, ContentType.APPLICATION_JSON)
 						.execute().returnContent().asString();
 				logger.info("Retrieved result of " + url + " as follows: \n" + result);
@@ -166,7 +153,7 @@ public class UpdateCertificationStatusApp extends App {
 		return certStatusMap;
 	}
 	
-	private Map<CertifiedProductDTO, ListingUpdateRequest> getListingUpdateRequests(List<CertifiedProductDTO> cpDTOs, Map<String, Object> newCertificationStatus, Properties props, String token) throws JsonParseException, JsonMappingException, IOException{
+	private Map<CertifiedProductDTO, ListingUpdateRequest> getListingUpdateRequests(List<CertifiedProductDTO> cpDTOs, Map<String, Object> newCertificationStatus, Properties props, Token token) throws JsonParseException, JsonMappingException, IOException{
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = new HashMap<CertifiedProductDTO, ListingUpdateRequest>();
 		for(CertifiedProductDTO dto : cpDTOs){
 			String urlRequest = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + String.format(props.getProperty("getCertifiedProductDetails"), dto.getId().toString());
@@ -178,7 +165,7 @@ public class UpdateCertificationStatusApp extends App {
 						.version(HttpVersion.HTTP_1_1)
 						.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
 						.addHeader("API-key", props.getProperty("apiKey"))
-						.addHeader("Authorization", "Bearer " + token)
+						.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
 						.execute().returnContent().asString();
 				logger.info("Retrieved result of " + urlRequest + " as follows: \n" + result);
 				// convert json to CertifiedProductSearchDetails object
@@ -195,50 +182,6 @@ public class UpdateCertificationStatusApp extends App {
 			}
 		}
 		return listingUpdatesMap;
-	}
-	
-	private String getToken(Properties props) {
-		String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("authenticate");
-		logger.info("Making REST HTTP POST call to " + url + 
-				" using API-key=" + props.getProperty("apiKey"));
-		String token = null;
-		try{
-			String tokenResponse = Request.Post(url)
-					.bodyString("{ \"userName\": \"" + props.getProperty("username") + "\","
-							+ " \"password\": \"" + props.getProperty("password") + "\" }", ContentType.APPLICATION_JSON)
-					.version(HttpVersion.HTTP_1_1)
-					.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
-					.addHeader("API-key", props.getProperty("apiKey"))
-					.execute().returnContent().asString();
-					JsonObject jobj = new Gson().fromJson(tokenResponse, JsonObject.class);
-					logger.info("Retrieved the following JSON from " + url + ": \n" + jobj.toString());
-					token = jobj.get("token").toString();
-					logger.info("Retrieved token " + token);
-					return token;
-		} catch (IOException e){
-			logger.info("Failed to make call to " + url +
-					" using API-key=" + props.getProperty("apiKey"));
-		}
-		return token;
-	}
-	
-	private void refreshToken(String token, Properties props){
-		String urlRequest = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("refreshToken");
-		String result = null;
-		logger.info("Making REST HTTP GET call to " + urlRequest +
-				" using API-key=" + props.getProperty("apiKey"));
-		try{
-			result = Request.Get(urlRequest)
-					.version(HttpVersion.HTTP_1_1)
-					.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
-					.addHeader("API-key", props.getProperty("apiKey"))
-					.addHeader("Authorization", "Bearer " + token)
-					.execute().returnContent().asString();
-			logger.info("Retrieved result of " + urlRequest + " as follows: \n" + result);
-		} catch (IOException e){
-			logger.info("Failed to make call to " + urlRequest + 
-					" using API-key=" + props.getProperty("apiKey"));
-		}
 	}
 
 	public SearchMenuManager getSearchMenuManager() {
