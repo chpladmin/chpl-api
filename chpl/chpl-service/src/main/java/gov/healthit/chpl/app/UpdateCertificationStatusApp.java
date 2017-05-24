@@ -170,18 +170,18 @@ public class UpdateCertificationStatusApp extends App {
 						.addHeader("Authorization", "Bearer " + token)
 						.execute().returnContent().asString();
 				logger.info("Retrieved result of " + urlRequest + " as follows: \n" + result);
+				// convert json to CertifiedProductSearchDetails object
+				ObjectMapper mapper = new ObjectMapper();
+				CertifiedProductSearchDetails cpDetails = mapper.readValue(result, CertifiedProductSearchDetails.class);
+				ListingUpdateRequest listingUpdate = new ListingUpdateRequest();
+				listingUpdate.setBanDeveloper(false);
+				listingUpdate.setListing(cpDetails);
+				listingUpdate.getListing().setCertificationStatus(newCertificationStatus);
+				listingUpdatesMap.put(dto, listingUpdate);
 			} catch (IOException e){
 				logger.info("Failed to make call to " + urlRequest + 
 						" using API-key=" + props.getProperty("apiKey"));
 			}
-			// convert json to CertifiedProductSearchDetails object
-			ObjectMapper mapper = new ObjectMapper();
-			CertifiedProductSearchDetails cpDetails = mapper.readValue(result, CertifiedProductSearchDetails.class);
-			ListingUpdateRequest listingUpdate = new ListingUpdateRequest();
-			listingUpdate.setBanDeveloper(false);
-			listingUpdate.setListing(cpDetails);
-			listingUpdate.getListing().setCertificationStatus(newCertificationStatus);
-			listingUpdatesMap.put(dto, listingUpdate);
 		}
 		return listingUpdatesMap;
 	}

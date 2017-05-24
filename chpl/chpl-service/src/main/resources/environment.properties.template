@@ -1,3 +1,11 @@
+#temp-app properties
+username=insertUsernameHere
+password=insertPasswordHere
+authenticate=/auth/authenticate
+getCertifiedProductDetails=/certified_products/%s/details
+updateCertifiedProduct=/certified_products/update
+apiKey=12345a123456abc1abc1234a12ab1234
+
 #chpl-service properties
 downloadFolderPath=C:\\Users\\kekey\\downloadFiles
 jndiName=java:comp/env/jdbc/openchpl
@@ -10,6 +18,7 @@ maxActivityRangeInDays=60
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
+disableSuspiciousActivityEmails=true
 
 #chpl/app/statistics/SummaryStatistics properties
 summaryEmail=chpl@ainq.com
