@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -14,16 +15,25 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 public class ProductVersion implements Serializable {
 	private static final long serialVersionUID = -447822739573816090L;
 	
+	/**
+	 * Product version internal ID
+	 */
 	@XmlElement(required = true)
 	private Long versionId;
 	
+	/**
+	 * Version name (i.e. "1.0")
+	 */
 	@XmlElement(required = true)
 	private String version;
 	
+	/**
+	 * Details/description of the product version.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String details;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String lastModifiedDate;
 	
 	public ProductVersion() {}

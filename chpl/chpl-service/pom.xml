@@ -347,6 +347,8 @@
 					<source>src/main/java/gov/healthit/chpl/domain/DeveloperStatus.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/DeveloperStatusEvent.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/Product.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/ProductOwner.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/ProductVersion.java</source>					
 					<source>src/main/java/gov/healthit/chpl/domain/Surveillance.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformity.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformityDocument.java</source>
