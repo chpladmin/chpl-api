@@ -16,6 +16,9 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 
+/**
+ * A task used for SED testing for a given criteria
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestTask implements Serializable {
@@ -23,57 +26,113 @@ public class CertificationResultTestTask implements Serializable {
 
 	private static final Logger logger = LogManager.getLogger(CertificationResultTestTask.class);
 
+	/**
+	 * Test task to certification result mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 
+	/**
+	 * An ONC-ACB designated identifier for an individual SED task
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String uniqueId;
 	
+	/**
+	 * Test task internal ID
+	 */
 	@XmlElement(required = true)
 	private Long testTaskId;
 	
+	/**
+	 * Brief description of task performed during SED/ usability testing
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String description;
 	
+	/**
+	 * Mean task success rate (in percentages)
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskSuccessAverage;
 	
+	/**
+	 * Standard deviation of the task success rate (in percentages)
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskSuccessStddev;
 	
+	/**
+	 * Observed number of steps taken for the corresponding task
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskPathDeviationObserved;
 	
+	/**
+	 * Optimal number of steps for the corresponding task
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskPathDeviationOptimal;
 	
+	/**
+	 * Average time of completion for the corresponding task, in seconds. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Long taskTimeAvg;
 	
+	/**
+	 * Standard deviation for task time, in seconds. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeStddev;
 	
+	/**
+	 * Observed number of time (in seconds) taken for the corresponding task
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeDeviationObservedAvg;
 	
+	/**
+	 * Optimal number of time (in seconds) taken for the corresponding task
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeDeviationOptimalAvg;
 	
+	/**
+	 * Mean task error rate (in percentages)
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskErrors;
 	
+	/**
+	 * Standard deviation of the task error rate (in percentages)
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskErrorsStddev;
 	
+	/**
+	 * The type of scale that was used to rate the usability of the task. 
+	 * System Usability Scale is preferred. Likert Scale is also accepted. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String taskRatingScale;
 	
+	/**
+	 * Mean usability rating of the corresponding task, based on the specified scale type.
+	 * If the scale type is System Usability Scale, only positive integers between 1-100 are allowed. If the scale type is the Likert scale, positive decimal numbers are allowed. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskRating;
 	
+	/**
+	 * Standard deviation of the mean usability rating of the corresponding task, based on the specified scale type
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskRatingStddev;
 	
+	/**
+	 * Participants in the test task.
+	 */
 	@XmlElementWrapper(name = "participants", nillable = true, required = false)
 	@XmlElement(name = "participant")
 	private List<CertificationResultTestParticipant> testParticipants;

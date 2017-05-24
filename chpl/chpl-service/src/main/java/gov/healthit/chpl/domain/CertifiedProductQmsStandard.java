@@ -9,23 +9,42 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 
+/**
+ * The standard or mapping used to meet the quality management system certification criterion
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductQmsStandard implements Serializable {
 	private static final long serialVersionUID = -2085183878828053974L;
 	
+	/**
+	 * QMS Standard to listing mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * QMS Standard internal ID
+	 */
 	@XmlElement(required = true)
 	private Long qmsStandardId;
 	
+	/**
+	 * QMS Standard name
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String qmsStandardName;
 	
+	/**
+	 * QMS modification
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String qmsModification;
 	
+	/**
+	 * QMS Applicable criteria
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String applicableCriteria;
 

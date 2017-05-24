@@ -13,6 +13,9 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 
+/**
+ * Participant in a given test task.
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestParticipant implements Serializable {
@@ -20,40 +23,81 @@ public class CertificationResultTestParticipant implements Serializable {
 
 	private static final Logger logger = LogManager.getLogger(CertificationResultTestParticipant.class);
 
+	/**
+	 * Test task to participant mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
+	
+	/**
+	 * An ONC-ACB designated identifier for an individual SED participant 
+	 */
+	@XmlElement(required = false, nillable=true)
 	private String uniqueId;
 	
+	/**
+	 * Participant internal ID
+	 */
 	@XmlElement(required = true)
 	private Long testParticipantId;
 	
+	/**
+	 * Self-reported gender of the corresponding participant
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String gender;
 	
+	/**
+	 * Education internal ID
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Long educationTypeId;
 	
+	/**
+	 * Highest education level attained by corresponding participant
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String educationTypeName;
 	
+	/**
+	 * Age range internal ID
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Long ageRangeId;
 	
+	/**
+	 * The age range for the corresponding participant
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String ageRange;
 	
+	/**
+	 * Occupation or role of corresponding participant
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String occupation;
 	
+	/**
+	 * Professional experience of the corresponding participant, in number of months
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer professionalExperienceMonths;
 	
+	/**
+	 * The corresponding participant’s experience with computers (in general), in number of months
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer computerExperienceMonths;
 	
+	/**
+	 * The corresponding participant’s experience with the certified product/ health IT capabilities (SED criterion) being tested, in number of months
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer productExperienceMonths;
 	
+	/**
+	 * Any assistive technology needs as identified by the corresponding participant
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String assistiveTechnologyNeeds;
 

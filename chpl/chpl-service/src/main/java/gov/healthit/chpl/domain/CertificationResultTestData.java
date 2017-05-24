@@ -9,17 +9,30 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 
+/**
+ * The version of the test data being used for a given certification criteria
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestData implements Serializable {
 	private static final long serialVersionUID = -7272525145274770518L;
 	
+	/**
+	 * Certification result to test data mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * The version of the test data being used for a given certification criteria
+	 */
 	@XmlElement(required = true)
 	private String version;
 	
+	/**
+	 * If test data alterations are made, a description of all modifications made.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String alteration;
 

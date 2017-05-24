@@ -17,44 +17,84 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 
+/**
+ * The clinical quality measure to which a given listing has been certified.
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CQMResultDetails implements Serializable {
 	private static final long serialVersionUID = -7077008682408284325L;
 	
+	/**
+	 * CQM internal ID
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Long id;
 	
+	/**
+	 * The clinical quality measure number to which the Health IT Module has been certified.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String number;
 	
+	/**
+	 * The CMS ID clinical quality measures to which the Health IT Module has been certified.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String cmsId;
 	
+	/**
+	 * The title of the clinical quality measure.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String title;
 	
+	/**
+	 * The description of the clinical quality measure.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String description;
 	
+	/**
+	 * The NQF Number of the clinical quality measure
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String nqfNumber;
 	
+	/**
+	 * Type of CQM. 1 for Ambulatory, 2 for Inpatient
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Long typeId;
 	
+	/**
+	 * Category of the clinial quality measure. Examples include "Population/Public Health" or "Patient and Family Engagement" 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String domain;
 	
+	/**
+	 * Whether or not the clinical quality measure has been certified to the related listing.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean success;
 	
+	/**
+	 * The corresponding versions of the clinical quality measures to which the Health IT Module has been certified.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Set<String> successVersions;
 	
+	/**
+	 * All possible versions of the clinical quality measure. 
+	 * For a list of clinical quality measures and their viable versions, please reference the CMS eCQM library. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Set<String> allVersions;
 	
+	/**
+	 * The certification criteria to which the clinical quality measures apply. 
+	 */
 	@XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
 	@XmlElement(name = "criteria")
 	private List<CQMResultCertification> criteria;

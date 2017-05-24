@@ -14,21 +14,39 @@ import gov.healthit.chpl.dto.ContactDTO;
 public class Contact implements Serializable {
 	private static final long serialVersionUID = 5378524206189674741L;
 	
+	/**
+	 * Contact internal ID
+	 */
 	@XmlElement(required = true)
 	private Long contactId;
 	
+	/**
+	 * Contact first name
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String firstName;
 	
+	/**
+	 * Contact last name
+	 */
 	@XmlElement(required = true)
 	private String lastName;
 	
+	/**
+	 * Contact email address
+	 */
 	@XmlElement(required = true)
 	private String email;
 	
+	/**
+	 * Contact phone number
+	 */
 	@XmlElement(required = true)
 	private String phoneNumber;
 	
+	/**
+	 * Contact title (Ms., Mr., Dr., etc)
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String title;
 	

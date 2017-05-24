@@ -15,66 +15,117 @@ import org.apache.commons.lang.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
+/**
+ * Criteria to which a given listing attests.
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResult implements Serializable {
 	private static final long serialVersionUID = -4917413876078419868L;
 	public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
 	
+	/**
+	 * Criteria number, i.e. 170.314 (a)(1)
+	 */
 	@XmlElement(required = true)
 	private String number;
 	
+	/**
+	 * Short description of the criteria
+	 */
 	@XmlElement(required = true)
 	private String title;
 	
+	/**
+	 * Whether or not this criteria was met.
+	 */
 	@XmlElement(required = true)
 	private Boolean success;
 	
+	/**
+	 * If the certification criteria was gap certified
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean gap;
 	
+	/**
+	 * If the corresponding certification criteria was submitted for safety-enhanced design attestation during certification testing. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean sed;
 	
+	/**
+	 * If the corresponding certification criteria was successfully tested for automated numerator recording
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean g1Success;
 	
+	/**
+	 * If the corresponding certification criteria was successfully tested for automated measure calculation
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean g2Success;
 	
+	/**
+	 * The hyperlink to access an application programming interface (API)’s documentation and terms of use
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String apiDocumentation;
 	
+	/**
+	 * The way in which each privacy and security criterion was addressed for the purposes of certification
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String privacySecurityFramework;
 	
 	@XmlTransient
 	private List<MacraMeasure> allowedMacraMeasures;
 	
+	/**
+	 * The user-centered design (UCD) processes applied for the corresponding certification criteria
+	 */
 	@XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
 	@XmlElement(name = "ucdProcess")
 	private List<CertificationResultUcdProcess> ucdProcesses;
 	
+	/**
+	 * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification criterion to which the Health IT module was tested and certified. 
+	 */
 	@XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
 	@XmlElement(name = "testFunctionality")
 	private List<CertificationResultTestFunctionality> testFunctionality;
 	
+	/**
+	 * The test procedures used for the certification criteria
+	 */
 	@XmlElementWrapper(name = "testProcedures", nillable = true, required = false)
 	@XmlElement(name = "testProcedure")
 	private List<CertificationResultTestProcedure> testProcedures;
 	
+	/**
+	 * The versions of the test data being used for the certification criteria
+	 */
 	@XmlElementWrapper(name = "testDataList", nillable = true, required = false)
 	@XmlElement(name = "testData")
 	private List<CertificationResultTestData> testDataUsed;
 	
+	/**
+	 * Additional software that is relied upon by the Health IT Module to demonstrate its compliance with a certification criterion or criteria.
+	 */
 	@XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
 	@XmlElement(name = "additionalSoftware")
 	private List<CertificationResultAdditionalSoftware> additionalSoftware;
 	
+	/**
+	 * The standard(s) used to meet a certification criterion where more than one is permitted
+	 */
 	@XmlElementWrapper(name = "testStandards", nillable = true, required = false)
 	@XmlElement(name = "testStandard")
 	private List<CertificationResultTestStandard> testStandards;
 	
+	/**
+	 * The test tool used to certify the Health IT Module to the corresponding certification criteria
+	 */
 	@XmlElementWrapper(name = "testTools", nillable = true, required = false)
 	@XmlElement(name = "testTool")
 	private List<CertificationResultTestTool> testToolsUsed;
@@ -87,6 +138,9 @@ public class CertificationResult implements Serializable {
 	@XmlElement(name = "macraMeasure")
 	private List<MacraMeasure> g2MacraMeasures;
 	
+	/**
+	 * Tasks used for SED testing
+	 */
 	@XmlElementWrapper(name = "testTasks", nillable = true, required = false)
 	@XmlElement(name = "testTask")
 	private List<CertificationResultTestTask> testTasks;

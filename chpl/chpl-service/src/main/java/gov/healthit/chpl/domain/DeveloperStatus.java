@@ -14,9 +14,15 @@ import gov.healthit.chpl.dto.DeveloperStatusDTO;
 public class DeveloperStatus implements Serializable {
 	private static final long serialVersionUID = 4646214778954081679L;
 	
+	/**
+	 * Developer status internal id.
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * Developer status name
+	 */
 	@XmlElement(required = true)
 	private String status;
 	

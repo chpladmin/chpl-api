@@ -9,17 +9,30 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 
+/**
+ * The certification criteria to which a given clinical quality measure applies. 
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CQMResultCertification implements Serializable {
 	private static final long serialVersionUID = 2547864525772721622L;
 	
+	/**
+	 * CQM to criteria mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * Criteria internal ID
+	 */
 	@XmlElement(required = true)
 	private Long certificationId;
 	
+	/**
+	 * Certification number (i.e. 170.314 (c)(1)) of the criteria
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String certificationNumber;
 

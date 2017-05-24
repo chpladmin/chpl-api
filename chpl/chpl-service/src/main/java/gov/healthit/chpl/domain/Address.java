@@ -14,24 +14,45 @@ import gov.healthit.chpl.dto.AddressDTO;
 public class Address implements Serializable {
 	private static final long serialVersionUID = 7978604053959537664L;
 	
+	/**
+	 * Address internal ID
+	 */
 	@XmlElement(required = true)
 	private Long addressId;
 	
+	/**
+	 * First line of the address
+	 */
 	@XmlElement(required = true)
 	private String line1;
 
+	/**
+	 * Second line of the address, optional
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String line2;
 	
+	/**
+	 * City of the address
+	 */
 	@XmlElement(required = true)
 	private String city;
 	
+	/**
+	 * State of the address
+	 */
 	@XmlElement(required = true)
 	private String state;
 	
+	/**
+	 * Zipcode of the address
+	 */
 	@XmlElement(required = true)
 	private String zipcode;
 	
+	/**
+	 * Country of the address
+	 */
 	@XmlElement(required = true)
 	private String country;
 	

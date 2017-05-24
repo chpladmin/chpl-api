@@ -22,18 +22,16 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private static final long serialVersionUID = 2903219171127034775L;
 	
 	/**
-	 * The internal ID of a listing.
+	 * The internal ID of the certified product.
 	 */
 	@XmlElement(required = true)
 	private Long id;
 	
-	@XmlElement(required = true)
 	/**
-	 * CHPL Product Number. Format can vary by edition. 2011 and many 2014 editions listings 
-	 * can have CHP-12345 formatted numbers. 2014 and future editions may have a 9-part unique
-	 * identifier.
-	 *  
+	 * The unique CHPL ID of the certified product. 
+	 * New uploads to CHPL will use the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date
 	 */
+	@XmlElement(required = true)
     private String chplProductNumber;
 	
 	@XmlElement(required = false, nillable=true)
@@ -48,6 +46,9 @@ public class CertifiedProductSearchDetails implements Serializable {
 	@XmlElement(required = false, nillable=true)
     private Date sedTestingEnd;
 	
+	/**
+	 * The ID used by ONC-ACBs for internal tracking
+	 */
 	@XmlElement(required = true)
     private String acbCertificationId;
 	
@@ -69,12 +70,21 @@ public class CertifiedProductSearchDetails implements Serializable {
 	@XmlElement(required = true)
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
 	
+	/**
+	 * The developer or vendor of the certified health IT product listing.
+	 */
 	@XmlElement(required = true)
     private Developer developer;
 	
+	/**
+	 * The product which this listing is under.
+	 */
 	@XmlElement(required = true)
     private Product product;
 
+	/**
+	 * The version of the product.
+	 */
 	@XmlElement(required = true)
     private ProductVersion version;
 	
@@ -156,20 +166,32 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private Integer countClosedNonconformities;
 	
 	/**
-	 * ICS status of the listings.
+	 * ICS status of the listing.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean ics;
 	
+	/**
+	 * Whether or not this listing is accessibility certified.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean accessibilityCertified;
 	
+	/**
+	 * For legacy CHPL listings, any additional software needed.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String productAdditionalSoftware;
 	
+	/**
+	 * The transparency attestation required by 170.523(k)(2) 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String transparencyAttestation;
 	
+	/**
+	 * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String transparencyAttestationUrl;
 	
@@ -179,33 +201,59 @@ public class CertifiedProductSearchDetails implements Serializable {
 	@XmlElement(required = false, nillable=true)
 	private Long numMeaningfulUse;
 	
+	/**
+	 * The last time this listing was modified in any way given in milliseconds since epoch.
+	 */
 	@XmlElement(required = true)
 	private Long lastModifiedDate;
 	
+	/**
+	 * Any surveillance that has occurred on this listing
+	 */
 	@XmlElementWrapper(name = "surveillanceList", nillable = true, required = false)
 	@XmlElement(name = "surveillance")
 	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 	
+	/**
+	 * The standard(s) or lack thereof used to meet the accessibility-centered design certification criterion.
+	 */
 	@XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
 	@XmlElement(name = "accessibilityStandard")
 	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 	
+	/**
+	 * The targeted users of the Health IT Module, as identified by the developer.
+	 * For example, "Ambulatory pediatricians"
+	 * 
+	 */
 	@XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
 	@XmlElement(name = "targetedUser")
 	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	
+	/**
+	 * The standards or mappings used to meet the quality management system certification criterion
+	 */
 	@XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
 	@XmlElement(name = "qmsStandard")
 	private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 	
+	/**
+	 * The criteria to which this listing attests
+	 */
 	@XmlElementWrapper(name = "certificationResults", nillable = true, required = false)
 	@XmlElement(name = "certificationResult")
 	private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 	
+	/**
+	 * The clinical quality measures to which this listing has been certified.
+	 */
 	@XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
 	@XmlElement(name = "cqmResult")
 	private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 	
+	/**
+	 * Changes to the certification status of this listing
+	 */
 	@XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
 	@XmlElement(name = "certificationEvent")
 	private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();

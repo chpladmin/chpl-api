@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -18,36 +19,63 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 public class Developer implements Serializable {
 	private static final long serialVersionUID = 7341544844577617247L;
 	
+	/**
+	 * The internal ID of the developer.
+	 */
 	@XmlElement(required = true)
 	private Long developerId;
 	
+	/**
+	 * A four-digit code assigned to each developer when it was created.
+	 */
 	@XmlElement(required = true)
 	private String developerCode;
 	
+	/**
+	 * Developer name
+	 */
 	@XmlElement(required = true)
 	private String name;
 	
+	/**
+	 * Developer website
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String website;
 	
+	/**
+	 * Developer's physical address
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Address address;
 	
+	/**
+	 * Contact information for the developer.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Contact contact;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String lastModifiedDate;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private Boolean deleted;
 	
+	/**
+	 * Transparency attestations between each certification body and the developer.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private List<TransparencyAttestationMap> transparencyAttestations;
 	
+	/**
+	 * Status changes that have occurred on the developer.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private List<DeveloperStatusEvent> statusEvents;
 	
+	/**
+	 * Current developer status
+	 */
 	@XmlElement(required = false, nillable=true)
 	private DeveloperStatus status;
 	

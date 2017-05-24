@@ -18,35 +18,59 @@ import javax.xml.bind.annotation.XmlType;
 public class Surveillance implements Serializable {
 	private static final long serialVersionUID = 7018071250912371691L;
 	
+	/**
+	 * Surveillance internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String surveillanceIdToReplace;
 	
+	/**
+	 * The user-friendly ID of this surveillance relative to a listing. Ex: SURV01
+	 */
 	@XmlElement(required = true)
 	private String friendlyId;
 	
+	/**
+	 * The listing under surveillance
+	 */
 	@XmlElement(required = true)
 	private CertifiedProduct certifiedProduct;
 	
+	/**
+	 * Date surveillance began
+	 */
 	@XmlElement(required = true)
 	private Date startDate;
 	
+	/**
+	 * Date surveillance ended
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Date endDate;
 	
+	/**
+	 * Type of surveillance (randomized or reactive)
+	 */
 	@XmlElement(required = true)
 	private SurveillanceType type;
 	
+	/**
+	 * Number of randomized sites used. Only applicable for randomized surveillance.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer randomizedSitesUsed;
 	
+	/**
+	 * Surveilled requirements
+	 */
 	@XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
 	@XmlElement(name = "requirement")
 	private Set<SurveillanceRequirement> requirements;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String authority;
 	
 	@XmlTransient

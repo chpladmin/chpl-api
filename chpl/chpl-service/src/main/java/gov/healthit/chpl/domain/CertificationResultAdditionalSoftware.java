@@ -5,36 +5,62 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 
+/**
+ * Additional software that is relied upon by the Health IT Module to demonstrate its compliance with a certification criterion or criteria.
+ * The additional software may be either another certified product listing or any other available software.
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultAdditionalSoftware implements Serializable {
 	private static final long serialVersionUID = -4131156681875211987L;
 	
+	/**
+	 * Additional software to certification result mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * If the additional software relied upon by the Health IT Module is not a certified health IT product, the name of the additional software product relied upon.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String name;
 	
+	/**
+	 * The version of the corresponding non-certified additional software relied upon by the Health IT Module. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String version;
 	
+	/**
+	 * If the additional software relied upon by the Health IT Module is also a certified health IT product, the internal listing ID of the additional software relied upon. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Long certifiedProductId;
 	
+	/**
+	 * If the additional software relied upon by the Health IT Module is also a certified health IT product, the unique CHPL ID of the additional software relied upon. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String certifiedProductNumber;
 	
+	/**
+	 * Additional software justification
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String justification;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private Long certificationResultId;
 	
+	/**
+	 * For 2015 certified products, the concept of a ‘grouping’ is introduced to allow for sets of alternative additional software. At least one Additional Software within a particular grouping is required to meet a specific certification criteria.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String grouping;
 	
