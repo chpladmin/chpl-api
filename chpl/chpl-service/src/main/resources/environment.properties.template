@@ -19,7 +19,7 @@ maxActivityRangeInDays=60
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
-disableSuspiciousActivityEmails=true
+disableSuspiciousActivityEmails=false
 
 #chpl/app/statistics/SummaryStatistics properties
 summaryEmail=chpl@ainq.com
