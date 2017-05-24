@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.apache.http.HttpVersion;
 import org.apache.http.client.fluent.Request;
@@ -66,6 +68,15 @@ public class UpdateCertificationStatusApp extends App {
 		List<CertifiedProductDTO> listings = updateCertStatus.getListings(cbDTO.getName(), certificationEdition, CertificationStatusType.Retired);
 		// Get authentication token for REST call to API
 		String token = updateCertStatus.getToken(props);
+		// refresh token every 15 mins because it expires every 30 mins
+		TimerTask refreshToken = new TimerTask() {
+			@Override
+			public void run() {
+				updateCertStatus.refreshToken(token, props);
+			}
+		};
+		Timer timer = new Timer("tokenTimer");
+		timer.scheduleAtFixedRate(refreshToken, 60*15*1000, 60*60*8*1000); // refresh token every 15 minutes for up to 8 hours
 		// Get Map<CertifiedProductDTO, ListingUpdateRequest> for update
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = updateCertStatus.getListingUpdateRequests(listings, updatedCertificationStatus, props, token);
 		// Update each listing's certification status to 'Withdrawn by Developer'
@@ -209,6 +220,25 @@ public class UpdateCertificationStatusApp extends App {
 					" using API-key=" + props.getProperty("apiKey"));
 		}
 		return token;
+	}
+	
+	private void refreshToken(String token, Properties props){
+		String urlRequest = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("refreshToken");
+		String result = null;
+		logger.info("Making REST HTTP GET call to " + urlRequest +
+				" using API-key=" + props.getProperty("apiKey"));
+		try{
+			result = Request.Get(urlRequest)
+					.version(HttpVersion.HTTP_1_1)
+					.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
+					.addHeader("API-key", props.getProperty("apiKey"))
+					.addHeader("Authorization", "Bearer " + token)
+					.execute().returnContent().asString();
+			logger.info("Retrieved result of " + urlRequest + " as follows: \n" + result);
+		} catch (IOException e){
+			logger.info("Failed to make call to " + urlRequest + 
+					" using API-key=" + props.getProperty("apiKey"));
+		}
 	}
 
 	public SearchMenuManager getSearchMenuManager() {
