@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.http.HttpVersion;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -95,27 +92,10 @@ public class UpdateCertificationStatusApp extends App {
 	private void updateListingsCertificationStatus(Long acbId, Map<CertifiedProductDTO, ListingUpdateRequest> cpUpdateMap, Properties props, Token token) throws JsonProcessingException, EntityRetrievalException, EntityCreationException{
 		for(CertifiedProductDTO cpDTO : cpUpdateMap.keySet()){
 			String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("updateCertifiedProduct");
-			logger.info("Making REST HTTP POST call to " + url +
-					" using API-key=" + props.getProperty("apiKey"));
 			ObjectMapper mapper = new ObjectMapper();
 			ListingUpdateRequest updateRequest = cpUpdateMap.get(cpDTO);
 			String json = mapper.writeValueAsString(updateRequest);
-			logger.info("Updating CP with id " + cpDTO.getId());
-			try{
-				String result = Request.Post(url)
-						.version(HttpVersion.HTTP_1_1)
-						.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
-						.addHeader("API-key", props.getProperty("apiKey"))
-						.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
-						.bodyString(json, ContentType.APPLICATION_JSON)
-						.execute().returnContent().asString();
-				logger.info("Retrieved result of " + url + " as follows: \n" + result);
-			} catch (IOException e){
-				logger.info("Failed to make call to " + url + 
-						" using API-key=" + props.getProperty("apiKey"));
-			}
-			logger.info("Updated CP " + cpDTO.getChplProductNumber() + " for acb id " + acbId + 
-					" to Certification Status = '" + cpUpdateMap.get(cpDTO).getListing().getCertificationStatus() + "'.");
+			HttpUtil.postBodyRequest(url, null, props, token, json);
 		}
 	}
 	
@@ -157,29 +137,15 @@ public class UpdateCertificationStatusApp extends App {
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = new HashMap<CertifiedProductDTO, ListingUpdateRequest>();
 		for(CertifiedProductDTO dto : cpDTOs){
 			String urlRequest = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + String.format(props.getProperty("getCertifiedProductDetails"), dto.getId().toString());
-			String result = null;
-			logger.info("Making REST HTTP GET call to " + urlRequest +
-					" using API-key=" + props.getProperty("apiKey"));
-			try{
-				result = Request.Get(urlRequest)
-						.version(HttpVersion.HTTP_1_1)
-						.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
-						.addHeader("API-key", props.getProperty("apiKey"))
-						.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
-						.execute().returnContent().asString();
-				logger.info("Retrieved result of " + urlRequest + " as follows: \n" + result);
-				// convert json to CertifiedProductSearchDetails object
-				ObjectMapper mapper = new ObjectMapper();
-				CertifiedProductSearchDetails cpDetails = mapper.readValue(result, CertifiedProductSearchDetails.class);
-				ListingUpdateRequest listingUpdate = new ListingUpdateRequest();
-				listingUpdate.setBanDeveloper(false);
-				listingUpdate.setListing(cpDetails);
-				listingUpdate.getListing().setCertificationStatus(newCertificationStatus);
-				listingUpdatesMap.put(dto, listingUpdate);
-			} catch (IOException e){
-				logger.info("Failed to make call to " + urlRequest + 
-						" using API-key=" + props.getProperty("apiKey"));
-			}
+			String result = HttpUtil.getRequest(urlRequest, null, props, token);
+			// convert json to CertifiedProductSearchDetails object
+			ObjectMapper mapper = new ObjectMapper();
+			CertifiedProductSearchDetails cpDetails = mapper.readValue(result, CertifiedProductSearchDetails.class);
+			ListingUpdateRequest listingUpdate = new ListingUpdateRequest();
+			listingUpdate.setBanDeveloper(false);
+			listingUpdate.setListing(cpDetails);
+			listingUpdate.getListing().setCertificationStatus(newCertificationStatus);
+			listingUpdatesMap.put(dto, listingUpdate);
 		}
 		return listingUpdatesMap;
 	}

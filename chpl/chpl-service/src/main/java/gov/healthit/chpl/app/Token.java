@@ -1,12 +1,8 @@
 package gov.healthit.chpl.app;
 
-import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,48 +48,21 @@ public class Token {
 	private Token getNewToken(Properties props) {
 		Token token = new Token();
 		String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("authenticate");
-		logger.info("Making REST HTTP POST call to " + url + 
-				" using API-key=" + props.getProperty("apiKey"));
-		try{
-			String tokenResponse = Request.Post(url)
-					.bodyString("{ \"userName\": \"" + props.getProperty("username") + "\","
-							+ " \"password\": \"" + props.getProperty("password") + "\" }", ContentType.APPLICATION_JSON)
-					.version(HttpVersion.HTTP_1_1)
-					.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
-					.addHeader("API-key", props.getProperty("apiKey"))
-					.execute().returnContent().asString();
-					JsonObject jobj = new Gson().fromJson(tokenResponse, JsonObject.class);
-					logger.info("Retrieved the following JSON from " + url + ": \n" + jobj.toString());
-					token.setToken(jobj.get("token").toString());
-					logger.info("Retrieved token " + token.getToken());
-					token.setTokenStartTime(System.currentTimeMillis());
-		} catch (IOException e){
-			logger.info("Failed to make call to " + url +
-					" using API-key=" + props.getProperty("apiKey"));
-		}
+		String bodyJson = "{ \"userName\": \"" + props.getProperty("username") + "\","
+							+ " \"password\": \"" + props.getProperty("password") + "\" }";
+		String tokenResponse = HttpUtil.postBodyRequest(url, null, props, bodyJson);
+		JsonObject jobj = new Gson().fromJson(tokenResponse, JsonObject.class);
+		token.setToken(jobj.get("token").toString());
+		token.setTokenStartTime(System.currentTimeMillis());
 		return token;
 	}
 	
 	private Token getRefreshedToken(Token token, Properties props) {
 		String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("refreshToken");
-		logger.info("Making REST HTTP GET call to " + url +
-				" using API-key=" + props.getProperty("apiKey"));
-		try{
-			String tokenResponse = Request.Get(url)
-					.version(HttpVersion.HTTP_1_1)
-					.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
-					.addHeader("API-key", props.getProperty("apiKey"))
-					.addHeader("Authorization", "Bearer " + token.getToken())
-					.execute().returnContent().asString();
-			JsonObject jobj = new Gson().fromJson(tokenResponse, JsonObject.class);
-			logger.info("Retrieved the following JSON from " + url + ": \n" + jobj.toString());
-			token.setToken(jobj.get("token").toString());
-			logger.info("Retrieved token " + token.getToken());
-			token.setTokenStartTime(System.currentTimeMillis());
-		} catch (IOException e){
-			logger.info("Failed to make call to " + url + 
-					" using API-key=" + props.getProperty("apiKey"));
-			}
+		String tokenResponse = HttpUtil.getRequest(url, null, props, token);
+		JsonObject jobj = new Gson().fromJson(tokenResponse, JsonObject.class);
+		token.setToken(jobj.get("token").toString());
+		token.setTokenStartTime(System.currentTimeMillis());
 		return token;
 	}
 	
