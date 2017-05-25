@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
@@ -12,6 +12,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+
+import gov.healthit.chpl.entity.AttestationType;
+import gov.healthit.chpl.entity.ProductEntity;
 
 
 @Entity

@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 public class CertifiedProductDTO implements Serializable {
 	private static final long serialVersionUID = 7918387302717979598L;

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,6 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 /** 
  * Object mapping for hibernate-handled table: certification_result.

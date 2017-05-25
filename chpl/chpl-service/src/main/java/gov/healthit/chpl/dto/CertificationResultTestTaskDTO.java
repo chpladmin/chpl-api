@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.healthit.chpl.entity.CertificationResultTestTaskEntity;
-import gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity;
 
 public class CertificationResultTestTaskDTO implements Serializable {
 	private static final long serialVersionUID = -2963883181763817735L;

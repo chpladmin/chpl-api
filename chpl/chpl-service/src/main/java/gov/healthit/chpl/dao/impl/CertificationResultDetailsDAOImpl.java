@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.entity.CertificationResultDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 
 
 @Repository(value = "certificationResultDetailsDAO")

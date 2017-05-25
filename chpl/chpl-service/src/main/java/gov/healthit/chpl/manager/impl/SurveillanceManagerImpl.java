@@ -42,7 +42,6 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
@@ -50,6 +49,7 @@ import gov.healthit.chpl.entity.SurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 

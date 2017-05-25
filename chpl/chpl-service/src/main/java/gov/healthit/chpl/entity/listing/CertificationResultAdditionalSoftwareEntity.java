@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
@@ -15,26 +15,38 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "certification_result_test_standard")
-public class CertificationResultTestStandardEntity {
+@Table(name = "certification_result_additional_software")
+public class CertificationResultAdditionalSoftwareEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certification_result_test_standard_id")
+	@Column(name = "certification_result_additional_software_id")
 	private Long id;
 	
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long certificationResultId;
 	
-	@Column(name = "test_standard_id")
-	private Long testStandardId;
+	@Column(name = "name")
+	private String name;
+	
+	@Column(name = "version")
+	private String version;
+	
+	@Column(name = "certified_product_id")
+	private Long certifiedProductId;
+	
+	@Column(name = "justification")
+	private String justification;
+
+	@Column(name = "grouping")
+	private String grouping;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private TestStandardEntity testStandard;
+	@JoinColumn(name = "certified_product_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private CertifiedProductDetailsEntity certifiedProduct;
 	
 	public Long getId() {
 		return id;
@@ -51,23 +63,39 @@ public class CertificationResultTestStandardEntity {
 	public void setCertificationResultId(Long certificationResultId) {
 		this.certificationResultId = certificationResultId;
 	}
-
-	public Long getTestStandardId() {
-		return testStandardId;
-	}
-
-	public void setTestStandardId(Long testStandardId) {
-		this.testStandardId = testStandardId;
-	}
-
-	public TestStandardEntity getTestStandard() {
-		return testStandard;
-	}
-
-	public void setTestStandard(TestStandardEntity testStandard) {
-		this.testStandard = testStandard;
-	}
 	
+	public String getJustification() {
+		return justification;
+	}
+
+	public void setJustification(String justification) {
+		this.justification = justification;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
+
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
+	}
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
@@ -107,5 +135,21 @@ public class CertificationResultTestStandardEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getGrouping() {
+		return grouping;
+	}
+
+	public void setGrouping(String grouping) {
+		this.grouping = grouping;
+	}
+
+	public CertifiedProductDetailsEntity getCertifiedProduct() {
+		return certifiedProduct;
+	}
+
+	public void setCertifiedProduct(CertifiedProductDetailsEntity certifiedProduct) {
+		this.certifiedProduct = certifiedProduct;
 	}
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.entity.CQMResultDetailsEntity;
+import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
 
 @Repository(value = "cqmResultDetailsDAO")
 public class CQMResultDetailsDAOImpl extends BaseDAOImpl implements
