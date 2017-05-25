@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.entity.ActivityEntity;
 
 

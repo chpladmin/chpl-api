@@ -18,6 +18,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,13 +40,13 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -85,6 +86,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired MeaningfulUseController meaningfulUseController;
+	@Autowired Environment env;
 
 	@ApiOperation(value="List all certified products", 
 			notes="Default behavior is to return all certified products in the system. "
@@ -276,6 +278,7 @@ public class CertifiedProductController {
 		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
+		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
 		
 		if(!changedProduct.getChplProductNumber().equals(existingProduct.getChplProductNumber())) {
