@@ -21,8 +21,8 @@ import gov.healthit.chpl.app.surveillance.presenter.SurveillanceOversightAllBrok
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.NotificationTypeConcept;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 

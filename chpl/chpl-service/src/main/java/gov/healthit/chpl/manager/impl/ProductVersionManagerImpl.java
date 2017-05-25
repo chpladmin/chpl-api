@@ -25,7 +25,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
-import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -135,6 +135,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		ProductVersionDTO after = new ProductVersionDTO(result);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, after.getId(), "Product Version "+dto.getVersion()+" updated for product "+dto.getProductId(), before, after);
 		checkSuspiciousActivity(before, after);
+		
 		return after;
 	}
 	
