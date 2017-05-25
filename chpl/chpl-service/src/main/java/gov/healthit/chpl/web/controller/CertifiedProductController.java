@@ -277,9 +277,8 @@ public class CertifiedProductController {
 		
 		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-		if(!Boolean.parseBoolean(env.getProperty("disableSuspiciousActivityEmails"))){
-			cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
-		}
+		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
+		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
 		
 		if(!changedProduct.getChplProductNumber().equals(existingProduct.getChplProductNumber())) {
