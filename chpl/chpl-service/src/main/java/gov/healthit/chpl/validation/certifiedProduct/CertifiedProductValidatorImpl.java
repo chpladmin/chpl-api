@@ -2,7 +2,9 @@ package gov.healthit.chpl.validation.certifiedProduct;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -14,10 +16,12 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -43,13 +47,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
 	@Autowired TestToolDAO testToolDao;
+	@Autowired ListingGraphDAO inheritanceDao;
 	
 	@Autowired
 	protected CertificationResultRules certRules;
 	
 	protected Boolean hasIcsConflict;
 	
-	protected String icsCode;
+	protected Integer icsCode;
 	
 	Pattern urlRegex;
 	
@@ -116,7 +121,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String developerCode = uniqueIdParts[DEVELOPER_CODE_INDEX];
 		String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
 		String versionCode = uniqueIdParts[VERSION_CODE_INDEX];
-		icsCode = uniqueIdParts[ICS_CODE_INDEX];
+		
+		String icsCodePart = uniqueIdParts[ICS_CODE_INDEX];
+		if(StringUtils.isEmpty(icsCodePart) || !icsCodePart.matches("^\\d+$")) {
+			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+		} else {
+			icsCode = new Integer(icsCodePart);
+		}
 		String additionalSoftwareCode = uniqueIdParts[ADDITIONAL_SOFTWARE_CODE_INDEX];
 		String certifiedDateCode = uniqueIdParts[CERTIFIED_DATE_CODE_INDEX];
 		
@@ -192,19 +203,18 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
 			product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 		}
-		
-		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
-			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
-		}
-			
+	
 		hasIcsConflict = false;
-		if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
-			product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
-			hasIcsConflict = true;
-		} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
-			product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
-			hasIcsConflict = true;
+		if(!StringUtils.isEmpty(icsCode)) {
+			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
+				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
+				hasIcsConflict = true;
+			} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
+				product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
+				hasIcsConflict = true;
+			}
 		}
+		
 		if(additionalSoftwareCode.equals("0")) {
 			boolean hasAS = false;
 			for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -278,7 +288,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
 			String versionCode = uniqueIdParts[VERSION_CODE_INDEX];
-			icsCode = uniqueIdParts[ICS_CODE_INDEX];
+			String icsCodePart = uniqueIdParts[ICS_CODE_INDEX];
+			if(StringUtils.isEmpty(icsCodePart) || !icsCodePart.matches("^\\d+$")) {
+				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+			} else {
+				icsCode = new Integer(icsCodePart);
+			}
 			String additionalSoftwareCode = uniqueIdParts[ADDITIONAL_SOFTWARE_CODE_INDEX];
 			String certifiedDateCode = uniqueIdParts[CERTIFIED_DATE_CODE_INDEX];
 			
@@ -308,17 +323,49 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 			}
 			
-			if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
-				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
-			}
-			
 			hasIcsConflict = false;
-			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
-				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
-				hasIcsConflict = true;
-			} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
-				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
-				hasIcsConflict = true;
+			if(!StringUtils.isEmpty(icsCode)) {
+				if(icsCode.intValue() == 0) {
+					if(product.getParents() != null && product.getParents().size() > 0) {
+						product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
+					} 
+					
+					if(product.getIcs().equals(Boolean.TRUE)) {
+						product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+						hasIcsConflict = true;
+					}
+				} else if(icsCode.intValue() > 0) {
+					//if ICS is nonzero, warn about providing parents
+					if(product.getParents() == null || product.getParents().size() == 0) {
+						product.getWarningMessages().add("The ICS code is greater than zero which means this listing has inherited properties. It is recommended to specify at least one parent from which the listing inherits.");
+					} else {
+						//parents are non-empty - check inheritance rules
+						//certification edition must be the same as this listings
+						List<Long> parentIds = new ArrayList<Long>();
+						for(CertifiedProduct potentialParent : product.getParents()) {
+							parentIds.add(potentialParent.getId());
+						}
+						List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+						for(CertificationEditionDTO parentEdition : parentEditions) {
+							if(!product.getCertificationEdition().get("id").equals(parentEdition.getId().toString())) {
+								product.getErrorMessages().add("A parent was found with certification edition '" + parentEdition.getYear() + ". Parent certification edition must match that of this listing.");
+							}
+						}
+						
+						//this listing's ICS code must be greater than the max of parent ICS codes
+						Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
+						if(largestIcs != null && icsCode.intValue() != (largestIcs.intValue()+1)) {
+							product.getErrorMessages().add("The ICS Code for this listing was given as '" + 
+									icsCode + "' but it was expected to be one more than the " +
+									"largest inherited ICS code '" + largestIcs + "'.");
+						}
+					}
+					
+					if(product.getIcs().equals(Boolean.FALSE)) {
+						product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
+						hasIcsConflict = true;
+					}
+				}
 			}
 			
 			if(!additionalSoftwareCode.equals("0") && !additionalSoftwareCode.equals("1")) {

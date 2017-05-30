@@ -28,7 +28,7 @@
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity</class>
-		<class>gov.healthit.chpl.entitylisting..CertificationResultTestToolEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity</class>
@@ -57,6 +57,7 @@
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
+		<class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
 		<class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
 		<class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
 		<class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>

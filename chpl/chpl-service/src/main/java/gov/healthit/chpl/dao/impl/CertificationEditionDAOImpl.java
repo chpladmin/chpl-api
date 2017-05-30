@@ -97,6 +97,22 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 	}
 	
 	@Override
+	public List<CertificationEditionDTO> getEditions(List<Long> listingIds){
+		Query query = entityManager.createQuery( "SELECT DISTINCT edition "
+				+ "FROM CertificationEditionEntity edition, CertifiedProductEntity listing "
+				+ "WHERE listing.deleted <> true "
+				+ "AND listing.certificationEditionId = edition.id "
+				+ "AND listing.id IN (:listingIds) ", CertificationEditionEntity.class );
+		query.setParameter("listingIds", listingIds);
+		List<CertificationEditionEntity> editions = query.getResultList();
+		List<CertificationEditionDTO> results = new ArrayList<CertificationEditionDTO>();
+		for(CertificationEditionEntity edition : editions) {
+			results.add(new CertificationEditionDTO(edition));
+		}
+		return results;
+	}
+	
+	@Override
 	public CertificationEditionDTO getByYear(String year) {
 		CertificationEditionDTO result = null;
 		CertificationEditionEntity yearEntity = getEntityByYear(year);

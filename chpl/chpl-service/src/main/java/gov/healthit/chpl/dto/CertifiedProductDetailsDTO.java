@@ -1,9 +1,7 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.util.StringUtils;
 
@@ -62,17 +60,8 @@ public class CertifiedProductDetailsDTO implements Serializable {
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long numMeaningfulUse;
-	
-	private List<CertifiedProductQmsStandardDTO> qmsStandards;
-	private List<TargetedUserDTO> targetedUsers;
-    private List<CertificationResultDetailsDTO> certResults;
-    private List<CQMResultDetailsDTO> cqmResults;
     
     public CertifiedProductDetailsDTO(){
-    	qmsStandards = new ArrayList<CertifiedProductQmsStandardDTO>();
-    	targetedUsers = new ArrayList<TargetedUserDTO>();
-    	certResults = new ArrayList<CertificationResultDetailsDTO>();
-    	cqmResults = new ArrayList<CQMResultDetailsDTO>();
     }
     
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
@@ -311,22 +300,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
 		this.certificationStatusName = certificationStatusName;
 	}
 	
-	public List<CertificationResultDetailsDTO> getCertResults() {
-		return certResults;
-	}
-
-	public void setCertResults(List<CertificationResultDetailsDTO> certResults) {
-		this.certResults = certResults;
-	}
-
-	public List<CQMResultDetailsDTO> getCqmResults() {
-		return cqmResults;
-	}
-
-	public void setCqmResults(List<CQMResultDetailsDTO> cqmResults) {
-		this.cqmResults = cqmResults;
-	}
-	
 	public String getYearCode() {
 		if(StringUtils.isEmpty(this.getYear())) {
 			return "";
@@ -456,22 +429,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
-	}
-
-	public List<CertifiedProductQmsStandardDTO> getQmsStandards() {
-		return qmsStandards;
-	}
-
-	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
-		this.qmsStandards = qmsStandards;
-	}
-	
-	public List<TargetedUserDTO> getTargetedUsers() {
-		return targetedUsers;
-	}
-
-	public void setTargetedUsers(List<TargetedUserDTO> targetedUsers) {
-		this.targetedUsers = targetedUsers;
 	}
 
 	public Boolean getAccessibilityCertified() {

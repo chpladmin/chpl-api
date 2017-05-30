@@ -40,6 +40,7 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -648,5 +649,14 @@ public class CertifiedProductManagerTest extends TestCase {
 		List<MacraMeasure> measures = cert.getG1MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(0, measures.size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getListingsOwnedByProduct() {
+		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(-1L);
+		assertNotNull(listings);
+		assertEquals(4, listings.size());
 	}
 }

@@ -369,7 +369,7 @@
 		last_modified_date="2016-08-20 13:15:00" deleted="false"
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="1" meaningful_use_users="12" testing_lab_id="-1"
-		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
+		acb_certification_id="abcdef" ics_code="2" additional_software_code="1"
 		product_code="EIC13" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="7"
 		certification_edition_id="1" product_version_id="7"
@@ -399,7 +399,7 @@
 		last_modified_date="2016-08-20 13:15:00" deleted="false"
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="3" meaningful_use_users="15" testing_lab_id="-1"
-		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
+		acb_certification_id="abcdef" ics_code="2" additional_software_code="1"
 		product_code="EIC16" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="10"
 		certification_edition_id="3" product_version_id="10"
@@ -480,7 +480,7 @@
 		last_modified_date="2016-08-20 13:15:00" deleted="false"
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="9" meaningful_use_users="23" testing_lab_id="-1"
-		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
+		acb_certification_id="abcdef" additional_software_code="1"
 		product_code="EIC24" certified_date_code="160402" version_code="36" />
 
 	<certified_product_qms_standard
@@ -962,6 +962,13 @@
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
+	<listing_to_listing_map listing_to_listing_map_id="1" child_listing_id="5" parent_listing_id="6"
+		creation_date="2016-08-20 13:14:00" last_modified_user="-2"
+		last_modified_date="2016-08-20 13:15:00" deleted="false" />
+	<listing_to_listing_map listing_to_listing_map_id="2" child_listing_id="5" parent_listing_id="9"
+		creation_date="2016-08-20 13:14:00" last_modified_user="-2"
+		last_modified_date="2016-08-20 13:15:00" deleted="false" />		
+		
 	<acl_class id="1" class="gov.healthit.chpl.auth.dto.UserDTO" />
 	<acl_class id="2" class="gov.healthit.chpl.dto.CertificationBodyDTO" />
 	<acl_class id="3" class="gov.healthit.chpl.dto.TestingLabDTO" />

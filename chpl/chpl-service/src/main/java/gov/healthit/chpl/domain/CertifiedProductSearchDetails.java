@@ -172,6 +172,20 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private Boolean ics;
 	
 	/**
+	 * The first-level parent listings that this listing inherits from
+	 */
+	@XmlElementWrapper(name = "parents", nillable = true, required = false)
+	@XmlElement(name = "parent")
+	private List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
+	
+	/**
+	 * The first-level child listings that inherit from this listings
+	 */
+	@XmlElementWrapper(name = "children", nillable = true, required = false)
+	@XmlElement(name = "child")
+	private List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
+	
+	/**
 	 * Whether or not this listing is accessibility certified.
 	 */
 	@XmlElement(required = false, nillable=true)
@@ -400,6 +414,18 @@ public class CertifiedProductSearchDetails implements Serializable {
 		this.ics = ics;
 	}
 	
+	public List<CertifiedProduct> getParents() {
+		return parents;
+	}
+	public void setParents(List<CertifiedProduct> parents) {
+		this.parents = parents;
+	}
+	public List<CertifiedProduct> getChildren() {
+		return children;
+	}
+	public void setChildren(List<CertifiedProduct> children) {
+		this.children = children;
+	}
 	public Map<String, Object> getTestingLab() {
 		return testingLab;
 	}
