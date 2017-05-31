@@ -69,12 +69,15 @@ public class UpdateCertificationStatusApp extends App {
 
 	@Override
 	protected void initiateSpringBeans(AbstractApplicationContext context, Properties props) {
+		logger.info("Initiate Spring Beans");
 		this.setCertificationBodyDAO((CertificationBodyDAO)context.getBean("certificationBodyDAO"));
 		this.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		this.setSearchMenuManager((SearchMenuManager)context.getBean("searchMenuManager"));
+		logger.info("Finished initiating Spring Beans");
 	}
 	
 	private List<CertifiedProductDTO> getListings(String certificationBodyName, KeyValueModel certificationEdition, CertificationStatusType certificationStatusType) throws EntityRetrievalException{
+		logger.info("Get listings for " + certificationBodyName + " " + certificationEdition + " " + certificationStatusType);
 		List<CertifiedProductDTO> cps = new ArrayList<CertifiedProductDTO>();
 		List<CertifiedProductDetailsDTO> allCpDetails = certifiedProductDAO.findAll();
 		for(CertifiedProductDetailsDTO dto : allCpDetails){
@@ -91,18 +94,22 @@ public class UpdateCertificationStatusApp extends App {
 
 	private void updateListingsCertificationStatus(Long acbId, Map<CertifiedProductDTO, ListingUpdateRequest> cpUpdateMap, Properties props, Token token) throws JsonProcessingException, EntityRetrievalException, EntityCreationException{
 		for(CertifiedProductDTO cpDTO : cpUpdateMap.keySet()){
+			logger.info("Update listing Certification Status for " + cpDTO.getChplProductNumber());
 			String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("updateCertifiedProduct");
 			ObjectMapper mapper = new ObjectMapper();
 			ListingUpdateRequest updateRequest = cpUpdateMap.get(cpDTO);
 			String json = mapper.writeValueAsString(updateRequest);
-			HttpUtil.postBodyRequest(url, null, props, token, json);
+			HttpUtil.postAuthenticatedBodyRequest(url, null, props, token, json);
+			logger.info("Finished updating listing Certification Status for " + cpDTO.getChplProductNumber());
 		}
 	}
 	
 	private CertificationBodyDTO getCertificationBody(String certificationBodyName){
+		logger.info("Get certification body");
 		List<CertificationBodyDTO> cbDTOs = this.certificationBodyDAO.findAll(true);
 		for(CertificationBodyDTO dto : cbDTOs){
 			if(dto.getName().equalsIgnoreCase(certificationBodyName)){
+				logger.info("Finished getting certification body for " + certificationBodyName);
 				return dto;
 			}
 		}
@@ -110,9 +117,11 @@ public class UpdateCertificationStatusApp extends App {
 	}
 	
 	private KeyValueModel getCertificationEdition(String certificationEditionYear){
+		logger.info("Get certification edition for " + certificationEditionYear);
 		Set<KeyValueModel> editionNames = this.searchMenuManager.getEditionNames(true);
 		for(KeyValueModel editionName : editionNames){
 			if(editionName.getName().equalsIgnoreCase(certificationEditionYear)){
+				logger.info("Finished getting certification edition for " + certificationEditionYear);
 				return editionName;
 			}
 		}
@@ -120,6 +129,7 @@ public class UpdateCertificationStatusApp extends App {
 	}
 	
 	private Map<String, Object> getCertificationStatus(CertificationStatusType certificationStatusType){
+		logger.info("Getting certification status for " + certificationStatusType.getName());
 		Set<KeyValueModel> certStatuses = searchMenuManager.getCertificationStatuses();
 		Map<String, Object> certStatusMap = new HashMap<String, Object>();
 		for(KeyValueModel certStatus : certStatuses){
@@ -127,6 +137,7 @@ public class UpdateCertificationStatusApp extends App {
 				certStatusMap.put("date", certStatus.getDescription());
 				certStatusMap.put("name", certStatus.getName());
 				certStatusMap.put("id", certStatus.getId().toString());
+				logger.info("Finished getting certification status for " + certificationStatusType.getName());
 				return certStatusMap;
 			}
 		}
@@ -134,10 +145,11 @@ public class UpdateCertificationStatusApp extends App {
 	}
 	
 	private Map<CertifiedProductDTO, ListingUpdateRequest> getListingUpdateRequests(List<CertifiedProductDTO> cpDTOs, Map<String, Object> newCertificationStatus, Properties props, Token token) throws JsonParseException, JsonMappingException, IOException{
+		logger.info("Getting listing update requests");
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = new HashMap<CertifiedProductDTO, ListingUpdateRequest>();
 		for(CertifiedProductDTO dto : cpDTOs){
 			String urlRequest = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + String.format(props.getProperty("getCertifiedProductDetails"), dto.getId().toString());
-			String result = HttpUtil.getRequest(urlRequest, null, props, token);
+			String result = HttpUtil.getAuthenticatedRequest(urlRequest, null, props, token);
 			// convert json to CertifiedProductSearchDetails object
 			ObjectMapper mapper = new ObjectMapper();
 			CertifiedProductSearchDetails cpDetails = mapper.readValue(result, CertifiedProductSearchDetails.class);
@@ -147,6 +159,7 @@ public class UpdateCertificationStatusApp extends App {
 			listingUpdate.getListing().setCertificationStatus(newCertificationStatus);
 			listingUpdatesMap.put(dto, listingUpdate);
 		}
+		logger.info("Finished getting listing update requests");
 		return listingUpdatesMap;
 	}
 
