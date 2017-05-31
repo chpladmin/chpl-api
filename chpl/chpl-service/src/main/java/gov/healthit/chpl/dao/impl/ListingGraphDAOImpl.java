@@ -48,10 +48,10 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 	public Integer getLargestIcs(List<Long> listingIds) {
 		Query query = entityManager.createQuery( "SELECT MAX(listing.icsCode) "
 				+ "FROM CertifiedProductEntity listing "
-				+ "WHERE listing.id IN (:listingIds)", String.class );
+				+ "WHERE listing.id IN (:listingIds)", Integer.class );
 		query.setParameter("listingIds", listingIds);
-		String result = (String)query.getSingleResult();
-		return new Integer(result);
+		Integer result = (Integer)query.getSingleResult();
+		return result;
 	}
 	
 	/**

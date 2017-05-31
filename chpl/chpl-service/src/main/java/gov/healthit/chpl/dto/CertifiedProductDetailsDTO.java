@@ -12,7 +12,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
 	private Long id;
 	private String productCode;
 	private String versionCode;
-	private String icsCode;
+	private Integer icsCode;
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
     private Long testingLabId;
@@ -351,11 +351,11 @@ public class CertifiedProductDetailsDTO implements Serializable {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getIcsCode() {
+	public Integer getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(String icsCode) {
+	public void setIcsCode(Integer icsCode) {
 		this.icsCode = icsCode;
 	}
 

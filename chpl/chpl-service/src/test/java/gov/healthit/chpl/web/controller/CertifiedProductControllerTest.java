@@ -267,8 +267,7 @@ public class CertifiedProductControllerTest {
 		} catch (ValidationException e) {
 			assertNotNull(e);
 			// 2014 certEdition; ICS is true, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. Mismatch = warning message
-			assertTrue(e.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
-					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+			assertTrue(e.getErrorMessages().contains("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true."));
 		}
 		
 	}

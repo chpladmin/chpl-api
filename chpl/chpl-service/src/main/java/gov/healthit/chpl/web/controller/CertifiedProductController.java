@@ -245,7 +245,7 @@ public class CertifiedProductController {
 				} else {
 					toUpdate.setProductCode(chplProductIdComponents[4]);
 					toUpdate.setVersionCode(chplProductIdComponents[5]);
-					toUpdate.setIcsCode(chplProductIdComponents[6]);
+					toUpdate.setIcsCode(new Integer(chplProductIdComponents[6]));
 					toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
 					toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
 				}

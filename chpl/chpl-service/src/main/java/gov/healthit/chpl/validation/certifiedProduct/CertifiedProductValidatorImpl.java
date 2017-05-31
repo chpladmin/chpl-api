@@ -205,11 +205,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 	
 		hasIcsConflict = false;
-		if(!StringUtils.isEmpty(icsCode)) {
-			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
+		if(icsCode != null) {
+			if(icsCode.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
 				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
 				hasIcsConflict = true;
-			} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
+			} else if(icsCode.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
 				hasIcsConflict = true;
 			}
@@ -324,7 +324,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 			
 			hasIcsConflict = false;
-			if(!StringUtils.isEmpty(icsCode)) {
+			if(icsCode != null) {
 				if(icsCode.intValue() == 0) {
 					if(product.getParents() != null && product.getParents().size() > 0) {
 						product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");

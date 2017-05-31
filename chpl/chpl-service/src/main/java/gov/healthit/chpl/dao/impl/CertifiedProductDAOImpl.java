@@ -490,7 +490,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		query.setParameter("developerCode", developerCode);
 		query.setParameter("productCode", productCode);
 		query.setParameter("versionCode", versionCode);
-		query.setParameter("icsCode", icsCode);
+		query.setParameter("icsCode", new Integer(icsCode));
 		query.setParameter("additionalSoftwareCode", additionalSoftwareCode);
 		query.setParameter("certifiedDateCode", certifiedDateCode);
 		

@@ -398,7 +398,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		toCreate.setProductCode(uniqueIdParts[4]);
 		toCreate.setVersionCode(uniqueIdParts[5]);
-		toCreate.setIcsCode(uniqueIdParts[6]);
+		toCreate.setIcsCode(new Integer(uniqueIdParts[6]));
 		toCreate.setAdditionalSoftwareCode(uniqueIdParts[7]);
 		toCreate.setCertifiedDateCode(uniqueIdParts[8]);
 		
