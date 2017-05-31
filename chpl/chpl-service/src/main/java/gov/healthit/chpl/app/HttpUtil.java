@@ -1,5 +1,4 @@
 package gov.healthit.chpl.app;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -76,7 +75,7 @@ public class HttpUtil {
         return null;
     }
      
-    public static String getRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
+    public static String getAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
         URI uri = buildURI(url, paramMap); 
         try { 
             String content = Request.Get(uri) 
@@ -88,19 +87,36 @@ public class HttpUtil {
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
+         logger.error("getAuthenticatedRequest:{},error:{}",uri,e); 
+         return null; 
+        } 
+    } 
+    
+    public static String getRequest(String url, Map<String, String> paramMap, Properties props) { 
+        URI uri = buildURI(url, paramMap); 
+        try { 
+            String content = Request.Get(uri) 
+            		.version(HttpVersion.HTTP_1_1)
+            		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
+            		.addHeader("API-key", props.getProperty("apiKey"))
+                    .execute().returnContent().asString(); 
+            logger.debug("{},result:{}",uri,content); 
+            return content; 
+        } catch (Exception e) { 
          logger.error("getRequest:{},error:{}",uri,e); 
          return null; 
         } 
     } 
      
-    public static String postRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
+    public static String postAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
         URI uri = buildURI(url, paramMap); 
         try { 
+        	String authenticatedToken = token.getValidToken(token, props).getToken();
             String content = Request.Post(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
+            		.addHeader("Authorization", "Bearer " + authenticatedToken)
                     .execute().returnContent().asString(); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
@@ -126,14 +142,15 @@ public class HttpUtil {
         } 
     } 
      
-    public static String postBodyRequest(String url, Map<String, String> paramMap, Properties props, Token token, String body) { 
+    public static String postAuthenticatedBodyRequest(String url, Map<String, String> paramMap, Properties props, Token token, String body) { 
         URI uri = buildURI(url, paramMap); 
         try { 
+        	String authenticatedToken = token.getValidToken(token, props).getToken();
             String content = Request.Post(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
+            		.addHeader("Authorization", "Bearer " + authenticatedToken)
                     .bodyString(body, ContentType.APPLICATION_JSON) 
                     .execute().returnContent().asString(); 
             logger.debug("{},result:{}",uri,content); 

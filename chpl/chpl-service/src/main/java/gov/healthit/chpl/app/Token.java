@@ -46,6 +46,7 @@ public class Token {
 	}
 	
 	private Token getNewToken(Properties props) {
+		logger.info("Get new token");
 		Token token = new Token();
 		String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("authenticate");
 		String bodyJson = "{ \"userName\": \"" + props.getProperty("username") + "\","
@@ -58,8 +59,9 @@ public class Token {
 	}
 	
 	private Token getRefreshedToken(Token token, Properties props) {
+		logger.info("Get refreshed token");
 		String url = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + props.getProperty("refreshToken");
-		String tokenResponse = HttpUtil.getRequest(url, null, props, token);
+		String tokenResponse = HttpUtil.getAuthenticatedRequest(url, null, props, token);
 		JsonObject jobj = new Gson().fromJson(tokenResponse, JsonObject.class);
 		token.setToken(jobj.get("token").toString());
 		token.setTokenStartTime(System.currentTimeMillis());
