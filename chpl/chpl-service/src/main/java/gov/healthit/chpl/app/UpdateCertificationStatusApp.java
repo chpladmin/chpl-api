@@ -61,6 +61,7 @@ public class UpdateCertificationStatusApp extends App {
 		List<CertifiedProductDTO> listings = updateCertStatus.getListings(cbDTO.getName(), certificationEdition, CertificationStatusType.Retired);
 		// Get authentication token for REST call to API
 		Token token = new Token(props);
+		token.setToken(token.getNewToken(props).getToken());
 		// Get Map<CertifiedProductDTO, ListingUpdateRequest> for update
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = updateCertStatus.getListingUpdateRequests(listings, updatedCertificationStatus, props, token);
 		// Update each listing's certification status to 'Withdrawn by Developer'
@@ -99,7 +100,8 @@ public class UpdateCertificationStatusApp extends App {
 			ObjectMapper mapper = new ObjectMapper();
 			ListingUpdateRequest updateRequest = cpUpdateMap.get(cpDTO);
 			String json = mapper.writeValueAsString(updateRequest);
-			HttpUtil.postAuthenticatedBodyRequest(url, null, props, token, json);
+			HttpUtil.postAuthenticatedBodyRequest(url, null, props, token.getToken(), json);
+			token = token.getRefreshedToken(token, props);
 			logger.info("Finished updating listing Certification Status for " + cpDTO.getChplProductNumber());
 		}
 	}
@@ -149,7 +151,7 @@ public class UpdateCertificationStatusApp extends App {
 		Map<CertifiedProductDTO, ListingUpdateRequest> listingUpdatesMap = new HashMap<CertifiedProductDTO, ListingUpdateRequest>();
 		for(CertifiedProductDTO dto : cpDTOs){
 			String urlRequest = props.getProperty("chplUrlBegin") + props.getProperty("basePath") + String.format(props.getProperty("getCertifiedProductDetails"), dto.getId().toString());
-			String result = HttpUtil.getAuthenticatedRequest(urlRequest, null, props, token);
+			String result = HttpUtil.getAuthenticatedRequest(urlRequest, null, props, token.getToken());
 			// convert json to CertifiedProductSearchDetails object
 			ObjectMapper mapper = new ObjectMapper();
 			CertifiedProductSearchDetails cpDetails = mapper.readValue(result, CertifiedProductSearchDetails.class);

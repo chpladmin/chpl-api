@@ -75,14 +75,14 @@ public class HttpUtil {
         return null;
     }
      
-    public static String getAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
+    public static String getAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, String token) { 
         URI uri = buildURI(url, paramMap); 
         try { 
             String content = Request.Get(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
+            		.addHeader("Authorization", "Bearer " + token)
                     .execute().returnContent().asString(); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
@@ -108,15 +108,14 @@ public class HttpUtil {
         } 
     } 
      
-    public static String postAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
+    public static String postAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, String token) { 
         URI uri = buildURI(url, paramMap); 
         try { 
-        	String authenticatedToken = token.getValidToken(token, props).getToken();
             String content = Request.Post(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + authenticatedToken)
+            		.addHeader("Authorization", "Bearer " + token)
                     .execute().returnContent().asString(); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
@@ -142,15 +141,14 @@ public class HttpUtil {
         } 
     } 
      
-    public static String postAuthenticatedBodyRequest(String url, Map<String, String> paramMap, Properties props, Token token, String body) { 
+    public static String postAuthenticatedBodyRequest(String url, Map<String, String> paramMap, Properties props, String token, String body) { 
         URI uri = buildURI(url, paramMap); 
         try { 
-        	String authenticatedToken = token.getValidToken(token, props).getToken();
             String content = Request.Post(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + authenticatedToken)
+            		.addHeader("Authorization", "Bearer " + token)
                     .bodyString(body, ContentType.APPLICATION_JSON) 
                     .execute().returnContent().asString(); 
             logger.debug("{},result:{}",uri,content); 
