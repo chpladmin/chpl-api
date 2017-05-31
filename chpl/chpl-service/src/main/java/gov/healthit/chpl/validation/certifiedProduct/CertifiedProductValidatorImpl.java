@@ -326,23 +326,26 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			hasIcsConflict = false;
 			if(icsCode != null) {
 				if(icsCode.intValue() == 0) {
-					if(product.getParents() != null && product.getParents().size() > 0) {
+					if(product.getIcs() != null && product.getIcs().getParents() != null && 
+							product.getIcs().getParents().size() > 0) {
 						product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
 					} 
 					
-					if(product.getIcs().equals(Boolean.TRUE)) {
+					if(product.getIcs() != null && product.getIcs().getInherits() != null && 
+							product.getIcs().getInherits().equals(Boolean.TRUE)) {
 						product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
 						hasIcsConflict = true;
 					}
 				} else if(icsCode.intValue() > 0) {
 					//if ICS is nonzero, warn about providing parents
-					if(product.getParents() == null || product.getParents().size() == 0) {
+					if(product.getIcs() == null || product.getIcs().getParents() == null || 
+							product.getIcs().getParents().size() == 0) {
 						product.getWarningMessages().add("The ICS code is greater than zero which means this listing has inherited properties. It is recommended to specify at least one parent from which the listing inherits.");
 					} else {
 						//parents are non-empty - check inheritance rules
 						//certification edition must be the same as this listings
 						List<Long> parentIds = new ArrayList<Long>();
-						for(CertifiedProduct potentialParent : product.getParents()) {
+						for(CertifiedProduct potentialParent : product.getIcs().getParents()) {
 							parentIds.add(potentialParent.getId());
 						}
 						List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
@@ -361,7 +364,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						}
 					}
 					
-					if(product.getIcs().equals(Boolean.FALSE)) {
+					if(product.getIcs() == null || product.getIcs().getInherits() == null ||
+							product.getIcs().getInherits().equals(Boolean.FALSE)) {
 						product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 						hasIcsConflict = true;
 					}

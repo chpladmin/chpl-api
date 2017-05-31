@@ -166,24 +166,11 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private Integer countClosedNonconformities;
 	
 	/**
-	 * ICS status of the listing.
+	 * Whether the listing inherits from other listings and the 
+	 * first-level parents and children of this listing.
 	 */
 	@XmlElement(required = false, nillable=true)
-	private Boolean ics;
-	
-	/**
-	 * The first-level parent listings that this listing inherits from
-	 */
-	@XmlElementWrapper(name = "parents", nillable = true, required = false)
-	@XmlElement(name = "parent")
-	private List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
-	
-	/**
-	 * The first-level child listings that inherit from this listings
-	 */
-	@XmlElementWrapper(name = "children", nillable = true, required = false)
-	@XmlElement(name = "child")
-	private List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
+	private InheritedCertificationStatus ics;
 	
 	/**
 	 * Whether or not this listing is accessibility certified.
@@ -407,25 +394,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
-	public Boolean getIcs() {
+	public InheritedCertificationStatus getIcs() {
 		return ics;
 	}
-	public void setIcs(Boolean ics) {
+	public void setIcs(InheritedCertificationStatus ics) {
 		this.ics = ics;
 	}
-	
-	public List<CertifiedProduct> getParents() {
-		return parents;
-	}
-	public void setParents(List<CertifiedProduct> parents) {
-		this.parents = parents;
-	}
-	public List<CertifiedProduct> getChildren() {
-		return children;
-	}
-	public void setChildren(List<CertifiedProduct> children) {
-		this.children = children;
-	}
+
 	public Map<String, Object> getTestingLab() {
 		return testingLab;
 	}

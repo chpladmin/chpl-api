@@ -658,7 +658,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	protected void validateDemographics(CertifiedProductSearchDetails product) {
 		super.validateDemographics(product);
 		
-		if(product.getIcs() == null) {
+		if(product.getIcs() == null || product.getIcs().getInherits() == null) {
 			product.getErrorMessages().add("ICS is required.");
 		}
 		

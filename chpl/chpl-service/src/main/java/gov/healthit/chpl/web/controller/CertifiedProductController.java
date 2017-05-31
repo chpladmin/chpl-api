@@ -227,7 +227,7 @@ public class CertifiedProductController {
 		toUpdate.setSedTestingEnd(updatedListing.getSedTestingEnd());
 		toUpdate.setAcbCertificationId(updatedListing.getAcbCertificationId());
 		toUpdate.setOtherAcb(updatedListing.getOtherAcb());
-		toUpdate.setIcs(updatedListing.getIcs());
+		toUpdate.setIcs(updatedListing.getIcs() == null || updatedListing.getIcs().getInherits() == null ? false : updatedListing.getIcs().getInherits());
 		toUpdate.setAccessibilityCertified(updatedListing.getAccessibilityCertified());
 		toUpdate.setProductAdditionalSoftware(updatedListing.getProductAdditionalSoftware());
 		
