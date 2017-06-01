@@ -31,7 +31,9 @@ public class CertificationResultTestProcedure implements Serializable {
 	private Long testProcedureId;
 	
 	/**
-	 * The test procedure version used for a given certification criteria
+	 * The test procedure version used for a given certification criteria. 
+	 * This variable is a string variable that does not take any restrictions on formatting 
+	 * or values and is applicable for 2014 and 2015 Edition. 
 	 */
 	@XmlElement(required = true)
 	private String testProcedureVersion;
