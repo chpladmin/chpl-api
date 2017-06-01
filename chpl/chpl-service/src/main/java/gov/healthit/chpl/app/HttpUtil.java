@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
 
 public class HttpUtil {
 	private static final Logger logger = LogManager.getLogger(HttpUtil.class);
-	private static final int CONNECTION_TIMEOUT = 600000;
+	private static final int CONNECTION_TIMEOUT = 600000; // time in millis. 1000 * 60 * 10 = 10 mins
 	private static final int SOCKET_TIMEOUT = 600000;
 	
 	private static final Function<Map.Entry<String, String>, NameValuePair> nameValueTransformFunction = new Function<Map.Entry<String, String>, NameValuePair>() { 
