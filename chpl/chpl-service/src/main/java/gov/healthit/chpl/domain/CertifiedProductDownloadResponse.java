@@ -19,9 +19,6 @@ public class CertifiedProductDownloadResponse implements Serializable {
 	
 	@XmlElementWrapper(name = "listings", nillable = false, required = true)
 	@XmlElement(name = "listing")
-	/**
-	 * Set of all listings on the CHPL.
-	 */
 	private List<CertifiedProductSearchDetails> listings;
 	
 	public CertifiedProductDownloadResponse(){

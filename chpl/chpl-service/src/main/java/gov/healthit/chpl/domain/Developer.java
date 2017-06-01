@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -18,36 +19,69 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 public class Developer implements Serializable {
 	private static final long serialVersionUID = 7341544844577617247L;
 	
+	/**
+	 * The internal ID of the developer.
+	 */
 	@XmlElement(required = true)
 	private Long developerId;
 	
+	/**
+	 * A four-digit code assigned to each developer when it was created.
+	 */
 	@XmlElement(required = true)
 	private String developerCode;
 	
+	/**
+	 * The name of the developer or vendor of the certified health IT product being uploaded.  
+	 * It is applicable to 2014 and 2015 Edition. If uploading a certified product from 
+	 * a developer that already exists in the CHPL database, please use the CHPL 
+	 * Developer management functionality to ensure that the name of the developer 
+	 * matches the database record to prevent duplication.
+	 */
 	@XmlElement(required = true)
 	private String name;
 	
+	/**
+	 * Website of health IT developer. Fully qualified URL which is reachable via web 
+	 * browser validation and verification. This variable is applicable for 2014 and 2015 Edition. 
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String website;
 	
+	/**
+	 * Developer's physical address
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Address address;
 	
+	/**
+	 * Contact information for the developer.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Contact contact;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String lastModifiedDate;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private Boolean deleted;
 	
+	/**
+	 * Transparency attestations between each certification body and the developer.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private List<TransparencyAttestationMap> transparencyAttestations;
 	
+	/**
+	 * Status changes that have occurred on the developer.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private List<DeveloperStatusEvent> statusEvents;
 	
+	/**
+	 * The status of a developer with certified Health IT. 
+	 * Allowable values are "Active", "Suspended by ONC", or "Under Certification Ban by ONC"
+	 */
 	@XmlElement(required = false, nillable=true)
 	private DeveloperStatus status;
 	

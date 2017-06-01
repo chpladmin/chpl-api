@@ -13,12 +13,21 @@ import javax.xml.bind.annotation.XmlType;
 public class TransparencyAttestationMap implements Serializable {
 	private static final long serialVersionUID = 584097086020777727L;
 	
+	/**
+	 * Certification body internal ID
+	 */
 	@XmlElement(required = true)
 	private Long acbId;
 	
+	/**
+	 * Certification body name
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String acbName;
 	
+	/**
+	 * Affirmative, Negative, or N/A
+	 */
 	@XmlElement(required = true)
 	private String attestation;
 	

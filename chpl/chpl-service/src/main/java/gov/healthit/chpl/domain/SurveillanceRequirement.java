@@ -15,18 +15,36 @@ import javax.xml.bind.annotation.XmlType;
 public class SurveillanceRequirement implements Serializable {
 	private static final long serialVersionUID = -4406043308588618231L;
 	
+	/**
+	 * Surveilled requirement internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * For a given surveillance activity, the type of requirement being surveilled. 
+	 * Allowable values include: "Certified Capability"; "Transparency or Disclosure Requirement", 
+	 * or "Other Requirement"
+	 */
 	@XmlElement(required = true)
 	private SurveillanceRequirementType type;
 	
+	/**
+	 * Name of the surveilled requirement (ex: 170.314 (a)(1))
+	 */
 	@XmlElement(required = true)
 	private String requirement;
 	
+	/**
+	 * The result for surveillance conducted on each surveillance requirement. 
+	 * Allowable values are "Non-Conformity" or "No Non-Conformity"
+	 */
 	@XmlElement(required = false, nillable=true)
 	private SurveillanceResultType result;
 	
+	/**
+	 * List of nonconformities found for this surveilled requirement
+	 */
 	@XmlElementWrapper(name = "nonconformities", nillable = true, required = false)
 	@XmlElement(name = "nonconformity")
 	private List<SurveillanceNonconformity> nonconformities;

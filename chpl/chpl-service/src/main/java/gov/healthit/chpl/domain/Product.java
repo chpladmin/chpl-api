@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.ProductDTO;
@@ -18,26 +19,46 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 public class Product implements Serializable {
 	private static final long serialVersionUID = 2177195816284265811L;
 	
+	/**
+	 * Product internal ID
+	 */
 	@XmlElement(required = true)
 	private Long productId;
 	
+	/**
+	 * The name of the product being uploaded. It is applicable for 2014 and 2015 Edition. 
+	 */
 	@XmlElement(required = true)
 	private String name;
 	
+	/**
+	 * A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules 
+	 * that can be accessed by the public. This variable is applicable to 2014 Edition. 
+	 * Fully qualified URL which is reachable via web browser validation and verification.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String reportFileLocation;
 	
+	/**
+	 * The point of contact for the product
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Contact contact;
 	
+	/**
+	 * The developer that owns this product.
+	 */
 	@XmlElement(required = true)
 	private Developer owner;
 	
+	/**
+	 * History of which developers have owned this product.
+	 */
 	@XmlElementWrapper(name = "ownerHistory", nillable = true, required = false)
 	@XmlElement(name = "owner")
 	private List<ProductOwner> ownerHistory;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String lastModifiedDate;
 	
 	public Product() {

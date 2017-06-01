@@ -18,35 +18,62 @@ import javax.xml.bind.annotation.XmlType;
 public class Surveillance implements Serializable {
 	private static final long serialVersionUID = 7018071250912371691L;
 	
+	/**
+	 * Surveillance internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String surveillanceIdToReplace;
 	
+	/**
+	 * The user-friendly ID of this surveillance relative to a listing. Ex: SURV01
+	 */
 	@XmlElement(required = true)
 	private String friendlyId;
 	
+	/**
+	 * The listing under surveillance
+	 */
 	@XmlElement(required = true)
 	private CertifiedProduct certifiedProduct;
 	
+	/**
+	 * Date surveillance began
+	 */
 	@XmlElement(required = true)
 	private Date startDate;
 	
+	/**
+	 * Date surveillance ended
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Date endDate;
 	
+	/**
+	 * The type of surveillance conducted. Allowable values are "Reactive" or "Randomized".
+	 */
 	@XmlElement(required = true)
 	private SurveillanceType type;
 	
+	/**
+	 * Number of randomized sites used. Only applicable for randomized surveillance.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer randomizedSitesUsed;
 	
+	/**
+	 * For a given surveillance activity, the certification criteria or program requirement being 
+	 * surveilled. Where applicable, the surveillance requirement will be presented as the 
+	 * regulation text number (e.g. 170.315(a)(2) or 170.315(k)(1)). 
+	 * However, other values are allowed to provide a brief description of the surveilled requirement.
+	 */
 	@XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
 	@XmlElement(name = "requirement")
 	private Set<SurveillanceRequirement> requirements;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlTransient
 	private String authority;
 	
 	@XmlTransient

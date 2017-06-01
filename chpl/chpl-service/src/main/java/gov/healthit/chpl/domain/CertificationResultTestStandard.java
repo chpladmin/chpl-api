@@ -9,20 +9,37 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 
+/**
+ * A standard used to meet a certification criterion.
+ * You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference Tables.
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestStandard implements Serializable {
 	private static final long serialVersionUID = -9182555768595891414L;
 	
+	/**
+	 * Test standard to certification result mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * Test standard internal ID
+	 */
 	@XmlElement(required = true)
 	private Long testStandardId;
 	
+	/**
+	 * Description of test standard
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String testStandardDescription;
 	
+	/**
+	 * Name of test standard
+	 */
 	@XmlElement(required = true)
 	private String testStandardName;
 
