@@ -29,6 +29,8 @@ import com.google.common.collect.Lists;
 
 public class HttpUtil {
 	private static final Logger logger = LogManager.getLogger(HttpUtil.class);
+	private static final int CONNECTION_TIMEOUT = 600000;
+	private static final int SOCKET_TIMEOUT = 600000;
 	
 	private static final Function<Map.Entry<String, String>, NameValuePair> nameValueTransformFunction = new Function<Map.Entry<String, String>, NameValuePair>() { 
         public NameValuePair apply(final Map.Entry<String, String> input) { 
@@ -83,7 +85,9 @@ public class HttpUtil {
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
             		.addHeader("Authorization", "Bearer " + token)
-                    .execute().returnContent().asString(); 
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -99,7 +103,9 @@ public class HttpUtil {
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-                    .execute().returnContent().asString(); 
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -116,7 +122,9 @@ public class HttpUtil {
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
             		.addHeader("Authorization", "Bearer " + token)
-                    .execute().returnContent().asString(); 
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -132,7 +140,9 @@ public class HttpUtil {
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-                    .execute().returnContent().asString(); 
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -149,8 +159,10 @@ public class HttpUtil {
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
             		.addHeader("Authorization", "Bearer " + token)
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
                     .bodyString(body, ContentType.APPLICATION_JSON) 
-                    .execute().returnContent().asString(); 
+                    .execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -167,7 +179,9 @@ public class HttpUtil {
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
                     .bodyString(body, ContentType.APPLICATION_JSON) 
-                    .execute().returnContent().asString(); 
+                    .connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+                    .execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
