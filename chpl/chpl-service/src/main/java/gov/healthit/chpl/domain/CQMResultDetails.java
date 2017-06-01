@@ -32,7 +32,9 @@ public class CQMResultDetails implements Serializable {
 	private Long id;
 	
 	/**
-	 * The clinical quality measure number to which the Health IT Module has been certified.
+	 * The CMS ID clinical quality measures to which the Health IT Module has been certified. 
+	 * It is applicable to 2014 and 2015 Edition. For a list of the clinical quality 
+	 * measures, please reference the CMS eCQM library.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String number;
@@ -74,13 +76,18 @@ public class CQMResultDetails implements Serializable {
 	private String domain;
 	
 	/**
-	 * Whether or not the clinical quality measure has been certified to the related listing.
+	 * This variable indicates whether or not the clinical quality measure has been 
+	 * certified to the related listing. It is applicable to 2014 and 2015 Edition and 
+	 * a binary variable that takes either true or false value. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean success;
 	
 	/**
-	 * The corresponding versions of the clinical quality measures to which the Health IT Module has been certified.
+	 * The corresponding version of the clinical quality measures to which the 
+	 * Health IT Module has been certified.  It is applicable to 2014 and 2015 Edition. 
+	 * For a list of clinical quality measures and their viable versions, please reference 
+	 * the CMS eCQM library.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Set<String> successVersions;
@@ -93,7 +100,10 @@ public class CQMResultDetails implements Serializable {
 	private Set<String> allVersions;
 	
 	/**
-	 * The certification criteria to which the clinical quality measures apply. 
+	 * The certification criteria to which a given clinical quality measure applies. 
+	 * It is only applicable to 2015 Edition. It takes values include: 
+	 * c1, c2, c3, c4,c1;c2[DC1], c1;c3, c1;c4, c2;c3, c2;c4, c3;c4, 
+	 * c1;c2;c3, c2;c3;c4, c1;c2;c3;c4
 	 */
 	@XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
 	@XmlElement(name = "criteria")

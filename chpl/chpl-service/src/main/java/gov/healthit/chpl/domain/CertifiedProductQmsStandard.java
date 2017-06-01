@@ -37,13 +37,16 @@ public class CertifiedProductQmsStandard implements Serializable {
 	private String qmsStandardName;
 	
 	/**
-	 * QMS modification
+	 * This variable indicates if a QMS standard or mapping was modified, 
+	 * documentation on the changes made. This variable is applicable for 2014 and 2015 
+	 * Edition, and a string variable that does not take any restrictions on formatting or values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String qmsModification;
 	
 	/**
-	 * QMS Applicable criteria
+	 * QMS Applicable criteria. This variable is applicable for 2015 Edition, 
+	 * and a string variable that does not take any restrictions on formatting or values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String applicableCriteria;

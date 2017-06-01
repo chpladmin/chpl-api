@@ -52,7 +52,7 @@ public class Surveillance implements Serializable {
 	private Date endDate;
 	
 	/**
-	 * Type of surveillance (randomized or reactive)
+	 * The type of surveillance conducted. Allowable values are "Reactive" or "Randomized".
 	 */
 	@XmlElement(required = true)
 	private SurveillanceType type;
@@ -64,7 +64,10 @@ public class Surveillance implements Serializable {
 	private Integer randomizedSitesUsed;
 	
 	/**
-	 * Surveilled requirements
+	 * For a given surveillance activity, the certification criteria or program requirement being 
+	 * surveilled. Where applicable, the surveillance requirement will be presented as the 
+	 * regulation text number (e.g. 170.315(a)(2) or 170.315(k)(1)). 
+	 * However, other values are allowed to provide a brief description of the surveilled requirement.
 	 */
 	@XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
 	@XmlElement(name = "requirement")

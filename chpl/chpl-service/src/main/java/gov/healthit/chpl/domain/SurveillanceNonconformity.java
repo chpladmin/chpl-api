@@ -30,7 +30,8 @@ public class SurveillanceNonconformity implements Serializable {
 	private String nonconformityType;
 	
 	/**
-	 * Nonconformity status. Open or Closed.
+	 * The status of a non-conformity found as a result of a surveillance activity. 
+	 * Allowable values are "Open" or "Closed".
 	 */
 	@XmlElement(required = true)
 	private SurveillanceNonconformityStatus status;

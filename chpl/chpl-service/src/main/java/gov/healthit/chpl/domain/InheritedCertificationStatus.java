@@ -16,7 +16,9 @@ public class InheritedCertificationStatus implements Serializable {
 	private static final long serialVersionUID = 2456763191912903082L;
 
 	/**
-	 * Whether or not this listing inherits from another listing.
+	 * This variable indicates whether or not the certification issued was a result 
+	 * of an inherited certified status request. This variable is applicable for 2014 and 
+	 * 2015 Edition and a binary variable that takes either true or false value. 
 	 */
 	@XmlElement(name = "inherits")
 	private Boolean inherits;

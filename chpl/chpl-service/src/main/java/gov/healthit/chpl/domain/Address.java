@@ -15,37 +15,43 @@ public class Address implements Serializable {
 	private static final long serialVersionUID = 7978604053959537664L;
 	
 	/**
-	 * Address internal ID
+	 * Address internal ID.
 	 */
 	@XmlElement(required = true)
 	private Long addressId;
 	
 	/**
-	 * First line of the address
+	 * First line of the street address of the health IT developer for 2014 and 2015 Edition. 
+	 * This variable is a string variable that does not have any restrictions on formatting or values.
 	 */
 	@XmlElement(required = true)
 	private String line1;
 
 	/**
-	 * Second line of the address, optional
+	 * Second line of the street address of the health IT developer for 2014 and 2015 Edition. 
+	 * This variable is a string variable that does not have any restrictions on formatting or values. This variable is optional.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String line2;
 	
 	/**
-	 * City of the address
+	 * The city in which the health IT developer can be contacted. 
+	 * This variable is for 2014 and 2015 Edition, and a string variable that does 
+	 * not have any restrictions on formatting or values.
 	 */
 	@XmlElement(required = true)
 	private String city;
 	
 	/**
-	 * State of the address
+	 * The state in which the health IT developer can be contacted. 
+	 * This variable is applicable for 2014 and 2015 Edition and is a string variable that does not have any restrictions on formatting or values. Name of states are denoted with two-letter abbreviation. 
 	 */
 	@XmlElement(required = true)
 	private String state;
 	
 	/**
-	 * Zipcode of the address
+	 * The ZIP code at which the health IT developer can be contacted. 
+	 * This is a variable applicable for 2014 and 2015 Edition, and a string variable that does not have any restrictions on formatting or values.
 	 */
 	@XmlElement(required = true)
 	private String zipcode;

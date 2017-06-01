@@ -28,32 +28,51 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private Long id;
 	
 	/**
-	 * The unique CHPL ID of the certified product. 
-	 * New uploads to CHPL will use the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date
+	 * The unique CHPL ID of the certified product.  This variable is applicable to 2014 
+	 * and 2015 Edition. New uploads to CHPL will use the format: 
+	 * CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date
 	 */
 	@XmlElement(required = true)
     private String chplProductNumber;
 	
+	/**
+	 * A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules that 
+	 * can be accessed by the public. This variable is applicable to 2014 Edition. 
+	 * Fully qualified URL which is reachable via web browser validation and verification.
+	 */
 	@XmlElement(required = false, nillable=true)
     private String reportFileLocation;
 	
+	/**
+	 * Hyperlink to FULL Usability Test Report meeting all the SED requirements. This variable is 
+	 * applicable for 2014 and 2015 Edition. Fully qualified URL which is reachable via web 
+	 * browser validation and verification.
+	 */
 	@XmlElement(required = false, nillable=true)
     private String sedReportFileLocation;
 	
+	/**
+	 * For SED testing, a description of the intended users of the Health IT
+	 */
 	@XmlElement(required = false, nillable=true)
     private String sedIntendedUserDescription;
 	
+	/**
+	 * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
+	 */
 	@XmlElement(required = false, nillable=true)
     private Date sedTestingEnd;
 	
 	/**
-	 * The ID used by ONC-ACBs for internal tracking
+	 * The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. 
+	 * It is a string variable that does not have any restrictions on formatting or values.
 	 */
 	@XmlElement(required = true)
     private String acbCertificationId;
 	
 	/**
-	 * Classification type id and name
+	 * The classification of the certified product (either complete or modular). 
+	 * It is only applicable to 2014 Edition, and takes values of either Complete EHR or Modular EHR.
 	 */
 	@XmlElement(required = false, nillable=true)
     private Map<String, Object> classificationType = new HashMap<String, Object>();
@@ -65,7 +84,11 @@ public class CertifiedProductSearchDetails implements Serializable {
     private String otherAcb;
 	
 	/**
-	 * Current certification status id, name, and date
+	 * The certification status for the corresponding listing. This variable takes value of 
+	 * Active; Suspended by ONC; Suspended by ONC-ACB; Withdrawn by Developer; 
+	 * Withdrawn by Developer Under Surveillance/Review; Withdrawn by ONC-ACB; Terminated by ONC; 
+	 * Retired. For a detailed description of each certification status, please see 
+	 * 'Understanding Certification Status in the CHPL', available in the CHPL Public User Guide. 
 	 */
 	@XmlElement(required = true)
     private Map<String, Object> certificationStatus = new HashMap<String, Object>();
@@ -83,31 +106,36 @@ public class CertifiedProductSearchDetails implements Serializable {
     private Product product;
 
 	/**
-	 * The version of the product.
+	 * The version of the product being uploaded. 
+	 * This variable is applicable for 2014 and 2015 Edition. 
 	 */
 	@XmlElement(required = true)
     private ProductVersion version;
 	
 	/**
-	 * Certification edition id and year.
+	 * The certification edition. It takes a value of 2011, 2014 or 2015.
 	 */
 	@XmlElement(required = true)
 	private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 	
 	/**
-	 * Practice type ID and Name if applicable to the edition.
+	 * For 2014 products, the practice setting for which the certified product is designed. 
+	 * It takes value of Ambulatory or Inpatient.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	
 	/**
-	 * Certifying body id and name
+	 * The ONC-ACB responsible for certifying the Health IT Module. This variable is applicable 
+	 * to 2014 and 2015 Edition, and allowable values are: Drummond Group, ICSA Labs, Infogard. 
 	 */
 	@XmlElement(required = true)
 	private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 	
 	/**
-	 * Testing lab id and name
+	 * The ATL responsible for testing the Health IT Module. It is applicable for 2014 and 
+	 * 2015 Edition and takes values of: Drummond Group, ICSA Labs, Infogard, 
+	 * National Technical Systems, SLI Global, CCHIT
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Map<String, Object> testingLab = new HashMap<String, Object>();
@@ -154,7 +182,9 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private Integer countClosedSurveillance;
 	
 	/**
-	 * Total count of open nonconformities for this listing.
+	 * The total number of open (unresolved) non-conformities found for the corresponding listing. 
+	 * For additional information, please see 'Understanding Surveillance Information 
+	 * in the CHPL', available in the CHPL Public User Guide
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer countOpenNonconformities;
@@ -166,14 +196,18 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private Integer countClosedNonconformities;
 	
 	/**
-	 * Whether the listing inherits from other listings and the 
-	 * first-level parents and children of this listing.
+	 * This variable indicates whether or not the certification issued was a result 
+	 * of an inherited certified status request. This variable is applicable for 2014 and 
+	 * 2015 Edition and contains the inherited status as well as first-level parents and 
+	 * children.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private InheritedCertificationStatus ics;
 	
 	/**
-	 * Whether or not this listing is accessibility certified.
+	 * This variable identifies if  Health IT Module was certified to the 
+	 * accessibility-centered design certification criterion for 2015 Edition. 
+	 * It is a binary variable that takes value of true or false.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Boolean accessibilityCertified;
@@ -185,7 +219,8 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private String productAdditionalSoftware;
 	
 	/**
-	 * The transparency attestation required by 170.523(k)(2) 
+	 * The transparency attestation required by 170.523(k)(2). It is applicable for 
+	 * 2014 and 2015 Edition and takes value of Affirmative, Negative, or N/A.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String transparencyAttestation;
@@ -216,15 +251,17 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 	
 	/**
-	 * The standard(s) or lack thereof used to meet the accessibility-centered design certification criterion.
+	 * This variable indicates that if  there is the standard(s) or lack thereof used to meet the accessibility-centered design certification criterion for 2015 Certification Edtion. 
+	 * It is a string variable that does not have any restrictions on formatting or values.
 	 */
 	@XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
 	@XmlElement(name = "accessibilityStandard")
 	private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 	
 	/**
-	 * The targeted users of the Health IT Module, as identified by the developer.
-	 * For example, "Ambulatory pediatricians"
+	 * Description of the health IT module(s) intended users for the tested 
+	 * capabilities/related criteria.  This variable is applicable only for 2015 Edition, 
+	 * and a string variable that does not take any restrictions on formatting or values. 
 	 * 
 	 */
 	@XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
@@ -232,7 +269,9 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 	
 	/**
-	 * The standards or mappings used to meet the quality management system certification criterion
+	 * The standard or mapping used to meet the quality management system 
+	 * certification criterion. This variable is applicable for 2014 and 2015 Edition, 
+	 * and a string variable that does not take any restrictions on formatting or values. 
 	 */
 	@XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
 	@XmlElement(name = "qmsStandard")

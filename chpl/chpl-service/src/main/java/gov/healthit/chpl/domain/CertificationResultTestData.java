@@ -25,13 +25,13 @@ public class CertificationResultTestData implements Serializable {
 	private Long id;
 	
 	/**
-	 * The version of the test data being used for a given certification criteria
+	 * This variable explains the version of the test data being used for a given certification criteria.  It is applicable for 2014 and 2015 Edition and a string variable that does not take any restrictions on formatting or values. 
 	 */
 	@XmlElement(required = true)
 	private String version;
 	
 	/**
-	 * If test data alterations are made, a description of all modifications made.
+	 * This variable indicates if test data alterations are made, a description of all modifications made. It is applicable for 2014 and 2015 Edition and a string variable that does not take any restrictions on formatting or values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String alteration;

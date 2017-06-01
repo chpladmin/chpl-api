@@ -22,7 +22,9 @@ public class SurveillanceRequirement implements Serializable {
 	private Long id;
 	
 	/**
-	 * Type of surveillance requirement
+	 * For a given surveillance activity, the type of requirement being surveilled. 
+	 * Allowable values include: "Certified Capability"; "Transparency or Disclosure Requirement", 
+	 * or "Other Requirement"
 	 */
 	@XmlElement(required = true)
 	private SurveillanceRequirementType type;
@@ -34,7 +36,8 @@ public class SurveillanceRequirement implements Serializable {
 	private String requirement;
 	
 	/**
-	 * The result of surveillance. Nonconformity or No Nonconformity
+	 * The result for surveillance conducted on each surveillance requirement. 
+	 * Allowable values are "Non-Conformity" or "No Non-Conformity"
 	 */
 	@XmlElement(required = false, nillable=true)
 	private SurveillanceResultType result;

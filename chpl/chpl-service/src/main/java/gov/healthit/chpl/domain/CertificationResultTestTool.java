@@ -38,7 +38,9 @@ public class CertificationResultTestTool implements Serializable {
 	private String testToolName;
 	
 	/**
-	 * The version of the test tool being used.
+	 * The version of the test tool being used. This variable is applicable for 
+	 * 2014 and 2015 Edition, and a string variable that does not take any restrictions 
+	 * on formatting or values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String testToolVersion;

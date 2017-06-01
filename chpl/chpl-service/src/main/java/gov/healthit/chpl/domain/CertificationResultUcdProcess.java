@@ -37,7 +37,9 @@ public class CertificationResultUcdProcess implements Serializable {
 	private String ucdProcessName;
 	
 	/**
-	 * A description of the UCD process used. 
+	 * A description of the UCD process used. This variable is applicable 
+	 * for 2014 and 2015 Edition, and a string variable that does not take any restrictions 
+	 * on formatting or values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String ucdProcessDetails;

@@ -26,11 +26,16 @@ public class Product implements Serializable {
 	private Long productId;
 	
 	/**
-	 * The name of the product
+	 * The name of the product being uploaded. It is applicable for 2014 and 2015 Edition. 
 	 */
 	@XmlElement(required = true)
 	private String name;
 	
+	/**
+	 * A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules 
+	 * that can be accessed by the public. This variable is applicable to 2014 Edition. 
+	 * Fully qualified URL which is reachable via web browser validation and verification.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String reportFileLocation;
 	

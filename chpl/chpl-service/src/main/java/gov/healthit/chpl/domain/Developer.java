@@ -32,13 +32,18 @@ public class Developer implements Serializable {
 	private String developerCode;
 	
 	/**
-	 * Developer name
+	 * The name of the developer or vendor of the certified health IT product being uploaded.  
+	 * It is applicable to 2014 and 2015 Edition. If uploading a certified product from 
+	 * a developer that already exists in the CHPL database, please use the CHPL 
+	 * Developer management functionality to ensure that the name of the developer 
+	 * matches the database record to prevent duplication.
 	 */
 	@XmlElement(required = true)
 	private String name;
 	
 	/**
-	 * Developer website
+	 * Website of health IT developer. Fully qualified URL which is reachable via web 
+	 * browser validation and verification. This variable is applicable for 2014 and 2015 Edition. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String website;
@@ -74,7 +79,8 @@ public class Developer implements Serializable {
 	private List<DeveloperStatusEvent> statusEvents;
 	
 	/**
-	 * Current developer status
+	 * The status of a developer with certified Health IT. 
+	 * Allowable values are "Active", "Suspended by ONC", or "Under Certification Ban by ONC"
 	 */
 	@XmlElement(required = false, nillable=true)
 	private DeveloperStatus status;

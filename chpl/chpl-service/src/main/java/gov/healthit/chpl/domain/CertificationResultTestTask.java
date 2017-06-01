@@ -33,7 +33,10 @@ public class CertificationResultTestTask implements Serializable {
 	private Long id;
 
 	/**
-	 * An ONC-ACB designated identifier for an individual SED task
+	 * An ONC-ACB designated identifier for an individual SED task and 
+	 * that must be unique to a particular task. 
+	 * This variable is only applicable to 2015 Edition and for internal 
+	 * use within an upload file only.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String uniqueId;
@@ -45,87 +48,99 @@ public class CertificationResultTestTask implements Serializable {
 	private Long testTaskId;
 	
 	/**
-	 * Brief description of task performed during SED/ usability testing
+	 * Brief description of task performed during SED/usability testing. This variable is only applicable to 2015 Edition, and a string variable that does not take any restrictions on formatting or values.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String description;
 	
 	/**
-	 * Mean task success rate (in percentages)
+	 * Mean task success rate (in percentages). 
+	 * It is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskSuccessAverage;
 	
 	/**
-	 * Standard deviation of the task success rate (in percentages)
+	 * Standard deviation of the task success rate (in percentages). 
+	 * It is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskSuccessStddev;
 	
 	/**
-	 * Observed number of steps taken for the corresponding task
+	 * This variable indicates observed number of steps taken for the corresponding task. It is applicable to 2015 Edition, and takes only positive integer values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskPathDeviationObserved;
 	
 	/**
-	 * Optimal number of steps for the corresponding task
+	 * This variable indicates optimal number of steps for the corresponding task. It is only applicable to 2015 Edition, and only takes positive integer(i.e. no decimals) values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskPathDeviationOptimal;
 	
 	/**
 	 * Average time of completion for the corresponding task, in seconds. 
+	 * It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Long taskTimeAvg;
 	
 	/**
-	 * Standard deviation for task time, in seconds. 
+	 * Standard deviation for task time, in seconds. It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeStddev;
 	
 	/**
-	 * Observed number of time (in seconds) taken for the corresponding task
+	 * Observed number of time (in seconds) taken for the corresponding task.  
+	 * It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeDeviationObservedAvg;
 	
 	/**
-	 * Optimal number of time (in seconds) taken for the corresponding task
+	 * Optimal number of time (in seconds) taken for the corresponding task.  
+	 * It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Integer taskTimeDeviationOptimalAvg;
 	
 	/**
-	 * Mean task error rate (in percentages)
+	 * Mean task error rate (in percentages). It is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskErrors;
 	
 	/**
-	 * Standard deviation of the task error rate (in percentages)
+	 * Standard deviation of the task error rate (in percentages). This variable is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskErrorsStddev;
 	
 	/**
-	 * The type of scale that was used to rate the usability of the task. 
-	 * System Usability Scale is preferred. Likert Scale is also accepted. 
+	 * This variable indicates the type of scale that was used to rate the usability of the task. 
+	 * System Usability Scale is preferred. Likert Scale is also accepted.  
+	 * If the scale type is System Usability Scale, only positive integers between 1-100 are allowed. 
+	 * If the scale type is the Likert scale, positive decimal numbers are allowed. 
+	 * It is only applicable to 2015 Edition.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String taskRatingScale;
 	
 	/**
-	 * Mean usability rating of the corresponding task, based on the specified scale type.
-	 * If the scale type is System Usability Scale, only positive integers between 1-100 are allowed. If the scale type is the Likert scale, positive decimal numbers are allowed. 
+	 * This variable indicates mean usability rating of the corresponding task, 
+	 * based on the specified scale type. If the scale type is System Usability Scale, 
+	 * only positive integers between 1-100 are allowed. If the scale type is the 
+	 * Likert scale, positive decimal numbers are allowed. It is only applicable to 2015 Edition.
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskRating;
 	
 	/**
-	 * Standard deviation of the mean usability rating of the corresponding task, based on the specified scale type
+	 * Standard deviation of the mean usability rating of the corresponding task, 
+	 * based on the specified scale type. 
+	 * It is only applicable to 2015 Edition, and takes only positive decimal numbers. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private Float taskRatingStddev;

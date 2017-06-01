@@ -21,25 +21,29 @@ public class Contact implements Serializable {
 	private Long contactId;
 	
 	/**
-	 * Contact first name
+	 * Contact first name. This variable is applicable for 2014 and 2015 Edition, 
+	 * and a string variable that does not take any restrictions on formatting or values. 
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String firstName;
 	
 	/**
-	 * Contact last name
+	 * Contact last name. This variable is applicable for 2014 and 2015 Edition, 
+	 * and a string variable that does not take any restrictions on formatting or values. 
 	 */
 	@XmlElement(required = true)
 	private String lastName;
 	
 	/**
-	 * Contact email address
+	 * Email address of the contact. It is applicable to 2014 and 2015 Edition.
 	 */
 	@XmlElement(required = true)
 	private String email;
 	
 	/**
-	 * Contact phone number
+	 * Phone number of health IT developer contact.  
+	 * This variable is applicable for 2014 and 2015 Edition, and a string variable that 
+	 * does not take any restrictions on formatting or values. Do not include hyphens. 
 	 */
 	@XmlElement(required = true)
 	private String phoneNumber;

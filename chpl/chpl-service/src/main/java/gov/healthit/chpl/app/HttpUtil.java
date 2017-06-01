@@ -29,6 +29,8 @@ import com.google.common.collect.Lists;
 
 public class HttpUtil {
 	private static final Logger logger = LogManager.getLogger(HttpUtil.class);
+	private static final int CONNECTION_TIMEOUT = 600000; // time in millis. 1000 * 60 * 10 = 10 mins
+	private static final int SOCKET_TIMEOUT = 600000;
 	
 	private static final Function<Map.Entry<String, String>, NameValuePair> nameValueTransformFunction = new Function<Map.Entry<String, String>, NameValuePair>() { 
         public NameValuePair apply(final Map.Entry<String, String> input) { 
@@ -75,15 +77,17 @@ public class HttpUtil {
         return null;
     }
      
-    public static String getAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
+    public static String getAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, String token) { 
         URI uri = buildURI(url, paramMap); 
         try { 
             String content = Request.Get(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + token.getValidToken(token, props).getToken())
-                    .execute().returnContent().asString(); 
+            		.addHeader("Authorization", "Bearer " + token)
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -99,7 +103,9 @@ public class HttpUtil {
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-                    .execute().returnContent().asString(); 
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -108,16 +114,17 @@ public class HttpUtil {
         } 
     } 
      
-    public static String postAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, Token token) { 
+    public static String postAuthenticatedRequest(String url, Map<String, String> paramMap, Properties props, String token) { 
         URI uri = buildURI(url, paramMap); 
         try { 
-        	String authenticatedToken = token.getValidToken(token, props).getToken();
             String content = Request.Post(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + authenticatedToken)
-                    .execute().returnContent().asString(); 
+            		.addHeader("Authorization", "Bearer " + token)
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -133,7 +140,9 @@ public class HttpUtil {
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-                    .execute().returnContent().asString(); 
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+            		.execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -142,17 +151,18 @@ public class HttpUtil {
         } 
     } 
      
-    public static String postAuthenticatedBodyRequest(String url, Map<String, String> paramMap, Properties props, Token token, String body) { 
+    public static String postAuthenticatedBodyRequest(String url, Map<String, String> paramMap, Properties props, String token, String body) { 
         URI uri = buildURI(url, paramMap); 
         try { 
-        	String authenticatedToken = token.getValidToken(token, props).getToken();
             String content = Request.Post(uri) 
             		.version(HttpVersion.HTTP_1_1)
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
-            		.addHeader("Authorization", "Bearer " + authenticatedToken)
+            		.addHeader("Authorization", "Bearer " + token)
+            		.connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
                     .bodyString(body, ContentType.APPLICATION_JSON) 
-                    .execute().returnContent().asString(); 
+                    .execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
@@ -169,7 +179,9 @@ public class HttpUtil {
             		.addHeader("Content-Type", ContentType.APPLICATION_JSON.getMimeType())
             		.addHeader("API-key", props.getProperty("apiKey"))
                     .bodyString(body, ContentType.APPLICATION_JSON) 
-                    .execute().returnContent().asString(); 
+                    .connectTimeout(CONNECTION_TIMEOUT)
+            		.socketTimeout(SOCKET_TIMEOUT)
+                    .execute().handleResponse(UTF8_CONTENT_HANDLER); 
             logger.debug("{},result:{}",uri,content); 
             return content; 
         } catch (Exception e) { 
