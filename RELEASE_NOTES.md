@@ -1,5 +1,11 @@
 # Release Notes
 
+## OCD-1396
+_Date TBD_
+* Add decertification date and numMeaningfulUse fields to the flat search results
+
+---
+
 ## Version TBD
 _Date TBD_
 

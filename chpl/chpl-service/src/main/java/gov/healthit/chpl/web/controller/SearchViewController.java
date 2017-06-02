@@ -60,7 +60,6 @@ import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.SearchViews;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -89,9 +88,6 @@ public class SearchViewController {
 	
 	@Autowired
 	private DeveloperManager developerManager;
-	
-	@Autowired
-	private CertifiedProductSearchResultDAO certifiedProductSearchResultDao;
 		
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
@@ -956,41 +952,13 @@ public class SearchViewController {
 			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
 	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody SearchResponse getDecertifiedCertifiedProducts (
-			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
-			@RequestParam(value = "pageSize", required = false) Integer pageSize,
-			@RequestParam(value = "orderBy", required = false) String orderBy,
-			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
-		SearchResponse resp = new SearchResponse();
-		
-		if (pageNumber == null){
-			pageNumber = 0;
-		}
-		
-		SearchRequest searchRequest = new SearchRequest();
-		List<String> allowedCertificationStatuses = new ArrayList<String>();
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByAcb));
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview));
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.TerminatedByOnc));
-		
-		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
-		
-		searchRequest.setPageNumber(pageNumber);
-		if(pageSize == null){
-			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
-		}
-		
-		if (orderBy != null){
-			searchRequest.setOrderBy(orderBy);
-		}
-		
-		if (sortDescending != null){
-			searchRequest.setSortDescending(sortDescending);
-		}
-		
-		resp = certifiedProductSearchManager.search(searchRequest);
-		
-		return resp;
+	public @ResponseBody String getDecertifiedListings () throws JsonProcessingException {
+		List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
+
+		ObjectMapper viewMapper = new ObjectMapper();
+		BasicSearchResponse response = new BasicSearchResponse();
+		response.setResults(cachedSearchResults);
+		return viewMapper.writerWithView(SearchViews.DecertifiedListings.class).writeValueAsString(response);
 	}
 	
 	@ApiOperation(value="Get decertified certified products in the CHPL with inactive certificates", 
@@ -998,39 +966,13 @@ public class SearchViewController {
 					+ "Includes their decertified statuses and the total count of decertified certified products as the recordCount.")
 	@RequestMapping(value="/decertifications/inactive_certificates", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody SearchResponse getDecertifiedInactiveCertificateCertifiedProducts (
-			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
-			@RequestParam(value = "pageSize", required = false) Integer pageSize,
-			@RequestParam(value = "orderBy", required = false) String orderBy,
-			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
-		SearchResponse resp = new SearchResponse();
-		
-		if (pageNumber == null){
-			pageNumber = 0;
-		}
-		
-		SearchRequest searchRequest = new SearchRequest();
-		List<String> allowedCertificationStatuses = new ArrayList<String>();
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
-		
-		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
-		
-		searchRequest.setPageNumber(pageNumber);
-		if(pageSize == null){
-			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
-		}
-		
-		if (orderBy != null){
-			searchRequest.setOrderBy(orderBy);
-		}
-		
-		if (sortDescending != null){
-			searchRequest.setSortDescending(sortDescending);
-		}
-		
-		resp = certifiedProductSearchManager.search(searchRequest);
-		
-		return resp;
+	public @ResponseBody String getDecertifiedInactiveCertificateListings () throws JsonProcessingException {
+		List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
+
+		ObjectMapper viewMapper = new ObjectMapper();
+		BasicSearchResponse response = new BasicSearchResponse();
+		response.setResults(cachedSearchResults);
+		return viewMapper.writerWithView(SearchViews.InactiveListings.class).writeValueAsString(response);
 	}
 	
 	private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {

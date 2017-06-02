@@ -7,19 +7,19 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class CertifiedProductSearchResult implements Serializable {
 	private static final long serialVersionUID = -2547390525592841034L;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class, SearchViews.Default.class})
 	protected Long id;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class, SearchViews.Default.class})
 	protected String chplProductNumber;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class, SearchViews.Default.class})
 	protected String edition;
 	
 	@JsonView({SearchViews.Default.class})
 	protected String atl;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class, SearchViews.Default.class})
 	protected String acb;
 	
 	@JsonView({SearchViews.Default.class})
@@ -28,19 +28,19 @@ public class CertifiedProductSearchResult implements Serializable {
 	@JsonView({SearchViews.Default.class})
 	protected String practiceType;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class, SearchViews.Default.class})
 	protected String developer;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class, SearchViews.Default.class})
 	protected String product;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class, SearchViews.Default.class})
 	protected String version;
 	
 	@JsonView({SearchViews.Default.class})
 	protected Long certificationDate;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.Default.class})
 	protected String certificationStatus;
 	
 	@JsonView({SearchViews.Default.class})
@@ -51,6 +51,12 @@ public class CertifiedProductSearchResult implements Serializable {
 	
 	@JsonView({SearchViews.Default.class})
 	protected Long closedNonconformityCount;
+	
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class})
+	protected Long decertificationDate;
+	
+	@JsonView({SearchViews.DecertifiedListings.class, SearchViews.InactiveListings.class})
+	protected Long numMeaningfulUse;
 	
 	public CertifiedProductSearchResult() {
 	}
@@ -165,5 +171,21 @@ public class CertifiedProductSearchResult implements Serializable {
 
 	public void setAcbCertificationId(String acbCertificationId) {
 		this.acbCertificationId = acbCertificationId;
+	}
+
+	public Long getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Long decertificationDate) {
+		this.decertificationDate = decertificationDate;
+	}
+
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
 	}
 }

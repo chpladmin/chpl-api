@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -626,15 +627,34 @@ public class SearchViewControllerTest extends TestCase {
 	 */
 	@Transactional
 	@Test
-	public void test_searchDecertifiedCPs() throws EntityRetrievalException {	
-		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null);		
+	public void test_searchDecertifiedCPs() throws JsonProcessingException, IOException {	
+		String resp = searchViewController.getDecertifiedListings();		
+		ObjectMapper viewMapper = new ObjectMapper();
+		BasicSearchResponse results = viewMapper.readerFor(BasicSearchResponse.class).readValue(resp);
 		
-		assertTrue(resp.getResults().size() == 1);
-		assertEquals((Integer) resp.getResults().size(), resp.getPageSize());
-		for(CertifiedProductSearchResult cp : resp.getResults()){
-			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
-					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview)) ||
-					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
+		assertNotNull(results);
+		assertNotNull(results.getResults());
+		assertEquals(16, results.getResults().size());
+		
+		//check that all fields are present for products in which we know those fields exist
+		for(CertifiedProductFlatSearchResult result : results.getResults()) {
+			assertNotNull(result.getId());
+			assertNotNull(result.getChplProductNumber());
+			assertNotNull(result.getEdition());
+			assertNotNull(result.getAcb());
+			assertNull(result.getAcbCertificationId());
+			assertNotNull(result.getDeveloper());
+			assertNotNull(result.getProduct());
+			assertNotNull(result.getVersion());
+			assertNull(result.getCertificationDate());
+			assertNotNull(result.getCertificationStatus());
+			assertNull(result.getSurveillanceCount());
+			assertNull(result.getOpenNonconformityCount());
+			assertNull(result.getClosedNonconformityCount());
+			assertNull(result.getPracticeType());
+			assertNull(result.getPreviousDevelopers());
+			assertNull(result.getCriteriaMet());
+			assertNull(result.getCqmsMet());
 		}
 	}
 	
@@ -647,13 +667,35 @@ public class SearchViewControllerTest extends TestCase {
 	 */
 	@Transactional
 	@Test
-	public void test_searchDecertifiedInactiveCertCPs() throws EntityRetrievalException {	
-		SearchResponse resp = searchViewController.getDecertifiedInactiveCertificateCertifiedProducts(null, null, null, null);		
+	public void test_searchDecertifiedInactiveCertCPs() throws JsonProcessingException, IOException {	
+	
+		String resp = searchViewController.getDecertifiedInactiveCertificateListings();		
+		ObjectMapper viewMapper = new ObjectMapper();
+		BasicSearchResponse results = viewMapper.readerFor(BasicSearchResponse.class).readValue(resp);
 		
-		assertTrue(resp.getResults().size() == 6);
-		assertEquals((Integer) resp.getResults().size(), resp.getPageSize());
-		for(CertifiedProductSearchResult cp : resp.getResults()){
-			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)));
+		assertNotNull(results);
+		assertNotNull(results.getResults());
+		assertEquals(16, results.getResults().size());
+		
+		//check that all fields are present for products in which we know those fields exist
+		for(CertifiedProductFlatSearchResult result : results.getResults()) {
+			assertNotNull(result.getId());
+			assertNotNull(result.getChplProductNumber());
+			assertNotNull(result.getEdition());
+			assertNotNull(result.getAcb());
+			assertNull(result.getAcbCertificationId());
+			assertNotNull(result.getDeveloper());
+			assertNotNull(result.getProduct());
+			assertNotNull(result.getVersion());
+			assertNull(result.getCertificationDate());
+			assertNull(result.getCertificationStatus());
+			assertNull(result.getSurveillanceCount());
+			assertNull(result.getOpenNonconformityCount());
+			assertNull(result.getClosedNonconformityCount());
+			assertNull(result.getPracticeType());
+			assertNull(result.getPreviousDevelopers());
+			assertNull(result.getCriteriaMet());
+			assertNull(result.getCqmsMet());
 		}
 	}
 	
@@ -689,6 +731,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNotNull(result.getVersion());
 			assertNotNull(result.getCertificationDate());
 			assertNotNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNotNull(result.getSurveillanceCount());
 			assertNotNull(result.getOpenNonconformityCount());
 			assertNotNull(result.getClosedNonconformityCount());
@@ -737,6 +781,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNull(result.getVersion());
 			assertNull(result.getCertificationDate());
 			assertNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNull(result.getSurveillanceCount());
 			assertNull(result.getOpenNonconformityCount());
 			assertNull(result.getClosedNonconformityCount());
@@ -777,6 +823,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNull(result.getVersion());
 			assertNull(result.getCertificationDate());
 			assertNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNull(result.getSurveillanceCount());
 			assertNull(result.getOpenNonconformityCount());
 			assertNull(result.getClosedNonconformityCount());
@@ -816,6 +864,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNull(result.getVersion());
 			assertNull(result.getCertificationDate());
 			assertNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNull(result.getSurveillanceCount());
 			assertNull(result.getOpenNonconformityCount());
 			assertNull(result.getClosedNonconformityCount());

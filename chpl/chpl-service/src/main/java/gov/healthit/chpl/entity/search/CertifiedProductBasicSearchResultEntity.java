@@ -52,6 +52,9 @@ public class CertifiedProductBasicSearchResultEntity {
 	@Column( name = "certification_status_name")
 	private String certificationStatus;
 	
+	@Column( name = "decertification_date")
+	private Date decertificationDate;
+	
     @Column(name = "surveillance_count")
     private Long surveillanceCount;
 
@@ -61,6 +64,9 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "closed_nonconformity_count")
     private Long closedNonconformityCount;
   
+    @Column( name = "meaningful_use_users")
+	private Long meaningfulUseUserCount;
+    
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria met by the certified product
     
@@ -212,5 +218,21 @@ public class CertifiedProductBasicSearchResultEntity {
 
 	public void setPreviousDevelopers(String previousDevelopers) {
 		this.previousDevelopers = previousDevelopers;
+	}
+
+	public Date getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Date decertificationDate) {
+		this.decertificationDate = decertificationDate;
+	}
+
+	public Long getMeaningfulUseUserCount() {
+		return meaningfulUseUserCount;
+	}
+
+	public void setMeaningfulUseUserCount(Long meaningfulUseUserCount) {
+		this.meaningfulUseUserCount = meaningfulUseUserCount;
 	}
 }
