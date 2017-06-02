@@ -5,6 +5,8 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -17,6 +19,7 @@ public class ListingToListingMapEntity {
 	private static final long serialVersionUID = -2928065796550375579L;
 	
     @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "listing_to_listing_map_id", nullable = false  )
 	private Long id;
         

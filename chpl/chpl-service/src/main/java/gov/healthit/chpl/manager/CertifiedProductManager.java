@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -34,7 +36,13 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, ListingUpdateRequest updateRequest) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	
+	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing) 
+			throws EntityNotFoundException;
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, 
+			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	

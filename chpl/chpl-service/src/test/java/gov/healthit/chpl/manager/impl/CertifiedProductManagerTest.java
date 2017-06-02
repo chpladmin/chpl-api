@@ -118,7 +118,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		cpManager.update(1L, cp, toUpdate);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -139,11 +140,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
 			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -168,11 +170,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
 			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -197,10 +200,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setBanDeveloper(true);
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -228,10 +232,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(beforeStatus.getId());
 		
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setBanDeveloper(false);
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO afterDev = devManager.getById(-1L);
 		assertNotNull(afterDev);
@@ -250,9 +255,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -273,11 +280,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
 			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}

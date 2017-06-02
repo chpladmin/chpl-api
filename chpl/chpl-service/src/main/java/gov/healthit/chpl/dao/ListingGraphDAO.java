@@ -11,5 +11,5 @@ public interface ListingGraphDAO {
 	public Integer getLargestIcs(List<Long> listingIds);
 	public List<CertifiedProductDetailsDTO> getParents(Long listingId);
 	public List<CertifiedProductDetailsDTO> getChildren(Long listingId);
-	
+	public ListingToListingMapDTO getListingMap(Long childId, Long parentId);
 }

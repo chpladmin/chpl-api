@@ -18,9 +18,11 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
@@ -660,6 +662,36 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		if(product.getIcs() == null || product.getIcs().getInherits() == null) {
 			product.getErrorMessages().add("ICS is required.");
+		} else if(product.getIcs().getInherits().equals(Boolean.TRUE) && icsCode.intValue() > 0) {
+			//if ICS is nonzero, warn about providing parents
+			if(product.getIcs() == null || product.getIcs().getParents() == null || 
+					product.getIcs().getParents().size() == 0) {
+				product.getWarningMessages().add("The ICS code is greater than zero which means this listing has inherited properties. It is recommended to specify at least one parent from which the listing inherits.");
+			} else {
+				//parents are non-empty - check inheritance rules
+				//certification edition must be the same as this listings
+				List<Long> parentIds = new ArrayList<Long>();
+				for(CertifiedProduct potentialParent : product.getIcs().getParents()) {
+					if(potentialParent.getId().toString().equals(product.getId().toString())) {
+						product.getErrorMessages().add("A parent listing was found with the same ID as this listing. A listing cannot inherit from itself.");
+					}
+					parentIds.add(potentialParent.getId());
+				}
+				List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+				for(CertificationEditionDTO parentEdition : parentEditions) {
+					if(!product.getCertificationEdition().get("id").toString().equals(parentEdition.getId().toString())) {
+						product.getErrorMessages().add("A parent was found with certification edition '" + parentEdition.getYear() + "'. Parent certification edition must match that of this listing.");
+					}
+				}
+				
+				//this listing's ICS code must be greater than the max of parent ICS codes
+				Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
+				if(largestIcs != null && icsCode.intValue() != (largestIcs.intValue()+1)) {
+					product.getErrorMessages().add("The ICS Code for this listing was given as '" + 
+							icsCode + "' but it was expected to be one more than the " +
+							"largest inherited ICS code '" + largestIcs + "'.");
+				}
+			}
 		}
 		
 		if(product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {

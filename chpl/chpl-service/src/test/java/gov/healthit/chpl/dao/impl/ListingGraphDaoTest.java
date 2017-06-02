@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -112,5 +114,30 @@ public class ListingGraphDaoTest extends TestCase {
 				fail("Expected 5 but found " + child.getId().intValue());
 			}
 		}
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testGetListingMapByParentAndChildIds() {
+		ListingToListingMapDTO dto = listingGraphDao.getListingMap(5L, 6L);
+		assertNotNull(dto);
+		assertEquals(5, dto.getChildId().longValue());
+		assertEquals(6, dto.getParentId().longValue());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void testCreateListingMap() {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
+
+		ListingToListingMapDTO dto = new ListingToListingMapDTO();
+		dto.setChildId(1L);
+		dto.setParentId(2L);
+
+		listingGraphDao.createListingMap(dto);
+		
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 }

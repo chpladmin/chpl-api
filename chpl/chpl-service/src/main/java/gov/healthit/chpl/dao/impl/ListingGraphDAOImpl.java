@@ -26,12 +26,21 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entityManager.persist(entity);
 		entityManager.flush();
+		entityManager.clear();
 		
+		entity = getListingMapEntity(toCreate.getChildId(), toCreate.getParentId());
 		return new ListingToListingMapDTO(entity);
 	}
 	
 	public void deleteListingMap(ListingToListingMapDTO toDelete) {
-		ListingToListingMapEntity entity = entityManager.find(ListingToListingMapEntity.class, toDelete.getId());
+		ListingToListingMapEntity entity = null;
+		
+		if(toDelete.getId() != null) {
+			entity = entityManager.find(ListingToListingMapEntity.class, toDelete.getId());
+		} else if(toDelete.getParentId() != null && toDelete.getChildId() != null) {
+			entity = getListingMapEntity(toDelete.getChildId(), toDelete.getParentId());
+		}
+		
 		if(entity != null) {
 			entity.setDeleted(true);
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -90,5 +99,33 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 			result.add(new CertifiedProductDetailsDTO(childEntity));
 		}
 		return result;
+	}
+	
+	public ListingToListingMapDTO getListingMap(Long childId, Long parentId) {
+		ListingToListingMapEntity mapEntity = getListingMapEntity(childId, parentId);
+		
+		ListingToListingMapDTO result = null;
+		if(mapEntity != null) {
+			result = new ListingToListingMapDTO(mapEntity);
+		}
+		return result;
+	}
+	
+	private ListingToListingMapEntity getListingMapEntity(Long childId, Long parentId) {
+		Query query = entityManager.createQuery( "SELECT listingMap "
+				+ "FROM ListingToListingMapEntity listingMap "
+				+ "JOIN FETCH listingMap.child "
+				+ "JOIN FETCH listingMap.parent "
+				+ "WHERE listingMap.parentId = :parentId "
+				+ "AND listingMap.childId = :childId "
+				+ "AND listingMap.deleted <> true", ListingToListingMapEntity.class );
+		query.setParameter("parentId", parentId);
+		query.setParameter("childId", childId);
+		List<ListingToListingMapEntity> mapEntities = query.getResultList();
+		
+		if(mapEntities != null && mapEntities.size() > 0) {
+			return mapEntities.get(0);
+		}
+		return null;
 	}
 }
