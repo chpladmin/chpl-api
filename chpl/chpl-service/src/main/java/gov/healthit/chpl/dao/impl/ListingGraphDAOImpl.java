@@ -57,7 +57,8 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 	public Integer getLargestIcs(List<Long> listingIds) {
 		Query query = entityManager.createQuery( "SELECT MAX(listing.icsCode) "
 				+ "FROM CertifiedProductEntity listing "
-				+ "WHERE listing.id IN (:listingIds)", Integer.class );
+				+ "WHERE listing.id IN (:listingIds) "
+				+ "AND listing.deleted <> true", Integer.class );
 		query.setParameter("listingIds", listingIds);
 		Integer result = (Integer)query.getSingleResult();
 		return result;
@@ -71,7 +72,8 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 	public List<CertifiedProductDetailsDTO> getParents(Long listingId) {
 		Query query = entityManager.createQuery( "SELECT listingMap.parent "
 				+ "FROM ListingToListingMapEntity listingMap "
-				+ "WHERE listingMap.childId = :childId", CertifiedProductDetailsEntity.class );
+				+ "WHERE listingMap.childId = :childId "
+				+ "AND listingMap.deleted <> true ", CertifiedProductDetailsEntity.class );
 		query.setParameter("childId", listingId);
 		List<CertifiedProductDetailsEntity> parentEntities = query.getResultList();
 		
@@ -90,7 +92,8 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 	public List<CertifiedProductDetailsDTO> getChildren(Long listingId) {
 		Query query = entityManager.createQuery( "SELECT listingMap.child "
 				+ "FROM ListingToListingMapEntity listingMap "
-				+ "WHERE listingMap.parentId = :parentId", CertifiedProductDetailsEntity.class );
+				+ "WHERE listingMap.parentId = :parentId "
+				+ "AND listingMap.deleted <> true", CertifiedProductDetailsEntity.class );
 		query.setParameter("parentId", listingId);
 		List<CertifiedProductDetailsEntity> childEntities = query.getResultList();
 		
