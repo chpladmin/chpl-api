@@ -16,15 +16,28 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 public class CertifiedProduct implements Serializable {
 	private static final long serialVersionUID = -6634520925641244762L;
 	
+	/**
+	 * Listing internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * The unique CHPL ID of the certified product. 
+	 * New uploads to CHPL will use the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date
+	 */
 	@XmlElement(required = true)
     private String chplProductNumber;
 	
+	/**
+	 * The last time this listing was modified in any way given in milliseconds since epoch.
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String lastModifiedDate;
 	
+	/**
+	 * Edition of the listing. Ex: 2011, 2014, or 2015
+	 */
 	@XmlElement(required = false, nillable=true)
 	private String edition;
 	

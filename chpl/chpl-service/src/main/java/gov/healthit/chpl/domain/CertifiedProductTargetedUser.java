@@ -9,17 +9,31 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 
+/**
+ * The targeted users of a Health IT Module, as identified by the developer.
+ * For example, "Ambulatory pediatricians"
+ * 
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductTargetedUser implements Serializable {
 	private static final long serialVersionUID = -2078691100124619582L;
 	
+	/**
+	 * Targeted user to listing mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * Targeted user internal ID
+	 */
 	@XmlElement(required = true)
 	private Long targetedUserId;
 	
+	/**
+	 * Targeted user name
+	 */
 	@XmlElement(required = true)
 	private String targetedUserName;
 

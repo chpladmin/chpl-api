@@ -9,17 +9,31 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 
+/**
+ * The standard(s) or lack thereof used to meet the accessibility-centered design certification criterion.
+ * Please see the 2015 Edition Certification Companion Guide for Accessibility Centered Design for example accessibility standards: https://www.healthit.gov/sites/default/files/2015Ed_CCG_g5-Accessibility-centered-design.pdf
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductAccessibilityStandard implements Serializable {
 	private static final long serialVersionUID = -676179466407109456L;
 	
+	/**
+	 * Accessibility standard to listing mapping internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * Accessibility standard internal ID
+	 */
 	@XmlElement(required = true)
 	private Long accessibilityStandardId;
 	
+	/**
+	 * Accessibility standard name
+	 */
 	@XmlElement(required = true)
 	private String accessibilityStandardName;
 
