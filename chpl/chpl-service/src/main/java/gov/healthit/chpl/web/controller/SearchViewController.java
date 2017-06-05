@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.auth.domain.Authority;
@@ -105,6 +106,7 @@ public class SearchViewController {
 			//write out objects as json but do not include properties with a null value
 			ObjectMapper nonNullJsonMapper = new ObjectMapper();
 			nonNullJsonMapper.setSerializationInclusion(Include.NON_NULL);
+			nonNullJsonMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 			
 			//create a copy of the search results since we will be manipulating them 
 			//by setting fields to null but do not want to overwrite the cached data
@@ -166,6 +168,7 @@ public class SearchViewController {
 			result = nonNullJsonMapper.writeValueAsString(response);
 		} else {
 			ObjectMapper viewMapper = new ObjectMapper();
+			viewMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 			BasicSearchResponse response = new BasicSearchResponse();
 			response.setResults(cachedSearchResults);
 			 result = viewMapper.writerWithView(SearchViews.Default.class).writeValueAsString(response);
