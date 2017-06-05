@@ -948,33 +948,6 @@ public class SearchViewController {
 		return ddr;
 	}
 	
-	@ApiOperation(value="Get all decertified certified products in the CHPL", 
-			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
-	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody String getDecertifiedListings () throws JsonProcessingException {
-		List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
-
-		ObjectMapper viewMapper = new ObjectMapper();
-		BasicSearchResponse response = new BasicSearchResponse();
-		response.setResults(cachedSearchResults);
-		return viewMapper.writerWithView(SearchViews.DecertifiedListings.class).writeValueAsString(response);
-	}
-	
-	@ApiOperation(value="Get decertified certified products in the CHPL with inactive certificates", 
-			notes="Returns only decertified certified products with inactive certificates. "
-					+ "Includes their decertified statuses and the total count of decertified certified products as the recordCount.")
-	@RequestMapping(value="/decertifications/inactive_certificates", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody String getDecertifiedInactiveCertificateListings () throws JsonProcessingException {
-		List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
-
-		ObjectMapper viewMapper = new ObjectMapper();
-		BasicSearchResponse response = new BasicSearchResponse();
-		response.setResults(cachedSearchResults);
-		return viewMapper.writerWithView(SearchViews.InactiveListings.class).writeValueAsString(response);
-	}
-	
 	private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {
 	    Class superClazz = clazz.getSuperclass();
 	    if(superClazz != null){
