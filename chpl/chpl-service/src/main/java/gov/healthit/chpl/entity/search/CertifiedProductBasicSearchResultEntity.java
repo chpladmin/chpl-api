@@ -55,6 +55,12 @@ public class CertifiedProductBasicSearchResultEntity {
 	@Column( name = "decertification_date")
 	private Date decertificationDate;
 	
+	@Column(name = "transparency_attestation_url")
+	private String transparencyAttestationUrl;
+	
+	@Column(name = "api_documentation")
+	private String apiDocumentation;
+	
     @Column(name = "surveillance_count")
     private Long surveillanceCount;
 
@@ -234,5 +240,21 @@ public class CertifiedProductBasicSearchResultEntity {
 
 	public void setMeaningfulUseUserCount(Long meaningfulUseUserCount) {
 		this.meaningfulUseUserCount = meaningfulUseUserCount;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
 	}
 }

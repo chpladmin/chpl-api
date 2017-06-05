@@ -8,7 +8,7 @@ _Backwards compatibility breaking changes_
 * Removed /decertifications/certified_products and /decertifications/inactive_certificates API calls. This same data can now be accessed through the /certified_products API method.
 
 ### Minor Features
-* Add decertification date and numMeaningfulUse fields to the flat search results
+* Add decertification date, numMeaningfulUse, transparency attestation url, and api documentation url fields to the flat search results
 
 ---
 
