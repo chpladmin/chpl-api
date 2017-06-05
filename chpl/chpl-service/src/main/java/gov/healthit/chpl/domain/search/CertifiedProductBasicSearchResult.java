@@ -1,7 +1,9 @@
 package gov.healthit.chpl.domain.search;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -17,10 +19,13 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
 	@JsonView({SearchViews.Default.class})
 	private List<String> cqmsMet; //list of cmqs that were met (any version)
 	
+	private Map<String, String> apiDocumentation; //map of criteria to api documentation url 
+	
 	public CertifiedProductBasicSearchResult() {
 		previousDevelopers = new ArrayList<String>();
 		criteriaMet = new ArrayList<String>();
 		cqmsMet = new ArrayList<String>();
+		apiDocumentation = new HashMap<String, String>();
 	}
 
 	public List<String> getCriteriaMet() {
@@ -42,5 +47,13 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
 
 	public void setPreviousDevelopers(List<String> previousDevelopers) {
 		this.previousDevelopers = previousDevelopers;
+	}
+
+	public Map<String, String> getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(Map<String, String> apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
 	}
 }

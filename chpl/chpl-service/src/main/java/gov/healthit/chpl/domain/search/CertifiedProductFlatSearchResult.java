@@ -14,6 +14,8 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 	@JsonView({SearchViews.Default.class})
 	private String cqmsMet; //unicode-char delimited string of cmqs that were met (any version)
 	
+	private String apiDocumentation;
+	
 	public CertifiedProductFlatSearchResult() {
 		
 	}
@@ -22,6 +24,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 		this.previousDevelopers = other.getPreviousDevelopers();
 		this.criteriaMet = other.getCriteriaMet();
 		this.cqmsMet = other.getCqmsMet();
+		this.apiDocumentation = other.getApiDocumentation();
 	}
 	
 	public String getPreviousDevelopers() {
@@ -46,5 +49,11 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
 
 	public void setCqmsMet(String cqmsMet) {
 		this.cqmsMet = cqmsMet;
+	}
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
 	}
 }
