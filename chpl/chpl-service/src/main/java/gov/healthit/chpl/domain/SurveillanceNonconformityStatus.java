@@ -2,11 +2,22 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceNonconformityStatus implements Serializable {
 	private static final long serialVersionUID = -411041849666278903L;
 	public static final String OPEN = "Open";
 	public static final String CLOSED = "Closed";
+	
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlElement(required = true)
 	private String name;
 	
 	public SurveillanceNonconformityStatus() {}

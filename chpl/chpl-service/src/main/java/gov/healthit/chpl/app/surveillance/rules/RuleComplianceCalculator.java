@@ -21,6 +21,7 @@ public class RuleComplianceCalculator {
 	@Autowired private CapStartedComplianceChecker capStarted;
 	@Autowired private CapCompletedComplianceChecker capCompleted;
 	@Autowired private CapClosedComplianceChecker capClosed;
+	@Autowired private NonconformityOpenCapCompleteComplianceChecker ncOpenCapClosed;
 		
 	public RuleComplianceCalculator() {
 	}
@@ -54,6 +55,11 @@ public class RuleComplianceCalculator {
 			capClosedResult.setRule(capClosed.getRuleChecked());
 			capClosedResult.setDateBroken(capClosed.check(cp, surv, nc));
 			survRuleResults.add(capClosedResult);
+
+            OversightRuleResult ncOpenCapClosedResult = new OversightRuleResult();
+			ncOpenCapClosedResult.setRule(ncOpenCapClosed.getRuleChecked());
+			ncOpenCapClosedResult.setDateBroken(ncOpenCapClosed.check(cp, surv, nc));
+			survRuleResults.add(ncOpenCapClosedResult);
         }
 		return survRuleResults;
 	}
@@ -67,6 +73,7 @@ public class RuleComplianceCalculator {
 		lsc.setNumDaysAllowed(new Integer(props.getProperty("suspendedDaysAllowed")).intValue());
 		capApproval.setNumDaysAllowed(new Integer(props.getProperty("capApprovalDaysAllowed")).intValue());
 		capStarted.setNumDaysAllowed(new Integer(props.getProperty("capStartDaysAllowed")).intValue());
+		ncOpenCapClosed.setNumDaysAllowed(new Integer(props.getProperty("ncOpenCapClosedDaysAllowed")).intValue());
 	}
 
 	public LongSuspensionComplianceChecker getLsc() {
@@ -99,5 +106,13 @@ public class RuleComplianceCalculator {
 
 	public void setCapCompleted(CapCompletedComplianceChecker capCompleted) {
 		this.capCompleted = capCompleted;
+	}
+
+    public NonconformityOpenCapCompleteComplianceChecker getNcOpenCapClosed() {
+		return ncOpenCapClosed;
+	}
+
+    public void setNcOpenCapClosed(NonconformityOpenCapCompleteComplianceChecker ncOpenCapClosed) {
+		this.ncOpenCapClosed = ncOpenCapClosed;
 	}
 }

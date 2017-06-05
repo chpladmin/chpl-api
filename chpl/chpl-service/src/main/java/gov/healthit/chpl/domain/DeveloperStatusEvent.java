@@ -3,13 +3,28 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class DeveloperStatusEvent implements Serializable {
 	private static final long serialVersionUID = -7303257499336378800L;
+	
+	@XmlElement(required = false, nillable=true)
 	private Long id;
+	
+	@XmlElement(required = true)
 	private Long developerId;
+	
+	@XmlElement(required = true)
 	private DeveloperStatus status;
+	
+	@XmlElement(required = true)
 	private Date statusDate;
 	
 	public DeveloperStatusEvent() {

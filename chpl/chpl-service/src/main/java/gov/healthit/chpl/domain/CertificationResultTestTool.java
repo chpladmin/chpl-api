@@ -2,8 +2,14 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestTool implements Serializable {
 	private static final long serialVersionUID = 2785949879671019720L;
 	private Long id;

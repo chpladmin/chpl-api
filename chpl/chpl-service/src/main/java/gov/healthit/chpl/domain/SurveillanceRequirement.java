@@ -4,12 +4,31 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceRequirement implements Serializable {
 	private static final long serialVersionUID = -4406043308588618231L;
+	
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlElement(required = true)
 	private SurveillanceRequirementType type;
+	
+	@XmlElement(required = true)
 	private String requirement;
+	
+	@XmlElement(required = false, nillable=true)
 	private SurveillanceResultType result;
+	
+	@XmlElementWrapper(name = "nonconformities", nillable = true, required = false)
+	@XmlElement(name = "nonconformity")
 	private List<SurveillanceNonconformity> nonconformities;
 	
 	public SurveillanceRequirement() {

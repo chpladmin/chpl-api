@@ -14,8 +14,6 @@
   <name>chpl-service Maven Webapp</name>
   <url>http://maven.apache.org</url>
   
-
-    
   <dependencies>
     	<dependency>
 			<groupId>gov.healthit.chpl</groupId>
@@ -315,6 +313,28 @@
           </descriptorRefs>
         </configuration>
       </plugin>
+      
+       <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jaxb2-maven-plugin</artifactId>
+            <version>2.3.1</version>
+            <configuration>
+            	<clearOutputDir>true</clearOutputDir>
+            	<verbose>true</verbose>
+            	<createJavaDocAnnotations>true</createJavaDocAnnotations>
+				<sources>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductDownloadResponse.java</source>
+				</sources>
+			</configuration>
+            <executions>
+                <execution>
+                    <id>schemagen</id>
+                    <goals>
+                        <goal>schemagen</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 	</plugins>
   </build>
   

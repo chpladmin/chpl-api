@@ -4,18 +4,41 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Product implements Serializable {
 	private static final long serialVersionUID = 2177195816284265811L;
+	
+	@XmlElement(required = true)
 	private Long productId;
+	
+	@XmlElement(required = true)
 	private String name;
+	
+	@XmlElement(required = false, nillable=true)
 	private String reportFileLocation;
+	
+	@XmlElement(required = false, nillable=true)
 	private Contact contact;
-	private String lastModifiedDate;
+	
+	@XmlElement(required = true)
 	private Developer owner;
+	
+	@XmlElementWrapper(name = "ownerHistory", nillable = true, required = false)
+	@XmlElement(name = "owner")
 	private List<ProductOwner> ownerHistory;
+	
+	@XmlElement(required = false, nillable=true)
+	private String lastModifiedDate;
 	
 	public Product() {
 		ownerHistory = new ArrayList<ProductOwner>();
