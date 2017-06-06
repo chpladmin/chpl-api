@@ -9,6 +9,7 @@ _Backwards compatibility breaking changes_
 
 ### Minor Features
 * Add decertification date, numMeaningfulUse, transparency attestation url, and api documentation url fields to the flat search results
+* Fill in blank cells for subelements in nonconformtiy and surveillance downloads.
 
 ---
 
