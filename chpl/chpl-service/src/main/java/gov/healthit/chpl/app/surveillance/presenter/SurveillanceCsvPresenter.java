@@ -107,36 +107,8 @@ public class SurveillanceCsvPresenter {
 		
 		List<String> firstRow = new ArrayList<String>();
 		firstRow.add("Update");
-		firstRow.add(data.getChplProductNumber());
-		firstRow.add(props.getProperty("chplUrlBegin") + "#/product/" + data.getId());
-		firstRow.add(data.getCertifyingBody().get("name").toString());
-		firstRow.add(data.getCertificationStatus().get("name").toString());
-		firstRow.add(data.getDeveloper().getName());
-		firstRow.add(data.getProduct().getName());
-		firstRow.add(data.getVersion().getVersion());
-		firstRow.add(surv.getFriendlyId());
-		if(surv.getStartDate() != null) {
-			LocalDateTime survStartDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(surv.getStartDate().getTime()), 
-				    ZoneId.systemDefault());
-			firstRow.add(dateFormatter.format(survStartDate));
-		} else {
-			firstRow.add("");
-		}
-		if(surv.getEndDate() != null) {
-			LocalDateTime survEndDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(surv.getEndDate().getTime()), 
-				    ZoneId.systemDefault());
-			firstRow.add(dateFormatter.format(survEndDate));
-		} else {
-			firstRow.add("");
-		}
-		firstRow.add(surv.getType().getName());
-		if(surv.getRandomizedSitesUsed() != null) {
-			firstRow.add(surv.getRandomizedSitesUsed().toString());
-		} else {
-			firstRow.add("");
-		}
+		List<String> survValues = generateSurveillanceRowValues(data, surv);
+		firstRow.addAll(survValues);
 		result.add(firstRow);
 
 		if(surv.getRequirements() != null && surv.getRequirements().size() > 0) {
@@ -152,18 +124,7 @@ public class SurveillanceCsvPresenter {
 					//make a new row
 					reqRow = new ArrayList<String>();
 					reqRow.add("Subelement");
-					reqRow.add(data.getChplProductNumber());
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
-					reqRow.add("");
+					reqRow.addAll(survValues);
 					reqRow.addAll(reqValues);
 					result.add(reqRow);
 				}
@@ -181,16 +142,7 @@ public class SurveillanceCsvPresenter {
 						} else {
 							List<String> ncRow = new ArrayList<String>();
 							ncRow.add("Subelement");
-							ncRow.add(data.getChplProductNumber());
-							ncRow.add("");
-							ncRow.add("");
-							ncRow.add("");
-							ncRow.add("");
-							ncRow.add("");
-							ncRow.add("");
-							ncRow.add("");
-							ncRow.add("");
-							ncRow.add("");
+							ncRow.addAll(survValues);
 							ncRow.addAll(reqValues);
 							ncRow.addAll(ncValues);
 							result.add(ncRow);
@@ -200,6 +152,41 @@ public class SurveillanceCsvPresenter {
 				
 				isFirstSurvRow = false;
 			}
+		}
+		return result;
+	}
+	
+	protected List<String> generateSurveillanceRowValues(CertifiedProductSearchDetails listing, Surveillance surv) {
+		List<String> result = new ArrayList<String>();
+		result.add(listing.getChplProductNumber());
+		result.add(props.getProperty("chplUrlBegin") + "#/product/" + listing.getId());
+		result.add(listing.getCertifyingBody().get("name").toString());
+		result.add(listing.getCertificationStatus().get("name").toString());
+		result.add(listing.getDeveloper().getName());
+		result.add(listing.getProduct().getName());
+		result.add(listing.getVersion().getVersion());
+		result.add(surv.getFriendlyId());
+		if(surv.getStartDate() != null) {
+			LocalDateTime survStartDate = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(surv.getStartDate().getTime()), 
+				    ZoneId.systemDefault());
+			result.add(dateFormatter.format(survStartDate));
+		} else {
+			result.add("");
+		}
+		if(surv.getEndDate() != null) {
+			LocalDateTime survEndDate = LocalDateTime.ofInstant(
+					Instant.ofEpochMilli(surv.getEndDate().getTime()), 
+				    ZoneId.systemDefault());
+			result.add(dateFormatter.format(survEndDate));
+		} else {
+			result.add("");
+		}
+		result.add(surv.getType().getName());
+		if(surv.getRandomizedSitesUsed() != null) {
+			result.add(surv.getRandomizedSitesUsed().toString());
+		} else {
+			result.add("");
 		}
 		return result;
 	}

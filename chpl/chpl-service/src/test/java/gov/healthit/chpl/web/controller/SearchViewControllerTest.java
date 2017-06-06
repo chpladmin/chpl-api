@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -617,46 +618,6 @@ public class SearchViewControllerTest extends TestCase {
 				resp.getNumMeaningfulUse() == 12);
 	}
 	
-	/** 
-	 * Given that a user with no security calls the API
-	 * When the API is called at /decertifications/certified_products
-	 * Then the API returns a SearchResponse object with only decertified CPs
-	 * Then the pageSize is equivalent to the sum of all the decertified CPs
-	 * @throws EntityRetrievalException 
-	 */
-	@Transactional
-	@Test
-	public void test_searchDecertifiedCPs() throws EntityRetrievalException {	
-		SearchResponse resp = searchViewController.getDecertifiedCertifiedProducts(null, null, null, null);		
-		
-		assertTrue(resp.getResults().size() == 1);
-		assertEquals((Integer) resp.getResults().size(), resp.getPageSize());
-		for(CertifiedProductSearchResult cp : resp.getResults()){
-			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByAcb)) || 
-					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview)) ||
-					cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.TerminatedByOnc)));
-		}
-	}
-	
-	/** 
-	 * Given that a user with no security calls the API
-	 * When the API is called at /decertifications/certified_products
-	 * Then the API returns a SearchResponse object with only decertified inactive certificate CPs
-	 * Then the pageSize is equivalent to the sum of all the decertified CPs
-	 * @throws EntityRetrievalException 
-	 */
-	@Transactional
-	@Test
-	public void test_searchDecertifiedInactiveCertCPs() throws EntityRetrievalException {	
-		SearchResponse resp = searchViewController.getDecertifiedInactiveCertificateCertifiedProducts(null, null, null, null);		
-		
-		assertTrue(resp.getResults().size() == 6);
-		assertEquals((Integer) resp.getResults().size(), resp.getPageSize());
-		for(CertifiedProductSearchResult cp : resp.getResults()){
-			assertTrue(cp.getCertificationStatus().containsValue(String.valueOf(CertificationStatusType.WithdrawnByDeveloper)));
-		}
-	}
-	
 	@Transactional
 	@Test
 	public void testBasicSearchDefaultViewHasRequiredFields() throws JsonProcessingException, EntityRetrievalException {
@@ -689,6 +650,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNotNull(result.getVersion());
 			assertNotNull(result.getCertificationDate());
 			assertNotNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNotNull(result.getSurveillanceCount());
 			assertNotNull(result.getOpenNonconformityCount());
 			assertNotNull(result.getClosedNonconformityCount());
@@ -737,6 +700,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNull(result.getVersion());
 			assertNull(result.getCertificationDate());
 			assertNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNull(result.getSurveillanceCount());
 			assertNull(result.getOpenNonconformityCount());
 			assertNull(result.getClosedNonconformityCount());
@@ -777,6 +742,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNull(result.getVersion());
 			assertNull(result.getCertificationDate());
 			assertNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNull(result.getSurveillanceCount());
 			assertNull(result.getOpenNonconformityCount());
 			assertNull(result.getClosedNonconformityCount());
@@ -816,6 +783,8 @@ public class SearchViewControllerTest extends TestCase {
 			assertNull(result.getVersion());
 			assertNull(result.getCertificationDate());
 			assertNull(result.getCertificationStatus());
+			assertNull(result.getDecertificationDate());
+			assertNull(result.getNumMeaningfulUse());
 			assertNull(result.getSurveillanceCount());
 			assertNull(result.getOpenNonconformityCount());
 			assertNull(result.getClosedNonconformityCount());

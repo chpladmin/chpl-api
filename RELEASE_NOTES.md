@@ -3,10 +3,22 @@
 ## Version TBD
 _Date TBD_
 
+### Major Features
+_Backwards compatibility breaking changes_
+* Removed /decertifications/certified_products and /decertifications/inactive_certificates API calls. This same data can now be accessed through the /certified_products API method.
+
+### Minor Features
+* Add decertification date, numMeaningfulUse, transparency attestation url, and api documentation url fields to the flat search results
+* Fill in blank cells for subelements in nonconformtiy and surveillance downloads.
+
+---
+
+## Version 10.2.0
+_5 June 2017_
+
 ### Minor features
-* Create application to update certification status to 'Withdrawn by Developer' for CCHIT's 2014 edition retired listings
-* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGES XML FILE FORMAT.
-* Allow corrective action plan resolution to be blank even when the end date is filled in.
+* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGES XML FILE FORMAT
+* Allow corrective action plan resolution to be blank even when the end date is filled in
 * Added surveillance trigger for Open Nonconformity with closed CAP > 45 days prior
 
 ---

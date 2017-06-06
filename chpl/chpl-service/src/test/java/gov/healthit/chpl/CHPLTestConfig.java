@@ -48,7 +48,9 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
@@ -158,6 +160,7 @@ public class CHPLTestConfig implements EnvironmentAware {
 		mediaTypes.add(MediaType.APPLICATION_JSON);
 		bean.setSupportedMediaTypes(mediaTypes);
 		bean.getObjectMapper().setSerializationInclusion(Include.NON_NULL);
+		bean.getObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 
 		return bean;
 	}
