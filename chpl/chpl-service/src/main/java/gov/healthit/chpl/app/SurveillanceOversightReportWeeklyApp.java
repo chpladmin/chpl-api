@@ -36,11 +36,10 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
     
 	public static void main(String[] args) throws Exception {
 		SurveillanceOversightReportWeeklyApp oversightApp = new SurveillanceOversightReportWeeklyApp();
-		Properties props = oversightApp.getProperties();
-		oversightApp.setLocalContext(props);
+		oversightApp.setLocalContext();
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		oversightApp.initiateSpringBeans(context, props);
-        String downloadFolderPath = oversightApp.getDownloadFolderPath(args, props);
+		oversightApp.initiateSpringBeans(context);
+        String downloadFolderPath = oversightApp.getDownloadFolderPath(args);
         File downloadFolder = oversightApp.getDownloadFolder(downloadFolderPath);
 		
         // Get ACBs for ONC-ACB emails
@@ -48,13 +47,10 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 		// Get all recipients with all subscriptions
 		Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 		permissions.add(new GrantedPermission("ROLE_ADMIN"));
-		List<RecipientWithSubscriptionsDTO> recipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappings(permissions, null);
-		// Get email addresses for ONC subscribers
-		Set<String> oncWeeklyEmails = oversightApp.getRecipientEmails(recipientSubscriptions, NotificationTypeConcept.ONC_WEEKLY_SURVEILLANCE_BROKEN_RULES);
-		// Get email addresses for ONC-ACB subscribers
-		Map<CertificationBodyDTO, Set<String>> acbEmailMap = oversightApp.getAcbRecipientEmails(recipientSubscriptions, acbs, NotificationTypeConcept.ONC_ACB_WEEKLY_SURVEILLANCE_BROKEN_RULES);
-		if(oncWeeklyEmails.size() > 0 || acbEmailMap.size() > 0){
-			// Get full set of data to send in ONC email
+		List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_WEEKLY_SURVEILLANCE_BROKEN_RULES, null);
+ 		List<RecipientWithSubscriptionsDTO> allAcbRecipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_ACB_WEEKLY_SURVEILLANCE_BROKEN_RULES, acbs);
+ 		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0){
+ 			// Get full set of data to send in ONC email
 			List<CertifiedProductSearchDetails> allCertifiedProductDetails = oversightApp.getAllCertifiedProductSearchDetails();
 			CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();
 			allCps.setListings(allCertifiedProductDetails);
@@ -62,108 +58,76 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 			Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadMap = oversightApp.getCertificationDownloadResponse(allCertifiedProductDetails, acbs);
 			
 			// send emails
-			oversightApp.sendOncWeeklyEmail(oncWeeklyEmails, props, downloadFolder, allCps);
-			oversightApp.sendAcbWeeklyRecipientSubscriptionEmails(acbEmailMap, props, downloadFolder, certificationDownloadMap);
+			oversightApp.sendOncWeeklyEmail(oncRecipientSubscriptions, downloadFolder, allCps);
+			for(CertificationBodyDTO acb : acbs) {
+				List<CertificationBodyDTO> currAcbList = new ArrayList<CertificationBodyDTO>();
+				currAcbList.add(acb);
+		 		List<RecipientWithSubscriptionsDTO> acbRecipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_ACB_DAILY_SURVEILLANCE_BROKEN_RULES, currAcbList);
+				oversightApp.sendAcbWeeklyEmail(acb, acbRecipientSubscriptions, downloadFolder, certificationDownloadMap);
+			}
 		}
         
         context.close();
 	}
 	
-	protected void initiateSpringBeans(AbstractApplicationContext context, Properties props){
-		super.initiateSpringBeans(context, props);
+	@Override
+	protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
+		super.initiateSpringBeans(context);
 		this.setPresenter((SurveillanceOversightAllBrokenRulesCsvPresenter)context.getBean("surveillanceOversightAllBrokenRulesCsvPresenter"));
-		this.getPresenter().setProps(props);
+		this.getPresenter().setProps(getProperties());
 	}
 	
-	private void sendOncWeeklyEmail(Set<String> oncWeeklyEmails, Properties props, File downloadFolder, CertifiedProductDownloadResponse cpList) throws IOException, AddressException, MessagingException {
-		String surveillanceReportFilename = null;
-        String htmlMessage = null;
-        String subject = null;
-        File surveillanceReportFile = null;
+	private void sendOncWeeklyEmail(List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions, File downloadFolder, CertifiedProductDownloadResponse cpList) throws IOException, AddressException, MessagingException {
+		Properties props = getProperties();
 		
-		surveillanceReportFilename = props.getProperty("oversightEmailWeeklyFileName");
-    	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
+        String surveillanceReportFilename = props.getProperty("oversightEmailWeeklyFileName");
+        File surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
+    	String subject = props.getProperty("oversightEmailWeeklySubject");
+    	String htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
     	this.getPresenter().presentAsFile(surveillanceReportFile, cpList);
-    	subject = props.getProperty("oversightEmailWeeklySubject");
-    	htmlMessage = props.getProperty("oversightEmailWeeklyHtmlMessage");
-    	String[] bccEmail = oncWeeklyEmails.toArray(new String[oncWeeklyEmails.size()]);
-        
+
+    	//get emails
+    	Set<String> oncEmails = new HashSet<String>();
+    	for(RecipientWithSubscriptionsDTO recip : oncRecipientSubscriptions) {
+    		oncEmails.add(recip.getEmail());
+    	}
+    	String[] bccEmail = oncEmails.toArray(new String[oncEmails.size()]);
+
         Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
-       
-        //were any rules broken?
-        boolean anyRulesBroken = false;
-        for(SurveillanceOversightRule rule : brokenRules.keySet()) {
-        	Integer brokenRuleCount = brokenRules.get(rule);
-        	if(brokenRuleCount.intValue() > 0) {
-        		anyRulesBroken = true;
-        	}
-        }
-        if(!anyRulesBroken) {
-        	htmlMessage += props.getProperty("oversightEmailWeeklyNoContent");
-        } else {
-        	htmlMessage += "<ul>";
-        	htmlMessage += "<li>" + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.LONG_SUSPENSION) + "</li>";
-        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_APPROVED) + "</li>";
-        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_STARTED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_STARTED) + "</li>";
-        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_COMPLETED) + "</li>";
-        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_CLOSED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_CLOSED) + "</li>";
-        	htmlMessage += "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE) + "</li>";
-        	htmlMessage += "</ul>";
-        }
-        
+        htmlMessage += createHtmlEmailBody(brokenRules, props.getProperty("oversightEmailWeeklyNoContent"));
+
         List<File> files = new ArrayList<File>();
         files.add(surveillanceReportFile);
         this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
 	}
 	
-	private void sendAcbWeeklyRecipientSubscriptionEmails(Map<CertificationBodyDTO, Set<String>> acbEmailMap, Properties props, File downloadFolder, Map<CertificationBodyDTO, CertifiedProductDownloadResponse> acbDownloadMap) throws IOException, AddressException, MessagingException {
-		String surveillanceReportFilename = null;
-        String htmlMessage = null;
-        String subject = null;
-        File surveillanceReportFile = null;
-        
-        // Send one email for each ACB to all of its subscribed recipients
-        for(Map.Entry<CertificationBodyDTO, Set<String>> entry : acbEmailMap.entrySet()){
-        	List<File> files = new ArrayList<File>();
-        	String fmtAcbName = entry.getKey().getName().replaceAll("\\W", "").toLowerCase();
-        	surveillanceReportFilename = fmtAcbName + "-" + props.getProperty("oversightEmailWeeklyFileName");
-        	surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
-        	this.getPresenter().clear();
-        	
-            // Generate this ACB's download file  	
-        	this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(entry.getKey()));
-    		files.add(surveillanceReportFile);	
-        	
-        	subject = entry.getKey().getName() + " " + props.getProperty("oversightEmailWeeklySubject");
-        	htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
-        	String[] bccEmail = entry.getValue().toArray(new String[entry.getValue().size()]);
-            
-        	// Get broken rules for email body
-            Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
-           
-            //were any rules broken?
-            boolean anyRulesBroken = false;
-            for(SurveillanceOversightRule rule : brokenRules.keySet()) {
-            	Integer brokenRuleCount = brokenRules.get(rule);
-            	if(brokenRuleCount.intValue() > 0) {
-            		anyRulesBroken = true;
-            	}
-            }
-            if(!anyRulesBroken) {
-            	htmlMessage += props.getProperty("oversightEmailWeeklyNoContent");
-            } else {
-            	htmlMessage += "<ul>";
-            	htmlMessage += "<li>" + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.LONG_SUSPENSION) + "</li>";
-            	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_APPROVED) + "</li>";
-            	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_STARTED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_STARTED) + "</li>";
-            	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_COMPLETED) + "</li>";
-            	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_CLOSED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_CLOSED) + "</li>";
-            	htmlMessage += "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE) + "</li>";
-            	htmlMessage += "</ul>";
-            }
-            
-            this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
-        }
+	private void sendAcbWeeklyEmail(CertificationBodyDTO acb, List<RecipientWithSubscriptionsDTO> acbRecipientSubscriptions, File downloadFolder, Map<CertificationBodyDTO, CertifiedProductDownloadResponse> acbDownloadMap) throws IOException, AddressException, MessagingException {
+		Properties props = getProperties();
+		
+		//get emails
+    	Set<String> acbEmails = new HashSet<String>();
+    	for(RecipientWithSubscriptionsDTO recip : acbRecipientSubscriptions) {
+    		acbEmails.add(recip.getEmail());
+    	}
+    	
+    	List<File> files = new ArrayList<File>();
+    	String fmtAcbName = acb.getName().replaceAll("\\W", "").toLowerCase();
+    	String surveillanceReportFilename = fmtAcbName + "-" + props.getProperty("oversightEmailWeeklyFileName");
+    	File surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
+    	this.getPresenter().clear();
+    	
+    	// Generate this ACB's download file  	
+        this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(acb));
+		files.add(surveillanceReportFile);	
+
+    	String subject = acb.getName() + " " + props.getProperty("oversightEmailWeeklySubject");
+    	String[] bccEmail = acbEmails.toArray(new String[acbEmails.size()]);
+    	
+    	// Get broken rules for email body
+        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
+    	String htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
+        htmlMessage += createHtmlEmailBody(brokenRules, props.getProperty("oversightEmailWeeklyNoContent"));
+        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
 	}
 
 	private SurveillanceOversightAllBrokenRulesCsvPresenter getPresenter() {

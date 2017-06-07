@@ -1,5 +1,6 @@
 package gov.healthit.chpl.app;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.AbstractApplicationContext;
 
+import gov.healthit.chpl.app.surveillance.presenter.SurveillanceOversightNewBrokenRulesCsvPresenter;
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -59,7 +61,8 @@ public abstract class SurveillanceOversightReportApp extends App {
 		return certificationDownloadResponse;
 	}
 	
-	protected void initiateSpringBeans(AbstractApplicationContext context, Properties props){
+	@Override
+	protected void initiateSpringBeans(AbstractApplicationContext context)  throws IOException {
 		this.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		this.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
 		this.setNotificationDAO((NotificationDAO)context.getBean("notificationDAO"));
@@ -67,7 +70,7 @@ public abstract class SurveillanceOversightReportApp extends App {
 		this.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
 	}
 	
-	public List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails(){
+	public List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails() {
 		List<CertifiedProductDetailsDTO> allCertifiedProducts = this.getCertifiedProductDAO().findWithSurveillance();
 	    List<CertifiedProductSearchDetails> allCertifiedProductDetails = new ArrayList<CertifiedProductSearchDetails>(allCertifiedProducts.size());
 		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
@@ -81,38 +84,25 @@ public abstract class SurveillanceOversightReportApp extends App {
 		return allCertifiedProductDetails;
 	}
 	
-	protected Set<String> getRecipientEmails(List<RecipientWithSubscriptionsDTO> recipientSubscriptions, NotificationTypeConcept notificationTypeConcept){
-		Set<String> oncDailyRecipients = new HashSet<String>();
-		for(RecipientWithSubscriptionsDTO rDto : recipientSubscriptions){
-			for(SubscriptionDTO sDto : rDto.getSubscriptions()){
-				if(sDto.getNotificationType().getName().equalsIgnoreCase(notificationTypeConcept.getName())){
-					oncDailyRecipients.add(rDto.getEmail());
-				}
-			}
-		}
-		return oncDailyRecipients;
+	protected String createHtmlEmailBody(Map<SurveillanceOversightRule, Integer> brokenRules, String noContentMsg) throws IOException {
+		//were any rules broken?
+		boolean anyRulesBroken = hasBrokenRules(brokenRules);
+        String htmlMessage = "";
+        if(!anyRulesBroken) {
+        	htmlMessage = noContentMsg;
+        } else {
+        	htmlMessage += "<ul>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.LONG_SUSPENSION) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_APPROVED) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_STARTED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_STARTED) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_COMPLETED) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.CAP_NOT_CLOSED.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.CAP_NOT_CLOSED) + "</li>";
+        	htmlMessage += "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE) + "</li>";
+        	htmlMessage += "</ul>";
+        }
+        return htmlMessage;
 	}
-	
-	protected Map<CertificationBodyDTO, Set<String>> getAcbRecipientEmails(List<RecipientWithSubscriptionsDTO> recipientSubscriptions, List<CertificationBodyDTO> acbs, NotificationTypeConcept notificationTypeConcept){
-		Map<CertificationBodyDTO, Set<String>> acbDailyRecipients = new HashMap<CertificationBodyDTO, Set<String>>();
-		for(CertificationBodyDTO acb : acbs){
-			Set<String> emails = new HashSet<String>();
-			for(RecipientWithSubscriptionsDTO rDto : recipientSubscriptions){
-				for(SubscriptionDTO sDto : rDto.getSubscriptions()){
-					if(sDto.getNotificationType().getName().equalsIgnoreCase(notificationTypeConcept.getName())){
-						if(sDto.getAcb().getAcbCode().equalsIgnoreCase(acb.getAcbCode())){
-							emails.add(rDto.getEmail());
-						}
-					}
-				}
-			}
-			if(emails.size() > 0){
-				acbDailyRecipients.put(acb, emails);
-			}
-		}
-		return acbDailyRecipients;
-	}
-	
+
 	protected Boolean hasBrokenRules(Map<SurveillanceOversightRule, Integer> brokenRules){
 		Boolean anyRulesBroken = false;
 		for(SurveillanceOversightRule rule : brokenRules.keySet()) {

@@ -47,9 +47,9 @@ public class UpdateCertificationStatusApp extends App {
 		// setup application
 		UpdateCertificationStatusApp updateCertStatus = new UpdateCertificationStatusApp();
 		Properties props = updateCertStatus.getProperties();
-		updateCertStatus.setLocalContext(props);
+		updateCertStatus.setLocalContext();
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		updateCertStatus.initiateSpringBeans(context, props);
+		updateCertStatus.initiateSpringBeans(context);
 		
 		// Get Certification Body for CCHIT
 		CertificationBodyDTO cbDTO = updateCertStatus.getCertificationBody(CERTIFICATION_NAME);
@@ -69,7 +69,7 @@ public class UpdateCertificationStatusApp extends App {
 	}
 
 	@Override
-	protected void initiateSpringBeans(AbstractApplicationContext context, Properties props) {
+	protected void initiateSpringBeans(AbstractApplicationContext context) {
 		logger.info("Initiate Spring Beans");
 		this.setCertificationBodyDAO((CertificationBodyDAO)context.getBean("certificationBodyDAO"));
 		this.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
