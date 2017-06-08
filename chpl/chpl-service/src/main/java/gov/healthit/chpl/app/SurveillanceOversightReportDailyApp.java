@@ -95,13 +95,15 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
     		oncEmails.add(recip.getEmail());
     	}
     	String[] bccEmail = oncEmails.toArray(new String[oncEmails.size()]);
-        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getNewBrokenRulesCounts();
-        String htmlMessage = props.getProperty("oversightEmailDailyHtmlMessage");
-        htmlMessage += createHtmlEmailBody(brokenRules, props.getProperty("oversightEmailDailyNoContent"));
-        
-        List<File> files = new ArrayList<File>();
-        files.add(surveillanceReportFile);
-        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
+    	if(bccEmail.length > 0) {
+	        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getNewBrokenRulesCounts();
+	        String htmlMessage = props.getProperty("oversightEmailDailyHtmlMessage");
+	        htmlMessage += createHtmlEmailBody(brokenRules, props.getProperty("oversightEmailDailyNoContent"));
+	        
+	        List<File> files = new ArrayList<File>();
+	        files.add(surveillanceReportFile);
+	        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
+    	}
 	}
 	
 	/**
@@ -138,11 +140,13 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
     	String subject = acb.getName() + " " + props.getProperty("oversightEmailDailySubject");
     	String[] bccEmail = acbEmails.toArray(new String[acbEmails.size()]);
     	
-    	// Get broken rules for email body
-        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getNewBrokenRulesCounts();
-    	String htmlMessage = props.getProperty("oversightEmailAcbDailyHtmlMessage");
-        htmlMessage += createHtmlEmailBody(brokenRules, props.getProperty("oversightEmailDailyNoContent"));
-        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
+    	if(bccEmail.length > 0) {
+	    	// Get broken rules for email body
+	        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getNewBrokenRulesCounts();
+	    	String htmlMessage = props.getProperty("oversightEmailAcbDailyHtmlMessage");
+	        htmlMessage += createHtmlEmailBody(brokenRules, props.getProperty("oversightEmailDailyNoContent"));
+	        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
+    	}
 	}
 
 	private SurveillanceOversightNewBrokenRulesCsvPresenter getPresenter() {

@@ -38,7 +38,9 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 			
 			for(CertifiedProductSearchDetails data : cpList.getListings()) {
 				List<String> rowValue = generateRowValue(data);
-				csvPrinter.printRecord(rowValue);
+				if(rowValue != null) { //a subclass could return null to skip a row
+					csvPrinter.printRecord(rowValue);
+				}
 			}
 		} catch(IOException ex) {
 			logger.error("Could not write file " + file.getName(), ex);
