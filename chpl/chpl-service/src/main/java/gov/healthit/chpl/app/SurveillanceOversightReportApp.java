@@ -30,46 +30,14 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.notification.SubscriptionDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
-public abstract class SurveillanceOversightReportApp extends App {
-	protected SimpleDateFormat timestampFormat;
-	protected CertifiedProductDetailsManager cpdManager;
-	protected CertifiedProductDAO certifiedProductDAO;
-	protected SendMailUtil mailUtils;
-	protected NotificationDAO notificationDAO;
-	protected CertificationBodyDAO certificationBodyDAO;
-	
+public abstract class SurveillanceOversightReportApp extends NotificationEmailerReportApp {	
 	private static final Logger logger = LogManager.getLogger(SurveillanceOversightReportApp.class);
 	
 	public SurveillanceOversightReportApp(){
-		timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-	}
-	
-	public Map<CertificationBodyDTO, CertifiedProductDownloadResponse> getCertificationDownloadResponse(List<CertifiedProductSearchDetails> allCertifiedProductDetails, List<CertificationBodyDTO> acbs){
-		Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadResponse = new HashMap<CertificationBodyDTO, CertifiedProductDownloadResponse>();
-		
-		for(CertificationBodyDTO cbDTO : acbs){
-			CertifiedProductDownloadResponse cpDlResponse = new CertifiedProductDownloadResponse();
-			List<CertifiedProductSearchDetails> acbCpSearchDetails = new ArrayList<CertifiedProductSearchDetails>();
-			for(CertifiedProductSearchDetails cpDetail : allCertifiedProductDetails){
-				if(cpDetail.getCertifyingBody().get("code").toString().equalsIgnoreCase(cbDTO.getAcbCode())){
-					acbCpSearchDetails.add(cpDetail);
-				}
-			}
-			cpDlResponse.setListings(acbCpSearchDetails);
-			certificationDownloadResponse.put(cbDTO, cpDlResponse);
-		}
-		return certificationDownloadResponse;
+		super();
 	}
 	
 	@Override
-	protected void initiateSpringBeans(AbstractApplicationContext context)  throws IOException {
-		this.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
-		this.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		this.setNotificationDAO((NotificationDAO)context.getBean("notificationDAO"));
-		this.setCertificationBodyDAO((CertificationBodyDAO)context.getBean("certificationBodyDAO"));
-		this.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
-	}
-	
 	public List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails() {
 		List<CertifiedProductDetailsDTO> allCertifiedProducts = this.getCertifiedProductDAO().findWithSurveillance();
 	    List<CertifiedProductSearchDetails> allCertifiedProductDetails = new ArrayList<CertifiedProductSearchDetails>(allCertifiedProducts.size());
@@ -112,45 +80,5 @@ public abstract class SurveillanceOversightReportApp extends App {
         	}
         }
 		return anyRulesBroken;
-	}
-
-	public CertifiedProductDetailsManager getCpdManager() {
-		return cpdManager;
-	}
-
-	public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
-		this.cpdManager = cpdManager;
-	}
-
-	public CertifiedProductDAO getCertifiedProductDAO() {
-		return certifiedProductDAO;
-	}
-
-	public void setCertifiedProductDAO(CertifiedProductDAO certifiedProductDAO) {
-		this.certifiedProductDAO = certifiedProductDAO;
-	}
-
-	public SendMailUtil getMailUtils() {
-		return mailUtils;
-	}
-
-	public void setMailUtils(SendMailUtil mailUtils) {
-		this.mailUtils = mailUtils;
-	}
-
-	public NotificationDAO getNotificationDAO() {
-		return notificationDAO;
-	}
-
-	public void setNotificationDAO(NotificationDAO notificationDAO) {
-		this.notificationDAO = notificationDAO;
-	}
-
-	public CertificationBodyDAO getCertificationBodyDAO() {
-		return certificationBodyDAO;
-	}
-
-	public void setCertificationBodyDAO(CertificationBodyDAO certificationBodyDAO) {
-		this.certificationBodyDAO = certificationBodyDAO;
 	}
 }

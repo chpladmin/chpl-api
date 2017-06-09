@@ -216,6 +216,23 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 	
 	@Transactional(readOnly=true)
+	public List<CertifiedProductDetailsDTO> findWithInheritance(){
+		
+		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery( 
+				"SELECT DISTINCT cp "
+				+ "FROM CertifiedProductDetailsEntity cp "
+				+ "WHERE (icsCode > 0 OR ics = true)", CertifiedProductDetailsEntity.class).getResultList();
+
+		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
+		for (CertifiedProductDetailsEntity entity : entities) {
+			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+			products.add(product);
+		}
+		return products;
+		
+	}
+	
+	@Transactional(readOnly=true)
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException{
 		
 		CertifiedProductDTO dto = null;

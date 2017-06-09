@@ -18,7 +18,8 @@ public interface CertifiedProductDAO {
 	
 	public List<CertifiedProductDetailsDTO> findAll();
 	public List<CertifiedProductDetailsDTO> findWithSurveillance();
-	
+	public List<CertifiedProductDetailsDTO> findWithInheritance();
+
 	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
 	public CertifiedProductDetailsDTO getDetailsById(Long productId) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException;
