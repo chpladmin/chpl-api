@@ -978,13 +978,85 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		return result;
 	}	
 	
-	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
-			+ ")")
-	@Transactional(readOnly = false)
-	public void updateQmsStandards(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductQmsStandardDTO> newQmsStandards)
+//	/**
+//	 * Intelligently determine what updates need to be made to ICS parents.
+//	 * @param existingIcs
+//	 * @param updatedIcs
+//	 */
+//	private void updateIcsParents(Long listingId, InheritedCertificationStatus existingIcs, 
+//			InheritedCertificationStatus updatedIcs) {
+//		//update ics parents as necessary
+//		List<Long> parentIdsToAdd = new ArrayList<Long>();
+//		List<Long> parentIdsToRemove = new ArrayList<Long>();
+//		
+//		if(updatedIcs != null && updatedIcs.getParents() != null &&
+//				updatedIcs.getParents().size() > 0) {
+//			if(existingIcs == null || existingIcs.getParents() == null || 
+//					existingIcs.getParents().size() == 0) {
+//				//existing listing has no ics parents, add all from the update
+//				if(updatedIcs.getParents() != null && updatedIcs.getParents().size() > 0) {
+//					for(CertifiedProduct parent : updatedIcs.getParents()) {
+//						if(parent.getId() != null) {
+//							parentIdsToAdd.add(parent.getId());
+//						} 
+//					}
+//				}
+//			} else if(existingIcs.getParents().size() > 0) {
+//				//existing listing has parents, compare to the update to see if any are different
+//				for(CertifiedProduct parent : updatedIcs.getParents()) { 
+//					boolean inExistingListing = false;
+//					for(CertifiedProduct existingParent : existingIcs.getParents()) {
+//						if(parent.getId().longValue() == existingParent.getId().longValue()) {
+//							inExistingListing = true;
+//						}
+//					}
+//					
+//					if(!inExistingListing) {
+//						parentIdsToAdd.add(parent.getId());
+//					}
+//				}
+//			}
+//		}
+//		
+//		if(existingIcs != null && existingIcs.getParents() != null && 
+//				existingIcs.getParents().size() > 0) {
+//			//if the updated listing has no parents, remove them all from existing
+//			if(updatedIcs == null || updatedIcs.getParents() == null || 
+//					updatedIcs.getParents().size() == 0) {
+//				for(CertifiedProduct existingParent : existingIcs.getParents()) {
+//					parentIdsToRemove.add(existingParent.getId());
+//				}
+//			} else if(updatedIcs.getParents().size() > 0) {
+//				for(CertifiedProduct existingParent : existingIcs.getParents()) {
+//					boolean inUpdatedListing = false;
+//					for(CertifiedProduct parent : updatedIcs.getParents()) {
+//						if(existingParent.getId().longValue() == parent.getId().longValue()) {
+//							inUpdatedListing = true;
+//						}
+//					}
+//					if(!inUpdatedListing) {
+//						parentIdsToRemove.add(existingParent.getId());
+//					}
+//				}
+//			}
+//		}
+//		//run DAO updates
+//		for(Long parentIdToAdd : parentIdsToAdd) {
+//			ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
+//			toAdd.setParentId(parentIdToAdd);
+//			toAdd.setChildId(listingId);
+//			listingGraphDao.createListingMap(toAdd);
+//		}
+//		
+//		for(Long parentIdToRemove : parentIdsToRemove) {
+//			ListingToListingMapDTO toDelete = new ListingToListingMapDTO();
+//			toDelete.setParentId(parentIdToRemove);
+//			toDelete.setChildId(listingId);
+//			listingGraphDao.deleteListingMap(toDelete);
+//		}
+//	}
+	
+	private void updateQmsStandards(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductQmsStandardDTO> newQmsStandards)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		List<CertifiedProductQmsStandardDTO> beforeQms = cpQmsDao.getQmsStandardsByCertifiedProductId(productDto.getId());
