@@ -34,25 +34,13 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, ListingUpdateRequest updateRequest) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, 
+			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public void updateTargetedUsers(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductTargetedUserDTO> newTargetedUsers)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;	
-	public void updateAccessibilityStandards(Long acbId, CertifiedProductDTO productDto, List<CertifiedProductAccessibilityStandardDTO> newAccStandards)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;		
-	public void updateCqms(Long acbId, CertifiedProductDTO productDto, List<CQMResultDetailsDTO> cqmResults)
-			throws EntityCreationException, EntityRetrievalException,
-			JsonProcessingException;
-	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, List<CertificationResult> certResults)
-			throws EntityCreationException, EntityRetrievalException,
-			JsonProcessingException;
-	public void updateCertificationDate(Long acbId, CertifiedProductDTO productDto, Date newCertDate)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public void updateCertificationStatusEvents(Long acbId, CertifiedProductDTO productDto)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;	
 	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed);
 }

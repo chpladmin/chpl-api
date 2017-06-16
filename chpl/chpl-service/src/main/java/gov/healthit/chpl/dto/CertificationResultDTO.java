@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 
 public class CertificationResultDTO implements Serializable {
@@ -48,30 +49,6 @@ public class CertificationResultDTO implements Serializable {
 		g2Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
 	}
 	
-	public List<CertificationResultMacraMeasureDTO> getG1Measures() {
-		return g1Measures;
-	}
-
-	public void setG1Measures(List<CertificationResultMacraMeasureDTO> g1Measures) {
-		this.g1Measures = g1Measures;
-	}
-
-	public List<CertificationResultMacraMeasureDTO> getG2Measures() {
-		return g2Measures;
-	}
-
-	public void setG2Measures(List<CertificationResultMacraMeasureDTO> g2Measures) {
-		this.g2Measures = g2Measures;
-	}
-
-	public List<CertificationResultTestProcedureDTO> getTestProcedures() {
-		return testProcedures;
-	}
-
-	public void setTestProcedures(List<CertificationResultTestProcedureDTO> testProcedures) {
-		this.testProcedures = testProcedures;
-	}
-
 	public CertificationResultDTO(CertificationResultEntity entity){
 		this();
 		this.id = entity.getId();
@@ -88,6 +65,17 @@ public class CertificationResultDTO implements Serializable {
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
+	}
+	
+	public CertificationResultDTO(CertificationResult domain){
+		this();
+		this.gap = domain.isGap();
+		this.sed = domain.isSed();
+		this.g1Success = domain.isG1Success();
+		this.g2Success = domain.isG2Success();
+		this.apiDocumentation = domain.getApiDocumentation();
+		this.privacySecurityFramework = domain.getPrivacySecurityFramework();
+		this.successful = domain.isSuccess();
 	}
 	
 	public Long getCertificationCriterionId() {
@@ -245,4 +233,28 @@ public class CertificationResultDTO implements Serializable {
 		this.privacySecurityFramework = privacySecurityFramework;
 	}
 	
+	public List<CertificationResultMacraMeasureDTO> getG1Measures() {
+		return g1Measures;
+	}
+
+	public void setG1Measures(List<CertificationResultMacraMeasureDTO> g1Measures) {
+		this.g1Measures = g1Measures;
+	}
+
+	public List<CertificationResultMacraMeasureDTO> getG2Measures() {
+		return g2Measures;
+	}
+
+	public void setG2Measures(List<CertificationResultMacraMeasureDTO> g2Measures) {
+		this.g2Measures = g2Measures;
+	}
+
+	public List<CertificationResultTestProcedureDTO> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedureDTO> testProcedures) {
+		this.testProcedures = testProcedures;
+	}
+
 }

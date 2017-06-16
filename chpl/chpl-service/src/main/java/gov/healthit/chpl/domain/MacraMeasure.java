@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -59,6 +61,23 @@ public class MacraMeasure implements Serializable {
 		this.description = dto.getDescription();
 	}
 	
+	//not overriding equals on purpose
+	//this is meant to determine if a user would think two macra measures
+	//are the same, not as thorough as equals
+	public boolean matches(MacraMeasure anotherMeasure) {
+		boolean result = false;
+		if(!StringUtils.isEmpty(this.getAbbreviation()) && 
+				!StringUtils.isEmpty(anotherMeasure.getAbbreviation()) && 
+				this.getAbbreviation().equalsIgnoreCase(anotherMeasure.getAbbreviation())) {
+			result = true;
+		}  else if(!StringUtils.isEmpty(this.getName()) && 
+				!StringUtils.isEmpty(anotherMeasure.getName()) && 
+				this.getName().equalsIgnoreCase(anotherMeasure.getName())) {
+			result = true;
+		}
+		return result;
+	}
+		
 	public Long getId() {
 		return id;
 	}

@@ -141,6 +141,16 @@ public class CertificationResultTestParticipant implements Serializable {
 		}
 	}
 	
+	public boolean matches(CertificationResultTestParticipant anotherParticipant) {
+		boolean result = false;
+		if(this.getTestParticipantId() != null && 
+			anotherParticipant.getTestParticipantId() != null && 
+			this.getTestParticipantId().longValue() == anotherParticipant.getTestParticipantId().longValue()) {
+			result = true;
+		}
+		return result;
+	}
+	
 	public Long getId() {
 		return id;
 	}

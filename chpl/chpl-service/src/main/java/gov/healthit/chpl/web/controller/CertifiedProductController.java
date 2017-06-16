@@ -162,27 +162,27 @@ public class CertifiedProductController {
 			validator.validate(updatedListing);
 		}
 		
-		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 		
 		//make sure the old and new certification statuses aren't ONC bans
-		if(!existingProduct.getCertificationStatus().get("id").toString().equals(
+		if(!existingListing.getCertificationStatus().get("id").toString().equals(
 				updatedListing.getCertificationStatus().get("id"))) {
 			//if the status is to or from suspended by onc make sure the user has admin
-			if((existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString()) 
+			if((existingListing.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString()) 
 				|| updatedListing.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString())
-				|| existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString())
+				|| existingListing.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString())
 				|| updatedListing.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString()))
 				&& !Util.isUserRoleAdmin()) {
 				updatedListing.getErrorMessages().add("User " + Util.getUsername() 
 					+ " does not have permission to change certification status of " 
-					+ existingProduct.getChplProductNumber() + " from " 
-					+ existingProduct.getCertificationStatus().get("name").toString() + " to " 
+					+ existingListing.getChplProductNumber() + " from " 
+					+ existingListing.getCertificationStatus().get("name").toString() + " to " 
 					+ updatedListing.getCertificationStatus().get("name").toString());
 			}
 		}
 		
 		//has the unique id changed? if so, make sure it is still unique
-		if(!existingProduct.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
+		if(!existingListing.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
 			try {
 				boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
 				if(isDup) {
@@ -195,95 +195,30 @@ public class CertifiedProductController {
 			throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
 		}
 		
-		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
+		Long acbId = new Long(existingListing.getCertifyingBody().get("id").toString());
 		Long newAcbId = new Long(updatedListing.getCertifyingBody().get("id").toString());
 		
 		//if the ACF owner is changed this is a separate action with different security
 		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updatedListing.getId(), newAcbId);
 			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Changed ACB ownership.", existingProduct, changedProduct);
-			existingProduct = changedProduct;
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Changed ACB ownership.", existingListing, changedProduct);
+			existingListing = changedProduct;
 		}
 		
-		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
-		toUpdate.setId(updatedListing.getId());
-		if(updatedListing.getTestingLab() != null && !StringUtils.isEmpty(updatedListing.getTestingLab().get("id"))) {
-			toUpdate.setTestingLabId(new Long(updatedListing.getTestingLab().get("id").toString()));
-		}
-		toUpdate.setCertificationBodyId(newAcbId);
-		if(updatedListing.getPracticeType() != null && updatedListing.getPracticeType().get("id") != null) {
-			toUpdate.setPracticeTypeId(new Long(updatedListing.getPracticeType().get("id").toString()));
-		}
-		if(updatedListing.getClassificationType() != null && updatedListing.getClassificationType().get("id") != null) {
-			toUpdate.setProductClassificationTypeId(new Long(updatedListing.getClassificationType().get("id").toString()));
-		}
-		toUpdate.setProductVersionId(new Long(updatedListing.getVersion().getVersionId()));
-		toUpdate.setCertificationStatusId(new Long(updatedListing.getCertificationStatus().get("id").toString()));
-		toUpdate.setCertificationEditionId(new Long(updatedListing.getCertificationEdition().get("id").toString()));
-		toUpdate.setReportFileLocation(updatedListing.getReportFileLocation());
-		toUpdate.setSedReportFileLocation(updatedListing.getSedReportFileLocation());
-		toUpdate.setSedIntendedUserDescription(updatedListing.getSedIntendedUserDescription());
-		toUpdate.setSedTestingEnd(updatedListing.getSedTestingEnd());
-		toUpdate.setAcbCertificationId(updatedListing.getAcbCertificationId());
-		toUpdate.setOtherAcb(updatedListing.getOtherAcb());
-		toUpdate.setIcs(updatedListing.getIcs());
-		toUpdate.setAccessibilityCertified(updatedListing.getAccessibilityCertified());
-		toUpdate.setProductAdditionalSoftware(updatedListing.getProductAdditionalSoftware());
-		
-		toUpdate.setTransparencyAttestationUrl(updatedListing.getTransparencyAttestationUrl());
-		
-		//set the pieces of the unique id
-		if(!StringUtils.isEmpty(updatedListing.getChplProductNumber())) {
-			if(updatedListing.getChplProductNumber().startsWith("CHP-")) {
-				toUpdate.setChplProductNumber(updatedListing.getChplProductNumber());
-			} else {
-				String chplProductId = updatedListing.getChplProductNumber();
-				String[] chplProductIdComponents = chplProductId.split("\\.");
-				if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
-					throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
-				} else {
-					toUpdate.setProductCode(chplProductIdComponents[4]);
-					toUpdate.setVersionCode(chplProductIdComponents[5]);
-					toUpdate.setIcsCode(chplProductIdComponents[6]);
-					toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
-					toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
-				}
-				
-				if(updatedListing.getCertificationDate() != null) {
-					Date certDate = new Date(updatedListing.getCertificationDate());
-					SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
-					String dateCode = dateCodeFormat.format(certDate);
-					toUpdate.setCertifiedDateCode(dateCode);
-				}
-				
-				if(updatedListing.getCertificationResults() != null && updatedListing.getCertificationResults().size() > 0) {
-					boolean hasSoftware = false;
-					for(CertificationResult cert : updatedListing.getCertificationResults()) {
-						if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-							hasSoftware = true;
-						}
-					}
-					if(hasSoftware) {
-						toUpdate.setAdditionalSoftwareCode("1");
-					} else {
-						toUpdate.setAdditionalSoftwareCode("0");
-					}
-				}
-			}
-		} 
-		
-		toUpdate = cpManager.update(acbId, toUpdate, updateRequest);
+		//update the listing
+		CertifiedProductDTO toUpdate = new CertifiedProductDTO(updatedListing);
+		toUpdate = cpManager.update(acbId, toUpdate, updateRequest, existingListing);
 		
 		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
+		cpManager.checkSuspiciousActivity(existingListing, changedProduct);
 		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing, changedProduct);
 		
-		if(!changedProduct.getChplProductNumber().equals(existingProduct.getChplProductNumber())) {
+		if(!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
 			 HttpHeaders responseHeaders = new HttpHeaders();
-			 responseHeaders.set("CHPL-Id-Changed", existingProduct.getChplProductNumber());
+			 responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
 			return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
 		}
 		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.OK);

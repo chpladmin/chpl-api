@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 
 /**
@@ -64,6 +66,20 @@ public class CertificationResultTestFunctionality implements Serializable {
 		this.description = dto.getTestFunctionalityName();
 		this.name = dto.getTestFunctionalityNumber();
 		this.year = dto.getTestFunctionalityEdition();
+	}
+	
+	public boolean matches(CertificationResultTestFunctionality anotherFunc) {
+		boolean result = false;
+		if(this.getTestFunctionalityId() != null && anotherFunc.getTestFunctionalityId() != null && 
+				this.getTestFunctionalityId().longValue() == anotherFunc.getTestFunctionalityId().longValue()) {
+			result = true;
+		} else if(!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(anotherFunc.getName()) && 
+				this.getName().equalsIgnoreCase(anotherFunc.getName()) && 
+				!StringUtils.isEmpty(this.getYear()) && !StringUtils.isEmpty(anotherFunc.getYear()) && 
+				this.getYear().equalsIgnoreCase(anotherFunc.getYear())) {
+			result = true;
+		}
+		return result;
 	}
 	
 	public Long getId() {

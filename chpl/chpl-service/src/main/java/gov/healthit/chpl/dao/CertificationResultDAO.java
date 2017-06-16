@@ -27,7 +27,6 @@ public interface CertificationResultDAO {
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareForCertificationResult(
 			Long certificationResultId);
 	public CertificationResultAdditionalSoftwareDTO addAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO dto) throws EntityCreationException;
-	public CertificationResultAdditionalSoftwareDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO dto);
 	public void deleteAdditionalSoftwareMapping(Long mappingId);
 	
 	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);
@@ -36,24 +35,17 @@ public interface CertificationResultDAO {
 	public void deleteTestStandardMapping(Long mappingId);
 	
 	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId);
-	public CertificationResultTestToolDTO lookupTestToolMapping(Long certificationResultId, Long testToolId);
 	public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto) throws EntityCreationException;
-	public CertificationResultTestToolDTO updateTestToolMapping(CertificationResultTestToolDTO dto);
 	public void deleteTestToolMapping(Long mappingId);
 	
 	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId);
 	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId);
 	public CertificationResultMacraMeasureDTO addG1MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException;
 	public CertificationResultMacraMeasureDTO addG2MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException;
-	public CertificationResultMacraMeasureDTO updateG1MacrameasureMapping(CertificationResultMacraMeasureDTO dto);
-	public CertificationResultMacraMeasureDTO updateG2MacrameasureMapping(CertificationResultMacraMeasureDTO dto);
 	public void deleteG1MacraMeasureMapping(Long mappingId);
 	public void deleteG2MacraMeasureMapping(Long mappingId);
-	public CertificationResultMacraMeasureDTO lookupG1MacraMeasureMapping(Long certificationResultId, Long macraMeasureId);
-	public CertificationResultMacraMeasureDTO lookupG2MacraMeasureMapping(Long certificationResultId, Long macraMeasureId);
 	
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);
-	public CertificationResultTestDataDTO updateTestDataMapping(CertificationResultTestDataDTO dto);
 	public CertificationResultTestDataDTO addTestDataMapping(CertificationResultTestDataDTO dto) throws EntityCreationException;
 	public void deleteTestDataMapping(Long mappingId);
 	
@@ -62,14 +54,12 @@ public interface CertificationResultDAO {
 	public void deleteTestProcedureMapping(Long mappingId);
 	
 	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId);
-	public CertificationResultTestFunctionalityDTO lookupTestFunctionalityMapping(Long certificationResultId, Long testFunctionalityId);
 	public CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(CertificationResultTestFunctionalityDTO dto) throws EntityCreationException;
 	public void deleteTestFunctionalityMapping(Long mappingId);
 	
 	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
 	public CertificationResultUcdProcessDTO lookupUcdProcessMapping(Long certificationResultId, Long ucdProcessId);
 	public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityCreationException;
-	public CertificationResultUcdProcessDTO updateUcdProcessMapping(CertificationResultUcdProcessDTO dto);
 	public void deleteUcdProcessMapping(Long mappingId);
 	
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);

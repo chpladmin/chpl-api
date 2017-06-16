@@ -11,6 +11,7 @@ public interface TargetedUserDAO {
 	public void delete(Long id) throws EntityRetrievalException;
 	
 	public List<TargetedUserDTO> findAll();
-	public TargetedUserDTO getById(Long id) throws EntityRetrievalException;
-	public TargetedUserDTO getByName(String name) ;
+	public TargetedUserDTO getById(Long id);
+	public TargetedUserDTO getByName(String name);
+	public TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException;
 }

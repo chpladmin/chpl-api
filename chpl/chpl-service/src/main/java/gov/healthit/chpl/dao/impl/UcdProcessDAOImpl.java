@@ -20,15 +20,11 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 	
 	@Override
 	public UcdProcessDTO create(UcdProcessDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+			throws EntityCreationException {
 		
 		UcdProcessEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
 		
 		if (entity != null) {
@@ -77,8 +73,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 	}
 
 	@Override
-	public UcdProcessDTO getById(Long id)
-			throws EntityRetrievalException {
+	public UcdProcessDTO getById(Long id) {
 		
 		UcdProcessDTO dto = null;
 		UcdProcessEntity entity = getEntityById(id);
@@ -132,17 +127,13 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 		return entityManager.createQuery( "from UcdProcessEntity where (NOT deleted = true) ", UcdProcessEntity.class).getResultList();
 	}
 	
-	private UcdProcessEntity getEntityById(Long id) throws EntityRetrievalException {
+	private UcdProcessEntity getEntityById(Long id) {
 		
 		UcdProcessEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from UcdProcessEntity where (NOT deleted = true) AND (ucd_process_id = :entityid) ", UcdProcessEntity.class );
 		query.setParameter("entityid", id);
 		List<UcdProcessEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate test tool id in database.");
-		}
 		
 		if (result.size() > 0){
 			entity = result.get(0);

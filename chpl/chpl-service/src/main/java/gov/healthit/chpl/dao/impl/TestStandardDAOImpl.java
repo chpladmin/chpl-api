@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
@@ -24,18 +23,13 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	@Autowired CertificationEditionDAO editionDao;
 	
 	@Override
-	public TestStandardDTO create(TestStandardDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+	public TestStandardDTO create(TestStandardDTO dto) throws EntityCreationException {
 		
 		TestStandardEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
@@ -62,7 +56,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	}
 
 	@Override
-	public TestStandardDTO getById(Long id) throws EntityRetrievalException {
+	public TestStandardDTO getById(Long id) {
 		TestStandardDTO dto = null;
 		TestStandardEntity entity = getEntityById(id);
 		
@@ -100,7 +94,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		return entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) ", TestStandardEntity.class).getResultList();
 	}
 	
-	private TestStandardEntity getEntityById(Long id) throws EntityRetrievalException {
+	private TestStandardEntity getEntityById(Long id) {
 		TestStandardEntity entity = null;
 			
 		Query query = entityManager.createQuery( "SELECT ts "
