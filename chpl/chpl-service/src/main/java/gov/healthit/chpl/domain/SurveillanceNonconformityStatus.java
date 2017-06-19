@@ -14,9 +14,15 @@ public class SurveillanceNonconformityStatus implements Serializable {
 	public static final String OPEN = "Open";
 	public static final String CLOSED = "Closed";
 	
+	/**
+	 * Nonconformity status internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * Nonconformity status name. Open or Closed.
+	 */
 	@XmlElement(required = true)
 	private String name;
 	

@@ -10,9 +10,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 
 public interface ActivityManager {
 

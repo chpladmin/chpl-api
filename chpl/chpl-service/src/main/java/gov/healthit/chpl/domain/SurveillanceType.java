@@ -12,9 +12,15 @@ import javax.xml.bind.annotation.XmlType;
 public class SurveillanceType implements Serializable {
 	private static final long serialVersionUID = 5788880200952752783L;
 	
+	/**
+	 * Surveillance type internal ID
+	 */
 	@XmlElement(required = true)
 	private Long id;
 	
+	/**
+	 * Surveillance type name (randomized, reactive)
+	 */
 	@XmlElement(required = true)
 	private String name;
 	

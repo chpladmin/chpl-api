@@ -37,6 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.auth.domain.Authority;
@@ -60,7 +61,6 @@ import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.search.SearchViews;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -89,9 +89,6 @@ public class SearchViewController {
 	
 	@Autowired
 	private DeveloperManager developerManager;
-	
-	@Autowired
-	private CertifiedProductSearchResultDAO certifiedProductSearchResultDao;
 		
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
 
@@ -109,6 +106,7 @@ public class SearchViewController {
 			//write out objects as json but do not include properties with a null value
 			ObjectMapper nonNullJsonMapper = new ObjectMapper();
 			nonNullJsonMapper.setSerializationInclusion(Include.NON_NULL);
+			nonNullJsonMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 			
 			//create a copy of the search results since we will be manipulating them 
 			//by setting fields to null but do not want to overwrite the cached data
@@ -170,6 +168,7 @@ public class SearchViewController {
 			result = nonNullJsonMapper.writeValueAsString(response);
 		} else {
 			ObjectMapper viewMapper = new ObjectMapper();
+			viewMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 			BasicSearchResponse response = new BasicSearchResponse();
 			response.setResults(cachedSearchResults);
 			 result = viewMapper.writerWithView(SearchViews.Default.class).writeValueAsString(response);
@@ -950,87 +949,6 @@ public class SearchViewController {
 	public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
 		DecertifiedDeveloperResults ddr = developerManager.getDecertifiedDevelopers();
 		return ddr;
-	}
-	
-	@ApiOperation(value="Get all decertified certified products in the CHPL", 
-			notes="Returns all decertified certified products, their decertified statuses, and the total count of decertified certified products as the recordCount.")
-	@RequestMapping(value="/decertifications/certified_products", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody SearchResponse getDecertifiedCertifiedProducts (
-			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
-			@RequestParam(value = "pageSize", required = false) Integer pageSize,
-			@RequestParam(value = "orderBy", required = false) String orderBy,
-			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
-		SearchResponse resp = new SearchResponse();
-		
-		if (pageNumber == null){
-			pageNumber = 0;
-		}
-		
-		SearchRequest searchRequest = new SearchRequest();
-		List<String> allowedCertificationStatuses = new ArrayList<String>();
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByAcb));
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloperUnderReview));
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.TerminatedByOnc));
-		
-		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
-		
-		searchRequest.setPageNumber(pageNumber);
-		if(pageSize == null){
-			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
-		}
-		
-		if (orderBy != null){
-			searchRequest.setOrderBy(orderBy);
-		}
-		
-		if (sortDescending != null){
-			searchRequest.setSortDescending(sortDescending);
-		}
-		
-		resp = certifiedProductSearchManager.search(searchRequest);
-		
-		return resp;
-	}
-	
-	@ApiOperation(value="Get decertified certified products in the CHPL with inactive certificates", 
-			notes="Returns only decertified certified products with inactive certificates. "
-					+ "Includes their decertified statuses and the total count of decertified certified products as the recordCount.")
-	@RequestMapping(value="/decertifications/inactive_certificates", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody SearchResponse getDecertifiedInactiveCertificateCertifiedProducts (
-			@RequestParam(value = "pageNumber", required = false) Integer pageNumber, 
-			@RequestParam(value = "pageSize", required = false) Integer pageSize,
-			@RequestParam(value = "orderBy", required = false) String orderBy,
-			@RequestParam(value = "sortDescending", required = false) Boolean sortDescending) throws EntityRetrievalException {
-		SearchResponse resp = new SearchResponse();
-		
-		if (pageNumber == null){
-			pageNumber = 0;
-		}
-		
-		SearchRequest searchRequest = new SearchRequest();
-		List<String> allowedCertificationStatuses = new ArrayList<String>();
-		allowedCertificationStatuses.add(String.valueOf(CertificationStatusType.WithdrawnByDeveloper));
-		
-		searchRequest.setCertificationStatuses(allowedCertificationStatuses);
-		
-		searchRequest.setPageNumber(pageNumber);
-		if(pageSize == null){
-			searchRequest.setPageSize(certifiedProductSearchResultDao.countMultiFilterSearchResults(searchRequest).intValue());
-		}
-		
-		if (orderBy != null){
-			searchRequest.setOrderBy(orderBy);
-		}
-		
-		if (sortDescending != null){
-			searchRequest.setSortDescending(sortDescending);
-		}
-		
-		resp = certifiedProductSearchManager.search(searchRequest);
-		
-		return resp;
 	}
 	
 	private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {

@@ -28,7 +28,7 @@ public class CertifiedProductSearchResult implements Serializable {
 	@JsonView({SearchViews.Default.class})
 	protected String practiceType;
 	
-	@JsonView({SearchViews.Default.class})
+	@JsonView({ SearchViews.Default.class})
 	protected String developer;
 	
 	@JsonView({SearchViews.Default.class})
@@ -52,6 +52,10 @@ public class CertifiedProductSearchResult implements Serializable {
 	@JsonView({SearchViews.Default.class})
 	protected Long closedNonconformityCount;
 	
+	protected Long decertificationDate;	
+	protected Long numMeaningfulUse;
+	protected String transparencyAttestationUrl;
+	
 	public CertifiedProductSearchResult() {
 	}
 	
@@ -68,9 +72,12 @@ public class CertifiedProductSearchResult implements Serializable {
 		this.version = other.getVersion();
 		this.certificationDate = other.getCertificationDate();
 		this.certificationStatus = other.getCertificationStatus();
+		this.decertificationDate = other.getDecertificationDate();
 		this.surveillanceCount = other.getSurveillanceCount();
 		this.openNonconformityCount = other.getOpenNonconformityCount();
 		this.closedNonconformityCount = other.getClosedNonconformityCount();
+		this.numMeaningfulUse = other.getNumMeaningfulUse();
+		this.transparencyAttestationUrl = other.getTransparencyAttestationUrl();
 	}
 	
 	public Long getId() {
@@ -165,5 +172,29 @@ public class CertifiedProductSearchResult implements Serializable {
 
 	public void setAcbCertificationId(String acbCertificationId) {
 		this.acbCertificationId = acbCertificationId;
+	}
+
+	public Long getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Long decertificationDate) {
+		this.decertificationDate = decertificationDate;
+	}
+
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
 	}
 }

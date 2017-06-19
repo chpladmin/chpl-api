@@ -53,7 +53,6 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
-import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -73,6 +72,7 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -150,7 +150,7 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
-@Service
+@Service("certifiedProductManager")
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
 	
