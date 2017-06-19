@@ -586,10 +586,11 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		
 		return new CertificationResultMacraMeasureDTO(mapping);
 	}
-	
+
 	@Override
-	public void deleteG1MacraMeasureMapping(Long mappingId){
-		CertificationResultG1MacraMeasureEntity toDelete = getCertificationResultG1MacraMeasureById(mappingId);
+	public void deleteG1MacraMeasureMapping(Long certificationResultId, Long macraMeasureId){
+		CertificationResultG1MacraMeasureEntity toDelete = 
+				getCertificationResultG1MacraMeasure(certificationResultId, macraMeasureId);
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -599,15 +600,18 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		}
 	}
 	
-	private CertificationResultG1MacraMeasureEntity getCertificationResultG1MacraMeasureById(Long id) {
+	private CertificationResultG1MacraMeasureEntity getCertificationResultG1MacraMeasure(Long certResultId, Long macraId) {
 		CertificationResultG1MacraMeasureEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT mm "
-				+ "FROM CertificationResultG1MacraMeasureEntity mm "
-				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
-				+ "where (NOT mm.deleted = true) AND (mm.id = :id) ", 
+		Query query = entityManager.createQuery( "SELECT certResultMacraMapping "
+				+ "FROM CertificationResultG1MacraMeasureEntity certResultMacraMapping "
+				+ "LEFT OUTER JOIN FETCH certResultMacraMapping.macraMeasure "
+				+ "WHERE (NOT certResultMacraMapping.deleted = true) "
+				+ "AND (certResultMacraMapping.certificationResultId = :certResultId) "
+				+ "AND (certResultMacraMapping.macraId = :macraId)", 
 				CertificationResultG1MacraMeasureEntity.class );
-		query.setParameter("id", id);
+		query.setParameter("certResultId", certResultId);
+		query.setParameter("macraId", macraId);
 		List<CertificationResultG1MacraMeasureEntity> result = query.getResultList();
 
 		if (result.size() > 0){
@@ -665,8 +669,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	}
 	
 	@Override
-	public void deleteG2MacraMeasureMapping(Long mappingId){
-		CertificationResultG2MacraMeasureEntity toDelete = getCertificationResultG2MacraMeasureById(mappingId);
+	public void deleteG2MacraMeasureMapping(Long certResultId, Long macraId){
+		CertificationResultG2MacraMeasureEntity toDelete = getCertificationResultG2MacraMeasureById(certResultId, macraId);
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -676,15 +680,18 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		}
 	}
 	
-	private CertificationResultG2MacraMeasureEntity getCertificationResultG2MacraMeasureById(Long id) {
+	private CertificationResultG2MacraMeasureEntity getCertificationResultG2MacraMeasureById(Long certResultId, Long macraId) {
 		CertificationResultG2MacraMeasureEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT mm "
-				+ "FROM CertificationResultG2MacraMeasureEntity mm "
-				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
-				+ "where (NOT mm.deleted = true) AND (mm.id = :id) ", 
+		Query query = entityManager.createQuery( "SELECT certResultMacraMapping "
+				+ "FROM CertificationResultG2MacraMeasureEntity certResultMacraMapping "
+				+ "LEFT OUTER JOIN FETCH certResultMacraMapping.macraMeasure "
+				+ "WHERE (NOT certResultMacraMapping.deleted = true) "
+				+ "AND (certResultMacraMapping.certificationResultId = :certResultId) "
+				+ "AND (certResultMacraMapping.macraId = :macraId)", 
 				CertificationResultG2MacraMeasureEntity.class );
-		query.setParameter("id", id);
+		query.setParameter("certResultId", certResultId);
+		query.setParameter("macraId", macraId);
 		List<CertificationResultG2MacraMeasureEntity> result = query.getResultList();
 
 		if (result.size() > 0){

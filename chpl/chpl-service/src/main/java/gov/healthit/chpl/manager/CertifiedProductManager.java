@@ -20,6 +20,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 public interface CertifiedProductManager {
 
@@ -34,9 +35,9 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, 
+	public CertifiedProductDTO update(Long acbId, 
 			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, InvalidArgumentsException;
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	

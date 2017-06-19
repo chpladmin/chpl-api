@@ -134,6 +134,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
@@ -812,15 +813,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.SEARCH, 
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, 
-			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
-			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
+			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, 
+			EntityCreationException, InvalidArgumentsException {
+		
+		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+		Long listingId = updatedListing.getId();
+		Long certificationStatusId = new Long(updatedListing.getCertificationStatus().get("id").toString());
+		Long productVersionId = new Long(updatedListing.getVersion().getVersionId());
 		
 		//look at the updated status and see if a developer ban is appropriate
-		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(dto.getCertificationStatusId());
-		DeveloperDTO cpDeveloper = developerDao.getByVersion(dto.getProductVersionId());
+		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(certificationStatusId);
+		DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
 		if(cpDeveloper == null) {
-			logger.error("Could not find developer for product version with id " + dto.getProductVersionId());
+			logger.error("Could not find developer for product version with id " + productVersionId);
 			throw new EntityNotFoundException("No developer could be located for the certified product in the update. Update cannot continue.");
 		}
 		DeveloperStatusDTO newDevStatusDto = null;
@@ -836,7 +842,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
 				} 
 			} else if (!Util.isUserRoleAdmin()) {
-				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + dto.getId());
+				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + listingId);
 				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");	
 			} 
 			break;
@@ -850,7 +856,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					logger.info("Request was made to update listing status to " + updatedCertificationStatus.getStatus() + " but not ban the developer.");
 				}
 			} else if(!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
-				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN and cannot change the status of developer for certified product with id " + dto.getId());
+				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN and cannot change the status of developer for certified product with id " + listingId);
 				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");	
 			} 
 			break;
@@ -867,18 +873,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			developerManager.update(cpDeveloper);
 		}
 		
-		CertifiedProductDTO result = cpDao.update(dto);	
-		
-		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+		CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
+		CertifiedProductDTO result = cpDao.update(dtoToUpdate);			
 		if(updatedListing != null){
-			updateQmsStandards(dto.getId(), existingListing.getQmsStandards(), updatedListing.getQmsStandards());
-			updateTargetedUsers(dto.getId(), existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
-			updateAccessibilityStandards(dto.getId(), existingListing.getAccessibilityStandards(), updatedListing.getAccessibilityStandards());
-			updateCertificationDate(dto.getId(), new Date(existingListing.getCertificationDate()), new Date(updatedListing.getCertificationDate()));
-			updateCertificationStatusEvents(dto.getId(), new Long(existingListing.getCertificationStatus().get("id").toString()),
+			updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
+			updateTargetedUsers(listingId, existingListing.getTargetedUsers(), updatedListing.getTargetedUsers());
+			updateAccessibilityStandards(listingId, existingListing.getAccessibilityStandards(), updatedListing.getAccessibilityStandards());
+			updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()), new Date(updatedListing.getCertificationDate()));
+			updateCertificationStatusEvents(listingId, new Long(existingListing.getCertificationStatus().get("id").toString()),
 					new Long(updatedListing.getCertificationStatus().get("id").toString()));
-			updateCertifications(dto, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
-			updateCqms(dto, existingListing.getCqmResults(), updatedListing.getCqmResults());
+			updateCertifications(result, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+			updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
 		}
 		return result;
 	}	
@@ -911,7 +916,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				for(CertifiedProductQmsStandard updatedItem : updatedQmsStandards) { 
 					boolean inExistingListing = false;
 					for(CertifiedProductQmsStandard existingItem : existingQmsStandards) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -939,7 +944,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				for(CertifiedProductQmsStandard existingItem : existingQmsStandards) {
 					boolean inUpdatedListing = false;
 					for(CertifiedProductQmsStandard updatedItem : updatedQmsStandards) {
-						inUpdatedListing = existingItem.matches(updatedItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -985,7 +990,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				for(CertifiedProductTargetedUser updatedItem : updatedTargetedUsers) { 
 					boolean inExistingListing = false;
 					for(CertifiedProductTargetedUser existingItem : existingTargetedUsers) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -1011,7 +1016,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				for(CertifiedProductTargetedUser existingItem : existingTargetedUsers) {
 					boolean inUpdatedListing = false;
 					for(CertifiedProductTargetedUser updatedItem : updatedTargetedUsers) {
-						inUpdatedListing = existingItem.matches(updatedItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -1057,7 +1062,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				for(CertifiedProductAccessibilityStandard updatedItem : updatedAccessibilityStandards) { 
 					boolean inExistingListing = false;
 					for(CertifiedProductAccessibilityStandard existingItem : existingAccessibilityStandards) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -1083,7 +1088,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				for(CertifiedProductAccessibilityStandard existingItem : existingAccessibilityStandards) {
 					boolean inUpdatedListing = false;
 					for(CertifiedProductAccessibilityStandard updatedItem : updatedAccessibilityStandards) {
-						inUpdatedListing = existingItem.matches(updatedItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -1147,7 +1152,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				if(!StringUtils.isEmpty(updatedItem.getNumber()) && 
 					!StringUtils.isEmpty(existingItem.getNumber()) &&
 					updatedItem.getNumber().equals(existingItem.getNumber())) {
-					numChanges += certResultManager.update(listing, existingItem, updatedItem);
+					numChanges += certResultManager.update(listing.getCertificationBodyId(), listing, existingItem, updatedItem);
 				}
 			}
 		}
@@ -1183,12 +1188,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			for(CQMResultDetailsDTO updatedItem : updatedCqms) { 
 				boolean inExistingListing = false;
 				for(CQMResultDetailsDTO existingItem : existingCqms) {
-					if(updatedItem.getNqfNumber() != null && existingItem.getNqfNumber() != null && 
+					if(!inExistingListing && 
+						updatedItem.getNqfNumber() != null && existingItem.getNqfNumber() != null &&
+						!updatedItem.getNqfNumber().equals("N/A") && 
+						!existingItem.getNqfNumber().equals("N/A") && 
 						updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {
 						//NQF is the same if the NQF numbers are equal
 						inExistingListing = true;
 						cqmsToUpdate.add(new CQMResultDetailsPair(existingItem, updatedItem));
-					} else if(updatedItem.getCmsId() != null && existingItem.getCmsId() != null && 
+					} else if(!inExistingListing && 
+						updatedItem.getCmsId() != null && existingItem.getCmsId() != null && 
 						updatedItem.getCmsId().equals(existingItem.getCmsId()) && 
 						updatedItem.getVersion() != null && existingItem.getVersion() != null && 
 						updatedItem.getVersion().equals(existingItem.getVersion())) {
@@ -1209,11 +1218,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			for(CQMResultDetailsDTO existingItem : existingCqms) {
 				boolean inUpdatedListing = false;
 				for(CQMResultDetailsDTO updatedItem : updatedCqms) {
-					if(updatedItem.getNqfNumber() != null && existingItem.getNqfNumber() != null && 
+					if(!inUpdatedListing && 
+						updatedItem.getNqfNumber() != null && existingItem.getNqfNumber() != null && 
+						!updatedItem.getNqfNumber().equals("N/A") && 
+						!existingItem.getNqfNumber().equals("N/A") && 
 						updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {
 						//NQF is the same if the NQF numbers are equal
 						inUpdatedListing = true;
-					} else if(updatedItem.getCmsId() != null && existingItem.getCmsId() != null && 
+					} else if(!inUpdatedListing && 
+						updatedItem.getCmsId() != null && existingItem.getCmsId() != null && 
 						updatedItem.getCmsId().equals(existingItem.getCmsId()) && 
 						updatedItem.getVersion() != null && existingItem.getVersion() != null && 
 						updatedItem.getVersion().equals(existingItem.getVersion())) {

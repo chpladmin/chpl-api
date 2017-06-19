@@ -207,8 +207,7 @@ public class CertifiedProductController {
 		}
 		
 		//update the listing
-		CertifiedProductDTO toUpdate = new CertifiedProductDTO(updatedListing);
-		toUpdate = cpManager.update(acbId, toUpdate, updateRequest, existingListing);
+		cpManager.update(acbId, updateRequest, existingListing);
 		
 		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());

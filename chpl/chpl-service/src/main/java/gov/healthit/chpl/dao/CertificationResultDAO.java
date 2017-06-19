@@ -42,8 +42,8 @@ public interface CertificationResultDAO {
 	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId);
 	public CertificationResultMacraMeasureDTO addG1MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException;
 	public CertificationResultMacraMeasureDTO addG2MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException;
-	public void deleteG1MacraMeasureMapping(Long mappingId);
-	public void deleteG2MacraMeasureMapping(Long mappingId);
+	public void deleteG1MacraMeasureMapping(Long certificationResultId, Long macraMeasureId);
+	public void deleteG2MacraMeasureMapping(Long certificationResultId, Long macraMeasureId);
 	
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);
 	public CertificationResultTestDataDTO addTestDataMapping(CertificationResultTestDataDTO dto) throws EntityCreationException;

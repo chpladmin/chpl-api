@@ -87,10 +87,10 @@ public class CertificationResultManagerImpl implements
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-			+ "  and hasPermission(#listing.getCertificationBodyId(), 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public int update(CertifiedProductDTO listing, CertificationResult orig, CertificationResult updated) 
+	public int update(Long acbId, CertifiedProductDTO updatedListing, CertificationResult orig, CertificationResult updated) 
 		throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		//does the cert result need updated?
@@ -107,7 +107,7 @@ public class CertificationResultManagerImpl implements
 		if(hasChanged) {
 			CertificationResultDTO toUpdate = new CertificationResultDTO();
 			toUpdate.setId(orig.getId());
-			toUpdate.setCertifiedProductId(listing.getId());
+			toUpdate.setCertifiedProductId(updatedListing.getId());
 			toUpdate.setApiDocumentation(updated.getApiDocumentation());
 			toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
 			toUpdate.setG1Success(updated.isG1Success());
@@ -127,46 +127,46 @@ public class CertificationResultManagerImpl implements
 
 		if(updated.isSuccess() == null || updated.isSuccess() == Boolean.FALSE) {
 			//similar to delete - remove all related items
-			numChanges += updateAdditionalSoftware(listing, updated, orig.getAdditionalSoftware(), null);
-			numChanges += updateMacraMeasures(listing, updated, orig.getG1MacraMeasures(), null, G1_MEASURE);
-			numChanges += updateMacraMeasures(listing, updated, orig.getG2MacraMeasures(), null, G2_MEASURE);
-			numChanges += updateUcdProcesses(listing, updated, orig.getUcdProcesses(), null);
-			numChanges += updateTestStandards(listing, updated, orig.getTestStandards(), null);
-			numChanges += updateTestTools(listing, updated, orig.getTestToolsUsed(), null);
-			numChanges += updateTestData(listing, updated, orig.getTestDataUsed(), null);
-			numChanges += updateTestProcedures(listing, updated, orig.getTestProcedures(), null);
-			numChanges += updateTestFunctionality(listing, updated, orig.getTestFunctionality(), null);
-			numChanges += updateTestTasks(listing, updated, orig.getTestTasks(), null);
+			numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
+			numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), null, G1_MEASURE);
+			numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), null, G2_MEASURE);
+			numChanges += updateUcdProcesses(updated, orig.getUcdProcesses(), null);
+			numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
+			numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
+			numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
+			numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
+			numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(), null);
+			numChanges += updateTestTasks(updated, orig.getTestTasks(), null);
 		} else {
 			//create/update all related items
-			numChanges += updateAdditionalSoftware(listing, updated, 
+			numChanges += updateAdditionalSoftware(updated, 
 					orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
-			numChanges += updateMacraMeasures(listing, updated, 
+			numChanges += updateMacraMeasures(updated, 
 					orig.getG1MacraMeasures(), updated.getG1MacraMeasures(),
 					G1_MEASURE);
-			numChanges += updateMacraMeasures(listing, updated, 
+			numChanges += updateMacraMeasures(updated, 
 					orig.getG2MacraMeasures(), updated.getG2MacraMeasures(),
 					G2_MEASURE);
-			numChanges += updateUcdProcesses(listing, updated, 
+			numChanges += updateUcdProcesses(updated, 
 					orig.getUcdProcesses(), updated.getUcdProcesses());
-			numChanges += updateTestStandards(listing, updated, 
+			numChanges += updateTestStandards(updatedListing, updated, 
 					orig.getTestStandards(), updated.getTestStandards());
-			numChanges += updateTestTools(listing, updated, 
+			numChanges += updateTestTools(updated, 
 					orig.getTestToolsUsed(), updated.getTestToolsUsed());
-			numChanges += updateTestData(listing, updated, 
+			numChanges += updateTestData( updated, 
 					orig.getTestDataUsed(), updated.getTestDataUsed());
-			numChanges += updateTestProcedures(listing, updated, 
+			numChanges += updateTestProcedures( updated, 
 					orig.getTestProcedures(), updated.getTestProcedures());
-			numChanges += updateTestFunctionality(listing, updated,
+			numChanges += updateTestFunctionality(updatedListing, updated,
 					orig.getTestFunctionality(), updated.getTestFunctionality());
-			numChanges += updateTestTasks(listing, updated, 
+			numChanges += updateTestTasks(updated, 
 					orig.getTestTasks(), updated.getTestTasks());
 		}
 		
 		return numChanges;
 	}
 	
-	private int updateAdditionalSoftware(CertifiedProductDTO listing, CertificationResult certResult,
+	private int updateAdditionalSoftware(CertificationResult certResult,
 			List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
 			List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware) 
 	throws EntityCreationException {
@@ -202,7 +202,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) { 
 					boolean inExistingListing = false;
 					for(CertificationResultAdditionalSoftware existingItem : existingAdditionalSoftware) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -231,7 +231,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultAdditionalSoftware existingItem : existingAdditionalSoftware) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -251,14 +251,14 @@ public class CertificationResultManagerImpl implements
 		return numChanges;
 	}
 	
-	private int updateMacraMeasures(CertifiedProductDTO listing, CertificationResult certResult,
+	private int updateMacraMeasures(CertificationResult certResult,
 			List<MacraMeasure> existingMeasures,
 			List<MacraMeasure> updatedMeasures,
 			String g1OrG2) 
 	throws EntityCreationException {
 		int numChanges = 0;
 		List<CertificationResultMacraMeasureDTO> measureToAdd = new ArrayList<CertificationResultMacraMeasureDTO>();
-		List<Long> idsToRemove = new ArrayList<Long>();
+		List<Long> macraIdsToRemove = new ArrayList<Long>();
 		
 		//figure out which macra measures to add
 		if(updatedMeasures != null && updatedMeasures.size() > 0) {
@@ -286,7 +286,7 @@ public class CertificationResultManagerImpl implements
 				for(MacraMeasure updatedItem : updatedMeasures) { 
 					boolean inExistingListing = false;
 					for(MacraMeasure existingItem : existingMeasures) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -306,22 +306,22 @@ public class CertificationResultManagerImpl implements
 			//if the updated listing has none, remove them all from existing
 			if(updatedMeasures == null || updatedMeasures.size() == 0) {
 				for(MacraMeasure existingItem : existingMeasures) {
-					idsToRemove.add(existingItem.getId());
+					macraIdsToRemove.add(existingItem.getId());
 				}
 			} else if(updatedMeasures.size() > 0) {
 				for(MacraMeasure existingItem : existingMeasures) {
 					boolean inUpdatedListing = false;
 					for(MacraMeasure updatedItem : updatedMeasures) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
-						idsToRemove.add(existingItem.getId());
+						macraIdsToRemove.add(existingItem.getId());
 					}
 				}
 			}
 		}
 		
-		numChanges = measureToAdd.size() + idsToRemove.size();
+		numChanges = measureToAdd.size() + macraIdsToRemove.size();
 		for(CertificationResultMacraMeasureDTO toAdd : measureToAdd) {
 			if(g1OrG2.equalsIgnoreCase(G1_MEASURE)) {
 				certResultDAO.addG1MacraMeasureMapping(toAdd);
@@ -330,17 +330,17 @@ public class CertificationResultManagerImpl implements
 			}
 		}
 		
-		for(Long idToRemove : idsToRemove) {
+		for(Long idToRemove : macraIdsToRemove) {
 			if(g1OrG2.equalsIgnoreCase(G1_MEASURE)) {
-				certResultDAO.deleteG1MacraMeasureMapping(idToRemove);
+				certResultDAO.deleteG1MacraMeasureMapping(certResult.getId(), idToRemove);
 			} else if(g1OrG2.equalsIgnoreCase(G2_MEASURE)) {
-				certResultDAO.deleteG2MacraMeasureMapping(idToRemove);
+				certResultDAO.deleteG2MacraMeasureMapping(certResult.getId(), idToRemove);
 			}
 		}	
 		return numChanges;
 	}
 	
-	private int updateUcdProcesses(CertifiedProductDTO listing, CertificationResult certResult,
+	private int updateUcdProcesses(CertificationResult certResult,
 			List<CertificationResultUcdProcess> existingUcdProcesses,
 			List<CertificationResultUcdProcess> updatedUcdProcesses) 
 	throws EntityCreationException {
@@ -379,7 +379,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultUcdProcess updatedItem : updatedUcdProcesses) { 
 					boolean inExistingListing = false;
 					for(CertificationResultUcdProcess existingItem : existingUcdProcesses) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -404,7 +404,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultUcdProcess existingItem : existingUcdProcesses) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultUcdProcess updatedItem : updatedUcdProcesses) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -464,7 +464,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestStandard updatedItem : updatedTestStandards) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestStandard existingItem : existingTestStandards) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -488,7 +488,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestStandard existingItem : existingTestStandards) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultTestStandard updatedItem : updatedTestStandards) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -508,7 +508,7 @@ public class CertificationResultManagerImpl implements
 		return numChanges;
 	}
 	
-	private int updateTestTools(CertifiedProductDTO listing, CertificationResult certResult,
+	private int updateTestTools(CertificationResult certResult,
 			List<CertificationResultTestTool> existingTestTools,
 			List<CertificationResultTestTool> updatedTestTools) 
 	throws EntityCreationException {
@@ -524,8 +524,8 @@ public class CertificationResultManagerImpl implements
 					TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
 					if(foundTool == null) {
 						logger.error("Could not find test tool " + updatedItem.getTestToolName() + 
-								"; will not be adding this as a test tool to listing id " + listing.getId() + 
-								", criteria " + certResult.getNumber());
+								"; will not be adding this as a test tool to certification result id " + 
+								certResult.getId() + ", criteria " + certResult.getNumber());
 					} else {
 						updatedItem.setTestToolId(foundTool.getId());
 					}
@@ -547,7 +547,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestTool updatedItem : updatedTestTools) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestTool existingItem : existingTestTools) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -573,7 +573,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestTool existingItem : existingTestTools) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultTestTool updatedItem : updatedTestTools) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -593,7 +593,7 @@ public class CertificationResultManagerImpl implements
 		return numChanges;
 	}
 	
-	private int updateTestData(CertifiedProductDTO listing, CertificationResult certResult,
+	private int updateTestData(CertificationResult certResult,
 			List<CertificationResultTestData> existingTestData,
 			List<CertificationResultTestData> updatedTestData) 
 	throws EntityCreationException {
@@ -617,7 +617,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestData updatedItem : updatedTestData) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestData existingItem : existingTestData) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -642,7 +642,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestData existingItem : existingTestData) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultTestData updatedItem : updatedTestData) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -662,7 +662,7 @@ public class CertificationResultManagerImpl implements
 		return numChanges;
 	}
 	
-	private int updateTestProcedures(CertifiedProductDTO listing, CertificationResult certResult,
+	private int updateTestProcedures(CertificationResult certResult,
 			List<CertificationResultTestProcedure> existingTestProcedures,
 			List<CertificationResultTestProcedure> updatedTestProcedures) 
 	throws EntityCreationException {
@@ -700,7 +700,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestProcedure updatedItem : updatedTestProcedures) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestProcedure existingItem : existingTestProcedures) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -724,7 +724,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestProcedure existingItem : existingTestProcedures) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -784,7 +784,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestFunctionality existingItem : existingTestFunctionality) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
 					
 					if(!inExistingListing) {
@@ -810,7 +810,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestFunctionality existingItem : existingTestFunctionality) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());
@@ -830,7 +830,7 @@ public class CertificationResultManagerImpl implements
 		return numChanges;
 	}
 
-	private int updateTestTasks(CertifiedProductDTO listing, CertificationResult certResult,
+	private int updateTestTasks(CertificationResult certResult,
 			List<CertificationResultTestTask> existingTestTasks,
 			List<CertificationResultTestTask> updatedTestTasks) 
 	throws EntityCreationException, EntityRetrievalException {
@@ -851,7 +851,8 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestTask updatedItem : updatedTestTasks) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestTask existingItem : existingTestTasks) {
-						if(updatedItem.getId() != null && existingItem.getId() != null && 
+						if(!inExistingListing && 
+							updatedItem.getId() != null && existingItem.getId() != null && 
 							updatedItem.getId().longValue() == existingItem.getId().longValue() &&
 							updatedItem.getTestTaskId() != null && existingItem.getTestTaskId() != null && 
 							updatedItem.getTestTaskId().longValue() == existingItem.getTestTaskId().longValue()) {
@@ -878,7 +879,8 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestTask existingItem : existingTestTasks) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultTestTask updatedItem : updatedTestTasks) {
-						if(updatedItem.getId() != null && existingItem.getId() != null && 
+						if(!inUpdatedListing && 
+							updatedItem.getId() != null && existingItem.getId() != null && 
 							updatedItem.getId().longValue() == existingItem.getId().longValue() &&
 							updatedItem.getTestTaskId() != null && existingItem.getTestTaskId() != null && 
 							updatedItem.getTestTaskId().longValue() == existingItem.getTestTaskId().longValue()) {
@@ -938,7 +940,7 @@ public class CertificationResultManagerImpl implements
 	}
 	
 	private int updateTestTask(CertificationResult certResult, CertificationResultTestTask existingTask, 
-			CertificationResultTestTask updatedTask) throws EntityRetrievalException {
+			CertificationResultTestTask updatedTask) throws EntityRetrievalException, EntityCreationException {
 		int numChanges = 0;
 		boolean isDifferent = false;
 		if(!StringUtils.equals(existingTask.getDescription(), updatedTask.getDescription()) || 
@@ -965,6 +967,9 @@ public class CertificationResultManagerImpl implements
 			testTaskDAO.update(taskToUpdate);
 			numChanges++;
 		}
+		
+		numChanges += updateTaskParticipants(existingTask.getId(), 
+				existingTask.getTestParticipants(), updatedTask.getTestParticipants());
 		return numChanges;
 	}
 	
@@ -1003,7 +1008,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestParticipant updatedItem : updatedParticipants) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestParticipant existingItem : existingParticipants) {
-						inExistingListing = updatedItem.matches(existingItem);
+						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 						participantsToUpdate.add(new CertificationResultTestParticipantPair(existingItem, updatedItem));
 					}
 					
@@ -1030,7 +1035,7 @@ public class CertificationResultManagerImpl implements
 				for(CertificationResultTestParticipant existingItem : existingParticipants) {
 					boolean inUpdatedListing = false;
 					for(CertificationResultTestParticipant updatedItem : updatedParticipants) {
-						inUpdatedListing = updatedItem.matches(existingItem);
+						inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
 					}
 					if(!inUpdatedListing) {
 						idsToRemove.add(existingItem.getId());

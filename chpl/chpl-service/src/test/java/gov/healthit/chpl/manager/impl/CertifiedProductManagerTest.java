@@ -47,6 +47,7 @@ import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import junit.framework.TestCase;
 
@@ -110,14 +111,20 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testAdminUserChangeStatusToSuspendedByOnc() throws EntityRetrievalException,
-		EntityCreationException, JsonProcessingException {
+		EntityCreationException, JsonProcessingException, InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
 		assertNotNull(stat);
-		CertifiedProductDTO cp = cpManager.getById(1L);
-		cp.setCertificationStatusId(stat.getId());
+		
+		Long acbId = 1L;
+		Long listingId = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getCertificationStatus().put("id", stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		cpManager.update(1L, cp, toUpdate);
+		toUpdate.setListing(updatedListing);
+		cpManager.update(acbId, toUpdate, existingListing);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -133,16 +140,23 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testNonAdminUserNotAllowedToChangeStatusToSuspendedByOnc() throws EntityRetrievalException,
-		EntityCreationException, JsonProcessingException {
+		EntityCreationException, JsonProcessingException, InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
 		assertNotNull(stat);
-		CertifiedProductDTO cp = cpManager.getById(1L);
-		cp.setCertificationStatusId(stat.getId());
+		
+		Long acbId = 1L;
+		Long listingId = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getCertificationStatus().put("id", stat.getId());
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setListing(updatedListing);
+		
 		boolean success = true;
 		try {
-			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(acbId, toUpdate, existingListing);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -162,16 +176,23 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testNonAdminUserNotAllowedToChangeStatusToWithdrawnByDeveloperUnderReview() throws EntityRetrievalException,
-		EntityCreationException, JsonProcessingException {
+		EntityCreationException, JsonProcessingException, InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
-		CertifiedProductDTO cp = cpManager.getById(1L);
-		cp.setCertificationStatusId(stat.getId());
+		
+		Long acbId = 1L;
+		Long listingId = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getCertificationStatus().put("id", stat.getId());
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setListing(updatedListing);
+		
 		boolean success = true;
 		try {
-			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(acbId, toUpdate, existingListing);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -191,15 +212,21 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithDeveloperBan() throws EntityRetrievalException,
-		EntityCreationException, JsonProcessingException {
+		EntityCreationException, JsonProcessingException, InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
-		CertifiedProductDTO cp = cpManager.getById(1L);
-		cp.setCertificationStatusId(stat.getId());
+		
+		Long acbId = 1L;
+		Long listingId = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getCertificationStatus().put("id", stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setListing(updatedListing);
 		toUpdate.setBanDeveloper(true);
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(acbId, toUpdate, existingListing);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -215,7 +242,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithoutDeveloperBan() throws EntityRetrievalException,
-		EntityCreationException, JsonProcessingException {
+		EntityCreationException, JsonProcessingException, InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
@@ -226,11 +253,16 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(beforeStatus);
 		assertNotNull(beforeStatus.getId());
 		
-		CertifiedProductDTO cp = cpManager.getById(1L);
-		cp.setCertificationStatusId(stat.getId());
+		Long acbId = 1L;
+		Long listingId = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getCertificationStatus().put("id", stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setListing(updatedListing);
 		toUpdate.setBanDeveloper(false);
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(acbId, toUpdate, existingListing);
 		
 		DeveloperDTO afterDev = devManager.getById(-1L);
 		assertNotNull(afterDev);
@@ -244,14 +276,20 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testAdminUserChangeStatusToTerminatedByOnc() throws EntityRetrievalException,
-		EntityCreationException, JsonProcessingException {
+		EntityCreationException, JsonProcessingException, InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
-		CertifiedProductDTO cp = cpManager.getById(1L);
-		cp.setCertificationStatusId(stat.getId());
+		
+		Long acbId = 1L;
+		Long listingId = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getCertificationStatus().put("id", stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		cpManager.update(1L, cp, toUpdate);
+		toUpdate.setListing(updatedListing);
+		cpManager.update(acbId, toUpdate, existingListing);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -267,16 +305,22 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testNonAdminUserNotAllowedToChangeStatusToTerminatedByOnc() throws EntityRetrievalException,
-		EntityCreationException, JsonProcessingException {
+		EntityCreationException, JsonProcessingException, InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
-		CertifiedProductDTO cp = cpManager.getById(1L);
-		cp.setCertificationStatusId(stat.getId());
+		
+		Long acbId = 1L;
+		Long listingId = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getCertificationStatus().put("id", stat.getId());
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setListing(updatedListing);
 		boolean success = true;
 		try {
-			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(acbId, toUpdate, existingListing);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -296,13 +340,16 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly = false)
 	@Rollback
 	public void testUpdateEducationForOneParticipant() 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+			InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setId(5L);
-		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(5L);
-		List<CertificationResult> certs = details.getCertificationResults();
+		Long abcId = 1L;
+		Long listingId = 5L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<CertificationResult> certs = updatedListing.getCertificationResults();
 		CertificationResult cert = certs.get(0);
 		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
@@ -312,10 +359,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		final long changedParticipantId = firstPart.getId();
 		firstPart.setEducationTypeId(1L);
 		
-		cpManager.updateCertifications(-1L, dto, certs);
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(abcId, updateRequest, existingListing);
 		
-		details = cpdManager.getCertifiedProductDetails(5L);
-		certs = details.getCertificationResults();
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		certs = existingListing.getCertificationResults();
 		cert = certs.get(0);
 		certTasks = cert.getTestTasks();
 		certTask = certTasks.get(0);
@@ -335,13 +384,17 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly = false)
 	@Rollback
 	public void testUpdateOccupationForAllParticipants() 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setId(5L);
-		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(5L);
-		List<CertificationResult> certs = details.getCertificationResults();
+		Long listingId = 5L;
+		Long acbId = -1L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<CertificationResult> certs = updatedListing.getCertificationResults();
 		CertificationResult cert = certs.get(0);
 		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
@@ -351,10 +404,12 @@ public class CertifiedProductManagerTest extends TestCase {
 			part.setOccupation("Teacher");
 		}
 		
-		cpManager.updateCertifications(-1L, dto, certs);
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
 		
-		details = cpdManager.getCertifiedProductDetails(5L);
-		certs = details.getCertificationResults();
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		certs = existingListing.getCertificationResults();
 		cert = certs.get(0);
 		certTasks = cert.getTestTasks();
 		certTask = certTasks.get(0);
@@ -369,13 +424,16 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Transactional(readOnly = false)
 	@Rollback
 	public void testUpdateEducationForAllParticipants() 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+	InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setId(5L);
-		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(5L);
-		List<CertificationResult> certs = details.getCertificationResults();
+		Long listingId = 5L;
+		Long acbId = -1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<CertificationResult> certs = updatedListing.getCertificationResults();
 		CertificationResult cert = certs.get(0);
 		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
@@ -385,10 +443,12 @@ public class CertifiedProductManagerTest extends TestCase {
 			part.setEducationTypeId(2L);
 		}
 		
-		cpManager.updateCertifications(-1L, dto, certs);
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
 		
-		details = cpdManager.getCertifiedProductDetails(5L);
-		certs = details.getCertificationResults();
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		certs = existingListing.getCertificationResults();
 		cert = certs.get(0);
 		certTasks = cert.getTestTasks();
 		certTask = certTasks.get(0);
@@ -396,6 +456,168 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals(2, part.getEducationTypeId().longValue());
 		}		
+	}
+	
+	
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testUpdateAgeRangeForAllParticipants() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+	InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long listingId = 5L;
+		Long acbId = -1L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<CertificationResult> certs = updatedListing.getCertificationResults();
+		CertificationResult cert = certs.get(0);
+		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResultTestTask certTask = certTasks.get(0);
+		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
+		
+		for(CertificationResultTestParticipant part : taskParts) {
+			part.setAgeRangeId(4L);
+		}
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		certs = existingListing.getCertificationResults();
+		cert = certs.get(0);
+		certTasks = cert.getTestTasks();
+		certTask = certTasks.get(0);
+		taskParts = certTask.getTestParticipants();
+		assertEquals(10, taskParts.size());
+		for(CertificationResultTestParticipant part : taskParts) {
+			assertEquals(4, part.getAgeRangeId().longValue());
+		}		
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testUpdateG1MacraMeasures() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+	InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long listingId = 3L;
+		Long acbId = -1L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<CertificationResult> certs = updatedListing.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		List<MacraMeasure> measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+		MacraMeasure measure = measures.get(0);
+		assertNotNull(measure);
+		MacraMeasure newMeasure = new MacraMeasure();
+		newMeasure.setId(2L);
+		cert.getG1MacraMeasures().set(0, newMeasure);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		certs = existingListing.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testAddG2Measure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+	InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long listingId = 3L;
+		Long acbId = -1L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<CertificationResult> certs = updatedListing.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		
+		MacraMeasure newMeasure = new MacraMeasure();
+		newMeasure.setId(1L);
+		cert.getG2MacraMeasures().add(newMeasure);
+
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		certs = existingListing.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		List<MacraMeasure> measures = cert.getG2MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+		MacraMeasure measure = measures.get(0);
+		assertEquals(1L, measure.getId().longValue());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testDeleteG1MacraMeasure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+	InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long listingId = 3L;
+		Long acbId = -1L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<CertificationResult> certs = updatedListing.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		cert.getG1MacraMeasures().clear();
+
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		certs = existingListing.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		List<MacraMeasure> measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(0, measures.size());
 	}
 	
 	/**
@@ -512,141 +734,5 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertTrue(results.getErrors().get(0).getError() != null);
 		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.EIC10.99.1.1.160403"));
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 30L);
-	}
-	
-	@Test
-	@Transactional(readOnly = false)
-	@Rollback
-	public void testUpdateAgeRangeForAllParticipants() 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setId(5L);
-		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(5L);
-		List<CertificationResult> certs = details.getCertificationResults();
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
-		CertificationResultTestTask certTask = certTasks.get(0);
-		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
-		
-		for(CertificationResultTestParticipant part : taskParts) {
-			part.setAgeRangeId(4L);
-		}
-		
-		cpManager.updateCertifications(-1L, dto, certs);
-		
-		details = cpdManager.getCertifiedProductDetails(5L);
-		certs = details.getCertificationResults();
-		cert = certs.get(0);
-		certTasks = cert.getTestTasks();
-		certTask = certTasks.get(0);
-		taskParts = certTask.getTestParticipants();
-		assertEquals(10, taskParts.size());
-		for(CertificationResultTestParticipant part : taskParts) {
-			assertEquals(4, part.getAgeRangeId().longValue());
-		}		
-	}
-	
-	@Test
-	@Transactional(readOnly = false)
-	@Rollback(true)
-	public void testUpdateG1MacraMeasures() 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setId(3L);
-		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
-		List<CertificationResult> certs = details.getCertificationResults();
-		assertNotNull(certs);
-		assertEquals(1, certs.size());
-		CertificationResult cert = certs.get(0);
-		assertNotNull(cert);
-		List<MacraMeasure> measures = cert.getG1MacraMeasures();
-		assertNotNull(measures);
-		assertEquals(1, measures.size());
-		MacraMeasure measure = measures.get(0);
-		assertNotNull(measure);
-		MacraMeasure newMeasure = new MacraMeasure();
-		newMeasure.setId(2L);
-		cert.getG1MacraMeasures().set(0, newMeasure);
-		
-		cpManager.updateCertifications(-1L, dto, certs);
-		
-		details = cpdManager.getCertifiedProductDetails(3L);
-		certs = details.getCertificationResults();
-		assertNotNull(certs);
-		assertEquals(1, certs.size());
-		cert = certs.get(0);
-		assertNotNull(cert);
-		measures = cert.getG1MacraMeasures();
-		assertNotNull(measures);
-		assertEquals(1, measures.size());
-	}
-	
-	@Test
-	@Transactional(readOnly = false)
-	@Rollback(true)
-	public void testAddG2Measure() 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setId(3L);
-		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
-		List<CertificationResult> certs = details.getCertificationResults();
-		assertNotNull(certs);
-		assertEquals(1, certs.size());
-		CertificationResult cert = certs.get(0);
-		assertNotNull(cert);
-		
-		MacraMeasure newMeasure = new MacraMeasure();
-		newMeasure.setId(1L);
-		cert.getG2MacraMeasures().add(newMeasure);
-
-		cpManager.updateCertifications(-1L, dto, certs);
-		
-		details = cpdManager.getCertifiedProductDetails(3L);
-		certs = details.getCertificationResults();
-		assertNotNull(certs);
-		assertEquals(1, certs.size());
-		cert = certs.get(0);
-		assertNotNull(cert);
-		List<MacraMeasure> measures = cert.getG2MacraMeasures();
-		assertNotNull(measures);
-		assertEquals(1, measures.size());
-		MacraMeasure measure = measures.get(0);
-		assertEquals(1L, measure.getId().longValue());
-	}
-	
-	@Test
-	@Transactional(readOnly = false)
-	@Rollback(true)
-	public void testDeleteG1MacraMeasure() 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setId(3L);
-		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
-		List<CertificationResult> certs = details.getCertificationResults();
-		assertNotNull(certs);
-		assertEquals(1, certs.size());
-		CertificationResult cert = certs.get(0);
-		assertNotNull(cert);
-		cert.getG1MacraMeasures().clear();
-
-		cpManager.updateCertifications(-1L, dto, certs);
-		
-		details = cpdManager.getCertifiedProductDetails(3L);
-		certs = details.getCertificationResults();
-		assertNotNull(certs);
-		assertEquals(1, certs.size());
-		cert = certs.get(0);
-		assertNotNull(cert);
-		List<MacraMeasure> measures = cert.getG1MacraMeasures();
-		assertNotNull(measures);
-		assertEquals(0, measures.size());
 	}
 }

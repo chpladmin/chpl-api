@@ -19,7 +19,7 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 
 public interface CertificationResultManager {
-	public int update(CertifiedProductDTO listing, CertificationResult orig, CertificationResult updated)
+	public int update(Long abcId, CertifiedProductDTO updatedListing, CertificationResult orig, CertificationResult updated)
 			throws EntityCreationException, EntityRetrievalException;
 	
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
