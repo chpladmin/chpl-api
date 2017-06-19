@@ -1,13 +1,18 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.statistics;
 
 import java.io.Serializable;
 import java.util.List;
+
+import gov.healthit.chpl.domain.DateRange;
 
 public class Statistics implements Serializable {
 	private static final long serialVersionUID = 6977674702447513779L;
 	private DateRange dateRange;
 	private Long totalDevelopers;
 	private Long totalDevelopersWith2014Listings;
+	private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear;
+	private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
+	private Long totalSuspendedDevelopersWith2014Listings;
 	private Long totalDevelopersWith2015Listings;
 	private Long totalCertifiedProducts;
 	private Long totalCPsActive2014Listings;
@@ -156,6 +161,32 @@ public class Statistics implements Serializable {
 
 	public void setDateRange(DateRange dateRange) {
 		this.dateRange = dateRange;
+	}
+
+	public Long getTotalSuspendedDevelopersWith2014Listings() {
+		return totalSuspendedDevelopersWith2014Listings;
+	}
+
+	public void setTotalSuspendedDevelopersWith2014Listings(Long totalSuspendedDevelopersWith2014Listings) {
+		this.totalSuspendedDevelopersWith2014Listings = totalSuspendedDevelopersWith2014Listings;
+	}
+
+	public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear() {
+		return totalDevelopersByCertifiedBodyWithListingsEachYear;
+	}
+
+	public void setTotalDevelopersByCertifiedBodyWithListingsEachYear(
+			List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear) {
+		this.totalDevelopersByCertifiedBodyWithListingsEachYear = totalDevelopersByCertifiedBodyWithListingsEachYear;
+	}
+
+	public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear() {
+		return totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
+	}
+
+	public void setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
+			List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear) {
+		this.totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
 	}
 	
 }

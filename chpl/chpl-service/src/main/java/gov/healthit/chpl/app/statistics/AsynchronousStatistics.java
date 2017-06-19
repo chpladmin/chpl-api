@@ -10,14 +10,18 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.StatisticsDAO;
-import gov.healthit.chpl.domain.CertifiedBodyStatistics;
+import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
 @Component
 @EnableAsync
 public class AsynchronousStatistics {
-	@Autowired StatisticsDAO statisticsDAO;
+	@Autowired DeveloperStatisticsDAO developerStatisticsDAO;
+	@Autowired ListingStatisticsDAO listingStatisticsDAO;
+	@Autowired SurveillanceStatisticsDAO surveillanceStatisticsDAO;
 	
 	/**
 	 * Total # of Unique Developers (Regardless of Edition) 
@@ -25,7 +29,7 @@ public class AsynchronousStatistics {
 	@Transactional
 	@Async
 	public Future<Long> getTotalDevelopers(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalDevelopers(dateRange));
+		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopers(dateRange));
 	}
 
 	/**
@@ -34,7 +38,25 @@ public class AsynchronousStatistics {
 	@Transactional
 	@Async
 	public Future<Long> getTotalDevelopersWith2014Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalDevelopersWith2014Listings(dateRange));
+		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2014Listings(dateRange));
+	}
+	
+	/**
+	 * Total # of Developers by certified body with listings for each year
+	 */
+	@Transactional
+	@Async
+	public Future<List<CertifiedBodyStatistics>> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange) {
+		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange));
+	}
+	
+	/**
+	 * Total # of Developers by certified body with listings in each certification status and year
+	 */
+	@Transactional
+	@Async
+	public Future<List<CertifiedBodyStatistics>> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(DateRange dateRange) {
+		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange));
 	}
 
 	/**
@@ -43,7 +65,7 @@ public class AsynchronousStatistics {
 	@Transactional
 	@Async
 	public Future<Long> getTotalDevelopersWith2015Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalDevelopersWith2015Listings(dateRange));
+		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2015Listings(dateRange));
 	}
 
 	/**
@@ -52,7 +74,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalCertifiedProducts(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalCertifiedProducts(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCertifiedProducts(dateRange));
 	}
 	
 	/**
@@ -61,7 +83,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalCPsActive2014Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalCPsActive2014Listings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2014Listings(dateRange));
 	}
 
 	/**
@@ -70,7 +92,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalCPsActive2015Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalCPsActive2015Listings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2015Listings(dateRange));
 	}
 
 	/**
@@ -79,7 +101,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalCPsActiveListings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalCPsActiveListings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActiveListings(dateRange));
 	}
 
 	/**
@@ -88,7 +110,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalListings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalListings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalListings(dateRange));
 	}
 
 	/**
@@ -97,7 +119,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalActive2014Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalActive2014Listings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalActive2014Listings(dateRange));
 	}
 
 	/**
@@ -106,7 +128,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalActive2015Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalActive2015Listings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalActive2015Listings(dateRange));
 	}
 	
 	/**
@@ -115,7 +137,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<List<CertifiedBodyStatistics>> getTotalActiveListingsByCertifiedBody(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalActiveListingsByCertifiedBody(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotalActiveListingsByCertifiedBody(dateRange));
 	}
 
 	/**
@@ -124,7 +146,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotal2014Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotal2014Listings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotal2014Listings(dateRange));
 	}
 
 	/**
@@ -133,7 +155,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotal2015Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotal2015Listings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotal2015Listings(dateRange));
 	}
 
 	/**
@@ -142,7 +164,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotal2011Listings(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotal2011Listings(dateRange));
+		return new AsyncResult<>(listingStatisticsDAO.getTotal2011Listings(dateRange));
 	}
 
 	/**
@@ -151,7 +173,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalSurveillanceActivities(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalSurveillanceActivities(dateRange));
+		return new AsyncResult<>(surveillanceStatisticsDAO.getTotalSurveillanceActivities(dateRange));
 	}
 
 	/**
@@ -160,7 +182,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalOpenSurveillanceActivities(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalOpenSurveillanceActivities(dateRange));
+		return new AsyncResult<>(surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(dateRange));
 	}
 
 	/**
@@ -169,7 +191,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalClosedSurveillanceActivities(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalClosedSurveillanceActivities(dateRange));
+		return new AsyncResult<>(surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(dateRange));
 	}
 
 	/**
@@ -178,7 +200,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalNonConformities(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalNonConformities(dateRange));
+		return new AsyncResult<>(surveillanceStatisticsDAO.getTotalNonConformities(dateRange));
 	}
 
 	/**
@@ -187,7 +209,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalOpenNonconformities(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalOpenNonconformities(dateRange));
+		return new AsyncResult<>(surveillanceStatisticsDAO.getTotalOpenNonconformities(dateRange));
 	}
 
 	/**
@@ -196,7 +218,7 @@ public class AsynchronousStatistics {
 	@Async
 	@Transactional
 	public Future<Long> getTotalClosedNonconformities(DateRange dateRange) {
-		return new AsyncResult<>(statisticsDAO.getTotalClosedNonconformities(dateRange));
+		return new AsyncResult<>(surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange));
 	}
 
 }
