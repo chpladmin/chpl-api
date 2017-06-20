@@ -71,34 +71,35 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			
-			create(entity);
-		}
+			entityManager.persist(entity);
+			entityManager.flush();		}
 		
 		return new CertificationResultDTO(entity);
 		
 	}
 
 	@Override
-	public CertificationResultDTO update(CertificationResultDTO result) throws EntityRetrievalException {
+	public CertificationResultDTO update(CertificationResultDTO toUpdate) throws EntityRetrievalException {
 	
-		CertificationResultEntity entity = getEntityById(result.getId());
-		entity.setCertificationCriterionId(result.getCertificationCriterionId());
-		entity.setCertifiedProductId(result.getCertifiedProductId());
-		entity.setGap(result.getGap());
-		entity.setSed(result.getSed());
-		entity.setG1Success(result.getG1Success());
-		entity.setG2Success(result.getG2Success());
-		entity.setSuccess(result.getSuccessful());
-		entity.setApiDocumentation(result.getApiDocumentation());
-		entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
+		CertificationResultEntity entity = getEntityById(toUpdate.getId());
+		entity.setCertificationCriterionId(toUpdate.getCertificationCriterionId());
+		entity.setCertifiedProductId(toUpdate.getCertifiedProductId());
+		entity.setGap(toUpdate.getGap());
+		entity.setSed(toUpdate.getSed());
+		entity.setG1Success(toUpdate.getG1Success());
+		entity.setG2Success(toUpdate.getG2Success());
+		entity.setSuccess(toUpdate.getSuccessful());
+		entity.setApiDocumentation(toUpdate.getApiDocumentation());
+		entity.setPrivacySecurityFramework(toUpdate.getPrivacySecurityFramework());
 		
-		if(result.getDeleted() != null) {
-			entity.setDeleted(result.getDeleted());
+		if(toUpdate.getDeleted() != null) {
+			entity.setDeleted(toUpdate.getDeleted());
 		}
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		
-		update(entity);
+		entityManager.merge(entity);	
+		entityManager.flush();
 		return new CertificationResultDTO(entity);
 	}
 
@@ -146,20 +147,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			dto = new CertificationResultDTO(entity);
 		}
 		return dto;
-	}
-	
-	private void create(CertificationResultEntity entity) {
-		
-		entityManager.persist(entity);
-		entityManager.flush();
-		
-	}
-	
-	private void update(CertificationResultEntity entity) {
-		
-		entityManager.merge(entity);	
-		entityManager.flush();
-	
 	}
 	
 	private List<CertificationResultEntity> getAllEntities() {

@@ -31,10 +31,14 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
@@ -42,6 +46,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -65,6 +70,8 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Autowired private CertificationStatusDAO certStatusDao;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
+	@Autowired private QmsStandardDAO qmsDao;
+	
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -336,6 +343,425 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
 	}
 	
+	/*********************
+	 * QMS Standard crud tests
+	 * *************************/
+
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddExistingQmsStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long qmsToAdd = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origQmsLength = existingListing.getQmsStandards().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductQmsStandard std = new CertifiedProductQmsStandard();
+		std.setQmsStandardId(qmsToAdd);
+		std.setQmsStandardName("21 CFR Part 820");
+		std.setQmsModification("None");
+		std.setApplicableCriteria("All");
+		updatedListing.getQmsStandards().add(std);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getQmsStandards());
+		assertEquals(origQmsLength+1, updatedListing.getQmsStandards().size());
+		boolean foundAddedQms = false;
+		for(CertifiedProductQmsStandard qms : updatedListing.getQmsStandards()) {
+			if(qms.getQmsStandardId().longValue() == qmsToAdd.longValue()) {
+				foundAddedQms = true;
+			}
+		}
+		assertTrue(foundAddedQms);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddNonExistingQmsStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origQmsLength = existingListing.getQmsStandards().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductQmsStandard std = new CertifiedProductQmsStandard();
+		String stdName = "NEW QMS STANDARD";
+		String stdModification = "None";
+		String stdCriteria = "ALL";
+		std.setQmsStandardName(stdName);
+		std.setQmsModification(stdModification);
+		std.setApplicableCriteria(stdCriteria);
+		updatedListing.getQmsStandards().add(std);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getQmsStandards());
+		assertEquals(origQmsLength+1, updatedListing.getQmsStandards().size());
+		CertifiedProductQmsStandard added = updatedListing.getQmsStandards().get(0);
+		assertNotNull(added.getQmsStandardId());
+		assertNotNull(added.getId());
+		assertEquals(stdName, added.getQmsStandardName());
+		assertEquals(stdModification, added.getQmsModification());
+		assertEquals(stdCriteria, added.getApplicableCriteria());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testDeleteQmsStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long qmsToAdd = 1L;
+		
+		//add a qms
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origQmsLength = existingListing.getQmsStandards().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductQmsStandard std = new CertifiedProductQmsStandard();
+		std.setQmsStandardId(qmsToAdd);
+		std.setQmsModification("None");
+		std.setApplicableCriteria("All");
+		updatedListing.getQmsStandards().add(std);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the qms
+		CertifiedProductSearchDetails listingWithQms = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(listingWithQms.getQmsStandards());
+		assertEquals(origQmsLength+1, listingWithQms.getQmsStandards().size());
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getQmsStandards().clear();
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, listingWithQms);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getQmsStandards());
+		assertEquals(origQmsLength, updatedListing.getQmsStandards().size());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testUpdateQmsModification() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long qmsToAdd = 1L;
+		
+		//add a qms
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origQmsLength = existingListing.getQmsStandards().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductQmsStandard std = new CertifiedProductQmsStandard();
+		std.setQmsStandardId(qmsToAdd);
+		std.setQmsModification("None");
+		std.setApplicableCriteria("All");
+		updatedListing.getQmsStandards().add(std);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//update the qms
+		CertifiedProductSearchDetails listingWithQms = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(listingWithQms.getQmsStandards());
+		assertEquals(origQmsLength+1, listingWithQms.getQmsStandards().size());
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		String newMod = "I modified a lot of stuff";
+		updatedListing.getQmsStandards().get(0).setQmsModification(newMod);
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, listingWithQms);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getQmsStandards());
+		assertEquals(origQmsLength+1, updatedListing.getQmsStandards().size());
+		assertEquals(newMod, updatedListing.getQmsStandards().get(0).getQmsModification());
+	}
+	
+	/*********************
+	 * Targeted User crud tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddExistingTargetedUser() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long targetedUserToAdd = -1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origTuLength = existingListing.getTargetedUsers().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductTargetedUser tu = new CertifiedProductTargetedUser();
+		tu.setTargetedUserId(targetedUserToAdd);
+		updatedListing.getTargetedUsers().add(tu);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getTargetedUsers());
+		assertEquals(origTuLength+1, updatedListing.getTargetedUsers().size());
+		boolean foundAddedTu = false;
+		for(CertifiedProductTargetedUser updatedTu : updatedListing.getTargetedUsers()) {
+			if(updatedTu.getTargetedUserId().longValue() == targetedUserToAdd.longValue()) {
+				foundAddedTu = true;
+			}
+		}
+		assertTrue(foundAddedTu);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddNonExistingTargetedUser() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origTuLength = existingListing.getTargetedUsers().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductTargetedUser tu = new CertifiedProductTargetedUser();
+		String newTuName = "Physical Therapy";
+		tu.setTargetedUserName(newTuName);
+		updatedListing.getTargetedUsers().add(tu);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getTargetedUsers());
+		assertEquals(origTuLength+1, updatedListing.getTargetedUsers().size());
+		
+		CertifiedProductTargetedUser added = updatedListing.getTargetedUsers().get(0);
+		assertNotNull(added.getTargetedUserId());
+		assertNotNull(added.getId());
+		assertEquals(newTuName, added.getTargetedUserName());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testDeleteTargetedUser() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long targetedUserToAdd = -1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origTuLength = existingListing.getTargetedUsers().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductTargetedUser tu = new CertifiedProductTargetedUser();
+		tu.setTargetedUserId(targetedUserToAdd);
+		updatedListing.getTargetedUsers().add(tu);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the targeted user
+		CertifiedProductSearchDetails listingWithtu = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getTargetedUsers());
+		assertEquals(origTuLength+1, updatedListing.getTargetedUsers().size());
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getTargetedUsers().clear();
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, listingWithtu);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getTargetedUsers());
+		assertEquals(origTuLength, updatedListing.getTargetedUsers().size());
+	}
+	
+	/*********************
+	 * Accessibility Standard crud tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddExistingAccessibilityStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long accStdIdToAdd = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origAccStdLength = existingListing.getAccessibilityStandards().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductAccessibilityStandard accStd = new CertifiedProductAccessibilityStandard();
+		accStd.setAccessibilityStandardId(accStdIdToAdd);
+		updatedListing.getAccessibilityStandards().add(accStd);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getAccessibilityStandards());
+		assertEquals(origAccStdLength+1, updatedListing.getAccessibilityStandards().size());
+		boolean foundAddedStd = false;
+		for(CertifiedProductAccessibilityStandard updatedStd : updatedListing.getAccessibilityStandards()) {
+			if(updatedStd.getAccessibilityStandardId().longValue() == accStdIdToAdd.longValue()) {
+				foundAddedStd = true;
+			}
+		}
+		assertTrue(foundAddedStd);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddNonExistingAccessibilityStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origStdLength = existingListing.getAccessibilityStandards().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductAccessibilityStandard std = new CertifiedProductAccessibilityStandard();
+		String newStdName = "NEW STANDARD";
+		std.setAccessibilityStandardName(newStdName);
+		updatedListing.getAccessibilityStandards().add(std);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getAccessibilityStandards());
+		assertEquals(origStdLength+1, updatedListing.getAccessibilityStandards().size());
+		
+		CertifiedProductAccessibilityStandard added = updatedListing.getAccessibilityStandards().get(0);
+		assertNotNull(added.getAccessibilityStandardName());
+		assertNotNull(added.getId());
+		assertEquals(newStdName, added.getAccessibilityStandardName());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testDeleteAccessibilityStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long accStdIdToAdd = 1L;
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		int origAccStdLength = existingListing.getAccessibilityStandards().size();
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductAccessibilityStandard accStd = new CertifiedProductAccessibilityStandard();
+		accStd.setAccessibilityStandardId(accStdIdToAdd);
+		updatedListing.getAccessibilityStandards().add(accStd);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the accessibility standard
+		CertifiedProductSearchDetails listingWithStd = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getAccessibilityStandards());
+		assertEquals(origAccStdLength+1, updatedListing.getAccessibilityStandards().size());
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		updatedListing.getAccessibilityStandards().clear();
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, listingWithStd);
+		
+		updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing.getAccessibilityStandards());
+		assertEquals(origAccStdLength, updatedListing.getAccessibilityStandards().size());
+	}
+	
+	/*********************
+	 * Certification Result add and remove tests
+	 * *************************/
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testUpdateCertificationResultSuccess() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 4L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		//update one that is currently false to be true
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.setSuccess(Boolean.TRUE);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertTrue(cert.isSuccess());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
 	@Test
 	@Transactional(readOnly = false)
 	@Rollback
@@ -344,7 +770,7 @@ public class CertifiedProductManagerTest extends TestCase {
 			InvalidArgumentsException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		Long abcId = 1L;
+		Long acbId = 1L;
 		Long listingId = 5L;
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
@@ -361,7 +787,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
 		updateRequest.setListing(updatedListing);
-		cpManager.update(abcId, updateRequest, existingListing);
+		cpManager.update(acbId, updateRequest, existingListing);
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();

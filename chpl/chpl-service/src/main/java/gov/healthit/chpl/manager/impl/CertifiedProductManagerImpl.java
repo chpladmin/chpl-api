@@ -894,7 +894,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		int numChanges = 0;
-		List<CertifiedProductQmsStandardDTO> qmsToAdd = new ArrayList<CertifiedProductQmsStandardDTO>();
+		List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
+		List<QmsStandardPair> qmsToUpdate = new ArrayList<QmsStandardPair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
 		
 		//figure out which QMS to add
@@ -902,32 +903,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			if(existingQmsStandards == null || existingQmsStandards.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertifiedProductQmsStandard updatedItem : updatedQmsStandards) {
-					QmsStandardDTO item = qmsDao.findOrCreate(updatedItem.getId(), updatedItem.getQmsStandardName());
-					CertifiedProductQmsStandardDTO toAdd = new CertifiedProductQmsStandardDTO();
-					toAdd.setApplicableCriteria(updatedItem.getApplicableCriteria());
-					toAdd.setCertifiedProductId(listingId);
-					toAdd.setQmsModification(updatedItem.getQmsModification());
-					toAdd.setQmsStandardId(item.getId());
-					toAdd.setQmsStandardName(item.getName());
-					qmsToAdd.add(toAdd);
+					qmsToAdd.add(updatedItem);
 				}
 			} else if(existingQmsStandards.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
 				for(CertifiedProductQmsStandard updatedItem : updatedQmsStandards) { 
 					boolean inExistingListing = false;
 					for(CertifiedProductQmsStandard existingItem : existingQmsStandards) {
-						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
+						if(updatedItem.matches(existingItem)) {
+							inExistingListing = true;
+							qmsToUpdate.add(new QmsStandardPair(existingItem, updatedItem));
+						}
 					}
 					
 					if(!inExistingListing) {
-						QmsStandardDTO item = qmsDao.findOrCreate(updatedItem.getId(), updatedItem.getQmsStandardName());
-						CertifiedProductQmsStandardDTO toAdd = new CertifiedProductQmsStandardDTO();
-						toAdd.setApplicableCriteria(updatedItem.getApplicableCriteria());
-						toAdd.setCertifiedProductId(listingId);
-						toAdd.setQmsModification(updatedItem.getQmsModification());
-						toAdd.setQmsStandardId(item.getId());
-						toAdd.setQmsStandardName(item.getName());
-						qmsToAdd.add(toAdd);
+						qmsToAdd.add(updatedItem);
 					}
 				}
 			}
@@ -954,8 +944,37 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		numChanges = qmsToAdd.size() + idsToRemove.size();
-		for(CertifiedProductQmsStandardDTO toAdd : qmsToAdd) {
-			cpQmsDao.createCertifiedProductQms(toAdd);
+		for(CertifiedProductQmsStandard toAdd : qmsToAdd) {
+			QmsStandardDTO qmsItem = qmsDao.findOrCreate(toAdd.getQmsStandardId(), toAdd.getQmsStandardName());
+			CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
+			qmsDto.setApplicableCriteria(toAdd.getApplicableCriteria());
+			qmsDto.setCertifiedProductId(listingId);
+			qmsDto.setQmsModification(toAdd.getQmsModification());
+			qmsDto.setQmsStandardId(qmsItem.getId());
+			qmsDto.setQmsStandardName(qmsItem.getName());
+			cpQmsDao.createCertifiedProductQms(qmsDto);
+		}
+		
+		for(QmsStandardPair toUpdate : qmsToUpdate) {
+			boolean hasChanged = false;
+			if(!ObjectUtils.equals(toUpdate.getOrig().getApplicableCriteria(), toUpdate.getUpdated().getApplicableCriteria()) ||
+				!ObjectUtils.equals(toUpdate.getOrig().getQmsModification(), toUpdate.getUpdated().getQmsModification())) {
+				hasChanged = true;
+			}
+			
+			if(hasChanged) {
+				CertifiedProductQmsStandard stdToUpdate = toUpdate.getUpdated();
+				QmsStandardDTO qmsItem = qmsDao.findOrCreate(stdToUpdate.getQmsStandardId(), stdToUpdate.getQmsStandardName());
+				CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
+				qmsDto.setId(stdToUpdate.getId());
+				qmsDto.setApplicableCriteria(stdToUpdate.getApplicableCriteria());
+				qmsDto.setCertifiedProductId(listingId);
+				qmsDto.setQmsModification(stdToUpdate.getQmsModification());
+				qmsDto.setQmsStandardId(qmsItem.getId());
+				qmsDto.setQmsStandardName(qmsItem.getName());
+				cpQmsDao.updateCertifiedProductQms(qmsDto);
+				numChanges++;
+			}
 		}
 		
 		for(Long idToRemove : idsToRemove) {
@@ -970,7 +989,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		int numChanges = 0;
-		List<CertifiedProductTargetedUserDTO> tusToAdd = new ArrayList<CertifiedProductTargetedUserDTO>();
+		List<CertifiedProductTargetedUser> tusToAdd = new ArrayList<CertifiedProductTargetedUser>();
 		List<Long> idsToRemove = new ArrayList<Long>();
 		
 		//figure out which targeted user to add
@@ -978,12 +997,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			if(existingTargetedUsers == null || existingTargetedUsers.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertifiedProductTargetedUser updatedItem : updatedTargetedUsers) {
-					TargetedUserDTO item = targetedUserDao.findOrCreate(updatedItem.getId(), updatedItem.getTargetedUserName());
-					CertifiedProductTargetedUserDTO toAdd = new CertifiedProductTargetedUserDTO();
-					toAdd.setTargetedUserId(item.getId());
-					toAdd.setTargetedUserName(item.getName());
-					toAdd.setCertifiedProductId(listingId);
-					tusToAdd.add(toAdd);
+					tusToAdd.add(updatedItem);
 				}
 			} else if(existingTargetedUsers.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
@@ -994,12 +1008,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					}
 					
 					if(!inExistingListing) {
-						TargetedUserDTO item = targetedUserDao.findOrCreate(updatedItem.getId(), updatedItem.getTargetedUserName());
-						CertifiedProductTargetedUserDTO toAdd = new CertifiedProductTargetedUserDTO();
-						toAdd.setTargetedUserId(item.getId());
-						toAdd.setTargetedUserName(item.getName());
-						toAdd.setCertifiedProductId(listingId);
-						tusToAdd.add(toAdd);
+						tusToAdd.add(updatedItem);
 					}
 				}
 			}
@@ -1026,8 +1035,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		numChanges = tusToAdd.size() + idsToRemove.size();
-		for(CertifiedProductTargetedUserDTO toAdd : tusToAdd) {
-			cpTargetedUserDao.createCertifiedProductTargetedUser(toAdd);
+		for(CertifiedProductTargetedUser toAdd : tusToAdd) {
+			TargetedUserDTO item = targetedUserDao.findOrCreate(toAdd.getTargetedUserId(), toAdd.getTargetedUserName());
+			CertifiedProductTargetedUserDTO tuDto = new CertifiedProductTargetedUserDTO();
+			tuDto.setTargetedUserId(item.getId());
+			tuDto.setTargetedUserName(item.getName());
+			tuDto.setCertifiedProductId(listingId);
+			cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
 		}
 		
 		for(Long idToRemove : idsToRemove) {
@@ -1042,7 +1056,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		
 		int numChanges = 0;
-		List<CertifiedProductAccessibilityStandardDTO> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+		List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
 		List<Long> idsToRemove = new ArrayList<Long>();
 		
 		//figure out which accessibility standards to add
@@ -1050,12 +1064,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			if(existingAccessibilityStandards == null || existingAccessibilityStandards.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertifiedProductAccessibilityStandard updatedItem : updatedAccessibilityStandards) {
-					AccessibilityStandardDTO item = asDao.findOrCreate(updatedItem.getId(), updatedItem.getAccessibilityStandardName());
-					CertifiedProductAccessibilityStandardDTO toAdd = new CertifiedProductAccessibilityStandardDTO();
-					toAdd.setAccessibilityStandardId(item.getId());
-					toAdd.setAccessibilityStandardName(item.getName());
-					toAdd.setCertifiedProductId(listingId);
-					accStdsToAdd.add(toAdd);
+					accStdsToAdd.add(updatedItem);
 				}
 			} else if(existingAccessibilityStandards.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
@@ -1066,12 +1075,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 					}
 					
 					if(!inExistingListing) {
-						AccessibilityStandardDTO item = asDao.findOrCreate(updatedItem.getId(), updatedItem.getAccessibilityStandardName());
-						CertifiedProductAccessibilityStandardDTO toAdd = new CertifiedProductAccessibilityStandardDTO();
-						toAdd.setAccessibilityStandardId(item.getId());
-						toAdd.setAccessibilityStandardName(item.getName());
-						toAdd.setCertifiedProductId(listingId);
-						accStdsToAdd.add(toAdd);
+						accStdsToAdd.add(updatedItem);
 					}
 				}
 			}
@@ -1098,12 +1102,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		numChanges = accStdsToAdd.size() + idsToRemove.size();
-		for(CertifiedProductAccessibilityStandardDTO toAdd : accStdsToAdd) {
-			cpAccStdDao.createCertifiedProductAccessibilityStandard(toAdd);
+		for(CertifiedProductAccessibilityStandard toAdd : accStdsToAdd) {
+			AccessibilityStandardDTO item = asDao.findOrCreate(toAdd.getAccessibilityStandardId(), toAdd.getAccessibilityStandardName());
+			CertifiedProductAccessibilityStandardDTO toAddStd = new CertifiedProductAccessibilityStandardDTO();
+			toAddStd.setAccessibilityStandardId(item.getId());
+			toAddStd.setAccessibilityStandardName(item.getName());
+			toAddStd.setCertifiedProductId(listingId);
+			cpAccStdDao.createCertifiedProductAccessibilityStandard(toAddStd);
 		}
 		
 		for(Long idToRemove : idsToRemove) {
-			cpTargetedUserDao.deleteCertifiedProductTargetedUser(idToRemove);
+			cpAccStdDao.deleteCertifiedProductAccessibilityStandards(idToRemove);
 		}	
 		return numChanges;
 	}
@@ -1551,6 +1560,30 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				logger.error("Could not send questionable activity email", me);
 			}
 		}
+	}
+	
+	private class QmsStandardPair {
+		CertifiedProductQmsStandard orig;
+		CertifiedProductQmsStandard updated;
+		
+		public QmsStandardPair() {}
+		public QmsStandardPair(CertifiedProductQmsStandard orig, CertifiedProductQmsStandard updated) {
+			this.orig = orig;
+			this.updated = updated;
+		}
+		public CertifiedProductQmsStandard getOrig() {
+			return orig;
+		}
+		public void setOrig(CertifiedProductQmsStandard orig) {
+			this.orig = orig;
+		}
+		public CertifiedProductQmsStandard getUpdated() {
+			return updated;
+		}
+		public void setUpdated(CertifiedProductQmsStandard updated) {
+			this.updated = updated;
+		}
+		
 	}
 	
 	private class CQMResultDetailsPair {
