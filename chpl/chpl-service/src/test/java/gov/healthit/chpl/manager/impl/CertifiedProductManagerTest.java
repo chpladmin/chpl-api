@@ -33,8 +33,16 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -103,7 +111,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(details);
 		List<CertificationResult> certs = details.getCertificationResults();
 		assertNotNull(certs);
-		assertEquals(1, certs.size());
+		assertEquals(2, certs.size());
 		assertEquals("170.315 (a)(1)", certs.get(0).getNumber());
 		CertificationResult cert = certs.get(0);
 		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
@@ -761,6 +769,1044 @@ public class CertifiedProductManagerTest extends TestCase {
 		}
 		assertTrue(foundCert);
 	}
+	
+	/*********************
+	 * Certification Result additional software tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCertificationResultAdditionalSoftware() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultAdditionalSoftware softwareToAdd = new CertificationResultAdditionalSoftware();
+				softwareToAdd.setJustification("you need it");
+				softwareToAdd.setName("Microsoft Windows");
+				softwareToAdd.setVersion("2000");
+				cert.getAdditionalSoftware().add(softwareToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getAdditionalSoftware().size());
+				CertificationResultAdditionalSoftware added = cert.getAdditionalSoftware().get(0);
+				assertEquals("you need it", added.getJustification());
+				assertNull(added.getCertifiedProductNumber());
+				assertNull(added.getCertifiedProductId());
+				assertEquals("Microsoft Windows", added.getName());
+				assertEquals("2000", added.getVersion());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCertificationResultAdditionalSoftwareAsCertifiedProduct() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultAdditionalSoftware softwareToAdd = new CertificationResultAdditionalSoftware();
+				softwareToAdd.setCertifiedProductId(2L);
+				cert.getAdditionalSoftware().add(softwareToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getAdditionalSoftware().size());
+				CertificationResultAdditionalSoftware added = cert.getAdditionalSoftware().get(0);
+				assertNull(added.getJustification());
+				assertNotNull(added.getCertifiedProductNumber());
+				assertNotNull(added.getCertifiedProductId());
+				assertEquals(2, added.getCertifiedProductId().longValue());
+				assertNull(added.getName());
+				assertNull(added.getVersion());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCertificationResultAdditionalSoftwareWithGroupings() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultAdditionalSoftware softwareToAdd1 = new CertificationResultAdditionalSoftware();
+				softwareToAdd1.setJustification("you need it");
+				softwareToAdd1.setName("Microsoft Windows");
+				softwareToAdd1.setVersion("2000");
+				softwareToAdd1.setGrouping("A");
+				cert.getAdditionalSoftware().add(softwareToAdd1);
+				
+				CertificationResultAdditionalSoftware softwareToAdd2 = new CertificationResultAdditionalSoftware();
+				softwareToAdd2.setCertifiedProductId(2L);
+				softwareToAdd2.setGrouping("A");
+				cert.getAdditionalSoftware().add(softwareToAdd2);
+				
+				CertificationResultAdditionalSoftware softwareToAdd3 = new CertificationResultAdditionalSoftware();
+				softwareToAdd3.setCertifiedProductId(3L);
+				softwareToAdd3.setGrouping("B");
+				cert.getAdditionalSoftware().add(softwareToAdd3);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(3, cert.getAdditionalSoftware().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testUpdateCertificationResultAdditionalSoftwareJustification() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultAdditionalSoftware softwareToAdd = new CertificationResultAdditionalSoftware();
+				softwareToAdd.setJustification("you need it");
+				softwareToAdd.setName("Microsoft Windows");
+				softwareToAdd.setVersion("2000");
+				cert.getAdditionalSoftware().add(softwareToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//now update the justification
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultAdditionalSoftware softwareToUpdate = cert.getAdditionalSoftware().get(0);
+				softwareToUpdate.setJustification("updated justification");
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getAdditionalSoftware().size());
+				CertificationResultAdditionalSoftware added = cert.getAdditionalSoftware().get(0);
+				assertEquals("updated justification", added.getJustification());
+				assertNull(added.getCertifiedProductNumber());
+				assertNull(added.getCertifiedProductId());
+				assertEquals("Microsoft Windows", added.getName());
+				assertEquals("2000", added.getVersion());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultAdditionalSoftware() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 1L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				assertEquals(2, cert.getAdditionalSoftware().size());
+				cert.getAdditionalSoftware().remove(0);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getAdditionalSoftware().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result macra measure tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCertificationResultMacraMeasure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 7L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				MacraMeasure measure = new MacraMeasure();
+				measure.setId(1L);
+				cert.getG1MacraMeasures().add(measure);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getG1MacraMeasures().size());
+				MacraMeasure measure = cert.getG1MacraMeasures().get(0);
+				assertEquals(1, measure.getId().longValue());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultMacraMeasure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 7L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				MacraMeasure measure = new MacraMeasure();
+				measure.setId(1L);
+				cert.getG1MacraMeasures().add(measure);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the measure
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.getG1MacraMeasures().clear();
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(0, cert.getG1MacraMeasures().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result UCD process tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCertificationResultUcdProcess() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultUcdProcess ucdToAdd = new CertificationResultUcdProcess();
+				ucdToAdd.setUcdProcessId(1L);
+				cert.getUcdProcesses().add(ucdToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getUcdProcesses().size());
+				CertificationResultUcdProcess added = cert.getUcdProcesses().get(0);
+				assertEquals(1, added.getUcdProcessId().longValue());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testUpdateCertificationResultUcdProcessDetails() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultUcdProcess ucdToAdd = new CertificationResultUcdProcess();
+				ucdToAdd.setUcdProcessId(1L);
+				ucdToAdd.setUcdProcessDetails("Some details");
+				cert.getUcdProcesses().add(ucdToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//now update the details
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultUcdProcess ucdToUpdate = cert.getUcdProcesses().get(0);
+				ucdToUpdate.setUcdProcessDetails("NEW DETAILS");
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getUcdProcesses().size());
+				CertificationResultUcdProcess updated = cert.getUcdProcesses().get(0);
+				assertEquals("NEW DETAILS", updated.getUcdProcessDetails());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultUcdProcess() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultUcdProcess ucdToAdd = new CertificationResultUcdProcess();
+				ucdToAdd.setUcdProcessId(1L);
+				ucdToAdd.setUcdProcessDetails("Some details");
+				cert.getUcdProcesses().add(ucdToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the ucd
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.getUcdProcesses().clear();
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(0, cert.getUcdProcesses().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result test standard tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddExistingCertificationResultTestStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestStandard tsToAdd = new CertificationResultTestStandard();
+				tsToAdd.setTestStandardId(1L);
+				cert.getTestStandards().add(tsToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getTestStandards().size());
+				CertificationResultTestStandard added = cert.getTestStandards().get(0);
+				assertEquals(1, added.getTestStandardId().longValue());
+			}
+		}
+		assertTrue(foundCert);
+	}
+
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddNewCertificationResultTestStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestStandard tsToAdd = new CertificationResultTestStandard();
+				tsToAdd.setTestStandardName("test test standard");
+				tsToAdd.setTestStandardDescription("a very good standard");
+				cert.getTestStandards().add(tsToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getTestStandards().size());
+				CertificationResultTestStandard added = cert.getTestStandards().get(0);
+				assertNotNull(added.getTestStandardId());
+				assertEquals("test test standard", added.getTestStandardName());
+				assertEquals("a very good standard", added.getTestStandardDescription());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultTestStandard() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 1L;
+		Long certIdToUpdate = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestStandard tsToAdd = new CertificationResultTestStandard();
+				tsToAdd.setTestStandardId(1L);
+				cert.getTestStandards().add(tsToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the ucd
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.getTestStandards().clear();
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(0, cert.getTestStandards().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result test tool tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCertificationResultTestTool() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestTool toolToAdd = new CertificationResultTestTool();
+				toolToAdd.setTestToolId(1L);
+				cert.getTestToolsUsed().add(toolToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getTestToolsUsed().size());
+				CertificationResultTestTool added = cert.getTestToolsUsed().get(0);
+				assertEquals(1, added.getTestToolId().longValue());
+			}
+		}
+		assertTrue(foundCert);
+	}
+
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultTestTool() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestTool toolToAdd = new CertificationResultTestTool();
+				toolToAdd.setTestToolId(1L);
+				cert.getTestToolsUsed().add(toolToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the ucd
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.getTestToolsUsed().clear();
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(0, cert.getTestToolsUsed().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result test data tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCertificationResultTestData() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestData tdToAdd = new CertificationResultTestData();
+				tdToAdd.setAlteration("altered");
+				tdToAdd.setVersion("1.0.0");
+				cert.getTestDataUsed().add(tdToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getTestDataUsed().size());
+				CertificationResultTestData added = cert.getTestDataUsed().get(0);
+				assertEquals("altered", added.getAlteration());
+				assertEquals("1.0.0", added.getVersion());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testUpdateCertificationResultTestDataAlteration() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestData tdToAdd = new CertificationResultTestData();
+				tdToAdd.setAlteration("altered");
+				tdToAdd.setVersion("1.0.0");
+				cert.getTestDataUsed().add(tdToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//now update the details
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestData tdToUpdate = cert.getTestDataUsed().get(0);
+				tdToUpdate.setAlteration("NEW ALTERATION");
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getTestDataUsed().size());
+				CertificationResultTestData updated = cert.getTestDataUsed().get(0);
+				assertEquals("NEW ALTERATION", updated.getAlteration());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultTestData() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestData tdToAdd = new CertificationResultTestData();
+				tdToAdd.setAlteration("altered");
+				tdToAdd.setVersion("1.0.0");
+				cert.getTestDataUsed().add(tdToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the ucd
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.getTestDataUsed().clear();
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(0, cert.getTestDataUsed().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result test procedure tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddNewCertificationResultTestProcedure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestProcedure procToAdd = new CertificationResultTestProcedure();
+				procToAdd.setTestProcedureVersion("1.1.1");
+				cert.getTestProcedures().add(procToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getTestProcedures().size());
+				CertificationResultTestProcedure added = cert.getTestProcedures().get(0);
+				assertNotNull(added.getTestProcedureId());
+				assertEquals("1.1.1", added.getTestProcedureVersion());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultTestProcedure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestProcedure procToAdd = new CertificationResultTestProcedure();
+				procToAdd.setTestProcedureVersion("1.1.1");
+				cert.getTestProcedures().add(procToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the proc
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.getTestProcedures().clear();
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(0, cert.getTestProcedures().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result test functionality tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddNewCertificationResultTestFunctionality() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestFunctionality funcToAdd = new CertificationResultTestFunctionality();
+				funcToAdd.setTestFunctionalityId(2L);
+				cert.getTestFunctionality().add(funcToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(1, cert.getTestFunctionality().size());
+				CertificationResultTestFunctionality added = cert.getTestFunctionality().get(0);
+				assertEquals(2, added.getTestFunctionalityId().longValue());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCertificationResultTestFunctionality() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+		InvalidArgumentsException{
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certIdToUpdate = 11L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				CertificationResultTestFunctionality funcToAdd = new CertificationResultTestFunctionality();
+				funcToAdd.setTestFunctionalityId(2L);
+				cert.getTestFunctionality().add(funcToAdd);
+			}
+		}
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		//remove the proc
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				cert.getTestFunctionality().clear();
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCert = false;
+		for(CertificationResult cert : updatedListing.getCertificationResults()) {
+			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
+				foundCert = true;
+				assertEquals(0, cert.getTestFunctionality().size());
+			}
+		}
+		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * Certification Result test participant tests
+	 * *************************/
 	
 	@Test
 	@Transactional(readOnly = false)

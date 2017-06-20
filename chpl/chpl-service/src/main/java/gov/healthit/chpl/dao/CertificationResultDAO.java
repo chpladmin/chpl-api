@@ -28,6 +28,7 @@ public interface CertificationResultDAO {
 			Long certificationResultId);
 	public CertificationResultAdditionalSoftwareDTO addAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO dto) throws EntityCreationException;
 	public void deleteAdditionalSoftwareMapping(Long mappingId);
+	public CertificationResultAdditionalSoftwareDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO toUpdate) throws EntityRetrievalException;
 	
 	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);
 	public CertificationResultTestStandardDTO addTestStandardMapping(CertificationResultTestStandardDTO dto) throws EntityCreationException;
@@ -48,7 +49,8 @@ public interface CertificationResultDAO {
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);
 	public CertificationResultTestDataDTO addTestDataMapping(CertificationResultTestDataDTO dto) throws EntityCreationException;
 	public void deleteTestDataMapping(Long mappingId);
-	
+	public void updateTestDataMapping(CertificationResultTestDataDTO dto) throws EntityRetrievalException;
+
 	public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(Long certificationResultId);
 	public CertificationResultTestProcedureDTO addTestProcedureMapping(CertificationResultTestProcedureDTO dto) throws EntityCreationException;
 	public void deleteTestProcedureMapping(Long mappingId);
@@ -61,6 +63,7 @@ public interface CertificationResultDAO {
 	public CertificationResultUcdProcessDTO lookupUcdProcessMapping(Long certificationResultId, Long ucdProcessId);
 	public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityCreationException;
 	public void deleteUcdProcessMapping(Long mappingId);
+	public void updateUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityRetrievalException;
 	
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long taskId);

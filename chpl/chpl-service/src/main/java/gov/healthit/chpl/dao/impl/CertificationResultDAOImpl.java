@@ -23,6 +23,7 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.CertificationResultEntity;
 import gov.healthit.chpl.entity.CertificationResultG1MacraMeasureEntity;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.entity.CertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity;
 import gov.healthit.chpl.entity.CertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.CertificationResultUcdProcessEntity;
+import gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity;
 
 @Repository(value="certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {
@@ -259,6 +261,19 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		}
 	}
 	
+	public void updateUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityRetrievalException {
+		CertificationResultUcdProcessEntity toUpdate = getCertificationResultUcdProcessById(dto.getId());
+		if(toUpdate == null) {
+			throw new EntityRetrievalException("Could not find UCD process mapping with id " + dto.getId());
+		}
+		toUpdate.setUcdProcessDetails(dto.getUcdProcessDetails());
+		toUpdate.setUcdProcessId(dto.getUcdProcessId());
+		toUpdate.setLastModifiedDate(new Date());
+		toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(toUpdate);
+		entityManager.flush();
+	}
+	
 	private CertificationResultUcdProcessEntity getCertificationResultUcdProcessById(Long id) {
 		CertificationResultUcdProcessEntity entity = null;
 		
@@ -335,11 +350,31 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		}
 	}
 	
+	public CertificationResultAdditionalSoftwareDTO updateAdditionalSoftwareMapping(CertificationResultAdditionalSoftwareDTO toUpdate) throws EntityRetrievalException {
+		
+		CertificationResultAdditionalSoftwareEntity curr = getCertificationResultAdditionalSoftwareById(toUpdate.getId());
+		if(curr == null) {
+			throw new EntityRetrievalException("Could not find mapping with id " + toUpdate.getId());
+		}
+		curr.setCertifiedProductId(toUpdate.getCertifiedProductId());
+		curr.setCertificationResultId(toUpdate.getCertificationResultId());
+		curr.setGrouping(toUpdate.getGrouping());
+		curr.setJustification(toUpdate.getJustification());
+		curr.setName(toUpdate.getName());
+		curr.setVersion(toUpdate.getVersion());
+		curr.setLastModifiedDate(new Date());
+		curr.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.merge(curr);
+		entityManager.flush();
+
+		return new CertificationResultAdditionalSoftwareDTO(curr);
+	}
+	
 	private CertificationResultAdditionalSoftwareEntity getCertificationResultAdditionalSoftwareById(Long id) {
 		CertificationResultAdditionalSoftwareEntity entity = null;
 		
 		Query query = entityManager.createQuery( "from CertificationResultAdditionalSoftwareEntity "
-				+ "where (NOT deleted = true) AND (certification_result_additional_software_id = :entityid) ", 
+				+ "where (NOT deleted = true) AND (id = :entityid) ", 
 				CertificationResultAdditionalSoftwareEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationResultAdditionalSoftwareEntity> result = query.getResultList();
@@ -745,6 +780,19 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entityManager.persist(toDelete);
 			entityManager.flush();
 		}
+	}
+	
+	public void updateTestDataMapping(CertificationResultTestDataDTO dto) throws EntityRetrievalException {
+		CertificationResultTestDataEntity toUpdate = getCertificationResultTestDataById(dto.getId());
+		if(toUpdate == null) {
+			throw new EntityRetrievalException("Could not find test data mapping with id " + dto.getId());
+		}
+		toUpdate.setAlterationDescription(dto.getAlteration());
+		toUpdate.setTestDataVersion(dto.getVersion());
+		toUpdate.setLastModifiedDate(new Date());
+		toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(toUpdate);
+		entityManager.flush();
 	}
 	
 	private CertificationResultTestDataEntity getCertificationResultTestDataById(Long id) {

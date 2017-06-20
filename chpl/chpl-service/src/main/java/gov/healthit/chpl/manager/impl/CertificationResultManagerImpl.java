@@ -169,9 +169,10 @@ public class CertificationResultManagerImpl implements
 	private int updateAdditionalSoftware(CertificationResult certResult,
 			List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
 			List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware) 
-	throws EntityCreationException {
+	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
-		List<CertificationResultAdditionalSoftwareDTO> additionalSoftwareToAdd = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
+		List<CertificationResultAdditionalSoftware> additionalSoftwareToAdd = new ArrayList<CertificationResultAdditionalSoftware>();
+		List<CertificationResultAdditionalSoftwarePair> additionalSoftwareToUpdate = new ArrayList<CertificationResultAdditionalSoftwarePair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
 		
 		//figure out which additional software to add
@@ -187,34 +188,21 @@ public class CertificationResultManagerImpl implements
 			if(existingAdditionalSoftware == null || existingAdditionalSoftware.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) {
-					CertificationResultAdditionalSoftwareDTO toAdd = new CertificationResultAdditionalSoftwareDTO();
-					toAdd.setCertificationResultId(certResult.getId());
-					toAdd.setCertifiedProductId(updatedItem.getCertifiedProductId());
-					toAdd.setCertifiedProductNumber(updatedItem.getCertifiedProductNumber());
-					toAdd.setGrouping(updatedItem.getGrouping());
-					toAdd.setJustification(updatedItem.getJustification());
-					toAdd.setName(updatedItem.getName());
-					toAdd.setVersion(updatedItem.getVersion());;
-					additionalSoftwareToAdd.add(toAdd);
+					additionalSoftwareToAdd.add(updatedItem);
 				}
 			} else if(existingAdditionalSoftware.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
 				for(CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) { 
 					boolean inExistingListing = false;
 					for(CertificationResultAdditionalSoftware existingItem : existingAdditionalSoftware) {
-						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
+						if(updatedItem.matches(existingItem)) {
+							inExistingListing = true;
+							additionalSoftwareToUpdate.add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
+						}						
 					}
 					
 					if(!inExistingListing) {
-						CertificationResultAdditionalSoftwareDTO toAdd = new CertificationResultAdditionalSoftwareDTO();
-						toAdd.setCertificationResultId(certResult.getId());
-						toAdd.setCertifiedProductId(updatedItem.getCertifiedProductId());
-						toAdd.setCertifiedProductNumber(updatedItem.getCertifiedProductNumber());
-						toAdd.setGrouping(updatedItem.getGrouping());
-						toAdd.setJustification(updatedItem.getJustification());
-						toAdd.setName(updatedItem.getName());
-						toAdd.setVersion(updatedItem.getVersion());;
-						additionalSoftwareToAdd.add(toAdd);
+						additionalSoftwareToAdd.add(updatedItem);
 					}
 				}
 			}
@@ -241,8 +229,26 @@ public class CertificationResultManagerImpl implements
 		}
 		
 		numChanges = additionalSoftwareToAdd.size() + idsToRemove.size();
-		for(CertificationResultAdditionalSoftwareDTO toAdd : additionalSoftwareToAdd) {
-			certResultDAO.addAdditionalSoftwareMapping(toAdd);
+		for(CertificationResultAdditionalSoftware toAdd : additionalSoftwareToAdd) {
+			CertificationResultAdditionalSoftwareDTO toAddDto = convert(certResult.getId(), toAdd);
+			certResultDAO.addAdditionalSoftwareMapping(toAddDto);
+		}
+		
+		for(CertificationResultAdditionalSoftwarePair toUpdate : additionalSoftwareToUpdate) {
+			boolean hasChanged = false;
+			if(!ObjectUtils.equals(toUpdate.getOrig().getJustification(), toUpdate.getUpdated().getJustification()) ||
+				!ObjectUtils.equals(toUpdate.getOrig().getName(), toUpdate.getUpdated().getName()) ||
+				!ObjectUtils.equals(toUpdate.getOrig().getGrouping(), toUpdate.getUpdated().getGrouping()) ||
+				!ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion()) ||
+				!ObjectUtils.equals(toUpdate.getOrig().getCertifiedProductId(), toUpdate.getUpdated().getCertifiedProductId()) ||
+				!ObjectUtils.equals(toUpdate.getOrig().getCertifiedProductNumber(), toUpdate.getUpdated().getCertifiedProductNumber())) {
+				hasChanged = true;
+			}
+			if(hasChanged) {
+				CertificationResultAdditionalSoftwareDTO toUpdateDto = convert(certResult.getId(), toUpdate.getUpdated());
+				certResultDAO.updateAdditionalSoftwareMapping(toUpdateDto);
+				numChanges++;
+			}
 		}
 		
 		for(Long idToRemove : idsToRemove) {
@@ -343,9 +349,10 @@ public class CertificationResultManagerImpl implements
 	private int updateUcdProcesses(CertificationResult certResult,
 			List<CertificationResultUcdProcess> existingUcdProcesses,
 			List<CertificationResultUcdProcess> updatedUcdProcesses) 
-	throws EntityCreationException {
+	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
-		List<CertificationResultUcdProcessDTO> ucdToAdd = new ArrayList<CertificationResultUcdProcessDTO>();
+		List<CertificationResultUcdProcess> ucdToAdd = new ArrayList<CertificationResultUcdProcess>();
+		List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
 		
 		//figure out which ucd processes to add
@@ -368,26 +375,21 @@ public class CertificationResultManagerImpl implements
 			if(existingUcdProcesses == null || existingUcdProcesses.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultUcdProcess updatedItem : updatedUcdProcesses) {
-					CertificationResultUcdProcessDTO toAdd = new CertificationResultUcdProcessDTO();
-					toAdd.setCertificationResultId(certResult.getId());
-					toAdd.setUcdProcessId(updatedItem.getUcdProcessId());
-					toAdd.setUcdProcessDetails(updatedItem.getUcdProcessDetails());
-					ucdToAdd.add(toAdd);
+					ucdToAdd.add(updatedItem);
 				}
 			} else if(existingUcdProcesses.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
 				for(CertificationResultUcdProcess updatedItem : updatedUcdProcesses) { 
 					boolean inExistingListing = false;
 					for(CertificationResultUcdProcess existingItem : existingUcdProcesses) {
-						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
+						if(updatedItem.matches(existingItem)) {
+							inExistingListing = true;
+							ucdToUpdate.add(new CertificationResultUcdProcessPair(existingItem, updatedItem));
+						}
 					}
 					
 					if(!inExistingListing) {
-						CertificationResultUcdProcessDTO toAdd = new CertificationResultUcdProcessDTO();
-						toAdd.setCertificationResultId(certResult.getId());
-						toAdd.setUcdProcessId(updatedItem.getUcdProcessId());
-						toAdd.setUcdProcessDetails(updatedItem.getUcdProcessDetails());
-						ucdToAdd.add(toAdd);
+						ucdToAdd.add(updatedItem);
 					}
 				}
 			}
@@ -414,8 +416,26 @@ public class CertificationResultManagerImpl implements
 		}
 		
 		numChanges = ucdToAdd.size() + idsToRemove.size();
-		for(CertificationResultUcdProcessDTO toAdd : ucdToAdd) {
-			certResultDAO.addUcdProcessMapping(toAdd);
+		for(CertificationResultUcdProcess toAdd : ucdToAdd) {
+			CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
+			toAddDto.setCertificationResultId(certResult.getId());
+			toAddDto.setUcdProcessId(toAdd.getUcdProcessId());
+			toAddDto.setUcdProcessDetails(toAdd.getUcdProcessDetails());
+			certResultDAO.addUcdProcessMapping(toAddDto);
+		}
+		
+		for(CertificationResultUcdProcessPair toUpdate : ucdToUpdate) {
+			boolean hasChanged = false;
+			if(!ObjectUtils.equals(toUpdate.getOrig().getUcdProcessDetails(), 
+					toUpdate.getUpdated().getUcdProcessDetails())) {
+				hasChanged = true;
+			}
+			CertificationResultUcdProcessDTO toUpdateDto = new CertificationResultUcdProcessDTO();
+			toUpdateDto.setId(toUpdate.getOrig().getId());
+			toUpdateDto.setCertificationResultId(certResult.getId());
+			toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getUcdProcessId());
+			toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getUcdProcessDetails());
+			certResultDAO.updateUcdProcessMapping(toUpdateDto);
 		}
 		
 		for(Long idToRemove : idsToRemove) {
@@ -596,9 +616,10 @@ public class CertificationResultManagerImpl implements
 	private int updateTestData(CertificationResult certResult,
 			List<CertificationResultTestData> existingTestData,
 			List<CertificationResultTestData> updatedTestData) 
-	throws EntityCreationException {
+	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
-		List<CertificationResultTestDataDTO> testDataToAdd = new ArrayList<CertificationResultTestDataDTO>();
+		List<CertificationResultTestData> testDataToAdd = new ArrayList<CertificationResultTestData>();
+		List<CertificationResultTestDataPair> testDataToUpdate = new ArrayList<CertificationResultTestDataPair>(); 
 		List<Long> idsToRemove = new ArrayList<Long>();
 		
 		//figure out which test data to add
@@ -606,26 +627,21 @@ public class CertificationResultManagerImpl implements
 			if(existingTestData == null || existingTestData.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultTestData updatedItem : updatedTestData) {
-					CertificationResultTestDataDTO toAdd = new CertificationResultTestDataDTO();
-					toAdd.setCertificationResultId(certResult.getId());
-					toAdd.setAlteration(updatedItem.getAlteration());
-					toAdd.setVersion(updatedItem.getVersion());
-					testDataToAdd.add(toAdd);
+					testDataToAdd.add(updatedItem);
 				}
 			} else if(existingTestData.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
 				for(CertificationResultTestData updatedItem : updatedTestData) { 
 					boolean inExistingListing = false;
 					for(CertificationResultTestData existingItem : existingTestData) {
-						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
+						if(updatedItem.matches(existingItem)) {
+							inExistingListing = true;
+							testDataToUpdate.add(new CertificationResultTestDataPair(existingItem, updatedItem));
+						}
 					}
 					
 					if(!inExistingListing) {
-						CertificationResultTestDataDTO toAdd = new CertificationResultTestDataDTO();
-						toAdd.setCertificationResultId(certResult.getId());
-						toAdd.setAlteration(updatedItem.getAlteration());
-						toAdd.setVersion(updatedItem.getVersion());
-						testDataToAdd.add(toAdd);
+						testDataToAdd.add(updatedItem);
 					}
 				}
 			}
@@ -652,8 +668,30 @@ public class CertificationResultManagerImpl implements
 		}
 		
 		numChanges = testDataToAdd.size() + idsToRemove.size();
-		for(CertificationResultTestDataDTO toAdd : testDataToAdd) {
-			certResultDAO.addTestDataMapping(toAdd);
+		for(CertificationResultTestData toAdd : testDataToAdd) {
+			CertificationResultTestDataDTO toAddDto = new CertificationResultTestDataDTO();
+			toAddDto.setCertificationResultId(certResult.getId());
+			toAddDto.setAlteration(toAdd.getAlteration());
+			toAddDto.setVersion(toAdd.getVersion());
+			certResultDAO.addTestDataMapping(toAddDto);
+		}
+		
+		for(CertificationResultTestDataPair toUpdate : testDataToUpdate) {
+			boolean hasChanged = false;
+			if(!ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration()) ||
+				!ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
+				hasChanged = true;
+			}
+			
+			if(hasChanged) {
+				CertificationResultTestDataDTO toUpdateDto = new CertificationResultTestDataDTO();
+				toUpdateDto.setId(toUpdate.getOrig().getId());
+				toUpdateDto.setCertificationResultId(certResult.getId());
+				toUpdateDto.setAlteration(toUpdate.getUpdated().getAlteration());
+				toUpdateDto.setVersion(toUpdate.getUpdated().getVersion());
+				certResultDAO.updateTestDataMapping(toUpdateDto);
+				numChanges++;
+			}
 		}
 		
 		for(Long idToRemove : idsToRemove) {
@@ -1077,6 +1115,19 @@ public class CertificationResultManagerImpl implements
 		return numChanges;
 	}
 
+	private CertificationResultAdditionalSoftwareDTO convert(Long certResultId, CertificationResultAdditionalSoftware orig) {
+		CertificationResultAdditionalSoftwareDTO result = new CertificationResultAdditionalSoftwareDTO();
+		result.setId(orig.getId());
+		result.setCertificationResultId(certResultId);
+		result.setCertifiedProductId(orig.getCertifiedProductId());
+		result.setCertifiedProductNumber(orig.getCertifiedProductNumber());
+		result.setGrouping(orig.getGrouping());
+		result.setJustification(orig.getJustification());
+		result.setName(orig.getName());
+		result.setVersion(orig.getVersion());
+		return result;
+	}
+	
 	private TestTaskDTO convert(CertificationResultTestTask task) {
 		TestTaskDTO result = new TestTaskDTO();
 		result.setId(task.getTestTaskId());
@@ -1182,6 +1233,75 @@ public class CertificationResultManagerImpl implements
 	@Override
 	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long certificationResultTaskId) {
 		return certResultDAO.getTestParticipantsForTask(certificationResultTaskId);
+	}
+	
+	private class CertificationResultAdditionalSoftwarePair {
+		private CertificationResultAdditionalSoftware orig;
+		private CertificationResultAdditionalSoftware updated;
+		
+		public CertificationResultAdditionalSoftwarePair() {}
+		public CertificationResultAdditionalSoftwarePair(CertificationResultAdditionalSoftware orig, CertificationResultAdditionalSoftware updated) {
+			this.orig = orig;
+			this.updated = updated;
+		}
+		public CertificationResultAdditionalSoftware getOrig() {
+			return orig;
+		}
+		public void setOrig(CertificationResultAdditionalSoftware orig) {
+			this.orig = orig;
+		}
+		public CertificationResultAdditionalSoftware getUpdated() {
+			return updated;
+		}
+		public void setUpdated(CertificationResultAdditionalSoftware updated) {
+			this.updated = updated;
+		}
+	}
+	
+	private class CertificationResultUcdProcessPair {
+		private CertificationResultUcdProcess orig;
+		private CertificationResultUcdProcess updated;
+		
+		public CertificationResultUcdProcessPair() {}
+		public CertificationResultUcdProcessPair(CertificationResultUcdProcess orig, CertificationResultUcdProcess updated) {
+			this.orig = orig;
+			this.updated = updated;
+		}
+		public CertificationResultUcdProcess getOrig() {
+			return orig;
+		}
+		public void setOrig(CertificationResultUcdProcess orig) {
+			this.orig = orig;
+		}
+		public CertificationResultUcdProcess getUpdated() {
+			return updated;
+		}
+		public void setUpdated(CertificationResultUcdProcess updated) {
+			this.updated = updated;
+		}
+	}
+	
+	private class CertificationResultTestDataPair {
+		private CertificationResultTestData orig;
+		private CertificationResultTestData updated;
+		
+		public CertificationResultTestDataPair() {}
+		public CertificationResultTestDataPair(CertificationResultTestData orig, CertificationResultTestData updated) {
+			this.orig = orig;
+			this.updated = updated;
+		}
+		public CertificationResultTestData getOrig() {
+			return orig;
+		}
+		public void setOrig(CertificationResultTestData orig) {
+			this.orig = orig;
+		}
+		public CertificationResultTestData getUpdated() {
+			return updated;
+		}
+		public void setUpdated(CertificationResultTestData updated) {
+			this.updated = updated;
+		}
 	}
 	
 	private class CertificationResultTestTaskPair {
