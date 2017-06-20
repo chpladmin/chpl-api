@@ -28,10 +28,10 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
 @Component("surveillanceWeeklyReportApp")
 public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightReportApp{
-	private SurveillanceOversightAllBrokenRulesCsvPresenter presenter;
-	
+    private SurveillanceOversightAllBrokenRulesCsvPresenter presenter;
+
     public SurveillanceOversightReportWeeklyApp() {
-    	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
     
 	public static void main(String[] args) throws Exception {
@@ -41,7 +41,7 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 		oversightApp.initiateSpringBeans(context);
         String downloadFolderPath = oversightApp.getDownloadFolderPath(args);
         File downloadFolder = oversightApp.getDownloadFolder(downloadFolderPath);
-		
+
         // Get ACBs for ONC-ACB emails
 		List<CertificationBodyDTO> acbs = oversightApp.getCertificationBodyDAO().findAll(false);
 		// Get all recipients with all subscriptions
@@ -133,11 +133,11 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
     	} 
 	}
 
-	private SurveillanceOversightAllBrokenRulesCsvPresenter getPresenter() {
-		return presenter;
-	}
+    private SurveillanceOversightAllBrokenRulesCsvPresenter getPresenter() {
+        return presenter;
+    }
 
-	private void setPresenter(SurveillanceOversightAllBrokenRulesCsvPresenter presenter) {
-		this.presenter = presenter;
-	}
+    private void setPresenter(SurveillanceOversightAllBrokenRulesCsvPresenter presenter) {
+        this.presenter = presenter;
+    }
 }

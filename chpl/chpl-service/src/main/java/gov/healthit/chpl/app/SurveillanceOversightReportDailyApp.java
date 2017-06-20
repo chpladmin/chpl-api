@@ -36,7 +36,7 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
 		oversightApp.initiateSpringBeans(context);
         String downloadFolderPath = oversightApp.getDownloadFolderPath(args);
         File downloadFolder = oversightApp.getDownloadFolder(downloadFolderPath);
-        
+
         // Get ACBs for ONC-ACB emails
      	List<CertificationBodyDTO> acbs = oversightApp.getCertificationBodyDAO().findAll(false);
      	// Get all recipients with all subscriptions
@@ -149,11 +149,11 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
     	}
 	}
 
-	private SurveillanceOversightNewBrokenRulesCsvPresenter getPresenter() {
-		return presenter;
-	}
+    private SurveillanceOversightNewBrokenRulesCsvPresenter getPresenter() {
+        return presenter;
+    }
 
-	private void setPresenter(SurveillanceOversightNewBrokenRulesCsvPresenter presenter) {
-		this.presenter = presenter;
-	}
+    private void setPresenter(SurveillanceOversightNewBrokenRulesCsvPresenter presenter) {
+        this.presenter = presenter;
+    }
 }

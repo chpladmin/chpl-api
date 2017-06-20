@@ -1,38 +1,31 @@
 package gov.healthit.chpl.app;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.support.AbstractApplicationContext;
 
-import gov.healthit.chpl.app.surveillance.presenter.SurveillanceOversightNewBrokenRulesCsvPresenter;
-import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.NotificationDAO;
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
-import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
-import gov.healthit.chpl.dto.notification.SubscriptionDTO;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public abstract class SurveillanceOversightReportApp extends NotificationEmailerReportApp {	
 	private static final Logger logger = LogManager.getLogger(SurveillanceOversightReportApp.class);
 	
+	 protected static final String TRIGGER_DESCRIPTIONS = "<h4>Description of Surveillance Rules</h4>" +
+        "<ol>" +
+        "<li>" + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": " + SurveillanceOversightRule.LONG_SUSPENSION.getDescription() + "</li>" +
+        "<li>" + SurveillanceOversightRule.CAP_NOT_APPROVED.getTitle() + ": " + SurveillanceOversightRule.CAP_NOT_APPROVED.getDescription() + "</li>" +
+        "<li>" + SurveillanceOversightRule.CAP_NOT_STARTED.getTitle() + ": " + SurveillanceOversightRule.CAP_NOT_STARTED.getDescription() + "</li>" +
+        "<li>" + SurveillanceOversightRule.CAP_NOT_COMPLETED.getTitle() + ": " + SurveillanceOversightRule.CAP_NOT_COMPLETED.getDescription() + "</li>" +
+        "<li>" + SurveillanceOversightRule.CAP_NOT_CLOSED.getTitle() + ": " + SurveillanceOversightRule.CAP_NOT_CLOSED.getDescription() + "</li>" +
+        "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getDescription() + "</li>" +
+        "</ol>";
+	 
 	public SurveillanceOversightReportApp(){
 		super();
 	}
@@ -68,6 +61,8 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
         	htmlMessage += "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE) + "</li>";
         	htmlMessage += "</ul>";
         }
+        
+        htmlMessage += this.TRIGGER_DESCRIPTIONS;
         return htmlMessage;
 	}
 

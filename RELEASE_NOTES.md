@@ -11,6 +11,7 @@ _Backwards compatibility breaking changes_
 * Changed ICS code from a string to an integer
 * Added validation to warn on missing parents if ICS is indicated
 * Added an additional app that runs to send out notifications of ICS inconsistencies (need to add cron for that)
+* Added description of surveillance triggers to emails
 
 ---
 
