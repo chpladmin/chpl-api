@@ -125,7 +125,7 @@ public class NotificationDAOTest extends TestCase {
 		List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(null);
 		assertNotNull(types);
 		assertTrue(types.size() > 0);
-		assertEquals(4, types.size());
+		assertEquals(6, types.size());
 		for(NotificationTypeDTO type : types) {
 			assertNotNull(type.getPermissions());
 			assertTrue(type.getPermissions().size() > 0);
@@ -142,7 +142,7 @@ public class NotificationDAOTest extends TestCase {
 		List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(adminUser.getPermissions());
 		assertNotNull(types);
 		assertTrue(types.size() > 0);
-		assertEquals(4, types.size());
+		assertEquals(6, types.size());
 		for(NotificationTypeDTO type : types) {
 			assertNotNull(type.getPermissions());
 			assertTrue(type.getPermissions().size() > 0);
@@ -159,7 +159,7 @@ public class NotificationDAOTest extends TestCase {
 		List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(testUser3.getPermissions());
 		assertNotNull(types);
 		assertTrue(types.size() > 0);
-		assertEquals(2, types.size());
+		assertEquals(3, types.size());
 		for(NotificationTypeDTO type : types) {
 			assertNotNull(type.getPermissions());
 			assertTrue(type.getPermissions().size() > 0);

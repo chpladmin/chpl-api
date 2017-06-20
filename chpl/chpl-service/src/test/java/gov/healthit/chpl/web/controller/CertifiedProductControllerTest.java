@@ -145,6 +145,7 @@ public class CertifiedProductControllerTest {
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
+		updateRequest.getCertifyingBody().put("id", "-1");
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -471,6 +472,7 @@ public class CertifiedProductControllerTest {
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
+		updateRequest.getCertifyingBody().put("id", "-1");
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -588,6 +590,7 @@ public class CertifiedProductControllerTest {
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
+		updateRequest.getCertifyingBody().put("id", "-1");
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
