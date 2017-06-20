@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Minor Features
+* Added description of surveillance triggers to emails
+
+---
+
 ## Version 11.0.0
 _19 June 2017_
 
