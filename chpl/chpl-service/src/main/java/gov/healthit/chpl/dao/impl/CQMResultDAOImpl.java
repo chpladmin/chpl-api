@@ -14,8 +14,8 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
-import gov.healthit.chpl.entity.CQMResultCriteriaEntity;
-import gov.healthit.chpl.entity.CQMResultEntity;
+import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
+import gov.healthit.chpl.entity.listing.CQMResultEntity;
 
 @Repository(value="cqmResultDAO")
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {

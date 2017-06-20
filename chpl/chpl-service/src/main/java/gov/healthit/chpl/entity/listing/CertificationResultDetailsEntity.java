@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;

@@ -7,6 +7,7 @@ import java.util.Set;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.NotificationDAO;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
@@ -123,7 +125,32 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 			}
 		}
 		
-		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(null, authorityNames, acbIds);
+		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(null, authorityNames, null, acbIds);
+		List<RecipientWithSubscriptionsDTO> results = new ArrayList<RecipientWithSubscriptionsDTO>();
+		for(RecipientWithSubscriptionsEntity mapping : allMappings) {
+			RecipientWithSubscriptionsDTO dto = new RecipientWithSubscriptionsDTO(mapping);
+			results.add(dto);
+		}
+		return results;
+	}
+	
+	@Transactional
+	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappingsForType(Set<GrantedPermission> permissions, 
+			NotificationTypeConcept notificationType, List<CertificationBodyDTO> acbs) {
+		List<String> authorityNames = new ArrayList<String>();
+		if(permissions != null) {
+			for(GrantedPermission perm : permissions) {
+				authorityNames.add(perm.getAuthority());
+			}
+		}
+		List<Long> acbIds = new ArrayList<Long>();
+		if(acbs != null) {
+			for(CertificationBodyDTO acb : acbs) {
+				acbIds.add(acb.getId());
+			}
+		}
+		
+		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(null, authorityNames, notificationType.getName(), acbIds);
 		List<RecipientWithSubscriptionsDTO> results = new ArrayList<RecipientWithSubscriptionsDTO>();
 		for(RecipientWithSubscriptionsEntity mapping : allMappings) {
 			RecipientWithSubscriptionsDTO dto = new RecipientWithSubscriptionsDTO(mapping);
@@ -147,7 +174,7 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 			}
 		}
 		
-		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(recipientId, authorityNames, acbIds);
+		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(recipientId, authorityNames, null, acbIds);
 		if(allMappings != null && allMappings.size() > 0) {
 			return new RecipientWithSubscriptionsDTO(allMappings.get(0));
 		}
@@ -225,7 +252,7 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		entityManager.clear();
 	}
 	
-	private List<RecipientWithSubscriptionsEntity> findRecipientsWithNotifications(Long recipId, List<String> authorityNames, List<Long> acbIds) {
+	private List<RecipientWithSubscriptionsEntity> findRecipientsWithNotifications(Long recipId, List<String> authorityNames, String notificationTypeName, List<Long> acbIds) {
 		String hql = "SELECT DISTINCT recip " 
 				+ "FROM RecipientWithSubscriptionsEntity recip "
 				+ "LEFT OUTER JOIN FETCH recip.subscriptions subs "
@@ -240,6 +267,9 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		if(authorityNames != null && authorityNames.size() > 0) {
 			hql += " AND perm.authority IN (:authorities) ";
 		}
+		if(!StringUtils.isEmpty(notificationTypeName)) {
+			hql += " AND UPPER(nt.name) = :notificationType";
+		}
 		if(acbIds != null && acbIds.size() > 0) {
 			hql += " AND acb.id IN (:acbIds) ";
 		}
@@ -250,6 +280,9 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		}
 		if(authorityNames != null && authorityNames.size() > 0) {
 			query.setParameter("authorities", authorityNames);
+		}
+		if(!StringUtils.isEmpty(notificationTypeName)) { 
+			query.setParameter("notificationType", notificationTypeName.toUpperCase());
 		}
 		if(acbIds != null && acbIds.size() > 0) {
 			query.setParameter("acbIds", acbIds);

@@ -13,7 +13,7 @@ import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 
 @Repository(value="certifiedProductTargetedUserDao")
 public class CertifiedProductTargetedUserDAOImpl extends BaseDAOImpl 

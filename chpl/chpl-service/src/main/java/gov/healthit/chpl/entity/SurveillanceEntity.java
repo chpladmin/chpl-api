@@ -18,6 +18,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+
 
 @Entity
 @Table(name = "surveillance")

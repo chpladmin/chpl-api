@@ -1,35 +1,43 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.TargetedUserEntity;
 
 
 @Entity
-@Table(name = "certification_result_test_data")
-public class CertificationResultTestDataEntity {
+@Table(name = "certified_product_targeted_user")
+public class CertifiedProductTargetedUserEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certification_result_test_data_id")
+	@Column(name = "certified_product_targeted_user_id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
-	private Long certificationResultId;
+	@Column( name = "certified_product_id", nullable = false  )
+	private Long certifiedProductId;
+
+	@Basic( optional = false )
+	@Column( name = "targeted_user_id", nullable = false  )
+	private Long targetedUserId;
 	
-	@Column(name = "version")
-	private String testDataVersion;
-	
-	@Column(name = "alteration")
-	private String alterationDescription;
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "targeted_user_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private TargetedUserEntity targetedUser;
 	
 	public Long getId() {
 		return id;
@@ -39,29 +47,12 @@ public class CertificationResultTestDataEntity {
 		this.id = id;
 	}
 
-	public Long getCertificationResultId() {
-		return certificationResultId;
+	public Long getCertifiedProductId() {
+		return certifiedProductId;
 	}
 
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
-	}
-
-	
-	public String getTestDataVersion() {
-		return testDataVersion;
-	}
-
-	public void setTestDataVersion(String testDataVersion) {
-		this.testDataVersion = testDataVersion;
-	}
-
-	public String getAlterationDescription() {
-		return alterationDescription;
-	}
-
-	public void setAlterationDescription(String alterationDescription) {
-		this.alterationDescription = alterationDescription;
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
 	}
 
 
@@ -104,5 +95,21 @@ public class CertificationResultTestDataEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public Long getTargetedUserId() {
+		return targetedUserId;
+	}
+
+	public void setTargetedUserId(Long targetedUserId) {
+		this.targetedUserId = targetedUserId;
+	}
+
+	public TargetedUserEntity getTargetedUser() {
+		return targetedUser;
+	}
+
+	public void setTargetedUser(TargetedUserEntity targetedUser) {
+		this.targetedUser = targetedUser;
 	}
 }

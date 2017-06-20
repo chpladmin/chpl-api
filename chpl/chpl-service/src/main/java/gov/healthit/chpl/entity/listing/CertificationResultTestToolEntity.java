@@ -1,8 +1,6 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,38 +10,42 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.TestToolEntity;
+
 
 @Entity
-@Table(name = "certification_result_test_task")
-public class CertificationResultTestTaskEntity {
+@Table(name = "certification_result_test_tool")
+public class CertificationResultTestToolEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column(name = "certification_result_test_task_id")
+	@Basic(optional = false)
+	@Column(name = "certification_result_test_tool_id")
 	private Long id;
 	
-	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
+	@Basic(optional = true)
+	@Column(name = "certification_result_id", nullable = false)
 	private Long certificationResultId;
 	
-	@Column(name = "test_task_id")
-	private Long testTaskId;
+	@Column(name = "test_tool_id")
+	private Long testToolId;
 	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private TestTaskEntity testTask;
+	@Column(name = "version")
+	private String version;
 	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "certificationResultTestTaskId"  )
-	@Basic( optional = false )
-	@Column( name = "certification_result_test_task_id", nullable = false  )
-	private Set<CertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<CertificationResultTestTaskParticipantEntity>();
+	@Basic(optional = true)
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "test_tool_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private TestToolEntity testTool;
 	
+	@Basic(optional = true)
+	@ManyToOne(targetEntity = CertificationResultEntity.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_result_id", nullable = false, insertable = false, updatable = false)
+	private CertificationResultEntity certificationResult;
 	
 	public Long getId() {
 		return id;
@@ -61,6 +63,22 @@ public class CertificationResultTestTaskEntity {
 		this.certificationResultId = certificationResultId;
 	}
 
+	public Long getTestToolId() {
+		return testToolId;
+	}
+
+	public void setTestToolId(Long testToolId) {
+		this.testToolId = testToolId;
+	}
+
+	public TestToolEntity getTestTool() {
+		return testTool;
+	}
+
+	public void setTestTool(TestToolEntity testTool) {
+		this.testTool = testTool;
+	}
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
@@ -102,27 +120,19 @@ public class CertificationResultTestTaskEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	public Long getTestTaskId() {
-		return testTaskId;
+	public String getVersion() {
+		return version;
 	}
 
-	public void setTestTaskId(Long testTaskId) {
-		this.testTaskId = testTaskId;
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
-	public TestTaskEntity getTestTask() {
-		return testTask;
+	public CertificationResultEntity getCertificationResult() {
+		return certificationResult;
 	}
 
-	public void setTestTask(TestTaskEntity testTaskEntity) {
-		this.testTask = testTaskEntity;
-	}
-
-	public Set<CertificationResultTestTaskParticipantEntity> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(Set<CertificationResultTestTaskParticipantEntity> testParticipants) {
-		this.testParticipants = testParticipants;
+	public void setCertificationResult(CertificationResultEntity certificationResult) {
+		this.certificationResult = certificationResult;
 	}
 }

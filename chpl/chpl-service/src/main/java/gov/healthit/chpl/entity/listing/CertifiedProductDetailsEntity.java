@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
@@ -12,6 +12,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+
+import gov.healthit.chpl.entity.AttestationType;
+import gov.healthit.chpl.entity.ProductEntity;
 
 
 @Entity
@@ -36,7 +39,7 @@ public class CertifiedProductDetailsEntity {
     private String versionCode;
     
     @Column(name = "ics_code")
-    private String icsCode;
+    private Integer icsCode;
     
     @Column(name = "additional_software_code")
     private String additionalSoftwareCode;
@@ -544,11 +547,11 @@ public class CertifiedProductDetailsEntity {
 		this.developerCode = developerCode;
 	}
 
-	public String getIcsCode() {
+	public Integer getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(String icsCode) {
+	public void setIcsCode(Integer icsCode) {
 		this.icsCode = icsCode;
 	}
 	

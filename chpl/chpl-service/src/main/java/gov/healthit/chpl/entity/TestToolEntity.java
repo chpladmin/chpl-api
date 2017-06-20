@@ -15,6 +15,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
 
 
 @Entity

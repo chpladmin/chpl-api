@@ -13,7 +13,7 @@ import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
-import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity;
 
 @Repository(value="certifiedProductAccessibilityStandardDao")
 public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl 

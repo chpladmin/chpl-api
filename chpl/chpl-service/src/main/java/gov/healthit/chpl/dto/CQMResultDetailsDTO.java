@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.entity.CQMResultDetailsEntity;
+import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
 
 public class CQMResultDetailsDTO implements Serializable {
 	private static final long serialVersionUID = 7190018955877689390L;

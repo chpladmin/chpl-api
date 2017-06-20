@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
@@ -13,31 +13,36 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.TestParticipantEntity;
+
 
 @Entity
-@Table(name = "certification_result_ucd_process")
-public class CertificationResultUcdProcessEntity {
+@Table(name = "certification_result_test_task_participant")
+public class CertificationResultTestTaskParticipantEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certification_result_ucd_process_id")
+	@Column(name = "certification_result_test_task_participant_id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "certification_result_id", nullable = false  )
-	private Long certificationResultId;
+	@Column(name = "certification_result_test_task_id", nullable = false )	
+	private Long certificationResultTestTaskId;
+
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_result_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private CertificationResultTestTaskEntity certTestTask;
 	
-	@Column(name = "ucd_process_id")
-	private Long ucdProcessId;
-	
-	@Column(name = "ucd_process_details")
-	private String ucdProcessDetails;
+	@Basic( optional = false )
+	@Column(name = "test_participant_id", nullable = false )	
+	private Long testParticipantId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "ucd_process_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private UcdProcessEntity ucdProcess;
+	@JoinColumn(name = "test_participant_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private TestParticipantEntity testParticipant;
 	
 	public Long getId() {
 		return id;
@@ -47,14 +52,6 @@ public class CertificationResultUcdProcessEntity {
 		this.id = id;
 	}
 
-	public Long getCertificationResultId() {
-		return certificationResultId;
-	}
-
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
-	}
-	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
@@ -96,27 +93,35 @@ public class CertificationResultUcdProcessEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	public Long getUcdProcessId() {
-		return ucdProcessId;
+	public Long getTestParticipantId() {
+		return testParticipantId;
 	}
 
-	public void setUcdProcessId(Long ucdProcessId) {
-		this.ucdProcessId = ucdProcessId;
+	public void setTestParticipantId(Long testParticipantId) {
+		this.testParticipantId = testParticipantId;
 	}
 
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
+	public TestParticipantEntity getTestParticipant() {
+		return testParticipant;
 	}
 
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
+	public void setTestParticipant(TestParticipantEntity testParticipantEntity) {
+		this.testParticipant = testParticipantEntity;
 	}
 
-	public UcdProcessEntity getUcdProcess() {
-		return ucdProcess;
+	public Long getCertificationResultTestTaskId() {
+		return certificationResultTestTaskId;
 	}
 
-	public void setUcdProcess(UcdProcessEntity ucdProcess) {
-		this.ucdProcess = ucdProcess;
+	public void setCertificationResultTestTaskId(Long certificationResultTestTaskId) {
+		this.certificationResultTestTaskId = certificationResultTestTaskId;
+	}
+
+	public CertificationResultTestTaskEntity getCertTestTask() {
+		return certTestTask;
+	}
+
+	public void setCertTestTask(CertificationResultTestTaskEntity certTestTask) {
+		this.certTestTask = certTestTask;
 	}
 }

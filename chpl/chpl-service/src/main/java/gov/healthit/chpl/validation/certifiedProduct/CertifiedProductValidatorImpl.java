@@ -2,7 +2,9 @@ package gov.healthit.chpl.validation.certifiedProduct;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -14,14 +16,17 @@ import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -43,13 +48,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Autowired CertificationBodyDAO acbDao;
 	@Autowired DeveloperDAO developerDao;
 	@Autowired TestToolDAO testToolDao;
+	@Autowired ListingGraphDAO inheritanceDao;
 	
 	@Autowired
 	protected CertificationResultRules certRules;
 	
 	protected Boolean hasIcsConflict;
 	
-	protected String icsCode;
+	protected Integer icsCode;
 	
 	Pattern urlRegex;
 	
@@ -71,10 +77,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Override
 	public boolean validateProductCodeCharacters(String chplProductNumber) {
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
-		if(uniqueIdParts != null && uniqueIdParts.length == CHPL_PRODUCT_ID_PARTS) {
+		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			
 			//validate that these pieces match up with data
-			String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
+			String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
 			if(StringUtils.isEmpty(productCode) || productCode.length() > 16 || !productCode.matches("^\\w+$")) {
 				return false;
 			}
@@ -84,7 +90,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	
 	private void updateChplProductNumber(CertifiedProductSearchDetails product, int productNumberIndex, String newValue) {
 		String[] uniqueIdParts = product.getChplProductNumber().split("\\.");
-		if(uniqueIdParts != null && uniqueIdParts.length == CHPL_PRODUCT_ID_PARTS) {
+		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			String newChplProductCode = "";
 			for(int idx = 0; idx < uniqueIdParts.length; idx++) {
 				if(idx == productNumberIndex) {
@@ -105,20 +111,26 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	public void validate(PendingCertifiedProductDTO product) {
 		String uniqueId = product.getUniqueId();
 		String[] uniqueIdParts = uniqueId.split("\\.");
-		if(uniqueIdParts == null || uniqueIdParts.length != CHPL_PRODUCT_ID_PARTS) {
-			product.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have " + CHPL_PRODUCT_ID_PARTS + " parts separated by '.'");
+		if(uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+			product.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have " + CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS + " parts separated by '.'");
 			return;
 		} 
 		//validate that these pieces match up with data
-		String editionCode = uniqueIdParts[EDITION_CODE_INDEX];
-		String atlCode = uniqueIdParts[ATL_CODE_INDEX];
-		String acbCode = uniqueIdParts[ACB_CODE_INDEX];
-		String developerCode = uniqueIdParts[DEVELOPER_CODE_INDEX];
-		String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
-		String versionCode = uniqueIdParts[VERSION_CODE_INDEX];
-		icsCode = uniqueIdParts[ICS_CODE_INDEX];
-		String additionalSoftwareCode = uniqueIdParts[ADDITIONAL_SOFTWARE_CODE_INDEX];
-		String certifiedDateCode = uniqueIdParts[CERTIFIED_DATE_CODE_INDEX];
+		String editionCode = uniqueIdParts[CertifiedProductDTO.EDITION_CODE_INDEX];
+		String atlCode = uniqueIdParts[CertifiedProductDTO.ATL_CODE_INDEX];
+		String acbCode = uniqueIdParts[CertifiedProductDTO.ACB_CODE_INDEX];
+		String developerCode = uniqueIdParts[CertifiedProductDTO.DEVELOPER_CODE_INDEX];
+		String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
+		String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
+		
+		String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
+		if(StringUtils.isEmpty(icsCodePart) || !icsCodePart.matches("^\\d+$")) {
+			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+		} else {
+			icsCode = new Integer(icsCodePart);
+		}
+		String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
+		String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 		
 		try {
 			CertificationEditionDTO certificationEdition = certEditionDao.getById(product.getCertificationEditionId());
@@ -192,19 +204,18 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
 			product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 		}
-		
-		if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
-			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
-		}
-			
+	
 		hasIcsConflict = false;
-		if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
-			product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
-			hasIcsConflict = true;
-		} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
-			product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
-			hasIcsConflict = true;
+		if(icsCode != null) {
+			if(icsCode.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
+				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
+				hasIcsConflict = true;
+			} else if(icsCode.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
+				product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
+				hasIcsConflict = true;
+			}
 		}
+		
 		if(additionalSoftwareCode.equals("0")) {
 			boolean hasAS = false;
 			for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -273,14 +284,19 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		//if it's a new product, check the id parts
 		String uniqueId = product.getChplProductNumber();
 		String[] uniqueIdParts = uniqueId.split("\\.");
-		if(uniqueIdParts != null && uniqueIdParts.length == CHPL_PRODUCT_ID_PARTS) {
+		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			
 			//validate that these pieces match up with data
-			String productCode = uniqueIdParts[PRODUCT_CODE_INDEX];
-			String versionCode = uniqueIdParts[VERSION_CODE_INDEX];
-			icsCode = uniqueIdParts[ICS_CODE_INDEX];
-			String additionalSoftwareCode = uniqueIdParts[ADDITIONAL_SOFTWARE_CODE_INDEX];
-			String certifiedDateCode = uniqueIdParts[CERTIFIED_DATE_CODE_INDEX];
+			String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
+			String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
+			String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
+			if(StringUtils.isEmpty(icsCodePart) || !icsCodePart.matches("^\\d+$")) {
+				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+			} else {
+				icsCode = new Integer(icsCodePart);
+			}
+			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
+			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 			
 			try {
 				if(product.getDeveloper() != null && product.getDeveloper().getDeveloperId() != null) {
@@ -308,15 +324,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
 			}
 			
-			if(StringUtils.isEmpty(icsCode) || !icsCode.matches("^\\d+$")) {
-				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
-			}
-			
 			hasIcsConflict = false;
-			if(icsCode.equals("0") && product.getIcs().equals(Boolean.TRUE)) {
-				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
-				hasIcsConflict = true;
-			} else if(!icsCode.equals("0") && product.getIcs().equals(Boolean.FALSE)) {
+			if(icsCode != null && icsCode.intValue() == 0) {
+				if(product.getIcs() != null && product.getIcs().getParents() != null && 
+						product.getIcs().getParents().size() > 0) {
+					product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
+				} 
+					
+				if(product.getIcs() != null && product.getIcs().getInherits() != null && 
+						product.getIcs().getInherits().equals(Boolean.TRUE)) {
+					product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+					hasIcsConflict = true;
+				}
+			} else if(product.getIcs() == null || product.getIcs().getInherits() == null ||
+					product.getIcs().getInherits().equals(Boolean.FALSE) && 
+					icsCode != null && icsCode.intValue() > 0) {
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 				hasIcsConflict = true;
 			}
@@ -332,7 +354,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 				String desiredAdditionalSoftwareCode = hasAS ? "1" : "0";
 				if(!additionalSoftwareCode.equals(desiredAdditionalSoftwareCode)) {
-					updateChplProductNumber(product, ADDITIONAL_SOFTWARE_CODE_INDEX, desiredAdditionalSoftwareCode);
+					updateChplProductNumber(product, CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX, desiredAdditionalSoftwareCode);
 					productIdChanged = true;
 				}
 			}
@@ -342,7 +364,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			String desiredCertificationDateCode = idDateFormat.format(product.getCertificationDate());
 			if(!certifiedDateCode.equals(desiredCertificationDateCode)) {
 				//change the certified date code to match the new certification date
-				updateChplProductNumber(product, CERTIFIED_DATE_CODE_INDEX, desiredCertificationDateCode);
+				updateChplProductNumber(product, CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX, desiredCertificationDateCode);
 				productIdChanged = true;
 			}
 		}
