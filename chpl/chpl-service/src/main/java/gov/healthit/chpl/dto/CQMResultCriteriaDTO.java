@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.CQMResultCriteriaEntity;
+import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
 
 public class CQMResultCriteriaDTO implements Serializable {
 	private static final long serialVersionUID = 8485439145849298419L;

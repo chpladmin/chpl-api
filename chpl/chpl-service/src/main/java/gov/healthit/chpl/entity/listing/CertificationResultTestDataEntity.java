@@ -1,41 +1,35 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "certified_product_accessibility_standard")
-public class CertifiedProductAccessibilityStandardEntity {
+@Table(name = "certification_result_test_data")
+public class CertificationResultTestDataEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certified_product_accessibility_standard_id")
+	@Column(name = "certification_result_test_data_id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "certified_product_id", nullable = false  )
-	private Long certifiedProductId;
-
-	@Basic( optional = false )
-	@Column( name = "accessibility_standard_id", nullable = false  )
-	private Long accessibilityStandardId;
+	@Column( name = "certification_result_id", nullable = false  )
+	private Long certificationResultId;
 	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "accessibility_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private AccessibilityStandardEntity accessibilityStandard;
+	@Column(name = "version")
+	private String testDataVersion;
+	
+	@Column(name = "alteration")
+	private String alterationDescription;
 	
 	public Long getId() {
 		return id;
@@ -45,12 +39,29 @@ public class CertifiedProductAccessibilityStandardEntity {
 		this.id = id;
 	}
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
+	public Long getCertificationResultId() {
+		return certificationResultId;
 	}
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
+	public void setCertificationResultId(Long certificationResultId) {
+		this.certificationResultId = certificationResultId;
+	}
+
+	
+	public String getTestDataVersion() {
+		return testDataVersion;
+	}
+
+	public void setTestDataVersion(String testDataVersion) {
+		this.testDataVersion = testDataVersion;
+	}
+
+	public String getAlterationDescription() {
+		return alterationDescription;
+	}
+
+	public void setAlterationDescription(String alterationDescription) {
+		this.alterationDescription = alterationDescription;
 	}
 
 
@@ -59,7 +70,7 @@ public class CertifiedProductAccessibilityStandardEntity {
 	protected Date creationDate;
 	
 	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
+	@Column( nullable = false  )
 	protected Boolean deleted;
 	
 	@Basic( optional = false )
@@ -93,21 +104,5 @@ public class CertifiedProductAccessibilityStandardEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
-	}
-
-	public Long getAccessibilityStandardId() {
-		return accessibilityStandardId;
-	}
-
-	public void setAccessibilityStandardId(Long accessibilityStandardId) {
-		this.accessibilityStandardId = accessibilityStandardId;
-	}
-
-	public AccessibilityStandardEntity getAccessibilityStandard() {
-		return accessibilityStandard;
-	}
-
-	public void setAccessibilityStandard(AccessibilityStandardEntity accessibilityStandard) {
-		this.accessibilityStandard = accessibilityStandard;
 	}
 }

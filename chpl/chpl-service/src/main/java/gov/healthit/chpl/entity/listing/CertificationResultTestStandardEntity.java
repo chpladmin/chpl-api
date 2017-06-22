@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
@@ -13,29 +13,30 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.TestStandardEntity;
+
 
 @Entity
-@Table(name = "certified_product_targeted_user")
-public class CertifiedProductTargetedUserEntity {
+@Table(name = "certification_result_test_standard")
+public class CertificationResultTestStandardEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certified_product_targeted_user_id")
+	@Column(name = "certification_result_test_standard_id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "certified_product_id", nullable = false  )
-	private Long certifiedProductId;
-
-	@Basic( optional = false )
-	@Column( name = "targeted_user_id", nullable = false  )
-	private Long targetedUserId;
+	@Column( name = "certification_result_id", nullable = false  )
+	private Long certificationResultId;
+	
+	@Column(name = "test_standard_id")
+	private Long testStandardId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "targeted_user_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private TargetedUserEntity targetedUser;
+	@JoinColumn(name = "test_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private TestStandardEntity testStandard;
 	
 	public Long getId() {
 		return id;
@@ -45,15 +46,30 @@ public class CertifiedProductTargetedUserEntity {
 		this.id = id;
 	}
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
+	public Long getCertificationResultId() {
+		return certificationResultId;
 	}
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
+	public void setCertificationResultId(Long certificationResultId) {
+		this.certificationResultId = certificationResultId;
 	}
 
+	public Long getTestStandardId() {
+		return testStandardId;
+	}
 
+	public void setTestStandardId(Long testStandardId) {
+		this.testStandardId = testStandardId;
+	}
+
+	public TestStandardEntity getTestStandard() {
+		return testStandard;
+	}
+
+	public void setTestStandard(TestStandardEntity testStandard) {
+		this.testStandard = testStandard;
+	}
+	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
@@ -93,21 +109,5 @@ public class CertifiedProductTargetedUserEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
-	}
-
-	public Long getTargetedUserId() {
-		return targetedUserId;
-	}
-
-	public void setTargetedUserId(Long targetedUserId) {
-		this.targetedUserId = targetedUserId;
-	}
-
-	public TargetedUserEntity getTargetedUser() {
-		return targetedUser;
-	}
-
-	public void setTargetedUser(TargetedUserEntity targetedUser) {
-		this.targetedUser = targetedUser;
 	}
 }

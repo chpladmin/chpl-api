@@ -27,7 +27,6 @@ oversightEmailDailySubject=Daily Surveillance Broken Rules Alert(LOCAL)
 oversightEmailDailyHtmlMessage=<h3>ONC Daily Surveillance Report</h3>
 oversightEmailDailyFileName=surveillance-oversight-daily-report.csv
 oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day</p>
-
 oversightEmailAcbDailyHtmlMessage=<h3>ONC-ACB Daily Surveillance Report</h3>
 
 #oversight weekly email properties
@@ -35,8 +34,14 @@ oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert(LOCAL)
 oversightEmailWeeklyHtmlMessage=<h3>ONC Weekly Surveillance Report</h3>
 oversightEmailWeeklyFileName=surveillance-oversight-weekly-report.csv
 oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken</p>
-
 oversightEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly Surveillance Report</h3>
+
+#inheritance report weekly email properties
+inheritanceReportEmailWeeklySubject=Weekly ICS Validation Report (LOCAL)
+inheritanceReportEmailWeeklyHtmlMessage=<h3>ONC Weekly ICS Validation Report</h3>
+inheritanceReportEmailWeeklyFileName=inheritance-validation-weekly-report.csv
+inheritanceReportEmailWeeklyNoContent=<p>No listings were found that do not meet ICS requirements.</p>
+inheritanceReportEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly ICS Validation Report</h3>
 
 #schema download file properties
 schemaXmlName=listingSchema.xsd

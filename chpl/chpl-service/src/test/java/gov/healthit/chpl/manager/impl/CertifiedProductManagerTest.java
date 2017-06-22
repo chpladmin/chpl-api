@@ -40,6 +40,7 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -117,7 +118,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		cpManager.update(1L, cp, toUpdate);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -138,11 +140,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
 			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -167,11 +170,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
 			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -196,10 +200,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setBanDeveloper(true);
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -227,10 +232,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(beforeStatus.getId());
 		
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setBanDeveloper(false);
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO afterDev = devManager.getById(-1L);
 		assertNotNull(afterDev);
@@ -249,9 +255,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+
 		cp.setCertificationStatusId(stat.getId());
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		cpManager.update(1L, cp, toUpdate);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -272,11 +280,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
 			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-			cpManager.update(1L, cp, toUpdate);
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -498,7 +508,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
 		
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
-		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC13.36.1.1.160402", 20L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC13.36.2.1.160402", 20L);
 		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.EIC10.99.1.1.160403", 30L);
 		muuSet.add(u1);
 		muuSet.add(u2);
@@ -507,7 +517,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
 		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC13.36.1.1.160402"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC13.36.2.1.160402"));
 		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 		assertTrue(results.getErrors().get(0).getError() != null);
 		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.EIC10.99.1.1.160403"));
@@ -648,5 +658,14 @@ public class CertifiedProductManagerTest extends TestCase {
 		List<MacraMeasure> measures = cert.getG1MacraMeasures();
 		assertNotNull(measures);
 		assertEquals(0, measures.size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getListingsOwnedByProduct() {
+		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(-1L);
+		assertNotNull(listings);
+		assertEquals(4, listings.size());
 	}
 }

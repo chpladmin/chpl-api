@@ -2,8 +2,8 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.CertificationResultG1MacraMeasureEntity;
-import gov.healthit.chpl.entity.CertificationResultG2MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultG2MacraMeasureEntity;
 
 public class CertificationResultMacraMeasureDTO implements Serializable {
 	private static final long serialVersionUID = 6206786831988717072L;

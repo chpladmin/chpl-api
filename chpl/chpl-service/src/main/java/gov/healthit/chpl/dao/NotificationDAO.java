@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.EntityNotFoundException;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
@@ -18,6 +19,8 @@ public interface NotificationDAO {
 	public boolean hasNotificationType(NotificationTypeDTO type, Set<GrantedPermission> permissions);
 	public List<NotificationTypeDTO> getAllNotificationTypes(Set<GrantedPermission> permissions);
 	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappings(Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
+	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappingsForType(Set<GrantedPermission> permissions, 
+			NotificationTypeConcept notificationType, List<CertificationBodyDTO> acbs);
 	public RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(
 			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
 	public RecipientDTO findRecipientByEmail(String email);

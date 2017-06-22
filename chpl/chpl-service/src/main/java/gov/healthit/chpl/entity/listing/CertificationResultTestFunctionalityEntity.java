@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
@@ -13,37 +13,30 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.TestFunctionalityEntity;
+
 
 @Entity
-@Table(name = "certified_product_qms_standard")
-public class CertifiedProductQmsStandardEntity {
+@Table(name = "certification_result_test_functionality")
+public class CertificationResultTestFunctionalityEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certified_product_qms_standard_id")
+	@Column(name = "certification_result_test_functionality_id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column( name = "certified_product_id", nullable = false  )
-	private Long certifiedProductId;
-
-	@Basic( optional = false )
-	@Column( name = "qms_standard_id", nullable = false  )
-	private Long qmsStandardId;
+	@Column( name = "certification_result_id", nullable = false  )
+	private Long certificationResultId;
+	
+	@Column(name = "test_functionality_id")
+	private Long testFunctionalityId;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "qms_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private QmsStandardEntity qmsStandard;
-	
-	@Basic( optional = false )
-	@Column( name = "modification", nullable = false  )
-	private String modification;
-	
-	@Basic( optional = false )
-	@Column( name = "applicable_criteria", nullable = false  )
-	private String applicableCriteria;
+	@JoinColumn(name = "test_functionality_id", unique=true, nullable = true, insertable=false, updatable=false)
+	private TestFunctionalityEntity testFunctionality;
 	
 	public Long getId() {
 		return id;
@@ -53,45 +46,30 @@ public class CertifiedProductQmsStandardEntity {
 		this.id = id;
 	}
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
+	public Long getCertificationResultId() {
+		return certificationResultId;
 	}
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
+	public void setCertificationResultId(Long certificationResultId) {
+		this.certificationResultId = certificationResultId;
 	}
 
-	public Long getQmsStandardId() {
-		return qmsStandardId;
+	public Long getTestFunctionalityId() {
+		return testFunctionalityId;
 	}
 
-	public void setQmsStandardId(Long qmsStandardId) {
-		this.qmsStandardId = qmsStandardId;
+	public void setTestFunctionalityId(Long testFunctionalityId) {
+		this.testFunctionalityId = testFunctionalityId;
 	}
 
-	public QmsStandardEntity getQmsStandard() {
-		return qmsStandard;
+	public TestFunctionalityEntity getTestFunctionality() {
+		return testFunctionality;
 	}
 
-	public void setQmsStandard(QmsStandardEntity qmsStandard) {
-		this.qmsStandard = qmsStandard;
+	public void setTestFunctionality(TestFunctionalityEntity testFunctionality) {
+		this.testFunctionality = testFunctionality;
 	}
 
-	public String getModification() {
-		return modification;
-	}
-
-	public void setModification(String modification) {
-		this.modification = modification;
-	}
-
-	public String getApplicableCriteria() {
-		return applicableCriteria;
-	}
-
-	public void setApplicableCriteria(String applicableCriteria) {
-		this.applicableCriteria = applicableCriteria;
-	}
 
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )

@@ -23,18 +23,18 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.CertificationResultEntity;
-import gov.healthit.chpl.entity.CertificationResultG1MacraMeasureEntity;
-import gov.healthit.chpl.entity.CertificationResultG2MacraMeasureEntity;
-import gov.healthit.chpl.entity.CertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity;
-import gov.healthit.chpl.entity.CertificationResultTestProcedureEntity;
-import gov.healthit.chpl.entity.CertificationResultTestStandardEntity;
-import gov.healthit.chpl.entity.CertificationResultTestTaskEntity;
-import gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity;
-import gov.healthit.chpl.entity.CertificationResultTestToolEntity;
-import gov.healthit.chpl.entity.CertificationResultUcdProcessEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultG2MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 
 @Repository(value="certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {

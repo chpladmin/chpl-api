@@ -153,9 +153,11 @@ public class CertifiedProductController {
 		JsonProcessingException, ValidationException {
 		
 		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-		//make sure the ui didn't send any error or warning messages back
-		updatedListing.setErrorMessages(new HashSet<String>());
-		updatedListing.setWarningMessages(new HashSet<String>());
+
+		//clean up what was sent in - some necessary IDs or other fields may be missing
+		Long newAcbId = new Long(updatedListing.getCertifyingBody().get("id").toString());
+		cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
+		
 		//validate
 		CertifiedProductValidator validator = validatorFactory.getValidator(updatedListing);
 		if(validator != null) {
@@ -195,11 +197,9 @@ public class CertifiedProductController {
 			throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
 		}
 		
-		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
-		Long newAcbId = new Long(updatedListing.getCertifyingBody().get("id").toString());
-		
+		Long existingAcbId = new Long(existingProduct.getCertifyingBody().get("id").toString());		
 		//if the ACF owner is changed this is a separate action with different security
-		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
+		if(newAcbId != null && existingAcbId.longValue() != newAcbId.longValue()) {
 			cpManager.changeOwnership(updatedListing.getId(), newAcbId);
 			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Changed ACB ownership.", existingProduct, changedProduct);
@@ -227,7 +227,7 @@ public class CertifiedProductController {
 		toUpdate.setSedTestingEnd(updatedListing.getSedTestingEnd());
 		toUpdate.setAcbCertificationId(updatedListing.getAcbCertificationId());
 		toUpdate.setOtherAcb(updatedListing.getOtherAcb());
-		toUpdate.setIcs(updatedListing.getIcs());
+		toUpdate.setIcs(updatedListing.getIcs() == null || updatedListing.getIcs().getInherits() == null ? false : updatedListing.getIcs().getInherits());
 		toUpdate.setAccessibilityCertified(updatedListing.getAccessibilityCertified());
 		toUpdate.setProductAdditionalSoftware(updatedListing.getProductAdditionalSoftware());
 		
@@ -245,7 +245,7 @@ public class CertifiedProductController {
 				} else {
 					toUpdate.setProductCode(chplProductIdComponents[4]);
 					toUpdate.setVersionCode(chplProductIdComponents[5]);
-					toUpdate.setIcsCode(chplProductIdComponents[6]);
+					toUpdate.setIcsCode(new Integer(chplProductIdComponents[6]));
 					toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
 					toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
 				}
@@ -273,7 +273,7 @@ public class CertifiedProductController {
 			}
 		} 
 		
-		toUpdate = cpManager.update(acbId, toUpdate, updateRequest);
+		toUpdate = cpManager.update(existingAcbId, toUpdate, updateRequest, existingProduct);
 		
 		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());

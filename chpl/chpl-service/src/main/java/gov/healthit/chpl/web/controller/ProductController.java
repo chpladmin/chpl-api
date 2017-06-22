@@ -92,6 +92,19 @@ public class ProductController {
 		return result;
 	}
 	
+	@ApiOperation(value="Get all listings owned by the specified product.", 
+			notes="")
+	@RequestMapping(value="/{productId}/listings", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") Long productId) throws EntityRetrievalException {
+		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(productId);
+		List<CertifiedProduct> results = new ArrayList<CertifiedProduct>();
+		for(CertifiedProductDetailsDTO listing : listings) {
+			results.add(new CertifiedProduct(listing));
+		}
+		return results;
+	}
+	
 	@ApiOperation(value="Update a product or merge products.", 
 			notes="This method serves two purposes: to update a single product's information and to merge two products into one. "
 					+ " A user of this service should pass in a single productId to update just that product. "

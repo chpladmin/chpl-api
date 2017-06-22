@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.json.JSONException;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -49,6 +48,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -145,6 +145,7 @@ public class CertifiedProductControllerTest {
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
+		updateRequest.getCertifyingBody().put("id", "-1");
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -205,7 +206,9 @@ public class CertifiedProductControllerTest {
 		String certEdition = "2015";
 		certificationEdition.put("name", certEdition);
 		updateRequest.setCertificationEdition(certificationEdition);
-		updateRequest.setIcs(false); // Inherited Status = product.getIcs();
+		InheritedCertificationStatus ics = new InheritedCertificationStatus();
+		ics.setInherits(false);
+		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
 		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
@@ -220,7 +223,7 @@ public class CertifiedProductControllerTest {
 					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 		}
 		
-		updateRequest.setIcs(true);
+		ics.setInherits(true);
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 			listingUpdateRequest.setListing(updateRequest);
@@ -230,8 +233,7 @@ public class CertifiedProductControllerTest {
 		} catch (ValidationException e) {
 			assertNotNull(e);
 			// ICS is true, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. Mismatch = warning message
-			assertTrue(e.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
-					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+			assertTrue(e.getErrorMessages().contains("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true."));
 		}
 		Map<String, Object> classificationType = new HashMap<String, Object>();
 		classificationType.put("name", "Modular EHR");
@@ -243,7 +245,7 @@ public class CertifiedProductControllerTest {
 		String certEdition2014 = "2014";
 		certificationEdition2014.put("name", certEdition2014);
 		updateRequest.setCertificationEdition(certificationEdition2014);
-		updateRequest.setIcs(false);
+		ics.setInherits(false);
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 			listingUpdateRequest.setListing(updateRequest);
@@ -257,7 +259,7 @@ public class CertifiedProductControllerTest {
 					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
 		}
 		
-		updateRequest.setIcs(true);
+		ics.setInherits(true);
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 			listingUpdateRequest.setListing(updateRequest);
@@ -267,8 +269,7 @@ public class CertifiedProductControllerTest {
 		} catch (ValidationException e) {
 			assertNotNull(e);
 			// 2014 certEdition; ICS is true, 15.07.07.2642.EIC04.36.0.1.160402 shows false ICS. Mismatch = warning message
-			assertTrue(e.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
-					+ "as it is a retired tool, and this Certified Product does not carry ICS."));
+			assertTrue(e.getErrorMessages().contains("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true."));
 		}
 		
 	}
@@ -471,6 +472,7 @@ public class CertifiedProductControllerTest {
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
+		updateRequest.getCertifyingBody().put("id", "-1");
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -531,7 +533,9 @@ public class CertifiedProductControllerTest {
 		String certEdition = "2015";
 		certificationEdition.put("name", certEdition);
 		updateRequest.setCertificationEdition(certificationEdition);
-		updateRequest.setIcs(true); // Inherited Status = product.getIcs();
+		InheritedCertificationStatus ics = new InheritedCertificationStatus();
+		ics.setInherits(true);
+		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
 		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
@@ -586,6 +590,7 @@ public class CertifiedProductControllerTest {
 		Map<String, Object> certStatus = new HashMap<String, Object>();
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
+		updateRequest.getCertifyingBody().put("id", "-1");
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -646,7 +651,9 @@ public class CertifiedProductControllerTest {
 		String certEdition = "2015";
 		certificationEdition.put("name", certEdition);
 		updateRequest.setCertificationEdition(certificationEdition);
-		updateRequest.setIcs(true); // Inherited Status = product.getIcs();
+		InheritedCertificationStatus ics = new InheritedCertificationStatus();
+		ics.setInherits(true);
+		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
 		updateRequest.setChplProductNumber("15.07.07.2642.EIC04.36.0.1.160402");
 		ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 		listingUpdateRequest.setListing(updateRequest);

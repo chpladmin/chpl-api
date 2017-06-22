@@ -43,6 +43,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -53,6 +54,7 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
+import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -65,10 +67,12 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
@@ -106,6 +110,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -161,6 +166,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	private CertificationResultRules certRules;
 	
 	@Autowired CertifiedProductDAO cpDao;
+	@Autowired CertifiedProductSearchDAO searchDao;
 	@Autowired CertificationResultDAO certDao;
 	@Autowired CertificationCriterionDAO certCriterionDao;
 	@Autowired QmsStandardDAO qmsDao;
@@ -188,6 +194,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired TestTaskDAO testTaskDao;
 	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertificationStatusDAO certStatusDao;
+	@Autowired ListingGraphDAO listingGraphDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -398,7 +405,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		toCreate.setProductCode(uniqueIdParts[4]);
 		toCreate.setVersionCode(uniqueIdParts[5]);
-		toCreate.setIcsCode(uniqueIdParts[6]);
+		toCreate.setIcsCode(new Integer(uniqueIdParts[6]));
 		toCreate.setAdditionalSoftwareCode(uniqueIdParts[7]);
 		toCreate.setCertifiedDateCode(uniqueIdParts[8]);
 		
@@ -826,11 +833,56 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
+	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing) 
+			throws EntityNotFoundException {
+		//make sure the ui didn't send any error or warning messages back
+		listing.setErrorMessages(new HashSet<String>());
+		listing.setWarningMessages(new HashSet<String>());
+				
+		//make sure IDs are filled in for all parents for the updated listing
+		if(listing.getIcs() != null && listing.getIcs().getParents() != null &&
+				listing.getIcs().getParents().size() > 0) {
+			for(CertifiedProduct parent : listing.getIcs().getParents()) {
+				if(parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
+					CertifiedProduct found = searchDao.getByChplProductNumber(parent.getChplProductNumber());
+					if(found != null) {
+						parent.setId(found.getId());
+					}
+				} else if(parent.getId() == null) {
+					throw new EntityNotFoundException("Every ICS parent must have either a CHPL ID or a CHPL Product Number.");
+				}
+			}
+		}	
+		
+		//make sure IDs are filled in for all children for the updated listing
+		if(listing.getIcs() != null && listing.getIcs().getChildren() != null &&
+				listing.getIcs().getChildren().size() > 0) {
+			for(CertifiedProduct child : listing.getIcs().getChildren()) {
+				if(child.getId() == null && !StringUtils.isEmpty(child.getChplProductNumber())) {
+					CertifiedProduct found = searchDao.getByChplProductNumber(child.getChplProductNumber());
+					if(found != null) {
+						child.setId(found.getId());
+					}
+				} else if(child.getId() == null) {
+					throw new EntityNotFoundException("Every ICS child must have either a CHPL ID or a CHPL Product Number.");
+				}
+			}
+		}
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or "
+			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
+			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
+			+ ")")
+	@Transactional(readOnly = false)
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.SEARCH, 
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, ListingUpdateRequest updateRequest) 
-			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, 
+			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
+			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, 
+			EntityCreationException {
 		
 		//look at the updated status and see if a developer ban is appropriate
 		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(dto.getCertificationStatusId());
@@ -886,7 +938,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		CertifiedProductDTO result = cpDao.update(dto);	
 		
 		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+		
 		if(updatedListing != null){
+			updateIcsParents(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
+			updateIcsChildren(updatedListing.getId(), existingListing.getIcs(), updatedListing.getIcs());
+			
 			//update qms standards used
 			List<CertifiedProductQmsStandardDTO> qmsStandardsToUpdate = new ArrayList<CertifiedProductQmsStandardDTO>();
 			for(CertifiedProductQmsStandard newQms : updatedListing.getQmsStandards()) {
@@ -977,6 +1033,163 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		
 		return result;
 	}	
+	
+	/**
+	 * Intelligently determine what updates need to be made to ICS parents.
+	 * @param existingIcs
+	 * @param updatedIcs
+	 */
+	private void updateIcsParents(Long listingId, InheritedCertificationStatus existingIcs, 
+			InheritedCertificationStatus updatedIcs) {
+		//update ics parents as necessary
+		List<Long> parentIdsToAdd = new ArrayList<Long>();
+		List<Long> parentIdsToRemove = new ArrayList<Long>();
+		
+		if(updatedIcs != null && updatedIcs.getParents() != null &&
+				updatedIcs.getParents().size() > 0) {
+			if(existingIcs == null || existingIcs.getParents() == null || 
+					existingIcs.getParents().size() == 0) {
+				//existing listing has no ics parents, add all from the update
+				if(updatedIcs.getParents() != null && updatedIcs.getParents().size() > 0) {
+					for(CertifiedProduct parent : updatedIcs.getParents()) {
+						if(parent.getId() != null) {
+							parentIdsToAdd.add(parent.getId());
+						} 
+					}
+				}
+			} else if(existingIcs.getParents().size() > 0) {
+				//existing listing has parents, compare to the update to see if any are different
+				for(CertifiedProduct parent : updatedIcs.getParents()) { 
+					boolean inExistingListing = false;
+					for(CertifiedProduct existingParent : existingIcs.getParents()) {
+						if(parent.getId().longValue() == existingParent.getId().longValue()) {
+							inExistingListing = true;
+						}
+					}
+					
+					if(!inExistingListing) {
+						parentIdsToAdd.add(parent.getId());
+					}
+				}
+			}
+		}
+		
+		if(existingIcs != null && existingIcs.getParents() != null && 
+				existingIcs.getParents().size() > 0) {
+			//if the updated listing has no parents, remove them all from existing
+			if(updatedIcs == null || updatedIcs.getParents() == null || 
+					updatedIcs.getParents().size() == 0) {
+				for(CertifiedProduct existingParent : existingIcs.getParents()) {
+					parentIdsToRemove.add(existingParent.getId());
+				}
+			} else if(updatedIcs.getParents().size() > 0) {
+				for(CertifiedProduct existingParent : existingIcs.getParents()) {
+					boolean inUpdatedListing = false;
+					for(CertifiedProduct parent : updatedIcs.getParents()) {
+						if(existingParent.getId().longValue() == parent.getId().longValue()) {
+							inUpdatedListing = true;
+						}
+					}
+					if(!inUpdatedListing) {
+						parentIdsToRemove.add(existingParent.getId());
+					}
+				}
+			}
+		}
+		//run DAO updates
+		for(Long parentIdToAdd : parentIdsToAdd) {
+			ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
+			toAdd.setParentId(parentIdToAdd);
+			toAdd.setChildId(listingId);
+			listingGraphDao.createListingMap(toAdd);
+		}
+		
+		for(Long parentIdToRemove : parentIdsToRemove) {
+			ListingToListingMapDTO toDelete = new ListingToListingMapDTO();
+			toDelete.setParentId(parentIdToRemove);
+			toDelete.setChildId(listingId);
+			listingGraphDao.deleteListingMap(toDelete);
+		}
+	}
+	
+	/**
+	 * Intelligently update the ICS children relationships
+	 * @param existingIcs
+	 * @param updatedIcs
+	 */
+	private void updateIcsChildren(Long listingId, InheritedCertificationStatus existingIcs, 
+			InheritedCertificationStatus updatedIcs) {
+		//update ics children as necessary
+		List<Long> childIdsToAdd = new ArrayList<Long>();
+		List<Long> childIdsToRemove = new ArrayList<Long>();
+		
+		if(updatedIcs != null && updatedIcs.getChildren() != null &&
+				updatedIcs.getChildren().size() > 0) {
+			if(existingIcs == null || existingIcs.getChildren() == null || 
+					existingIcs.getChildren().size() == 0) {
+				//existing listing has no ics parents, add all from the update
+				if(updatedIcs.getChildren() != null && updatedIcs.getChildren().size() > 0) {
+					for(CertifiedProduct child : updatedIcs.getChildren()) {
+						if(child.getId() != null) {
+							childIdsToAdd.add(child.getId());
+						} 
+					}
+				}
+			} else if(existingIcs.getChildren().size() > 0) {
+				//existing listing has children, compare to the update to see if any are different
+				for(CertifiedProduct child : updatedIcs.getChildren()) { 
+					boolean inExistingListing = false;
+					for(CertifiedProduct existingChild : existingIcs.getChildren()) {
+						if(child.getId().longValue() == existingChild.getId().longValue()) {
+							inExistingListing = true;
+						}
+					}
+					
+					if(!inExistingListing) {
+						childIdsToAdd.add(child.getId());
+					}
+				}
+			}
+		}
+		
+		if(existingIcs != null && existingIcs.getChildren() != null && 
+				existingIcs.getChildren().size() > 0) {
+			//if the updated listing has no children, remove them all from existing
+			if(updatedIcs == null || updatedIcs.getChildren() == null || 
+					updatedIcs.getChildren().size() == 0) {
+				for(CertifiedProduct existingChild : existingIcs.getChildren()) {
+					childIdsToRemove.add(existingChild.getId());
+				}
+			} else if(updatedIcs.getChildren().size() > 0) {
+				for(CertifiedProduct existingChild : existingIcs.getChildren()) {
+					boolean inUpdatedListing = false;
+					for(CertifiedProduct child : updatedIcs.getChildren()) {
+						if(existingChild.getId().longValue() == child.getId().longValue()) {
+							inUpdatedListing = true;
+						}
+					}
+					if(!inUpdatedListing) {
+						childIdsToRemove.add(existingChild.getId());
+					}
+				}
+			}
+		}
+		
+		//update listings in dao
+		for(Long childIdToAdd : childIdsToAdd) {
+			ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
+			toAdd.setChildId(childIdToAdd);
+			toAdd.setParentId(listingId);
+			listingGraphDao.createListingMap(toAdd);
+		}
+		
+		for(Long childIdToRemove : childIdsToRemove) {
+			ListingToListingMapDTO toDelete = new ListingToListingMapDTO();
+			toDelete.setChildId(childIdToRemove);
+			toDelete.setParentId(listingId);
+			listingGraphDao.deleteListingMap(toDelete);
+		}
+	}
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "

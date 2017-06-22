@@ -285,7 +285,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
-						} else if(tt.isRetired() && (product.getIcs() == null || product.getIcs().equals(Boolean.FALSE))) {
+						} else if(tt.isRetired() && (product.getIcs() == null || product.getIcs().getInherits() == null || product.getIcs().getInherits().equals(Boolean.FALSE))) {
 							product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 							+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 						}
