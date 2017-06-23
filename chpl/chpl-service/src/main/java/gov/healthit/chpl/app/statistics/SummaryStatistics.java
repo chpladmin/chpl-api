@@ -160,106 +160,79 @@ public class SummaryStatistics {
 		 emailMessage.append("Date: " + calendarCounter.getTime());
 		 emailMessage.append("<h4>Total # of Unique Developers (Regardless of Edition) -  " + stats.getTotalDevelopers() + "</h4>");
 		 emailMessage.append("<ul><li>Total # of Developers with Active 2014 Listings - " + stats.getTotalDevelopersWithActive2014Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics stat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
-			 if(stat.getYear() == 2014 && 
-					 getActiveDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), stat.getName()) > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
-					 if(cbStat.getYear() == 2014){
-						 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
+			 if(cbStat.getYear() == 2014 && 
+					 getActiveDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) > 0){
+				 
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
 								 getActiveDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
 			 }
 		 }
-		 
+		 emailMessage.append("</ul>");
 		 emailMessage.append("<li>Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2014 Listings</li>");
 		 List<String> uniqueAcbList = new ArrayList<String>(); // make sure not to add one ACB more than once
 		 Boolean hasSuspended = false;
-		 A: for(CertifiedBodyStatistics stat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
-			 if(stat.getYear() == 2014 && stat.getCertificationStatusName().toLowerCase().contains("suspended")){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
-					 if(!uniqueAcbList.contains(cbStat.getName())){
-						 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
-								 getSuspendedDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
-						 uniqueAcbList.add(cbStat.getName());
-						 hasSuspended = true;
-					 }
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
+			 if(cbStat.getYear() == 2014 && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")){
+				 if(!uniqueAcbList.contains(cbStat.getName())){
+					 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+							 getSuspendedDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
+					 uniqueAcbList.add(cbStat.getName());
+					 hasSuspended = true;
 				 }
-				 emailMessage.append("</ul>");
-				 break A;
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
 		 
 		 emailMessage.append("<li>Total # of Developers with 2014 Listings (Regardless of Status) - " + stats.getTotalDevelopersWith2014Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
 			 if(cbStat.getYear() == 2014 && cbStat.getTotalDevelopersWithListings() > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
-					 if(stat.getYear() == 2014){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getTotalDevelopersWithListings() + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalDevelopersWithListings() + "</li>");
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
 		 emailMessage.append("<li>Total # of Developers with Active 2015 Listings - " + stats.getTotalDevelopersWithActive2015Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
 			 if(cbStat.getYear() == 2015 && 
-					 getActiveDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
-					 if(stat.getYear() == 2015){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + 
-								 getActiveDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), stat.getName()) + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+				 getActiveDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) > 0){
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+					 getActiveDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
 		 emailMessage.append("<li>Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings</li>");
 		 uniqueAcbList.clear(); // make sure not to add one ACB more than once
 		 hasSuspended = false;
-		 A: for(CertifiedBodyStatistics stat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
-			 if(stat.getYear() == 2015 && stat.getCertificationStatusName().toLowerCase().contains("suspended")){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
-					 if(!uniqueAcbList.contains(cbStat.getName())){
-						 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
-								 getSuspendedDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
-						 uniqueAcbList.add(cbStat.getName());
-						 hasSuspended = true;
-					 }
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
+			 if(cbStat.getYear() == 2015 && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")){
+				 if(!uniqueAcbList.contains(cbStat.getName())){
+					 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+						 getSuspendedDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
+					 uniqueAcbList.add(cbStat.getName());
+					 hasSuspended = true;
 				 }
-				 emailMessage.append("</ul>");
-				 break A;
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
 		 
 		 emailMessage.append("<li>Total # of Developers with 2015 Listings (Regardless of Status) - " + stats.getTotalDevelopersWith2015Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
 			 if(cbStat.getYear() == 2015 && cbStat.getTotalDevelopersWithListings() > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
-					 if(stat.getYear() == 2015){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getTotalDevelopersWithListings() + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalDevelopersWithListings() + "</li>");
 			 }
 		 }
 		 emailMessage.append("</ul></ul>");
@@ -267,162 +240,106 @@ public class SummaryStatistics {
 		 emailMessage.append("<h4>Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011) -  " + stats.getTotalCertifiedProducts() + "</h4>");
 		 emailMessage.append("<ul>");
 		 emailMessage.append("<li>Total # of Unique Products with 2014 Listings (Regardless of Status) -  " + stats.getTotalCPs2014Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBody()){
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBody()){
 			 if(cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalCPListingsEachYearByCertifiedBody()){
-					 if(stat.getYear() == 2014){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getTotalListings() + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
 		 uniqueAcbList.clear();
-		 emailMessage.append("<li>Total # of Unique Products with Active (Including Suspended) 2014 Listings - " + stats.getTotalCPsActive2014Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-			 if(cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0 && (
-					 cbStat.getCertificationStatusName().equalsIgnoreCase("active")
-					 || cbStat.getCertificationStatusName().contains("suspended")
-					 )){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-					 if(!uniqueAcbList.contains(stat.getName()) && stat.getYear() == 2014 && stat.getTotalListings() > 0 && (
-							 stat.getCertificationStatusName().equalsIgnoreCase("active")
-							 || stat.getCertificationStatusName().contains("suspended")
-							 )){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + 
-							 getActiveCPsForAcb(2014, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), stat.getName()) + "</li>");
-						 uniqueAcbList.add(stat.getName());
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+		 emailMessage.append("<li>Total # of Unique Products with Active 2014 Listings - " + stats.getTotalCPsActive2014Listings() + "</li>");
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
+			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0 && 
+					 (cbStat.getCertificationStatusName().equalsIgnoreCase("active"))){ 
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+					 getActiveCPsForAcb(2014, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
+				 uniqueAcbList.add(cbStat.getName());
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
 		 hasSuspended = false;
 		 emailMessage.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings -  " + stats.getTotalCPsSuspended2014Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-			 if(cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0 && (
-					 cbStat.getCertificationStatusName().equalsIgnoreCase("active")
-					 || cbStat.getCertificationStatusName().contains("suspended")
-					 )){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-					 if(!uniqueAcbList.contains(stat.getName()) && stat.getYear() == 2014 && stat.getTotalListings() > 0 && 
-							 stat.getCertificationStatusName().contains("suspended")){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + 
-							 getSuspendedCPsForAcb(2014, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), stat.getName()) + "</li>");
-						 uniqueAcbList.add(stat.getName());
-						 hasSuspended = true;
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
+			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0 && 
+					 cbStat.getCertificationStatusName().contains("suspended")){
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+					 getSuspendedCPsForAcb(2014, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
+				 uniqueAcbList.add(cbStat.getName());
+				 hasSuspended = true;
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
 
 		 emailMessage.append("<li>Total # of Unique Products with 2015 Listings (Regardless of Status) -  " + stats.getTotalCPs2015Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBody()){
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBody()){
 			 if(cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalCPListingsEachYearByCertifiedBody()){
-					 if(stat.getYear() == 2015){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getTotalListings() + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
 		 uniqueAcbList.clear();
-		 emailMessage.append("<li>Total # of Unique Products with Active (Including Suspended) 2015 Listings -  " + stats.getTotalCPsActive2015Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-			 if(cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0 && (
-					 cbStat.getCertificationStatusName().equalsIgnoreCase("active")
-					 || cbStat.getCertificationStatusName().contains("suspended")
-					 )){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-					 if(!uniqueAcbList.contains(stat.getName()) && stat.getYear() == 2015 && stat.getTotalListings() > 0 && (
-							 stat.getCertificationStatusName().equalsIgnoreCase("active")
-							 || stat.getCertificationStatusName().contains("suspended")
-							 )){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + 
-							 getActiveCPsForAcb(2015, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), stat.getName()) + "</li>");
-						 uniqueAcbList.add(stat.getName());
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+		 emailMessage.append("<li>Total # of Unique Products with Active 2015 Listings -  " + stats.getTotalCPsActive2015Listings() + "</li>");
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
+			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0 && (
+					 cbStat.getCertificationStatusName().equalsIgnoreCase("active"))){
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+					 getActiveCPsForAcb(2015, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
+				 uniqueAcbList.add(cbStat.getName());
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
 		 uniqueAcbList.clear();
 		 hasSuspended = false;
 		 emailMessage.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings -  " + stats.getTotalCPsSuspended2015Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-			 if(cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0 && (
-					 cbStat.getCertificationStatusName().equalsIgnoreCase("active")
-					 || cbStat.getCertificationStatusName().contains("suspended")
-					 )){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-					 if(!uniqueAcbList.contains(stat.getName()) && stat.getYear() == 2015 && stat.getTotalListings() > 0 && 
-							 stat.getCertificationStatusName().contains("suspended")){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + 
-							 getSuspendedCPsForAcb(2015, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), stat.getName()) + "</li>");
-						 uniqueAcbList.add(stat.getName());
-						 hasSuspended = true;
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
+			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0 && 
+					 cbStat.getCertificationStatusName().contains("suspended")){
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+					 getSuspendedCPsForAcb(2015, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
+				 uniqueAcbList.add(cbStat.getName());
+				 hasSuspended = true;
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
 		 
 		 uniqueAcbList.clear();
-		 emailMessage.append("<li>Total # of Unique Products with Active Listings (Including Suspended) (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</ul></li>");
+		 emailMessage.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</ul></li>");
 		 emailMessage.append("</ul>");
 		 emailMessage.append("<h4>Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings() + "</h4>");
-		 emailMessage.append("<ul><li>Total # of Active (Including Suspended) 2014 Listings - " + stats.getTotalActive2014Listings() + "</li>");
+		 emailMessage.append("<ul><li>Total # of Active 2014 Listings - " + stats.getTotalActive2014Listings() + "</li>");
 		 
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()){
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()){
 			 if(cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalActiveListingsByCertifiedBody()){
-					 if(stat.getYear() == 2014){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getTotalListings() + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
-		 emailMessage.append("<li>Total # of Active (Including Suspended) 2015 Listings - " + stats.getTotalActive2015Listings() + "</li>");
-		 A: for(CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()){
+		 emailMessage.append("<li>Total # of Active 2015 Listings - " + stats.getTotalActive2015Listings() + "</li>");
+		 emailMessage.append("<ul>");
+		 for(CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()){
 			 if(cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0){
-				 emailMessage.append("<ul>");
-				 for(CertifiedBodyStatistics stat : stats.getTotalActiveListingsByCertifiedBody()){
-					 if(stat.getYear() == 2015){
-						 emailMessage.append("<li>Certified by " + stat.getName() + " - " + stat.getTotalListings() + "</li>");
-					 }
-				 }
-				 emailMessage.append("</ul>");
-				 break A;
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + cbStat.getTotalListings() + "</li>");
 			 }
 		 }
+		 emailMessage.append("</ul>");
 		 
 		 emailMessage.append("<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
 		 emailMessage.append("<li>Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
@@ -455,8 +372,7 @@ public class SummaryStatistics {
 		Long count = 0L;
 		for(CertifiedBodyStatistics cbStat : cbStats){
 			if(cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb) && 
-					(cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active")
-					|| cbStat.getCertificationStatusName().toLowerCase().contains("suspended"))){
+					(cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active"))){
 				count = count + cbStat.getTotalDevelopersWithListings();
 			}
 		}
@@ -467,8 +383,7 @@ public class SummaryStatistics {
 		Long count = 0L;
 		for(CertifiedBodyStatistics cbStat : cbStats){
 			if(cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb) && 
-					(cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active")
-					|| cbStat.getCertificationStatusName().toLowerCase().contains("suspended"))){
+					(cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active"))){
 				count = count + cbStat.getTotalListings();
 			}
 		}

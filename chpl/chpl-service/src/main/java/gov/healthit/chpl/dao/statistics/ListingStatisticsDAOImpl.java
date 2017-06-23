@@ -98,7 +98,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	@Override
 	public Long getTotalCPsActive2014Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2014' AND UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -135,12 +135,12 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	}
 
 	/**
-	 * Total # of unique Products with Active (Including Suspended) 2015 Listings
+	 * Total # of unique Products with Active 2015 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2015' AND UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -163,12 +163,12 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	}
 
 	/**
-	 * Total # of unique Products with Active Listings (Including Suspended) (Regardless of Edition)
+	 * Total # of unique Products with Active Listings (Regardless of Edition)
 	 */
 	@Override
 	public Long getTotalCPsActiveListings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
-				+ " WHERE UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -195,7 +195,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	@Override
 	public Long getTotalActive2014Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2014' AND UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -204,12 +204,12 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	}
 	
 	/**
-	 * Total # of Active (Including Suspended) Listings in each year
+	 * Total # of Active Listings in each year
 	 */
 	@Override
 	public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
 				+ " GROUP BY certificationBodyName, year "
@@ -230,12 +230,12 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	}
 
 	/**
-	 * Total # of Active (Including Suspended) 2015 Listings
+	 * Total # of Active 2015 Listings
 	 */
 	@Override
 	public Long getTotalActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2015' AND UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());

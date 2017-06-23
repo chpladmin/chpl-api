@@ -26,4 +26,5 @@ public interface ListingStatisticsDAO {
 	public Long getTotalActive2015Listings(DateRange dateRange);
 	public Long getTotalCPsSuspended2015Listings(DateRange dateRange);
 	public Long getTotalCPsActive2015Listings(DateRange dateRange);
+	
 }

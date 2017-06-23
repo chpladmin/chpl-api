@@ -123,7 +123,7 @@ public class AsynchronousStatistics {
 	}
 	
 	/**
-	 * Total # of unique Products with Active (Including Suspended) 2014 Listings
+	 * Total # of unique Products with Active 2014 Listings
 	 */
 	@Async
 	@Transactional
@@ -150,7 +150,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of unique Products with Active (Including Suspended) 2015 Listings
+	 * Total # of unique Products with Active 2015 Listings
 	 */
 	@Async
 	@Transactional
@@ -168,7 +168,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of unique Products with Active Listings (Including Suspended) (Regardless of Edition)
+	 * Total # of unique Products with Active Listings (Regardless of Edition)
 	 */
 	@Async
 	@Transactional
@@ -186,7 +186,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of Active (Including Suspended) 2014 Listings
+	 * Total # of Active 2014 Listings
 	 */
 	@Async
 	@Transactional
@@ -195,7 +195,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of Active (Including Suspended) 2015 Listings
+	 * Total # of Active 2015 Listings
 	 */
 	@Async
 	@Transactional
@@ -204,7 +204,7 @@ public class AsynchronousStatistics {
 	}
 	
 	/**
-	 * Total # of Active (Including Suspended) Listings by Certified Body
+	 * Total # of Active Listings by Certified Body
 	 */
 	@Async
 	@Transactional
