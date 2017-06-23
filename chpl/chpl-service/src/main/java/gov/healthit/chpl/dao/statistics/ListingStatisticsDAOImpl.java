@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.impl;
+package gov.healthit.chpl.dao.statistics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,52 +7,12 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.dao.StatisticsDAO;
-import gov.healthit.chpl.domain.CertifiedBodyStatistics;
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
-@Repository("statisticsDAO")
-public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
-
-	/**
-	 * Total # of Unique Developers (Regardless of Edition) 
-	 */
-	@Override
-	public Long getTotalDevelopers(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM DeveloperEntity "
-				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
-	/**
-	 * Total # of Developers with 2014 Listings
-	 */
-	@Override
-	public Long getTotalDevelopersWith2014Listings(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(DISTINCT developerCode) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate)"
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
-	/**
-	 * Total # of Developers with 2015 Listings
-	 */
-	@Override
-	public Long getTotalDevelopersWith2015Listings(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(DISTINCT developerCode) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate)"
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
+@Repository("listingStatisticsDAO")
+public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStatisticsDAO {
 	/**
 	 * Total # of Certified Unique Products (Regardless of Status or Edition – Including 2011) 
 	 */
@@ -65,6 +25,72 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
 	}
+	
+	/**
+	 * Total # of unique Products with 2014 Listings
+	 */
+	@Override
+	public Long getTotalCPs2014Listings(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2014' "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (long) query.getResultList().size();
+	}
+	
+	/**
+	 * Total # of unique Products by certified product with Listings in each year
+	 */
+	@Override
+	public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(DISTINCT uniqueProduct) "
+				+ " FROM CertifiedProductDetailsEntity "
+				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
+				+ " GROUP BY certificationBodyName, year "
+				+ " ORDER BY certificationBodyName ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		List<Object[]> results = query.getResultList();
+		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
+		for(Object[] obj : results){
+			CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+			stat.setName(obj[0].toString());
+			stat.setYear(Integer.valueOf(obj[1].toString()));
+			stat.setTotalListings(Long.valueOf(obj[2].toString()));
+			stat.setCertificationStatusName(null);
+			cbStats.add(stat);
+		}
+		return cbStats;
+	}
+	
+	/**
+	 * Total # of unique Products by certified product with Listings in each year
+	 */
+	@Override
+	public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(DISTINCT uniqueProduct), certificationStatusName "
+				+ " FROM CertifiedProductDetailsEntity "
+				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
+				+ " GROUP BY certificationBodyName, year, certificationStatusName "
+				+ " ORDER BY certificationBodyName ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		List<Object[]> results = query.getResultList();
+		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
+		for(Object[] obj : results){
+			CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
+			stat.setName(obj[0].toString());
+			stat.setYear(Integer.valueOf(obj[1].toString()));
+			stat.setTotalListings(Long.valueOf(obj[2].toString()));
+			stat.setCertificationStatusName(obj[3].toString());
+			cbStats.add(stat);
+		}
+		return cbStats;
+	}
 
 	/**
 	 * Total # of unique Products with Active (Including Suspended) 2014 Listings
@@ -72,7 +98,35 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	@Override
 	public Long getTotalCPsActive2014Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2014' AND UPPER(certificationStatusName) = 'ACTIVE' "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (long) query.getResultList().size();
+	}
+	
+	/**
+	 * Total # of unique Products with Suspended (by ONC or ONC-ACB) 2014 Listings
+	 */
+	@Override
+	public Long getTotalCPsSuspended2014Listings(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (long) query.getResultList().size();
+	}
+	
+	/**
+	 * Total # of unique Products with 2015 Listings
+	 */
+	@Override
+	public Long getTotalCPs2015Listings(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2015' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -81,12 +135,26 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of unique Products with Active (Including Suspended) 2015 Listings
+	 * Total # of unique Products with Active 2015 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2015' AND UPPER(certificationStatusName) = 'ACTIVE' "
+				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (long) query.getResultList().size();
+	}
+	
+	/**
+	 * Total # of unique Products with Suspended (by ONC or ONC-ACB) 2015 Listings
+	 */
+	@Override
+	public Long getTotalCPsSuspended2015Listings(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -95,12 +163,12 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 
 	/**
-	 * Total # of unique Products with Active Listings (Including Suspended) (Regardless of Edition)
+	 * Total # of unique Products with Active Listings (Regardless of Edition)
 	 */
 	@Override
 	public Long getTotalCPsActiveListings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
-				+ " WHERE UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -127,7 +195,7 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	@Override
 	public Long getTotalActive2014Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2014' AND UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -136,12 +204,12 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 	}
 	
 	/**
-	 * Total # of Active (Including Suspended) 2014 Listings
+	 * Total # of Active Listings in each year
 	 */
 	@Override
 	public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
 				+ " GROUP BY certificationBodyName, year "
@@ -154,19 +222,20 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 			CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
 			stat.setName(obj[0].toString());
 			stat.setYear(Integer.valueOf(obj[1].toString()));
-			stat.setCount(Long.valueOf(obj[2].toString()));
+			stat.setTotalListings(Long.valueOf(obj[2].toString()));
+			stat.setCertificationStatusName(null);
 			cbStats.add(stat);
 		}
 		return cbStats;
 	}
 
 	/**
-	 * Total # of Active (Including Suspended) 2015 Listings
+	 * Total # of Active 2015 Listings
 	 */
 	@Override
 	public Long getTotalActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
+				+ " WHERE year = '2015' AND UPPER(certificationStatusName) = 'ACTIVE' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -212,83 +281,4 @@ public class StatisticsDAOImpl extends BaseDAOImpl implements StatisticsDAO {
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
 	}
-
-	/**
-	 * Total # of Surveillance Activities* 
-	 */
-	@Override
-	public Long getTotalSurveillanceActivities(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM SurveillanceEntity "
-				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
-	/**
-	 * Open Surveillance Activities
-	 */
-	@Override
-	public Long getTotalOpenSurveillanceActivities(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM SurveillanceEntity "
-				+ " WHERE startDate <= now() AND (endDate IS NULL OR endDate >= now()) AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
-	/**
-	 * Closed Surveillance Activities
-	 */
-	@Override
-	public Long getTotalClosedSurveillanceActivities(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM SurveillanceEntity "
-				+ " WHERE startDate <= now() AND (endDate IS NOT NULL AND endDate <= now()) AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
-	/**
-	 * Total # of NCs
-	 */
-	@Override
-	public Long getTotalNonConformities(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM SurveillanceNonconformityEntity "
-				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
-	/**
-	 * Open NCs
-	 */
-	@Override
-	public Long getTotalOpenNonconformities(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM SurveillanceNonconformityEntity "
-				+ " WHERE nonconformityStatusId = 1 AND ((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate))) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
-	/**
-	 * Closed NCs
-	 */
-	@Override
-	public Long getTotalClosedNonconformities(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT count(*) FROM SurveillanceNonconformityEntity "
-				+ " WHERE nonconformityStatusId = 2 AND ((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate))) ");
-		query.setParameter("creationStartDate", dateRange.getStartDate());
-		query.setParameter("creationEndDate", dateRange.getEndDate());
-		return (Long) query.getSingleResult();
-	}
-
 }

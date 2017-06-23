@@ -1,17 +1,30 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.statistics;
 
 import java.io.Serializable;
 import java.util.List;
+
+import gov.healthit.chpl.domain.DateRange;
 
 public class Statistics implements Serializable {
 	private static final long serialVersionUID = 6977674702447513779L;
 	private DateRange dateRange;
 	private Long totalDevelopers;
 	private Long totalDevelopersWith2014Listings;
+	private Long totalDevelopersWithActive2014Listings;
+	private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear;
+	private List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
+	private Long totalSuspendedDevelopersWith2014Listings;
 	private Long totalDevelopersWith2015Listings;
+	private Long totalDevelopersWithActive2015Listings;
 	private Long totalCertifiedProducts;
+	private List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBody;
+	private List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
+	private Long totalCPs2014Listings;
 	private Long totalCPsActive2014Listings;
+	private Long totalCPsSuspended2014Listings;
+	private Long totalCPs2015Listings;
 	private Long totalCPsActive2015Listings;
+	private Long totalCPsSuspended2015Listings;
 	private Long totalCPsActiveListings;
 	private Long totalListings;
 	private Long totalActive2014Listings;
@@ -156,6 +169,97 @@ public class Statistics implements Serializable {
 
 	public void setDateRange(DateRange dateRange) {
 		this.dateRange = dateRange;
+	}
+
+	public Long getTotalSuspendedDevelopersWith2014Listings() {
+		return totalSuspendedDevelopersWith2014Listings;
+	}
+
+	public void setTotalSuspendedDevelopersWith2014Listings(Long totalSuspendedDevelopersWith2014Listings) {
+		this.totalSuspendedDevelopersWith2014Listings = totalSuspendedDevelopersWith2014Listings;
+	}
+
+	public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear() {
+		return totalDevelopersByCertifiedBodyWithListingsEachYear;
+	}
+
+	public void setTotalDevelopersByCertifiedBodyWithListingsEachYear(
+			List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsEachYear) {
+		this.totalDevelopersByCertifiedBodyWithListingsEachYear = totalDevelopersByCertifiedBodyWithListingsEachYear;
+	}
+
+	public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear() {
+		return totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
+	}
+
+	public void setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
+			List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear) {
+		this.totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
+	}
+
+	public Long getTotalDevelopersWithActive2014Listings() {
+		return totalDevelopersWithActive2014Listings;
+	}
+
+	public void setTotalDevelopersWithActive2014Listings(Long totalDevelopersWithActive2014Listings) {
+		this.totalDevelopersWithActive2014Listings = totalDevelopersWithActive2014Listings;
+	}
+
+	public Long getTotalDevelopersWithActive2015Listings() {
+		return totalDevelopersWithActive2015Listings;
+	}
+
+	public void setTotalDevelopersWithActive2015Listings(Long totalDevelopersWithActive2015Listings) {
+		this.totalDevelopersWithActive2015Listings = totalDevelopersWithActive2015Listings;
+	}
+
+	public Long getTotalCPs2014Listings() {
+		return totalCPs2014Listings;
+	}
+
+	public void setTotalCPs2014Listings(Long totalCPs2014Listings) {
+		this.totalCPs2014Listings = totalCPs2014Listings;
+	}
+
+	public Long getTotalCPs2015Listings() {
+		return totalCPs2015Listings;
+	}
+
+	public void setTotalCPs2015Listings(Long totalCPs2015Listings) {
+		this.totalCPs2015Listings = totalCPs2015Listings;
+	}
+
+	public Long getTotalCPsSuspended2014Listings() {
+		return totalCPsSuspended2014Listings;
+	}
+
+	public void setTotalCPsSuspended2014Listings(Long totalCPsSuspended2014Listings) {
+		this.totalCPsSuspended2014Listings = totalCPsSuspended2014Listings;
+	}
+
+	public Long getTotalCPsSuspended2015Listings() {
+		return totalCPsSuspended2015Listings;
+	}
+
+	public void setTotalCPsSuspended2015Listings(Long totalCPsSuspended2015Listings) {
+		this.totalCPsSuspended2015Listings = totalCPsSuspended2015Listings;
+	}
+
+	public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody() {
+		return totalCPListingsEachYearByCertifiedBody;
+	}
+
+	public void setTotalCPListingsEachYearByCertifiedBody(List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBody) {
+		this.totalCPListingsEachYearByCertifiedBody = totalCPListingsEachYearByCertifiedBody;
+	}
+
+	public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus() {
+		return totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
+	}
+
+	public void setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
+			List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus) {
+		this.totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
 	}
 	
 }
