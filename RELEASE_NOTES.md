@@ -12,6 +12,7 @@ _Backwards compatibility breaking changes_
 * Added validation to warn on missing parents if ICS is indicated
 * Added an additional app that runs to send out notifications of ICS inconsistencies (need to add cron for that)
 * Added description of surveillance triggers to emails
+* Added developer and listing statistics for ACBs to ONC summary email
 
 ---
 
