@@ -32,22 +32,44 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalActive2014Listings = null;
 		Future<Long> totalActive2015Listings = null;
 		Future<List<CertifiedBodyStatistics>> totalActiveListingsByCertifiedBody = null;
+		Future<Long> totalDevelopersWithActive2014Listings = null;
+		Future<Long> totalDevelopersWithActive2015Listings = null;
+		Future<List<CertifiedBodyStatistics>> totalCPListingsEachYearByCertifiedBody = null;
+		Future<List<CertifiedBodyStatistics>> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = null;
+		Future<Long> totalCPs2014Listings = null;
+		Future<Long> totalCPs2015Listings = null;
+		Future<Long> totalCPsSuspended2014Listings = null;
+		Future<Long> totalCPsSuspended2015Listings = null;
 		
 		if(includeActiveStatistics){
 			totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
 			totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
 			totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
+			totalDevelopersWithActive2014Listings = asyncStats.getTotalDevelopersWithActive2014Listings(dateRange);
+			totalDevelopersWithActive2015Listings = asyncStats.getTotalDevelopersWithActive2015Listings(dateRange);
+			totalCPListingsEachYearByCertifiedBody = asyncStats.getTotalCPListingsEachYearByCertifiedBody(dateRange);
+			totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = asyncStats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dateRange);
+			totalCPs2014Listings = asyncStats.getTotalCPs2014Listings(dateRange);
+			totalCPs2015Listings = asyncStats.getTotalCPs2015Listings(dateRange);
+			totalCPsSuspended2014Listings = asyncStats.getTotalCPsSuspended2014Listings(dateRange);
+			totalCPsSuspended2015Listings = asyncStats.getTotalCPsSuspended2015Listings(dateRange);
  		}
+		
 		// developers
 		Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
 		Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(dateRange);
+		
 		Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsEachYear = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
 		Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
 		Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
+		
 		// listings
 		Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(dateRange);
+		
 		Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(dateRange);
+		
 		Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(dateRange);
+		
 		Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
 		Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
 		Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
@@ -65,13 +87,24 @@ public class AsynchronousStatisticsInitializor {
 			stats.setTotalActive2014Listings(totalActive2014Listings.get());
 			stats.setTotalActive2015Listings(totalActive2015Listings.get());
 			stats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());
+			stats.setTotalDevelopersWithActive2014Listings(totalDevelopersWithActive2014Listings.get());
+			stats.setTotalDevelopersWithActive2015Listings(totalDevelopersWithActive2015Listings.get());
+			stats.setTotalCPListingsEachYearByCertifiedBody(totalCPListingsEachYearByCertifiedBody.get());
+			stats.setTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(totalCPListingsEachYearByCertifiedBodyAndCertificationStatus.get());
+			stats.setTotalCPs2014Listings(totalCPs2014Listings.get());
+			stats.setTotalCPs2015Listings(totalCPs2015Listings.get());
+			stats.setTotalCPsSuspended2014Listings(totalCPsSuspended2014Listings.get());
+			stats.setTotalCPsSuspended2015Listings(totalCPsSuspended2015Listings.get());
  		}
+		
 		// developers
 		stats.setTotalDevelopers(totalDevelopers.get());
 		stats.setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings.get());
+		
 		stats.setTotalDevelopersByCertifiedBodyWithListingsEachYear(totalDevelopersByCertifiedBodyWithListingsEachYear.get());
 		stats.setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear.get());
 		stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
+		
 		// listings
 		stats.setTotalCertifiedProducts(totalCertifiedProducts.get());
 		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());

@@ -42,6 +42,15 @@ public class AsynchronousStatistics {
 	}
 	
 	/**
+	 * Total # of Developers with Active 2014 Listings
+	 */
+	@Transactional
+	@Async
+	public Future<Long> getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
+		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWithActive2014Listings(dateRange));
+	}
+	
+	/**
 	 * Total # of Developers by certified body with listings for each year
 	 */
 	@Transactional
@@ -67,6 +76,15 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalDevelopersWith2015Listings(DateRange dateRange) {
 		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2015Listings(dateRange));
 	}
+	
+	/**
+	 * Total # of Developers with Active 2015 Listings
+	 */
+	@Transactional
+	@Async
+	public Future<Long> getTotalDevelopersWithActive2015Listings(DateRange dateRange) {
+		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWithActive2015Listings(dateRange));
+	}
 
 	/**
 	 * Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011) 
@@ -78,12 +96,57 @@ public class AsynchronousStatistics {
 	}
 	
 	/**
+	 * Total # of Certified Unique Products each year by certified body
+	 */
+	@Async
+	@Transactional
+	public Future<List<CertifiedBodyStatistics>> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange) {
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBody(dateRange));
+	}
+	
+	/**
+	 * Total # of Certified Unique Products each year by certified body and certification status
+	 */
+	@Async
+	@Transactional
+	public Future<List<CertifiedBodyStatistics>> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(DateRange dateRange) {
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dateRange));
+	}
+	
+	/**
+	 * Total # of unique Products with 2014 Listings
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalCPs2014Listings(DateRange dateRange) {
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPs2014Listings(dateRange));
+	}
+	
+	/**
 	 * Total # of unique Products with Active (Including Suspended) 2014 Listings
 	 */
 	@Async
 	@Transactional
 	public Future<Long> getTotalCPsActive2014Listings(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2014Listings(dateRange));
+	}
+	
+	/**
+	 * Total # of unique Products with Suspended (by ONC and ONC-ACB) 2014 Listings
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalCPsSuspended2014Listings(DateRange dateRange) {
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsSuspended2014Listings(dateRange));
+	}
+	
+	/**
+	 * Total # of unique Products with 2015 Listings
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalCPs2015Listings(DateRange dateRange) {
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPs2015Listings(dateRange));
 	}
 
 	/**
@@ -93,6 +156,15 @@ public class AsynchronousStatistics {
 	@Transactional
 	public Future<Long> getTotalCPsActive2015Listings(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2015Listings(dateRange));
+	}
+	
+	/**
+	 * Total # of unique Products with Suspended (by ONC and ONC-ACB) 2015 Listings
+	 */
+	@Async
+	@Transactional
+	public Future<Long> getTotalCPsSuspended2015Listings(DateRange dateRange) {
+		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsSuspended2015Listings(dateRange));
 	}
 
 	/**

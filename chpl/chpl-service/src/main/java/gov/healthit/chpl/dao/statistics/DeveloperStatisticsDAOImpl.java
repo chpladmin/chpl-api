@@ -28,6 +28,19 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 	}
 
 	/**
+	 * Total # of Developers with Active 2014 Listings
+	 */
+	@Override
+	public Long getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(DISTINCT developerCode) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate)"
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
+	
+	/**
 	 * Total # of Developers with 2014 Listings
 	 */
 	@Override
@@ -47,6 +60,19 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 	public Long getTotalDevelopersWith2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(DISTINCT developerCode) FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2015' AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate)"
+				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+		query.setParameter("creationStartDate", dateRange.getStartDate());
+		query.setParameter("creationEndDate", dateRange.getEndDate());
+		return (Long) query.getSingleResult();
+	}
+	
+	/**
+	 * Total # of Developers with Active 2015 Listings
+	 */
+	@Override
+	public Long getTotalDevelopersWithActive2015Listings(DateRange dateRange) {
+		Query query = entityManager.createQuery("SELECT count(DISTINCT developerCode) FROM CertifiedProductDetailsEntity "
+				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate)"
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
@@ -84,7 +110,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 	@Override
 	public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(DISTINCT developerCode), certificationStatusName FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
 				+ " GROUP BY certificationBodyName, year, certificationStatusName "
 				+ " ORDER BY certificationBodyName ");
