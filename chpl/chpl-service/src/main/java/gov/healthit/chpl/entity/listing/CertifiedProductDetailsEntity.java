@@ -252,9 +252,6 @@ public class CertifiedProductDetailsEntity {
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
 	
-	@Formula("concat(UPPER(product_name),UPPER(vendor_name))")
-	private String uniqueProduct;
-	
 	public Long getId() {
 		return id;
 	}

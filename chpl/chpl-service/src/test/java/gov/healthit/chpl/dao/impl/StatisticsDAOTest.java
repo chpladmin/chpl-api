@@ -213,7 +213,7 @@ public class StatisticsDAOTest extends TestCase {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
 		Long totalActive2015Listings = listingStatisticsDao.getTotalCPsActive2015Listings(dateRange);
 		assertNotNull(totalActive2015Listings);
-		assertEquals(2L, totalActive2015Listings.longValue()); 
+		assertEquals(1L, totalActive2015Listings.longValue()); 
 	}
 	
 	
@@ -228,7 +228,7 @@ public class StatisticsDAOTest extends TestCase {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
 		Long totalActiveCPs = listingStatisticsDao.getTotalCPsActiveListings(dateRange);
 		assertNotNull(totalActiveCPs);
-		assertEquals(4L, totalActiveCPs.longValue()); 
+		assertEquals(3L, totalActiveCPs.longValue()); 
 	}
 	
 	/**
@@ -271,7 +271,7 @@ public class StatisticsDAOTest extends TestCase {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
 		List<CertifiedBodyStatistics> cbStats = listingStatisticsDao.getTotalActiveListingsByCertifiedBody(dateRange);
 		assertNotNull(cbStats);
-		assertEquals(4, cbStats.size());
+		assertEquals(3, cbStats.size());
 	}
 	
 	/**
@@ -285,7 +285,7 @@ public class StatisticsDAOTest extends TestCase {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
 		Long totalActive2015Listings = listingStatisticsDao.getTotalActive2015Listings(dateRange);
 		assertNotNull(totalActive2015Listings);
-		assertEquals(3L, totalActive2015Listings.longValue()); 
+		assertEquals(2L, totalActive2015Listings.longValue()); 
 	}
 	
 	/**
