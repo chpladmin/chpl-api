@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
 @Repository("listingStatisticsDAO")
 public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStatisticsDAO {
@@ -45,14 +46,19 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	 */
 	@Override
 	public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(DISTINCT uniqueProduct) "
-				+ " FROM CertifiedProductDetailsEntity "
-				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
-				+ " GROUP BY certificationBodyName, year "
-				+ " ORDER BY certificationBodyName ");
+		String queryStr = "SELECT t.certification_body_name, t.year, count(DISTINCT t.products) "
+				+ "FROM(SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), UPPER(vendor_Name)) AS products "
+				+ "FROM openchpl.certified_product_details "
+				+ "WHERE (deleted = false AND creation_Date BETWEEN :creationStartDate AND :creationEndDate) "
+				+ "OR (deleted = true AND creation_Date BETWEEN :creationStartDate AND :creationEndDate AND last_Modified_Date > :creationEndDate) "
+				+ ") t "
+				+ "GROUP BY certification_body_name, year "
+				+ "ORDER BY t.certification_body_name ";
+		
+		Query query = entityManager.createNativeQuery(queryStr);
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
+		
 		List<Object[]> results = query.getResultList();
 		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
 		for(Object[] obj : results){
@@ -71,14 +77,19 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	 */
 	@Override
 	public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT certificationBodyName, year, count(DISTINCT uniqueProduct), certificationStatusName "
-				+ " FROM CertifiedProductDetailsEntity "
-				+ " WHERE (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
-				+ " GROUP BY certificationBodyName, year, certificationStatusName "
-				+ " ORDER BY certificationBodyName ");
+		String queryStr = "SELECT t.certification_body_name, t.year, count(DISTINCT t.products), t.certification_status_name "
+				+ "FROM(SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), UPPER(vendor_Name)) AS products, certification_status_name "
+				+ "FROM openchpl.certified_product_details "
+				+ "WHERE (deleted = false AND creation_Date BETWEEN :creationStartDate AND :creationEndDate) "
+				+ "OR (deleted = true AND creation_Date BETWEEN :creationStartDate AND :creationEndDate AND last_Modified_Date > :creationEndDate) "
+				+ ") t "
+				+ "GROUP BY certification_body_name, year, certification_status_name "
+				+ "ORDER BY t.certification_body_name ";
+		
+		Query query = entityManager.createNativeQuery(queryStr);
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
+		
 		List<Object[]> results = query.getResultList();
 		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
 		for(Object[] obj : results){

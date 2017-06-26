@@ -159,7 +159,7 @@ public class NotificationDAOTest extends TestCase {
 		List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(testUser3.getPermissions());
 		assertNotNull(types);
 		assertTrue(types.size() > 0);
-		assertEquals(3, types.size());
+		assertEquals(2, types.size());
 		for(NotificationTypeDTO type : types) {
 			assertNotNull(type.getPermissions());
 			assertTrue(type.getPermissions().size() > 0);
