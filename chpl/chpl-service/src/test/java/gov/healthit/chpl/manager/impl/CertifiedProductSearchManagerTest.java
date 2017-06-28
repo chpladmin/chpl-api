@@ -89,7 +89,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVersion("1.0.1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
+		assertEquals(2, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getProduct().get("version").toString().startsWith("1.0.1"));
@@ -219,7 +219,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		searchRequest.setSearchTerm("Test");
 		searchRequest.setDeveloper("Test Developer");
 		searchRequest.setProduct("Test");
-		searchRequest.setVersion("1.0.1");
+		searchRequest.setVersion("2.0");
 		searchRequest.getCertificationEditions().add("2014");
 		searchRequest.getCertificationBodies().add("InfoGard");
 		searchRequest.setPracticeType("Ambulatory");
