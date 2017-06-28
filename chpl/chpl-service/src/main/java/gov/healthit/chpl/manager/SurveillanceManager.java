@@ -8,11 +8,17 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 public interface SurveillanceManager {
 	public File getDownloadFile(String filename) throws IOException;
@@ -35,5 +41,7 @@ public interface SurveillanceManager {
 	public Long createPendingSurveillance(Long acbId, Surveillance surv);
 	public void deletePendingSurveillance(Long acbId, Long survId);
 	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
-			throws EntityNotFoundException, AccessDeniedException;
+			throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException;
+	boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
+			throws EntityRetrievalException, ObjectMissingValidationException;
 }

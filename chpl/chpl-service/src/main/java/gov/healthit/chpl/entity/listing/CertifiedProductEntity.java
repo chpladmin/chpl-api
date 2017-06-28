@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 
 /** 
  * Object mapping for hibernate-handled table: certified_product.
@@ -137,6 +139,7 @@ public class CertifiedProductEntity {
 	@Basic(optional = true)
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "certified_product_id", nullable = false, insertable=false, updatable=false)
+	@JsonManagedReference
 	private CertifiedProductEntity certifiedProduct;
 	
 	/**

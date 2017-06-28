@@ -6,9 +6,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
@@ -41,6 +44,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
@@ -49,8 +53,11 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 
@@ -92,39 +99,39 @@ public class SurveillanceControllerTest {
 		adminUser.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		
 		acbAdmin = new JWTAuthenticatedUser();
-		acbAdmin.setFirstName("Test");
+		acbAdmin.setFirstName("acbAdmin");
 		acbAdmin.setId(3L);
-		acbAdmin.setLastName("User3");
-		acbAdmin.setSubjectName("testUser3");
+		acbAdmin.setLastName("User");
+		acbAdmin.setSubjectName("acbAdminUser");
 		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
 		
 		acbAdmin2 = new JWTAuthenticatedUser();
-		acbAdmin2.setFirstName("TESTUSER");
+		acbAdmin2.setFirstName("acbAdmin2");
 		acbAdmin2.setId(1L);
-		acbAdmin2.setLastName("User3");
-		acbAdmin2.setSubjectName("testUser3");
+		acbAdmin2.setLastName("User");
+		acbAdmin2.setSubjectName("acbAdmin2");
 		acbAdmin2.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
 		
 		oncAdmin = new JWTAuthenticatedUser();
-		oncAdmin.setFirstName("Test");
+		oncAdmin.setFirstName("oncAdmin");
 		oncAdmin.setId(3L);
 		oncAdmin.setLastName("User");
-		oncAdmin.setSubjectName("TESTUSER");
+		oncAdmin.setSubjectName("oncAdminUser");
 		oncAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		
 		oncAndAcb = new JWTAuthenticatedUser();
-		oncAndAcb.setFirstName("Test");
-		oncAndAcb.setId(3L);
+		oncAndAcb.setFirstName("oncAndAcb");
+		oncAndAcb.setId(-4L);
 		oncAndAcb.setLastName("User");
-		oncAndAcb.setSubjectName("TESTUSER");
+		oncAndAcb.setSubjectName("oncAndAcbUser");
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
 		
 		oncAndAcbStaff = new JWTAuthenticatedUser();
-		oncAndAcbStaff.setFirstName("Test");
+		oncAndAcbStaff.setFirstName("oncAndAcbStaff");
 		oncAndAcbStaff.setId(3L);
 		oncAndAcbStaff.setLastName("User");
-		oncAndAcbStaff.setSubjectName("TESTUSER");
+		oncAndAcbStaff.setSubjectName("oncAndAcbStaffUser");
 		oncAndAcbStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		oncAndAcbStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_STAFF));
 	}
@@ -1849,4 +1856,128 @@ public class SurveillanceControllerTest {
 			assertFalse(StringUtils.containsIgnoreCase(e.getErrorMessages().toString(), "Date Corrective Action Plan Must Be Completed"));
 		}
 	}
+	
+	/** 
+	 * Given I am authenticated as ACB Admin
+	 * Given I have authority on each surveillance
+	 * When I reject multiple surveillances through the API
+	 * Then all of the surveillances are deleted
+	 * @throws ObjectsMissingValidationException 
+	 * @throws AccessDeniedException 
+	 * @throws EntityNotFoundException 
+	 */
+	@Transactional 
+	@Test
+	@Rollback
+	public void test_deletePendingSurveillance()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+		List<Long> ids = new ArrayList<Long>(Arrays.asList( -3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
+		IdListContainer idList = new IdListContainer();
+		idList.setIds(ids);
+		// verify ids are in list of surveillances returned
+		List<PendingSurveillanceEntity> survResults = survDao.getPendingSurveillanceByAcb(-1L);
+		Boolean survHasId = false;
+		for(PendingSurveillanceEntity surv : survResults){
+			for(Long id : ids){
+				if(surv.getId() == id){
+					survHasId = true;
+					break;
+				}
+			}
+			assertTrue(survHasId);
+			survHasId = false;
+		}
+		
+		// delete list of pending surveillances
+		String result = surveillanceController.deletePendingSurveillance(idList);
+		assertNotNull(result);
+		assertTrue(result.contains("true"));
+		
+		// verify newly deleted surveillances are deleted
+		survResults.clear();
+		survResults = survDao.getPendingSurveillanceByAcb(-1L);
+		survHasId = false;
+		for(PendingSurveillanceEntity surv : survResults){
+			for(Long id : ids){
+				if(surv.getId() == id){
+					survHasId = true;
+					break;
+				}
+			}
+			assertFalse(survHasId);
+		}
+	}
+	
+	/** 
+	 * Given I am authenticated as ACB Admin
+	 * Given I have authority on each surveillance
+	 * Given a surveillance id has already been rejected/confirmed
+	 * When I reject multiple surveillances through the API
+	 * And one of the surveillance ids has already been rejected/confirmed
+	 * Then all of the valid surveillances are deleted
+	 * Then for the already rejected/confirmed surveillance, the API returns the related CHPL Product ID, start date, end date, and contact info of last modified user
+	 * @throws ObjectsMissingValidationException 
+	 * @throws AccessDeniedException 
+	 * @throws EntityNotFoundException 
+	 */
+	@Transactional 
+	@Rollback
+	@Test(expected = ObjectsMissingValidationException.class)
+	public void test_deletePendingSurveillance_alreadyRejected()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+		List<Long> ids = new ArrayList<Long>(Arrays.asList( -3L, -4L, -5L, -6L, -7L, -8L, -9L, -20L, -21L, -22L));
+		IdListContainer idList = new IdListContainer();
+		idList.setIds(ids);
+		// verify ids are in list of surveillances returned
+		List<PendingSurveillanceEntity> survResults = survDao.getPendingSurveillanceByAcb(-1L);
+		Boolean survHasId = false;
+		for(PendingSurveillanceEntity surv : survResults){
+			for(Long id : ids){
+				if(surv.getId() == id){
+					survHasId = true;
+					break;
+				}
+			}
+			assertTrue(survHasId);
+			survHasId = false;
+		}
+		
+		// delete list of pending surveillances
+		String result = surveillanceController.deletePendingSurveillance(idList);
+		assertNotNull(result);
+		assertTrue(result.contains("true"));
+		
+		// verify newly deleted surveillances are deleted
+		survResults.clear();
+		survResults = survDao.getPendingSurveillanceByAcb(-1L);
+		survHasId = false;
+		for(PendingSurveillanceEntity surv : survResults){
+			for(Long id : ids){
+				if(surv.getId() == id){
+					survHasId = true;
+					break;
+				}
+			}
+			assertFalse(survHasId);
+		}
+		
+		// try to delete already deleted pending surveillances
+		try{
+			result = surveillanceController.deletePendingSurveillance(idList);
+		} catch(ObjectsMissingValidationException ex){
+			for(ObjectMissingValidationException e : ex.getExceptions()){
+				assertTrue(e.getObjectId() != null); // CHPL Product ID
+				assertTrue(e.getContact() != null); // contact info of last modified user
+				assertTrue(e.getContact().getContactId() != null);
+				assertTrue(e.getStartDate() != null); // Pending Surveillance start date
+				assertTrue(e.getEndDate() != null); // Pending Surveillance end date
+			}
+		}
+		result = surveillanceController.deletePendingSurveillance(idList); // this should cause expected exception for ObjectsMissingValidationException
+	}
+	
 }

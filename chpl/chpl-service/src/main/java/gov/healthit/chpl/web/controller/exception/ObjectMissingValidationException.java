@@ -1,5 +1,7 @@
 package gov.healthit.chpl.web.controller.exception;
 
+import java.util.Date;
+
 import gov.healthit.chpl.domain.Contact;
 
 public class ObjectMissingValidationException extends ValidationException {
@@ -7,6 +9,8 @@ public class ObjectMissingValidationException extends ValidationException {
 	
 	private String objectId;
 	private Contact contact;
+	private Date startDate;
+	private Date endDate;
 
 	public ObjectMissingValidationException() {
 		super();
@@ -33,5 +37,21 @@ public class ObjectMissingValidationException extends ValidationException {
 
 	public void setObjectId(String objectId) {
 		this.objectId = objectId;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 }

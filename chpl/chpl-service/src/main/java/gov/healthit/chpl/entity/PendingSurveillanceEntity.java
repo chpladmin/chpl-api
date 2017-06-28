@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 
@@ -39,6 +41,7 @@ public class PendingSurveillanceEntity {
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
+	@JsonBackReference
 	private CertifiedProductEntity certifiedProduct;
 	
 	@Column(name = "start_date")

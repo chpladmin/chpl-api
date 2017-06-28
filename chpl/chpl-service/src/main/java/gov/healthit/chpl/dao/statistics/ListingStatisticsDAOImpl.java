@@ -104,7 +104,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	}
 
 	/**
-	 * Total # of unique Products with Active (Including Suspended) 2014 Listings
+	 * Total # of unique Products with Active 2014 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2014Listings(DateRange dateRange) {
