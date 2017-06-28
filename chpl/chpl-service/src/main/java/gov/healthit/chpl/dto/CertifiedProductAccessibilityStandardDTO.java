@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity;
 
 public class CertifiedProductAccessibilityStandardDTO implements Serializable {
 	private static final long serialVersionUID = -8092493683326428044L;

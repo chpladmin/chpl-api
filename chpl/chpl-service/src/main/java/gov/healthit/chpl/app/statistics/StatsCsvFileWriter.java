@@ -11,7 +11,7 @@ import java.util.TimeZone;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
-import gov.healthit.chpl.domain.Statistics;
+import gov.healthit.chpl.domain.statistics.Statistics;
 
 public class StatsCsvFileWriter {
 	//Delimiter used in CSV file

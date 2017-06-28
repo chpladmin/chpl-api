@@ -3,9 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -40,7 +38,6 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
@@ -153,9 +150,11 @@ public class CertifiedProductController {
 		JsonProcessingException, ValidationException {
 		
 		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-		//make sure the ui didn't send any error or warning messages back
-		updatedListing.setErrorMessages(new HashSet<String>());
-		updatedListing.setWarningMessages(new HashSet<String>());
+
+		//clean up what was sent in - some necessary IDs or other fields may be missing
+		Long newAcbId = new Long(updatedListing.getCertifyingBody().get("id").toString());
+		cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
+		
 		//validate
 		CertifiedProductValidator validator = validatorFactory.getValidator(updatedListing);
 		if(validator != null) {
@@ -196,7 +195,6 @@ public class CertifiedProductController {
 		}
 		
 		Long acbId = new Long(existingListing.getCertifyingBody().get("id").toString());
-		Long newAcbId = new Long(updatedListing.getCertifyingBody().get("id").toString());
 		
 		//if the ACF owner is changed this is a separate action with different security
 		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {

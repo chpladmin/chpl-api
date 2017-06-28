@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+
 
 @Entity
 @Table(name = "pending_surveillance")

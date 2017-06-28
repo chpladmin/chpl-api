@@ -6,18 +6,28 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
-
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 public class CertifiedProductDTO implements Serializable {
 	private static final long serialVersionUID = 7918387302717979598L;
+	public static final int CHPL_PRODUCT_ID_PARTS = 9;
+	public static final int EDITION_CODE_INDEX = 0;
+	public static final int ATL_CODE_INDEX = 1;
+	public static final int ACB_CODE_INDEX = 2;
+	public static final int DEVELOPER_CODE_INDEX = 3;
+	public static final int PRODUCT_CODE_INDEX = 4;
+	public static final int VERSION_CODE_INDEX = 5;
+	public static final int ICS_CODE_INDEX = 6;
+	public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
+	public static final int CERTIFIED_DATE_CODE_INDEX = 8;
+	
 	private Long id;
 	private String productCode;
 	private String versionCode;
-	private String icsCode;
+	private Integer icsCode;
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
 	private String acbCertificationId;
@@ -104,7 +114,7 @@ public class CertifiedProductDTO implements Serializable {
 		this.setSedTestingEnd(from.getSedTestingEnd());
 		this.setAcbCertificationId(from.getAcbCertificationId());
 		this.setOtherAcb(from.getOtherAcb());
-		this.setIcs(from.getIcs());
+		this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? false : from.getIcs().getInherits());
 		this.setAccessibilityCertified(from.getAccessibilityCertified());
 		this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
 		
@@ -122,7 +132,7 @@ public class CertifiedProductDTO implements Serializable {
 				} else {
 					this.setProductCode(chplProductIdComponents[4]);
 					this.setVersionCode(chplProductIdComponents[5]);
-					this.setIcsCode(chplProductIdComponents[6]);
+					this.setIcsCode(new Integer(chplProductIdComponents[6]));
 					this.setAdditionalSoftwareCode(chplProductIdComponents[7]);
 					this.setCertifiedDateCode(chplProductIdComponents[8]);
 				}
@@ -296,11 +306,11 @@ public class CertifiedProductDTO implements Serializable {
 		this.certifiedDateCode = certifiedDateCode;
 	}
 
-	public String getIcsCode() {
+	public Integer getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(String icsCode) {
+	public void setIcsCode(Integer icsCode) {
 		this.icsCode = icsCode;
 	}
 

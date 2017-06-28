@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Major Features
+_Backwards compatibility breaking changes_
+* Changed ICS field in certified product details object (used on get and update calls) from a boolean to a more complex object to include whether something was inherited and a list of parents and children.
+
+## Minor Features
+* Changed ICS code from a string to an integer
+* Added validation to warn on missing parents if ICS is indicated
+* Added an additional app that runs to send out notifications of ICS inconsistencies (need to add cron for that)
+* Added description of surveillance triggers to emails
+* Added developer and listing statistics for ACBs to ONC summary email
+
+---
+
 ## Version 11.0.0
 _19 June 2017_
 

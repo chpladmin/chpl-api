@@ -47,7 +47,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
 		this.setSedTestingEnd(dto.getSedTestingEnd());
 		this.setAcbCertificationId(dto.getAcbCertificationId());
-		this.setIcs(dto.getIcs());
+		InheritedCertificationStatus ics = new InheritedCertificationStatus();
+		ics.setInherits(dto.getIcs());
+		this.setIcs(ics);
 		this.setAccessibilityCertified(dto.getAccessibilityCertified());
 		
 		Map<String, Object> classificationTypeMap = new HashMap<String, Object>();

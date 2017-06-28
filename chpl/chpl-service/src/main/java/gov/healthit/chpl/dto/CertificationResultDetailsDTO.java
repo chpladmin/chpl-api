@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.CertificationResultDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 
 
 public class CertificationResultDetailsDTO implements Serializable {

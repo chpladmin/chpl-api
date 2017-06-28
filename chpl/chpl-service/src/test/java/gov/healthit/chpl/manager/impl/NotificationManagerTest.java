@@ -318,7 +318,7 @@ public class NotificationManagerTest extends TestCase {
 				assertEquals(2, result.getSubscriptions().size());
 				break;
 			case -2:
-				assertEquals(3, result.getSubscriptions().size());
+				assertEquals(4, result.getSubscriptions().size());
 				break;
 			default:
 				fail("Found recipient with unexpected id " + result.getId().intValue());
@@ -354,7 +354,7 @@ public class NotificationManagerTest extends TestCase {
 		notification = notificationManager.getAllForRecipient(recipId);
 		assertNotNull(notification);
 		assertEquals(recipId.longValue(), notification.getId().longValue());
-		assertEquals(3, notification.getSubscriptions().size());
+		assertEquals(4, notification.getSubscriptions().size());
 	}
 	
 	@Test

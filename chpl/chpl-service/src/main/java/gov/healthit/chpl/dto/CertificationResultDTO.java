@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.entity.CertificationResultEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 
 public class CertificationResultDTO implements Serializable {
 	private static final long serialVersionUID = 4640517836460510236L;

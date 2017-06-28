@@ -26,7 +26,6 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.AttestationType;
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.DeveloperACBMapEntity;
 import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
@@ -34,6 +33,7 @@ import gov.healthit.chpl.entity.DeveloperEntity;
 import gov.healthit.chpl.entity.DeveloperStatusEntity;
 import gov.healthit.chpl.entity.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
