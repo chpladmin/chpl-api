@@ -1408,7 +1408,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				boolean inExistingListing = false;
 				for(CQMResultDetailsDTO existingItem : existingCqms) {
 					if(!inExistingListing && 
-						updatedItem.getNqfNumber() != null && existingItem.getNqfNumber() != null &&
+						StringUtils.isEmpty(updatedItem.getCmsId()) && 
+						StringUtils.isEmpty(existingItem.getCmsId()) &&
+						!StringUtils.isEmpty(updatedItem.getNqfNumber()) && 
+						!StringUtils.isEmpty(existingItem.getNqfNumber()) && 
 						!updatedItem.getNqfNumber().equals("N/A") && 
 						!existingItem.getNqfNumber().equals("N/A") && 
 						updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {
@@ -1438,7 +1441,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				boolean inUpdatedListing = false;
 				for(CQMResultDetailsDTO updatedItem : updatedCqms) {
 					if(!inUpdatedListing && 
-						updatedItem.getNqfNumber() != null && existingItem.getNqfNumber() != null && 
+						StringUtils.isEmpty(updatedItem.getCmsId()) && 
+						StringUtils.isEmpty(existingItem.getCmsId()) &&
+						!StringUtils.isEmpty(updatedItem.getNqfNumber()) && 
+						!StringUtils.isEmpty(existingItem.getNqfNumber()) && 
 						!updatedItem.getNqfNumber().equals("N/A") && 
 						!existingItem.getNqfNumber().equals("N/A") && 
 						updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {

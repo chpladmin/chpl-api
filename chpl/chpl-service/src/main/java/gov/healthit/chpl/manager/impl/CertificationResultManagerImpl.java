@@ -430,12 +430,14 @@ public class CertificationResultManagerImpl implements
 					toUpdate.getUpdated().getUcdProcessDetails())) {
 				hasChanged = true;
 			}
-			CertificationResultUcdProcessDTO toUpdateDto = new CertificationResultUcdProcessDTO();
-			toUpdateDto.setId(toUpdate.getOrig().getId());
-			toUpdateDto.setCertificationResultId(certResult.getId());
-			toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getUcdProcessId());
-			toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getUcdProcessDetails());
-			certResultDAO.updateUcdProcessMapping(toUpdateDto);
+			if(hasChanged) {
+				CertificationResultUcdProcessDTO toUpdateDto = new CertificationResultUcdProcessDTO();
+				toUpdateDto.setId(toUpdate.getOrig().getId());
+				toUpdateDto.setCertificationResultId(certResult.getId());
+				toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getUcdProcessId());
+				toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getUcdProcessDetails());
+				certResultDAO.updateUcdProcessMapping(toUpdateDto);
+			}
 		}
 		
 		for(Long idToRemove : idsToRemove) {
@@ -1047,7 +1049,9 @@ public class CertificationResultManagerImpl implements
 					boolean inExistingListing = false;
 					for(CertificationResultTestParticipant existingItem : existingParticipants) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
-						participantsToUpdate.add(new CertificationResultTestParticipantPair(existingItem, updatedItem));
+						if(updatedItem.getTestParticipantId().longValue() == existingItem.getTestParticipantId().longValue()) {
+							participantsToUpdate.add(new CertificationResultTestParticipantPair(existingItem, updatedItem));
+						}
 					}
 					
 					if(!inExistingListing) {
