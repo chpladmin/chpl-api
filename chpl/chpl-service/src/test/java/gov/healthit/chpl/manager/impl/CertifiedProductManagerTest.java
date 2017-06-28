@@ -1,10 +1,12 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.xerces.impl.dtd.models.CMStateSet;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +34,8 @@ import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.QmsStandardDAO;
+import gov.healthit.chpl.domain.CQMResultCertification;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
@@ -1805,6 +1809,145 @@ public class CertifiedProductManagerTest extends TestCase {
 			}
 		}
 		assertTrue(foundCert);
+	}
+	
+	/*********************
+	 * CQM tests
+	 * *************************/
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testAddCqm() throws EntityRetrievalException, EntityCreationException, 
+		JsonProcessingException, InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		String cqmToUpdate = "CMS163";
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		boolean updatedCqm = false;
+		for(CQMResultDetails cqm : toUpdateListing.getCqmResults()) {
+			if(cqm.getCmsId().equals(cqmToUpdate)) {
+				assertFalse(cqm.isSuccess());
+				assertTrue(cqm.getSuccessVersions() == null || cqm.getSuccessVersions().size() == 0);
+				cqm.setSuccess(true);
+				cqm.getSuccessVersions().add("v3");
+				cqm.getSuccessVersions().add("v4");
+				updatedCqm = true;
+			}
+		}
+		assertTrue(updatedCqm);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCqm = false;
+		for(CQMResultDetails cqm : updatedListing.getCqmResults()) {
+			if(cqm.getCmsId().equals(cqmToUpdate)) {
+				foundCqm = true;
+				assertTrue(cqm.isSuccess());
+				assertNotNull(cqm.getSuccessVersions());
+				assertEquals(2, cqm.getSuccessVersions().size());
+			}
+		}
+		assertTrue(foundCqm);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testUpdateCqmAddCriteria() throws EntityRetrievalException, EntityCreationException, 
+		JsonProcessingException, InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		String cqmToUpdate = "CMS163";
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		boolean updatedCqm = false;
+		for(CQMResultDetails cqm : toUpdateListing.getCqmResults()) {
+			if(cqm.getCmsId().equals(cqmToUpdate)) {
+				assertFalse(cqm.isSuccess());
+				assertTrue(cqm.getSuccessVersions() == null || cqm.getSuccessVersions().size() == 0);
+				cqm.setSuccess(true);
+				cqm.getSuccessVersions().add("v3");
+				updatedCqm = true;
+			}
+		}
+		assertTrue(updatedCqm);
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails listingWithCqm = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails listingWithCqmAndCriteria = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(listingWithCqmAndCriteria);
+		for(CQMResultDetails cqm : listingWithCqmAndCriteria.getCqmResults()) {
+			if(cqm.getCmsId().equals(cqmToUpdate)) {
+				CQMResultCertification cqmCert = new CQMResultCertification();
+				cqmCert.setCertificationId(25L);
+				cqmCert.setCertificationNumber("170.315 (c)(1)");
+				cqm.getCriteria().add(cqmCert);
+			}
+		}
+		updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(listingWithCqmAndCriteria);
+		cpManager.update(acbId, updateRequest, listingWithCqm);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCqm = false;
+		for(CQMResultDetails cqm : updatedListing.getCqmResults()) {
+			if(cqm.getCmsId().equals(cqmToUpdate)) {
+				foundCqm = true;
+				assertNotNull(cqm.getCriteria());
+				assertEquals(1, cqm.getCriteria().size());
+				assertEquals("170.315 (c)(1)", cqm.getCriteria().get(0).getCertificationNumber());
+			}
+		}
+		assertTrue(foundCqm);
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void testRemoveCqm() throws EntityRetrievalException, EntityCreationException, 
+		JsonProcessingException, InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 2L;
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		for(CQMResultDetails cqm : toUpdateListing.getCqmResults()) {
+			if(cqm.isSuccess() == Boolean.TRUE) {
+				cqm.setSuccess(Boolean.FALSE);
+				cqm.getSuccessVersions().clear();
+			}
+		}
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(toUpdateListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		boolean foundCqm = false;
+		for(CQMResultDetails cqm : updatedListing.getCqmResults()) {
+			foundCqm = true;
+			assertFalse(cqm.isSuccess());
+			assertTrue(cqm.getSuccessVersions() == null || cqm.getSuccessVersions().size() == 0);
+		}
+		assertTrue(foundCqm);
 	}
 	
 	/*********************

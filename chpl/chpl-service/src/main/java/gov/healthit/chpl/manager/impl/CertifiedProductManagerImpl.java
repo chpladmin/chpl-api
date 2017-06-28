@@ -1581,6 +1581,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
 			for(String version : cqm.getSuccessVersions()) {
 				CQMResultDetailsDTO dto = new CQMResultDetailsDTO();
+				dto.setId(cqm.getId());
 				dto.setNqfNumber(cqm.getNqfNumber());
 				dto.setCmsId(cqm.getCmsId());
 				dto.setNumber(cqm.getNumber());
@@ -1592,6 +1593,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				if(cqm.getCriteria() != null && cqm.getCriteria().size() > 0) {
 					for(CQMResultCertification criteria : cqm.getCriteria()) {
 						CQMResultCriteriaDTO cqmdto = new CQMResultCriteriaDTO();
+						cqmdto.setId(criteria.getId());
 						cqmdto.setCriterionId(criteria.getCertificationId());
 						CertificationCriterionDTO certDto = new CertificationCriterionDTO();
 						certDto.setNumber(criteria.getCertificationNumber());
@@ -1603,6 +1605,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			}
 		} else if(StringUtils.isEmpty(cqm.getCmsId())) {
 			CQMResultDetailsDTO dto = new CQMResultDetailsDTO();
+			dto.setId(cqm.getId());
 			dto.setNqfNumber(cqm.getNqfNumber());
 			dto.setCmsId(cqm.getCmsId());
 			dto.setNumber(cqm.getNumber());
