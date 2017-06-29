@@ -28,7 +28,7 @@ public interface SurveillanceDAO {
 	public void deleteNonconformityDocument(Long documentId) throws EntityNotFoundException;
 	
 	public Long insertPendingSurveillance(Surveillance surv);
-	public PendingSurveillanceEntity getPendingSurveillanceById(Long id);
+	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted);
 	public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId);
 	public void deletePendingSurveillance(Surveillance surv) throws EntityNotFoundException;
 	

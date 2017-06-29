@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +36,6 @@ import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import junit.framework.TestCase;
 
