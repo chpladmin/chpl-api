@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
@@ -75,6 +77,7 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 		super.initiateSpringBeans(context);
 		this.setPresenter((InvalidInheritanceCsvPresenter)context.getBean("invalidInheritanceCsvPresenter"));
 		this.getPresenter().setProps(getProperties());
+		this.getPresenter().setMessageSource((MessageSource)context.getBean("messageSource"));
 		this.getPresenter().setInheritanceDao((ListingGraphDAO)context.getBean("listingGraphDao"));
 	}
 	

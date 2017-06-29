@@ -6,7 +6,11 @@ import java.util.Properties;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -19,6 +23,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 	private static final Logger logger = LogManager.getLogger(InvalidInheritanceCsvPresenter.class);
 	private Properties props;
 	private ListingGraphDAO inheritanceDao;
+	private MessageSource messageSource;
 	
 	protected List<String> generateHeaderValues() {
 		List<String> result = new ArrayList<String>();
@@ -28,17 +33,14 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 		result.add("Version");
 		result.add("ONC-ACB");
 		result.add("URL");
-		if(getApplicableCriteria() != null) {
-			for(CertificationCriterionDTO criteria : getApplicableCriteria()) {
-				result.add(criteria.getNumber());
-			}
-		}
+		result.add("Reason for Inclusion");
 		return result;
 	}
 	
 	protected List<String> generateRowValue(CertifiedProductSearchDetails data) {
 		//determine if this listing is breaking any of the ICS rules we want to trigger on
-		if(breaksIcsRules(data)) {
+		String reason = breaksIcsRules(data);
+		if(!StringUtils.isEmpty(reason)) {
 			List<String> result = new ArrayList<String>();
 			result.add(data.getChplProductNumber());
 			result.add(data.getDeveloper().getName());
@@ -51,18 +53,17 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 			} 
 			productDetailsUrl += "#/product/" + data.getId();
 			result.add(productDetailsUrl);
-			List<String> criteria = generateCriteriaValues(data);
-			result.addAll(criteria);
+			result.add(reason);
 			return result;
 		}
 		return null;
 	}
 	
-	private boolean breaksIcsRules(CertifiedProductSearchDetails listing) {
+	private String breaksIcsRules(CertifiedProductSearchDetails listing) {
 		String uniqueId = listing.getChplProductNumber();
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		if(uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-			return false;
+			return null;
 		}
 		String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
 		try {
@@ -73,7 +74,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 			//check if listing has ICS but no family ties
 			if(hasIcs && (listing.getIcs() == null || listing.getIcs().getParents() == null || 
 					listing.getIcs().getParents().size() == 0)) {
-				return true;
+				return messageSource.getMessage(new DefaultMessageSourceResolvable("ics.noInheritanceError"), LocaleContextHolder.getLocale());
 			}
 			
 			//check if this listing has correct ICS incrementation
@@ -86,14 +87,18 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 				}
 				
 				Integer largestIcs = getInheritanceDao().getLargestIcs(parentIds);
-				if(largestIcs != null && icsCode.intValue() != (largestIcs.intValue()+1)) {
-					return true;
+				int expectedIcsCode = largestIcs.intValue()+1;
+				if(largestIcs != null && icsCode.intValue() != expectedIcsCode) {
+					return String.format(
+							messageSource.getMessage(new DefaultMessageSourceResolvable("ics.badIncrementError"), 
+							LocaleContextHolder.getLocale()), 
+							icsCode.toString(), expectedIcsCode+"");
 				}
 			}
 		} catch(Exception ex) {
 			logger.error("Could not compare ICS value " + icsCodePart + " to inherits boolean value", ex);
 		}
-		return false;
+		return null;
 	}
 	
 	public Properties getProps() {
@@ -110,6 +115,14 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 
 	public void setInheritanceDao(ListingGraphDAO inheritanceDao) {
 		this.inheritanceDao = inheritanceDao;
+	}
+
+	public MessageSource getMessageSource() {
+		return messageSource;
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 }
