@@ -39,9 +39,11 @@ public interface SurveillanceManager {
 	public List<Surveillance> getPendingByAcb(Long acbId);
 	public Surveillance getPendingById(Long acbId, Long survId) throws EntityNotFoundException;
 	public Long createPendingSurveillance(Long acbId, Surveillance surv);
-	public void deletePendingSurveillance(Long acbId, Long survId) throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException;
-	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
+	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, 
+	EntityRetrievalException, EntityCreationException;
+	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
 			throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException;
 	boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
 			throws EntityRetrievalException, ObjectMissingValidationException;
+
 }

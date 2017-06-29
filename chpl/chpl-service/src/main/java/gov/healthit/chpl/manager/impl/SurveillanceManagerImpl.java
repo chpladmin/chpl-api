@@ -49,7 +49,6 @@ import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
@@ -284,7 +283,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void deletePendingSurveillance(Long acbId, Long survId) throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {		
+	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {		
 		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
 		if(surv == null) {
 			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
@@ -306,17 +305,23 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			try {
 				survDao.deletePendingSurveillance(toDelete);
 			} catch(Exception ex) {
-				logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
+				logger.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
 			}
-			String activityMsg = "Pending surveillance " + surv.getId() + " has been confirmed.";
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, surv.getId(), activityMsg, surv, null);	
+			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
+			if(isConfirmed){
+				activityMsg.append("confirmed.");
+			} else{
+				activityMsg.append("rejected.");
+			}
+			
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);	
 		}
 	}
 	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
+	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
 		throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
 		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
 		if(surv == null) {
@@ -346,10 +351,16 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			try {
 				survDao.deletePendingSurveillance(toDelete);
 			} catch(Exception ex) {
-				logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
+				logger.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
 			}
-			String activityMsg = "Pending surveillance " + surv.getId() + " has been rejected.";
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, surv.getId(), activityMsg, surv, null);	
+			
+			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
+			if(isConfirmed){
+				activityMsg.append("confirmed.");
+			} else{
+				activityMsg.append("rejected.");
+			}
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);
 		}
 	}
 	

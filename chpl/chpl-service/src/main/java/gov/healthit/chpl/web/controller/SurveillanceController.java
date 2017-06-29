@@ -404,7 +404,7 @@ public class SurveillanceController implements MessageSourceAware {
 			produces = "application/json; charset=utf-8")
 	public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id) throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
-		survManager.deletePendingSurveillance(acbs, id);
+		survManager.deletePendingSurveillance(acbs, id, false);
 		return "{\"success\" : true }";
 	}
 	
@@ -425,7 +425,7 @@ public class SurveillanceController implements MessageSourceAware {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 		for(Long id : idList.getIds()) {
 			try {
-				survManager.deletePendingSurveillance(acbs, id);
+				survManager.deletePendingSurveillance(acbs, id, false);
 			} catch(ObjectMissingValidationException ex) {
 				possibleExceptions.getExceptions().add(ex);
 			}
@@ -484,7 +484,7 @@ public class SurveillanceController implements MessageSourceAware {
 		
 		//delete the pending surveillance item if this one was successfully inserted
 		try {
-			survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete);
+			survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete, true);
 		} catch(Exception ex) {
 			logger.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
 		}
