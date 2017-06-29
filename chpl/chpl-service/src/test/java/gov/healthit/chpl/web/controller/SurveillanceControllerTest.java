@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -1925,7 +1926,7 @@ public class SurveillanceControllerTest {
 	@Transactional 
 	@Rollback
 	@Test(expected = ObjectsMissingValidationException.class)
-	public void test_deletePendingSurveillance_alreadyRejected()
+	public void test_deletePendingSurveillance_bulk_alreadyRejected()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
 		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
@@ -1978,6 +1979,50 @@ public class SurveillanceControllerTest {
 			}
 		}
 		result = surveillanceController.deletePendingSurveillance(idList); // this should cause expected exception for ObjectsMissingValidationException
+	}
+	
+	/** 
+	 * Given I am authenticated as ACB Admin
+	 * Given I have authority on each surveillance
+	 * Given a surveillance id has already been rejected/confirmed
+	 * When I reject the same surveillance id through the API that has already been rejected/confirmed
+	 * Then the API returns the related CHPL Product ID, start date, end date, and contact info of last modified user
+	 * @throws ObjectsMissingValidationException 
+	 * @throws AccessDeniedException 
+	 * @throws EntityNotFoundException 
+	 */
+	@Transactional 
+	@Rollback
+	@Test(expected = ObjectMissingValidationException.class)
+	public void test_deletePendingSurveillance_alreadyRejected()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
+		SecurityContextHolder.getContext().setAuthentication(oncAndAcb);
+		Long id = -3L;
+		// verify id exists
+		PendingSurveillanceEntity survResult = survDao.getPendingSurveillanceById(-3L, false);
+		assertTrue(survResult.getId() == id);
+		
+		// delete pending surveillance
+		String result = surveillanceController.deletePendingSurveillance(id);
+		assertNotNull(result);
+		assertTrue(result.contains("true"));
+		
+		// verify newly deleted surveillances are deleted
+		survResult = survDao.getPendingSurveillanceById(-3L, false);
+		assertNull(survResult);
+		
+		// try to delete already deleted pending surveillance
+		try{
+			result = surveillanceController.deletePendingSurveillance(id);
+		} catch(ObjectMissingValidationException ex){
+			assertTrue(ex.getObjectId() != null); // CHPL Product ID
+			assertTrue(ex.getContact() != null); // contact info of last modified user
+			assertTrue(ex.getContact().getContactId() != null);
+			assertTrue(ex.getStartDate() != null); // Pending Surveillance start date
+			assertTrue(ex.getEndDate() != null); // Pending Surveillance end date
+		}
+		result = surveillanceController.deletePendingSurveillance(id); // this should cause expected exception for ObjectsMissingValidationException
 	}
 	
 }

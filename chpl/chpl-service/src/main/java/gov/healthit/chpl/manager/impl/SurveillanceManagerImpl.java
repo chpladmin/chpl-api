@@ -292,8 +292,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		if(ownerCp == null) {
 			throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
 		}
-		Surveillance toDelete = new Surveillance();
-		toDelete.setId(survId);
+		
+		Surveillance toDelete = getPendingById(acbId, survId);
 		
 		try {
 			survDao.deletePendingSurveillance(toDelete);
@@ -313,7 +313,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			} else{
 				activityMsg.append("rejected.");
 			}
-			
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);	
 		}
 	}
@@ -344,10 +343,8 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			throw new AccessDeniedException("Permission denied on ACB " + ownerCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
 		}
 		
-		Surveillance toDelete = new Surveillance();
-		toDelete.setId(survId);
-		
 		if(isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
+			Surveillance toDelete = getPendingById(ownerCp.getCertificationBodyId(), survId);
 			try {
 				survDao.deletePendingSurveillance(toDelete);
 			} catch(Exception ex) {
