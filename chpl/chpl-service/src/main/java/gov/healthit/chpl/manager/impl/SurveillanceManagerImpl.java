@@ -284,14 +284,32 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void deletePendingSurveillance(Long acbId, Long survId) {		
-		Surveillance surv = new Surveillance();
-		surv.setId(survId);
+	public void deletePendingSurveillance(Long acbId, Long survId) throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {		
+		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
+		if(surv == null) {
+			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
+		}
+		CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
+		if(ownerCp == null) {
+			throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
+		}
+		Surveillance toDelete = new Surveillance();
+		toDelete.setId(survId);
 		
 		try {
-			survDao.deletePendingSurveillance(surv);
+			survDao.deletePendingSurveillance(toDelete);
 		} catch(Exception ex) {
 			logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
+		}
+		
+		if(isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
+			try {
+				survDao.deletePendingSurveillance(toDelete);
+			} catch(Exception ex) {
+				logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
+			}
+			String activityMsg = "Pending surveillance " + surv.getId() + " has been confirmed.";
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, surv.getId(), activityMsg, surv, null);	
 		}
 	}
 	
