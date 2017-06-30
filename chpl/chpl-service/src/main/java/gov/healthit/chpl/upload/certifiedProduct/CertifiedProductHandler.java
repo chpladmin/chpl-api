@@ -57,11 +57,21 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 			return false;
 		}
 		
-		boolean result = false;
-		if("1".equals(value) || value.equalsIgnoreCase("true")) {
-			result = true;
+		//look for a string
+		if(value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || 
+			value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("y")) {
+			return true;
 		}
 		
-		return new Boolean(result);
+		try {
+			double numValue = Double.parseDouble(value);
+			if(numValue > 0) {
+				return true;
+			} 
+		} catch(NumberFormatException ex) {
+			logger.error("Could not parse " + value + " as an integer");
+		}
+		
+		return false;
 	}
 }
