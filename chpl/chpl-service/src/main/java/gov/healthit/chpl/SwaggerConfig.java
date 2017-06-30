@@ -80,6 +80,7 @@ public class SwaggerConfig implements EnvironmentAware {
     		  regex("/key.*"),
     		  regex("/notifications.*"),    		  
     		  regex("/products.*"),
+    		  regex("/resources.*"),
     		  regex("/search.*"),
     		  regex("/surveillance.*"),
     		  regex("/status"),
