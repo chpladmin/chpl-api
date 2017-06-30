@@ -1,5 +1,10 @@
 # Release Notes
 
+## OCD-1550
+* Improve /update API call speed. Selectively update only items that have changed rather than doing a replace on the entire listing.
+
+---
+
 ## Version TBD
 _Date TBD_
 
