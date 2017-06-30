@@ -132,7 +132,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVersion("1.0.1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(2, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getVersion().getVersion().startsWith("1.0.1"));
@@ -432,7 +432,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		searchRequest.setSearchTerm("Test");
 		searchRequest.setDeveloper("Test Developer 1");
 		searchRequest.setProduct("Test");
-		searchRequest.setVersion("1.0.1");
+		searchRequest.setVersion("2.0");
 		searchRequest.getCertificationEditions().add("2014");
 		searchRequest.getCertificationBodies().add("InfoGard");
 		searchRequest.setPracticeType("Ambulatory");

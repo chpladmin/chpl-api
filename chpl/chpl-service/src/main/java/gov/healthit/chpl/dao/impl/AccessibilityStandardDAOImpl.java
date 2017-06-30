@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -20,15 +21,11 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 	
 	@Override
 	public AccessibilityStandardDTO create(AccessibilityStandardDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+			throws EntityCreationException {
 		
 		AccessibilityStandardEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
 		
 		if (entity != null) {
@@ -74,8 +71,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 	}
 
 	@Override
-	public AccessibilityStandardDTO getById(Long id)
-			throws EntityRetrievalException {
+	public AccessibilityStandardDTO getById(Long id) {
 		
 		AccessibilityStandardDTO dto = null;
 		AccessibilityStandardEntity entity = getEntityById(id);
@@ -111,6 +107,23 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 		return dtos;
 		
 	}
+	
+	@Override
+	public AccessibilityStandardDTO findOrCreate(Long id, String name) throws EntityCreationException {
+		AccessibilityStandardDTO result = null;
+		if(id != null) {
+			result = getById(id);
+		} else if(!StringUtils.isEmpty(name)) {
+			result = getByName(name);
+		} 
+		
+		if(result == null){
+			AccessibilityStandardDTO toCreate = new AccessibilityStandardDTO();
+			toCreate.setName(name.trim());
+			result = create(toCreate);
+		}
+		return result;
+	}
 
 	private void create(AccessibilityStandardEntity entity) {
 		
@@ -129,17 +142,13 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 		return entityManager.createQuery( "from AccessibilityStandardEntity where (NOT deleted = true) ", AccessibilityStandardEntity.class).getResultList();
 	}
 	
-	private AccessibilityStandardEntity getEntityById(Long id) throws EntityRetrievalException {
+	private AccessibilityStandardEntity getEntityById(Long id) {
 		
 		AccessibilityStandardEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from AccessibilityStandardEntity where (NOT deleted = true) AND (id = :entityid) ", AccessibilityStandardEntity.class );
 		query.setParameter("entityid", id);
 		List<AccessibilityStandardEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate id in database.");
-		}
 		
 		if (result.size() > 0){
 			entity = result.get(0);

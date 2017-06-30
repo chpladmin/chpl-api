@@ -40,6 +40,7 @@
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CQMResultEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>

@@ -13,4 +13,5 @@ public interface AccessibilityStandardDAO {
 	public List<AccessibilityStandardDTO> findAll();
 	public AccessibilityStandardDTO getById(Long id) throws EntityRetrievalException;
 	public AccessibilityStandardDTO getByName(String name) ;
+	public AccessibilityStandardDTO findOrCreate(Long id, String name) throws EntityCreationException;
 }

@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 
 /**
@@ -45,6 +47,19 @@ public class CertifiedProductTargetedUser implements Serializable {
 		this.id = dto.getId();
 		this.targetedUserId = dto.getTargetedUserId();
 		this.targetedUserName = dto.getTargetedUserName();
+	}
+	
+	public boolean matches(CertifiedProductTargetedUser other) {
+		boolean result = false;
+		if(this.getTargetedUserId() != null && other.getTargetedUserId() != null && 
+				this.getTargetedUserId().longValue() == other.getTargetedUserId().longValue()) {
+			result = true;
+		} else if(!StringUtils.isEmpty(this.getTargetedUserName()) && 
+				!StringUtils.isEmpty(other.getTargetedUserName()) &&
+				this.getTargetedUserName().equals(other.getTargetedUserName())) {
+			result = true;
+		}	
+		return result;
 	}
 	
 	public Long getId() {

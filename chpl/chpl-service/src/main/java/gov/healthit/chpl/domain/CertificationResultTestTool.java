@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 
 /**
@@ -61,6 +63,18 @@ public class CertificationResultTestTool implements Serializable {
 		this.testToolName = dto.getTestToolName();
 		this.testToolVersion = dto.getTestToolVersion();
 		this.retired = dto.isRetired();
+	}
+	
+	public boolean matches(CertificationResultTestTool anotherTool) {
+		boolean result = false;
+		if(this.getTestToolId() != null && anotherTool.getTestToolId() != null && 
+				this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()) {
+			result = true;
+		} else if(!StringUtils.isEmpty(this.getTestToolName()) && !StringUtils.isEmpty(anotherTool.getTestToolName()) && 
+				this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())) {
+			result = true;
+		}
+		return result;
 	}
 	
 	public Long getId() {

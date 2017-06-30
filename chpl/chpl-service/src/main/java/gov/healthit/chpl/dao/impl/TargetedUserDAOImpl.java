@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -20,15 +21,11 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 	
 	@Override
 	public TargetedUserDTO create(TargetedUserDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+			throws EntityCreationException {
 		
 		TargetedUserEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
 		
 		if (entity != null) {
@@ -74,8 +71,7 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 	}
 
 	@Override
-	public TargetedUserDTO getById(Long id)
-			throws EntityRetrievalException {
+	public TargetedUserDTO getById(Long id) {
 		
 		TargetedUserDTO dto = null;
 		TargetedUserEntity entity = getEntityById(id);
@@ -112,6 +108,23 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 		
 	}
 
+	@Override
+	public TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException {
+		TargetedUserDTO result = null;
+		if(id != null) {
+			result = getById(id);
+		} else if(!StringUtils.isEmpty(name)) {
+			result = getByName(name);
+		} 
+		
+		if(result == null){
+			TargetedUserDTO toCreate = new TargetedUserDTO();
+			toCreate.setName(name.trim());
+			result = create(toCreate);
+		}
+		return result;
+	}
+	
 	private void create(TargetedUserEntity entity) {
 		
 		entityManager.persist(entity);
@@ -129,17 +142,13 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 		return entityManager.createQuery( "from TargetedUserEntity where (NOT deleted = true) ", TargetedUserEntity.class).getResultList();
 	}
 	
-	private TargetedUserEntity getEntityById(Long id) throws EntityRetrievalException {
+	private TargetedUserEntity getEntityById(Long id) {
 		
 		TargetedUserEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from TargetedUserEntity where (NOT deleted = true) AND (id = :entityid) ", TargetedUserEntity.class );
 		query.setParameter("entityid", id);
 		List<TargetedUserEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate targeted user id in database.");
-		}
 		
 		if (result.size() > 0){
 			entity = result.get(0);
