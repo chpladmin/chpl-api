@@ -13,6 +13,7 @@ _Backwards compatibility breaking changes_
 * Added an additional app that runs to send out notifications of ICS inconsistencies (need to add cron for that)
 * Added description of surveillance triggers to emails
 * Added developer and listing statistics for ACBs to ONC summary email
+* Allow mass reject of pending surveillances
 
 ---
 

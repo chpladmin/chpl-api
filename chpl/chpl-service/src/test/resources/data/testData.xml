@@ -1047,6 +1047,11 @@
 		signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
+	<contact contact_id="-4" first_name="oncAndAcb" last_name="USER"
+		email="test@ainq.com" phone_number="(301) 560-6999" title="employee"
+		signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015"
+		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
+		deleted="FALSE" />
 
 	<pending_certified_product pending_certified_product_id="-1" unique_id="14.01.01.1009.FU01.05.1.0.160331" record_status="New" practice_type="Ambulatory" 
        testing_lab_name="My Testing Lab" vendor_name="Test Developer 1" product_name="Test Product 1" product_version="5.3.1.1" 
@@ -1323,6 +1328,24 @@
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
 		last_modified_user="-2" deleted="FALSE" />
+	<pending_surveillance id="-20"
+		surveillance_id_to_replace="-2" certified_product_id="1"
+		certified_product_unique_id="CHP-024050" start_date="2017-03-01 12:42:00.000"
+		end_date="2018-04-01 12:42:00.000" type_value="1"
+		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
+		last_modified_user="-2" deleted="FALSE" />
+	<pending_surveillance id="-21"
+		surveillance_id_to_replace="-2" certified_product_id="2"
+		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
+		end_date="2018-04-01 12:42:00.000" type_value="1"
+		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
+		last_modified_user="-2" deleted="FALSE" />
+	<pending_surveillance id="-22"
+		surveillance_id_to_replace="-2" certified_product_id="3"
+		certified_product_unique_id="CHP-024052" start_date="2017-03-01 12:42:00.000"
+		end_date="2018-04-01 12:42:00.000" type_value="1"
+		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
+		last_modified_user="-2" deleted="FALSE" />
 
 	<user user_id="-2" user_name="admin" password="pwd"
 		account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE"
@@ -1364,6 +1387,11 @@
 		account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE"
 		account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
+		deleted="FALSE" contact_id="1" />
+	<user user_id="7" user_name="oncAndAcb" password="pwd"
+		account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE"
+		account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015"
+		last_modified_date="2017-04-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" contact_id="1" />
 
 	<global_user_permission_map

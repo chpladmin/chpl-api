@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
 @Repository("listingStatisticsDAO")
 public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStatisticsDAO {
@@ -104,7 +103,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	}
 
 	/**
-	 * Total # of unique Products with Active (Including Suspended) 2014 Listings
+	 * Total # of unique Products with Active 2014 Listings
 	 */
 	@Override
 	public Long getTotalCPsActive2014Listings(DateRange dateRange) {

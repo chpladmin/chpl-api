@@ -372,7 +372,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 	
 	public void deletePendingSurveillance(Surveillance surv) throws EntityNotFoundException {
-		PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId());
+		PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId(), true);
 		if(toDelete == null) {
 			throw new EntityNotFoundException("Could not find pending surveillance with id " + surv.getId());
 		}
@@ -399,8 +399,8 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		entityManager.flush();
 	}
 	
-	public PendingSurveillanceEntity getPendingSurveillanceById(Long id) {
-		PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id);
+	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted) {
+		PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, includeDeleted);
 		return entity;
 	}
 
@@ -696,23 +696,27 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
-	private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id) {
-		entityManager.clear();
-		Query query = entityManager.createQuery("SELECT DISTINCT surv " 
+	private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id, boolean includeDeleted) {
+		PendingSurveillanceEntity entity = null;
+		String hql = "SELECT DISTINCT surv " 
 				+ "FROM PendingSurveillanceEntity surv "
 				+ "JOIN FETCH surv.certifiedProduct "
 				+ "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
-				+ "WHERE surv.deleted <> true "
-				+ "AND surv.id = :entityid", 
-				PendingSurveillanceEntity.class);
+				+ "WHERE surv.id = :entityid ";
+		if(!includeDeleted){
+			hql+= "AND surv.deleted <> true ";
+		}
+
+		entityManager.clear();
+		Query query = entityManager.createQuery(hql, PendingSurveillanceEntity.class);
 		query.setParameter("entityid", id);
 		
 		List<PendingSurveillanceEntity> results = query.getResultList();
-		if(results != null && results.size() > 0) {
-			return results.get(0);
+		if(results.size() > 0) {
+			entity = results.get(0);
 		}
-		return null;
+		return entity;
 	}
 	
 	private List<PendingSurveillanceEntity> fetchPendingSurveillanceByAcbId(Long acbId) {
