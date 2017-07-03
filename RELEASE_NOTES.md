@@ -4,7 +4,6 @@
 _Date TBD_
 
 ## Minor Features
-* Add /resources/create API call to allow returning a CSV from JSON input
 * Improve /update API call speed. Selectively update only items that have changed rather than doing a replace on the entire listing.
 * Allow mass reject of pending surveillances
 
