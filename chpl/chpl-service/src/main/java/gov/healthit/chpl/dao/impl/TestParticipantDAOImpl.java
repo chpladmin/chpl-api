@@ -19,16 +19,11 @@ import gov.healthit.chpl.entity.TestParticipantEntity;
 public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipantDAO {
 	
 	@Override
-	public TestParticipantDTO create(TestParticipantDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+	public TestParticipantDTO create(TestParticipantDTO dto) throws EntityCreationException {
 		
 		TestParticipantEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
 		
 		if (entity != null) {
@@ -91,8 +86,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 	}
 
 	@Override
-	public TestParticipantDTO getById(Long id)
-			throws EntityRetrievalException {
+	public TestParticipantDTO getById(Long id) {
 		
 		TestParticipantDTO dto = null;
 		TestParticipantEntity entity = getEntityById(id);
@@ -138,7 +132,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 				+ "where (NOT tpe.deleted = true) ", TestParticipantEntity.class).getResultList();
 	}
 	
-	private TestParticipantEntity getEntityById(Long id) throws EntityRetrievalException {
+	private TestParticipantEntity getEntityById(Long id) {
 		
 		TestParticipantEntity entity = null;
 		
@@ -149,10 +143,6 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			TestParticipantEntity.class);
 		query.setParameter("entityid", id);
 		List<TestParticipantEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate test participant id in database.");
-		}
 		
 		if (result.size() > 0){
 			entity = result.get(0);

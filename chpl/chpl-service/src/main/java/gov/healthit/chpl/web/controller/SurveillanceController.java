@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,6 +46,7 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -59,6 +61,8 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.annotations.Api;
@@ -398,9 +402,38 @@ public class SurveillanceController implements MessageSourceAware {
 	@ApiOperation(value="Reject (effectively delete) a pending surveillance item.")
 	@RequestMapping(value="/pending/{pendingSurvId}/reject", method=RequestMethod.POST,
 			produces = "application/json; charset=utf-8")
-	public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id) {
+	public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id) throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
-		survManager.deletePendingSurveillance(acbs, id);
+		survManager.deletePendingSurveillance(acbs, id, false);
+		return "{\"success\" : true }";
+	}
+	
+	@ApiOperation(value="Reject several pending surveillance.", 
+			notes="Marks a list of pending surveillance as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB for each pending surveillance is required.")
+	@RequestMapping(value="/pending/reject", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody String deletePendingSurveillance(@RequestBody IdListContainer idList) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, 
+			EntityNotFoundException, AccessDeniedException, InvalidArgumentsException, 
+			ObjectsMissingValidationException {
+		if(idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
+			throw new InvalidArgumentsException("At least one id must be provided for rejection.");
+		}
+		
+		ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		for(Long id : idList.getIds()) {
+			try {
+				survManager.deletePendingSurveillance(acbs, id, false);
+			} catch(ObjectMissingValidationException ex) {
+				possibleExceptions.getExceptions().add(ex);
+			}
+		}
+		
+		if(possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
+			throw possibleExceptions;
+		}
 		return "{\"success\" : true }";
 	}
 	
@@ -451,7 +484,7 @@ public class SurveillanceController implements MessageSourceAware {
 		
 		//delete the pending surveillance item if this one was successfully inserted
 		try {
-			survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete);
+			survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete, true);
 		} catch(Exception ex) {
 			logger.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
 		}

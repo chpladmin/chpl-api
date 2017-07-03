@@ -453,12 +453,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "AND pve.productId = pe.id "
 				+ "AND ve.id = pe.developerId ", DeveloperEntity.class);
 		getDeveloperByVersionIdQuery.setParameter("versionId", productVersionId);
-		Object result = getDeveloperByVersionIdQuery.getSingleResult();
-		if(result == null) {
-			return null;
+		List<DeveloperEntity> results = getDeveloperByVersionIdQuery.getResultList();
+		if(results != null && results.size() > 0) {
+			return new DeveloperDTO(results.get(0));
 		}
-		DeveloperEntity ve = (DeveloperEntity)result;
-		return new DeveloperDTO(ve);
+		return null;
 	}
 	
 	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){

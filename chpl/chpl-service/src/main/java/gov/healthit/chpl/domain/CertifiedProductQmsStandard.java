@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 
 /**
@@ -61,6 +63,19 @@ public class CertifiedProductQmsStandard implements Serializable {
 		this.qmsStandardName = dto.getQmsStandardName();
 		this.qmsModification = dto.getQmsModification();
 		this.applicableCriteria = dto.getApplicableCriteria();
+	}
+	
+	public boolean matches(CertifiedProductQmsStandard other) {
+		boolean result = false;
+		if(this.getQmsStandardId() != null && other.getQmsStandardId() != null && 
+			this.getQmsStandardId().longValue() == other.getQmsStandardId().longValue()) {
+		result = true;
+		} else if(!StringUtils.isEmpty(this.getQmsStandardName()) && 
+				!StringUtils.isEmpty(other.getQmsStandardName()) &&
+				this.getQmsStandardName().equals(other.getQmsStandardName())) {
+			result = true;
+		}
+		return result;
 	}
 	
 	public Long getId() {

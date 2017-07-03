@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 
 /**
@@ -79,6 +81,28 @@ public class CertificationResultAdditionalSoftware implements Serializable {
 		this.certificationResultId = dto.getCertificationResultId();
 		this.certifiedProductNumber = dto.getCertifiedProductNumber();
 		this.grouping = dto.getGrouping();
+	}
+	
+	//not overriding equals becuase i'm not sure if this logic is really right for "equals"
+	//but i want to know if two additional software objects are the same as far
+	//as a user would think
+	public boolean matches(CertificationResultAdditionalSoftware other) {
+		boolean result = false;
+		if((StringUtils.isEmpty(this.getGrouping()) && StringUtils.isEmpty(other.getGrouping())) || 
+				this.getGrouping().equals(other.getGrouping())) {
+			//if grouping is the same (or not grouped), 
+			//look for cp id or or software name/version combo to match
+			if(this.getCertifiedProductId() != null && other.getCertifiedProductId() != null && 
+				this.getCertifiedProductId().longValue() == other.getCertifiedProductId().longValue()) {
+				result = true;
+			} else if(!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(other.getName()) && 
+					this.getName().equalsIgnoreCase(other.getName()) && 
+					((StringUtils.isEmpty(this.getVersion()) && StringUtils.isEmpty(other.getVersion())) || 
+						this.getVersion().equalsIgnoreCase(other.getVersion()))) {
+				result = true;
+			}
+		}
+		return result;
 	}
 	
 	public String getJustification() {

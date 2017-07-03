@@ -19,16 +19,11 @@ import gov.healthit.chpl.entity.TestTaskEntity;
 public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 	
 	@Override
-	public TestTaskDTO create(TestTaskDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+	public TestTaskDTO create(TestTaskDTO dto) throws EntityCreationException {
 		
 		TestTaskEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
 		
 		if (entity != null) {
@@ -90,7 +85,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 	}
 
 	@Override
-	public void delete(Long id) throws EntityRetrievalException {
+	public void delete(Long id) {
 		
 		TestTaskEntity toDelete = getEntityById(id);
 		
@@ -103,8 +98,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 	}
 
 	@Override
-	public TestTaskDTO getById(Long id)
-			throws EntityRetrievalException {
+	public TestTaskDTO getById(Long id) {
 		
 		TestTaskDTO dto = null;
 		TestTaskEntity entity = getEntityById(id);
@@ -146,18 +140,14 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 		return entityManager.createQuery( "from TestTaskEntity where (NOT deleted = true) ", TestTaskEntity.class).getResultList();
 	}
 	
-	private TestTaskEntity getEntityById(Long id) throws EntityRetrievalException {
+	private TestTaskEntity getEntityById(Long id) {
 		
 		TestTaskEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from TestTaskEntity where (NOT deleted = true) AND (id = :entityid) ", TestTaskEntity.class );
 		query.setParameter("entityid", id);
 		List<TestTaskEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate test task id in database.");
-		}
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}

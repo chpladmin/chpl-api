@@ -24,6 +24,9 @@ public class CertificationResult implements Serializable {
 	private static final long serialVersionUID = -4917413876078419868L;
 	public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
 	
+	@XmlTransient
+	private Long id;
+	
 	/**
 	 * Criteria number, i.e. 170.314 (a)(1)
 	 */
@@ -209,16 +212,13 @@ public class CertificationResult implements Serializable {
 		 g2MacraMeasures = new ArrayList<MacraMeasure>();
 	}
 
-	public List<MacraMeasure> getAllowedMacraMeasures() {
-		return allowedMacraMeasures;
-	}
-
-	public void setAllowedMacraMeasures(List<MacraMeasure> allowedMacraMeasures) {
-		this.allowedMacraMeasures = allowedMacraMeasures;
+	public Long getId() {
+		return id;
 	}
 
 	public CertificationResult(CertificationResultDetailsDTO certResult) {
 		this();
+		this.setId(certResult.getId());
 		this.setNumber(certResult.getNumber());
 		this.setSuccess(certResult.getSuccess());
 		this.setTitle(certResult.getTitle());
@@ -230,6 +230,18 @@ public class CertificationResult implements Serializable {
 		this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
 	}
 	
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<MacraMeasure> getAllowedMacraMeasures() {
+		return allowedMacraMeasures;
+	}
+
+	public void setAllowedMacraMeasures(List<MacraMeasure> allowedMacraMeasures) {
+		this.allowedMacraMeasures = allowedMacraMeasures;
+	}
+
 	public List<CertificationResultTestProcedure> getTestProcedures() {
 		return testProcedures;
 	}

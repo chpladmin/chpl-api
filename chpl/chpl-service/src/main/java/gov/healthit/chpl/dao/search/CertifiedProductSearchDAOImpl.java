@@ -19,7 +19,23 @@ import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
-		
+	
+	@Override
+	public Long getListingIdByUniqueChplNumber(String chplProductNumber) {
+		Long id = null;
+		Query query = entityManager.createQuery("SELECT cps "
+				+ "FROM CertifiedProductBasicSearchResultEntity cps "
+				+ "WHERE chplProductNumber = :chplProductNumber", 
+				CertifiedProductBasicSearchResultEntity.class);
+		query.setParameter("chplProductNumber", chplProductNumber);
+		List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
+		if(results != null && results.size() > 0) {
+			CertifiedProductBasicSearchResultEntity result = results.get(0);
+			id = result.getId();
+		}
+		return id;
+	}
+
 	@Override
 	public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts() {
 		logger.info("Starting basic search query.");
