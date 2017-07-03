@@ -1,10 +1,15 @@
 package gov.healthit.chpl.dao.impl;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -37,10 +43,16 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationCriterionDaoTest extends TestCase {
-
+	
+	@PersistenceContext
+	protected EntityManager entityManager;
 	
 	@Autowired
 	private CertificationCriterionDAO certificationCriterionDAO;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -73,7 +85,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -89,7 +101,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
@@ -117,7 +129,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -134,7 +146,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-2L);
 		result.setNumber("CERT124");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(true);
 		dto.setTitle("Test Cert Criterion 1");
 		
@@ -152,7 +164,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
@@ -179,7 +191,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -195,7 +207,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
@@ -245,7 +257,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		dto.setLastModifiedDate(new Date());
 		dto.setLastModifiedUser(-1L);
 		dto.setNumber("CERT123");
-		dto.setParentCriterionId(null);
+//		dto.setParentCriterionId(null);
 		dto.setRequiresSed(false);
 		dto.setTitle("Test Cert Criterion");
 		
@@ -261,7 +273,7 @@ public class CertificationCriterionDaoTest extends TestCase {
 		assertEquals(result.getId(), check.getId());
 		assertEquals(result.getLastModifiedUser(), check.getLastModifiedUser());
 		assertEquals(result.getNumber(), check.getNumber());
-		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
+//		assertEquals(result.getParentCriterionId(), result.getParentCriterionId());
 		assertEquals(result.getRequiresSed(), result.getRequiresSed());
 		assertEquals(result.getTitle(), result.getTitle());
 		
@@ -287,5 +299,25 @@ public class CertificationCriterionDaoTest extends TestCase {
 		certificationCriterionDAO.delete(id);
 	}
 	
-
+	/**
+	 * Tests that getAllEntities() gets all non-deleted certification criterion that are associated with a certified product
+	 * Must have (TestTool.retired = true AND CP.ics_code = true) OR (TestTool.retired = false) AND CertCriterion.deleted = false
+	 * @throws EntityRetrievalException
+	 * @throws EntityCreationException
+	 */
+	@Test
+	@Transactional
+	public void testGetAllEntities() throws EntityRetrievalException, EntityCreationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		
+		System.out.println("Running getAllEntities() test");
+		List<CertificationCriterionDTO> certCritDTOs = certificationCriterionDAO.findAll();
+		assertEquals(164, certCritDTOs.size());
+		
+		List<Long> certCritIdList = new ArrayList<Long>();
+		for(CertificationCriterionDTO dto : certCritDTOs){
+			certCritIdList.add(dto.getId());
+			assertFalse(dto.getDeleted());
+		}
+	}
 }

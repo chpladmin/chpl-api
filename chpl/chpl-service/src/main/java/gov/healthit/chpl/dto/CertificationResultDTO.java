@@ -1,13 +1,14 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.entity.CertificationResultEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 
-public class CertificationResultDTO {
-	
+public class CertificationResultDTO implements Serializable {
+	private static final long serialVersionUID = 4640517836460510236L;
 	private Long id;
 	private Long certificationCriterionId;
 	private Long certifiedProductId;
@@ -31,6 +32,8 @@ public class CertificationResultDTO {
 	private List<CertificationResultTestStandardDTO> testStandards;
 	private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
 	private List<CertificationResultTestTaskDTO> testTasks;
+	private List<CertificationResultMacraMeasureDTO> g1Measures;
+	private List<CertificationResultMacraMeasureDTO> g2Measures;
 	
 	public CertificationResultDTO(){
 		ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
@@ -41,8 +44,26 @@ public class CertificationResultDTO {
 		testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
 		testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
 		testTasks = new ArrayList<CertificationResultTestTaskDTO>();
+		g1Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
+		g2Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
 	}
 	
+	public List<CertificationResultMacraMeasureDTO> getG1Measures() {
+		return g1Measures;
+	}
+
+	public void setG1Measures(List<CertificationResultMacraMeasureDTO> g1Measures) {
+		this.g1Measures = g1Measures;
+	}
+
+	public List<CertificationResultMacraMeasureDTO> getG2Measures() {
+		return g2Measures;
+	}
+
+	public void setG2Measures(List<CertificationResultMacraMeasureDTO> g2Measures) {
+		this.g2Measures = g2Measures;
+	}
+
 	public List<CertificationResultTestProcedureDTO> getTestProcedures() {
 		return testProcedures;
 	}

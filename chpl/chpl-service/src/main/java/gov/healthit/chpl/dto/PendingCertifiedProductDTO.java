@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dto;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
@@ -32,8 +34,8 @@ import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
-public class PendingCertifiedProductDTO {
-	
+public class PendingCertifiedProductDTO implements Serializable {
+	private static final long serialVersionUID = 8778880570983282001L;
 	private Long id;
 	private Long practiceTypeId;
     private Long developerId;
@@ -44,6 +46,8 @@ public class PendingCertifiedProductDTO {
     private Long certificationBodyId;    
     private Long productClassificationId;
     private Long testingLabId;
+    private Boolean deleted;
+    private Long lastModifiedUser;
     private Set<String> errorMessages;
     private Set<String> warningMessages;
     
@@ -185,7 +189,7 @@ public class PendingCertifiedProductDTO {
 		this.sedReportFileLocation = details.getSedReportFileLocation();
 		this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
 		this.sedTestingEnd = details.getSedTestingEnd();
-		this.ics = details.getIcs();
+		this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? false : details.getIcs().getInherits();
 		this.accessibilityCertified = details.getAccessibilityCertified();
 		this.transparencyAttestation = details.getTransparencyAttestation();
 		this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
@@ -305,6 +309,34 @@ public class PendingCertifiedProductDTO {
 				}
 			}
 			
+			if(crResult.getG1MacraMeasures() != null && crResult.getG1MacraMeasures().size() > 0) {
+				for(MacraMeasure mm : crResult.getG1MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					mmDto.setMacraMeasureId(mm.getId());
+
+					MacraMeasureDTO measure = new MacraMeasureDTO();
+					measure.setId(mm.getId());
+					measure.setValue(mm.getAbbreviation());
+					mmDto.setMacraMeasure(measure);
+					certDto.getG1MacraMeasures().add(mmDto);
+				}
+			}
+			
+			if(crResult.getG2MacraMeasures() != null && crResult.getG2MacraMeasures().size() > 0) {
+				for(MacraMeasure mm : crResult.getG2MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					mmDto.setMacraMeasureId(mm.getId());
+						
+					MacraMeasureDTO measure = new MacraMeasureDTO();
+					measure.setId(mm.getId());
+					measure.setValue(mm.getAbbreviation());
+					mmDto.setMacraMeasure(measure);
+					certDto.getG2MacraMeasures().add(mmDto);
+				}
+			}
+			
 			if(crResult.getTestTasks() != null && crResult.getTestTasks().size() > 0) {
 				for(CertificationResultTestTask task : crResult.getTestTasks()) {
 					PendingCertificationResultTestTaskDTO crTaskDto = new PendingCertificationResultTestTaskDTO();
@@ -399,6 +431,8 @@ public class PendingCertifiedProductDTO {
 		this.id = entity.getId();
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.testingLabId = entity.getTestingLabId();
+		this.deleted = entity.getDeleted();
+		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.developerId = entity.getDeveloperId();
 		//this.developerAddress = new AddressDTO(entity.getDeveloperAddress());
 		this.productId = entity.getProductId();
@@ -850,5 +884,21 @@ public class PendingCertifiedProductDTO {
 
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
 	}
 }

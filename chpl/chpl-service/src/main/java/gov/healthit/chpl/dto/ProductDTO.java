@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -9,15 +10,17 @@ import java.util.Set;
 import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductEntity;
+import gov.healthit.chpl.entity.ProductVersionEntity;
 
-public class ProductDTO {
-	
+public class ProductDTO implements Serializable {
+	private static final long serialVersionUID = -5440560685496661764L;
 	private Long id;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private String name;
+	private ContactDTO contact;
 	private Set<ProductVersionDTO> productVersions = new HashSet<ProductVersionDTO>();
 	private String reportFileLocation;
 	private Long developerId;
@@ -39,6 +42,9 @@ public class ProductDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
 		this.reportFileLocation = entity.getReportFileLocation();
+		if(entity.getContact() != null) {
+			this.contact = new ContactDTO(entity.getContact());
+		}
 		this.developerId = entity.getDeveloperId();
 		if(entity.getDeveloper() != null) {
 			this.developerName = entity.getDeveloper().getName();
@@ -50,6 +56,13 @@ public class ProductDTO {
 				this.ownerHistory.add(ownerDto);
 			}
 		}
+		if(entity.getProductVersions() != null) {
+			for(ProductVersionEntity version : entity.getProductVersions()) {
+				ProductVersionDTO versionDto = new ProductVersionDTO(version);
+				this.productVersions.add(versionDto);
+			}
+		}
+		
 		if(entity.getProductCertificationStatusesEntity() != null){
 			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(), 
 					entity.getProductCertificationStatusesEntity().getRetired(), 
@@ -138,6 +151,12 @@ public class ProductDTO {
 	}
 	public void setDeveloperCode(String developerCode) {
 		this.developerCode = developerCode;
+	}
+	public ContactDTO getContact() {
+		return contact;
+	}
+	public void setContact(ContactDTO contact) {
+		this.contact = contact;
 	}
 	
 }

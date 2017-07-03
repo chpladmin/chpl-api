@@ -1,13 +1,17 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity;
+import java.io.Serializable;
 
-public class CertificationResultTestFunctionalityDTO {
+import gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity;
+
+public class CertificationResultTestFunctionalityDTO implements Serializable {
+	private static final long serialVersionUID = 1504901339062574362L;
 	private Long id;
 	private Long certificationResultId;
 	private Long testFunctionalityId;
 	private String testFunctionalityName;
 	private String testFunctionalityNumber;
+	private String testFunctionalityEdition;
 	private Boolean deleted;
 	
 	public CertificationResultTestFunctionalityDTO(){}
@@ -19,6 +23,9 @@ public class CertificationResultTestFunctionalityDTO {
 		if(entity.getTestFunctionality() != null) {
 			this.testFunctionalityName = entity.getTestFunctionality().getName();
 			this.testFunctionalityNumber = entity.getTestFunctionality().getNumber();
+			if(entity.getTestFunctionality().getCertificationEdition() != null) {
+				this.testFunctionalityEdition = entity.getTestFunctionality().getCertificationEdition().getYear();
+			}
 		}
 		this.deleted = entity.getDeleted();
 	}
@@ -69,6 +76,14 @@ public class CertificationResultTestFunctionalityDTO {
 
 	public void setTestFunctionalityNumber(String testFunctionalityNumber) {
 		this.testFunctionalityNumber = testFunctionalityNumber;
+	}
+
+	public String getTestFunctionalityEdition() {
+		return testFunctionalityEdition;
+	}
+
+	public void setTestFunctionalityEdition(String testFunctionalityEdition) {
+		this.testFunctionalityEdition = testFunctionalityEdition;
 	}
 
 }

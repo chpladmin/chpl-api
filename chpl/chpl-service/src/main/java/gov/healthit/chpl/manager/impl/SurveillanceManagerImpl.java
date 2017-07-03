@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +12,22 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
@@ -32,7 +42,6 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
@@ -40,6 +49,7 @@ import gov.healthit.chpl.entity.SurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 
@@ -52,6 +62,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Autowired SurveillanceDAO survDao;
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired SurveillanceValidator validator;
+	@Autowired UserPermissionDAO userPermissionDao;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -115,12 +126,16 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public Long createSurveillance(Long acbId, Surveillance surv) {
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
+	public Long createSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		Long insertedId = null;
+		checkSurveillanceAuthority(surv);
+		updateNullAuthority(surv);
 		
 		try {
 			insertedId = survDao.insertSurveillance(surv);
-		} catch(Exception ex) {
+		} catch(UserPermissionRetrievalException ex) {
 			logger.error("Error inserting surveillance.", ex);
 			throw ex;
 		}
@@ -151,10 +166,23 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public void updateSurveillance(Long acbId, Surveillance surv) {
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
+	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+		SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
+		try{
+			dbSurvEntity = survDao.getSurveillanceById(surv.getId());
+		} catch(NullPointerException e){
+			logger.debug("Surveillance id is null");
+		}
+		Surveillance dbSurv = new Surveillance();
+		dbSurv.setId(dbSurvEntity.getId());
+		UserPermissionDTO upDto = userPermissionDao.findById(dbSurvEntity.getUserPermissionId());
+		dbSurv.setAuthority(upDto.getAuthority());
+		checkSurveillanceAuthority(dbSurv);
 		try {
 			survDao.updateSurveillance(surv);
-		} catch(Exception ex) {
+		} catch(UserPermissionRetrievalException ex) {
 			logger.error("Error updating surveillance.", ex);
 			throw ex;
 		}
@@ -165,14 +193,15 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public void deleteSurveillance(Long acbId, Long survId) {		
-		Surveillance surv = new Surveillance();
-		surv.setId(survId);
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
+	public void deleteSurveillance(Long acbId, Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
+		checkSurveillanceAuthority(surv);
 		
 		try {
 			survDao.deleteSurveillance(surv);
 		} catch(Exception ex) {
-			logger.error("Error marking surveillance with id " + survId + " as deleted.", ex);
+			logger.error("Error marking surveillance with id " + surv.getId() + " as deleted.", ex);
 			throw ex;
 		}
 	}
@@ -314,6 +343,27 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		}
 	}
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	public File getProtectedDownloadFile(String filenameToDownload) throws IOException {
+		return getFileFromDownloadFolder(filenameToDownload);
+	}
+	
+	@Override
+	public File getDownloadFile(String filenameToDownload) throws IOException {
+		return getFileFromDownloadFolder(filenameToDownload);
+	}
+	
+	private File getFileFromDownloadFolder(String filenameToDownload) throws IOException {
+		String downloadFileLocation = env.getProperty("downloadFolderPath");
+		
+		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
+		if(!downloadFile.exists() || !downloadFile.canRead()) {
+			throw new IOException("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+		} 
+		return downloadFile;
+	}
+	
 	private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
 		Surveillance surv = new Surveillance();
 		surv.setId(pr.getId());
@@ -398,6 +448,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		surv.setStartDate(entity.getStartDate());
 		surv.setEndDate(entity.getEndDate());
 		surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
+		surv.setAuthority(userPermissionDao.findById(entity.getUserPermissionId()).getAuthority());
 		
 		if(entity.getCertifiedProduct() != null) {
 			CertifiedProductEntity cpEntity = entity.getCertifiedProduct();
@@ -496,5 +547,57 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			}
 		}
 		return surv;
+	}
+	
+	private void checkSurveillanceAuthority(Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
+		Boolean hasOncAdmin = Util.isUserRoleAdmin();
+		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
+		if(StringUtils.isEmpty(surv.getAuthority())){
+			// If user has ROLE_ADMIN and ROLE_ACB_ADMIN or ROLE_ACB_STAFF, return 403
+			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)){
+				String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and " 
+						+ Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF;
+				logger.error(errorMsg);
+				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
+			}
+		}
+		else {
+			// Cannot have surveillance authority as ROLE_ADMIN for user lacking ROLE_ADMIN
+		    if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin){
+		    	String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
+				logger.error(errorMsg);
+				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);	
+			}
+		    // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
+		    else if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) 
+		    		|| surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
+		    	if(!hasOncAdmin && !hasAcbAdmin && !hasAcbStaff){
+		    		String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
+		    		logger.error(errorMsg);
+		    		throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
+		    	}
+		    }
+		}
+	}
+	
+	private void updateNullAuthority(Surveillance surv){
+		Boolean hasOncAdmin = Util.isUserRoleAdmin();
+		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
+		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
+		if(StringUtils.isEmpty(surv.getAuthority())){
+			if(hasOncAdmin){
+				surv.setAuthority(Authority.ROLE_ADMIN);
+			}
+			else if(hasAcbAdmin && hasAcbStaff){
+				surv.setAuthority(Authority.ROLE_ACB_STAFF);
+			}
+			else if(hasAcbAdmin){
+				surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+			}
+			else if(hasAcbStaff){
+				surv.setAuthority(Authority.ROLE_ACB_STAFF);
+			}
+		}
 	}
 }

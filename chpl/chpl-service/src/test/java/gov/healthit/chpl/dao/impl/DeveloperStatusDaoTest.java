@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao.impl;
 
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
@@ -32,6 +34,10 @@ public class DeveloperStatusDaoTest extends TestCase {
 
 	@Autowired 
 	private DeveloperStatusDAO developerStatusDao;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 
 	@Test
 	@Transactional

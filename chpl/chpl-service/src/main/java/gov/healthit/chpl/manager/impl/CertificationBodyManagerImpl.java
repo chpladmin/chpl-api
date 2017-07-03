@@ -30,18 +30,19 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
-import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 
-@Service
+@Service("certificationBodyManager")
 public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
 
 	@Autowired
@@ -61,6 +62,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		//assign a code
 		String maxCode = certificationBodyDAO.getMaxCode();
@@ -96,6 +98,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
+	@ClearAllCaches
 	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
 		
 		CertificationBodyDTO result = null;
@@ -109,6 +112,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public void undelete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		CertificationBodyDTO original = certificationBodyDAO.getById(acb.getId(), true);
 		acb.setDeleted(false);
@@ -120,6 +124,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@ClearAllCaches
 	public void delete(CertificationBodyDTO acb) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
@@ -266,9 +271,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			mutableAclService.updateAcl(acl);
 			logger.debug("Added permission " + permission + " for Sid " + recipient
 					+ " acb " + acb);
-			
-			//now give them permission on all of the pending certified products for this ACB
-			pendingCpManager.addPermissionToAllPendingCertifiedProductsOnAcb(acb, user, permission);
 		}
 	}
 
@@ -293,9 +295,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			mutableAclService.updateAcl(acl);
 		}
 		logger.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
-		
-		//now delete permission from all of the pending certified products for this ACB
-		pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, recipient);
 	}
 
 	@Transactional
@@ -320,9 +319,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
-		
-		//now delete permission from all of the pending certified products for this ACB
-		pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, recipient);
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')") 
@@ -344,9 +340,6 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 					permissions.remove(currEntry.getPermission());
 				}
 			}
-			
-			//now delete permission from all of the pending certified products for this ACB
-			pendingCpManager.deleteUserPermissionFromAllPendingCertifiedProductsOnAcb(acb, new PrincipalSid(userDto.getSubjectName()));
 		}
 	}
 	

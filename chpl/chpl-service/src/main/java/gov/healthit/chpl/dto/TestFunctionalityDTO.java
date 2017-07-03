@@ -1,11 +1,15 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.TestFunctionalityEntity;
 
-public class TestFunctionalityDTO {
+public class TestFunctionalityDTO implements Serializable {
+	private static final long serialVersionUID = -4607291382443032361L;
 	private Long id;
 	private String name;
 	private String number;
+	private String year;
 	
 	public TestFunctionalityDTO(){}
 	
@@ -13,6 +17,9 @@ public class TestFunctionalityDTO {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.number = entity.getNumber();
+		if(entity.getCertificationEdition() != null) {
+			this.year = entity.getCertificationEdition().getYear();
+		}
 	}
 
 	public Long getId() {
@@ -37,5 +44,13 @@ public class TestFunctionalityDTO {
 
 	public void setNumber(String number) {
 		this.number = number;
+	}
+
+	public String getYear() {
+		return year;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
 	}
 }

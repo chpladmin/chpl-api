@@ -4,6 +4,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -39,6 +40,17 @@ public interface CertificationResultDAO {
 	public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto) throws EntityCreationException;
 	public CertificationResultTestToolDTO updateTestToolMapping(CertificationResultTestToolDTO dto);
 	public void deleteTestToolMapping(Long mappingId);
+	
+	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId);
+	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId);
+	public CertificationResultMacraMeasureDTO addG1MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException;
+	public CertificationResultMacraMeasureDTO addG2MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException;
+	public CertificationResultMacraMeasureDTO updateG1MacrameasureMapping(CertificationResultMacraMeasureDTO dto);
+	public CertificationResultMacraMeasureDTO updateG2MacrameasureMapping(CertificationResultMacraMeasureDTO dto);
+	public void deleteG1MacraMeasureMapping(Long mappingId);
+	public void deleteG2MacraMeasureMapping(Long mappingId);
+	public CertificationResultMacraMeasureDTO lookupG1MacraMeasureMapping(Long certificationResultId, Long macraMeasureId);
+	public CertificationResultMacraMeasureDTO lookupG2MacraMeasureMapping(Long certificationResultId, Long macraMeasureId);
 	
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);
 	public CertificationResultTestDataDTO updateTestDataMapping(CertificationResultTestDataDTO dto);

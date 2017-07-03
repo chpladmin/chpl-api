@@ -1,7 +1,9 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 
-public class UpdateVersionRequest {
+public class UpdateVersionRequest implements Serializable {
+	private static final long serialVersionUID = 7332486411279338020L;
 	private Long versionId;
 	private String version;
 	

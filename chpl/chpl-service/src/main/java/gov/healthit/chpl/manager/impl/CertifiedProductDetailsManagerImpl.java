@@ -13,18 +13,19 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -35,20 +36,24 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -58,10 +63,12 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
+import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -99,17 +106,24 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private CertificationResultRules certRules;
+	
+	@Autowired private ListingGraphDAO listingGraphDao;
 
 	@Autowired private SurveillanceManager survManager;
 	
 	private CQMCriterionDAO cqmCriterionDAO;
+	private MacraMeasureDAO macraDao;
 	
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+	private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 	
 	@Autowired
-	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO){
+	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO, MacraMeasureDAO macraDao){
 		this.cqmCriterionDAO = cqmCriterionDAO;
+		this.macraDao = macraDao;
+		
 		loadCQMCriteria();
+		loadCriteriaMacraMeasures();
 	}
 	
 
@@ -179,7 +193,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		ProductVersion version = new ProductVersion(dto.getVersion());
 		searchDetails.setVersion(version);
 
-		searchDetails.setIcs(dto.getIcs());
+		InheritedCertificationStatus ics = new InheritedCertificationStatus();
+		ics.setInherits(dto.getIcs());
+		searchDetails.setIcs(ics);
 		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
@@ -331,6 +347,26 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setTestFunctionality(null);
 			}
 			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG1MacraMeasuresForCertificationResult(certResult.getId());
+				for(CertificationResultMacraMeasureDTO currResult : measures) {
+					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
+					result.getG1MacraMeasures().add(mmResult);
+				}
+			} else {
+				result.setG1MacraMeasures(null);
+			}
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG2MacraMeasuresForCertificationResult(certResult.getId());
+				for(CertificationResultMacraMeasureDTO currResult : measures) {
+					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
+					result.getG2MacraMeasures().add(mmResult);
+				}
+			} else {
+				result.setG2MacraMeasures(null);
+			}
+			
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
 				List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
 				for(CertificationResultTestTaskDTO currResult : testTask) {
@@ -350,6 +386,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				}
 			} else {
 				result.setTestTasks(null);
+			}
+			
+			//set allowed macra measures (if any)
+			for(MacraMeasure measure : macraMeasures) {
+				if(measure.getCriteria().getNumber().equals(result.getNumber())) {
+					result.getAllowedMacraMeasures().add(measure);
+				}
 			}
 			
 			certificationResults.add(result);
@@ -438,6 +481,21 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
 		
+		//get first-level parents and children
+		List<CertifiedProductDetailsDTO> children = listingGraphDao.getChildren(dto.getId());
+		if(children != null && children.size() > 0) {
+			for(CertifiedProductDetailsDTO child : children) {
+				searchDetails.getIcs().getChildren().add(new CertifiedProduct(child));
+			}
+		}
+		
+		List<CertifiedProductDetailsDTO> parents = listingGraphDao.getParents(dto.getId());
+		if(parents != null && parents.size() > 0) {
+			for(CertifiedProductDetailsDTO parent : parents) {
+				searchDetails.getIcs().getParents().add(new CertifiedProduct(parent));
+			}
+		}
+		
 		return searchDetails;
 	}
 	
@@ -457,9 +515,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		for (CertificationStatusEventDTO certStatusDto : certStatusDtos){
 			CertificationStatusEvent cse = new CertificationStatusEvent();
 			cse.setId(certStatusDto.getId());								
-			cse.setEventDate(certStatusDto.getEventDate().getTime() + "");
+			cse.setEventDate(certStatusDto.getEventDate().getTime());
 			cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
-			cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime() + "");
+			cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
 			
 			CertificationStatusDTO statusDto = certStatusDao.getById(certStatusDto.getStatus().getId());
 			cse.setCertificationStatusId(statusDto.getId());
@@ -467,6 +525,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			certEvents.add(cse);
 		}
 		return certEvents;
+	}
+	
+	private void loadCriteriaMacraMeasures() {
+		List<MacraMeasureDTO> dtos = macraDao.findAll();
+		for(MacraMeasureDTO dto : dtos) {
+			MacraMeasure measure = new MacraMeasure(dto);
+			macraMeasures.add(measure);
+		}
 	}
 	
 	private void loadCQMCriteria(){

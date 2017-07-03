@@ -1,21 +1,82 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class Surveillance {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Surveillance implements Serializable {
+	private static final long serialVersionUID = 7018071250912371691L;
+	
+	/**
+	 * Surveillance internal ID
+	 */
+	@XmlElement(required = true)
 	private Long id;
+	
+	@XmlTransient
 	private String surveillanceIdToReplace;
+	
+	/**
+	 * The user-friendly ID of this surveillance relative to a listing. Ex: SURV01
+	 */
+	@XmlElement(required = true)
 	private String friendlyId;
+	
+	/**
+	 * The listing under surveillance
+	 */
+	@XmlElement(required = true)
 	private CertifiedProduct certifiedProduct;
+	
+	/**
+	 * Date surveillance began
+	 */
+	@XmlElement(required = true)
 	private Date startDate;
+	
+	/**
+	 * Date surveillance ended
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Date endDate;
+	
+	/**
+	 * The type of surveillance conducted. Allowable values are "Reactive" or "Randomized".
+	 */
+	@XmlElement(required = true)
 	private SurveillanceType type;
+	
+	/**
+	 * Number of randomized sites used. Only applicable for randomized surveillance.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private Integer randomizedSitesUsed;
+	
+	/**
+	 * For a given surveillance activity, the certification criteria or program requirement being 
+	 * surveilled. Where applicable, the surveillance requirement will be presented as the 
+	 * regulation text number (e.g. 170.315(a)(2) or 170.315(k)(1)). 
+	 * However, other values are allowed to provide a brief description of the surveilled requirement.
+	 */
+	@XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
+	@XmlElement(name = "requirement")
 	private Set<SurveillanceRequirement> requirements;
 	
+	@XmlTransient
+	private String authority;
+	
+	@XmlTransient
 	private Set<String> errorMessages;
 	
 	public Surveillance() {
@@ -102,4 +163,13 @@ public class Surveillance {
 	public void setFriendlyId(String friendlyId) {
 		this.friendlyId = friendlyId;
 	}
+
+	public String getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(String authority) {
+		this.authority = authority;
+	}
+
 }

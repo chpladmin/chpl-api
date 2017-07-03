@@ -1,9 +1,37 @@
 package gov.healthit.chpl.domain;
 
-public class SurveillanceNonconformityDocument {
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class SurveillanceNonconformityDocument implements Serializable {
+	private static final long serialVersionUID = -7456509117016763596L;
+	
+	/**
+	 * Document internal ID
+	 */
+	@XmlElement(required = true)
 	private Long id;
+	
+	/**
+	 * Document file name
+	 */
+	@XmlElement(required = true)
 	private String fileName;
+	
+	/**
+	 * Document file type (XML, PDF, etc)
+	 */
+	@XmlElement(required = true)
 	private String fileType;
+	
+	@XmlTransient
 	private byte[] fileContents;
 	
 	public Long getId() {

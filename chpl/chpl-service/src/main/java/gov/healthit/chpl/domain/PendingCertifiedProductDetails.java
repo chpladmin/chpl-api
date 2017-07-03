@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
@@ -28,7 +30,8 @@ import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
 
-public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails {
+public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
+	private static final long serialVersionUID = -461584179489619328L;
 	private String recordStatus;
 	
 	public PendingCertifiedProductDetails() {}
@@ -44,7 +47,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		this.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
 		this.setSedTestingEnd(dto.getSedTestingEnd());
 		this.setAcbCertificationId(dto.getAcbCertificationId());
-		this.setIcs(dto.getIcs());
+		InheritedCertificationStatus ics = new InheritedCertificationStatus();
+		ics.setInherits(dto.getIcs());
+		this.setIcs(ics);
 		this.setAccessibilityCertified(dto.getAccessibilityCertified());
 		
 		Map<String, Object> classificationTypeMap = new HashMap<String, Object>();
@@ -294,6 +299,36 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				}
 			} else {
 				cert.setTestStandards(null);
+			}
+			
+			if(certCriterion.getG1MacraMeasures() != null) {
+				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG1MacraMeasures()) {
+					if(mm.getMacraMeasure() != null) {
+						MacraMeasure measure = new MacraMeasure(mm.getMacraMeasure());
+						cert.getG1MacraMeasures().add(measure);
+					} else {
+						MacraMeasure measure = new MacraMeasure();
+						measure.setId(mm.getMacraMeasureId());
+						cert.getG1MacraMeasures().add(measure);
+					}
+				}
+			} else {
+				cert.setG1MacraMeasures(null);
+			}
+			
+			if(certCriterion.getG2MacraMeasures() != null) {
+				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG2MacraMeasures()) {
+					if(mm.getMacraMeasure() != null) {
+						MacraMeasure measure = new MacraMeasure(mm.getMacraMeasure());
+						cert.getG2MacraMeasures().add(measure);
+					} else {
+						MacraMeasure measure = new MacraMeasure();
+						measure.setId(mm.getMacraMeasureId());
+						cert.getG2MacraMeasures().add(measure);
+					}
+				}
+			} else {
+				cert.setG2MacraMeasures(null);
 			}
 			
 			if(certCriterion.getTestTasks() != null && certCriterion.getTestTasks().size() > 0) {

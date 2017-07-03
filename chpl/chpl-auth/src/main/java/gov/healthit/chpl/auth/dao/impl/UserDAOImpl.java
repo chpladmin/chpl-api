@@ -1,20 +1,6 @@
 package gov.healthit.chpl.auth.dao.impl;
 
 
-import gov.healthit.chpl.auth.BaseDAOImpl;
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.dao.UserContactDAO;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.entity.UserContactEntity;
-import gov.healthit.chpl.auth.entity.UserEntity;
-import gov.healthit.chpl.auth.manager.impl.SecuredUserManagerImpl;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +13,19 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import gov.healthit.chpl.auth.BaseDAOImpl;
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserContactDAO;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.entity.UserContactEntity;
+import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 
 @Repository(value="userDAO")

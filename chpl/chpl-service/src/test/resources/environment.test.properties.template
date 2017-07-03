@@ -7,6 +7,7 @@ jwtAudience=ONCCHPL
 jwtExpirationTimeMinutesInTheFuture=30
 jwtNotBeforeMinutesInThePast=4
 keyLocation=C:\\CHPL\\keys\\JSONRsaJoseJWebKeyTest.txt
+maxActivityRangeInDays=60
 
 testDbUser=openchpl
 testDbPassword=

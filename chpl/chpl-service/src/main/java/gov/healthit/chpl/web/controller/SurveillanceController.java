@@ -21,6 +21,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
@@ -37,12 +41,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -50,8 +55,11 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,7 +67,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value="surveillance")
 @RestController
 @RequestMapping("/surveillance")
-public class SurveillanceController {
+public class SurveillanceController implements MessageSourceAware {
 	
 	private static final Logger logger = LogManager.getLogger(SurveillanceController.class);
 	private static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
@@ -68,6 +76,7 @@ public class SurveillanceController {
 	private static final String SUBELEMENT_INDICATOR = "Subelement";
 	
 	@Autowired Environment env;
+	@Autowired MessageSource messageSource;
 	@Autowired
 	private SurveillanceUploadHandlerFactory uploadHandlerFactory;
 	@Autowired
@@ -80,6 +89,8 @@ public class SurveillanceController {
 	private CertifiedProductDetailsManager cpdetailsManager;
 	@Autowired
 	private CertificationBodyManager acbManager;
+	@Autowired
+	private SurveillanceValidator survValidator;
 
 	@ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
 	@RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -155,8 +166,8 @@ public class SurveillanceController {
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance createSurveillance(
-			@RequestBody(required = true) Surveillance survToInsert) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
+				CertificationBodyAccessException, UserPermissionRetrievalException, EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		survToInsert.getErrorMessages().clear();
 		
 		//validate first. this ensures we have all the info filled in 
@@ -172,13 +183,22 @@ public class SurveillanceController {
 		CertificationBodyDTO owningAcb = null;
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
-		} catch(Exception ex) {
+		} catch(AccessDeniedException ex) {
+			throw new CertificationBodyAccessException("User does not have permission to add surveillance to a certified product under ACB " + beforeCp.getCertifyingBody().get("name"));
+		} catch(EntityRetrievalException ex) {
 			logger.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 		
 		//insert the surveillance
-		Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+		Long insertedSurv = null;
+		try{
+			insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+		} catch(SurveillanceAuthorityAccessDeniedException ex){
+			logger.error("User lacks authority to delete surveillance");
+			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
+		} 
+		
 		if(insertedSurv == null) {
 			throw new EntityCreationException("Error creating new surveillance.");
 		}
@@ -201,7 +221,7 @@ public class SurveillanceController {
 	public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
 			@PathVariable("nonconformityId") Long nonconformityId,
 			@RequestParam("file") MultipartFile file) throws 
-			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
+			InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException, EntityCreationException, IOException {
 		if (file.isEmpty()) {
 			throw new InvalidArgumentsException("You cannot upload an empty file!");
 		}
@@ -248,7 +268,7 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance updateSurveillance(
 			@RequestBody(required = true) Surveillance survToUpdate) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		survToUpdate.getErrorMessages().clear();
 		
 		//validate first. this ensures we have all the info filled in 
@@ -272,9 +292,13 @@ public class SurveillanceController {
 		//update the surveillance
 		try {
 			survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
+		} catch(SurveillanceAuthorityAccessDeniedException ex){
+			logger.error("User lacks authority to update surveillance");
+			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
 		} catch(Exception ex) {
 			logger.error("Error updating surveillance with id " + survToUpdate.getId());
-		}
+		} 
+		  
 		
 		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
@@ -293,11 +317,16 @@ public class SurveillanceController {
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody String deleteSurveillance(
 			@PathVariable(value = "surveillanceId") Long surveillanceId) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		Surveillance survToDelete = survManager.getById(surveillanceId);
-		
+			
 		if(survToDelete == null) {
 			throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+		}
+		
+		survValidator.validateSurveillanceAuthority(survToDelete);
+		if(survToDelete.getErrorMessages() != null && survToDelete.getErrorMessages().size() > 0) {
+			throw new ValidationException(survToDelete.getErrorMessages(), null);
 		}
 
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
@@ -311,8 +340,11 @@ public class SurveillanceController {
 		
 		//delete it
 		try {
-			survManager.deleteSurveillance(owningAcb.getId(), survToDelete.getId());
+			survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
 			survManager.sendSuspiciousActivityEmail(survToDelete);
+		} catch(SurveillanceAuthorityAccessDeniedException ex){
+			logger.error("User lacks authority to delete surveillance");
+			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
 		} catch(Exception ex) {
 			logger.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
 		}
@@ -385,8 +417,8 @@ public class SurveillanceController {
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody Surveillance confirmPendingSurveillance(
-			@RequestBody(required = true) Surveillance survToInsert) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
+				EntityCreationException, JsonProcessingException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		if(survToInsert == null || survToInsert.getId() == null) {
 			throw new ValidationException("An id must be provided in the request body.");
 		}
@@ -431,7 +463,7 @@ public class SurveillanceController {
 						survToInsert.getCertifiedProduct().getId(),
 						survToInsert.getSurveillanceIdToReplace());
 				CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
-				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace.getId());
+				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
 			}
 		} catch(Exception ex) {
 			logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
@@ -453,18 +485,42 @@ public class SurveillanceController {
 	@RequestMapping(value="/download", method=RequestMethod.GET,
 			produces="text/csv")
 	public void download(@RequestParam(value="type", required=false, defaultValue="") String type,
-			HttpServletRequest request, HttpServletResponse response) throws IOException {	
-		String downloadFileLocation = env.getProperty("downloadFolderPath");
-		String filenameToDownload = "surveillance-with-nonconformities.csv";
-		if(type.equalsIgnoreCase("all")) {
-			filenameToDownload = "surveillance-all.csv";
-		} else if(type.equalsIgnoreCase("basic")) {
-			filenameToDownload = "surveillance-basic-report.csv";
+			@RequestParam(value="definition", defaultValue="false", required=false) Boolean isDefinition,
+			HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		File downloadFile = null;
+		if(isDefinition != null && isDefinition.booleanValue() == true) {
+			String downloadFolderLocation = env.getProperty("downloadFolderPath");
+			File downloadFolder = new File(downloadFolderLocation);
+			String schemaFilename = env.getProperty("schemaSurveillanceName");
+			String absolutePath = downloadFolder.getAbsolutePath() + File.separator + schemaFilename;
+			if(!StringUtils.isEmpty(absolutePath)) {
+				downloadFile = new File(absolutePath);
+				if(!downloadFile.exists()) {
+					response.getWriter().write(
+							String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.schemaFileNotFound"), LocaleContextHolder.getLocale()), absolutePath));
+					return;
+				}
+			}
+
+		} else {
+			try {
+				if(type.equalsIgnoreCase("all")) {
+					downloadFile = survManager.getDownloadFile("surveillance-all.csv");
+				} else if(type.equalsIgnoreCase("basic")) {
+					downloadFile = survManager.getProtectedDownloadFile("surveillance-basic-report.csv");
+				} else {
+					downloadFile = survManager.getDownloadFile("surveillance-with-nonconformities.csv");
+				}
+			} catch(IOException ex) {
+				response.getWriter().append(ex.getMessage());
+				return;
+			}
 		}
 		
-		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
-		if(!downloadFile.exists() || !downloadFile.canRead()) {
-			response.getWriter().write("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
+		if(downloadFile == null) {
+			response.getWriter().append(
+					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("resources.schemaFileGeneralError"), LocaleContextHolder.getLocale())));
 			return;
 		}
 		
@@ -638,19 +694,18 @@ public class SurveillanceController {
 			try {
 				surveilledProduct = cpManager.getById(pendingSurv.getCertifiedProduct().getId());
 			} catch(EntityRetrievalException ex) {
-				pendingSurv.getErrorMessages().add("Unexpected error looking up certified product with id " + pendingSurv.getCertifiedProduct().getId());
+				pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.certifiedProductIdNotFound"), LocaleContextHolder.getLocale()), pendingSurv.getCertifiedProduct().getId()));
 				logger.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
 			} 
 			
 			if(surveilledProduct != null) {
-				CertificationBodyDTO owningAcb = null;
 				try {
-					owningAcb = acbManager.getById(surveilledProduct.getCertificationBodyId());
+					acbManager.getById(surveilledProduct.getCertificationBodyId());
 				} catch(EntityRetrievalException ex) {
-					pendingSurv.getErrorMessages().add("Unexpected error looking up certification body with id " + surveilledProduct.getCertificationBodyId());
+					pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.certificationBodyIdNotFound"), LocaleContextHolder.getLocale()), surveilledProduct.getCertificationBodyId()));
 					logger.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
 				} catch(AccessDeniedException denied) {
-					pendingSurv.getErrorMessages().add("User does not have permission to add surveillance to " + pendingSurv.getCertifiedProduct().getChplProductNumber());
+					pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.addSurveillancePermissionDenied"), LocaleContextHolder.getLocale()), pendingSurv.getCertifiedProduct().getChplProductNumber()));
 					logger.error("User " + Util.getCurrentUser().getSubjectName() + 
 							" does not have access to the ACB with id " + 
 							surveilledProduct.getCertificationBodyId());
@@ -658,4 +713,10 @@ public class SurveillanceController {
 			} 
 		}
 	}
+
+	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 }

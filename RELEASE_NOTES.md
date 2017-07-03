@@ -1,27 +1,239 @@
 # Release Notes
 
+## Version 12.0.0
+_3 July 2017_
+
+### Major Features
+_Backwards compatibility breaking changes_
+* Changed ICS field in certified product details object (used on get and update calls) from a boolean to a more complex object to include whether something was inherited and a list of parents and children.
+
+## Minor Features
+* Changed ICS code from a string to an integer
+* Added validation to warn on missing parents if ICS is indicated
+* Added an additional app that runs to send out notifications of ICS inconsistencies (need to add cron for that)
+* Added description of surveillance triggers to emails
+* Added developer and listing statistics for ACBs to ONC summary email
+
+---
+
+## Version 11.0.0
+_19 June 2017_
+
+### Major Features
+_Backwards compatibility breaking changes_
+* Removed /decertifications/certified_products and /decertifications/inactive_certificates API calls. This same data can now be accessed through the /certified_products API method.
+
+### Minor Features
+* Add decertification date, numMeaningfulUse, transparency attestation url, and api documentation url fields to the flat search results
+* Fill in blank cells for subelements in nonconformtiy and surveillance downloads.
+
+---
+
+## Version 10.2.0
+_5 June 2017_
+
+### Minor features
+* Add schemagen xsd generation to the build. Updated JAXB XML annotations on relevant Java classes. Requires an extra step of copying the XSD to the downloads folder after the build. CHANGES XML FILE FORMAT
+* Allow corrective action plan resolution to be blank even when the end date is filled in
+* Added surveillance trigger for Open Nonconformity with closed CAP > 45 days prior
+
+---
+
+## Version 10.1.0
+_22 May 2017_
+
+### Minor features
+* Return exception with last modified user's contact info when deleting or confirming a pending Certified Product that has already been deleted or confirmed
+* Add surveillance rule when a Listing has an open Non-conformity and status of "Withdrawn by..."
+* Add daily/weekly surveillance trigger emails that use notification subscriptions and are specific to ACB
+* Update /data/test_standards to include certification edition
+* Disallow duplicate test standards per certification criterion.
+* Check for exisitng test standard in the listing's edition before adding a new one (eliminates repeated entries in the database and keeps the selection dropdowns manageable).
+* Update all test standard entities, dtos, and domain objects to include certification edition.
+* Use error message file for error messages and support internationalization.
+
+---
+
+## Version 10.0.0
+_8 May 2017_
+
+### Major features
+_Backwards compatibility breaking changes_
+* Allow users to specify a condition in the listing update request whether or not the developer status should be changed. Only applicable if listing status is changing to Withdrawn Under
+Surveillance by ONC-ACB
+
+### Features Added
+* Limit activity searches to a configurable max date range (currently set to 60 days)
+* Validate the privacy and security framework users enter for listing criteria
+* Add notifications service to allow registration, getting, and deleting of email subscriptions
+* Add /data/notification_types service to send back the types of notifications a logged-in user may work with
+* Add certification edition to test functionality and check that the right edition of test functionality is used during listing edit and upload.
+
+---
+
+## Version 9.1.0
+_24 April 2017_
+
+### Features Added
+* Update parameters for HTTP GET /search call. All the same options that were previously available only to POST exist for the GET. Updated related API documentation.
+* Add /cache_status endpoint. Returns a status of OK or INITIALIZING based on whether the basic search cache has been loaded.
+* Add statistics to ONC weekly email body and csv file
+* Add endpoint /{productId}/split to allow splitting of products and moving versions to the old or new product.
+* Add optional contact information for a product that can be changed by ONC or ACB Admins.
+* Add optional showDeleted flag to the /data/search_options call. Defaults to false but setting to true will include deleted ACBs in the response.
+
+### Bugs Fixed
+* Fix error saving developer with updated contact information.
+
+---
+
+## Version 9.0.0
+_10 April 2017_
+
+### Features Added
+* Show error to ONC-ACB during upload and edit when Surveillance Activity has a nonconformity with an entry for "Date Corrective Action Plan Was Approved" but no entry for "Date Corrective Action Plan Must Be Completed"
+* Show error to ONC-ACB during upload and edit for a Surveillance Activity nonconformity that violates business rules for "Corrective Action Plan End Date"
+* Add statusEvents field to developers to track past status changes (Active, Suspended by Onc, etc) and the date on which each status change occurred. Provide create, read, update, and delete API functionality for developer status changes.
+* Add decertificationDate to the data returned in the banned developers API call.
+* Updated basic search objects that get returned:
+  * remove has open surveillance, has closed surveillance, has open nonconformities, has closed nonconformities
+  * add surveillanceCount, openNonconformityCount, closedNonconformityCount fields
+* Cache results of /certified_products/pending to improve view time by ~683%
+* Add Surveillance Friendly ID to Surveillance (Basic) CSV file download
+* Add optional "fields" parameter to /certified_products call to allow only sending back a custom list of fields
+* Add nonconformity status to daily and weekly surveillance broken rules reports. Only include values in the reports with Open nonconformities.
+
+### Bugs Fixed
+* Fix misaligned cells in nonconformity download file
+
+---
+
+## Version 8.3.0
+_27 March 2017_
+
+### Features Added
+* Add authority to surveillance to allow end user to tell whether ONC or ACB created a surveillance activity
+* Disallow saving of Surveillance without close date but with no open Non-Conformities
+* Improve performance of /surveillance/pending by ~643%
+
+### Bugs Fixed
+* Fix an Internal Server Error when obtaining user activities and there exists a deleted user
+
+---
+
+## Version 8.2.0
+_13 March 2017_
+
+### Features Added
+* No longer use ACLs that were getting added to each pending product x ACB Admin.
+
+---
+
+## Version 8.1.0
+_27 February 2017_
+
+### Features Added
+* Add basic search API endpoint to return all certified products
+* Add surveillance statistics to weekly email
+* Protect basic surveillance report and only allow download by ONC ADMIN and ONC STAFF
+* Add functionality to allow a "rolling cache" that refreshes the cache asynchronously while allowing the user to view currently available cached data
+* Make caches eternal so the user gets cached data more often
+* Add columns to surveillance reports (ACB Name, certification status, hyperlink to CHPL listing) and reformat dates (yyyy/mm/dd)
+* Add daily and weekly surveillance oversight reports to calculate which surveillance items have broken a given set of rules.
+  * Environment properties have been added:
+ ```
+ #oversight email properties
+ oversightEmailDailyTo=sample@email.com
+ oversightEmailDailySubject=Daily Surveillance Broken Rules Alert
+ oversightEmailDailyNoContent=<p>No surveillance oversight rules were newly broken in the last day.</p>
+ oversightEmailWeeklyTo=sample@email.com
+ oversightEmailWeeklySubject=Weekly Surveillance Broken Rules Alert
+ oversightEmailWeeklyNoContent=<p>No surveillance oversight rules are broken.</p>
+ suspendedDaysAllowed=30
+ capApprovalDaysAllowed=75
+ capStartDaysAllowed=10
+ ```
+  * To run the weekly report at 00:05 on Wednesdays, add a line like the below to crontab
+ ```
+ 5 0 * * 3 cd /chpl/chpl-api/chpl/chpl-service && ./generateWeeklySurveillanceOversightReport.sh
+ ```
+  * To run the daily report at 00:05 every day, add a line like the below to crontab
+ ```
+ 5 0 * * * cd /chpl/chpl-api/chpl/chpl-service && ./generateDailySurveillanceOversightReport.sh
+ ```
+
+---
+
+## Verison 8.0.0
+_7 February 2017_
+
+### Features Added
+* Add G1 and G2 macra measures to certified product upload, edit and detail display *BREAKS BACKWARDS COMPATIBILITY*
+* Add functionality to get Meaningful Use User Accurate As Of Date and update it
+* Check certification date and additional software code vs supplied data for CP edit and update code if necessary
+* Add API call for decertified certified products with inactive certificates
+* Update API call for decertified certified products to not include products with certification status 'Withdrawn by Developer'
+* When a Certified Product is marked as "Withdrawn by Developer under Surveillance/Review" by an ONC_ADMIN or ACB_ADMIN, update Developer Status to "Under Certification Ban by ONC"
+* Exclude Developers with status "Suspended by ONC" from the /decertifications/developers API call
+* Selectively evict caches in order to improve website performance
+
+### Bugs Fixed
+* Update 2014 validator retired test tool logic to handle CHPL-XXXXXX products that will not have an icsCode
+
+---
+
+## Version 7.1.0
+_23 January 2017_
+
+### Features Added
+* Improve website performance:
+  * Initialize cache stores asynchronously at server startup
+  * Increase cache timeout to 1 hour
+  * Add caching for /certification_ids API call
+  * Add caching for /pending API call
+  * Add caching for /search API call
+  * Add caching for /decertifications/developers
+  * Add caching for /decertifications/certified_products
+  * Update caching for /search_options API call
+  * Cache underlying data that improves call speed for many other API calls
+* Added properties to environment.properties related to cache timeout
+  * `enableCacheInitialization=true`
+  * `cacheClearTimeoutSecs=15`
+  * `cacheInitializeTimeoutSecs=300`
+* /authenticate now returns 403 Forbidden for bad credentials instead of 500 Internal Server Error
+* Add new certification status for products
+* Allow 0 for number of randomized sites and total sites for surveillance
+* Remove products marked Suspended By ONC from Decertified Product search
+* Allow retired test tools where certified product ICS=true
+
+### Bugs Fixed
+* Fixes exception when getting back activity performed by a user that has since been deleted
+* Fixes innaccurate error message if a user tries to add surveillance to a product under an ACB they are not associated with
+
+---
+
 ## Version 7.0.0
 _6 January 2017_
 
 ### Features Added
-* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details. 
+* Add API methods for surveillance-related acivities. This includes upload, confirm, and reject for the bulk upload of surveillance data. It also includes create, update, and delete for singular changes to surveillance. Surveillance and associated non-conformities are returned with certified product details.
 * Add API call to support updating certified_product meaningful_use_user counts with a CSV upload in CMS Management
 * Change behavior if certified product is marked as suspended or terminated by ONC. These statuses also result in a developer status change and require ROLE_ADMIN
-* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer. 
+* Add API call to get decertified developers with developer name, the developer's associated ONC_ACBs, the developer status, and the sum of the developer's estimated number of meaningful use users for all certified products associated with the developer.
 * Add API call to get decertified certified products with pageCount set to the total number of decertified products
 * Add certificationDateStart and certificationDateEnd as advanced search parameters
-* Change corrective action plan search parameters to new surveillance search parameters - NOT BACKWARDS COMPATIBLE
+* Change corrective action plan search parameters to new surveillance search parameters - *NOT BACKWARDS COMPATIBLE*
 * Send questionable activity email when product owner changes (not during a merge)
 * Add /surveillance/download[?type=all|basic|nonconformities] endpoint to allow download of CSV file with all surveillance and download of CSV file with surveillance that resulted in nonconformities
 * Add lookup to new tables for certification status event history
 * Add date of last certification status change to certified product details
 * Add script cleanupXml.sh to remove download files older than 30 days except for the first of each month. Needs to be given executable permission and have a cron job set up.
-* Add decertification date to certified product details * CHANGES XML DOWNLOAD FORMAT *
+* Add decertification date to certified product details *CHANGES XML DOWNLOAD FORMAT*
 
 ### Bugs Fixed
 * Changed transition of care calculations for the EHR Certification ID to more closely match the rule.
 
---- 
+---
 
 ## Version 6.0.1
 _17 November 2016_
@@ -29,7 +241,7 @@ _17 November 2016_
 ### Bugs Fixed
 * Mark all DAO methods that return certified product details as transactional so they can retrieve the product owner history. Fixes issue with summary email being sent and with xml download not being generated.
 
---- 
+---
 
 ## Version 6.0.0
 _15 November 2016_
@@ -42,7 +254,7 @@ _15 November 2016_
 * Make it impossible to confirm duplicate pending certified products
 * Ability to edit a certified product without security authorization
 
---- 
+---
 
 ## Version 5.2.0
 _21 October 2016_
@@ -113,7 +325,7 @@ _19 September 2016_
 
 ### Bugs fixed
 * Pending 2015 products can now have CQM versions modified
-* API Documentation Link is now correctly validated on upload and edit 
+* API Documentation Link is now correctly validated on upload and edit
 * Added new style product number to CAP Activity Report descriptions
 
 ---
@@ -125,10 +337,7 @@ _30 August 2016_
 * Added a new service certification_ids/all to generate JSON with two fields - the certification ID and the date created. This includes all certification IDS ever and could be large.
 * Change all /activity calls that used to accept a lastNDays parameter to accept start and end parameters instead. Start and end are longs and treated as timestamps. (Not backwards compatible)
 * Set up log4j2 and set hopefully appropriate log levels
-* TO DO DURING THE RELEASE: change the questionable activity email recipients to just be the ONC_CHPL@hhs.gov email (i.e. remove onc.certification@hhs.gov)
-* TO DO DURING THE RELEASE: create a file (can call it cleantomcat) in /etc/cron.daily and chmod a+x the file. Contents of the file are listed as a comment in OCD-811. The command deletes files that have not been written to since X days ago. The number near the end of the command is X.
 * Updated /activity API endpoint to incorporate new parameters to filter by API-Key, sort dateAscending, and filter by start & end date.
-
 * Do not allow 170.315 (d)(3) to mark GAP as true
 * Added 'responsibleUser' field with all user data for /activity reports
 * Removed CORSFilter in web.xml; this was preventing some ajax calls from other domains

@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+
 
 @Entity
 @Table(name = "pending_surveillance")
@@ -51,16 +53,16 @@ public class PendingSurveillanceEntity {
 	@Column(name = "randomized_sites_used")
 	private Integer numRandomizedSites;
 	
-	@Column( name = "deleted")
+	@Column(name = "deleted")
 	private Boolean deleted;
 	
-	@Column( name = "last_modified_user")
+	@Column(name = "last_modified_user")
 	private Long lastModifiedUser;
 	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
+	@Column(name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
+	@Column(name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId"  )

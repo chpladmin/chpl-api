@@ -5,9 +5,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 
@@ -27,6 +30,25 @@ public class TestStandardEntity {
 	@Column( name = "name", nullable = false  )
 	private String description;
 	
+	@Column(name = "certification_edition_id")
+	private Long certificationEditionId;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
+	private CertificationEditionEntity certificationEdition;
+	
+	@Column( name="deleted", nullable = false  )
+	protected Boolean deleted;
+
+	@Column( name = "last_modified_user", nullable = false )
+	protected Long lastModifiedUser;
+	
+	@Column( name = "creation_date", insertable = false, updatable = false  )
+	private Date creationDate;
+	
+	@Column( name = "last_modified_date", insertable = false, updatable = false )
+	private Date lastModifiedDate;
+	
 	public Long getId() {
 		return id;
 	}
@@ -42,22 +64,6 @@ public class TestStandardEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	protected Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	protected Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	protected Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	protected Long lastModifiedUser;
 	
 	public Date getCreationDate() {
 		return creationDate;
@@ -90,5 +96,21 @@ public class TestStandardEntity {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Long getCertificationEditionId() {
+		return certificationEditionId;
+	}
+
+	public void setCertificationEditionId(Long certificationEditionId) {
+		this.certificationEditionId = certificationEditionId;
+	}
+
+	public CertificationEditionEntity getCertificationEdition() {
+		return certificationEdition;
+	}
+
+	public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
+		this.certificationEdition = certificationEdition;
 	}
 }

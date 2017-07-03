@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -19,6 +23,8 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
@@ -29,18 +35,22 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
-import gov.healthit.chpl.domain.RequirementTypeEnum;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.TestFunctionality;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
+import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
+import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -51,6 +61,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
@@ -60,9 +71,10 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
-@Service
+@Service("searchMenuManager")
 public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Autowired
@@ -104,9 +116,23 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Autowired
 	private DeveloperDAO developerDAO;
 	
+	@Autowired private MacraMeasureDAO macraDao;
+	@Autowired private NotificationDAO notificationDao;
 	
 	@Transactional
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	public Set<NotificationType> getNotificationTypes() {
+		List<NotificationTypeDTO> notificationTypes = notificationDao.getAllNotificationTypes(Util.getCurrentUser().getPermissions());
+		Set<NotificationType> results = new HashSet<NotificationType>();
+		for(NotificationTypeDTO dto : notificationTypes) {
+			results.add(new NotificationType(dto));
+		}
+		return results;
+	}
+
+	@Transactional
 	@Override
+	@Cacheable(CacheNames.CLASSIFICATION_NAMES)
 	public Set<KeyValueModel> getClassificationNames() {
 		
 		List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
@@ -121,9 +147,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.EDITION_NAMES)
 	public Set<KeyValueModel> getEditionNames(Boolean simple) {
-		
-		
 		
 		List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
 		Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
@@ -143,6 +168,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.CERTIFICATION_STATUSES)
 	public Set<KeyValueModel> getCertificationStatuses() {
 		List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
@@ -156,6 +182,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.PRACTICE_TYPE_NAMES)
 	public Set<KeyValueModel> getPracticeTypeNames() {
 		
 		List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
@@ -170,6 +197,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.PRODUCT_NAMES)
 	public Set<KeyValueModelStatuses> getProductNames() {
 		
 		List<ProductDTO> productDTOs = this.productDAO.findAll();
@@ -184,6 +212,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.DEVELOPER_NAMES)
 	public Set<KeyValueModelStatuses> getDeveloperNames() {
 		
 		List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
@@ -198,9 +227,10 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 	@Transactional
 	@Override
-	public Set<KeyValueModel> getCertBodyNames() {
+	@Cacheable(CacheNames.CERT_BODY_NAMES)
+	public Set<KeyValueModel> getCertBodyNames(Boolean showDeleted) {
 		
-		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(false);
+		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(showDeleted);
 		Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
 		
 		for (CertificationBodyDTO dto : dtos) {
@@ -240,13 +270,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
-	public Set<KeyValueModel> getTestFunctionality() {
+	public Set<TestFunctionality> getTestFunctionality() {
 		
 		List<TestFunctionalityDTO> dtos = this.testFuncDao.findAll();
-		Set<KeyValueModel> testFuncs = new HashSet<KeyValueModel>();
+		Set<TestFunctionality> testFuncs = new HashSet<TestFunctionality>();
 		
 		for (TestFunctionalityDTO dto : dtos) {
-			testFuncs.add(new KeyValueModel(dto.getId(), dto.getNumber(), dto.getName()));
+			testFuncs.add(new TestFunctionality(dto));
 		}
 		
 		return testFuncs;
@@ -324,15 +354,18 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return standards;
 	}
 
+	@Transactional
 	@Override
-	public Set<KeyValueModel> getTestStandards() {
-		List<TestStandardDTO> dtos = testStandardDao.findAll();
-		Set<KeyValueModel> std = new HashSet<KeyValueModel>();
+	public Set<TestStandard> getTestStandards() {
 		
-		for(TestStandardDTO dto : dtos) {
-			std.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
+		List<TestStandardDTO> dtos = this.testStandardDao.findAll();
+		Set<TestStandard> testStds = new HashSet<TestStandard>();
+		
+		for (TestStandardDTO dto : dtos) {
+			testStds.add(new TestStandard(dto));
 		}
-		return std;
+		
+		return testStds;
 	}
 	
 	@Override
@@ -419,17 +452,27 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.MACRA_MEASURES)
+	public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures() {
+		List<MacraMeasureDTO> measureDtos = macraDao.findAll();
+		Set<CriteriaSpecificDescriptiveModel> measures = new HashSet<CriteriaSpecificDescriptiveModel>();
+		
+		for (MacraMeasureDTO dto : measureDtos) {
+			measures.add(new CriteriaSpecificDescriptiveModel(dto.getId(), dto.getValue(), dto.getName(), 
+					dto.getDescription(), new CertificationCriterion(dto.getCriteria())));
+		}
+		return measures;
+	}
+	
+	@Transactional
+	@Override
+	@Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException{
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
 		
 		for (CertificationCriterionDTO dto : dtos) {
-			if (simple){
-				if (certificationEditionDAO.getById(dto.getCertificationEditionId()).getRetired().equals(true)) {
-					continue;
-				}
-			}
 			criterionNames.add( new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
 		}
 		
@@ -439,6 +482,23 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	
 	@Transactional
 	@Override
+	@Cacheable(CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
+	public Set<CertificationCriterion> getCertificationCriterion() {
+
+		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
+		Set<CertificationCriterion> criterion = new HashSet<CertificationCriterion>();
+		
+		for (CertificationCriterionDTO dto : dtos) {
+			criterion.add( new CertificationCriterion(dto));
+		}
+		
+		return criterion;
+		
+	}
+	
+	@Transactional
+	@Override
+	@Cacheable(CacheNames.CQM_CRITERION_NUMBERS)
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple){
 
 		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
@@ -465,24 +525,5 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			criterionNames.add( new DescriptiveModel(dto.getId(), idNumber, dto.getTitle()));
 		}
 		return criterionNames;
-	}
-
-	@Transactional
-	@Override
-	public PopulateSearchOptions getPopulateSearchOptions(Boolean simple) throws EntityRetrievalException {
-		
-		PopulateSearchOptions searchOptions = new PopulateSearchOptions();
-		searchOptions.setCertBodyNames(this.getCertBodyNames());
-		searchOptions.setEditions(this.getEditionNames(simple));
-		searchOptions.setCertificationStatuses(this.getCertificationStatuses());
-		searchOptions.setPracticeTypeNames(this.getPracticeTypeNames());
-		searchOptions.setProductClassifications(this.getClassificationNames());
-		searchOptions.setProductNames(this.getProductNames());
-		searchOptions.setDeveloperNames(this.getDeveloperNames());
-		searchOptions.setCqmCriterionNumbers(this.getCQMCriterionNumbers(simple));
-		searchOptions.setCertificationCriterionNumbers(this.getCertificationCriterionNumbers(simple));
-		
-		return searchOptions;
-		
 	}
 }

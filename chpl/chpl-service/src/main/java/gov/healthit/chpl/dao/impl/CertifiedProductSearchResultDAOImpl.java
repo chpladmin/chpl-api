@@ -16,15 +16,17 @@ import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
 @Repository(value = "certifiedProductSearchResultDAO")
 public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
@@ -85,6 +87,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			+ "vendor_website, " 
 			+ "vendor_status_id, "
 			+ "vendor_status_name, "
+			+ "last_vendor_status_change, "
 			+ "address_id, "
 			+ "street_line_1, "
 			+ "street_line_2, " 
@@ -130,6 +133,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 	
 	@Override
+	@Transactional
 	public List<CertifiedProductDetailsDTO> search(
 			SearchRequest searchRequest) {
 		
@@ -392,6 +396,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	@Override
 	@Transactional
+	@Cacheable(CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS)
 	public Long countMultiFilterSearchResults(SearchRequest searchRequest) {
 		
 		Query query = getCountQueryForSearchFilters(searchRequest);

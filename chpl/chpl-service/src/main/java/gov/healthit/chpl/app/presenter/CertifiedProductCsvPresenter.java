@@ -26,9 +26,11 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 	
 	/**
 	 * Required to setCriteriaNames before calling this function.
+	 * Returns number of rows printed (minus the header)
 	 */
 	@Override
-	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+	public int presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+		int numRows = 0;
 		FileWriter writer = null;
 		CSVPrinter csvPrinter = null;
 		try {
@@ -36,9 +38,12 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 			csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 			csvPrinter.printRecord(generateHeaderValues());
 			
-			for(CertifiedProductSearchDetails data : cpList.getProducts()) {
+			for(CertifiedProductSearchDetails data : cpList.getListings()) {
 				List<String> rowValue = generateRowValue(data);
-				csvPrinter.printRecord(rowValue);
+				if(rowValue != null) { //a subclass could return null to skip a row
+					csvPrinter.printRecord(rowValue);
+					numRows++;
+				}
 			}
 		} catch(IOException ex) {
 			logger.error("Could not write file " + file.getName(), ex);
@@ -50,6 +55,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 				csvPrinter.close();
 			} catch(Exception ignore) {}
 		}
+		return numRows;
 	}
 
 	protected List<String> generateHeaderValues() {

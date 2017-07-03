@@ -1,12 +1,54 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 
-public class CertifiedProductQmsStandard {
+/**
+ * The standard or mapping used to meet the quality management system certification criterion
+ *
+ */
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CertifiedProductQmsStandard implements Serializable {
+	private static final long serialVersionUID = -2085183878828053974L;
+	
+	/**
+	 * QMS Standard to listing mapping internal ID
+	 */
+	@XmlElement(required = true)
 	private Long id;
+	
+	/**
+	 * QMS Standard internal ID
+	 */
+	@XmlElement(required = true)
 	private Long qmsStandardId;
+	
+	/**
+	 * QMS Standard name
+	 */
+	@XmlElement(required = false, nillable=true)
 	private String qmsStandardName;
+	
+	/**
+	 * This variable indicates if a QMS standard or mapping was modified, 
+	 * documentation on the changes made. This variable is applicable for 2014 and 2015 
+	 * Edition, and a string variable that does not take any restrictions on formatting or values. 
+	 */
+	@XmlElement(required = false, nillable=true)
 	private String qmsModification;
+	
+	/**
+	 * QMS Applicable criteria. This variable is applicable for 2015 Edition, 
+	 * and a string variable that does not take any restrictions on formatting or values. 
+	 */
+	@XmlElement(required = false, nillable=true)
 	private String applicableCriteria;
 
 	public CertifiedProductQmsStandard() {

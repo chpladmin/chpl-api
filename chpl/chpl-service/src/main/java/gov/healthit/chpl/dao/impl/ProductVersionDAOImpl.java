@@ -202,12 +202,14 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		
 		entityManager.persist(entity);
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	private void update(ProductVersionEntity entity) {
 		
 		entityManager.merge(entity);	
 		entityManager.flush();
+		entityManager.clear();
 	}
 	
 	private List<ProductVersionEntity> getAllEntities() {

@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -30,6 +32,7 @@ import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import junit.framework.TestCase;
 
@@ -48,6 +51,10 @@ public class DeveloperDaoTest extends TestCase {
 	@Autowired 
 	private AddressDAO addressDao;
 	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+	
 	private static JWTAuthenticatedUser authUser;
 
 	@BeforeClass
@@ -65,9 +72,11 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(results);
 		assertEquals(9, results.size());
 		DeveloperDTO first = results.get(0);
-		assertNotNull(first.getStatus());
-		assertNotNull(first.getStatus().getId());
-		assertNotNull(first.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = first.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
 	}
 
 	@Test
@@ -84,7 +93,11 @@ public class DeveloperDaoTest extends TestCase {
 		assertEquals(-1, developer.getId().longValue());
 		assertNotNull(developer.getAddress());
 		assertEquals(-1, developer.getAddress().getId().longValue());
-		assertNotNull(developer.getStatus());
+		DeveloperStatusEventDTO status = developer.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -100,7 +113,11 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(developer);
 		assertEquals(-3, developer.getId().longValue());
 		assertNull(developer.getAddress());
-		assertNotNull(developer.getStatus());
+		DeveloperStatusEventDTO status = developer.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -126,10 +143,14 @@ public class DeveloperDaoTest extends TestCase {
 		assertNotNull(result);
 		assertNotNull(result.getId());
 		assertTrue(result.getId() > 0L);
+		result = developerDao.getById(result.getId());
 		assertNull(result.getAddress());
-		assertNotNull(developerDao.getById(result.getId()));
-		assertNotNull(result.getStatus());
-		assertEquals(1, result.getStatus().getId().longValue());
+		DeveloperStatusEventDTO status = result.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(1, status.getStatus().getId().longValue());
 	}
 	
 	@Test
@@ -214,6 +235,7 @@ public class DeveloperDaoTest extends TestCase {
 	@Transactional
 	@Rollback
 	public void updateDeveloper() {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
 		DeveloperDTO developer = developerDao.findAll().get(0);
 		developer.setName("UPDATED NAME");
 		
@@ -221,8 +243,8 @@ public class DeveloperDaoTest extends TestCase {
 		try {
 			result = developerDao.update(developer);
 		} catch(Exception ex) {
+			ex.printStackTrace();
 			fail("could not update developer!");
-			System.out.println(ex.getStackTrace());
 		}
 		assertNotNull(result);
 
@@ -230,9 +252,10 @@ public class DeveloperDaoTest extends TestCase {
 			DeveloperDTO updatedDeveloper = developerDao.getById(developer.getId());
 			assertEquals("UPDATED NAME", updatedDeveloper.getName());
 		} catch(Exception ex) {
+			ex.printStackTrace();
 			fail("could not find developer!");
-			System.out.println(ex.getStackTrace());
 		}
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -269,33 +292,16 @@ public class DeveloperDaoTest extends TestCase {
 	public void getDecertifiedDevelopers() {
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		dtoList = developerDao.getDecertifiedDevelopers();
-		assertTrue(dtoList.size() == 2);
+		assertTrue(dtoList.size() == 1);
 		assertTrue(dtoList.get(0).getDeveloperId() == -10L || dtoList.get(0).getDeveloperId() == -11L);
 		assertTrue(dtoList.get(0).getNumMeaningfulUse() == 66 || dtoList.get(0).getNumMeaningfulUse() == 73);
-		assertTrue(dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
-				dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
-		if(dtoList.get(0).getDeveloperId() == -11L){
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
-		}
-		else{
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
-		}
-		
-		assertTrue(dtoList.get(1).getNumMeaningfulUse() == 66 || dtoList.get(1).getNumMeaningfulUse() == 73);
-		assertTrue(dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)) || 
-				dtoList.get(1).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.SuspendedByOnc)));
-		if(dtoList.get(1).getDeveloperId() == -10L){
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
-		}
-		else{
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-3L));
-			assertTrue(dtoList.get(0).getAcbIdList().contains(-2L));
-		}
+		assertTrue(dtoList.get(0).getDeveloperStatus().equals(String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc)));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-6L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-5L));
+		assertTrue(dtoList.get(0).getAcbIdList().contains(-4L));
 	}
 	
 }

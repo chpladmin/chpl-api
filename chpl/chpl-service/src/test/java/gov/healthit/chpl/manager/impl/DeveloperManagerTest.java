@@ -1,9 +1,11 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +25,20 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,6 +53,9 @@ public class DeveloperManagerTest extends TestCase {
 	@Autowired private DeveloperManager developerManager;
 	@Autowired private ProductManager productManager;
 	@Autowired private DeveloperStatusDAO devStatusDao;
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser testUser3;
@@ -131,7 +138,11 @@ public class DeveloperManagerTest extends TestCase {
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
 		DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
-		developer.setStatus(newStatus);
+		DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
+		newStatusHistory.setDeveloperId(developer.getId());
+		newStatusHistory.setStatus(newStatus);
+		newStatusHistory.setStatusDate(new Date());
+		developer.getStatusEvents().add(newStatusHistory);
 		
 		boolean failed = false;
 		try {
@@ -141,8 +152,12 @@ public class DeveloperManagerTest extends TestCase {
 			failed = true;
 		}
 		assertFalse(failed);
-		assertNotNull(developer.getStatus());
-		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), developer.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = developer.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -207,8 +222,12 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		DeveloperDTO developer = developerManager.getById(-3L);
 		assertNotNull(developer);
-		assertNotNull(developer.getStatus());
-		assertNotSame(DeveloperStatusType.Active.toString(), developer.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = developer.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertNotSame(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
 		
 		developer.setName("UPDATE THIS NAME");
 		boolean failed = false;
@@ -231,7 +250,11 @@ public class DeveloperManagerTest extends TestCase {
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
 		DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
-		developer.setStatus(newStatus);
+		DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
+		newStatusHistory.setDeveloperId(developer.getId());
+		newStatusHistory.setStatus(newStatus);
+		newStatusHistory.setStatusDate(new Date());
+		developer.getStatusEvents().add(newStatusHistory);
 		
 		boolean failed = false;
 		try {
@@ -249,13 +272,14 @@ public class DeveloperManagerTest extends TestCase {
 	 * Given the CHPL is accepting search requests
 	 * When I call the REST API's /decertified/developers, the controller calls the developerManager.getDecertifiedDevelopers()
 	 * Then the manager returns a list of DeveloperDecertifiedDTO with expected results
+	 * @throws EntityRetrievalException 
 	 */
 	@Transactional
 	@Rollback(true) 
 	@Test
-	public void testGetDecertifiedDevelopers() {
-		List<DecertifiedDeveloperDTO> dtoList = developerManager.getDecertifiedDevelopers();
-		assertTrue("DeveloperDecertificationResponse should have size == 2 but has size " + dtoList.size(), 
-				dtoList.size() == 2);
+	public void testGetDecertifiedDevelopers() throws EntityRetrievalException {
+		DecertifiedDeveloperResults results = developerManager.getDecertifiedDevelopers();
+		assertEquals(1, results.getDecertifiedDeveloperResults().size());
 	}
+	
 }

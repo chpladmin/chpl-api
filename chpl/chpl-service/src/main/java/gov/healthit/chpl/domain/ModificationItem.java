@@ -1,10 +1,10 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class ModificationItem {
-
-	
+public class ModificationItem implements Serializable {
+	private static final long serialVersionUID = 3049027227760878239L;
 	private String subject;
 	private String action;
 	private Date date;

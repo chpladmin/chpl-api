@@ -1,19 +1,18 @@
 package gov.healthit.chpl.dto;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
-public class CertifiedProductDetailsDTO {
-	
+public class CertifiedProductDetailsDTO implements Serializable {
+	private static final long serialVersionUID = 6238278848984479683L;
 	private Long id;
 	private String productCode;
 	private String versionCode;
-	private String icsCode;
+	private Integer icsCode;
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
     private Long testingLabId;
@@ -39,6 +38,7 @@ public class CertifiedProductDetailsDTO {
     private String certificationBodyCode;
     private String productClassificationName;
     private DeveloperDTO developer;
+    private DeveloperStatusEventDTO developerCurrentStatus;
     private ProductDTO product;
     private ProductVersionDTO version;
     private Date creationDate;
@@ -60,17 +60,8 @@ public class CertifiedProductDetailsDTO {
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long numMeaningfulUse;
-	
-	private List<CertifiedProductQmsStandardDTO> qmsStandards;
-	private List<TargetedUserDTO> targetedUsers;
-    private List<CertificationResultDetailsDTO> certResults;
-    private List<CQMResultDetailsDTO> cqmResults;
     
     public CertifiedProductDetailsDTO(){
-    	qmsStandards = new ArrayList<CertifiedProductQmsStandardDTO>();
-    	targetedUsers = new ArrayList<TargetedUserDTO>();
-    	certResults = new ArrayList<CertificationResultDetailsDTO>();
-    	cqmResults = new ArrayList<CQMResultDetailsDTO>();
     }
     
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
@@ -113,11 +104,16 @@ public class CertifiedProductDetailsDTO {
     	this.developer.setWebsite(entity.getDeveloperWebsite());
     	
     	if(entity.getDeveloperStatusId() != null) {
-    		DeveloperStatusDTO developerStatus = new DeveloperStatusDTO();
-    		developerStatus.setId(entity.getDeveloperStatusId());
-    		developerStatus.setStatusName(entity.getDeveloperStatusName());
-    		this.developer.setStatus(developerStatus);
+    		developerCurrentStatus = new DeveloperStatusEventDTO();
+    		developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
+    		DeveloperStatusDTO statusObj = new DeveloperStatusDTO();
+    		statusObj.setId(entity.getDeveloperStatusId());
+    		statusObj.setStatusName(entity.getDeveloperStatusName());
+    		developerCurrentStatus.setStatus(statusObj);
+    		developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
+    		this.developer.getStatusEvents().add(developerCurrentStatus);
     	}
+    	
     	if(entity.getAddressId() != null) {
     		AddressDTO developerAddress = new AddressDTO();
     		developerAddress.setId(entity.getAddressId());
@@ -304,22 +300,6 @@ public class CertifiedProductDetailsDTO {
 		this.certificationStatusName = certificationStatusName;
 	}
 	
-	public List<CertificationResultDetailsDTO> getCertResults() {
-		return certResults;
-	}
-
-	public void setCertResults(List<CertificationResultDetailsDTO> certResults) {
-		this.certResults = certResults;
-	}
-
-	public List<CQMResultDetailsDTO> getCqmResults() {
-		return cqmResults;
-	}
-
-	public void setCqmResults(List<CQMResultDetailsDTO> cqmResults) {
-		this.cqmResults = cqmResults;
-	}
-	
 	public String getYearCode() {
 		if(StringUtils.isEmpty(this.getYear())) {
 			return "";
@@ -371,11 +351,11 @@ public class CertifiedProductDetailsDTO {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getIcsCode() {
+	public Integer getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(String icsCode) {
+	public void setIcsCode(Integer icsCode) {
 		this.icsCode = icsCode;
 	}
 
@@ -449,22 +429,6 @@ public class CertifiedProductDetailsDTO {
 
 	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
 		this.transparencyAttestationUrl = transparencyAttestationUrl;
-	}
-
-	public List<CertifiedProductQmsStandardDTO> getQmsStandards() {
-		return qmsStandards;
-	}
-
-	public void setQmsStandards(List<CertifiedProductQmsStandardDTO> qmsStandards) {
-		this.qmsStandards = qmsStandards;
-	}
-	
-	public List<TargetedUserDTO> getTargetedUsers() {
-		return targetedUsers;
-	}
-
-	public void setTargetedUsers(List<TargetedUserDTO> targetedUsers) {
-		this.targetedUsers = targetedUsers;
 	}
 
 	public Boolean getAccessibilityCertified() {
@@ -577,5 +541,13 @@ public class CertifiedProductDetailsDTO {
 
 	public void setDecertificationDate(Date decertificationDate) {
 		this.decertificationDate = decertificationDate;
+	}
+
+	public DeveloperStatusEventDTO getDeveloperCurrentStatus() {
+		return developerCurrentStatus;
+	}
+
+	public void setDeveloperCurrentStatus(DeveloperStatusEventDTO developerCurrentStatus) {
+		this.developerCurrentStatus = developerCurrentStatus;
 	}
 }

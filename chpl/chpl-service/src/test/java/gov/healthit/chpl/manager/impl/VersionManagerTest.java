@@ -1,7 +1,10 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.Date;
+
 import org.junit.BeforeClass;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +24,13 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -44,6 +49,10 @@ public class VersionManagerTest extends TestCase {
 	@Autowired private ProductVersionManager versionManager;
 	@Autowired private DeveloperManager developerManager;
 	@Autowired private DeveloperStatusDAO devStatusDao;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -95,7 +104,11 @@ public class VersionManagerTest extends TestCase {
 		DeveloperDTO developer = developerManager.getById(-1L);
 		assertNotNull(developer);
 		DeveloperStatusDTO newStatus = devStatusDao.getById(2L);
-		developer.setStatus(newStatus);
+		DeveloperStatusEventDTO newStatusHistory = new DeveloperStatusEventDTO();
+		newStatusHistory.setDeveloperId(developer.getId());
+		newStatusHistory.setStatus(newStatus);
+		newStatusHistory.setStatusDate(new Date());
+		developer.getStatusEvents().add(newStatusHistory);
 		
 		boolean failed = false;
 		try {
@@ -105,8 +118,12 @@ public class VersionManagerTest extends TestCase {
 			failed = true;
 		}
 		assertFalse(failed);
-		assertNotNull(developer.getStatus());
-		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), developer.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = developer.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 		
 		//try to update version
 		ProductVersionDTO version = versionManager.getById(1L);

@@ -5,13 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -20,9 +18,14 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
@@ -38,8 +41,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2015Validator")
 public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl {
-	private static final Logger logger = LogManager.getLogger(CertifiedProduct2015Validator.class);
-
 	private static final String[] aComplimentaryCerts = {"170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)",
 			"170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)", "170.315 (d)(7)"};
 	
@@ -72,6 +73,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	@Autowired TestToolDAO testToolDao;
 	@Autowired TestFunctionalityDAO testFuncDao;
 	@Autowired AccessibilityStandardDAO asDao;
+	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	
 	@Override
@@ -356,9 +358,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(pendingToolMap.getName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + pendingToolMap.getName() + "'.");
-							} else if(foundTestTool.isRetired()) {
-								product.getErrorMessages().add("Cannot use test tool '" + foundTestTool.getName() + "' since it is retired. Please choose a different test tool for " + cert.getNumber() + ".");
-							}
+							} 
 						}
 					}
 				}
@@ -367,7 +367,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
 					for(PendingCertificationResultTestFunctionalityDTO pendingFuncMap : cert.getTestFunctionality()) {
 						if(pendingFuncMap.getTestFunctionalityId() == null) {
-							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumber(pendingFuncMap.getNumber());
+							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
+									pendingFuncMap.getNumber(), product.getCertificationEditionId());
 							if(foundTestFunc == null || foundTestFunc.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + pendingFuncMap.getNumber() + "'.");
 							}
@@ -375,6 +376,34 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
+						if(pendingMeasureMap.getMacraMeasureId() == null) {
+							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure: '" + pendingMeasureMap.getEnteredValue() + "'.");
+							} else {
+								pendingMeasureMap.setMacraMeasure(foundMeasure);
+							}
+						}
+					}
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
+						if(pendingMeasureMap.getMacraMeasureId() == null) {
+							MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(), pendingMeasureMap.getEnteredValue());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure: '" + pendingMeasureMap.getEnteredValue() + "'.");
+							} else {
+								pendingMeasureMap.setMacraMeasure(foundMeasure);
+							}
+						}
+					}
+				}
+				
 				if(!gapEligibleAndTrue && 
 					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
@@ -387,7 +416,33 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 //					if(cert.getTestTasks() == null || cert.getTestTasks().size() == 0) {
 //						product.getErrorMessages().add("Test tasks are required for certification " + cert.getNumber() + ".");
 //					}
-//				}
+//				}	
+			}
+		}
+		
+		// Allow retired test tool only if CP ICS = true
+		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+				for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
+					if(StringUtils.isEmpty(testTool.getName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
+					} else {
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
+						if(tt == null) {
+							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
+						}
+						else if(tt.isRetired() && super.icsCode.intValue() == 0) {
+							if(super.hasIcsConflict){
+								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else {
+								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -605,8 +660,38 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 	protected void validateDemographics(CertifiedProductSearchDetails product) {
 		super.validateDemographics(product);
 		
-		if(product.getIcs() == null) {
+		if(product.getIcs() == null || product.getIcs().getInherits() == null) {
 			product.getErrorMessages().add("ICS is required.");
+		} else if(product.getIcs().getInherits().equals(Boolean.TRUE) && icsCode.intValue() > 0) {
+			//if ICS is nonzero, warn about providing parents
+			if(product.getIcs() == null || product.getIcs().getParents() == null || 
+					product.getIcs().getParents().size() == 0) {
+				product.getWarningMessages().add("The ICS code is greater than zero which means this listing has inherited properties. It is recommended to specify at least one parent from which the listing inherits.");
+			} else {
+				//parents are non-empty - check inheritance rules
+				//certification edition must be the same as this listings
+				List<Long> parentIds = new ArrayList<Long>();
+				for(CertifiedProduct potentialParent : product.getIcs().getParents()) {
+					if(potentialParent.getId().toString().equals(product.getId().toString())) {
+						product.getErrorMessages().add("A parent listing was found with the same ID as this listing. A listing cannot inherit from itself.");
+					}
+					parentIds.add(potentialParent.getId());
+				}
+				List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+				for(CertificationEditionDTO parentEdition : parentEditions) {
+					if(!product.getCertificationEdition().get("id").toString().equals(parentEdition.getId().toString())) {
+						product.getErrorMessages().add("A parent was found with certification edition '" + parentEdition.getYear() + "'. Parent certification edition must match that of this listing.");
+					}
+				}
+				
+				//this listing's ICS code must be greater than the max of parent ICS codes
+				Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
+				if(largestIcs != null && icsCode.intValue() != (largestIcs.intValue()+1)) {
+					product.getErrorMessages().add("The ICS Code for this listing was given as '" + 
+							icsCode + "' but it was expected to be one more than the " +
+							"largest inherited ICS code '" + largestIcs + "'.");
+				}
+			}
 		}
 		
 		if(product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
@@ -623,41 +708,26 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 			product.getErrorMessages().add("Accessibility standards are required.");
 		}
 		
-		//have to get the old product to compare previous and current test tools
-		CertifiedProductSearchDetails oldProduct = null;
-		try {
-				oldProduct = cpdManager.getCertifiedProductDetails(product.getId());
-		} catch(EntityRetrievalException ex) {
-			logger.error("Could not find certified product details with id " + product.getId(), ex);
-		}
-		
-		//we do have to check for retired test tools here because users are not allowed to:
-		//1. remove a retired test tool that was previously used, or 
-		//2. add a retired test tool that was not previously used, or
-		//3. change the test tool version of a retired test tool
-		for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-			if(oldCert.isSuccess() != null && oldCert.isSuccess() == Boolean.TRUE && oldCert.getTestToolsUsed() != null) {
-				for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-					TestToolDTO testTool = testToolDao.getById(oldTestTool.getTestToolId());
-					if(testTool.isRetired()) {
-						boolean certStillExists = false;
-						boolean certHasRetiredTool = false;
-						//make sure this test tool still exists in the passed in product/cert
-						//because users are not allowed to remove exisitng test tools if they are retired
-						for(CertificationResult cert : product.getCertificationResults()) {
-							if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
-								if(cert.getNumber().equals(oldCert.getNumber())) {
-									certStillExists = true;
-									for(CertificationResultTestTool newTestTool : cert.getTestToolsUsed()) {
-										if(newTestTool.getTestToolId().equals(oldTestTool.getTestToolId())) {
-											certHasRetiredTool = true;
-										}
-									}
-								}
-							}
+		// Allow retired test tool only if CP ICS = true
+		for(CertificationResult cert : product.getCertificationResults()) {
+			if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+				for(CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+					if(StringUtils.isEmpty(testTool.getTestToolName())) {
+						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
+					} else {
+						TestToolDTO tt = super.testToolDao.getByName(testTool.getTestToolName());
+						if(tt == null){
+							product.getErrorMessages().add("No test tool with " + testTool.getTestToolName() + " was found for criteria " + cert.getNumber() + ".");
 						}
-						if(certStillExists && !certHasRetiredTool) {
-							product.getErrorMessages().add("Certification " + oldCert.getNumber() + " exists but is missing the required test tool '" + testTool.getName() + "'. This tool was present before and cannt be removed since it is retired.");
+						else if(tt.isRetired() && super.icsCode.intValue() == 0) {
+							if(super.hasIcsConflict) {
+								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
+							else {
+								product.getErrorMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
+								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+							}
 						}
 					}
 				}
@@ -693,35 +763,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							TestToolDTO foundTestTool = testToolDao.getByName(toolMap.getTestToolName());
 							if(foundTestTool == null || foundTestTool.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid test tool name: '" + toolMap.getTestToolName() + "'.");
-							} else if(foundTestTool.isRetired() && oldProduct != null) {
-								//this retired tool is acceptable if it is not new 
-								//and the version has not been changed
-								boolean certMatch = false;
-								boolean retiredToolMatch = false;
-								boolean versionMatch = true;
-								for(CertificationResult oldCert : oldProduct.getCertificationResults()) {
-									if(oldCert.getNumber().equals(cert.getNumber())) {
-										certMatch = true;
-										for(CertificationResultTestTool oldTestTool : oldCert.getTestToolsUsed()) {
-											if(oldTestTool.getTestToolId().equals(foundTestTool.getId())) {
-												retiredToolMatch = true;
-												
-												if(!oldTestTool.getTestToolVersion().equals(toolMap.getTestToolVersion())) {
-													versionMatch = false;
-												}
-											}
-										}
-									}
-								}
-								
-								if(!certMatch) {
-									product.getErrorMessages().add("Cannot add a retired product to " + cert.getNumber());
-								} else if(certMatch && !retiredToolMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " has test tool " + foundTestTool.getName() + " but did not have that before. Retired test tools cannot be added to products.");
-								} else if(certMatch && retiredToolMatch && !versionMatch) {
-									product.getErrorMessages().add("Certification " + cert.getNumber() + " cannot change the test tool version for " + foundTestTool.getName() + " since that test tool is retired.");
-								}
-							}
+							} 
 						}
 					}
 				}
@@ -730,7 +772,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
 					for(CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {
 						if(funcMap.getTestFunctionalityId() == null) {
-							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumber(funcMap.getName());
+							TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(funcMap.getName(), new Long(product.getCertificationEdition().get("id").toString()));
 							if(foundTestFunc == null || foundTestFunc.getId() == null) {
 								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid test functionality: '" + funcMap.getName() + "'.");
 							}
@@ -738,6 +780,50 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					for(int i = 0; i < cert.getG1MacraMeasures().size(); i++) {
+						MacraMeasure measure = cert.getG1MacraMeasures().get(i);
+						if(measure == null || measure.getId() == null) {
+							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure.");
+						} else {
+							//confirm the measure id is valid
+							MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure. No measure found with ID '" + measure.getId() + "'.");
+							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G1 Macra Measure. Measure with ID '" + 
+										measure.getId() + "' is the measure '" + foundMeasure.getName() + 
+										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
+							} else {								
+								cert.getG1MacraMeasures().set(i, new MacraMeasure(foundMeasure));
+							}
+						}
+					}
+				}
+				
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					for(int i = 0; i < cert.getG2MacraMeasures().size(); i++) {
+						MacraMeasure measure = cert.getG2MacraMeasures().get(i);
+						if(measure == null || measure.getId() == null) {
+							product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure.");
+						} else {
+							//confirm the measure id is valid
+							MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
+							if(foundMeasure == null || foundMeasure.getId() == null) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure. No measure found with ID '" + measure.getId() + "'.");
+							} else if(!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
+								product.getErrorMessages().add("Certification " + cert.getNumber() + " contains an invalid G2 Macra Measure. Measure with ID '" + 
+										measure.getId() + "' is the measure '" + foundMeasure.getName() + 
+										"' and is for criteria '" + foundMeasure.getCriteria().getNumber() + "'.");
+							} else {
+								cert.getG2MacraMeasures().set(i, new MacraMeasure(foundMeasure));
+							}
+						}
+					}
+				}
+				
 				if(!gapEligibleAndTrue && 
 					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {

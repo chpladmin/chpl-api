@@ -522,11 +522,11 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
 						break;
 					case "STANDARD TESTED AGAINST":
-						parseTestStandards(cert, currIndex);
+						parseTestStandards(pendingCertifiedProduct, cert, currIndex);
 						currIndex++;
 						break;
 					case "FUNCTIONALITY TESTED":
-						parseTestFunctionality(cert, currIndex);
+						parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
 						currIndex++;
 						break;
 					case "MEASURE SUCCESSFULLY TESTED FOR G1":
@@ -582,13 +582,13 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		return cert;
 	}
 	
-	private void parseTestStandards(PendingCertificationResultEntity cert, int tsColumn) {
+	private void parseTestStandards(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int tsColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tsValue = row.get(tsColumn).trim();
 			if(!StringUtils.isEmpty(tsValue)) {
 				PendingCertificationResultTestStandardEntity tsEntity = new PendingCertificationResultTestStandardEntity();
 				tsEntity.setTestStandardName(tsValue);
-				TestStandardDTO ts = testStandardDao.getByNumber(tsValue);
+				TestStandardDTO ts = testStandardDao.getByNumberAndEdition(tsValue, listing.getCertificationEditionId());
 				if(ts != null) {
 					tsEntity.setTestStandardId(ts.getId());
 				}
@@ -597,13 +597,13 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}
 	}
 	
-	private void parseTestFunctionality(PendingCertificationResultEntity cert, int tfColumn) {
+	private void parseTestFunctionality(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int tfColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tfValue = row.get(tfColumn).trim();
 			if(!StringUtils.isEmpty(tfValue)) {
 				PendingCertificationResultTestFunctionalityEntity tfEntity = new PendingCertificationResultTestFunctionalityEntity();
 				tfEntity.setTestFunctionalityNumber(tfValue);
-				TestFunctionalityDTO tf = testFunctionalityDao.getByNumber(tfValue);
+				TestFunctionalityDTO tf = testFunctionalityDao.getByNumberAndEdition(tfValue, listing.getCertificationEditionId());
 				if(tf != null) {
 					tfEntity.setTestFunctionalityId(tf.getId());
 				}
@@ -699,9 +699,6 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				ttEntity.setTestToolVersion(testToolVersion);
 				TestToolDTO testTool = testToolDao.getByName(testToolName);
 				if(testTool != null) {
-					if(testTool.isRetired()) {
-						product.getErrorMessages().add("Test tool '" + testToolName + "' has been retired. Please remove it from the upload file and add a different test tool if necessary.");
-					}
 					ttEntity.setTestToolId(testTool.getId());
 				}
 				cert.getTestTools().add(ttEntity);

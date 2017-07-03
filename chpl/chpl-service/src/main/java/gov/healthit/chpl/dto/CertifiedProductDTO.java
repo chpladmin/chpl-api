@@ -1,17 +1,30 @@
 package gov.healthit.chpl.dto;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
-public class CertifiedProductDTO {
+public class CertifiedProductDTO implements Serializable {
+	private static final long serialVersionUID = 7918387302717979598L;
+	public static final int CHPL_PRODUCT_ID_PARTS = 9;
+	public static final int EDITION_CODE_INDEX = 0;
+	public static final int ATL_CODE_INDEX = 1;
+	public static final int ACB_CODE_INDEX = 2;
+	public static final int DEVELOPER_CODE_INDEX = 3;
+	public static final int PRODUCT_CODE_INDEX = 4;
+	public static final int VERSION_CODE_INDEX = 5;
+	public static final int ICS_CODE_INDEX = 6;
+	public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
+	public static final int CERTIFIED_DATE_CODE_INDEX = 8;
+	
 	private Long id;
 	private String productCode;
 	private String versionCode;
-	private String icsCode;
+	private Integer icsCode;
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
 	private String acbCertificationId;
@@ -223,11 +236,11 @@ public class CertifiedProductDTO {
 		this.certifiedDateCode = certifiedDateCode;
 	}
 
-	public String getIcsCode() {
+	public Integer getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(String icsCode) {
+	public void setIcsCode(Integer icsCode) {
 		this.icsCode = icsCode;
 	}
 

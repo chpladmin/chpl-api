@@ -11,21 +11,22 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import gov.healthit.chpl.app.App;
+import gov.healthit.chpl.app.DownloadableResourceCreatorApp;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 
 public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
-	private static final Logger logger = LogManager.getLogger(App.class);
+	private static final Logger logger = LogManager.getLogger(DownloadableResourceCreatorApp.class);
 
 	@Override
-	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+	public int presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+		int numRecords = 0;
 		FileOutputStream os = null;
         try {
             os = new FileOutputStream(file);
             Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
             marshaller.setClassesToBeBound(cpList.getClass());
             marshaller.marshal(cpList, new StreamResult(os));
-
+            numRecords = (cpList.getListings() == null ? 0 : cpList.getListings().size());
         } catch(FileNotFoundException ex) {
         	logger.error("file not found " + file);
         } finally {
@@ -33,6 +34,7 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
                 try { os.close(); } catch(IOException ignore) {}
             }
         }
+        return numRecords;
 	}
 
 }

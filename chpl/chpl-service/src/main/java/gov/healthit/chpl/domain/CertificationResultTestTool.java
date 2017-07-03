@@ -1,12 +1,54 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
+
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 
-public class CertificationResultTestTool {
+/**
+ * The test tool used to certify the Health IT Module to the corresponding certification criteria
+ * Allowable values are based on the NIST 2014 and 2015 Edition Test Tools.
+ *
+ */
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CertificationResultTestTool implements Serializable {
+	private static final long serialVersionUID = 2785949879671019720L;
+	
+	/**
+	 * Test tool to certification result mapping internal ID
+	 */
+	@XmlElement(required = true)
 	private Long id;
+	
+	/**
+	 * Test tool internal ID
+	 */
+	@XmlElement(required = true)
 	private Long testToolId;
+	
+	/**
+	 * The test tool used to certify the Health IT Module to the corresponding certification criteria
+	 */
+	@XmlElement(required = true)
 	private String testToolName;
+	
+	/**
+	 * The version of the test tool being used. This variable is applicable for 
+	 * 2014 and 2015 Edition, and a string variable that does not take any restrictions 
+	 * on formatting or values. 
+	 */
+	@XmlElement(required = false, nillable=true)
 	private String testToolVersion;
+	
+	/**
+	 * Whether or not the test tool has been retired.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private boolean retired;
 	
 	public CertificationResultTestTool() {

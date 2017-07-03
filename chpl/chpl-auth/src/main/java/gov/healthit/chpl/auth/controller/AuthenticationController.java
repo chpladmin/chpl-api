@@ -20,7 +20,6 @@ import gov.healthit.chpl.auth.json.UserResetPasswordJSONObject;
 import gov.healthit.chpl.auth.jwt.JWTCreationException;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UpdatePasswordRequest;
-import gov.healthit.chpl.auth.user.UserConversionHelper;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

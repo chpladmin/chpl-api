@@ -1,12 +1,12 @@
 package gov.healthit.chpl.auth.dto;
 
-import gov.healthit.chpl.auth.entity.UserEntity;
-
 import java.util.Collection;
 import java.util.Date;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import gov.healthit.chpl.auth.entity.UserEntity;
 
 public class UserDTO implements UserDetails {
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,21 +27,22 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -60,11 +62,12 @@ import junit.framework.TestCase;
 public class CertifiedProductManagerTest extends TestCase {
 	
 	@Autowired private DeveloperManager devManager;
-	@Autowired private DeveloperDAO devDao;
 	@Autowired private CertificationStatusDAO certStatusDao;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
-	@Autowired private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	private static JWTAuthenticatedUser testUser3;
@@ -114,14 +117,18 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
 		cp.setCertificationStatusId(stat.getId());
-		cpManager.update(1L, cp);
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), dev.getStatus().getStatusName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.SuspendedByOnc.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -133,10 +140,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			cpManager.update(1L, cp);
+			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -144,10 +153,97 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testNonAdminUserNotAllowedToChangeStatusToWithdrawnByDeveloperUnderReview() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(testUser3);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+		cp.setCertificationStatusId(stat.getId());
+		boolean success = true;
+		try {
+			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+			cpManager.update(1L, cp, toUpdate, details);
+		} catch(AccessDeniedException adEx) {
+			success = false;
+		}
+		assertFalse(success);
 		
-		SecurityContextHolder.getContext().setAuthentication(null);
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithDeveloperBan() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+		assertNotNull(stat);
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+		cp.setCertificationStatusId(stat.getId());
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setBanDeveloper(true);
+		cpManager.update(1L, cp, toUpdate, details);
+		
+		DeveloperDTO dev = devManager.getById(-1L);
+		assertNotNull(dev);
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), status.getStatus().getStatusName());
+	}
+	
+	@Test
+	@Transactional(readOnly=false)
+	@Rollback(true)
+	public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithoutDeveloperBan() throws EntityRetrievalException,
+		EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+		assertNotNull(stat);
+		
+		DeveloperDTO beforeDev = devManager.getById(-1L);
+		assertNotNull(beforeDev);
+		DeveloperStatusEventDTO beforeStatus = beforeDev.getStatus();
+		assertNotNull(beforeStatus);
+		assertNotNull(beforeStatus.getId());
+		
+		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+		cp.setCertificationStatusId(stat.getId());
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		toUpdate.setBanDeveloper(false);
+		cpManager.update(1L, cp, toUpdate, details);
+		
+		DeveloperDTO afterDev = devManager.getById(-1L);
+		assertNotNull(afterDev);
+		DeveloperStatusEventDTO afterStatus = afterDev.getStatus();
+		assertNotNull(afterStatus);
+		assertNotNull(afterStatus.getId());
+		assertEquals(beforeStatus.getId().longValue(), afterStatus.getId().longValue());
 	}
 	
 	@Test
@@ -159,15 +255,20 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+
 		cp.setCertificationStatusId(stat.getId());
-		cpManager.update(1L, cp);
+		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+		cpManager.update(1L, cp, toUpdate, details);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), dev.getStatus().getStatusName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -179,10 +280,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
 		CertifiedProductDTO cp = cpManager.getById(1L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(1L);
+
 		cp.setCertificationStatusId(stat.getId());
 		boolean success = true;
 		try {
-			cpManager.update(1L, cp);
+			ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+			cpManager.update(1L, cp, toUpdate, details);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -190,10 +294,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
-		assertNotNull(dev.getStatus());
-		assertEquals(DeveloperStatusType.Active.toString(), dev.getStatus().getStatusName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
+		DeveloperStatusEventDTO status = dev.getStatus();
+		assertNotNull(status);
+		assertNotNull(status.getId());
+		assertNotNull(status.getStatus());
+		assertNotNull(status.getStatus().getStatusName());
+		assertEquals(DeveloperStatusType.Active.toString(), status.getStatus().getStatusName());
 	}
 	
 	@Test
@@ -233,9 +339,6 @@ public class CertifiedProductManagerTest extends TestCase {
 			}
 		}
 		assertTrue(changedParticipantExists);
-		
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -270,8 +373,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals("Teacher", part.getOccupation());
 		}		
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
@@ -305,8 +406,6 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals(2, part.getEducationTypeId().longValue());
 		}		
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	/**
@@ -409,7 +508,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
 		
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
-		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC08.36.1.1.160402", 20L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC13.36.2.1.160402", 20L);
 		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.EIC10.99.1.1.160403", 30L);
 		muuSet.add(u1);
 		muuSet.add(u2);
@@ -418,7 +517,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
 		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC08.36.1.1.160402"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC13.36.2.1.160402"));
 		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 		assertTrue(results.getErrors().get(0).getError() != null);
 		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.EIC10.99.1.1.160403"));
@@ -457,9 +556,116 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResultTestParticipant part : taskParts) {
 			assertEquals(4, part.getAgeRangeId().longValue());
 		}		
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testUpdateG1MacraMeasures() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		dto.setId(3L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
+		List<CertificationResult> certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		List<MacraMeasure> measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+		MacraMeasure measure = measures.get(0);
+		assertNotNull(measure);
+		MacraMeasure newMeasure = new MacraMeasure();
+		newMeasure.setId(2L);
+		cert.getG1MacraMeasures().set(0, newMeasure);
 		
-		SecurityContextHolder.getContext().setAuthentication(null);
+		cpManager.updateCertifications(-1L, dto, certs);
+		
+		details = cpdManager.getCertifiedProductDetails(3L);
+		certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testAddG2Measure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		dto.setId(3L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
+		List<CertificationResult> certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		
+		MacraMeasure newMeasure = new MacraMeasure();
+		newMeasure.setId(1L);
+		cert.getG2MacraMeasures().add(newMeasure);
+
+		cpManager.updateCertifications(-1L, dto, certs);
+		
+		details = cpdManager.getCertifiedProductDetails(3L);
+		certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		List<MacraMeasure> measures = cert.getG2MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(1, measures.size());
+		MacraMeasure measure = measures.get(0);
+		assertEquals(1L, measure.getId().longValue());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback(true)
+	public void testDeleteG1MacraMeasure() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		dto.setId(3L);
+		CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(dto.getId());
+		List<CertificationResult> certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		CertificationResult cert = certs.get(0);
+		assertNotNull(cert);
+		cert.getG1MacraMeasures().clear();
+
+		cpManager.updateCertifications(-1L, dto, certs);
+		
+		details = cpdManager.getCertifiedProductDetails(3L);
+		certs = details.getCertificationResults();
+		assertNotNull(certs);
+		assertEquals(1, certs.size());
+		cert = certs.get(0);
+		assertNotNull(cert);
+		List<MacraMeasure> measures = cert.getG1MacraMeasures();
+		assertNotNull(measures);
+		assertEquals(0, measures.size());
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
+	public void getListingsOwnedByProduct() {
+		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(-1L);
+		assertNotNull(listings);
+		assertEquals(4, listings.size());
 	}
 }
-
-

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
@@ -13,11 +14,12 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.entity.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceEntity;
 import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
+import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 
 public interface SurveillanceDAO {
-	public Long insertSurveillance(Surveillance surv);
+	public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException;
 	public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc);
-	public Long updateSurveillance(Surveillance newSurv);
+	public Long updateSurveillance(Surveillance newSurv) throws UserPermissionRetrievalException;
 	public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId, String survFriendlyId);
 	public SurveillanceEntity getSurveillanceById(Long id);
 	public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id);
@@ -42,4 +44,6 @@ public interface SurveillanceDAO {
 	public List<SurveillanceNonconformityStatus> getAllSurveillanceNonconformityStatusTypes();
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type);
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id);
+	public List<SurveillanceEntity> getAllSurveillance();
+	public List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities();
 }

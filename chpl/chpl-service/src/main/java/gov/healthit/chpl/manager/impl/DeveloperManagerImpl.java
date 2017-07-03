@@ -10,6 +10,8 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -20,14 +22,20 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.ClearBasicSearch;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.AttestationType;
@@ -36,6 +44,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -47,12 +56,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Autowired DeveloperDAO developerDao;	
 	@Autowired ProductManager productManager;
 	@Autowired CertificationBodyManager acbManager;
+	@Autowired CertificationBodyDAO certificationBodyDao;
 
 	@Autowired
 	ActivityManager activityManager;
 	
 	@Override
 	@Transactional(readOnly = true)
+	@Cacheable(CacheNames.ALL_DEVELOPERS)
 	public List<DeveloperDTO> getAll() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAll();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -62,6 +73,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+	@Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
 	public List<DeveloperDTO> getAllIncludingDeleted() {
 		List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
 		List<DeveloperDTO> allDevelopersWithTransparencies = addTransparencyMappings(allDevelopers);
@@ -97,43 +109,74 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
+	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES, 
+			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS, CacheNames.GET_DECERTIFIED_DEVELOPERS}, allEntries=true)
+	@ClearBasicSearch
 	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		DeveloperDTO beforeDev = getById(developer.getId());
-		DeveloperDTO updatedDeveloper = null;
+		DeveloperStatusEventDTO newDevStatus = developer.getStatus();
+		DeveloperStatusEventDTO currDevStatus = beforeDev.getStatus();
+		if(currDevStatus == null || currDevStatus.getStatus() == null) {
+			String msg = "The developer " + beforeDev.getName()+ " cannot be updated since it's current status cannot be determined.";
+			logger.error(msg);
+			throw new EntityCreationException(msg);
+		}
 		
 		//if the before status is not Active and the user is not ROLE_ADMIN
 		//then nothing can be changed
-		if(!beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+		if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
 				!Util.isUserRoleAdmin()) {
 			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " because its status is not Active.");
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to update an inactive developer.");
 		} 
 		
-		//determine if the status flag has been changed.
-		//only users with ROLE_ADMIN are allowed to change it
-		if(!beforeDev.getStatus().getStatusName().equals(developer.getStatus().getStatusName()) && 
+		//if the status history has been modified, the user must be role admin
+		//except that an acb admin can change to UnderCertificationBanByOnc 
+		//triggered by listing status update
+		boolean devStatusHistoryUpdated = isStatusHistoryUpdated(beforeDev, developer);
+		if(devStatusHistoryUpdated && newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
+			!(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN but may "
+					+ "have tried to change status history for the developer " + beforeDev.getName() + " to include " + DeveloperStatusType.UnderCertificationBanByOnc.toString());
+			throw new EntityCreationException("User cannot change developer status to " + DeveloperStatusType.UnderCertificationBanByOnc.toString() + " without ROLE_ADMIN or ROLE_ACB_ADMIN.");
+		} else if(devStatusHistoryUpdated && !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
 				!Util.isUserRoleAdmin()) {
-			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + beforeDev.getStatus().getStatusName() + " to " + developer.getStatus().getStatusName());
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN but may have tried to change history for the developer " + beforeDev.getName());
+			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status history.");
+		}
+				
+		//determine if the status has been changed
+		//in most cases only allowed by ROLE_ADMIN but ROLE_ACB_ADMIN
+		//can change it to UnderCertificationBanByOnc
+		boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName().equals(newDevStatus.getStatus().getStatusName());
+		if(currentStatusChanged && newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
+				!(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
+				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN but may "
+						+ "have tried to change status for the developer " + beforeDev.getName() + " to include " + DeveloperStatusType.UnderCertificationBanByOnc.toString());
+				throw new EntityCreationException("User cannot change developer status to " + DeveloperStatusType.UnderCertificationBanByOnc.toString() + " without ROLE_ADMIN or ROLE_ACB_ADMIN.");
+		} else if(currentStatusChanged &&  !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && 
+				!Util.isUserRoleAdmin()) {
+			logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer " + beforeDev.getName() + " status from " + currDevStatus.getStatus().getStatusName() + " to " + currDevStatus.getStatus().getStatusName());
 			throw new EntityCreationException("User without ROLE_ADMIN is not authorized to change developer status.");
-		} else if(!beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
-				  !developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) &&
-				  Util.isUserRoleAdmin()) {
+		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+				  !newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 			//if the developer is not active and not going to be active
 			//only its status can be updated
-			updatedDeveloper = developerDao.updateStatus(developer);
+			developerDao.updateStatus(newDevStatus);
+			return getById(developer.getId());
 		}
 		
 		//if either the before or updated statuses are active and the user is ROLE_ADMIN
 		//OR if before status is active and user is not ROLE_ADMIN - proceed
-		if( ((beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) 
-				|| developer.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) 
+		if( ((currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) 
+				|| newDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) 
 			  && Util.isUserRoleAdmin()) 
 			||
-			(beforeDev.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
+			(currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString()) && 
 					!Util.isUserRoleAdmin())) {
 			
-			updatedDeveloper = developerDao.update(developer);
+			developerDao.update(developer);
 			List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
 			if(availableAcbs != null && availableAcbs.size() > 0) {
 				for(CertificationBodyDTO acb : availableAcbs) {
@@ -160,14 +203,18 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			}
 		}
 		
-		DeveloperDTO after = getById(updatedDeveloper.getId());
+		DeveloperDTO after = getById(developer.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", beforeDev, after);
 		checkSuspiciousActivity(beforeDev, after);
+
 		return after;
 	}
 	
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@Transactional(readOnly = false)
+	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES, 
+			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@ClearBasicSearch
 	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		DeveloperDTO created = developerDao.create(dto);
@@ -188,54 +235,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		return created;
 	}
 	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Transactional(readOnly = false)
-	public void delete(DeveloperDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		DeveloperDTO toDelete = developerDao.getById(dto.getId());
-		
-		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				developerDao.deleteTransparencyMapping(dto.getId(), acb.getId());
-			}
-		}
-		developerDao.delete(dto.getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, toDelete.getId(), "Developer "+toDelete.getName()+" has been deleted.", toDelete, null);
-		
-	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	@Transactional(readOnly = false)
-	public void delete(Long developerId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		
-		DeveloperDTO toDelete = developerDao.getById(developerId);
-		
-		if(toDelete.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-			String msg = "Cannot delete developer " + toDelete.getName() + " because their status is " + toDelete.getStatus().getStatusName();
-			logger.error(msg);
-			throw new EntityCreationException(msg);
-		}
-		
-		List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
-		if(availableAcbs != null && availableAcbs.size() > 0) {
-			for(CertificationBodyDTO acb : availableAcbs) {
-				developerDao.deleteTransparencyMapping(developerId, acb.getId());
-			}
-		}
-		developerDao.delete(developerId);
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, toDelete.getId(), "Developer "+toDelete.getName()+" has been deleted.", toDelete, null);
-	}
-	
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@Transactional(readOnly = false)
+	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES, 
+			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS, CacheNames.GET_DECERTIFIED_DEVELOPERS}, allEntries=true)
+	@ClearBasicSearch
 	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
@@ -245,8 +250,13 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		//check for any non-active developers and throw an error if any are found
 		for(DeveloperDTO beforeDeveloper : beforeDevelopers) {
-			if(!beforeDeveloper.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
-				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of " + beforeDeveloper.getStatus().getStatusName();
+			DeveloperStatusEventDTO currDeveloperStatus = beforeDeveloper.getStatus();
+			if(currDeveloperStatus == null || currDeveloperStatus.getStatus() == null) {
+				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " because their current status cannot be determined.";
+				logger.error(msg);
+				throw new EntityCreationException(msg);
+			} else if(!currDeveloperStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
+				String msg = "Cannot merge developer " + beforeDeveloper.getName() + " with a status of " + currDeveloperStatus.getStatus().getStatusName();
 				logger.error(msg);
 				throw new EntityCreationException(msg);
 			}
@@ -311,10 +321,27 @@ public class DeveloperManagerImpl implements DeveloperManager {
 	}
 	
 	@Transactional(readOnly = true)
-	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
-		List<DecertifiedDeveloperDTO> developerDecertifiedDTOList = new ArrayList<DecertifiedDeveloperDTO>();
-		developerDecertifiedDTOList = developerDao.getDecertifiedDevelopers();
-		return developerDecertifiedDTOList;
+	@Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
+	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
+		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
+		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
+		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
+		
+		dtoList = developerDao.getDecertifiedDevelopers();
+		
+		for(DecertifiedDeveloperDTO dto : dtoList){
+			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
+			for(Long oncacbId : dto.getAcbIdList()){
+				CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
+				certifyingBody.add(cb);
+			}
+			
+			DecertifiedDeveloperResult decertifiedDeveloper = new DecertifiedDeveloperResult(developerDao.getById(dto.getDeveloperId()), certifyingBody, dto.getDecertificationDate(), dto.getNumMeaningfulUse());
+			decertifiedDeveloperResults.add(decertifiedDeveloper);
+		}
+		
+		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
+		return ddr;
 	}
 	
 	@Override
@@ -332,11 +359,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 			sendMsg = true;
 		}
 		
-		if( (original.getStatus().getId() != null && changed.getStatus().getId() == null) || 
-			(original.getStatus().getId() == null && changed.getStatus().getId() != null) ||
-			(original.getStatus().getId().longValue() != changed.getStatus().getId().longValue())) {
-			sendMsg = true;
-		}
+		sendMsg = sendMsg || isStatusHistoryUpdated(original, changed);
 		
 		if(sendMsg) {
 			String emailAddr = env.getProperty("questionableActivityEmail");
@@ -347,6 +370,29 @@ public class DeveloperManagerImpl implements DeveloperManager {
 				logger.error("Could not send questionable activity email", me);
 			}
 		}	
+	}
+	
+	private boolean isStatusHistoryUpdated(DeveloperDTO original, DeveloperDTO changed) {
+		boolean hasChanged = false;
+		if( (original.getStatusEvents() != null && changed.getStatusEvents() == null) || 
+				(original.getStatusEvents() == null && changed.getStatusEvents() != null) || 
+				(original.getStatusEvents().size() != changed.getStatusEvents().size())) {
+			hasChanged = true;
+			} else {
+				//neither status history is null and they have the same size history arrays
+				//so now check for any differences in the values of each
+				for(DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
+					boolean foundMatchInChanged = false;
+					for(DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
+						if(origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId().longValue() && 
+							origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate().getTime()) {
+							foundMatchInChanged = true;
+						}
+					}
+					hasChanged = hasChanged || !foundMatchInChanged;
+				}
+			}
+		return hasChanged;
 	}
 	
 	private List<DeveloperDTO> addTransparencyMappings(List<DeveloperDTO> developers) {

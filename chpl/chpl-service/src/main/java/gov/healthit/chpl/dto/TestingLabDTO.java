@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.TestingLabEntity;
 
-public class TestingLabDTO {
-
+public class TestingLabDTO implements Serializable {
+	private static final long serialVersionUID = 3772645398248735019L;
 	private String testingLabCode;
 	private Long id;
 	private AddressDTO address;

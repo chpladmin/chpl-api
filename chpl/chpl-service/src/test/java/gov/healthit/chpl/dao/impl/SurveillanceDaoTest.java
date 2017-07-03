@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
@@ -35,6 +39,8 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
 import junit.framework.TestCase;
 
 
@@ -53,6 +59,10 @@ public class SurveillanceDaoTest extends TestCase {
 	@Autowired
 	private CertifiedProductDAO cpDao;
 	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+	
 	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
@@ -68,7 +78,7 @@ public class SurveillanceDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void insertSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+	public void insertSurveillanceWithoutNonconformities() throws EntityRetrievalException, UserPermissionRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -91,6 +101,7 @@ public class SurveillanceDaoTest extends TestCase {
 		req.setResult(resType);
 		
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);
@@ -100,7 +111,7 @@ public class SurveillanceDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void insertSurveillanceWithNonconformities() throws EntityRetrievalException {
+	public void insertSurveillanceWithNonconformities() throws EntityRetrievalException, UserPermissionRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -145,6 +156,7 @@ public class SurveillanceDaoTest extends TestCase {
 		SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
 		nc.setStatus(ncStatus);
 		req2.getNonconformities().add(nc);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);
@@ -154,7 +166,7 @@ public class SurveillanceDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateSurveillanceWithoutNonconformities() throws EntityRetrievalException {
+	public void updateSurveillanceWithoutNonconformities() throws EntityRetrievalException, UserPermissionRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Surveillance surv = new Surveillance();
 		
@@ -177,6 +189,7 @@ public class SurveillanceDaoTest extends TestCase {
 		req.setResult(resType);
 		
 		surv.getRequirements().add(req);
+		surv.setAuthority(Authority.ROLE_ADMIN);
 		
 		Long insertedId = survDao.insertSurveillance(surv);
 		assertNotNull(insertedId);
@@ -256,5 +269,21 @@ public class SurveillanceDaoTest extends TestCase {
 			assertNotNull(result.getName());
 			assertTrue(result.getName().length() > 0);
 		}
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllSurveillance() {
+		List<SurveillanceEntity> results = survDao.getAllSurveillance();
+		assertNotNull(results);
+		assertEquals(4, results.size());
+	}
+	
+	@Test
+	@Transactional
+	public void testGetAllSurveillanceNonConformities() {
+		List<SurveillanceNonconformityEntity> results = survDao.getAllSurveillanceNonConformities();
+		assertNotNull(results);
+		assertEquals(4, results.size());
 	}
 }

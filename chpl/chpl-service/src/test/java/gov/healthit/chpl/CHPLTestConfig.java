@@ -2,6 +2,7 @@ package gov.healthit.chpl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.sql.DataSource;
 
@@ -17,8 +18,10 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -40,19 +43,29 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
+import gov.healthit.chpl.caching.CacheInitializor;
 
 @Configuration
-//@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
+@EnableAspectJAutoProxy(proxyTargetClass=true)
 @EnableTransactionManagement
-//@EnableAspectJAutoProxy
-@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
+@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {
+		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),
+		@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = CacheInitializor.class)
+		})
 public class CHPLTestConfig implements EnvironmentAware {
 	
 	private Environment env;
@@ -70,7 +83,6 @@ public class CHPLTestConfig implements EnvironmentAware {
         ds.setPassword(env.getRequiredProperty("testDbPassword"));
 		return ds;
 	}
-	
 	
 	@Bean
 	@Autowired
@@ -142,16 +154,14 @@ public class CHPLTestConfig implements EnvironmentAware {
 	
 	@Bean
 	public MappingJackson2HttpMessageConverter jsonConverter(){
-		
 		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
-		
 		bean.setPrefixJson(false);
-		
 		List<MediaType> mediaTypes = new ArrayList<MediaType>();
 		mediaTypes.add(MediaType.APPLICATION_JSON);
-		
 		bean.setSupportedMediaTypes(mediaTypes);
-		
+		bean.getObjectMapper().setSerializationInclusion(Include.NON_NULL);
+		bean.getObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
+
 		return bean;
 	}
 	
@@ -265,5 +275,38 @@ public class CHPLTestConfig implements EnvironmentAware {
 		bean.setPermissionCacheOptimizer(aclPermissionCacheOptimizer());
 		return bean;
 	}
+	
+	@Bean
+    public ReloadableResourceBundleMessageSource messageSource(){
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:/errors.test");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
+
+    @Bean
+    public CookieLocaleResolver localeResolver(){
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.ENGLISH);
+        localeResolver.setCookieName("my-locale-cookie");
+        localeResolver.setCookieMaxAge(3600);
+        return localeResolver;
+    }
+
+    @Bean
+    public LocaleChangeInterceptor localeInterceptor(){
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("lang");
+        return interceptor;
+    }
+
+    @Bean
+    public InternalResourceViewResolver viewResolver(){
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
+    }
 	
 }

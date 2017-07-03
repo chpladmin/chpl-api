@@ -5,12 +5,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.EntityNotFoundException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
@@ -28,12 +31,18 @@ public interface CertifiedProductManager {
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getAll();
 	public List<CertifiedProductDetailsDTO> getAllWithEditPermission();
+	public List<CertifiedProductDetailsDTO> getByProduct(Long productId);
 	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId);
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) throws EntityRetrievalException;
+	
+	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing) 
+			throws EntityNotFoundException;
+	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto, 
+			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+	
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	

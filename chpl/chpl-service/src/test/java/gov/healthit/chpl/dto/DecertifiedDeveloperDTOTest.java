@@ -1,13 +1,16 @@
 package gov.healthit.chpl.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -21,6 +24,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.entity.DeveloperStatusType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -33,6 +37,10 @@ import gov.healthit.chpl.entity.DeveloperStatusType;
 public class DecertifiedDeveloperDTOTest {
 	
 	private static JWTAuthenticatedUser authUser;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -52,13 +60,14 @@ public class DecertifiedDeveloperDTOTest {
 	@Test
 	@Transactional
 	public void decertifiedDeveloperHandlesNulls() {
+		Date decertDate = new Date();
 		Long developerId1 = -1L; 
 		List<Long> acbList1 = new ArrayList<Long>();
 		acbList1.add(-1L);
 		acbList1.add(null);
 		String developerStatus1 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
 		Long numMeaningfulUse1 = 66L;
-		DecertifiedDeveloperDTO dto1 = new DecertifiedDeveloperDTO(developerId1, acbList1, developerStatus1, numMeaningfulUse1);
+		DecertifiedDeveloperDTO dto1 = new DecertifiedDeveloperDTO(developerId1, acbList1, developerStatus1, decertDate, numMeaningfulUse1);
 		assertTrue(dto1 != null);
 		
 		Long developerId2 = -1L; 
@@ -67,7 +76,7 @@ public class DecertifiedDeveloperDTOTest {
 		acbList2.add(null);
 		String developerStatus2 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
 		Long numMeaningfulUse2 = null;
-		DecertifiedDeveloperDTO dto2 = new DecertifiedDeveloperDTO(developerId2, acbList2, developerStatus2, numMeaningfulUse2);
+		DecertifiedDeveloperDTO dto2 = new DecertifiedDeveloperDTO(developerId2, acbList2, developerStatus2, decertDate, numMeaningfulUse2);
 		assertTrue(dto2 != null);
 		
 		DecertifiedDeveloperDTO dto3 = new DecertifiedDeveloperDTO();
@@ -89,9 +98,9 @@ public class DecertifiedDeveloperDTOTest {
 		acbList4.add(null);
 		String developerStatus4 = String.valueOf(DeveloperStatusType.UnderCertificationBanByOnc);
 		Long numMeaningfulUse4 = null;
-		DecertifiedDeveloperDTO dto4 = new DecertifiedDeveloperDTO(developerId4, null, developerStatus4, numMeaningfulUse4);
+		DecertifiedDeveloperDTO dto4 = new DecertifiedDeveloperDTO(developerId4, null, developerStatus4, decertDate, numMeaningfulUse4);
 		assertTrue(dto4 != null);
-		DecertifiedDeveloperDTO dto5 = new DecertifiedDeveloperDTO(developerId4, acbList4, developerStatus4, numMeaningfulUse4);
+		DecertifiedDeveloperDTO dto5 = new DecertifiedDeveloperDTO(developerId4, acbList4, developerStatus4, decertDate, numMeaningfulUse4);
 		assertTrue(dto5 != null);
 	}
 	

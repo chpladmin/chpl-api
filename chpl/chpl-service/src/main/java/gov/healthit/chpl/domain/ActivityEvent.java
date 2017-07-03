@@ -1,14 +1,16 @@
 package gov.healthit.chpl.domain;
 
 
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 
-public class ActivityEvent {
-	
+public class ActivityEvent implements Serializable {
+	private static final long serialVersionUID = -8220712127605295980L;
 	private Long id;
 	private String description;
 	private JsonNode originalData;

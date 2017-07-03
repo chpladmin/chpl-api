@@ -1,16 +1,47 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
-
-public class CertificationStatusEvent {
-
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CertificationStatusEvent implements Serializable {
+	private static final long serialVersionUID = -2498656549844148886L;
+	
+	/**
+	 * Internal ID
+	 */
+	@XmlElement(required = true)
 	private Long id;
-	private String eventDate;
+	
+	/**
+	 * The date on which a change of certification status occurred.
+	 */
+	@XmlElement(required = true)
+	private Long eventDate;
+	
+	/**
+	 * Internal certification status ID.
+	 */
+	@XmlElement(required = true)
 	private Long certificationStatusId;
+	
+	/**
+	 * Certification status name.
+	 */
+	@XmlElement(required = true)
 	private String certificationStatusName;
+
+	@XmlTransient
 	private Long lastModifiedUser;
-	private String lastModifiedDate;
+	
+	@XmlTransient
+	private Long lastModifiedDate;
 	
 	public CertificationStatusEvent(){}
 	
@@ -20,10 +51,10 @@ public class CertificationStatusEvent {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public String getEventDate() {
+	public Long getEventDate() {
 		return eventDate;
 	}
-	public void setEventDate(String eventDate) {
+	public void setEventDate(Long eventDate) {
 		this.eventDate = eventDate;
 	}
 	public Long getLastModifiedUser() {
@@ -32,10 +63,10 @@ public class CertificationStatusEvent {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public String getLastModifiedDate() {
+	public Long getLastModifiedDate() {
 		return lastModifiedDate;
 	}
-	public void setLastModifiedDate(String lastModifiedDate) {
+	public void setLastModifiedDate(Long lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
 	}
 

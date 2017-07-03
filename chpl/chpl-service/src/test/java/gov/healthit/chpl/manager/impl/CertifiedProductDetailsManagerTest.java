@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +19,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
 
@@ -42,6 +46,9 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	@Test
 	@Transactional
@@ -127,12 +134,26 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCertificationResults() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(5 , detail.getCertificationResults().size());
+		assertEquals(6 , detail.getCertificationResults().size());
 		
 		//check additional software
-		CertificationResult cert = detail.getCertificationResults().get(0);
+		Boolean hasTwoAdditionalSoftware = false;
+		for(CertificationResult result : detail.getCertificationResults()){
+			assertNotNull(result.getAdditionalSoftware());
+			if(result.getAdditionalSoftware().size() == 2){
+				hasTwoAdditionalSoftware = true;
+			}
+		}
+		
+		CertificationResult cert = null;
+		for(CertificationResult cr : detail.getCertificationResults()){
+			if(cr.getNumber().equalsIgnoreCase("170.314 (a)(1)")){
+				cert = cr;
+			}
+		}
+		
 		assertNotNull(cert.getAdditionalSoftware());
-		assertEquals(2, cert.getAdditionalSoftware().size());
+		assertTrue(hasTwoAdditionalSoftware);
 		
 		//check test functionality
 		assertNull(cert.getTestFunctionality());
@@ -188,7 +209,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCountCerts() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(3 , detail.getCountCerts().intValue());
+		assertEquals(4 , detail.getCountCerts().intValue());
 	}
 	
 	@Test
@@ -286,6 +307,59 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsTransparencyAttestationFalse() throws EntityRetrievalException{
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(4L);
 		assertNull(detail.getTransparencyAttestation());
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsMacraMeasures() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(3L);
+		assertNotNull(detail);
+		assertNotNull(detail.getCertificationResults());
+		assertEquals(1, detail.getCertificationResults().size());
+		
+		CertificationResult cert = detail.getCertificationResults().get(0);
+		assertNotNull(cert.getG1MacraMeasures());
+		assertEquals(1, cert.getG1MacraMeasures().size());
+		
+		MacraMeasure mm = cert.getG1MacraMeasures().get(0);
+		assertNotNull(mm);
+		assertEquals(1L, mm.getId().longValue());
+		assertNotNull(mm.getAbbreviation());
+		assertNotNull(mm.getName());
+		assertNotNull(mm.getDescription());
+		
+		assertNotNull(cert.getG2MacraMeasures());
+		assertEquals(0, cert.getG2MacraMeasures().size());
+		
+		boolean foundA1 = false;
+		for(CertificationResult cr : detail.getCertificationResults()) {
+			if(cr.getNumber().equals("170.315 (a)(1)")) {
+				foundA1 = true;
+				assertNotNull(cr.getAllowedMacraMeasures());
+				assertEquals(2, cr.getAllowedMacraMeasures().size());
+			}
+		}
+		assertTrue(foundA1);
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsParentExists() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(5L);
+		assertNotNull(detail);
+		assertNotNull(detail.getIcs().getParents());
+		assertEquals(2, detail.getIcs().getParents().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsChildExists() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(6L);
+		assertNotNull(detail);
+		assertNotNull(detail.getIcs().getChildren());
+		assertEquals(1, detail.getIcs().getChildren().size());
+		CertifiedProduct child = detail.getIcs().getChildren().get(0);
+		assertEquals(5, child.getId().longValue());
 	}
 }
 

@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.PendingTestParticipantEntity;
 
-public class PendingTestParticipantDTO {
+public class PendingTestParticipantDTO implements Serializable {
+	private static final long serialVersionUID = -1972103510475701834L;
 	private Long id;
 	private String uniqueId;
 	private String gender;

@@ -2,10 +2,11 @@ package gov.healthit.chpl.web.controller;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +23,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.TransparencyAttestationMap;
 import gov.healthit.chpl.domain.UpdateDevelopersRequest;
 import gov.healthit.chpl.dto.AddressDTO;
@@ -29,6 +31,7 @@ import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
+import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -91,11 +94,11 @@ public class DeveloperController {
 					+ " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
 					+ " old developers are then deleted. "
 					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
-	@CacheEvict(value="searchOptionsCache", allEntries=true)
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public Developer updateDeveloper(@RequestBody(required=true) UpdateDevelopersRequest developerInfo) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+	public Developer updateDeveloper(@RequestBody(required=true) UpdateDevelopersRequest developerInfo) 
+			throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		DeveloperDTO result = null;
 		
 		if(developerInfo.getDeveloperIds().size() > 1) {
@@ -106,10 +109,23 @@ public class DeveloperController {
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
 			
-			if(developerInfo.getDeveloper().getStatus() != null) {
-				DeveloperStatusDTO status = new DeveloperStatusDTO();
-				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
-				toCreate.setStatus(status);
+			if(developerInfo.getDeveloper().getStatusEvents() != null && 
+					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
+				List<String> statusErrors = validateDeveloperStatusEvents(developerInfo.getDeveloper().getStatusEvents());
+				if(statusErrors != null && statusErrors.size() > 0) {
+					//can only have one error message here for the status text so just pick the first one
+					throw new InvalidArgumentsException(statusErrors.get(0));
+				}				
+				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
+					DeveloperStatusDTO status = new DeveloperStatusDTO();
+					status.setStatusName(providedStatusHistory.getStatus().getStatus());
+					DeveloperStatusEventDTO toCreateHistory = new DeveloperStatusEventDTO();
+					toCreateHistory.setStatus(status);
+					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
+					toCreate.getStatusEvents().add(toCreateHistory);
+				}
+				//if no history is passed in, an Active status gets added in the DAO
+				//when the new developer is created
 			}
 			
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
@@ -151,10 +167,27 @@ public class DeveloperController {
 				toUpdate.getTransparencyAttestationMappings().add(devMap);
 			}	
 			
-			if(developerInfo.getDeveloper().getStatus() != null) {
-				DeveloperStatusDTO status = new DeveloperStatusDTO();
-				status.setStatusName(developerInfo.getDeveloper().getStatus().getStatus());
-				toUpdate.setStatus(status);
+			if(developerInfo.getDeveloper().getStatusEvents() != null && 
+					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
+				List<String> statusErrors = validateDeveloperStatusEvents(developerInfo.getDeveloper().getStatusEvents());
+				if(statusErrors != null && statusErrors.size() > 0) {
+					//can only have one error message here for the status text so just pick the first one
+					throw new InvalidArgumentsException(statusErrors.get(0));
+				}
+				
+				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
+					DeveloperStatusDTO status = new DeveloperStatusDTO();
+					status.setId(providedStatusHistory.getStatus().getId());
+					status.setStatusName(providedStatusHistory.getStatus().getStatus());
+					DeveloperStatusEventDTO toCreateHistory = new DeveloperStatusEventDTO();
+					toCreateHistory.setId(providedStatusHistory.getId());
+					toCreateHistory.setDeveloperId(providedStatusHistory.getDeveloperId());
+					toCreateHistory.setStatus(status);
+					toCreateHistory.setStatusDate(providedStatusHistory.getStatusDate());
+					toUpdate.getStatusEvents().add(toCreateHistory);
+				}
+			} else {
+				throw new InvalidArgumentsException("The developer must have a current status specified.");
 			}
 			
 			if(developerInfo.getDeveloper().getAddress() != null) {
@@ -187,5 +220,50 @@ public class DeveloperController {
 		}
 		Developer restResult = new Developer(result);
 		return restResult;
+	}
+	
+	private List<String> validateDeveloperStatusEvents(List<DeveloperStatusEvent> statusEvents) {
+		List<String> errors = new ArrayList<String>();
+		if(statusEvents == null || statusEvents.size() == 0) {
+			errors.add("The developer must have at least a current status specified.");
+		} else {
+			//sort the status events by date
+			statusEvents.sort(new Comparator<DeveloperStatusEvent>() {
+
+				@Override
+				public int compare(DeveloperStatusEvent o1, DeveloperStatusEvent o2) {
+					if(o1 == null && o2 != null) {
+						return -1;
+					} else if(o1 != null && o2 == null) {
+						return 1;
+					} else if(o1 == null && o2 == null) {
+						return 0;
+					} else {
+						//neither are null, compare the dates
+						return o1.getStatusDate().compareTo(o2.getStatusDate());
+					}
+				}
+			});
+			
+			//now that the list is sorted by date, make sure no two statuses next to each other are the same
+			Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
+			DeveloperStatusEvent prev = null, curr = null;
+			while(iter.hasNext()) {
+				if(prev == null) {
+					prev = iter.next();
+				} else if(curr == null){
+					curr = iter.next();
+				} else {
+					prev = curr;
+					curr = iter.next();
+				}
+				
+				if(prev != null && curr != null && 
+					prev.getStatus().getStatus().equalsIgnoreCase(curr.getStatus().getStatus())) {
+					errors.add("The status '" + prev.getStatus().getStatus() + "' cannot be listed twice in a row.");
+				}
+			}
+		}
+		return errors;
 	}
 }

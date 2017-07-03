@@ -113,6 +113,16 @@ public class PendingCertificationResultEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
+	private Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
+	@Basic( optional = false )
+	@Column( name = "pending_certification_result_id", nullable = false  )
+	private Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
+	@Basic( optional = false )
+	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestTaskEntity> testTasks;
 	
 	public PendingCertificationResultEntity() {
@@ -123,6 +133,8 @@ public class PendingCertificationResultEntity {
 		testProcedures = new HashSet<PendingCertificationResultTestProcedureEntity>();
 		testData = new HashSet<PendingCertificationResultTestDataEntity>();
 		testTools = new HashSet<PendingCertificationResultTestToolEntity>();
+		g1MacraMeasures = new HashSet<PendingCertificationResultG1MacraMeasureEntity>();
+		g2MacraMeasures = new HashSet<PendingCertificationResultG2MacraMeasureEntity>();
 		testTasks = new HashSet<PendingCertificationResultTestTaskEntity>();
 	}
 	
@@ -308,6 +320,22 @@ public class PendingCertificationResultEntity {
 
 	public void setPrivacySecurityFramework(String privacySecurityFramework) {
 		this.privacySecurityFramework = privacySecurityFramework;
+	}
+
+	public Set<PendingCertificationResultG1MacraMeasureEntity> getG1MacraMeasures() {
+		return g1MacraMeasures;
+	}
+
+	public void setG1MacraMeasures(Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures) {
+		this.g1MacraMeasures = g1MacraMeasures;
+	}
+
+	public Set<PendingCertificationResultG2MacraMeasureEntity> getG2MacraMeasures() {
+		return g2MacraMeasures;
+	}
+
+	public void setG2MacraMeasures(Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures) {
+		this.g2MacraMeasures = g2MacraMeasures;
 	}
 
 }

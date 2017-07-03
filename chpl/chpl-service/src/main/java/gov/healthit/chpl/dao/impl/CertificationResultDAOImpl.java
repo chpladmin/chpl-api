@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
@@ -22,16 +23,18 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.CertificationResultEntity;
-import gov.healthit.chpl.entity.CertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity;
-import gov.healthit.chpl.entity.CertificationResultTestProcedureEntity;
-import gov.healthit.chpl.entity.CertificationResultTestStandardEntity;
-import gov.healthit.chpl.entity.CertificationResultTestTaskEntity;
-import gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity;
-import gov.healthit.chpl.entity.CertificationResultTestToolEntity;
-import gov.healthit.chpl.entity.CertificationResultUcdProcessEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultG2MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 
 @Repository(value="certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {
@@ -629,6 +632,232 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	}
 	
 	/******************************************************
+	 * g1 macra measures mapping
+	 * 
+	 *******************************************************/
+	
+	@Override
+	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId){
+		
+		List<CertificationResultG1MacraMeasureEntity> entities = getG1MacraMeasuresForCertification(certificationResultId);
+		List<CertificationResultMacraMeasureDTO> dtos = new ArrayList<CertificationResultMacraMeasureDTO>();
+		
+		for (CertificationResultG1MacraMeasureEntity entity : entities){
+			CertificationResultMacraMeasureDTO dto = new CertificationResultMacraMeasureDTO(entity);
+			dtos.add(dto);	
+		}
+		return dtos;
+	}
+	
+	@Override
+	public CertificationResultMacraMeasureDTO addG1MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException {
+		CertificationResultG1MacraMeasureEntity mapping = new CertificationResultG1MacraMeasureEntity();
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setMacraId(dto.getMeasure().getId());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		
+		return new CertificationResultMacraMeasureDTO(mapping);
+	}
+
+	@Override
+	public CertificationResultMacraMeasureDTO updateG1MacrameasureMapping(CertificationResultMacraMeasureDTO dto){
+		CertificationResultG1MacraMeasureEntity mapping = getCertificationResultG1MacraMeasureById(dto.getId());
+		if(mapping == null) {
+			return null;
+		}
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setMacraId(dto.getMeasure().getId());
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.merge(mapping);
+		entityManager.flush();
+		return new CertificationResultMacraMeasureDTO(mapping);
+	}
+	
+	@Override
+	public void deleteG1MacraMeasureMapping(Long mappingId){
+		CertificationResultG1MacraMeasureEntity toDelete = getCertificationResultG1MacraMeasureById(mappingId);
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
+		}
+	}
+	
+	@Override
+	public CertificationResultMacraMeasureDTO lookupG1MacraMeasureMapping(Long certificationResultId, Long macraMeasureId){
+		Query query = entityManager.createQuery( "SELECT mm "
+				+ "FROM CertificationResultG1MacraMeasureEntity mm "
+				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
+				+ "where (NOT mm.deleted = true) "
+				+ "AND (mm.certificationResultId = :certificationResultId) "
+				+ "AND (mm.id = :macraMeasureId)", 
+				CertificationResultG1MacraMeasureEntity.class );
+		query.setParameter("certificationResultId", certificationResultId);
+		query.setParameter("macraMeasureId", macraMeasureId);
+		List<CertificationResultG1MacraMeasureEntity> entities = query.getResultList();		
+		
+		CertificationResultMacraMeasureDTO result = null;
+		if(entities != null && entities.size() > 0) {
+			result = new CertificationResultMacraMeasureDTO(entities.get(0));
+		}
+		
+		return result;
+	}
+	
+	private CertificationResultG1MacraMeasureEntity getCertificationResultG1MacraMeasureById(Long id) {
+		CertificationResultG1MacraMeasureEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT mm "
+				+ "FROM CertificationResultG1MacraMeasureEntity mm "
+				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
+				+ "where (NOT mm.deleted = true) AND (mm.id = :id) ", 
+				CertificationResultG1MacraMeasureEntity.class );
+		query.setParameter("id", id);
+		List<CertificationResultG1MacraMeasureEntity> result = query.getResultList();
+
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		return entity;
+	}
+	
+	private List<CertificationResultG1MacraMeasureEntity> getG1MacraMeasuresForCertification(Long certificationResultId){
+		Query query = entityManager.createQuery( "SELECT mm "
+				+ "FROM CertificationResultG1MacraMeasureEntity mm "
+				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
+				+ "where (NOT mm.deleted = true) AND (mm.certificationResultId = :certificationResultId) ", 
+				CertificationResultG1MacraMeasureEntity.class );
+		query.setParameter("certificationResultId", certificationResultId);
+		
+		List<CertificationResultG1MacraMeasureEntity> result = query.getResultList();
+		if(result == null) {
+			return null;
+		}
+		return result;
+	}
+	
+	/******************************************************
+	 * g1 macra measures mapping
+	 * 
+	 *******************************************************/
+	
+	@Override
+	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId){
+		
+		List<CertificationResultG2MacraMeasureEntity> entities = getG2MacraMeasuresForCertification(certificationResultId);
+		List<CertificationResultMacraMeasureDTO> dtos = new ArrayList<CertificationResultMacraMeasureDTO>();
+		
+		for (CertificationResultG2MacraMeasureEntity entity : entities){
+			CertificationResultMacraMeasureDTO dto = new CertificationResultMacraMeasureDTO(entity);
+			dtos.add(dto);	
+		}
+		return dtos;
+	}
+	
+	@Override
+	public CertificationResultMacraMeasureDTO addG2MacraMeasureMapping(CertificationResultMacraMeasureDTO dto) throws EntityCreationException {
+		CertificationResultG2MacraMeasureEntity mapping = new CertificationResultG2MacraMeasureEntity();
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setMacraId(dto.getMeasure().getId());
+		mapping.setCreationDate(new Date());
+		mapping.setDeleted(false);
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.persist(mapping);
+		entityManager.flush();
+		
+		return new CertificationResultMacraMeasureDTO(mapping);
+	}
+
+	@Override
+	public CertificationResultMacraMeasureDTO updateG2MacrameasureMapping(CertificationResultMacraMeasureDTO dto){
+		CertificationResultG2MacraMeasureEntity mapping = getCertificationResultG2MacraMeasureById(dto.getId());
+		if(mapping == null) {
+			return null;
+		}
+		mapping.setCertificationResultId(dto.getCertificationResultId());
+		mapping.setMacraId(dto.getMeasure().getId());
+		mapping.setLastModifiedDate(new Date());
+		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		entityManager.merge(mapping);
+		entityManager.flush();
+		return new CertificationResultMacraMeasureDTO(mapping);
+	}
+	
+	@Override
+	public void deleteG2MacraMeasureMapping(Long mappingId){
+		CertificationResultG2MacraMeasureEntity toDelete = getCertificationResultG2MacraMeasureById(mappingId);
+		if(toDelete != null) {
+			toDelete.setDeleted(true);
+			toDelete.setLastModifiedDate(new Date());
+			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(toDelete);
+			entityManager.flush();
+		}
+	}
+	
+	@Override
+	public CertificationResultMacraMeasureDTO lookupG2MacraMeasureMapping(Long certificationResultId, Long macraMeasureId){
+		Query query = entityManager.createQuery( "SELECT mm "
+				+ "FROM CertificationResultG2MacraMeasureEntity mm "
+				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
+				+ "where (NOT mm.deleted = true) "
+				+ "AND (mm.certificationResultId = :certificationResultId) "
+				+ "AND (mm.id = :macraMeasureId)", 
+				CertificationResultG2MacraMeasureEntity.class );
+		query.setParameter("certificationResultId", certificationResultId);
+		query.setParameter("macraMeasureId", macraMeasureId);
+		List<CertificationResultG2MacraMeasureEntity> entities = query.getResultList();		
+		
+		CertificationResultMacraMeasureDTO result = null;
+		if(entities != null && entities.size() > 0) {
+			result = new CertificationResultMacraMeasureDTO(entities.get(0));
+		}
+		
+		return result;
+	}
+	
+	private CertificationResultG2MacraMeasureEntity getCertificationResultG2MacraMeasureById(Long id) {
+		CertificationResultG2MacraMeasureEntity entity = null;
+		
+		Query query = entityManager.createQuery( "SELECT mm "
+				+ "FROM CertificationResultG2MacraMeasureEntity mm "
+				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
+				+ "where (NOT mm.deleted = true) AND (mm.id = :id) ", 
+				CertificationResultG2MacraMeasureEntity.class );
+		query.setParameter("id", id);
+		List<CertificationResultG2MacraMeasureEntity> result = query.getResultList();
+
+		if (result.size() > 0){
+			entity = result.get(0);
+		}
+		return entity;
+	}
+	
+	private List<CertificationResultG2MacraMeasureEntity> getG2MacraMeasuresForCertification(Long certificationResultId){
+		Query query = entityManager.createQuery( "SELECT mm "
+				+ "FROM CertificationResultG2MacraMeasureEntity mm "
+				+ "LEFT OUTER JOIN FETCH mm.macraMeasure "
+				+ "where (NOT mm.deleted = true) AND (mm.certificationResultId = :certificationResultId) ", 
+				CertificationResultG2MacraMeasureEntity.class );
+		query.setParameter("certificationResultId", certificationResultId);
+		
+		List<CertificationResultG2MacraMeasureEntity> result = query.getResultList();
+		if(result == null) {
+			return null;
+		}
+		return result;
+	}
+	
+	/******************************************************
 	 * Test Data for Certification Results
 	 * 
 	 *******************************************************/
@@ -782,7 +1011,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		Query query = entityManager.createQuery( "SELECT tp "
 				+ "FROM CertificationResultTestProcedureEntity tp "
 				+ "LEFT OUTER JOIN FETCH tp.testProcedure "
-				+ "where (NOT tp.deleted = true) AND (certification_result_id = :certificationResultId) ", 
+				+ "WHERE (NOT tp.deleted = true) "
+				+ "AND (certification_result_id = :certificationResultId) ", 
 				CertificationResultTestProcedureEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		
@@ -814,7 +1044,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	
 	public CertificationResultTestFunctionalityDTO addTestFunctionalityMapping(CertificationResultTestFunctionalityDTO dto) throws EntityCreationException {
 		CertificationResultTestFunctionalityEntity mapping = new CertificationResultTestFunctionalityEntity();
-		mapping = new CertificationResultTestFunctionalityEntity();
 		mapping.setCertificationResultId(dto.getCertificationResultId());
 		mapping.setTestFunctionalityId(dto.getTestFunctionalityId());
 		mapping.setCreationDate(new Date());
@@ -840,12 +1069,13 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	
 	@Override
 	public CertificationResultTestFunctionalityDTO lookupTestFunctionalityMapping(Long certificationResultId, Long testFunctionalityId){
-		Query query = entityManager.createQuery( "SELECT tf "
-				+ "FROM CertificationResultTestFunctionalityEntity tf "
-				+ "LEFT OUTER JOIN FETCH tf.testFunctionality "
-				+ "where (NOT tf.deleted = true) "
-				+ "AND (tf.certificationResultId = :certificationResultId) "
-				+ "AND (tf.testFunctionalityId = :testFunctionalityId)", 
+		Query query = entityManager.createQuery( "SELECT crtf "
+				+ "FROM CertificationResultTestFunctionalityEntity crtf "
+				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
+				+ "JOIN FETCH tf.certificationEdition edition "
+				+ "WHERE (NOT crtf.deleted = true) "
+				+ "AND (crtf.certificationResultId = :certificationResultId) "
+				+ "AND (crtf.testFunctionalityId = :testFunctionalityId)", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		query.setParameter("testFunctionalityId", testFunctionalityId);
@@ -862,10 +1092,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	private CertificationResultTestFunctionalityEntity getCertificationResultTestFunctionalityById(Long id) {
 		CertificationResultTestFunctionalityEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT tf "
-				+ "FROM CertificationResultTestFunctionalityEntity tf "
-				+ "LEFT OUTER JOIN FETCH tf.testFunctionality "
-				+ "where (NOT tf.deleted = true) AND (tf.id = :entityid) ", 
+		Query query = entityManager.createQuery( "SELECT crtf "
+				+ "FROM CertificationResultTestFunctionalityEntity crtf "
+				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
+				+ "JOIN FETCH tf.certificationEdition edition "
+				+ "WHERE (NOT crtf.deleted = true) "
+				+ "AND (crtf.id = :entityid) ", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationResultTestFunctionalityEntity> result = query.getResultList();
@@ -877,11 +1109,12 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	}
 	
 	private List<CertificationResultTestFunctionalityEntity> getTestFunctionalityForCertification(Long certificationResultId){
-		Query query = entityManager.createQuery( "SELECT tf "
-				+ "FROM CertificationResultTestFunctionalityEntity tf "
-				+ "LEFT OUTER JOIN FETCH tf.testFunctionality "
-				+ "where (NOT tf.deleted = true) "
-				+ "AND (certification_result_id = :certificationResultId) ", 
+		Query query = entityManager.createQuery( "SELECT crtf "
+				+ "FROM CertificationResultTestFunctionalityEntity crtf "
+				+ "LEFT OUTER JOIN FETCH crtf.testFunctionality tf "
+				+ "JOIN FETCH tf.certificationEdition edition "
+				+ "WHERE (NOT crtf.deleted = true) "
+				+ "AND (crtf.certificationResultId = :certificationResultId) ", 
 				CertificationResultTestFunctionalityEntity.class );
 		query.setParameter("certificationResultId", certificationResultId);
 		

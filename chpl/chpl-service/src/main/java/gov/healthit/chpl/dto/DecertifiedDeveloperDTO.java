@@ -1,20 +1,25 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public class DecertifiedDeveloperDTO {
+public class DecertifiedDeveloperDTO implements Serializable {
+	private static final long serialVersionUID = 5686501038412355764L;
 	private Long developerId;
 	private List<Long> acbIdList;
 	private String developerStatus;
+	private Date decertificationDate;
 	private Long numMeaningfulUse;
 
 	public DecertifiedDeveloperDTO(){}
 	
-	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbIdList, String developerStatus, Long numMeaningfulUse){
+	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbIdList, String developerStatus, Date decertificationDate, Long numMeaningfulUse){
 		this.setDeveloperId(developerId);
 		this.acbIdList=acbIdList;
 		this.developerStatus=developerStatus;
+		this.decertificationDate = decertificationDate;
 		this.numMeaningfulUse=numMeaningfulUse;
 	}
 
@@ -65,6 +70,14 @@ public class DecertifiedDeveloperDTO {
 	
 	public void setAcbList(List<Long> acbIdList){
 		this.acbIdList = acbIdList;
+	}
+
+	public Date getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Date decertificationDate) {
+		this.decertificationDate = decertificationDate;
 	}
 	
 }

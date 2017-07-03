@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,9 +7,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -18,6 +18,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,31 +37,21 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
-import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.IdListContainer;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.DeveloperStatusType;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -68,6 +62,9 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
@@ -87,6 +84,9 @@ public class CertifiedProductController {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
+	@Autowired CertifiedProductDAO cpDao;
+	@Autowired MeaningfulUseController meaningfulUseController;
+	@Autowired Environment env;
 
 	@ApiOperation(value="List all certified products", 
 			notes="Default behavior is to return all certified products in the system. "
@@ -148,117 +148,118 @@ public class CertifiedProductController {
 					+ " user must have ROLE_ADMIN.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails updateCertifiedProduct(@RequestBody(required=true) CertifiedProductSearchDetails updateRequest) 
+	public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(@RequestBody(required=true) ListingUpdateRequest updateRequest) 
 		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
 		JsonProcessingException, ValidationException {
 		
-		//make sure the ui didn't send any error or warning messages back
-		updateRequest.setErrorMessages(new HashSet<String>());
-		updateRequest.setWarningMessages(new HashSet<String>());
+		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
+
+		//clean up what was sent in - some necessary IDs or other fields may be missing
+		Long newAcbId = new Long(updatedListing.getCertifyingBody().get("id").toString());
+		cpManager.sanitizeUpdatedListingData(newAcbId, updatedListing);
+		
 		//validate
-		CertifiedProductValidator validator = validatorFactory.getValidator(updateRequest);
+		CertifiedProductValidator validator = validatorFactory.getValidator(updatedListing);
 		if(validator != null) {
-			validator.validate(updateRequest);
+			validator.validate(updatedListing);
 		}
 		
-		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		CertifiedProductSearchDetails existingProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 		
 		//make sure the old and new certification statuses aren't ONC bans
 		if(!existingProduct.getCertificationStatus().get("id").toString().equals(
-				updateRequest.getCertificationStatus().get("id"))) {
+				updatedListing.getCertificationStatus().get("id"))) {
 			//if the status is to or from suspended by onc make sure the user has admin
 			if((existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString()) 
-				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString())
+				|| updatedListing.getCertificationStatus().get("name").toString().equals(CertificationStatusType.SuspendedByOnc.toString())
 				|| existingProduct.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString())
-				|| updateRequest.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString()))
+				|| updatedListing.getCertificationStatus().get("name").toString().equals(CertificationStatusType.TerminatedByOnc.toString()))
 				&& !Util.isUserRoleAdmin()) {
-				updateRequest.getErrorMessages().add("User " + Util.getUsername() 
+				updatedListing.getErrorMessages().add("User " + Util.getUsername() 
 					+ " does not have permission to change certification status of " 
 					+ existingProduct.getChplProductNumber() + " from " 
 					+ existingProduct.getCertificationStatus().get("name").toString() + " to " 
-					+ updateRequest.getCertificationStatus().get("name").toString());
+					+ updatedListing.getCertificationStatus().get("name").toString());
 			}
 		}
 		
 		//has the unique id changed? if so, make sure it is still unique
-		if(!existingProduct.getChplProductNumber().equals(updateRequest.getChplProductNumber())) {
+		if(!existingProduct.getChplProductNumber().equals(updatedListing.getChplProductNumber())) {
 			try {
-				boolean isDup = cpManager.chplIdExists(updateRequest.getChplProductNumber());
+				boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
 				if(isDup) {
-					updateRequest.getErrorMessages().add("The CHPL Product Number has changed. The new CHPL Product Number " + updateRequest.getChplProductNumber() + " must be unique among all other certified products but one already exists with the same ID.");
+					updatedListing.getErrorMessages().add("The CHPL Product Number has changed. The new CHPL Product Number " + updatedListing.getChplProductNumber() + " must be unique among all other certified products but one already exists with the same ID. Edit a part of the CHPL product number (e.g. the version code) to make it unique.");
 				}
 			} catch(EntityRetrievalException ex) {}
 		}
 		
-		if(updateRequest.getErrorMessages() != null && updateRequest.getErrorMessages().size() > 0) {
-			throw new ValidationException(updateRequest.getErrorMessages(), updateRequest.getWarningMessages());
+		if(updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
+			throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
 		}
 		
-		Long acbId = new Long(existingProduct.getCertifyingBody().get("id").toString());
-		Long newAcbId = new Long(updateRequest.getCertifyingBody().get("id").toString());
-		
+		Long existingAcbId = new Long(existingProduct.getCertifyingBody().get("id").toString());		
 		//if the ACF owner is changed this is a separate action with different security
-		if(newAcbId != null && acbId.longValue() != newAcbId.longValue()) {
-			cpManager.changeOwnership(updateRequest.getId(), newAcbId);
-			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
+		if(newAcbId != null && existingAcbId.longValue() != newAcbId.longValue()) {
+			cpManager.changeOwnership(updatedListing.getId(), newAcbId);
+			CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Changed ACB ownership.", existingProduct, changedProduct);
 			existingProduct = changedProduct;
 		}
 		
 		CertifiedProductDTO toUpdate = new CertifiedProductDTO();
-		toUpdate.setId(updateRequest.getId());
-		if(updateRequest.getTestingLab() != null && !StringUtils.isEmpty(updateRequest.getTestingLab().get("id"))) {
-			toUpdate.setTestingLabId(new Long(updateRequest.getTestingLab().get("id").toString()));
+		toUpdate.setId(updatedListing.getId());
+		if(updatedListing.getTestingLab() != null && !StringUtils.isEmpty(updatedListing.getTestingLab().get("id"))) {
+			toUpdate.setTestingLabId(new Long(updatedListing.getTestingLab().get("id").toString()));
 		}
 		toUpdate.setCertificationBodyId(newAcbId);
-		if(updateRequest.getPracticeType() != null && updateRequest.getPracticeType().get("id") != null) {
-			toUpdate.setPracticeTypeId(new Long(updateRequest.getPracticeType().get("id").toString()));
+		if(updatedListing.getPracticeType() != null && updatedListing.getPracticeType().get("id") != null) {
+			toUpdate.setPracticeTypeId(new Long(updatedListing.getPracticeType().get("id").toString()));
 		}
-		if(updateRequest.getClassificationType() != null && updateRequest.getClassificationType().get("id") != null) {
-			toUpdate.setProductClassificationTypeId(new Long(updateRequest.getClassificationType().get("id").toString()));
+		if(updatedListing.getClassificationType() != null && updatedListing.getClassificationType().get("id") != null) {
+			toUpdate.setProductClassificationTypeId(new Long(updatedListing.getClassificationType().get("id").toString()));
 		}
-		toUpdate.setProductVersionId(new Long(updateRequest.getVersion().getVersionId()));
-		toUpdate.setCertificationStatusId(new Long(updateRequest.getCertificationStatus().get("id").toString()));
-		toUpdate.setCertificationEditionId(new Long(updateRequest.getCertificationEdition().get("id").toString()));
-		toUpdate.setReportFileLocation(updateRequest.getReportFileLocation());
-		toUpdate.setSedReportFileLocation(updateRequest.getSedReportFileLocation());
-		toUpdate.setSedIntendedUserDescription(updateRequest.getSedIntendedUserDescription());
-		toUpdate.setSedTestingEnd(updateRequest.getSedTestingEnd());
-		toUpdate.setAcbCertificationId(updateRequest.getAcbCertificationId());
-		toUpdate.setOtherAcb(updateRequest.getOtherAcb());
-		toUpdate.setIcs(updateRequest.getIcs());
-		toUpdate.setAccessibilityCertified(updateRequest.getAccessibilityCertified());
-		toUpdate.setProductAdditionalSoftware(updateRequest.getProductAdditionalSoftware());
+		toUpdate.setProductVersionId(new Long(updatedListing.getVersion().getVersionId()));
+		toUpdate.setCertificationStatusId(new Long(updatedListing.getCertificationStatus().get("id").toString()));
+		toUpdate.setCertificationEditionId(new Long(updatedListing.getCertificationEdition().get("id").toString()));
+		toUpdate.setReportFileLocation(updatedListing.getReportFileLocation());
+		toUpdate.setSedReportFileLocation(updatedListing.getSedReportFileLocation());
+		toUpdate.setSedIntendedUserDescription(updatedListing.getSedIntendedUserDescription());
+		toUpdate.setSedTestingEnd(updatedListing.getSedTestingEnd());
+		toUpdate.setAcbCertificationId(updatedListing.getAcbCertificationId());
+		toUpdate.setOtherAcb(updatedListing.getOtherAcb());
+		toUpdate.setIcs(updatedListing.getIcs() == null || updatedListing.getIcs().getInherits() == null ? false : updatedListing.getIcs().getInherits());
+		toUpdate.setAccessibilityCertified(updatedListing.getAccessibilityCertified());
+		toUpdate.setProductAdditionalSoftware(updatedListing.getProductAdditionalSoftware());
 		
-		toUpdate.setTransparencyAttestationUrl(updateRequest.getTransparencyAttestationUrl());
+		toUpdate.setTransparencyAttestationUrl(updatedListing.getTransparencyAttestationUrl());
 		
 		//set the pieces of the unique id
-		if(!StringUtils.isEmpty(updateRequest.getChplProductNumber())) {
-			if(updateRequest.getChplProductNumber().startsWith("CHP-")) {
-				toUpdate.setChplProductNumber(updateRequest.getChplProductNumber());
+		if(!StringUtils.isEmpty(updatedListing.getChplProductNumber())) {
+			if(updatedListing.getChplProductNumber().startsWith("CHP-")) {
+				toUpdate.setChplProductNumber(updatedListing.getChplProductNumber());
 			} else {
-				String chplProductId = updateRequest.getChplProductNumber();
+				String chplProductId = updatedListing.getChplProductNumber();
 				String[] chplProductIdComponents = chplProductId.split("\\.");
 				if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
 					throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
 				} else {
 					toUpdate.setProductCode(chplProductIdComponents[4]);
 					toUpdate.setVersionCode(chplProductIdComponents[5]);
-					toUpdate.setIcsCode(chplProductIdComponents[6]);
+					toUpdate.setIcsCode(new Integer(chplProductIdComponents[6]));
 					toUpdate.setAdditionalSoftwareCode(chplProductIdComponents[7]);
 					toUpdate.setCertifiedDateCode(chplProductIdComponents[8]);
 				}
 				
-				if(updateRequest.getCertificationDate() != null) {
-					Date certDate = new Date(updateRequest.getCertificationDate());
+				if(updatedListing.getCertificationDate() != null) {
+					Date certDate = new Date(updatedListing.getCertificationDate());
 					SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
 					String dateCode = dateCodeFormat.format(certDate);
 					toUpdate.setCertifiedDateCode(dateCode);
 				}
 				
-				if(updateRequest.getCertificationResults() != null && updateRequest.getCertificationResults().size() > 0) {
+				if(updatedListing.getCertificationResults() != null && updatedListing.getCertificationResults().size() > 0) {
 					boolean hasSoftware = false;
-					for(CertificationResult cert : updateRequest.getCertificationResults()) {
+					for(CertificationResult cert : updatedListing.getCertificationResults()) {
 						if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 							hasSoftware = true;
 						}
@@ -272,101 +273,20 @@ public class CertifiedProductController {
 			}
 		} 
 		
-		toUpdate = cpManager.update(acbId, toUpdate);
-		
-		//update qms standards used
-		List<CertifiedProductQmsStandardDTO> qmsStandardsToUpdate = new ArrayList<CertifiedProductQmsStandardDTO>();
-		for(CertifiedProductQmsStandard newQms : updateRequest.getQmsStandards()) {
-			CertifiedProductQmsStandardDTO dto = new CertifiedProductQmsStandardDTO();
-			dto.setId(newQms.getId());
-			dto.setApplicableCriteria(newQms.getApplicableCriteria());
-			dto.setCertifiedProductId(toUpdate.getId());
-			dto.setQmsModification(newQms.getQmsModification());
-			dto.setQmsStandardId(newQms.getQmsStandardId());
-			dto.setQmsStandardName(newQms.getQmsStandardName());
-			qmsStandardsToUpdate.add(dto);
-		}
-		cpManager.updateQmsStandards(acbId, toUpdate, qmsStandardsToUpdate);
-		
-		//update targeted users
-		List<CertifiedProductTargetedUserDTO> targetedUsersToUpdate = new ArrayList<CertifiedProductTargetedUserDTO>();
-		for(CertifiedProductTargetedUser newTu : updateRequest.getTargetedUsers()) {
-			CertifiedProductTargetedUserDTO dto = new CertifiedProductTargetedUserDTO();
-			dto.setId(newTu.getId());
-			dto.setCertifiedProductId(toUpdate.getId());
-			dto.setTargetedUserId(newTu.getTargetedUserId());
-			dto.setTargetedUserName(newTu.getTargetedUserName());
-			targetedUsersToUpdate.add(dto);
-		}
-		cpManager.updateTargetedUsers(acbId, toUpdate, targetedUsersToUpdate);
-		
-		//update accessibility standards
-		List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardsToUpdate = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
-		for(CertifiedProductAccessibilityStandard newStd : updateRequest.getAccessibilityStandards()) {
-			CertifiedProductAccessibilityStandardDTO dto = new CertifiedProductAccessibilityStandardDTO();
-			dto.setId(newStd.getId());
-			dto.setCertifiedProductId(toUpdate.getId());
-			dto.setAccessibilityStandardId(newStd.getAccessibilityStandardId());
-			dto.setAccessibilityStandardName(newStd.getAccessibilityStandardName());
-			accessibilityStandardsToUpdate.add(dto);
-		}
-		cpManager.updateAccessibilityStandards(acbId, toUpdate, accessibilityStandardsToUpdate);
-		
-		//update certification date
-		cpManager.updateCertificationDate(acbId, toUpdate, new Date(updateRequest.getCertificationDate()));
-		
-		//possibly add something to certification status event
-		cpManager.updateCertificationStatusEvents(acbId, toUpdate);
-		
-		//update product certifications
-		cpManager.updateCertifications(acbId, toUpdate, updateRequest.getCertificationResults());
-		
-		//update CQMs
-		List<CQMResultDetailsDTO> cqmDtos = new ArrayList<CQMResultDetailsDTO>();
-		for(CQMResultDetails cqm : updateRequest.getCqmResults()) {
-			if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
-				for(String version : cqm.getSuccessVersions()) {
-					CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO();
-					cqmDto.setNqfNumber(cqm.getNqfNumber());
-					cqmDto.setCmsId(cqm.getCmsId());
-					cqmDto.setNumber(cqm.getNumber());
-					cqmDto.setCmsId(cqm.getCmsId());
-					cqmDto.setNqfNumber(cqm.getNqfNumber());
-					cqmDto.setTitle(cqm.getTitle());
-					cqmDto.setVersion(version);
-					cqmDto.setSuccess(Boolean.TRUE);
-					if(cqm.getCriteria() != null && cqm.getCriteria().size() > 0) {
-						for(CQMResultCertification criteria : cqm.getCriteria()) {
-							CQMResultCriteriaDTO dto = new CQMResultCriteriaDTO();
-							dto.setCriterionId(criteria.getCertificationId());
-							CertificationCriterionDTO certDto = new CertificationCriterionDTO();
-							certDto.setNumber(criteria.getCertificationNumber());
-							dto.setCriterion(certDto);
-							cqmDto.getCriteria().add(dto);
-						}
-					}
-					cqmDtos.add(cqmDto);
-				}
-			} else if(StringUtils.isEmpty(cqm.getCmsId())) {
-				CQMResultDetailsDTO cqmDto = new CQMResultDetailsDTO();
-				cqmDto.setNqfNumber(cqm.getNqfNumber());
-				cqmDto.setCmsId(cqm.getCmsId());
-				cqmDto.setNumber(cqm.getNumber());
-				cqmDto.setCmsId(cqm.getCmsId());
-				cqmDto.setNqfNumber(cqm.getNqfNumber());
-				cqmDto.setTitle(cqm.getTitle());
-				cqmDto.setSuccess(cqm.isSuccess());
-				cqmDtos.add(cqmDto);
-			}
-		}
-		cpManager.updateCqms(acbId, toUpdate, cqmDtos);
-		
-		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updateRequest.getId());
-		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
+		toUpdate = cpManager.update(existingAcbId, toUpdate, updateRequest, existingProduct);
 		
 		//search for the product by id to get it with all the updates
-		return changedProduct;
+		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
+		cpManager.checkSuspiciousActivity(existingProduct, changedProduct);
+		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingProduct.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingProduct, changedProduct);
+		
+		if(!changedProduct.getChplProductNumber().equals(existingProduct.getChplProductNumber())) {
+			 HttpHeaders responseHeaders = new HttpHeaders();
+			 responseHeaders.set("CHPL-Id-Changed", existingProduct.getChplProductNumber());
+			return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
+		}
+		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="List pending certified products.", 
@@ -375,15 +295,28 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {		
-		List<PendingCertifiedProductDTO> allProductDtos = pcpManager.getPending();
-		
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		List<PendingCertifiedProductDTO> allProductDtos = new ArrayList<PendingCertifiedProductDTO>();
+
+		if (acbs != null) {
+			for (CertificationBodyDTO acb : acbs) {
+				try {
+					List<PendingCertifiedProductDTO> pendingCpsByAcb = pcpManager.getPendingCertifiedProductsByAcb(acb.getId());
+					allProductDtos.addAll(pendingCpsByAcb);
+				} catch (AccessDeniedException denied) {
+					logger.warn("Access denied to pending certified products for acb " + acb.getName() + " and user "
+							+ Util.getUsername());
+				}
+			}
+		}
+				
 		List<PendingCertifiedProductDetails> result = new ArrayList<PendingCertifiedProductDetails>();
 		for(PendingCertifiedProductDTO product : allProductDtos) {
 			PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
 			pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
+			pcpManager.addAllMeasuresToCertificationCriteria(pcpDetails);
 			result.add(pcpDetails);
 		}
-		
 		PendingCertifiedProductResults results = new PendingCertifiedProductResults();
 		results.getPendingCertifiedProducts().addAll(result);
 		return results;
@@ -393,8 +326,10 @@ public class CertifiedProductController {
 			notes="")
 	@RequestMapping(value="/pending/{pcpId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) throws EntityRetrievalException {
-		PendingCertifiedProductDetails details = pcpManager.getById(pcpId);	
+	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId) 
+			throws EntityRetrievalException, EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		PendingCertifiedProductDetails details = pcpManager.getById(acbs, pcpId);	
 		return details;
 	}
 	
@@ -403,8 +338,40 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/{pcpId}/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody String rejectPendingCertifiedProducts(@PathVariable("pcpId") Long id) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		pcpManager.reject(id);
+	public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long id) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, 
+			EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		pcpManager.deletePendingCertifiedProduct(acbs, id);
+		return "{\"success\" : true }";
+	}
+	
+	@ApiOperation(value="Reject several pending certified products.", 
+			notes="Marks a list of pending certified products as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+					+ " and administrative authority on the ACB for each pending certified product is required.")
+	@RequestMapping(value="/pending//reject", method=RequestMethod.POST,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, 
+			EntityNotFoundException, AccessDeniedException, InvalidArgumentsException, 
+			ObjectsMissingValidationException {
+		if(idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
+			throw new InvalidArgumentsException("At least one id must be provided for rejection.");
+		}
+		
+		ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		for(Long id : idList.getIds()) {
+			try {
+				pcpManager.deletePendingCertifiedProduct(acbs, id);
+			} catch(ObjectMissingValidationException ex) {
+				possibleExceptions.getExceptions().add(ex);
+			}
+		}
+		
+		if(possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
+			throw possibleExceptions;
+		}
 		return "{\"success\" : true }";
 	}
 	
@@ -418,130 +385,40 @@ public class CertifiedProductController {
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
-		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+		throws InvalidArgumentsException, ValidationException, EntityCreationException, 
+		EntityRetrievalException, JsonProcessingException, ObjectMissingValidationException {
 		
 		String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
 		if(StringUtils.isEmpty(acbIdStr)) {
 			throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
 		}
-		
-		PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
-		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
-		if(validator != null) {
-			validator.validate(pcpDto);
-		}
-		if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
-			throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
-		}
-		
 		Long acbId = new Long(acbIdStr);
-		CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
-		pcpManager.confirm(pendingCp.getId());
-		
-		CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-		return result;
+		if(pcpManager.isPendingListingAvailableForUpdate(acbId, pendingCp.getId())) {
+			PendingCertifiedProductDTO pcpDto = new PendingCertifiedProductDTO(pendingCp);
+			CertifiedProductValidator validator = validatorFactory.getValidator(pcpDto);
+			if(validator != null) {
+				validator.validate(pcpDto);
+			}
+			if(pcpDto.getErrorMessages() != null && pcpDto.getErrorMessages().size() > 0) {
+				throw new ValidationException(pcpDto.getErrorMessages(), pcpDto.getWarningMessages());
+			}
+			
+			CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
+			pcpManager.confirm(acbId, pendingCp.getId());
+			CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
+			return result;
+		}
+		return null;
 	}
 	
-	@ApiOperation(value="Upload a file to update the number of meaningful use users for each CHPL Product Number", 
+	@ApiOperation(value="DEPRECATED. Upload a file to update the number of meaningful use users for each CHPL Product Number", 
 			notes="Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
 					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
 	@RequestMapping(value="/meaningful_use_users/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
+	@Deprecated
 	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
-		if (file.isEmpty()) {
-			throw new ValidationException("You cannot upload an empty file!");
-		}
-		
-		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
-				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
-			throw new ValidationException("File must be a CSV document.");
-		}
-		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
-		Set<MeaningfulUseUser> muusToUpdate = new LinkedHashSet<MeaningfulUseUser>();
-		Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
-		
-		BufferedReader reader = null;
-		CSVParser parser = null;
-		try {
-			reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-			parser = new CSVParser(reader, CSVFormat.EXCEL);
-			
-			List<CSVRecord> records = parser.getRecords();
-			if(records.size() <= 1) {
-				throw new ValidationException("The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
-			}
-			
-			CSVRecord heading = null;
-			
-			for(int i = 1; i <= records.size(); i++){
-				CSVRecord currRecord = records.get(i-1);
-				MeaningfulUseUser muu = new MeaningfulUseUser();
-				
-				// add header if something similar to "chpl_product_number" and "num_meaningful_use" exists
-				if(heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim()) && currRecord.get(0).trim().contains("product")
-						&& !StringUtils.isEmpty(currRecord.get(1).trim()) && currRecord.get(1).trim().contains("meaning")) {
-					heading = currRecord;
-				}
-				// populate MeaningfulUseUserResults
-				else {
-					String chplProductNumber = currRecord.get(0).trim();
-					Long numMeaningfulUseUsers = null;
-					try{
-						numMeaningfulUseUsers = Long.parseLong(currRecord.get(1).trim());
-						muu.setProductNumber(chplProductNumber);
-						muu.setNumberOfUsers(numMeaningfulUseUsers);
-						muu.setCsvLineNumber(i);
-						// check if product number has already been updated
-						if(uniqueMuusFromFile.contains(muu.getProductNumber())){
-							throw new IOException();
-						}
-						muusToUpdate.add(muu);
-						uniqueMuusFromFile.add(muu.getProductNumber());
-					} catch (NumberFormatException e){
-						muu.setProductNumber(chplProductNumber);
-						muu.setCsvLineNumber(i);
-						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_use\" with value \"" + currRecord.get(1).trim() + "\" is invalid. "
-								+ "Value in field \"num_meaningful_use\" must be an integer.");
-						muusToUpdate.add(muu);
-						uniqueMuusFromFile.add(muu.getProductNumber());
-					}
-					catch (IOException e){
-						muu.setProductNumber(chplProductNumber);
-						muu.setCsvLineNumber(i);
-						Integer dupLineNumber = null;
-						// get line number with duplicate chpl_product_number
-						for (MeaningfulUseUser entry: muusToUpdate) {
-						     if (entry.getProductNumber().equals(muu.getProductNumber())){
-						    	 dupLineNumber = entry.getCsvLineNumber();
-						     }
-						   }
-						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
-								+ "Duplicate \"chpl_product_number\" at line " + dupLineNumber);
-						muusToUpdate.add(muu);
-					}
-				}
-			}
-		} catch(IOException ioEx) {
-			logger.error("Could not get input stream for uploaded file " + file.getName());			
-			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
-		} finally {
-			 try { parser.close(); } catch(Exception ignore) {}
-			try { reader.close(); } catch(Exception ignore) {}
-		}
-		
-		try {
-			meaningfulUseUserResults = cpManager.updateMeaningfulUseUsers(muusToUpdate);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		} catch (EntityCreationException e) {
-			e.printStackTrace();
-		} catch (EntityRetrievalException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		
-		return meaningfulUseUserResults;
+		return meaningfulUseController.uploadMeaningfulUseUsers(file);
 	}
 	
 	@ApiOperation(value="Upload a file with certified products", 

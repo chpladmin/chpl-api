@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,11 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import junit.framework.TestCase;
 
@@ -46,6 +48,10 @@ public class ActivityDaoTest extends TestCase {
 	
 	
 	private static JWTAuthenticatedUser adminUser;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	
 	@BeforeClass
@@ -184,7 +190,7 @@ public class ActivityDaoTest extends TestCase {
 	public void testFindAll(){
 		
 		List<ActivityDTO> results = activityDAO.findAll(false);
-		assertEquals(5, results.size());
+		assertEquals(7, results.size());
 	}
 	
 	@Test
@@ -228,12 +234,12 @@ public class ActivityDaoTest extends TestCase {
 	public void testFindAllInLastNDays() throws EntityCreationException, EntityRetrievalException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
-		List<ActivityDTO> results = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
-		assertEquals(0,results.size());
+		Date fiveDaysAgo = new Date(1489699376931L - (5*24*60*60*1000)); // 3/16/2017 in millis - 5 days in millis
+		List<ActivityDTO> results = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date(1489699376931L));
+		assertEquals(2,results.size());
 		
 		List<ActivityDTO> results2 = activityDAO.findAllInDateRange(false, null, new Date());
-		assertEquals(5 ,results2.size());
+		assertEquals(7 ,results2.size());
 		
 		ActivityDTO recent = new ActivityDTO();
 		recent.setActivityDate(new Date());
@@ -246,7 +252,7 @@ public class ActivityDaoTest extends TestCase {
 		ActivityDTO created = activityDAO.create(recent);
 		
 		List<ActivityDTO> results3 = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
-		assertEquals(1, results3.size());
+		assertEquals(3, results3.size());
 		activityDAO.delete(created.getId());
 		ActivityDTO deleted = activityDAO.getById(created.getId());
 		assertNull(deleted);
