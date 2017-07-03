@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 12.1.0
+_3 July 2017_
 
 ## Minor Features
 * Improve /update API call speed. Selectively update only items that have changed rather than doing a replace on the entire listing.
