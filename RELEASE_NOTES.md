@@ -1,15 +1,17 @@
 # Release Notes
 
-## OCD-1495
-* Add /resources/create API call to allow returning a CSV from JSON input
+## Version TBD
+_Date TBD_
 
-## OCD-1550
+## Minor Features
+* Add /resources/create API call to allow returning a CSV from JSON input
 * Improve /update API call speed. Selectively update only items that have changed rather than doing a replace on the entire listing.
+* Allow mass reject of pending surveillances
 
 ---
 
-## Version TBD
-_Date TBD_
+## Version 12.0.0
+_3 July 2017_
 
 ### Major Features
 _Backwards compatibility breaking changes_
@@ -21,7 +23,6 @@ _Backwards compatibility breaking changes_
 * Added an additional app that runs to send out notifications of ICS inconsistencies (need to add cron for that)
 * Added description of surveillance triggers to emails
 * Added developer and listing statistics for ACBs to ONC summary email
-* Allow mass reject of pending surveillances
 
 ---
 
