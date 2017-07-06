@@ -53,70 +53,72 @@ public class DeveloperTransparency implements Serializable {
 		this.acbAttestations = acbAttestations;
 	}
 	
-	public class ListingCount {
-	    private Long activeListings;
-	    private Long retiredListings;
-	    private Long pendingListings;
-	    private Long withdrawnByDeveloperListings;
-	    private Long withdrawnByOncAcbListings;
-	    private Long suspendedByOncAcbListings;
-	    private Long suspendedByOncListings;
-	    private Long terminatedByOncListings;
-	    private Long withdrawnByDeveloperUnderSurveillanceListings;
+	public class ListingCount implements Serializable {
+		private static final long serialVersionUID = 5805200079893165212L;
+		
+		private Long active;
+	    private Long retired;
+	    private Long pending;
+	    private Long withdrawnByDeveloper;
+	    private Long withdrawnByOncAcb;
+	    private Long suspendedByOncAcb;
+	    private Long suspendedByOnc;
+	    private Long terminatedByOnc;
+	    private Long withdrawnByDeveloperUnderSurveillance;
 	    
-		public Long getActiveListings() {
-			return activeListings;
+		public Long getActive() {
+			return active;
 		}
-		public void setActiveListings(Long activeListings) {
-			this.activeListings = activeListings;
+		public void setActive(Long active) {
+			this.active = active;
 		}
-		public Long getRetiredListings() {
-			return retiredListings;
+		public Long getRetired() {
+			return retired;
 		}
-		public void setRetiredListings(Long retiredListings) {
-			this.retiredListings = retiredListings;
+		public void setRetired(Long retired) {
+			this.retired = retired;
 		}
-		public Long getPendingListings() {
-			return pendingListings;
+		public Long getPending() {
+			return pending;
 		}
-		public void setPendingListings(Long pendingListings) {
-			this.pendingListings = pendingListings;
+		public void setPending(Long pending) {
+			this.pending = pending;
 		}
-		public Long getWithdrawnByDeveloperListings() {
-			return withdrawnByDeveloperListings;
+		public Long getWithdrawnByDeveloper() {
+			return withdrawnByDeveloper;
 		}
-		public void setWithdrawnByDeveloperListings(Long withdrawnByDeveloperListings) {
-			this.withdrawnByDeveloperListings = withdrawnByDeveloperListings;
+		public void setWithdrawnByDeveloper(Long withdrawnByDeveloper) {
+			this.withdrawnByDeveloper = withdrawnByDeveloper;
 		}
-		public Long getWithdrawnByOncAcbListings() {
-			return withdrawnByOncAcbListings;
+		public Long getWithdrawnByOncAcb() {
+			return withdrawnByOncAcb;
 		}
-		public void setWithdrawnByOncAcbListings(Long withdrawnByOncAcbListings) {
-			this.withdrawnByOncAcbListings = withdrawnByOncAcbListings;
+		public void setWithdrawnByOncAcb(Long withdrawnByOncAcb) {
+			this.withdrawnByOncAcb = withdrawnByOncAcb;
 		}
-		public Long getSuspendedByOncAcbListings() {
-			return suspendedByOncAcbListings;
+		public Long getSuspendedByOncAcb() {
+			return suspendedByOncAcb;
 		}
-		public void setSuspendedByOncAcbListings(Long suspendedByOncAcbListings) {
-			this.suspendedByOncAcbListings = suspendedByOncAcbListings;
+		public void setSuspendedByOncAcb(Long suspendedByOncAcb) {
+			this.suspendedByOncAcb = suspendedByOncAcb;
 		}
-		public Long getSuspendedByOncListings() {
-			return suspendedByOncListings;
+		public Long getSuspendedByOnc() {
+			return suspendedByOnc;
 		}
-		public void setSuspendedByOncListings(Long suspendedByOncListings) {
-			this.suspendedByOncListings = suspendedByOncListings;
+		public void setSuspendedByOnc(Long suspendedByOnc) {
+			this.suspendedByOnc = suspendedByOnc;
 		}
-		public Long getTerminatedByOncListings() {
-			return terminatedByOncListings;
+		public Long getTerminatedByOnc() {
+			return terminatedByOnc;
 		}
-		public void setTerminatedByOncListings(Long terminatedByOncListings) {
-			this.terminatedByOncListings = terminatedByOncListings;
+		public void setTerminatedByOnc(Long terminatedByOnc) {
+			this.terminatedByOnc = terminatedByOnc;
 		}
-		public Long getWithdrawnByDeveloperUnderSurveillanceListings() {
-			return withdrawnByDeveloperUnderSurveillanceListings;
+		public Long getWithdrawnByDeveloperUnderSurveillance() {
+			return withdrawnByDeveloperUnderSurveillance;
 		}
-		public void setWithdrawnByDeveloperUnderSurveillanceListings(Long withdrawnByDeveloperUnderSurveillanceListings) {
-			this.withdrawnByDeveloperUnderSurveillanceListings = withdrawnByDeveloperUnderSurveillanceListings;
+		public void setWithdrawnByDeveloperUnderSurveillance(Long withdrawnByDeveloperUnderSurveillance) {
+			this.withdrawnByDeveloperUnderSurveillance = withdrawnByDeveloperUnderSurveillance;
 		}
 	}
 }
