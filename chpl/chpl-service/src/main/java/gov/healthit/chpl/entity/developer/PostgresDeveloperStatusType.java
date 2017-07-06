@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.developer;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -6,6 +6,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
+
+import gov.healthit.chpl.entity.PostgresEnumType;
 
 public class PostgresDeveloperStatusType extends PostgresEnumType {
 	

@@ -18,6 +18,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
+
 @Entity
 @Table(name = "product")
 public class ProductEntity implements Serializable {

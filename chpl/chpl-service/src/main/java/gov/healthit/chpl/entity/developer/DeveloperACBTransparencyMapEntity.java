@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.developer;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+
+import gov.healthit.chpl.entity.AttestationType;
 
 @Entity
 @Table(name = "acb_developer_transparency_mappings", schema="openchpl")

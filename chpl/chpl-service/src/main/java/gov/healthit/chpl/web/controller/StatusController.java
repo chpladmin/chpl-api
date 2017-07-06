@@ -37,7 +37,7 @@ public class StatusController {
 	@RequestMapping(value="/cache_status", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public @ResponseBody String getCacheStatus() {
 		CacheManager manager = cacheUtil.getMyCacheManager();
-		Cache basicCache = manager.getCache(CacheNames.BASIC_SEARCH);
+		Cache basicCache = manager.getCache(CacheNames.COLLECTIONS_LISTINGS);
 		if(basicCache == null || basicCache.getSize() == 0) {
 			return "{\"status\": \"" + CacheStatus.INITIALIZING + "\"}";
 		}

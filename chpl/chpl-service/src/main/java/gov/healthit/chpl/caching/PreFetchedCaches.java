@@ -19,8 +19,8 @@ public class PreFetchedCaches {
 	@Autowired private CertifiedProductSearchDAO certifiedProductSearchDao;
 	
 	@Transactional
-	@CacheEvict(value=CacheNames.PRE_FETCHED_BASIC_SEARCH, beforeInvocation=true, allEntries=true)
-	@Cacheable(CacheNames.PRE_FETCHED_BASIC_SEARCH)
+	@CacheEvict(value=CacheNames.COLLECTIONS_PREFETCHED_LISTINGS, beforeInvocation=true, allEntries=true)
+	@Cacheable(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS)
 	public List<CertifiedProductFlatSearchResult> initializePreFetchedBasicSearch(){
 		logger.debug("Initializing PreFetchedBasicSearch");
 		List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();

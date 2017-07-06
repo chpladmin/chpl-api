@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.developer;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -20,6 +20,9 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.ContactEntity;
 
 @Entity
 @Table(name = "vendor")

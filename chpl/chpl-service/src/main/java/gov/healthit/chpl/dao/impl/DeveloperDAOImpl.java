@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -27,13 +28,15 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ContactEntity;
-import gov.healthit.chpl.entity.DeveloperACBMapEntity;
-import gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity;
-import gov.healthit.chpl.entity.DeveloperEntity;
-import gov.healthit.chpl.entity.DeveloperStatusEntity;
-import gov.healthit.chpl.entity.DeveloperStatusEventEntity;
-import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.entity.developer.DeveloperACBMapEntity;
+import gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
+import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
@@ -388,6 +391,26 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		return dtos;
 	}
 
+	@Override
+	public List<DeveloperTransparency> getAllDevelopersWithTransparencies() {
+		Query query = entityManager.createQuery("SELECT dt "
+				+ "FROM DeveloperTransparencyEntity dt "
+				, DeveloperTransparencyEntity.class);
+		
+		List<DeveloperTransparencyEntity> entityResults = query.getResultList();		
+		List<DeveloperTransparency> domainResults = new ArrayList<DeveloperTransparency>();
+		for(DeveloperTransparencyEntity entity : entityResults) {
+			DeveloperTransparency domain = new DeveloperTransparency();
+			domain.setId(entity.getId());
+			domain.setName(entity.getName());
+			domain.setStatus(entity.getStatus());
+			domain.setAcbAttestations(entity.getAcbAttestations());
+			domain.setTransparencyAttestationUrls(entity.getTransparencyAttestationUrls());
+			domainResults.add(domain);
+		}
+		return domainResults;
+	}
+	
 	@Override
 	public DeveloperACBMapDTO getTransparencyMapping(Long developerId, Long acbId) {
 		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(developerId, acbId);

@@ -2,6 +2,8 @@ package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
+
 public interface ProductOwnerEntity {
 
 	public Long getId();
