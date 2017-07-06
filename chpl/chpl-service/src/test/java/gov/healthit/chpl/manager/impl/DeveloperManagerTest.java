@@ -136,7 +136,7 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		List<DeveloperTransparency> developers = developerManager.getDeveloperCollection();
 		assertNotNull(developers);
-		assertEquals(3, developers.size());
+		assertEquals(9, developers.size());
 	}
 	
 	@Test

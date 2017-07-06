@@ -404,6 +404,15 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			domain.setId(entity.getId());
 			domain.setName(entity.getName());
 			domain.setStatus(entity.getStatus());
+			domain.getListingCounts().setActiveListings(entity.getCountActiveListings());
+			domain.getListingCounts().setRetiredListings(entity.getCountRetiredListings());
+			domain.getListingCounts().setPendingListings(entity.getCountPendingListings());
+			domain.getListingCounts().setSuspendedByOncAcbListings(entity.getCountSuspendedByOncAcbListings());
+			domain.getListingCounts().setSuspendedByOncListings(entity.getCountSuspendedByOncListings());
+			domain.getListingCounts().setTerminatedByOncListings(entity.getCountTerminatedByOncListings());
+			domain.getListingCounts().setWithdrawnByDeveloperListings(entity.getCountWithdrawnByDeveloperListings());
+			domain.getListingCounts().setWithdrawnByDeveloperUnderSurveillanceListings(entity.getCountWithdrawnByDeveloperUnderSurveillanceListings());
+			domain.getListingCounts().setWithdrawnByOncAcbListings(entity.getCountWithdrawnByOncAcbListings());
 			domain.setAcbAttestations(entity.getAcbAttestations());
 			domain.setTransparencyAttestationUrls(entity.getTransparencyAttestationUrls());
 			domainResults.add(domain);

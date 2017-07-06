@@ -20,6 +20,33 @@ public class DeveloperTransparencyEntity {
     @Column(name = "status_name")
     private String status;
     
+    @Column(name = "countActiveListings")
+    private Long countActiveListings;
+    
+    @Column(name = "countRetiredListings")
+    private Long countRetiredListings;
+    
+    @Column(name = "countPendingListings")
+    private Long countPendingListings;
+    
+    @Column(name = "countWithdrawnByDeveloperListings")
+    private Long countWithdrawnByDeveloperListings;
+    
+    @Column(name = "countWithdrawnByOncAcbListings")
+    private Long countWithdrawnByOncAcbListings;
+    
+    @Column(name = "countSuspendedByOncAcbListings")
+    private Long countSuspendedByOncAcbListings;
+    
+    @Column(name = "countSuspendedByOncListings")
+    private Long countSuspendedByOncListings;
+    
+    @Column(name = "countTerminatedByOncListings")
+    private Long countTerminatedByOncListings;
+    
+    @Column(name = "countWithdrawnByDeveloperUnderSurveillanceListings")
+    private Long countWithdrawnByDeveloperUnderSurveillanceListings;
+    
     @Column(name = "transparency_attestation_urls")
     private String transparencyAttestationUrls;
     
@@ -51,6 +78,79 @@ public class DeveloperTransparencyEntity {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public Long getCountActiveListings() {
+		return countActiveListings;
+	}
+
+	public void setCountActiveListings(Long countActiveListings) {
+		this.countActiveListings = countActiveListings;
+	}
+
+	public Long getCountRetiredListings() {
+		return countRetiredListings;
+	}
+
+	public void setCountRetiredListings(Long countRetiredListings) {
+		this.countRetiredListings = countRetiredListings;
+	}
+
+	public Long getCountPendingListings() {
+		return countPendingListings;
+	}
+
+	public void setCountPendingListings(Long countPendingListings) {
+		this.countPendingListings = countPendingListings;
+	}
+
+	public Long getCountWithdrawnByDeveloperListings() {
+		return countWithdrawnByDeveloperListings;
+	}
+
+	public void setCountWithdrawnByDeveloperListings(Long countWithdrawnByDeveloperListings) {
+		this.countWithdrawnByDeveloperListings = countWithdrawnByDeveloperListings;
+	}
+
+	public Long getCountWithdrawnByOncAcbListings() {
+		return countWithdrawnByOncAcbListings;
+	}
+
+	public void setCountWithdrawnByOncAcbListings(Long countWithdrawnByOncAcbListings) {
+		this.countWithdrawnByOncAcbListings = countWithdrawnByOncAcbListings;
+	}
+
+	public Long getCountSuspendedByOncAcbListings() {
+		return countSuspendedByOncAcbListings;
+	}
+
+	public void setCountSuspendedByOncAcbListings(Long countSuspendedByOncAcbListings) {
+		this.countSuspendedByOncAcbListings = countSuspendedByOncAcbListings;
+	}
+
+	public Long getCountSuspendedByOncListings() {
+		return countSuspendedByOncListings;
+	}
+
+	public void setCountSuspendedByOncListings(Long countSuspendedByOncListings) {
+		this.countSuspendedByOncListings = countSuspendedByOncListings;
+	}
+
+	public Long getCountTerminatedByOncListings() {
+		return countTerminatedByOncListings;
+	}
+
+	public void setCountTerminatedByOncListings(Long countTerminatedByOncListings) {
+		this.countTerminatedByOncListings = countTerminatedByOncListings;
+	}
+
+	public Long getCountWithdrawnByDeveloperUnderSurveillanceListings() {
+		return countWithdrawnByDeveloperUnderSurveillanceListings;
+	}
+
+	public void setCountWithdrawnByDeveloperUnderSurveillanceListings(
+			Long countWithdrawnByDeveloperUnderSurveillanceListings) {
+		this.countWithdrawnByDeveloperUnderSurveillanceListings = countWithdrawnByDeveloperUnderSurveillanceListings;
 	}
 
 	public String getTransparencyAttestationUrls() {
