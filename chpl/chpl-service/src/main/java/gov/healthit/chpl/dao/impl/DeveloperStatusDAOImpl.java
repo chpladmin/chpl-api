@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.entity.DeveloperStatusEntity;
-import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 
 @Repository("developerStatusDAO")
 public class DeveloperStatusDAOImpl extends BaseDAOImpl implements DeveloperStatusDAO {

@@ -49,12 +49,13 @@
 		<class>gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CQMResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperACBMapEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperCertificationStatusesEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperStatusEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperStatusEventEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperACBMapEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperCertificationStatusesEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperStatusEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>

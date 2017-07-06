@@ -279,8 +279,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void testBasicSearchCache() throws IllegalStateException, CacheException, ClassCastException, InterruptedException, ExecutionException {
 		CacheManager manager = cacheUtil.getMyCacheManager();
-		assertEquals(0, manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize());
-		assertEquals(0, manager.getCache(CacheNames.BASIC_SEARCH).getSize());
+		assertEquals(0, manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize());
+		assertEquals(0, manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize());
 		List<CertifiedProductFlatSearchResult> response = certifiedProductSearchManager.search();
 		//basic search response should now be cached
 		List<CertifiedProductFlatSearchResult> response2 = certifiedProductSearchManager.search();
@@ -290,27 +290,27 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		//expect cache to clear properly the first time; prefetched cache was not cached
 		Future<Boolean> isEvictDone = cacheUpdater.updateBasicSearch(); 
 		isEvictDone.get();
-		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
 		// Verify that the preFetchedCache gets populated
-		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
 		List<CertifiedProductFlatSearchResult> response3 = certifiedProductSearchManager.search();
-		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
 		assertNotSame(response2, response3); 
 		
 		//make sure the cache also clears the second time; prefetched cache was cached
 		isEvictDone = cacheUpdater.updateBasicSearch();
 		isEvictDone.get();
-		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
 		// Verify that the preFetchedCache gets populated
-		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
 		List<CertifiedProductFlatSearchResult> response4 = certifiedProductSearchManager.search();
-		assertTrue(manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.BASIC_SEARCH).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
+		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
 		assertNotSame(response3, response4);
 	}
 }

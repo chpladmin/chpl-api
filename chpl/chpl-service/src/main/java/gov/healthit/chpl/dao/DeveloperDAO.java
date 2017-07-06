@@ -2,6 +2,7 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
+import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -26,6 +27,7 @@ public interface DeveloperDAO {
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
 	public void deleteTransparencyMapping(Long vendorId, Long acbId);
 	public DeveloperACBMapDTO getTransparencyMapping(Long vendorId, Long acbId);
+	public List<DeveloperTransparency> getAllDevelopersWithTransparencies();
 	public List<DeveloperACBMapDTO> getAllTransparencyMappings();
 	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers();
 }

@@ -32,7 +32,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
-import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 

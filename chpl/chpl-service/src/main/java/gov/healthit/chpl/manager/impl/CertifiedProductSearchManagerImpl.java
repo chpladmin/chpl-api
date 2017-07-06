@@ -27,7 +27,7 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	
 	@Transactional(readOnly = true)
 	@Override
-	@Cacheable(CacheNames.BASIC_SEARCH)
+	@Cacheable(CacheNames.COLLECTIONS_LISTINGS)
 	public List<CertifiedProductFlatSearchResult> search() {
 		List<CertifiedProductFlatSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
 		return results;

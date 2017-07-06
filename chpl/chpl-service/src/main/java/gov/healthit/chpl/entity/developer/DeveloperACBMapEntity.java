@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.developer;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +15,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
+
+import gov.healthit.chpl.entity.AttestationType;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
 
 
 @Entity

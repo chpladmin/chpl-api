@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+## Minor Features
+* Added /collections/developers API call to return a list of all developers, attestations, urls, and counts of their listings
+
+---
+
 ## Version 12.1.0
 _3 July 2017_
 
