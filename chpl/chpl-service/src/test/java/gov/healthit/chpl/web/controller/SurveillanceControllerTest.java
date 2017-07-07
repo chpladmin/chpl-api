@@ -122,7 +122,7 @@ public class SurveillanceControllerTest {
 		
 		oncAndAcb = new JWTAuthenticatedUser();
 		oncAndAcb.setFirstName("oncAndAcb");
-		oncAndAcb.setId(-4L);
+		oncAndAcb.setId(1L);
 		oncAndAcb.setLastName("User");
 		oncAndAcb.setSubjectName("oncAndAcbUser");
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
@@ -1973,7 +1973,6 @@ public class SurveillanceControllerTest {
 			for(ObjectMissingValidationException e : ex.getExceptions()){
 				assertTrue(e.getObjectId() != null); // CHPL Product ID
 				assertTrue(e.getContact() != null); // contact info of last modified user
-				assertTrue(e.getContact().getContactId() != null);
 				assertTrue(e.getStartDate() != null); // Pending Surveillance start date
 				assertTrue(e.getEndDate() != null); // Pending Surveillance end date
 			}
@@ -2018,7 +2017,6 @@ public class SurveillanceControllerTest {
 		} catch(ObjectMissingValidationException ex){
 			assertTrue(ex.getObjectId() != null); // CHPL Product ID
 			assertTrue(ex.getContact() != null); // contact info of last modified user
-			assertTrue(ex.getContact().getContactId() != null);
 			assertTrue(ex.getStartDate() != null); // Pending Surveillance start date
 			assertTrue(ex.getEndDate() != null); // Pending Surveillance end date
 		}
