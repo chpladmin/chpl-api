@@ -5,6 +5,11 @@ _Date TBD_
 
 ## Minor Features
 * Added /collections/developers API call to return a list of all developers, attestations, urls, and counts of their listings
+* Completed bulk reject of pending surveillance. 
+* Pulling pending surveillance validation out of a db table instead of calculating on the fly to speed up large uploads.
+
+## Bug Fixes
+* Fixed incorrect contact name displayed if pending surveillance or listing had already been confirmed/rejected.
 
 ---
 
