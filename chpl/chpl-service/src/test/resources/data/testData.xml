@@ -1065,7 +1065,7 @@
        vendor_id="-1" vendor_address_id="-1" vendor_contact_id="-1" product_id="-1" 
        product_version_id="1722" certification_edition_id="2" certification_body_id="-1" 
        product_classification_id="1" testing_lab_id="-1" creation_date="2016-04-01 23:46:27.707" last_modified_date="2016-06-07 15:49:23.117772" 
-       last_modified_user="-3" deleted="true" certification_status_id="3" /> 
+       last_modified_user="1" deleted="true" certification_status_id="3" /> 
     <pending_certified_product pending_certified_product_id="-2" unique_id="15.04.04.2315.SESD.02.0.0.170217" record_status="New" practice_type="Ambulatory" 
        testing_lab_name="Drummond Group" vendor_name="Secure Exchange Solutions" product_name="SES Direct" product_version="Version 2.0" 
        certification_edition="2015" acb_certification_id="15.04.04.2315.SESD.02.0.0.170217" certification_body_name="Drummond Group" 
@@ -1078,7 +1078,7 @@
        vendor_id="-1" vendor_address_id="-1" vendor_contact_id="-1" product_id="-1" 
        product_version_id="1722" certification_edition_id="2" certification_body_id="-1" 
        product_classification_id="1" testing_lab_id="-1" creation_date="2016-04-01 23:46:27.707" last_modified_date="2016-06-07 15:49:23.117772" 
-       last_modified_user="-3" deleted="false" certification_status_id="3" />
+       last_modified_user="1" deleted="false" certification_status_id="3" />
        
     <pending_certification_result pending_certification_result_id="-1" certification_criterion_id="116"
        pending_certified_product_id="-1" meets_criteria="TRUE" gap="FALSE" sed="FALSE" g1_success="FALSE"
@@ -1219,133 +1219,133 @@
 		certified_product_unique_id="CHP-024050" start_date="2016-05-01 12:42:00.000"
 		end_date="2016-06-01 12:42:00.000" type_value="1"
 		creation_date="2016-05-01 12:42:00.000" last_modified_date="2016-05-01 12:42:00.000"
-		last_modified_user="-1" deleted="FALSE" />
+		last_modified_user="1" deleted="FALSE" />
 	<pending_surveillance id="-2"
 		surveillance_id_to_replace="-2" certified_product_id="17"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-3"
 		surveillance_id_to_replace="-2" certified_product_id="1"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-4"
 		surveillance_id_to_replace="-2" certified_product_id="2"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-5"
 		surveillance_id_to_replace="-2" certified_product_id="3"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-6"
 		surveillance_id_to_replace="-2" certified_product_id="4"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-7"
 		surveillance_id_to_replace="-2" certified_product_id="5"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-8"
 		surveillance_id_to_replace="-2" certified_product_id="6"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-9"
 		surveillance_id_to_replace="-2" certified_product_id="7"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-10"
 		surveillance_id_to_replace="-2" certified_product_id="8"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-11"
 		surveillance_id_to_replace="-2" certified_product_id="9"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-12"
 		surveillance_id_to_replace="-2" certified_product_id="10"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-13"
 		surveillance_id_to_replace="-2" certified_product_id="11"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-14"
 		surveillance_id_to_replace="-2" certified_product_id="12"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-15"
 		surveillance_id_to_replace="-2" certified_product_id="13"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-16"
 		surveillance_id_to_replace="-2" certified_product_id="14"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-17"
 		surveillance_id_to_replace="-2" certified_product_id="15"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-18"
 		surveillance_id_to_replace="-2" certified_product_id="16"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-19"
 		surveillance_id_to_replace="-2" certified_product_id="17"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-20"
 		surveillance_id_to_replace="-2" certified_product_id="1"
 		certified_product_unique_id="CHP-024050" start_date="2017-03-01 12:42:00.000"
 		end_date="2018-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-21"
 		surveillance_id_to_replace="-2" certified_product_id="2"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2018-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-22"
 		surveillance_id_to_replace="-2" certified_product_id="3"
 		certified_product_unique_id="CHP-024052" start_date="2017-03-01 12:42:00.000"
 		end_date="2018-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 
 	<user user_id="-2" user_name="admin" password="pwd"
 		account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE"
