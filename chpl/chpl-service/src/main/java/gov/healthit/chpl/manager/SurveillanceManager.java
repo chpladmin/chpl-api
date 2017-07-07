@@ -37,12 +37,14 @@ public interface SurveillanceManager {
 	public void deleteNonconformityDocument(Long acbId, Long documentId);
 	
 	public List<Surveillance> getPendingByAcb(Long acbId);
-	public Surveillance getPendingById(Long acbId, Long survId) throws EntityNotFoundException;
+	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityNotFoundException;
 	public Long createPendingSurveillance(Long acbId, Surveillance surv);
 	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, 
 	EntityRetrievalException, EntityCreationException;
 	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
 			throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException;
+	public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
+			throws EntityRetrievalException, ObjectMissingValidationException;
 	boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
 			throws EntityRetrievalException, ObjectMissingValidationException;
 

@@ -20,7 +20,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
@@ -38,7 +40,6 @@ import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -60,7 +61,6 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
 	
-	@Autowired ContactDAO contactDao;
 	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
 	@Autowired CertificationBodyManager acbManager;
@@ -212,11 +212,27 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp) 
 	throws EntityRetrievalException, ObjectMissingValidationException {
 		if(pendingCp.getDeleted().booleanValue() == true) {
-			ContactDTO contactDTO = contactDao.getById(pendingCp.getLastModifiedUser());
 			ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
 			alreadyDeletedEx.getErrorMessages().add("This pending certified product has already been confirmed or rejected by another user.");
-			alreadyDeletedEx.setContact(contactDTO != null ? new Contact(contactDTO) : null);
 			alreadyDeletedEx.setObjectId(pendingCp.getUniqueId());
+			
+			try {
+				UserDTO lastModifiedUser = userDAO.getById(pendingCp.getLastModifiedUser());
+				if(lastModifiedUser != null) {
+					Contact contact = new Contact();
+					contact.setFirstName(lastModifiedUser.getFirstName());
+					contact.setLastName(lastModifiedUser.getLastName());
+					contact.setEmail(lastModifiedUser.getEmail());
+					contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
+					contact.setTitle(lastModifiedUser.getTitle());
+					alreadyDeletedEx.setContact(contact);
+				} else {
+					alreadyDeletedEx.setContact(null);
+				}
+			} catch(UserRetrievalException ex) {
+				alreadyDeletedEx.setContact(null);
+			}
+			
 			throw alreadyDeletedEx;
 		}
 		return pendingCp != null;

@@ -455,18 +455,6 @@ public class SurveillanceController implements MessageSourceAware {
 		if(survToInsert == null || survToInsert.getId() == null) {
 			throw new ValidationException("An id must be provided in the request body.");
 		}
-		Long pendingSurvToDelete = survToInsert.getId();
-		
-		survToInsert.getErrorMessages().clear();
-		
-		//validate first. this ensures we have all the info filled in 
-		//that we need to continue
-		survManager.validate(survToInsert);
-
-		if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
-			throw new ValidationException(survToInsert.getErrorMessages(), null);
-		}
-		
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
 		try {
@@ -476,40 +464,54 @@ public class SurveillanceController implements MessageSourceAware {
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 		
-		//insert or update the surveillance
-		Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
-		if(insertedSurv == null) {
-			throw new EntityCreationException("Error creating new surveillance.");
-		}
-		
-		//delete the pending surveillance item if this one was successfully inserted
-		try {
-			survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete, true);
-		} catch(Exception ex) {
-			logger.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
-		}
-		
-		try {
-			//if a surveillance was getting replaced, delete it
-			if(!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
-				Surveillance survToReplace = survManager.getByFriendlyIdAndProduct(
-						survToInsert.getCertifiedProduct().getId(),
-						survToInsert.getSurveillanceIdToReplace());
-				CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
-				survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
+		Long pendingSurvToDelete = survToInsert.getId();
+		if(survManager.isPendingSurveillanceAvailableForUpdate(owningAcb.getId(), pendingSurvToDelete)) {
+			survToInsert.getErrorMessages().clear();
+			
+			//validate first. this ensures we have all the info filled in 
+			//that we need to continue
+			survManager.validate(survToInsert);
+	
+			if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
+				throw new ValidationException(survToInsert.getErrorMessages(), null);
 			}
-		} catch(Exception ex) {
-			logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
+			
+			//insert or update the surveillance
+			Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+			if(insertedSurv == null) {
+				throw new EntityCreationException("Error creating new surveillance.");
+			}
+			
+			//delete the pending surveillance item if this one was successfully inserted
+			try {
+				survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete, true);
+			} catch(Exception ex) {
+				logger.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
+			}
+			
+			try {
+				//if a surveillance was getting replaced, delete it
+				if(!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
+					Surveillance survToReplace = survManager.getByFriendlyIdAndProduct(
+							survToInsert.getCertifiedProduct().getId(),
+							survToInsert.getSurveillanceIdToReplace());
+					CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
+					survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
+				}
+			} catch(Exception ex) {
+				logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
+			}
+			
+			
+			CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
+					"Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+	
+			
+			//query the inserted surveillance
+			return survManager.getById(insertedSurv);
 		}
-		
-		
-		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
-				"Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
-
-		
-		//query the inserted surveillance
-		return survManager.getById(insertedSurv);
+		return null;
 	}
 	
 	@ApiOperation(value="Download surveillance as CSV.", 
@@ -694,7 +696,7 @@ public class SurveillanceController implements MessageSourceAware {
 					try {
 						owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
 						Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
-						Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId);
+						Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId, false);
 						uploadedSurveillance.add(uploaded);
 					} catch(AccessDeniedException denied) {
 						logger.error("User " + Util.getCurrentUser().getSubjectName() + 
