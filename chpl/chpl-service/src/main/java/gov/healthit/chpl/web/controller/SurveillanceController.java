@@ -455,6 +455,7 @@ public class SurveillanceController implements MessageSourceAware {
 		if(survToInsert == null || survToInsert.getId() == null) {
 			throw new ValidationException("An id must be provided in the request body.");
 		}
+		
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
 		try {
@@ -471,7 +472,6 @@ public class SurveillanceController implements MessageSourceAware {
 			//validate first. this ensures we have all the info filled in 
 			//that we need to continue
 			survManager.validate(survToInsert);
-	
 			if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
 				throw new ValidationException(survToInsert.getErrorMessages(), null);
 			}
@@ -506,8 +506,6 @@ public class SurveillanceController implements MessageSourceAware {
 			CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
 					"Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
-	
-			
 			//query the inserted surveillance
 			return survManager.getById(insertedSurv);
 		}
@@ -695,6 +693,7 @@ public class SurveillanceController implements MessageSourceAware {
 					CertifiedProductDTO owningCp = null; 
 					try {
 						owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
+						survValidator.validate(surv);
 						Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
 						Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId, false);
 						uploadedSurveillance.add(uploaded);

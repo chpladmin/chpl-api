@@ -34,7 +34,6 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
@@ -51,14 +50,16 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -244,7 +245,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		if(pendingResults != null) {
 			for(PendingSurveillanceEntity pr : pendingResults) {
 				Surveillance surv = convertToDomain(pr);
-				validator.validate(surv);
 				results.add(surv);
 			}
 		}
@@ -261,7 +261,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
 		}
 		Surveillance surv = convertToDomain(pending);
-		validator.validate(surv);
 		return surv;
 	}
 	
@@ -508,6 +507,14 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 					}
 				}
 				surv.getRequirements().add(req);
+			}
+		}
+		
+		if(pr.getValidation() != null && pr.getValidation().size() > 0) {
+			for(PendingSurveillanceValidationEntity validation : pr.getValidation()) {
+				if(validation.getMessageType() == ValidationMessageType.Error) {
+					surv.getErrorMessages().add(validation.getMessage());
+				}
 			}
 		}
 		return surv;

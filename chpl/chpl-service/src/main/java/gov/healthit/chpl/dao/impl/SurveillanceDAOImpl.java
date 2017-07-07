@@ -29,16 +29,18 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.NonconformityStatusEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.SurveillanceRequirementTypeEntity;
-import gov.healthit.chpl.entity.SurveillanceResultTypeEntity;
-import gov.healthit.chpl.entity.SurveillanceTypeEntity;
+import gov.healthit.chpl.entity.ValidationMessageType;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 
 @Repository("surveillanceDAO")
 public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO {
@@ -277,6 +279,17 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		entityManager.persist(toInsert);
 		entityManager.flush();
 		
+		for(String errorMessage : surv.getErrorMessages()) {
+			PendingSurveillanceValidationEntity valEntity = new PendingSurveillanceValidationEntity();
+			valEntity.setMessageType(ValidationMessageType.Error);
+			valEntity.setPendingSurveillanceId(toInsert.getId());
+			valEntity.setMessage(errorMessage);
+			valEntity.setDeleted(false);
+			valEntity.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(valEntity);
+			entityManager.flush();
+		}
+		
 		for(SurveillanceRequirement req : surv.getRequirements()) {
 			PendingSurveillanceRequirementEntity toInsertReq = new PendingSurveillanceRequirementEntity();
 			if(req.getResult() != null) {
@@ -375,6 +388,15 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId(), true);
 		if(toDelete == null) {
 			throw new EntityNotFoundException("Could not find pending surveillance with id " + surv.getId());
+		}
+		
+		if(toDelete.getValidation() != null) {
+			for(PendingSurveillanceValidationEntity val : toDelete.getValidation()) {
+				val.setDeleted(true);
+				val.setLastModifiedUser(Util.getCurrentUser().getId());
+				entityManager.merge(val);
+				entityManager.flush();
+			}
 		}
 		
 		if(toDelete.getSurveilledRequirements() != null) {
@@ -703,6 +725,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				+ "JOIN FETCH surv.certifiedProduct "
 				+ "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
+				+ "LEFT OUTER JOIN FETCH surv.validation "
 				+ "WHERE surv.id = :entityid ";
 		if(!includeDeleted){
 			hql+= "AND surv.deleted <> true ";
@@ -726,6 +749,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				+ "JOIN FETCH surv.certifiedProduct cp "
 				+ "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
+				+ "LEFT OUTER JOIN FETCH surv.validation "
 				+ "WHERE surv.deleted <> true "
 				+ "AND cp.certificationBodyId = :acbId", 
 				PendingSurveillanceEntity.class);
