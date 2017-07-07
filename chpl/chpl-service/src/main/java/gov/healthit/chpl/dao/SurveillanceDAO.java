@@ -11,10 +11,10 @@ import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
-import gov.healthit.chpl.entity.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 
 public interface SurveillanceDAO {
 	public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException;

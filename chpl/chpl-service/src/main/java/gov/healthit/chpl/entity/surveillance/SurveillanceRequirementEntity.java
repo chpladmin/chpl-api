@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.surveillance;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -17,6 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 
 @Entity

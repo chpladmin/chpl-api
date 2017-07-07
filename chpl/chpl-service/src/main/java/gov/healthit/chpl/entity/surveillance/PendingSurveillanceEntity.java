@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.surveillance;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -16,22 +16,23 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Where;
-
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 
 @Entity
-@Table(name = "surveillance")
-public class SurveillanceEntity {
+@Table(name = "pending_surveillance")
+public class PendingSurveillanceEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
 	
-	@Column(name = "friendly_id", insertable = false, updatable = false)
-	private String friendlyId;
+	@Column(name = "surveillance_id_to_replace")
+	private String survFriendlyIdToReplace;
+	
+	@Column(name = "certified_product_unique_id")
+	private String certifiedProductUniqueId;
 	
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
@@ -46,36 +47,33 @@ public class SurveillanceEntity {
 	@Column(name = "end_date")
 	private Date endDate;
 	
-	@Column(name = "type_id")
-	private Long surveillanceTypeId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "type_id", insertable = false, updatable = false)
-	private SurveillanceTypeEntity surveillanceType;
+	@Column(name = "type_value")
+	private String surveillanceType;
 	
 	@Column(name = "randomized_sites_used")
 	private Integer numRandomizedSites;
 	
-	@Column( name = "deleted")
+	@Column(name = "deleted")
 	private Boolean deleted;
 	
-	@Column( name = "last_modified_user")
+	@Column(name = "last_modified_user")
 	private Long lastModifiedUser;
 	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
+	@Column(name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
 	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
+	@Column(name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
 	
-	@Column(name = "user_permission_id")
-	private Long userPermissionId;
-	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "surveillanceId"  )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId"  )
 	@Basic( optional = false )
-	@Column( name = "surveillance_id", nullable = false  )
- 	@Where(clause="deleted <> 'true'")
-	private Set<SurveillanceRequirementEntity> surveilledRequirements = new HashSet<SurveillanceRequirementEntity>();
+	@Column( name = "pending_surveillance_id", nullable = false  )
+	private Set<PendingSurveillanceRequirementEntity> surveilledRequirements = new HashSet<PendingSurveillanceRequirementEntity>();
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId"  )
+	@Basic( optional = false )
+	@Column( name = "pending_surveillance_id", nullable = false  )
+	private Set<PendingSurveillanceValidationEntity> validation = new HashSet<PendingSurveillanceValidationEntity>();
 	
 	public Long getId() {
 		return id;
@@ -83,6 +81,14 @@ public class SurveillanceEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getCertifiedProductUniqueId() {
+		return certifiedProductUniqueId;
+	}
+
+	public void setCertifiedProductUniqueId(String certifiedProductUniqueId) {
+		this.certifiedProductUniqueId = certifiedProductUniqueId;
 	}
 
 	public Date getStartDate() {
@@ -99,6 +105,14 @@ public class SurveillanceEntity {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getSurveillanceType() {
+		return surveillanceType;
+	}
+
+	public void setSurveillanceType(String surveillanceType) {
+		this.surveillanceType = surveillanceType;
 	}
 
 	public Integer getNumRandomizedSites() {
@@ -134,6 +148,14 @@ public class SurveillanceEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
+	public Set<PendingSurveillanceRequirementEntity> getSurveilledRequirements() {
+		return surveilledRequirements;
+	}
+
+	public void setSurveilledRequirements(Set<PendingSurveillanceRequirementEntity> surveilledRequirements) {
+		this.surveilledRequirements = surveilledRequirements;
+	}
+
 	public CertifiedProductEntity getCertifiedProduct() {
 		return certifiedProduct;
 	}
@@ -150,43 +172,19 @@ public class SurveillanceEntity {
 		this.certifiedProductId = certifiedProductId;
 	}
 
-	public Long getSurveillanceTypeId() {
-		return surveillanceTypeId;
+	public String getSurvFriendlyIdToReplace() {
+		return survFriendlyIdToReplace;
 	}
 
-	public void setSurveillanceTypeId(Long surveillanceTypeId) {
-		this.surveillanceTypeId = surveillanceTypeId;
+	public void setSurvFriendlyIdToReplace(String survFriendlyIdToReplace) {
+		this.survFriendlyIdToReplace = survFriendlyIdToReplace;
 	}
 
-	public SurveillanceTypeEntity getSurveillanceType() {
-		return surveillanceType;
+	public Set<PendingSurveillanceValidationEntity> getValidation() {
+		return validation;
 	}
 
-	public void setSurveillanceType(SurveillanceTypeEntity surveillanceType) {
-		this.surveillanceType = surveillanceType;
-	}
-
-	public Set<SurveillanceRequirementEntity> getSurveilledRequirements() {
-		return surveilledRequirements;
-	}
-
-	public void setSurveilledRequirements(Set<SurveillanceRequirementEntity> surveilledRequirements) {
-		this.surveilledRequirements = surveilledRequirements;
-	}
-
-	public String getFriendlyId() {
-		return friendlyId;
-	}
-
-	public void setFriendlyId(String friendlyId) {
-		this.friendlyId = friendlyId;
-	}
-
-	public Long getUserPermissionId() {
-		return userPermissionId;
-	}
-
-	public void setUserPermissionId(Long userPermissionId) {
-		this.userPermissionId = userPermissionId;
+	public void setValidation(Set<PendingSurveillanceValidationEntity> validation) {
+		this.validation = validation;
 	}
 }

@@ -464,6 +464,9 @@ public class SurveillanceController implements MessageSourceAware {
 		survManager.validate(survToInsert);
 
 		if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
+			
+			//TODO: update or replace existing error messages for this pending surveillance
+			
 			throw new ValidationException(survToInsert.getErrorMessages(), null);
 		}
 		
@@ -693,6 +696,7 @@ public class SurveillanceController implements MessageSourceAware {
 					CertifiedProductDTO owningCp = null; 
 					try {
 						owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
+						survValidator.validate(surv);
 						Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
 						Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId);
 						uploadedSurveillance.add(uploaded);

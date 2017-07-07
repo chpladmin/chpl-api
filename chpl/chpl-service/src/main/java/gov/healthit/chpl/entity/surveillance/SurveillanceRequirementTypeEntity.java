@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.surveillance;
 
 import java.util.Date;
 
@@ -11,8 +11,8 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "surveillance_type")
-public class SurveillanceTypeEntity {
+@Table(name = "surveillance_requirement_type")
+public class SurveillanceRequirementTypeEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
