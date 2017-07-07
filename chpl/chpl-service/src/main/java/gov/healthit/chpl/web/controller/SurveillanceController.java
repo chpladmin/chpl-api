@@ -472,8 +472,6 @@ public class SurveillanceController implements MessageSourceAware {
 			//validate first. this ensures we have all the info filled in 
 			//that we need to continue
 			survManager.validate(survToInsert);
-			//TODO: update or replace existing error messages for this pending surveillance
-
 			if(survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
 				throw new ValidationException(survToInsert.getErrorMessages(), null);
 			}
@@ -508,8 +506,6 @@ public class SurveillanceController implements MessageSourceAware {
 			CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
 					"Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
-	
-			
 			//query the inserted surveillance
 			return survManager.getById(insertedSurv);
 		}

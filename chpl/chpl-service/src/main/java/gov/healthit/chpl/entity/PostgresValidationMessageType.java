@@ -17,13 +17,4 @@ public class PostgresValidationMessageType extends PostgresEnumType {
 	    }
 	    return ValidationMessageType.getValue(name);
 	}
-	
-	@Override
-	public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
-	    if (value == null) {
-	        st.setNull(index, Types.OTHER);
-	    } else {
-	        st.setString(index, value.toString());
-	    } 
-	}
 }

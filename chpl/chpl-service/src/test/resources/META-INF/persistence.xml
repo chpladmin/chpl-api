@@ -84,6 +84,7 @@
 		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity</class>
 		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity</class>
 		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity</class>
 		<class>gov.healthit.chpl.entity.PendingTestParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.PendingTestTaskEntity</class>		
 		<class>gov.healthit.chpl.entity.PracticeTypeEntity</class>

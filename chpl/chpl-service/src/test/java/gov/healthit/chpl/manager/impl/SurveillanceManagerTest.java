@@ -1,10 +1,16 @@
 package gov.healthit.chpl.manager.impl;
 
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,14 +27,17 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -41,6 +50,9 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.web.controller.CertificationBodyAccessException;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -620,5 +632,58 @@ public class SurveillanceManagerTest extends TestCase {
 		assertNotNull(got.getEndDate());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Transactional 
+	@Test
+	@Rollback
+	public void testCreatePendingSurveillanceWithErrors()
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+		SecurityContextHolder.getContext().setAuthentication(acbUser);
+		Surveillance surv = new Surveillance();
+		
+		CertifiedProductDTO cpDto = cpDao.getById(1L);
+		CertifiedProduct cp = new CertifiedProduct();
+		cp.setId(cpDto.getId());
+		cp.setChplProductNumber(cp.getChplProductNumber());
+		cp.setEdition(cp.getEdition());
+		surv.setCertifiedProduct(cp);
+		surv.setStartDate(new Date());
+		surv.setRandomizedSitesUsed(10);
+		SurveillanceType type = survDao.findSurveillanceType("Randomized");
+		surv.setType(type);
+		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		
+		SurveillanceRequirement req = new SurveillanceRequirement();
+		req.setRequirement("170.314 (a)(1)");
+		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+		req.setType(reqType);
+		SurveillanceResultType resType = survDao.findSurveillanceResultType("Non-Conformity");
+		req.setResult(resType);
+		
+		List<SurveillanceNonconformity> ncs = new ArrayList<SurveillanceNonconformity>();
+		SurveillanceNonconformity nc = new SurveillanceNonconformity();
+		nc.setNonconformityType("170.523 (k)(1)");
+		SurveillanceNonconformityStatus survNcStatus = new SurveillanceNonconformityStatus();
+		survNcStatus.setName("Closed");
+		nc.setStatus(survNcStatus);
+		nc.setCapEndDate(new Date());
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, 1);
+		nc.setCapStartDate(new Date(cal.getTimeInMillis()));
+		ncs.add(nc);
+		req.setNonconformities(ncs);
+		
+		surv.getRequirements().add(req);
+		survManager.validate(surv);
+		
+		Long createdId = survManager.createPendingSurveillance(-1L, surv);
+		assertNotNull(createdId);
+		
+		Surveillance createdPendingSurv = survManager.getPendingById(-1L, createdId, false);
+		assertNotNull(createdPendingSurv);
+		assertNotNull(createdPendingSurv.getErrorMessages());
+		assertEquals(9, createdPendingSurv.getErrorMessages().size());
 	}
 }
