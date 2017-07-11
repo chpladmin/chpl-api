@@ -10,6 +10,7 @@ _Date TBD_
 
 ## Bug Fixes
 * Fixed incorrect contact name displayed if pending surveillance or listing had already been confirmed/rejected.
+* Only evict basic search cache if listing create/update methods return successfully.
 
 ---
 
