@@ -127,7 +127,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	}
 	
 	@Override
-	@Transactional
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class})
 	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries=true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
