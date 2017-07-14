@@ -83,7 +83,6 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Autowired private CertificationStatusDAO certStatusDao;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
-	@Autowired private QmsStandardDAO qmsDao;
 	
 	@Rule
     @Autowired
@@ -1964,12 +1963,19 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long acbId = 1L;
 		Long listingId = 5L;
+		Long certResultId = 7L;
+		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = updatedListing.getCertificationResults();
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
 		
@@ -1984,8 +1990,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		cert = certs.get(0);
-		certTasks = cert.getTestTasks();
+		certToUpdate = certs.get(0);
+		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		boolean changedParticipantExists = false;
@@ -2009,13 +2015,19 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long listingId = 5L;
 		Long acbId = -1L;
+		Long certResultId = 7L;
 		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = updatedListing.getCertificationResults();
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
 		
@@ -2029,8 +2041,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		cert = certs.get(0);
-		certTasks = cert.getTestTasks();
+		certToUpdate = certs.get(0);
+		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		assertEquals(10, taskParts.size());
@@ -2049,12 +2061,19 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long listingId = 5L;
 		Long acbId = -1L;
+		Long certResultId = 7L;
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = updatedListing.getCertificationResults();
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		
+		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
 		
@@ -2069,8 +2088,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		cert = certs.get(0);
-		certTasks = cert.getTestTasks();
+		certToUpdate = certs.get(0);
+		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		for(CertificationResultTestParticipant part : taskParts) {
@@ -2091,12 +2110,18 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long listingId = 5L;
 		Long acbId = -1L;
+		Long certResultId = 7L;
 		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = toUpdateListing.getCertificationResults();
-		CertificationResult certToUpdate = certs.get(0);
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
 		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
