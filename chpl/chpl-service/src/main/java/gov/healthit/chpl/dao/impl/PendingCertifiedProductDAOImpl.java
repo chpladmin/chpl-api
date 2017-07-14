@@ -10,6 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -44,7 +47,7 @@ import gov.healthit.chpl.entity.PendingTestTaskEntity;
 @Repository(value="pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements PendingCertifiedProductDAO {
 	private static final Logger logger = LogManager.getLogger(PendingCertifiedProductDAOImpl.class);
-	
+	@Autowired MessageSource messageSource;
 	@Autowired ContactDAO contactDao;
 	
 	@Override
@@ -58,7 +61,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 			try {
 				entityManager.persist(toCreate);
 			} catch(Exception ex) {
-				String msg = "Could not process pending certified product '" + toCreate.getUniqueId() + "'. " + ex.getMessage();
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"), LocaleContextHolder.getLocale()), toCreate.getUniqueId(), ex.getMessage());
 				logger.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
@@ -72,7 +75,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 				try {
 					entityManager.persist(qmsStandard);
 				} catch(Exception ex) {
-					String msg = "Could not process QMS Standard '" + qmsStandard.getName() + "'";
+					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"), LocaleContextHolder.getLocale()), qmsStandard.getName());
 					logger.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
@@ -87,7 +90,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 				try {
 					entityManager.persist(accStandard);
 				} catch(Exception ex) {
-					String msg = "Could not process accessibility standard '" + accStandard.getName() + "'. ";
+					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badAccessibilityStandard"), LocaleContextHolder.getLocale()), accStandard.getName());
 					logger.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
@@ -102,7 +105,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 				try {
 					entityManager.persist(targetedUser);
 				} catch(Exception ex) {
-					String msg = "Could not process targeted user'" + targetedUser.getName() + "'. ";
+					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"), LocaleContextHolder.getLocale()), targetedUser.getName());
 					logger.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
@@ -117,7 +120,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 				try {
 					entityManager.persist(criterion);
 				} catch(Exception ex) {
-					String msg = "Could not process criteria '" + criterion.getMappedCriterion().getNumber() + "'. " + ex.getMessage();
+					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"), LocaleContextHolder.getLocale()), criterion.getMappedCriterion().getNumber(), ex.getMessage());
 					logger.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
@@ -132,7 +135,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(ucd);
 						} catch(Exception ex) {
-							String msg = "Could not process UCD Process '" + ucd.getUcdProcessName() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()), 
+									ucd.getUcdProcessName());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -149,7 +153,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(tsEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process Test Standard '" + tsEntity.getTestStandardName() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestStandard"), LocaleContextHolder.getLocale()), 
+									tsEntity.getTestStandardName());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -165,7 +170,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(tfEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process Test Functionality '" + tfEntity.getTestFunctionalityNumber() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestFunctionality"), LocaleContextHolder.getLocale()), 
+									tfEntity.getTestFunctionalityNumber());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -182,8 +188,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(asEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process Additional Software '" + 
-									(StringUtils.isEmpty(asEntity.getSoftwareName()) ? asEntity.getChplId() : asEntity.getSoftwareName()) + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"), LocaleContextHolder.getLocale()), 
+										(StringUtils.isEmpty(asEntity.getSoftwareName()) ? asEntity.getChplId() : asEntity.getSoftwareName()));
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -200,7 +206,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(tpEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process Test Procedure '" + tpEntity.getTestProcedureVersion() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestProcedure"), LocaleContextHolder.getLocale()), 
+									tpEntity.getTestProcedureVersion());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -217,7 +224,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(tdEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process Test Data '" + tdEntity.getVersion() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"), LocaleContextHolder.getLocale()), 
+									tdEntity.getVersion());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -234,7 +242,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(ttEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process Test Tool '" + ttEntity.getTestToolName() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTool"), LocaleContextHolder.getLocale()), 
+									ttEntity.getTestToolName());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -251,7 +260,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(mmEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process G1 Macra Measure '" + mmEntity.getEnteredValue() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badG1MacraMeasure"), LocaleContextHolder.getLocale()), 
+									mmEntity.getEnteredValue());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -268,7 +278,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						try {
 							entityManager.persist(mmEntity);
 						} catch(Exception ex) {
-							String msg = "Could not process G2 Macra Measure '" + mmEntity.getEnteredValue() + "'. ";
+							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badG2MacraMeasure"), LocaleContextHolder.getLocale()), 
+									mmEntity.getEnteredValue());
 							logger.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
@@ -287,7 +298,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 								try {
 									entityManager.persist(testTask);
 								} catch(Exception ex) {
-									String msg = "Could not process Test Task '" + testTask.getUniqueId() + "'. ";
+									String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTask"), LocaleContextHolder.getLocale()), 
+											testTask.getUniqueId());
 									logger.error(msg, ex);
 									throw new EntityCreationException(msg);
 								}
@@ -313,7 +325,8 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 										try {
 											entityManager.persist(partEntity);
 										} catch(Exception ex) {
-											String msg = "Could not process Test Participant '" + partEntity.getUniqueId() + "'. ";
+											String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestParticipant"), LocaleContextHolder.getLocale()), 
+													partEntity.getUniqueId());
 											logger.error(msg, ex);
 											throw new EntityCreationException(msg);
 										}

@@ -6,9 +6,13 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -62,6 +66,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
 public class CertificationResultManagerImpl implements
@@ -89,7 +94,7 @@ public class CertificationResultManagerImpl implements
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
-	@Transactional(readOnly = false)
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class})
 	public int update(Long acbId, CertifiedProductDTO updatedListing, CertificationResult orig, CertificationResult updated) 
 		throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;

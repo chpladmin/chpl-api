@@ -7,6 +7,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +27,8 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 @Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
+	private static final Logger logger = LogManager.getLogger(CertifiedProductDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Transactional(readOnly=false)
 	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException{
@@ -103,7 +111,13 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 				entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			}
 			
-			create(entity);
+			try {
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"), LocaleContextHolder.getLocale()), dto.getChplProductNumber(), ex.getMessage());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new CertifiedProductDTO(entity);
 		}
 	}
@@ -112,7 +126,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException{
 		
 		CertifiedProductEntity entity = getEntityById(dto.getId());		
-		
 		entity.setAcbCertificationId(dto.getAcbCertificationId());
 		entity.setProductCode(dto.getProductCode());
 		entity.setVersionCode(dto.getVersionCode());
@@ -140,8 +153,14 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		
-		update(entity);
+		try {
+			update(entity);
+		} 
+		catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"), LocaleContextHolder.getLocale()), dto.getChplProductNumber(), ex.getMessage());
+			logger.error(msg, ex);
+			throw new EntityRetrievalException(msg);
+		}
 		return new CertifiedProductDTO(entity);
 	}
 	

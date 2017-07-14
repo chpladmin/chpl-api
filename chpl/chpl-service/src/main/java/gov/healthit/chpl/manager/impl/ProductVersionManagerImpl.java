@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -140,11 +141,13 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	}
 	
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, 
+			JsonProcessingException.class, AccessDeniedException.class})	
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
-	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+	public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		
 		List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
 		for(Long versionId : versionIdsToMerge) {

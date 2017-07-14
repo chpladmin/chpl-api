@@ -5,9 +5,16 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
@@ -16,17 +23,24 @@ import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 
 @Repository(value="listingGraphDao")
 public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO {
+	private static final Logger logger = LogManager.getLogger(ListingGraphDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
-	public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) {
+	public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException {
 		ListingToListingMapEntity entity = new ListingToListingMapEntity();
 		entity.setChildId(toCreate.getChildId());
 		entity.setParentId(toCreate.getParentId());
 		entity.setDeleted(false);
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.persist(entity);
-		entityManager.flush();
-		entityManager.clear();
-		
+		try {
+			entityManager.persist(entity);
+			entityManager.flush();
+			entityManager.clear();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badIcsRelative"), LocaleContextHolder.getLocale()), toCreate.getParentId(), toCreate.getChildId());
+			logger.error(msg, ex);
+			throw new EntityCreationException(msg);
+		}
 		entity = getListingMapEntity(toCreate.getChildId(), toCreate.getParentId());
 		return new ListingToListingMapDTO(entity);
 	}

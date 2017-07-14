@@ -6,7 +6,14 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -38,10 +45,11 @@ import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 
 @Repository(value="certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {
+	private static final Logger logger = LogManager.getLogger(CertificationResultDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Override
 	public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException {
-		
 		CertificationResultEntity entity = null;
 		try {
 			if (result.getId() != null){
@@ -71,16 +79,21 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			
-			entityManager.persist(entity);
-			entityManager.flush();		}
-		
+			try {
+				entityManager.persist(entity);
+				entityManager.flush();		
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"), LocaleContextHolder.getLocale()), result.getCertificationCriterionId(), ex.getMessage());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
+		}
 		return new CertificationResultDTO(entity);
 		
 	}
 
 	@Override
 	public CertificationResultDTO update(CertificationResultDTO toUpdate) throws EntityRetrievalException {
-	
 		CertificationResultEntity entity = getEntityById(toUpdate.getId());
 		entity.setCertificationCriterionId(toUpdate.getCertificationCriterionId());
 		entity.setCertifiedProductId(toUpdate.getCertifiedProductId());
@@ -98,8 +111,14 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
 		
-		entityManager.merge(entity);	
-		entityManager.flush();
+		try {
+			entityManager.merge(entity);	
+			entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"), LocaleContextHolder.getLocale()), toUpdate.getCertificationCriterionId(), ex.getMessage());
+			logger.error(msg, ex);
+			throw new EntityRetrievalException(msg);
+		}
 		return new CertificationResultDTO(entity);
 	}
 
@@ -242,8 +261,15 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.persist(mapping);
-		entityManager.flush();
+		try {
+			entityManager.persist(mapping);
+			entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()), 
+					dto.getUcdProcessName());
+			logger.error(msg, ex);
+			throw new EntityCreationException(msg);
+		}
 		
 		return new CertificationResultUcdProcessDTO(mapping);
 	}
@@ -268,8 +294,15 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		toUpdate.setUcdProcessId(dto.getUcdProcessId());
 		toUpdate.setLastModifiedDate(new Date());
 		toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.persist(toUpdate);
-		entityManager.flush();
+		try {
+			entityManager.persist(toUpdate);
+			entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()), 
+					dto.getUcdProcessName());
+			logger.error(msg, ex);
+			throw new EntityRetrievalException(msg);
+		}
 	}
 	
 	private CertificationResultUcdProcessEntity getCertificationResultUcdProcessById(Long id) {
@@ -331,8 +364,16 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+		
+		try {
 		entityManager.persist(mapping);
 		entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"), LocaleContextHolder.getLocale()), 
+					(StringUtils.isEmpty(dto.getName()) ? dto.getCertifiedProductNumber() : dto.getName()));
+			logger.error(msg, ex);
+			throw new EntityCreationException(msg);
+		}
 		
 		return new CertificationResultAdditionalSoftwareDTO(mapping);
 	}
@@ -362,9 +403,16 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		curr.setVersion(toUpdate.getVersion());
 		curr.setLastModifiedDate(new Date());
 		curr.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.merge(curr);
-		entityManager.flush();
-
+		
+		try {
+			entityManager.merge(curr);
+			entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"), LocaleContextHolder.getLocale()), 
+					(StringUtils.isEmpty(toUpdate.getName()) ? toUpdate.getCertifiedProductNumber() : toUpdate.getName()));
+			logger.error(msg, ex);
+			throw new EntityRetrievalException(msg);
+		}
 		return new CertificationResultAdditionalSoftwareDTO(curr);
 	}
 	
@@ -524,8 +572,15 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.persist(mapping);
-		entityManager.flush();
+		try {
+			entityManager.persist(mapping);
+			entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTool"), LocaleContextHolder.getLocale()), 
+					dto.getTestToolName());
+			logger.error(msg, ex);
+			throw new EntityCreationException(msg);
+		}
 		
 		return new CertificationResultTestToolDTO(mapping);
 	}
@@ -763,8 +818,15 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		mapping.setDeleted(false);
 		mapping.setLastModifiedDate(new Date());
 		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.persist(mapping);
-		entityManager.flush();
+		try {
+			entityManager.persist(mapping);
+			entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"), LocaleContextHolder.getLocale()), 
+					dto.getVersion());
+			logger.error(msg, ex);
+			throw new EntityCreationException(msg);
+		}
 		
 		return new CertificationResultTestDataDTO(mapping);
 	}
@@ -789,8 +851,15 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		toUpdate.setTestDataVersion(dto.getVersion());
 		toUpdate.setLastModifiedDate(new Date());
 		toUpdate.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.persist(toUpdate);
-		entityManager.flush();
+		try {
+			entityManager.persist(toUpdate);
+			entityManager.flush();
+		} catch(Exception ex) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"), LocaleContextHolder.getLocale()), 
+					dto.getVersion());
+			logger.error(msg, ex);
+			throw new EntityRetrievalException(msg);
+		}
 	}
 	
 	private CertificationResultTestDataEntity getCertificationResultTestDataById(Long id) {

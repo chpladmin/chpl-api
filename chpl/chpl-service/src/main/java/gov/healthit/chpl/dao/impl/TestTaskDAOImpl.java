@@ -6,6 +6,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -17,6 +23,8 @@ import gov.healthit.chpl.entity.TestTaskEntity;
 
 @Repository("testTaskDao")
 public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
+	private static final Logger logger = LogManager.getLogger(TestTaskDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Override
 	public TestTaskDTO create(TestTaskDTO dto) throws EntityCreationException {
@@ -49,7 +57,14 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 			entity.setTaskTimeDeviationOptimalAvg(dto.getTaskTimeDeviationOptimalAvg());
 			entity.setTaskTimeStddev(dto.getTaskTimeStddev());
 			
-			create(entity);
+			try {
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTask"), LocaleContextHolder.getLocale()), 
+						dto.getDescription());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new TestTaskDTO(entity);
 		}		
 	}

@@ -860,7 +860,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
-	@Transactional(readOnly = false)
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, 
+			JsonProcessingException.class, AccessDeniedException.class, InvalidArgumentsException.class})
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, 
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.SEARCH, 
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
@@ -948,7 +949,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * @param updatedIcs
 	 */
 	private void updateIcsParents(Long listingId, InheritedCertificationStatus existingIcs, 
-			InheritedCertificationStatus updatedIcs) {
+			InheritedCertificationStatus updatedIcs) throws EntityCreationException {
 		//update ics parents as necessary
 		List<Long> parentIdsToAdd = new ArrayList<Long>();
 		List<Long> parentIdsToRemove = new ArrayList<Long>();
@@ -1026,7 +1027,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * @param updatedIcs
 	 */
 	private void updateIcsChildren(Long listingId, InheritedCertificationStatus existingIcs, 
-			InheritedCertificationStatus updatedIcs) {
+			InheritedCertificationStatus updatedIcs) throws EntityCreationException {
 		//update ics children as necessary
 		List<Long> childIdsToAdd = new ArrayList<Long>();
 		List<Long> childIdsToRemove = new ArrayList<Long>();
