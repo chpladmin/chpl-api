@@ -1,5 +1,10 @@
 # Release Notes
 
+## OCD-1652
+* Improve capturing of database errors on listing upload or update.
+
+---
+
 ## Version TBD
 _Date TBD_
 
