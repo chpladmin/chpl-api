@@ -21,6 +21,7 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -36,11 +37,13 @@ import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationResultUcdProcess;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -103,6 +106,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Autowired
 	private CertificationResultRules certRules;
+	
+	@Autowired private ListingGraphDAO listingGraphDao;
 
 	@Autowired private SurveillanceManager survManager;
 	
@@ -188,7 +193,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		ProductVersion version = new ProductVersion(dto.getVersion());
 		searchDetails.setVersion(version);
 
-		searchDetails.setIcs(dto.getIcs());
+		InheritedCertificationStatus ics = new InheritedCertificationStatus();
+		ics.setInherits(dto.getIcs());
+		searchDetails.setIcs(ics);
 		searchDetails.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
 		searchDetails.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
 		searchDetails.setTransparencyAttestation(dto.getTransparencyAttestation());
@@ -473,6 +480,21 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		searchDetails.setCqmResults(cqmResults);
 		
 		searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
+		
+		//get first-level parents and children
+		List<CertifiedProductDetailsDTO> children = listingGraphDao.getChildren(dto.getId());
+		if(children != null && children.size() > 0) {
+			for(CertifiedProductDetailsDTO child : children) {
+				searchDetails.getIcs().getChildren().add(new CertifiedProduct(child));
+			}
+		}
+		
+		List<CertifiedProductDetailsDTO> parents = listingGraphDao.getParents(dto.getId());
+		if(parents != null && parents.size() > 0) {
+			for(CertifiedProductDetailsDTO parent : parents) {
+				searchDetails.getIcs().getParents().add(new CertifiedProduct(parent));
+			}
+		}
 		
 		return searchDetails;
 	}

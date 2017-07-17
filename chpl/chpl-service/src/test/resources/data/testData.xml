@@ -286,21 +286,8 @@
 		certification_body_id="-7" transparency_attestation="Affirmative"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-
-	<qms_standard qms_standard_id="1" name="QMS111"
-		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
-		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<qms_standard qms_standard_id="2" name="QMS222"
-		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
-		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<qms_standard qms_standard_id="3" name="QMS333"
-		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
-		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<qms_standard qms_standard_id="4" name="QMS444"
-		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
-		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-
-	<targeted_user targeted_user_id="1" name="Pediatrics"
+		
+	<targeted_user targeted_user_id="-1" name="Pediatrics"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
@@ -321,7 +308,7 @@
 		ics_code="1" additional_software_code="1" product_code="EIC08"
 		certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="2"
-		certification_edition_id="2" product_version_id="2"
+		certification_edition_id="2" product_version_id="3"
 		certification_body_id="-1" chpl_product_number="CHP-024051"
 		report_file_location="http://infogard.com/images/cms/files/14-3246-R-0057-PRA%20V1.1%20WRS%20Health%20PTR.pdf"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
@@ -369,7 +356,7 @@
 		last_modified_date="2016-08-20 13:15:00" deleted="false"
 		practice_type_id="1" product_classification_type_id="2"
 		certification_status_id="1" meaningful_use_users="12" testing_lab_id="-1"
-		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
+		acb_certification_id="abcdef" ics_code="2" additional_software_code="1"
 		product_code="EIC13" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="7"
 		certification_edition_id="1" product_version_id="7"
@@ -399,7 +386,7 @@
 		last_modified_date="2016-08-20 13:15:00" deleted="false"
 		practice_type_id="2" product_classification_type_id="1"
 		certification_status_id="3" meaningful_use_users="15" testing_lab_id="-1"
-		acb_certification_id="abcdef" ics_code="1" additional_software_code="1"
+		acb_certification_id="abcdef" ics_code="2" additional_software_code="1"
 		product_code="EIC16" certified_date_code="160402" version_code="36" />
 	<certified_product certified_product_id="10"
 		certification_edition_id="3" product_version_id="10"
@@ -484,27 +471,27 @@
 		product_code="EIC24" certified_date_code="160402" version_code="36" />
 
 	<certified_product_qms_standard
-		certified_product_qms_standard_id="1" certified_product_id="1"
+		certified_product_qms_standard_id="-1" certified_product_id="1"
 		qms_standard_id="1" modification="I changed something."
 		applicable_criteria="(a)(1) and (b)(1)" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 	<certified_product_qms_standard
-		certified_product_qms_standard_id="2" certified_product_id="2"
+		certified_product_qms_standard_id="-2" certified_product_id="2"
 		qms_standard_id="4" modification="I changed something."
 		applicable_criteria="(a)(1) and (b)(1)" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 	<certified_product_qms_standard
-		certified_product_qms_standard_id="3" certified_product_id="2"
+		certified_product_qms_standard_id="-3" certified_product_id="2"
 		qms_standard_id="3" modification="I changed something."
 		applicable_criteria="(a)(1) and (b)(1)" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 
 	<certified_product_targeted_user
-		certified_product_targeted_user_id="1" certified_product_id="1"
-		targeted_user_id="1" creation_date="2015-08-20 13:14:00"
+		certified_product_targeted_user_id="-1" certified_product_id="1"
+		targeted_user_id="-1" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 
@@ -558,6 +545,11 @@
 		gap="true" sed="false" g1_success="true" g2_success="false"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
+	<certification_result certification_result_id="11"
+		certification_criterion_id="16" certified_product_id="5" success="true"
+		gap="true" sed="false" g1_success="true" g2_success="false"
+		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
+		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
 	<certification_result_g1_macra id="-1"
 		macra_id="1" certification_result_id="10" creation_date="2015-08-20 13:14:00"
@@ -565,77 +557,65 @@
 		deleted="false" />
 
 	<certification_result_additional_software
-		certification_result_additional_software_id="1"
+		certification_result_additional_software_id="-1"
 		certification_result_id="1" name="Microsoft Office" version="2010"
 		justification="because i said so" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 	<certification_result_additional_software
-		certification_result_additional_software_id="2"
+		certification_result_additional_software_id="-2"
 		certification_result_id="1" certified_product_id="2" justification="you need it"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
 	<certification_result_test_functionality
-		certification_result_test_functionality_id="1"
+		certification_result_test_functionality_id="-1"
 		certification_result_id="1" test_functionality_id="1"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
 	<certification_result_test_standard
-		certification_result_test_standard_id="1" certification_result_id="1"
+		certification_result_test_standard_id="-1" certification_result_id="1"
 		test_standard_id="1" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 
-	<test_procedure test_procedure_id="1" version="1.1.0.1"
+	<test_procedure test_procedure_id="-1" version="1.1.0.1"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_procedure test_procedure_id="2" version="1.2.0.1"
+	<test_procedure test_procedure_id="-2" version="1.2.0.1"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
 	<certification_result_test_procedure
-		certification_result_test_procedure_id="1" certification_result_id="1"
-		test_procedure_id="1" creation_date="2015-08-20 13:14:00"
+		certification_result_test_procedure_id="-1" certification_result_id="1"
+		test_procedure_id="-1" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 	<certification_result_test_procedure
-		certification_result_test_procedure_id="2" certification_result_id="1"
-		test_procedure_id="2" creation_date="2015-08-20 13:14:00"
+		certification_result_test_procedure_id="-2" certification_result_id="1"
+		test_procedure_id="-2" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 
 	<certification_result_test_data
-		certification_result_test_data_id="1" certification_result_id="1"
+		certification_result_test_data_id="-1" certification_result_id="1"
 		version="1.2.1" alteration="only used the first 5" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 
-	<test_tool test_tool_id="1" name="Windows" description="Microsoft office"
-		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
-		last_modified_date="2015-08-20 13:15:00" deleted="false" retired="false" />
-	<test_tool test_tool_id="2" name="Transport Test Tool"
-		description="Transport Test Tool description" creation_date="2016-04-04 09:01:32"
-		last_modified_user="-2" last_modified_date="2016-12-28 14:15:00"
-		deleted="false" retired="true" />
-	<test_tool test_tool_id="3" name="Testing Test Tool"
-		description="Testing Test Tool description" creation_date="2016-04-04 09:01:32"
-		last_modified_user="-2" last_modified_date="2016-12-28 14:15:00"
-		deleted="false" retired="true" />
-
 	<certification_result_test_tool
-		certification_result_test_tool_id="1" certification_result_id="1"
+		certification_result_test_tool_id="-1" certification_result_id="1"
 		test_tool_id="2" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 	<certification_result_test_tool
-		certification_result_test_tool_id="2" certification_result_id="2"
+		certification_result_test_tool_id="-2" certification_result_id="2"
 		test_tool_id="1" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 	<certification_result_test_tool
-		certification_result_test_tool_id="3" certification_result_id="1"
+		certification_result_test_tool_id="-3" certification_result_id="1"
 		test_tool_id="3" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
@@ -747,33 +727,33 @@
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
-	<cqm_result cqm_result_id="1" certified_product_id="1"
+	<cqm_result cqm_result_id="-1" certified_product_id="1"
 		cqm_criterion_id="1" success="false" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
-	<cqm_result cqm_result_id="2" certified_product_id="1"
+	<cqm_result cqm_result_id="-2" certified_product_id="1"
 		cqm_criterion_id="2" success="false" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
-	<cqm_result cqm_result_id="3" certified_product_id="1"
+	<cqm_result cqm_result_id="-3" certified_product_id="1"
 		cqm_criterion_id="3" success="false" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
-	<cqm_result cqm_result_id="4" certified_product_id="2"
+	<cqm_result cqm_result_id="-4" certified_product_id="2"
 		cqm_criterion_id="1" success="true" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
-	<cqm_result cqm_result_id="5" certified_product_id="2"
+	<cqm_result cqm_result_id="-5" certified_product_id="2"
 		cqm_criterion_id="2" success="false" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
-	<cqm_result cqm_result_id="6" certified_product_id="2"
+	<cqm_result cqm_result_id="-6" certified_product_id="2"
 		cqm_criterion_id="3" success="true" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 
-	<cqm_result_criteria cqm_result_criteria_id="1"
-		cqm_result_id="4" certification_criterion_id="66" creation_date="2015-08-20 13:14:00"
+	<cqm_result_criteria cqm_result_criteria_id="-1"
+		cqm_result_id="-4" certification_criterion_id="66" creation_date="2015-08-20 13:14:00"
 		last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
 		deleted="false" />
 
@@ -962,6 +942,13 @@
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
+	<listing_to_listing_map listing_to_listing_map_id="-1" child_listing_id="5" parent_listing_id="6"
+		creation_date="2016-08-20 13:14:00" last_modified_user="-2"
+		last_modified_date="2016-08-20 13:15:00" deleted="false" />
+	<listing_to_listing_map listing_to_listing_map_id="-2" child_listing_id="5" parent_listing_id="9"
+		creation_date="2016-08-20 13:14:00" last_modified_user="-2"
+		last_modified_date="2016-08-20 13:15:00" deleted="false" />		
+		
 	<acl_class id="1" class="gov.healthit.chpl.auth.dto.UserDTO" />
 	<acl_class id="2" class="gov.healthit.chpl.dto.CertificationBodyDTO" />
 	<acl_class id="3" class="gov.healthit.chpl.dto.TestingLabDTO" />
@@ -1060,6 +1047,11 @@
 		signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
+	<contact contact_id="-4" first_name="oncAndAcb" last_name="USER"
+		email="test@ainq.com" phone_number="(301) 560-6999" title="employee"
+		signature_date="2015-09-13" creation_date="2015-08-26 12:43:00.015"
+		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
+		deleted="FALSE" />
 
 	<pending_certified_product pending_certified_product_id="-1" unique_id="14.01.01.1009.FU01.05.1.0.160331" record_status="New" practice_type="Ambulatory" 
        testing_lab_name="My Testing Lab" vendor_name="Test Developer 1" product_name="Test Product 1" product_version="5.3.1.1" 
@@ -1073,7 +1065,7 @@
        vendor_id="-1" vendor_address_id="-1" vendor_contact_id="-1" product_id="-1" 
        product_version_id="1722" certification_edition_id="2" certification_body_id="-1" 
        product_classification_id="1" testing_lab_id="-1" creation_date="2016-04-01 23:46:27.707" last_modified_date="2016-06-07 15:49:23.117772" 
-       last_modified_user="-3" deleted="true" certification_status_id="3" /> 
+       last_modified_user="1" deleted="true" certification_status_id="3" /> 
     <pending_certified_product pending_certified_product_id="-2" unique_id="15.04.04.2315.SESD.02.0.0.170217" record_status="New" practice_type="Ambulatory" 
        testing_lab_name="Drummond Group" vendor_name="Secure Exchange Solutions" product_name="SES Direct" product_version="Version 2.0" 
        certification_edition="2015" acb_certification_id="15.04.04.2315.SESD.02.0.0.170217" certification_body_name="Drummond Group" 
@@ -1086,7 +1078,7 @@
        vendor_id="-1" vendor_address_id="-1" vendor_contact_id="-1" product_id="-1" 
        product_version_id="1722" certification_edition_id="2" certification_body_id="-1" 
        product_classification_id="1" testing_lab_id="-1" creation_date="2016-04-01 23:46:27.707" last_modified_date="2016-06-07 15:49:23.117772" 
-       last_modified_user="-3" deleted="false" certification_status_id="3" />
+       last_modified_user="1" deleted="false" certification_status_id="3" />
        
     <pending_certification_result pending_certification_result_id="-1" certification_criterion_id="116"
        pending_certified_product_id="-1" meets_criteria="TRUE" gap="FALSE" sed="FALSE" g1_success="FALSE"
@@ -1094,7 +1086,7 @@
        last_modified_date="2017-04-27 11:15:54.086" last_modified_user="-3" deleted="FALSE" />
        
     <pending_certification_result_test_procedure pending_certification_result_test_procedure_id="-1" pending_certification_result_id="-1" 
-       test_procedure_id="1" test_procedure_version="1.1.0.1" creation_date="2016-04-01 23:46:27.721" last_modified_date="2017-04-27 11:15:54.086"
+       test_procedure_id="-1" test_procedure_version="1.1.0.1" creation_date="2016-04-01 23:46:27.721" last_modified_date="2017-04-27 11:15:54.086"
        last_modified_user="-3" deleted="FALSE" />
 
 	<surveillance_type id="1" name="Reactive"
@@ -1227,115 +1219,133 @@
 		certified_product_unique_id="CHP-024050" start_date="2016-05-01 12:42:00.000"
 		end_date="2016-06-01 12:42:00.000" type_value="1"
 		creation_date="2016-05-01 12:42:00.000" last_modified_date="2016-05-01 12:42:00.000"
-		last_modified_user="-1" deleted="FALSE" />
+		last_modified_user="1" deleted="FALSE" />
 	<pending_surveillance id="-2"
 		surveillance_id_to_replace="-2" certified_product_id="17"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-3"
 		surveillance_id_to_replace="-2" certified_product_id="1"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-4"
 		surveillance_id_to_replace="-2" certified_product_id="2"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-5"
 		surveillance_id_to_replace="-2" certified_product_id="3"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-6"
 		surveillance_id_to_replace="-2" certified_product_id="4"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-7"
 		surveillance_id_to_replace="-2" certified_product_id="5"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-8"
 		surveillance_id_to_replace="-2" certified_product_id="6"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-9"
 		surveillance_id_to_replace="-2" certified_product_id="7"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-10"
 		surveillance_id_to_replace="-2" certified_product_id="8"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-11"
 		surveillance_id_to_replace="-2" certified_product_id="9"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-12"
 		surveillance_id_to_replace="-2" certified_product_id="10"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-13"
 		surveillance_id_to_replace="-2" certified_product_id="11"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-14"
 		surveillance_id_to_replace="-2" certified_product_id="12"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-15"
 		surveillance_id_to_replace="-2" certified_product_id="13"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-16"
 		surveillance_id_to_replace="-2" certified_product_id="14"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-17"
 		surveillance_id_to_replace="-2" certified_product_id="15"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-18"
 		surveillance_id_to_replace="-2" certified_product_id="16"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
 	<pending_surveillance id="-19"
 		surveillance_id_to_replace="-2" certified_product_id="17"
 		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
 		end_date="2017-04-01 12:42:00.000" type_value="1"
 		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
-		last_modified_user="-2" deleted="FALSE" />
+		last_modified_user="2" deleted="FALSE" />
+	<pending_surveillance id="-20"
+		surveillance_id_to_replace="-2" certified_product_id="1"
+		certified_product_unique_id="CHP-024050" start_date="2017-03-01 12:42:00.000"
+		end_date="2018-04-01 12:42:00.000" type_value="1"
+		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
+		last_modified_user="2" deleted="FALSE" />
+	<pending_surveillance id="-21"
+		surveillance_id_to_replace="-2" certified_product_id="2"
+		certified_product_unique_id="CHP-024051" start_date="2017-03-01 12:42:00.000"
+		end_date="2018-04-01 12:42:00.000" type_value="1"
+		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
+		last_modified_user="2" deleted="FALSE" />
+	<pending_surveillance id="-22"
+		surveillance_id_to_replace="-2" certified_product_id="3"
+		certified_product_unique_id="CHP-024052" start_date="2017-03-01 12:42:00.000"
+		end_date="2018-04-01 12:42:00.000" type_value="1"
+		creation_date="2017-03-01 12:42:00.000" last_modified_date="2017-03-01 12:42:00.000"
+		last_modified_user="2" deleted="FALSE" />
 
 	<user user_id="-2" user_name="admin" password="pwd"
 		account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE"
@@ -1377,6 +1387,11 @@
 		account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE"
 		account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
+		deleted="FALSE" contact_id="1" />
+	<user user_id="7" user_name="oncAndAcb" password="pwd"
+		account_expired="FALSE" account_locked="FALSE" credentials_expired="FALSE"
+		account_enabled="TRUE" creation_date="2015-08-26 12:43:00.015"
+		last_modified_date="2017-04-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" contact_id="1" />
 
 	<global_user_permission_map
@@ -1518,6 +1533,10 @@
 		deleted="false" />
 	<notification_type_recipient_map id="-5" recipient_id="-2"
 		notification_type_id="1" acb_id="-2" creation_date="2016-08-28 13:13:24.528"
+		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
+		deleted="false" />
+	<notification_type_recipient_map id="-6" recipient_id="-2"
+		notification_type_id="5" acb_id="-2" creation_date="2016-08-28 13:13:24.528"
 		last_modified_date="2016-08-22 13:12:23.525" last_modified_user="-2"
 		deleted="false" />
 	

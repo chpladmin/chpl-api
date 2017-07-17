@@ -2,18 +2,32 @@ package gov.healthit.chpl.dto;
 
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.util.StringUtils;
-
-import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 public class CertifiedProductDTO implements Serializable {
 	private static final long serialVersionUID = 7918387302717979598L;
+	public static final int CHPL_PRODUCT_ID_PARTS = 9;
+	public static final int EDITION_CODE_INDEX = 0;
+	public static final int ATL_CODE_INDEX = 1;
+	public static final int ACB_CODE_INDEX = 2;
+	public static final int DEVELOPER_CODE_INDEX = 3;
+	public static final int PRODUCT_CODE_INDEX = 4;
+	public static final int VERSION_CODE_INDEX = 5;
+	public static final int ICS_CODE_INDEX = 6;
+	public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
+	public static final int CERTIFIED_DATE_CODE_INDEX = 8;
+	
 	private Long id;
 	private String productCode;
 	private String versionCode;
-	private String icsCode;
+	private Integer icsCode;
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
 	private String acbCertificationId;
@@ -79,6 +93,73 @@ public class CertifiedProductDTO implements Serializable {
 		this.setProductAdditionalSoftware(entity.getProductAdditionalSoftware());
 	}
 
+	public CertifiedProductDTO(CertifiedProductSearchDetails from) throws InvalidArgumentsException {
+		this.setId(from.getId());
+		if(from.getTestingLab() != null && !StringUtils.isEmpty(from.getTestingLab().get("id"))) {
+			this.setTestingLabId(new Long(from.getTestingLab().get("id").toString()));
+		}
+		this.setCertificationBodyId(new Long(from.getCertifyingBody().get("id").toString()));
+		if(from.getPracticeType() != null && from.getPracticeType().get("id") != null) {
+			this.setPracticeTypeId(new Long(from.getPracticeType().get("id").toString()));
+		}
+		if(from.getClassificationType() != null && from.getClassificationType().get("id") != null) {
+			this.setProductClassificationTypeId(new Long(from.getClassificationType().get("id").toString()));
+		}
+		this.setProductVersionId(new Long(from.getVersion().getVersionId()));
+		this.setCertificationStatusId(new Long(from.getCertificationStatus().get("id").toString()));
+		this.setCertificationEditionId(new Long(from.getCertificationEdition().get("id").toString()));
+		this.setReportFileLocation(from.getReportFileLocation());
+		this.setSedReportFileLocation(from.getSedReportFileLocation());
+		this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());
+		this.setSedTestingEnd(from.getSedTestingEnd());
+		this.setAcbCertificationId(from.getAcbCertificationId());
+		this.setOtherAcb(from.getOtherAcb());
+		this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? false : from.getIcs().getInherits());
+		this.setAccessibilityCertified(from.getAccessibilityCertified());
+		this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
+		
+		this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
+		
+		//set the pieces of the unique id
+		if(!StringUtils.isEmpty(from.getChplProductNumber())) {
+			if(from.getChplProductNumber().startsWith("CHP-")) {
+				this.setChplProductNumber(from.getChplProductNumber());
+			} else {
+				String chplProductId = from.getChplProductNumber();
+				String[] chplProductIdComponents = chplProductId.split("\\.");
+				if(chplProductIdComponents == null || chplProductIdComponents.length != 9) {
+					throw new InvalidArgumentsException("CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
+				} else {
+					this.setProductCode(chplProductIdComponents[4]);
+					this.setVersionCode(chplProductIdComponents[5]);
+					this.setIcsCode(new Integer(chplProductIdComponents[6]));
+					this.setAdditionalSoftwareCode(chplProductIdComponents[7]);
+					this.setCertifiedDateCode(chplProductIdComponents[8]);
+				}
+				
+				if(from.getCertificationDate() != null) {
+					Date certDate = new Date(from.getCertificationDate());
+					SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
+					String dateCode = dateCodeFormat.format(certDate);
+					this.setCertifiedDateCode(dateCode);
+				}
+				
+				if(from.getCertificationResults() != null && from.getCertificationResults().size() > 0) {
+					boolean hasSoftware = false;
+					for(CertificationResult cert : from.getCertificationResults()) {
+						if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+							hasSoftware = true;
+						}
+					}
+					if(hasSoftware) {
+						this.setAdditionalSoftwareCode("1");
+					} else {
+						this.setAdditionalSoftwareCode("0");
+					}
+				}
+			}
+		} 
+	}
 	
 	public Long getId() {
 		return id;
@@ -225,11 +306,11 @@ public class CertifiedProductDTO implements Serializable {
 		this.certifiedDateCode = certifiedDateCode;
 	}
 
-	public String getIcsCode() {
+	public Integer getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(String icsCode) {
+	public void setIcsCode(Integer icsCode) {
 		this.icsCode = icsCode;
 	}
 

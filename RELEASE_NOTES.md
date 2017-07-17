@@ -1,5 +1,44 @@
 # Release Notes
 
+## Version 12.2.0
+_17 July 2017_
+
+## Minor Features
+* Added /collections/developers API call to return a list of all developers, attestations, urls, and counts of their listings
+* Completed bulk reject of pending surveillance. 
+* Pulling pending surveillance validation out of a db table instead of calculating on the fly to speed up large uploads.
+
+## Bug Fixes
+* Fixed incorrect contact name displayed if pending surveillance or listing had already been confirmed/rejected.
+* Only evict basic search cache if listing create/update methods return successfully.
+
+---
+
+## Version 12.1.0
+_3 July 2017_
+
+## Minor Features
+* Improve /update API call speed. Selectively update only items that have changed rather than doing a replace on the entire listing.
+* Allow mass reject of pending surveillances
+
+---
+
+## Version 12.0.0
+_3 July 2017_
+
+### Major Features
+_Backwards compatibility breaking changes_
+* Changed ICS field in certified product details object (used on get and update calls) from a boolean to a more complex object to include whether something was inherited and a list of parents and children.
+
+## Minor Features
+* Changed ICS code from a string to an integer
+* Added validation to warn on missing parents if ICS is indicated
+* Added an additional app that runs to send out notifications of ICS inconsistencies (need to add cron for that)
+* Added description of surveillance triggers to emails
+* Added developer and listing statistics for ACBs to ONC summary email
+
+---
+
 ## Version 11.0.0
 _19 June 2017_
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
@@ -18,9 +19,8 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 
 public interface CertificationResultManager {
-	
-	public CertificationResultDTO update(Long acbId, CertifiedProductDTO listing, CertificationResultDTO result) throws EntityRetrievalException, EntityCreationException;
-
+	public int update(Long abcId, CertifiedProductDTO updatedListing, CertificationResult orig, CertificationResult updated)
+			throws EntityCreationException, EntityRetrievalException;
 	
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
 			Long certificationResultId);

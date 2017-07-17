@@ -41,7 +41,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;

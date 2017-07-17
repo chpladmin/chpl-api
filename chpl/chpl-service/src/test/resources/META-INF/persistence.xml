@@ -19,44 +19,47 @@
 		<class>gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdProductMapEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultAdditionalSoftwareEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultDetailsEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultG1MacraMeasureEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultG2MacraMeasureEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultTestDataEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultTestProcedureEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultTestFunctionalityEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultTestStandardEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultTestToolEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultUcdProcessEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultTestTaskParticipantEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationResultTestTaskEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultG2MacraMeasureEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestDataEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductAccessibilityStandardEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductDetailsEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity</class>
-		<class>gov.healthit.chpl.entity.CertifiedProductTargetedUserEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CQMResultEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanEntity</class>
 		<class>gov.healthit.chpl.entity.CQMCriterionEntity</class>
-		<class>gov.healthit.chpl.entity.CQMResultCriteriaEntity</class>
-		<class>gov.healthit.chpl.entity.CQMResultDetailsEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CQMResultDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.CQMVersionEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperACBMapEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperACBTransparencyMapEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperCertificationStatusesEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperStatusEntity</class>
-		<class>gov.healthit.chpl.entity.DeveloperStatusEventEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperACBMapEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperACBTransparencyMapEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperCertificationStatusesEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperStatusEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity</class>
+		<class>gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
+		<class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
 		<class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
 		<class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
 		<class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>
@@ -78,9 +81,10 @@
 		<class>gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCqmCriterionEntity</class>
 		<class>gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity</class>
-		<class>gov.healthit.chpl.entity.PendingSurveillanceEntity</class>
-		<class>gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity</class>
-		<class>gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity</class>
 		<class>gov.healthit.chpl.entity.PendingTestParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.PendingTestTaskEntity</class>		
 		<class>gov.healthit.chpl.entity.PracticeTypeEntity</class>
@@ -91,13 +95,13 @@
 		<class>gov.healthit.chpl.entity.ProductInsertableOwnerEntity</class>
 		<class>gov.healthit.chpl.entity.ProductVersionEntity</class>		
 		<class>gov.healthit.chpl.entity.QmsStandardEntity</class>	
-		<class>gov.healthit.chpl.entity.SurveillanceEntity</class>
-		<class>gov.healthit.chpl.entity.SurveillanceRequirementEntity</class>
-		<class>gov.healthit.chpl.entity.SurveillanceNonconformityEntity</class>
-		<class>gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity</class>
-		<class>gov.healthit.chpl.entity.SurveillanceTypeEntity</class>
-		<class>gov.healthit.chpl.entity.SurveillanceResultTypeEntity</class>
-		<class>gov.healthit.chpl.entity.SurveillanceRequirementTypeEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.SurveillanceEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>
+		<class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity</class>
 		<class>gov.healthit.chpl.entity.TargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.TestProcedureEntity</class>
 		<class>gov.healthit.chpl.entity.TestStandardEntity</class>

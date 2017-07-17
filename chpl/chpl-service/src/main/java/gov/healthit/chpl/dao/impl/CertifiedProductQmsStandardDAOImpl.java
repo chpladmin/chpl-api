@@ -13,7 +13,7 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
-import gov.healthit.chpl.entity.CertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity;
 
 @Repository(value="certifiedProductQmsStandardDao")
 public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements CertifiedProductQmsStandardDAO {

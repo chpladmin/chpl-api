@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 
 /**
@@ -53,6 +55,22 @@ public class CertificationResultUcdProcess implements Serializable {
 		this.ucdProcessId = dto.getUcdProcessId();
 		this.ucdProcessName = dto.getUcdProcessName();
 		this.ucdProcessDetails = dto.getUcdProcessDetails();
+	}
+	
+	public boolean matches(CertificationResultUcdProcess anotherUcd) {
+		boolean result = false;
+		if(this.getUcdProcessId() != null && anotherUcd.getUcdProcessId() != null && 
+				this.getUcdProcessId().longValue() == anotherUcd.getUcdProcessId().longValue() && 
+				((StringUtils.isEmpty(this.getUcdProcessDetails()) && StringUtils.isEmpty(anotherUcd.getUcdProcessDetails())) || 
+				this.getUcdProcessDetails().equals(anotherUcd.getUcdProcessDetails()))) {
+			result = true;
+		} else if(!StringUtils.isEmpty(this.getUcdProcessName()) && !StringUtils.isEmpty(anotherUcd.getUcdProcessName()) && 
+				this.getUcdProcessName().equalsIgnoreCase(anotherUcd.getUcdProcessName()) && 
+				((StringUtils.isEmpty(this.getUcdProcessDetails()) && StringUtils.isEmpty(anotherUcd.getUcdProcessDetails())) || 
+				this.getUcdProcessDetails().equals(anotherUcd.getUcdProcessDetails()))) {
+			result = true;
+		}
+		return result;
 	}
 	
 	public Long getId() {

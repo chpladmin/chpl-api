@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 
 /**
@@ -46,6 +48,19 @@ public class CertificationResultTestProcedure implements Serializable {
 		this.id = dto.getId();
 		this.testProcedureId = dto.getTestProcedureId();
 		this.testProcedureVersion = dto.getTestProcedureVersion();
+	}
+	
+	public boolean matches(CertificationResultTestProcedure anotherProc) {
+		boolean result = false;
+		if(this.getTestProcedureId() != null && anotherProc.getTestProcedureId() != null && 
+				this.getTestProcedureId().longValue() == anotherProc.getTestProcedureId().longValue()) {
+			result = true;
+		} else if(!StringUtils.isEmpty(this.getTestProcedureVersion()) && 
+				!StringUtils.isEmpty(anotherProc.getTestProcedureVersion()) && 
+				this.getTestProcedureVersion().equalsIgnoreCase(anotherProc.getTestProcedureVersion())) {
+			result = true;
+		}
+		return result;
 	}
 	
 	public Long getId() {

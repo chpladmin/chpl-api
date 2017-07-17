@@ -198,10 +198,11 @@ public class CertifiedProductSearchDetails implements Serializable {
 	/**
 	 * This variable indicates whether or not the certification issued was a result 
 	 * of an inherited certified status request. This variable is applicable for 2014 and 
-	 * 2015 Edition and a binary variable that takes either true or false value. 
+	 * 2015 Edition and contains the inherited status as well as first-level parents and 
+	 * children.
 	 */
 	@XmlElement(required = false, nillable=true)
-	private Boolean ics;
+	private InheritedCertificationStatus ics;
 	
 	/**
 	 * This variable identifies if  Health IT Module was certified to the 
@@ -432,13 +433,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
-	public Boolean getIcs() {
+	public InheritedCertificationStatus getIcs() {
 		return ics;
 	}
-	public void setIcs(Boolean ics) {
+	public void setIcs(InheritedCertificationStatus ics) {
 		this.ics = ics;
 	}
-	
+
 	public Map<String, Object> getTestingLab() {
 		return testingLab;
 	}

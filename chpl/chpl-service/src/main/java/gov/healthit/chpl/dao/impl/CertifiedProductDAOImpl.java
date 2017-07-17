@@ -16,8 +16,8 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.CertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 @Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
@@ -207,6 +207,23 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
 		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
 		
+		for (CertifiedProductDetailsEntity entity : entities) {
+			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+			products.add(product);
+		}
+		return products;
+		
+	}
+	
+	@Transactional(readOnly=true)
+	public List<CertifiedProductDetailsDTO> findWithInheritance(){
+		
+		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery( 
+				"SELECT DISTINCT cp "
+				+ "FROM CertifiedProductDetailsEntity cp "
+				+ "WHERE (icsCode > 0 OR ics = true)", CertifiedProductDetailsEntity.class).getResultList();
+
+		List<CertifiedProductDetailsDTO> products = new ArrayList<>();
 		for (CertifiedProductDetailsEntity entity : entities) {
 			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
 			products.add(product);
@@ -490,7 +507,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		query.setParameter("developerCode", developerCode);
 		query.setParameter("productCode", productCode);
 		query.setParameter("versionCode", versionCode);
-		query.setParameter("icsCode", icsCode);
+		query.setParameter("icsCode", new Integer(icsCode));
 		query.setParameter("additionalSoftwareCode", additionalSoftwareCode);
 		query.setParameter("certifiedDateCode", certifiedDateCode);
 		

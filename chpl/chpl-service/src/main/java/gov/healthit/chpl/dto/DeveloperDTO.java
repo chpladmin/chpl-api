@@ -6,8 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.Statuses;
-import gov.healthit.chpl.entity.DeveloperEntity;
-import gov.healthit.chpl.entity.DeveloperStatusEventEntity;
+import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 
 public class DeveloperDTO implements Serializable {
 	private static final long serialVersionUID = -2492373079266782228L;

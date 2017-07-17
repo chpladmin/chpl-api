@@ -39,8 +39,8 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 import junit.framework.TestCase;
 
 

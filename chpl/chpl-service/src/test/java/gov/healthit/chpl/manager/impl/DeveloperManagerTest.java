@@ -29,13 +29,14 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
-import gov.healthit.chpl.entity.DeveloperStatusType;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
@@ -127,6 +128,15 @@ public class DeveloperManagerTest extends TestCase {
 		}
 		assertNull(developers);
 		assertTrue(failed);
+	}
+	
+	@Test
+	@Transactional
+	public void testGetDeveloperCollection() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(null);
+		List<DeveloperTransparency> developers = developerManager.getDeveloperCollection();
+		assertNotNull(developers);
+		assertEquals(9, developers.size());
 	}
 	
 	@Test

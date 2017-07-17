@@ -5,7 +5,7 @@ import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -23,13 +23,13 @@ public class CacheUpdater {
 	@Autowired private CacheUtil cacheUtil;
 	@Autowired private PreFetchedCaches preFetchedCaches;
 	
-	@After("@annotation(ClearBasicSearch)")
+	@AfterReturning("@annotation(ClearBasicSearch)")
 	@Async
 	public Future<Boolean> updateBasicSearch() throws IllegalStateException, CacheException, ClassCastException, InterruptedException, ExecutionException{
 		CacheManager manager = cacheUtil.getMyCacheManager();
-		logger.info("Evicted " + CacheNames.PRE_FETCHED_BASIC_SEARCH);
+		logger.info("Evicted " + CacheNames.COLLECTIONS_PREFETCHED_LISTINGS);
 		preFetchedCaches.initializePreFetchedBasicSearch();
-		CacheReplacer.replaceCache(manager.getCache(CacheNames.BASIC_SEARCH), manager.getCache(CacheNames.PRE_FETCHED_BASIC_SEARCH));
+		CacheReplacer.replaceCache(manager.getCache(CacheNames.COLLECTIONS_LISTINGS), manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS));
 		return new AsyncResult<>(true);
 	}
 }

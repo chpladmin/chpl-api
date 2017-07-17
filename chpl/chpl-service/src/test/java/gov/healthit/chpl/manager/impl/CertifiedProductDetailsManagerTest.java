@@ -26,6 +26,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
@@ -339,6 +340,26 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 			}
 		}
 		assertTrue(foundA1);
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsParentExists() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(5L);
+		assertNotNull(detail);
+		assertNotNull(detail.getIcs().getParents());
+		assertEquals(2, detail.getIcs().getParents().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetailsChildExists() throws EntityRetrievalException{
+		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(6L);
+		assertNotNull(detail);
+		assertNotNull(detail.getIcs().getChildren());
+		assertEquals(1, detail.getIcs().getChildren().size());
+		CertifiedProduct child = detail.getIcs().getChildren().get(0);
+		assertEquals(5, child.getId().longValue());
 	}
 }
 

@@ -20,18 +20,25 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearBasicSearch;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
@@ -40,18 +47,23 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertifiedProductEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.PendingSurveillanceRequirementEntity;
-import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.entity.SurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.ValidationMessageType;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceValidationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 @Service
 public class SurveillanceManagerImpl implements SurveillanceManager {
@@ -61,8 +73,11 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	
 	@Autowired SurveillanceDAO survDao;
 	@Autowired CertifiedProductDAO cpDao;
+	@Autowired UserDAO userDAO;
 	@Autowired SurveillanceValidator validator;
 	@Autowired UserPermissionDAO userPermissionDao;
+	
+	@Autowired private ActivityManager activityManager;
 	
 	@Override
 	@Transactional(readOnly = true)
@@ -230,7 +245,6 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		if(pendingResults != null) {
 			for(PendingSurveillanceEntity pr : pendingResults) {
 				Surveillance surv = convertToDomain(pr);
-				validator.validate(surv);
 				results.add(surv);
 			}
 		}
@@ -241,13 +255,12 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional(readOnly = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public Surveillance getPendingById(Long acbId, Long survId) throws EntityNotFoundException {
-		PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId);
+	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityNotFoundException {
+		PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId, includeDeleted);
 		if(pending == null) {
 			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
 		}
 		Surveillance surv = convertToDomain(pending);
-		validator.validate(surv);
 		return surv;
 	}
 	
@@ -271,23 +284,40 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void deletePendingSurveillance(Long acbId, Long survId) {		
-		Surveillance surv = new Surveillance();
-		surv.setId(survId);
+	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {		
+		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
+		if(surv == null) {
+			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
+		}
+		CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
+		if(ownerCp == null) {
+			throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
+		}
 		
-		try {
-			survDao.deletePendingSurveillance(surv);
-		} catch(Exception ex) {
-			logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
+		Surveillance toDelete = getPendingById(acbId, survId, true);
+		
+		if(isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
+			try {
+				survDao.deletePendingSurveillance(toDelete);
+			} catch(Exception ex) {
+				logger.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
+			}
+			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
+			if(isConfirmed){
+				activityMsg.append("confirmed.");
+			} else{
+				activityMsg.append("rejected.");
+			}
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);	
 		}
 	}
 	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
-		throws EntityNotFoundException, AccessDeniedException {
-		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId);
+	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
+		throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
+		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
 		if(surv == null) {
 			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
 		}
@@ -308,14 +338,66 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 			throw new AccessDeniedException("Permission denied on ACB " + ownerCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
 		}
 		
-		Surveillance toDelete = new Surveillance();
-		toDelete.setId(survId);
-		
-		try {
-			survDao.deletePendingSurveillance(toDelete);
-		} catch(Exception ex) {
-			logger.error("Error marking pending surveillance with id " + survId + " as deleted.", ex);
+		if(isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
+			Surveillance toDelete = convertToDomain(surv);
+			try {
+				survDao.deletePendingSurveillance(toDelete);
+			} catch(Exception ex) {
+				logger.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
+			}
+			
+			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
+			if(isConfirmed){
+				activityMsg.append("confirmed.");
+			} else{
+				activityMsg.append("rejected.");
+			}
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);
 		}
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
+	throws EntityRetrievalException, ObjectMissingValidationException {
+		PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId, true);
+		return isPendingSurveillanceAvailableForUpdate(acbId, pendingSurv);
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+	public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv) 
+	throws EntityRetrievalException, ObjectMissingValidationException {
+		if(pendingSurv.getDeleted().booleanValue() == true) {
+			ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
+			alreadyDeletedEx.getErrorMessages().add("This pending surveillance has already been confirmed or rejected by another user.");
+			alreadyDeletedEx.setObjectId(pendingSurv.getId().toString());
+			alreadyDeletedEx.setStartDate(pendingSurv.getStartDate());
+			alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
+			
+			try {
+				UserDTO lastModifiedUser = userDAO.getById(pendingSurv.getLastModifiedUser());
+				if(lastModifiedUser != null) {
+					Contact contact = new Contact();
+					contact.setFirstName(lastModifiedUser.getFirstName());
+					contact.setLastName(lastModifiedUser.getLastName());
+					contact.setEmail(lastModifiedUser.getEmail());
+					contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
+					contact.setTitle(lastModifiedUser.getTitle());
+					alreadyDeletedEx.setContact(contact);
+				} else {
+					alreadyDeletedEx.setContact(null);
+				}
+			} catch(UserRetrievalException ex) {
+				alreadyDeletedEx.setContact(null);
+			}
+			throw alreadyDeletedEx;
+		}
+		return pendingSurv != null;
 	}
 	
 	@Override
@@ -425,6 +507,14 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 					}
 				}
 				surv.getRequirements().add(req);
+			}
+		}
+		
+		if(pr.getValidation() != null && pr.getValidation().size() > 0) {
+			for(PendingSurveillanceValidationEntity validation : pr.getValidation()) {
+				if(validation.getMessageType() == ValidationMessageType.Error) {
+					surv.getErrorMessages().add(validation.getMessage());
+				}
 			}
 		}
 		return surv;

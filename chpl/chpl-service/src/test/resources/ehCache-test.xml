@@ -170,26 +170,6 @@
 	<!-- end /search_options caching -->
 	
 	<!-- /search caching -->
-	<cache name="basicSearch"
-		maxEntriesLocalHeap="300000"
-		maxEntriesLocalDisk="10000000"
-		eternal="true"
-		diskSpoolBufferSizeMB="20"
-		memoryStoreEvictionPolicy="LFU"
-		transactionalMode="off">
-		<persistence strategy="localTempSwap" />
-	</cache>
-	
-	<cache name="preFetchedBasicSearch"
-		maxEntriesLocalHeap="300000"
-		maxEntriesLocalDisk="10000000"
-		eternal="true"
-		diskSpoolBufferSizeMB="20"
-		memoryStoreEvictionPolicy="LFU"
-		transactionalMode="off">
-		<persistence strategy="localTempSwap" />
-	</cache>
-	
 	<cache name="search"
 		maxEntriesLocalHeap="10000"
 		maxEntriesLocalDisk="10000000"
@@ -266,4 +246,37 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	<!-- end /certified_products/pending -->
+	
+	<!--  collections caches -->
+	<cache name="developerCollection"
+		maxEntriesLocalHeap="10000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+		<cache name="listingCollection"
+		maxEntriesLocalHeap="300000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<cache name="preFetchedListingCollection"
+		maxEntriesLocalHeap="300000"
+		maxEntriesLocalDisk="10000000"
+		eternal="true"
+		diskSpoolBufferSizeMB="20"
+		memoryStoreEvictionPolicy="LFU"
+		transactionalMode="off">
+		<persistence strategy="localTempSwap" />
+	</cache>
+	
+	<!-- end collections caching -->
 </ehcache>

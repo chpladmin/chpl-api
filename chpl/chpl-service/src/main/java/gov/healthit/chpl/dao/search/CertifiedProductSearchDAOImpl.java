@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,13 +12,31 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
-		
+	
+	@Override
+	public Long getListingIdByUniqueChplNumber(String chplProductNumber) {
+		Long id = null;
+		Query query = entityManager.createQuery("SELECT cps "
+				+ "FROM CertifiedProductBasicSearchResultEntity cps "
+				+ "WHERE chplProductNumber = :chplProductNumber", 
+				CertifiedProductBasicSearchResultEntity.class);
+		query.setParameter("chplProductNumber", chplProductNumber);
+		List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
+		if(results != null && results.size() > 0) {
+			CertifiedProductBasicSearchResultEntity result = results.get(0);
+			id = result.getId();
+		}
+		return id;
+	}
+
+	@Override
 	public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts() {
 		logger.info("Starting basic search query.");
 		Query query = entityManager.createQuery("SELECT cps "
@@ -29,6 +48,27 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		Date endDate = new Date();
 		logger.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
 		return convert(results);
+	}
+	
+	@Override
+	public CertifiedProduct getByChplProductNumber(String chplProductNumber) 
+		throws EntityNotFoundException {
+		Query query = entityManager.createQuery("SELECT cps "
+				+ "FROM CertifiedProductBasicSearchResultEntity cps "
+				+ "WHERE cps.chplProductNumber = :chplProductNumber"
+				, CertifiedProductBasicSearchResultEntity.class);
+		query.setParameter("chplProductNumber", chplProductNumber);
+		
+		List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
+		if(results == null || results.size() == 0) {
+			throw new EntityNotFoundException("No listing with CHPL Product Number " + chplProductNumber + " was found.");
+		}
+		CertifiedProduct result = new CertifiedProduct();
+		result.setCertificationDate(results.get(0).getCertificationDate().getTime());
+		result.setChplProductNumber(results.get(0).getChplProductNumber());
+		result.setEdition(results.get(0).getEdition());
+		result.setId(results.get(0).getId());
+		return result;
 	}
 	
 	private List<CertifiedProductFlatSearchResult> convert(List<CertifiedProductBasicSearchResultEntity> dbResults) {

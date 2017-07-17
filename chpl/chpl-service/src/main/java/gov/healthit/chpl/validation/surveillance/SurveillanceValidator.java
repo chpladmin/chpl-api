@@ -33,7 +33,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 
 @Component("surveillanceValidator")
 public class SurveillanceValidator implements MessageSourceAware {

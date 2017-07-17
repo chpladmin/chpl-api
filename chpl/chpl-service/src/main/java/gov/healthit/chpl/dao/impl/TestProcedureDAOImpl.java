@@ -19,16 +19,11 @@ import gov.healthit.chpl.entity.TestProcedureEntity;
 public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDAO {
 	
 	@Override
-	public TestProcedureDTO create(TestProcedureDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+	public TestProcedureDTO create(TestProcedureDTO dto) throws EntityCreationException {
 		
 		TestProcedureEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
 		
 		if (entity != null) {
@@ -77,8 +72,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 	}
 
 	@Override
-	public TestProcedureDTO getById(Long id)
-			throws EntityRetrievalException {
+	public TestProcedureDTO getById(Long id) {
 		
 		TestProcedureDTO dto = null;
 		TestProcedureEntity entity = getEntityById(id);
@@ -132,17 +126,13 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 		return entityManager.createQuery( "from TestProcedureEntity where (NOT deleted = true) ", TestProcedureEntity.class).getResultList();
 	}
 	
-	private TestProcedureEntity getEntityById(Long id) throws EntityRetrievalException {
+	private TestProcedureEntity getEntityById(Long id) {
 		
 		TestProcedureEntity entity = null;
 			
 		Query query = entityManager.createQuery( "from TestProcedureEntity where (NOT deleted = true) AND (id = :entityid) ", TestProcedureEntity.class );
 		query.setParameter("entityid", id);
 		List<TestProcedureEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate test procedure id in database.");
-		}
 		
 		if (result.size() > 0){
 			entity = result.get(0);

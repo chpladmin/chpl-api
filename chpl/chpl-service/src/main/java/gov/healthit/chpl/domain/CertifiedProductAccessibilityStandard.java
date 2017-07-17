@@ -7,6 +7,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 
 /**
@@ -45,6 +47,19 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
 		this.id = dto.getId();
 		this.accessibilityStandardId = dto.getAccessibilityStandardId();
 		this.accessibilityStandardName = dto.getAccessibilityStandardName();
+	}
+	
+	public boolean matches(CertifiedProductAccessibilityStandard other) {
+		boolean result = false;
+		if(this.getAccessibilityStandardId() != null && other.getAccessibilityStandardId() != null && 
+				this.getAccessibilityStandardId().longValue() == other.getAccessibilityStandardId().longValue()) {
+			result = true;
+		} else if(!StringUtils.isEmpty(this.getAccessibilityStandardName()) && 
+				!StringUtils.isEmpty(other.getAccessibilityStandardName()) &&
+				this.getAccessibilityStandardName().equals(other.getAccessibilityStandardName())) {
+			result = true;
+		}
+		return result;
 	}
 	
 	public Long getId() {

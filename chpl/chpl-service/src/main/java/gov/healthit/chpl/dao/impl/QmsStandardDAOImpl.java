@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -19,18 +20,13 @@ import gov.healthit.chpl.entity.QmsStandardEntity;
 public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 	
 	@Override
-	public QmsStandardDTO create(QmsStandardDTO dto)
-			throws EntityCreationException, EntityRetrievalException {
+	public QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
 		
 		QmsStandardEntity entity = null;
-		try {
-			if (dto.getId() != null){
-				entity = this.getEntityById(dto.getId());
-			}
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
+		if (dto.getId() != null){
+			entity = this.getEntityById(dto.getId());
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
@@ -74,9 +70,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 	}
 
 	@Override
-	public QmsStandardDTO getById(Long id)
-			throws EntityRetrievalException {
-		
+	public QmsStandardDTO getById(Long id) {
 		QmsStandardDTO dto = null;
 		QmsStandardEntity entity = getEntityById(id);
 		
@@ -112,6 +106,23 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		
 	}
 
+	@Override
+	public QmsStandardDTO findOrCreate(Long id, String name) throws EntityCreationException {
+		QmsStandardDTO result = null;
+		if(id != null) {
+			result = getById(id);
+		} else if(!StringUtils.isEmpty(name)) {
+			result = getByName(name);
+		} 
+		
+		if(result == null){
+			QmsStandardDTO toCreate = new QmsStandardDTO();
+			toCreate.setName(name.trim());
+			result = create(toCreate);
+		}
+		return result;
+	}
+	
 	private void create(QmsStandardEntity entity) {
 		
 		entityManager.persist(entity);
@@ -129,18 +140,14 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		return entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) ", QmsStandardEntity.class).getResultList();
 	}
 	
-	private QmsStandardEntity getEntityById(Long id) throws EntityRetrievalException {
+	private QmsStandardEntity getEntityById(Long id) {
 		
 		QmsStandardEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) AND (qms_standard_id = :entityid) ", QmsStandardEntity.class );
+		Query query = entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) AND (id = :entityid) ", QmsStandardEntity.class );
 		query.setParameter("entityid", id);
 		List<QmsStandardEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate qms standard id in database.");
-		}
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
@@ -153,7 +160,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		
 		Query query = entityManager.createQuery( "from QmsStandardEntity where "
 				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", QmsStandardEntity.class );
-		query.setParameter("name", name.toUpperCase());
+		query.setParameter("name", name.toUpperCase().trim());
 		List<QmsStandardEntity> result = query.getResultList();
 		
 		return result;

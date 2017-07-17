@@ -11,10 +11,10 @@ import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
-import gov.healthit.chpl.entity.PendingSurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityDocumentationEntity;
-import gov.healthit.chpl.entity.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
+import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 
 public interface SurveillanceDAO {
 	public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException;
@@ -28,7 +28,7 @@ public interface SurveillanceDAO {
 	public void deleteNonconformityDocument(Long documentId) throws EntityNotFoundException;
 	
 	public Long insertPendingSurveillance(Surveillance surv);
-	public PendingSurveillanceEntity getPendingSurveillanceById(Long id);
+	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted);
 	public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId);
 	public void deletePendingSurveillance(Surveillance surv) throws EntityNotFoundException;
 	

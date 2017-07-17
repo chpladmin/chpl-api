@@ -17,9 +17,11 @@ public class CacheNames {
 	public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";
 	public static final String CERTIFICATION_CRITERION_WITH_EDITIONS = "certificationCriterionWithEditions";
 	public static final String SEARCH = "search";
-	public static final String BASIC_SEARCH = "basicSearch";
-	public static final String PRE_FETCHED_BASIC_SEARCH = "preFetchedBasicSearch";
 	public static final String COUNT_MULTI_FILTER_SEARCH_RESULTS = "countMultiFilterSearchResults";
 	public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
 	public static final String FIND_BY_ACB_ID = "findByAcbId";
+	
+	public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
+	public static final String COLLECTIONS_LISTINGS = "listingCollection";
+	public static final String COLLECTIONS_PREFETCHED_LISTINGS = "preFetchedListingCollection";
 }

@@ -2,6 +2,8 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
+import org.springframework.util.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 
@@ -32,6 +34,20 @@ public class CertificationResultMacraMeasure implements Serializable {
 			this.measure = new MacraMeasure();
 			this.measure.setId(dto.getMacraMeasureId());
 		}
+	}
+	
+	//not overriding equals on purpose
+	//this is meant to determine if a user would think two macra measures
+	//are the same, not as thorough as equals
+	public boolean matches(CertificationResultMacraMeasure anotherMeasure) {
+		boolean result = false;
+		if(this.getId() != null && anotherMeasure.getId() != null && 
+			this.getId().longValue() == anotherMeasure.getId().longValue()) {
+			result = true;
+		} else if(this.getMeasure() != null && anotherMeasure.getMeasure() != null) {
+			result = this.getMeasure().matches(anotherMeasure.getMeasure());
+		}
+		return result;
 	}
 	
 	public Long getId() {

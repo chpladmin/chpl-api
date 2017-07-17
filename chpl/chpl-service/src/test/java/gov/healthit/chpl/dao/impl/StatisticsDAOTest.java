@@ -31,9 +31,10 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.StatisticsDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
-import gov.healthit.chpl.domain.CertifiedBodyStatistics;
+import gov.healthit.chpl.dao.statistics.DeveloperStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
+import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.Surveillance;
@@ -41,6 +42,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -52,7 +54,11 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class StatisticsDAOTest extends TestCase {
 	@Autowired
-	private StatisticsDAO statisticsDao;
+	private DeveloperStatisticsDAO developerStatisticsDao;
+	@Autowired 
+	private ListingStatisticsDAO listingStatisticsDao;
+	@Autowired
+	private SurveillanceStatisticsDAO surveillanceStatisticsDao;
 	@Autowired
 	private SurveillanceDAO surveillanceDao;
 	@Autowired
@@ -83,7 +89,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalDevelopers_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalDevelopers = statisticsDao.getTotalDevelopers(dateRange);
+		Long totalDevelopers = developerStatisticsDao.getTotalDevelopers(dateRange);
 		assertNotNull(totalDevelopers);
 		assertEquals(9L, totalDevelopers.longValue()); 
 	}
@@ -99,7 +105,7 @@ public class StatisticsDAOTest extends TestCase {
 		Calendar cal = Calendar.getInstance();
 		cal.set(2016, 0, 1, 0, 0);
 		DateRange dateRange = new DateRange(new Date(0), new Date(cal.getTimeInMillis()));
-		Long totalDevelopers = statisticsDao.getTotalDevelopers(dateRange);
+		Long totalDevelopers = developerStatisticsDao.getTotalDevelopers(dateRange);
 		assertNotNull(totalDevelopers);
 		assertEquals(4L, totalDevelopers.longValue()); 
 	}
@@ -115,7 +121,7 @@ public class StatisticsDAOTest extends TestCase {
 		Calendar cal = Calendar.getInstance();
 		cal.set(2016, 0, 1, 0, 0);
 		DateRange dateRange = new DateRange(new Date(cal.getTimeInMillis()), new Date());
-		Long totalDevelopers = statisticsDao.getTotalDevelopers(dateRange);
+		Long totalDevelopers = developerStatisticsDao.getTotalDevelopers(dateRange);
 		assertNotNull(totalDevelopers);
 		assertEquals(5L, totalDevelopers.longValue()); 
 	}
@@ -134,7 +140,7 @@ public class StatisticsDAOTest extends TestCase {
 		Calendar calStart2016 = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calStart2016.set(2016, 0, 1, 0, 0);
 		DateRange dateRange = new DateRange(new Date(calStart2016.getTimeInMillis()), new Date(calEnd2016.getTimeInMillis()));
-		Long totalDevelopers = statisticsDao.getTotalDevelopers(dateRange);
+		Long totalDevelopers = developerStatisticsDao.getTotalDevelopers(dateRange);
 		assertNotNull(totalDevelopers);
 		assertEquals(3L, totalDevelopers.longValue()); 
 	}
@@ -148,7 +154,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalDevelopersWith2014Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalDevelopers2014Listings = statisticsDao.getTotalDevelopersWith2014Listings(dateRange);
+		Long totalDevelopers2014Listings = developerStatisticsDao.getTotalDevelopersWith2014Listings(dateRange);
 		assertNotNull(totalDevelopers2014Listings);
 		assertEquals(1L, totalDevelopers2014Listings.longValue());
 	}
@@ -162,7 +168,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalDevelopersWith2015Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalDevelopers2015Listings = statisticsDao.getTotalDevelopersWith2015Listings(dateRange);
+		Long totalDevelopers2015Listings = developerStatisticsDao.getTotalDevelopersWith2015Listings(dateRange);
 		assertNotNull(totalDevelopers2015Listings);
 		assertEquals(3L, totalDevelopers2015Listings.longValue()); 
 	}
@@ -177,7 +183,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCertifiedProducts_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalCertifiedProducts = statisticsDao.getTotalCertifiedProducts(dateRange);
+		Long totalCertifiedProducts = listingStatisticsDao.getTotalCertifiedProducts(dateRange);
 		assertNotNull(totalCertifiedProducts);
 		assertEquals(8L, totalCertifiedProducts.longValue()); 
 	}
@@ -191,7 +197,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCPsActive2014Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2014Listings = statisticsDao.getTotalCPsActive2014Listings(dateRange);
+		Long totalActive2014Listings = listingStatisticsDao.getTotalCPsActive2014Listings(dateRange);
 		assertNotNull(totalActive2014Listings);
 		assertEquals(1L, totalActive2014Listings.longValue()); 
 	}
@@ -205,9 +211,9 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCPsActive2015Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2015Listings = statisticsDao.getTotalCPsActive2015Listings(dateRange);
+		Long totalActive2015Listings = listingStatisticsDao.getTotalCPsActive2015Listings(dateRange);
 		assertNotNull(totalActive2015Listings);
-		assertEquals(2L, totalActive2015Listings.longValue()); 
+		assertEquals(1L, totalActive2015Listings.longValue()); 
 	}
 	
 	
@@ -220,9 +226,9 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCPsActiveListings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActiveCPs = statisticsDao.getTotalCPsActiveListings(dateRange);
+		Long totalActiveCPs = listingStatisticsDao.getTotalCPsActiveListings(dateRange);
 		assertNotNull(totalActiveCPs);
-		assertEquals(4L, totalActiveCPs.longValue()); 
+		assertEquals(3L, totalActiveCPs.longValue()); 
 	}
 	
 	/**
@@ -234,7 +240,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalListings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalListings = statisticsDao.getTotalListings(dateRange);
+		Long totalListings = listingStatisticsDao.getTotalListings(dateRange);
 		assertNotNull(totalListings);
 		assertEquals(16L, totalListings.longValue()); 
 	}
@@ -249,7 +255,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalActive2014Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2014Listings = statisticsDao.getTotalActive2014Listings(dateRange);
+		Long totalActive2014Listings = listingStatisticsDao.getTotalActive2014Listings(dateRange);
 		assertNotNull(totalActive2014Listings);
 		assertEquals(2L, totalActive2014Listings.longValue()); 
 	}
@@ -263,9 +269,9 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalActiveListingsByCertifiedBody_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		List<CertifiedBodyStatistics> cbStats = statisticsDao.getTotalActiveListingsByCertifiedBody(dateRange);
+		List<CertifiedBodyStatistics> cbStats = listingStatisticsDao.getTotalActiveListingsByCertifiedBody(dateRange);
 		assertNotNull(cbStats);
-		assertEquals(4, cbStats.size());
+		assertEquals(3, cbStats.size());
 	}
 	
 	/**
@@ -277,9 +283,9 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalActive2015Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2015Listings = statisticsDao.getTotalActive2015Listings(dateRange);
+		Long totalActive2015Listings = listingStatisticsDao.getTotalActive2015Listings(dateRange);
 		assertNotNull(totalActive2015Listings);
-		assertEquals(3L, totalActive2015Listings.longValue()); 
+		assertEquals(2L, totalActive2015Listings.longValue()); 
 	}
 	
 	/**
@@ -291,7 +297,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotal2014Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long total2014Listings = statisticsDao.getTotal2014Listings(dateRange);
+		Long total2014Listings = listingStatisticsDao.getTotal2014Listings(dateRange);
 		assertNotNull(total2014Listings);
 		assertEquals(3L, total2014Listings.longValue()); 
 	}
@@ -305,7 +311,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotal2015Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long total2015Listings = statisticsDao.getTotal2015Listings(dateRange);
+		Long total2015Listings = listingStatisticsDao.getTotal2015Listings(dateRange);
 		assertNotNull(total2015Listings);
 		assertEquals(10L, total2015Listings.longValue()); 
 	}
@@ -319,7 +325,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotal2011Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long total2011Listings = statisticsDao.getTotal2011Listings(dateRange);
+		Long total2011Listings = listingStatisticsDao.getTotal2011Listings(dateRange);
 		assertNotNull(total2011Listings);
 		assertEquals(3L, total2011Listings.longValue()); 
 	}
@@ -333,7 +339,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalSurveillanceActivities_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalSurveillanceActivities = statisticsDao.getTotalSurveillanceActivities(dateRange);
+		Long totalSurveillanceActivities = surveillanceStatisticsDao.getTotalSurveillanceActivities(dateRange);
 		assertNotNull(totalSurveillanceActivities);
 		assertEquals(4L, totalSurveillanceActivities.longValue()); 
 	}
@@ -385,7 +391,7 @@ public class StatisticsDAOTest extends TestCase {
 		}
 		
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalOpenSurveillanceActivities = statisticsDao.getTotalOpenSurveillanceActivities(dateRange);
+		Long totalOpenSurveillanceActivities = surveillanceStatisticsDao.getTotalOpenSurveillanceActivities(dateRange);
 		assertNotNull(totalOpenSurveillanceActivities);
 		assertEquals(1L, totalOpenSurveillanceActivities.longValue()); 
 	}
@@ -399,7 +405,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalClosedSurveillanceActivities_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalClosedSurveillanceActivities = statisticsDao.getTotalClosedSurveillanceActivities(dateRange);
+		Long totalClosedSurveillanceActivities = surveillanceStatisticsDao.getTotalClosedSurveillanceActivities(dateRange);
 		assertNotNull(totalClosedSurveillanceActivities);
 		assertEquals(4L, totalClosedSurveillanceActivities.longValue()); 
 	}
@@ -413,7 +419,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalOpenNonConformities_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalOpenSurveillanceNonconformities = statisticsDao.getTotalOpenNonconformities(dateRange);
+		Long totalOpenSurveillanceNonconformities = surveillanceStatisticsDao.getTotalOpenNonconformities(dateRange);
 		assertNotNull(totalOpenSurveillanceNonconformities);
 		assertEquals(3L, totalOpenSurveillanceNonconformities.longValue()); 
 	}
@@ -427,7 +433,7 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalClosedNonconformities_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalClosedSurveillanceNonconformities = statisticsDao.getTotalClosedNonconformities(dateRange);
+		Long totalClosedSurveillanceNonconformities = surveillanceStatisticsDao.getTotalClosedNonconformities(dateRange);
 		assertNotNull(totalClosedSurveillanceNonconformities);
 		assertEquals(1L, totalClosedSurveillanceNonconformities.longValue()); 
 	}

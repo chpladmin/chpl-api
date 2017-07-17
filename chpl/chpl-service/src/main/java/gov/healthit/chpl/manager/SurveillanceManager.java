@@ -8,11 +8,17 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.security.access.AccessDeniedException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 public interface SurveillanceManager {
 	public File getDownloadFile(String filename) throws IOException;
@@ -31,9 +37,15 @@ public interface SurveillanceManager {
 	public void deleteNonconformityDocument(Long acbId, Long documentId);
 	
 	public List<Surveillance> getPendingByAcb(Long acbId);
-	public Surveillance getPendingById(Long acbId, Long survId) throws EntityNotFoundException;
+	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityNotFoundException;
 	public Long createPendingSurveillance(Long acbId, Surveillance surv);
-	public void deletePendingSurveillance(Long acbId, Long survId);
-	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId)
-			throws EntityNotFoundException, AccessDeniedException;
+	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, 
+	EntityRetrievalException, EntityCreationException;
+	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
+			throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException;
+	public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
+			throws EntityRetrievalException, ObjectMissingValidationException;
+	boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
+			throws EntityRetrievalException, ObjectMissingValidationException;
+
 }

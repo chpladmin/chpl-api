@@ -14,8 +14,8 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
-import gov.healthit.chpl.entity.CQMResultCriteriaEntity;
-import gov.healthit.chpl.entity.CQMResultEntity;
+import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
+import gov.healthit.chpl.entity.listing.CQMResultEntity;
 
 @Repository(value="cqmResultDAO")
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
@@ -76,10 +76,6 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	public void update(CQMResultDTO cqmResult) throws EntityRetrievalException {
 		
 		CQMResultEntity entity = this.getEntityById(cqmResult.getId());
-		entity.setCqmCriterionId(cqmResult.getCqmCriterionId());
-		entity.setCreationDate(cqmResult.getCreationDate());
-		entity.setDeleted(cqmResult.getDeleted());
-		entity.setId(cqmResult.getId());
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setSuccess(cqmResult.getSuccess());
