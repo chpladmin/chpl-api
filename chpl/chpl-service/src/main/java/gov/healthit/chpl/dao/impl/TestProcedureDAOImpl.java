@@ -6,6 +6,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -17,6 +23,8 @@ import gov.healthit.chpl.entity.TestProcedureEntity;
 
 @Repository("testProcedureDAO")
 public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDAO {
+	private static final Logger logger = LogManager.getLogger(TestProcedureDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Override
 	public TestProcedureDTO create(TestProcedureDTO dto) throws EntityCreationException {
@@ -36,7 +44,14 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setVersion(dto.getVersion());
 			
-			create(entity);
+			try {
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestProcedure"), LocaleContextHolder.getLocale()), 
+						dto.getVersion());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new TestProcedureDTO(entity);
 		}		
 	}

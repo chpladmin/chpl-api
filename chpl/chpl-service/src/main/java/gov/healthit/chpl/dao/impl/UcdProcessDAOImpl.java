@@ -6,6 +6,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -17,11 +23,11 @@ import gov.healthit.chpl.entity.UcdProcessEntity;
 
 @Repository("ucdProcessDAO")
 public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
+	private static final Logger logger = LogManager.getLogger(UcdProcessDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Override
-	public UcdProcessDTO create(UcdProcessDTO dto)
-			throws EntityCreationException {
-		
+	public UcdProcessDTO create(UcdProcessDTO dto) throws EntityCreationException {
 		UcdProcessEntity entity = null;
 		if (dto.getId() != null){
 			entity = this.getEntityById(dto.getId());
@@ -37,7 +43,14 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			entity.setName(dto.getName());
 			
-			create(entity);
+			try {
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()), 
+						dto.getName());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new UcdProcessDTO(entity);
 		}		
 	}

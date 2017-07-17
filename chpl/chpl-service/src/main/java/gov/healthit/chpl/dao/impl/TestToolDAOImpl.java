@@ -6,6 +6,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -17,6 +23,8 @@ import gov.healthit.chpl.entity.TestToolEntity;
 
 @Repository("testToolDAO")
 public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
+	private static final Logger logger = LogManager.getLogger(TestToolDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Override
 	public TestToolDTO create(TestToolDTO dto)
@@ -39,7 +47,14 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 			entity.setDescription(dto.getDescription());
 			entity.setRetired(false);
 			
-			create(entity);
+			try {
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTool"), LocaleContextHolder.getLocale()), 
+						dto.getName());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new TestToolDTO(entity);
 		}		
 	}

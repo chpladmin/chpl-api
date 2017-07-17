@@ -21,8 +21,8 @@ public class QmsStandardEntity {
 	@Column(name = "qms_standard_id")
 	private Long id;
 	
-	@Basic( optional = false )
-	@Column( name = "name", nullable = false  )
+	@Basic(optional = false)
+	@Column(name = "name", nullable = false)
 	private String name;
 
 	public Long getId() {

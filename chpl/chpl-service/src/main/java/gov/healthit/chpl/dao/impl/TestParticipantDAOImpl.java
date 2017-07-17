@@ -6,6 +6,12 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -17,6 +23,8 @@ import gov.healthit.chpl.entity.TestParticipantEntity;
 
 @Repository("testParticipantDAO")
 public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipantDAO {
+	private static final Logger logger = LogManager.getLogger(TestParticipantDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Override
 	public TestParticipantDTO create(TestParticipantDTO dto) throws EntityCreationException {
@@ -43,7 +51,14 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			entity.setProductExperienceMonths(dto.getProductExperienceMonths());
 			entity.setProfessionalExperienceMonths(dto.getProfessionalExperienceMonths());
 			
-			create(entity);
+			try {
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestParticipant"), LocaleContextHolder.getLocale()), 
+						dto.getGender() + ": " + dto.getOccupation());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new TestParticipantDTO(entity);
 		}		
 	}

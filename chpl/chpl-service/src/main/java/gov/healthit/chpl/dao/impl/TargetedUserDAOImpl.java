@@ -7,6 +7,12 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -18,6 +24,8 @@ import gov.healthit.chpl.entity.TargetedUserEntity;
 
 @Repository("targetedUserDao")
 public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO {
+	private static final Logger logger = LogManager.getLogger(TargetedUserDAOImpl.class);
+	@Autowired MessageSource messageSource;
 	
 	@Override
 	public TargetedUserDTO create(TargetedUserDTO dto)
@@ -31,13 +39,19 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
-			entity = new TargetedUserEntity();
-			entity.setCreationDate(new Date());
-			entity.setDeleted(false);
-			entity.setLastModifiedDate(new Date());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setName(dto.getName());
-			create(entity);
+			try {
+				entity = new TargetedUserEntity();
+				entity.setCreationDate(new Date());
+				entity.setDeleted(false);
+				entity.setLastModifiedDate(new Date());
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+				entity.setName(dto.getName());
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"), LocaleContextHolder.getLocale()), dto.getName());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new TargetedUserDTO(entity);
 		}		
 	}

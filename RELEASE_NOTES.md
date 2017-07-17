@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+## Minor Features
+* Improve capturing of database errors on listing upload or update.
+
+---
+
 ## Version 12.2.0
 _17 July 2017_
 

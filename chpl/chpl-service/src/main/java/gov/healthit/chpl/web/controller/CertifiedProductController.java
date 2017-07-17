@@ -463,14 +463,17 @@ public class CertifiedProductController {
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						uploadedProducts.add(details);
 					} catch(EntityCreationException ex) {
-						logger.error("Error creating pending certified product: " + cpToAdd.getUniqueId());
+						String error = "Error creating pending certified product " + cpToAdd.getUniqueId() +
+								". Error was: " + ex.getMessage();
+						logger.error(error);
+						throw new ValidationException(error);
 					} catch(EntityRetrievalException ex) {
 						logger.error("Error retreiving pending certified product.", ex);
 					}
-				}				
+				}
 			}
 		} catch(IOException ioEx) {
-			logger.error("Could not get input stream for uploaded file " + file.getName());			
+			logger.error("Could not get input stream for uploaded file " + file.getName());
 			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}

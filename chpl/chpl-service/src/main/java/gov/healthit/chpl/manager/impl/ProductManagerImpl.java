@@ -42,6 +42,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
 public class ProductManagerImpl implements ProductManager {
@@ -209,7 +210,8 @@ public class ProductManagerImpl implements ProductManager {
 	}
 	
 	@Override
-	@Transactional(readOnly = false)
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, 
+			JsonProcessingException.class, AccessDeniedException.class})	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN', 'ROLE_ACB_STAFF')")
 	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
 	@ClearBasicSearch
