@@ -1,12 +1,15 @@
 # Release Notes
 
-## OCD-1652
+## Version TBD
+_Date TBD_
+
+## Minor Features
 * Improve capturing of database errors on listing upload or update.
 
 ---
 
-## Version TBD
-_Date TBD_
+## Version 12.2.0
+_17 July 2017_
 
 ## Minor Features
 * Added /collections/developers API call to return a list of all developers, attestations, urls, and counts of their listings
