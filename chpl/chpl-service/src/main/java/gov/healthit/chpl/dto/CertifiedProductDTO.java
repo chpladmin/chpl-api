@@ -24,6 +24,12 @@ public class CertifiedProductDTO implements Serializable {
 	public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
 	public static final int CERTIFIED_DATE_CODE_INDEX = 8;
 	
+	public static final int PRODUCT_CODE_LENGTH = 4;
+	public static final int VERSION_CODE_LENGTH = 2;
+	public static final int ICS_CODE_LENGTH = 1;
+	public static final int ADDITIONAL_SOFTWARE_CODE_LENGTH = 1;
+	public static final int CERTIFIED_DATE_CODE_LENGTH = 6;
+	
 	private Long id;
 	private String productCode;
 	private String versionCode;
@@ -63,7 +69,7 @@ public class CertifiedProductDTO implements Serializable {
 		this.id = entity.getId();
 		this.productCode = entity.getProductCode();
 		this.versionCode = entity.getVersionCode();
-		this.icsCode = entity.getIcsCode();
+		this.icsCode = entity.getIcsCode() == null ? null : new Integer(entity.getIcsCode());
 		this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
 		this.certifiedDateCode = entity.getCertifiedDateCode();
 		this.acbCertificationId = entity.getAcbCertificationId();

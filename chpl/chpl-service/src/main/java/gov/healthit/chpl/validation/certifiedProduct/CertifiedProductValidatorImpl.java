@@ -7,6 +7,9 @@ import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -37,7 +40,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
-	
+	@Autowired MessageSource messageSource;
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired TestingLabDAO atlDao;
@@ -78,7 +81,65 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
-			if(StringUtils.isEmpty(productCode) || productCode.length() > 16 || !productCode.matches("^\\w+$")) {
+			if(StringUtils.isEmpty(productCode) || 
+				!productCode.matches("^[a-zA-Z0-9_]{"+CertifiedProductDTO.PRODUCT_CODE_LENGTH+"}$")) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean validateVersionCodeCharacters(String chplProductNumber) {
+		String[] uniqueIdParts = chplProductNumber.split("\\.");
+		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+			
+			//validate that these pieces match up with data
+			String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
+			if(StringUtils.isEmpty(versionCode) || 
+				!versionCode.matches("^[a-zA-Z0-9_]{"+CertifiedProductDTO.VERSION_CODE_LENGTH+"}$")) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean validateIcsCodeCharacters(String chplProductNumber) {
+		String[] uniqueIdParts = chplProductNumber.split("\\.");
+		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+			//validate that these pieces match up with data
+			String icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
+			if(StringUtils.isEmpty(icsCode) || 
+				!icsCode.matches("^[0-9]{"+CertifiedProductDTO.ICS_CODE_LENGTH+"}$")) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean validateAdditionalSoftwareCodeCharacters(String chplProductNumber) {
+		String[] uniqueIdParts = chplProductNumber.split("\\.");
+		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+			//validate that these pieces match up with data
+			String icsCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
+			if(StringUtils.isEmpty(icsCode) || 
+				!icsCode.matches("^0|1$")) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public boolean validateCertifiedDateCodeCharacters(String chplProductNumber) {
+		String[] uniqueIdParts = chplProductNumber.split("\\.");
+		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+			//validate that these pieces match up with data
+			String icsCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+			if(StringUtils.isEmpty(icsCode) || 
+				!icsCode.matches("^[0-9]{"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
@@ -195,13 +256,27 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		if(!validateProductCodeCharacters(product.getUniqueId())) {
-			product.getErrorMessages().add("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.PRODUCT_CODE_LENGTH));
 		}
 		
-		if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
-			product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
+		if(!validateVersionCodeCharacters(product.getUniqueId())) {
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badVersionCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.VERSION_CODE_LENGTH));
 		}
 	
+		if(!validateIcsCodeCharacters(product.getUniqueId())) {
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.ICS_CODE_LENGTH));
+		}
+		
+		
 		hasIcsConflict = false;
 		if(icsCode != null) {
 			if(icsCode.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
@@ -213,6 +288,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 		}
 		
+		if(!validateAdditionalSoftwareCodeCharacters(product.getUniqueId())) {
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
+		}
 		if(additionalSoftwareCode.equals("0")) {
 			boolean hasAS = false;
 			for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -235,6 +316,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 		} else {
 			product.getErrorMessages().add("The additional software part of the unique ID must be 0 or 1.");
+		}
+		
+		if(!validateCertifiedDateCodeCharacters(product.getUniqueId())) {
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badCertifiedDateCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH));
 		}
 		SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
 		try {
@@ -284,8 +372,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			
 			//validate that these pieces match up with data
-			String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
-			String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
 			String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
 			if(StringUtils.isEmpty(icsCodePart) || !icsCodePart.matches("^\\d+$")) {
 				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
@@ -314,11 +400,24 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 			
 			if(!validateProductCodeCharacters(product.getChplProductNumber())) {
-				product.getErrorMessages().add("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.PRODUCT_CODE_LENGTH));
 			}
 			
-			if(StringUtils.isEmpty(versionCode) || !versionCode.matches("^\\w+$")) {
-				product.getErrorMessages().add("The version code is required and may only contain the characters A-Z, a-z, 0-9, and _");
+			if(!validateVersionCodeCharacters(product.getChplProductNumber())) {
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badVersionCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.VERSION_CODE_LENGTH));
+			}
+			
+			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.ICS_CODE_LENGTH));
 			}
 			
 			hasIcsConflict = false;
@@ -340,6 +439,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				hasIcsConflict = true;
 			}
 			
+			if(!validateAdditionalSoftwareCodeCharacters(product.getChplProductNumber())) {
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
+			}
+			
 			if(!additionalSoftwareCode.equals("0") && !additionalSoftwareCode.equals("1")) {
 				product.getErrorMessages().add("The additional software part of the unique ID must be 0 or 1.");
 			} else {
@@ -356,6 +462,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 			
+			if(!validateCertifiedDateCodeCharacters(product.getChplProductNumber())) {
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badCertifiedDateCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH));
+			}
 			SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
 			idDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			String desiredCertificationDateCode = idDateFormat.format(product.getCertificationDate());

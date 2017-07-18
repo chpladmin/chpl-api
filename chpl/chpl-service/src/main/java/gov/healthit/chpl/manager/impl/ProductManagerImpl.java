@@ -9,6 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -50,7 +53,7 @@ public class ProductManagerImpl implements ProductManager {
 	
 	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
-	
+	@Autowired private MessageSource messageSource;
 	@Autowired ProductDAO productDao;
 	@Autowired ProductVersionDAO versionDao;
 	@Autowired DeveloperDAO devDao;
@@ -266,7 +269,10 @@ public class ProductManagerImpl implements ProductManager {
 					throw new EntityCreationException("Cannot update certified product " + chplNumber + " to " + potentialChplNumber + " because a certified product with that CHPL ID already exists.");
 				}
 				if(validator != null && !validator.validateProductCodeCharacters(potentialChplNumber)) {
-					throw new EntityCreationException("The product code is required and must be 16 characters or less in length containing only the characters A-Z, a-z, 0-9, and _");
+					throw new EntityCreationException(
+							String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.PRODUCT_CODE_LENGTH));
 				}
 				
 				affectedCp.setProductCode(newProductCode);	
