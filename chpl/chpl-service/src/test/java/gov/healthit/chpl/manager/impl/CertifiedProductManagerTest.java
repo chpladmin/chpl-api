@@ -1990,7 +1990,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		certToUpdate = certs.get(0);
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
 		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
@@ -2092,7 +2096,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		certToUpdate = certs.get(0);
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
 		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
