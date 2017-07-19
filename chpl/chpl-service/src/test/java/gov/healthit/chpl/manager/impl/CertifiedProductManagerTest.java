@@ -110,9 +110,15 @@ public class CertifiedProductManagerTest extends TestCase {
 		List<CertificationResult> certs = details.getCertificationResults();
 		assertNotNull(certs);
 		assertEquals(2, certs.size());
-		assertEquals("170.315 (a)(1)", certs.get(0).getNumber());
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certWithTestTasks = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().longValue() == 7) {
+				assertEquals("170.315 (a)(1)", cert.getNumber());
+				certWithTestTasks = cert;
+			} 
+		}
+		assertNotNull(certWithTestTasks);
+		List<CertificationResultTestTask> certTasks = certWithTestTasks.getTestTasks();
 		assertNotNull(certTasks);
 		assertEquals(1, certTasks.size());
 		CertificationResultTestTask certTask = certTasks.get(0);
@@ -2035,7 +2041,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		certToUpdate = certs.get(0);
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
 		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
