@@ -5,6 +5,7 @@ _Date TBD_
 
 ## Minor Features
 * Improve capturing of database errors on listing upload or update.
+* Improve error handling for invalid length/format codes in the CHPL unique product id.
 
 ---
 

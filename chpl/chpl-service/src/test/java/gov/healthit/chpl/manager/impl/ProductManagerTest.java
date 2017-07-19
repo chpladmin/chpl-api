@@ -503,7 +503,7 @@ public class ProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		String name = "Split Product";
-		String code = "SPLIT";
+		String code = "SPLI";
 		
 		ProductDTO origProduct = productManager.getById(-2L);
 		assertNotNull(origProduct.getProductVersions());
@@ -547,7 +547,7 @@ public class ProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 
 		String name = "Split Product";
-		String code = "SPLIT";
+		String code = "SPLI";
 		
 		ProductDTO origProduct = productManager.getById(-2L);
 		assertNotNull(origProduct.getProductVersions());

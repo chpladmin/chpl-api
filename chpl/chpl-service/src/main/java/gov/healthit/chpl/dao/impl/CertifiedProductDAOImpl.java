@@ -54,7 +54,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			entity.setProductCode(dto.getProductCode());
 			entity.setVersionCode(dto.getVersionCode());
 			entity.setAdditionalSoftwareCode(dto.getAdditionalSoftwareCode());
-			entity.setIcsCode(dto.getIcsCode());
+			entity.setIcsCode(dto.getIcsCode().toString());
 			entity.setCertifiedDateCode(dto.getCertifiedDateCode());
 			entity.setPracticeTypeId(dto.getPracticeTypeId());
 			entity.setProductClassificationTypeId(dto.getProductClassificationTypeId());
@@ -129,7 +129,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		entity.setAcbCertificationId(dto.getAcbCertificationId());
 		entity.setProductCode(dto.getProductCode());
 		entity.setVersionCode(dto.getVersionCode());
-		entity.setIcsCode(dto.getIcsCode());
+		entity.setIcsCode(dto.getIcsCode() == null ? null : dto.getIcsCode().toString());
 		entity.setAdditionalSoftwareCode(dto.getAdditionalSoftwareCode());
 		entity.setCertifiedDateCode(dto.getCertifiedDateCode());
 		entity.setPracticeTypeId(dto.getPracticeTypeId());
@@ -526,7 +526,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		query.setParameter("developerCode", developerCode);
 		query.setParameter("productCode", productCode);
 		query.setParameter("versionCode", versionCode);
-		query.setParameter("icsCode", new Integer(icsCode));
+		query.setParameter("icsCode", icsCode);
 		query.setParameter("additionalSoftwareCode", additionalSoftwareCode);
 		query.setParameter("certifiedDateCode", certifiedDateCode);
 		

@@ -10,6 +10,11 @@ public interface CertifiedProductValidator {
 	
 	public boolean validateUniqueId(String uniqueId);
 	public boolean validateProductCodeCharacters(String uniqueId);
+	public boolean validateVersionCodeCharacters(String uniqueId);
+	public boolean validateIcsCodeCharacters(String chplProductNumber);
+	public boolean validateAdditionalSoftwareCodeCharacters(String chplProductNumber);
+	public boolean validateCertifiedDateCodeCharacters(String chplProductNumber);
+
 	public void validate(PendingCertifiedProductDTO product);
 	public void validate(CertifiedProductSearchDetails product);
 }

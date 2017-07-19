@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,13 +69,13 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 	 * @return largest ICS value
 	 */
 	public Integer getLargestIcs(List<Long> listingIds) {
-		Query query = entityManager.createQuery( "SELECT MAX(listing.icsCode) "
+		Query query = entityManager.createQuery( "SELECT MAX(to_number(listing.icsCode, '9')) "
 				+ "FROM CertifiedProductEntity listing "
 				+ "WHERE listing.id IN (:listingIds) "
-				+ "AND listing.deleted <> true", Integer.class );
+				+ "AND listing.deleted <> true", BigDecimal.class );
 		query.setParameter("listingIds", listingIds);
-		Integer result = (Integer)query.getSingleResult();
-		return result;
+		BigDecimal result = (BigDecimal)query.getSingleResult();
+		return new Integer(result.intValue());
 	}
 	
 	/**
