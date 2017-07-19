@@ -181,11 +181,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
 		String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
 		
-		String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
-		if(StringUtils.isEmpty(icsCodePart) || !icsCodePart.matches("^\\d+$")) {
-			product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+		if(!validateIcsCodeCharacters(product.getUniqueId())) {
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.ICS_CODE_LENGTH));
 		} else {
-			icsCode = new Integer(icsCodePart);
+			icsCode = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
 		}
 		String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 		String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
@@ -268,14 +270,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 							new DefaultMessageSourceResolvable("listing.badVersionCodeChars"), LocaleContextHolder.getLocale()), 
 							CertifiedProductDTO.VERSION_CODE_LENGTH));
 		}
-	
-		if(!validateIcsCodeCharacters(product.getUniqueId())) {
-			product.getErrorMessages().add(
-					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
-							CertifiedProductDTO.ICS_CODE_LENGTH));
-		}
-		
 		
 		hasIcsConflict = false;
 		if(icsCode != null) {
@@ -293,29 +287,28 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()), 
 							CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
-		}
-		if(additionalSoftwareCode.equals("0")) {
-			boolean hasAS = false;
-			for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-					hasAS = true;
-				}
-			}
-			if(hasAS) {
-				product.getErrorMessages().add("The unique id indicates the product does not have additional software but some is specified in the upload file.");
-			}
-		} else if(additionalSoftwareCode.equals("1")) {
-			boolean hasAS = false;
-			for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
-					hasAS = true;
-				}
-			}
-			if(!hasAS) {
-				product.getErrorMessages().add("The unique id indicates the product has additional software but none is specified in the upload file.");
-			}
 		} else {
-			product.getErrorMessages().add("The additional software part of the unique ID must be 0 or 1.");
+			if(additionalSoftwareCode.equals("0")) {
+				boolean hasAS = false;
+				for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+						hasAS = true;
+					}
+				}
+				if(hasAS) {
+					product.getErrorMessages().add("The unique id indicates the product does not have additional software but some is specified in the upload file.");
+				}
+			} else if(additionalSoftwareCode.equals("1")) {
+				boolean hasAS = false;
+				for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+					if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+						hasAS = true;
+					}
+				}
+				if(!hasAS) {
+					product.getErrorMessages().add("The unique id indicates the product has additional software but none is specified in the upload file.");
+				}
+			} 
 		}
 		
 		if(!validateCertifiedDateCodeCharacters(product.getUniqueId())) {
@@ -372,11 +365,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			
 			//validate that these pieces match up with data
-			String icsCodePart = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
-			if(StringUtils.isEmpty(icsCodePart) || !icsCodePart.matches("^\\d+$")) {
-				product.getErrorMessages().add("The ICS code is required and may only contain the characters 0-9");
+			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.ICS_CODE_LENGTH));
 			} else {
-				icsCode = new Integer(icsCodePart);
+				icsCode = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
 			}
 			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
@@ -413,13 +408,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 								CertifiedProductDTO.VERSION_CODE_LENGTH));
 			}
 			
-			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
-				product.getErrorMessages().add(
-						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
-								CertifiedProductDTO.ICS_CODE_LENGTH));
-			}
-			
 			hasIcsConflict = false;
 			if(icsCode != null && icsCode.intValue() == 0) {
 				if(product.getIcs() != null && product.getIcs().getParents() != null && 
@@ -444,10 +432,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						String.format(messageSource.getMessage(
 								new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()), 
 								CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
-			}
-			
-			if(!additionalSoftwareCode.equals("0") && !additionalSoftwareCode.equals("1")) {
-				product.getErrorMessages().add("The additional software part of the unique ID must be 0 or 1.");
 			} else {
 				boolean hasAS = false;
 				for(CertificationResult cert : product.getCertificationResults()) {
