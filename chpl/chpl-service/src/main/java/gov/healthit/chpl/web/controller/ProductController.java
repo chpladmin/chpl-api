@@ -20,9 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -116,11 +118,12 @@ public class ProductController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public Product updateProduct(@RequestBody(required=true) UpdateProductsRequest productInfo) throws EntityCreationException, 
+	public ResponseEntity<Product> updateProduct(@RequestBody(required=true) UpdateProductsRequest productInfo) throws EntityCreationException, 
 		EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
 		
 		ProductDTO result = null;
-		
+		HttpHeaders responseHeaders = new HttpHeaders();
+
 		if(productInfo.getProductIds() == null || productInfo.getProductIds().size() == 0) {
 			throw new InvalidArgumentsException("At least one product id must be provided in the request.");
 		}
@@ -131,6 +134,7 @@ public class ProductController {
 				ProductDTO toUpdate = productManager.getById(productId);
 				toUpdate.setDeveloperId(productInfo.newDeveloperId());
 				result = productManager.update(toUpdate, true);
+				responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			}
 		} else {
 			if(productInfo.getProductIds().size() > 1) {
@@ -155,7 +159,7 @@ public class ProductController {
 					}
 				}
 				result = productManager.merge(productInfo.getProductIds(), newProduct);
-				
+				responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			} else if(productInfo.getProductIds().size() == 1) {
 				//update the given product id with new data
 				ProductDTO toUpdate = new ProductDTO();
@@ -190,6 +194,7 @@ public class ProductController {
 					}
 				}
 				result = productManager.update(toUpdate, true);
+				responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			}	
 		}
 
@@ -199,7 +204,7 @@ public class ProductController {
 		
 		//get the updated product since all transactions should be complete by this point
 		ProductDTO updatedProduct = productManager.getById(result.getId());
-		return new Product(updatedProduct);
+		return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
 	}
 	
 	
@@ -236,6 +241,7 @@ public class ProductController {
 			throw new InvalidArgumentsException("The productId passed into the URL (" + productId + ") does not match the product id specified in the request body (" + splitRequest.getOldProduct().getProductId() + ").");
 		}
 		
+		HttpHeaders responseHeaders = new HttpHeaders();
 		ProductDTO oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());
 		ProductDTO newProduct = new ProductDTO();
 		newProduct.setName(splitRequest.getNewProductName());
@@ -248,6 +254,7 @@ public class ProductController {
 			newProductVersions.add(newVersion);
 		}
 		ProductDTO splitProductNew = productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(), newProductVersions);
+		responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		ProductDTO splitProductOld = productManager.getById(oldProduct.getId());
 		SplitProductResponse response = new SplitProductResponse();
 		response.setNewProduct(new Product(splitProductNew));
@@ -255,7 +262,6 @@ public class ProductController {
 		
 		//find out which CHPL product numbers would have changed (only new-style ones) 
 		// and add them to the response header
-		HttpHeaders responseHeaders = new HttpHeaders();
 		List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
 		if(possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
 			StringBuffer buf = new StringBuffer();
