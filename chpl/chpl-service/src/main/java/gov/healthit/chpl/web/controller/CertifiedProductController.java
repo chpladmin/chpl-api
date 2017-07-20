@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -213,12 +214,12 @@ public class CertifiedProductController {
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing, changedProduct);
 		
+		 HttpHeaders responseHeaders = new HttpHeaders();
+		 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		if(!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
-			 HttpHeaders responseHeaders = new HttpHeaders();
 			 responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
-			return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
 		}
-		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.OK);
+		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="List pending certified products.", 
@@ -316,7 +317,7 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public synchronized @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
+	public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, 
 		EntityRetrievalException, JsonProcessingException, ObjectMissingValidationException {
 		
@@ -338,7 +339,10 @@ public class CertifiedProductController {
 			CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
 			pcpManager.confirm(acbId, pendingCp.getId());
 			CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-			return result;
+			
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+			return new ResponseEntity<CertifiedProductSearchDetails>(result, responseHeaders, HttpStatus.OK);
 		}
 		return null;
 	}

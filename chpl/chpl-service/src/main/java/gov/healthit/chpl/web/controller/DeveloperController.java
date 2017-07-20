@@ -7,7 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -97,10 +102,11 @@ public class DeveloperController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public Developer updateDeveloper(@RequestBody(required=true) UpdateDevelopersRequest developerInfo) 
+	public ResponseEntity<Developer> updateDeveloper(@RequestBody(required=true) UpdateDevelopersRequest developerInfo) 
 			throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		DeveloperDTO result = null;
-		
+		HttpHeaders responseHeaders = new HttpHeaders();
+
 		if(developerInfo.getDeveloperIds().size() > 1) {
 			//merge these developers into one 
 			// - create a new developer with the rest of the passed in information
@@ -150,6 +156,7 @@ public class DeveloperController {
 				toCreate.setContact(toCreateContact);
 			}
 			result = developerManager.merge(developerInfo.getDeveloperIds(), toCreate);
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			//re-query because the developer code isn't filled in otherwise
 			result = developerManager.getById(result.getId());
 		} else if(developerInfo.getDeveloperIds().size() == 1) {
@@ -213,13 +220,14 @@ public class DeveloperController {
 			}
 			
 			result = developerManager.update(toUpdate);
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		}
 		
 		if(result == null) {
 			throw new EntityCreationException("There was an error inserting or updating the developer information.");
 		}
 		Developer restResult = new Developer(result);
-		return restResult;
+		return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
 	}
 	
 	private List<String> validateDeveloperStatusEvents(List<DeveloperStatusEvent> statusEvents) {

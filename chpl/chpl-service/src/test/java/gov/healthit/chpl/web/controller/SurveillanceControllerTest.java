@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
@@ -182,7 +183,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
@@ -245,7 +247,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
@@ -308,7 +311,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
@@ -527,7 +531,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance updatedSurv;
 		try {
-			updatedSurv = surveillanceController.updateSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.updateSurveillance(surv);
+			updatedSurv = response.getBody();
 			assertNotNull(updatedSurv);
 			Surveillance got = survManager.getById(updatedSurv.getId());
 			assertNotNull(got);
@@ -590,7 +595,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance updatedSurv;
 		try {
-			updatedSurv = surveillanceController.updateSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.updateSurveillance(surv);
+			updatedSurv = response.getBody();
 			assertNotNull(updatedSurv);
 			Surveillance got = survManager.getById(updatedSurv.getId());
 			assertNotNull(got);
@@ -704,7 +710,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance updatedSurv;
 		try {
-			updatedSurv = surveillanceController.updateSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.updateSurveillance(surv);
+			updatedSurv = response.getBody();
 			assertNotNull(updatedSurv);
 			Surveillance got = survManager.getById(updatedSurv.getId());
 			assertNotNull(got);
@@ -767,7 +774,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
@@ -786,7 +794,8 @@ public class SurveillanceControllerTest {
 		
 		String result = null;
 		try{
-			result = surveillanceController.deleteSurveillance(surv.getId());
+			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
+			result = response.getBody();
 			assertTrue(result.contains("true"));
 		} catch(Exception e){
 			System.out.println(e.getClass() + ": " + e.getMessage());
@@ -838,7 +847,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
@@ -857,7 +867,8 @@ public class SurveillanceControllerTest {
 		
 		String result = null;
 		try{
-			result = surveillanceController.deleteSurveillance(surv.getId());
+			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
+			result = response.getBody();
 			assertTrue(result.contains("true"));
 		} catch(Exception e){
 			System.out.println(e.getClass() + ": " + e.getMessage());
@@ -908,7 +919,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
@@ -928,7 +940,8 @@ public class SurveillanceControllerTest {
 		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
 		String result = null;
 		try{
-			result = surveillanceController.deleteSurveillance(surv.getId());
+			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
+			result = response.getBody();
 			assertFalse(result.contains("true"));
 		} catch (AccessDeniedException e) {
 			assertTrue(e != null);
@@ -982,7 +995,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
@@ -1001,7 +1015,8 @@ public class SurveillanceControllerTest {
 		
 		String result = null;
 		try{
-			result = surveillanceController.deleteSurveillance(surv.getId());
+			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
+			result = response.getBody();
 			assertTrue(result.contains("true"));
 		} catch (ValidationException e) {
 			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ADMIN + " for a user lacking " + Authority.ROLE_ADMIN));
@@ -1054,7 +1069,8 @@ public class SurveillanceControllerTest {
 		
 		Surveillance insertedSurv;
 		try {
-			insertedSurv = surveillanceController.createSurveillance(surv);
+			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+			insertedSurv = response.getBody();
 			assertNotNull(insertedSurv);
 			Surveillance got = survManager.getById(insertedSurv.getId());
 			assertNotNull(got);
