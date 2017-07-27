@@ -27,7 +27,7 @@ import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
-import gov.healthit.chpl.caching.ClearBasicSearch;
+
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -293,7 +293,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, 
 			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
-	@ClearBasicSearch
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
@@ -865,7 +864,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, 
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.SEARCH, 
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
-	@ClearBasicSearch
 	public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, 
 			EntityCreationException, InvalidArgumentsException {

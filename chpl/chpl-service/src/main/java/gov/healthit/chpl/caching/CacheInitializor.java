@@ -137,10 +137,6 @@ public class CacheInitializor {
 				isInitializeDecertifiedDevelopers.cancel(true);
 			}
 			
-			if(isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()){
-								isInitializeBasicSearch.cancel(true);
-			}
-			
 			if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()){
 				isInitializeFindByAcbId.cancel(true);
 			}

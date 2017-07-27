@@ -25,6 +25,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -45,6 +46,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableWebSecurity
 @EnableAsync
 @EnableAspectJAutoProxy
+@EnableScheduling
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"})
 public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
