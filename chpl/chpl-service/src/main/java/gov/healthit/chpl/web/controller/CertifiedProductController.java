@@ -340,7 +340,6 @@ public class CertifiedProductController {
 			
 			CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
 			pcpManager.confirm(acbId, pendingCp.getId());
-			searchManager.addSearchResultToListingCache(createdProduct.getId());
 			CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
 			
 			HttpHeaders responseHeaders = new HttpHeaders();

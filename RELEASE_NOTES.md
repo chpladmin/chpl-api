@@ -9,7 +9,6 @@ _Date TBD_
 * Send a cache-cleared header when the search cache has been evicted
 * Eliminate on-demand listing search cache eviction
 * Add timed refresh of listings search
-* Add newly confirmed listings into the search cache immediately
 
 ---
 

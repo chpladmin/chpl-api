@@ -10,6 +10,5 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 public interface CertifiedProductSearchManager {
 
 	public List<CertifiedProductFlatSearchResult> search();
-	public void addSearchResultToListingCache(Long id);
 	public SearchResponse search(SearchRequest searchRequest);
 }

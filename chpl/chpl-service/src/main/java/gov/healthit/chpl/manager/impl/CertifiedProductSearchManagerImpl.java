@@ -30,7 +30,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
 	@Autowired CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 	@Autowired CertifiedProductSearchDAO basicCpSearchDao;
-	@Autowired private CacheUtil cacheUtil;
 
 	@Transactional(readOnly = true)
 	@Override
@@ -38,25 +37,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 	public List<CertifiedProductFlatSearchResult> search() {
 		List<CertifiedProductFlatSearchResult> results = basicCpSearchDao.getAllCertifiedProducts();
 		return results;
-	}
-	
-	@Transactional
-	@Override
-	public void addSearchResultToListingCache(Long id) {
-		CertifiedProductFlatSearchResult result = basicCpSearchDao.getListingSearchResultBydId(id);
-		CacheManager manager = cacheUtil.getMyCacheManager();
-		Cache listingsCache = manager.getCache(CacheNames.COLLECTIONS_LISTINGS);
-		Map<Object, Element> cacheContents = listingsCache.getAll(listingsCache.getKeys());
-		if(cacheContents != null && cacheContents.size() == 1) {
-			Collection<Element> cacheValues = cacheContents.values();
-			if(cacheValues != null && cacheValues.size() == 1) {
-				Element onlyValue = cacheValues.iterator().next();
-				if(onlyValue.getObjectValue() instanceof List<?>) {
-					List<CertifiedProductFlatSearchResult> onlyValueList = (List<CertifiedProductFlatSearchResult>) onlyValue.getObjectValue();
-					onlyValueList.add(result);
-				}
-			}
-		}
 	}
 	
 	@Transactional

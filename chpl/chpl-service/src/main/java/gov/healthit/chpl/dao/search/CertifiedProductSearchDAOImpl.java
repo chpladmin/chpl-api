@@ -51,19 +51,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 	}
 	
 	@Override
-	public CertifiedProductFlatSearchResult getListingSearchResultBydId(Long id) {
-		Query query = entityManager.createQuery("SELECT cps "
-				+ "FROM CertifiedProductBasicSearchResultEntity cps "
-				+ "WHERE cps.id = :id"
-				, CertifiedProductBasicSearchResultEntity.class);
-		query.setParameter("id", id);
-		List<CertifiedProductBasicSearchResultEntity> dbResults = query.getResultList();		
-		List<CertifiedProductFlatSearchResult> results = convert(dbResults);
-		
-		return results != null && results.size() > 0 ? results.get(0) : null;
-	}
-	
-	@Override
 	public CertifiedProduct getByChplProductNumber(String chplProductNumber) 
 		throws EntityNotFoundException {
 		Query query = entityManager.createQuery("SELECT cps "
