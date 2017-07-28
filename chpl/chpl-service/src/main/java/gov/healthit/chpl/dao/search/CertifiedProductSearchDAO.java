@@ -11,6 +11,7 @@ public interface CertifiedProductSearchDAO {
 	
 	public Long getListingIdByUniqueChplNumber(String chplProductNumber);
 	public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts();
+	public CertifiedProductFlatSearchResult getListingSearchResultBydId(Long id);
 	public CertifiedProduct getByChplProductNumber(String chplProductNumber) 
 			throws EntityNotFoundException;
 }

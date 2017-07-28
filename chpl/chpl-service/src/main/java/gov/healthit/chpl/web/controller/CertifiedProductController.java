@@ -55,6 +55,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
@@ -78,6 +79,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	@Autowired CertifiedProductManager cpManager;
+	@Autowired CertifiedProductSearchManager searchManager;
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
@@ -338,6 +340,7 @@ public class CertifiedProductController {
 			
 			CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
 			pcpManager.confirm(acbId, pendingCp.getId());
+			searchManager.addSearchResultToListingCache(createdProduct.getId());
 			CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
 			
 			HttpHeaders responseHeaders = new HttpHeaders();

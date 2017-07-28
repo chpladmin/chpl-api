@@ -7,6 +7,9 @@ _Date TBD_
 * Improve capturing of database errors on listing upload or update.
 * Improve error handling for invalid length/format codes in the CHPL unique product id.
 * Send a cache-cleared header when the search cache has been evicted
+* Eliminate on-demand listing search cache eviction
+* Add timed refresh of listings search
+* Add newly confirmed listings into the search cache immediately
 
 ---
 
