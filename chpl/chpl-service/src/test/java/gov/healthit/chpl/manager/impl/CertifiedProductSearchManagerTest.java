@@ -20,7 +20,6 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.CacheUpdater;
 import gov.healthit.chpl.caching.CacheUtil;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
@@ -47,8 +46,6 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
 	@Autowired private CacheUtil cacheUtil;
-	
-	@Autowired private CacheUpdater cacheUpdater;
 	
 	@Rule
     @Autowired
@@ -272,45 +269,5 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		}
 		assertTrue(checkedCriteria);
 		assertTrue(checkedCqms);
-	}
-	
-
-	@Test
-	@Transactional(readOnly = true)
-	public void testBasicSearchCache() throws IllegalStateException, CacheException, ClassCastException, InterruptedException, ExecutionException {
-		CacheManager manager = cacheUtil.getMyCacheManager();
-		assertEquals(0, manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize());
-		assertEquals(0, manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize());
-		List<CertifiedProductFlatSearchResult> response = certifiedProductSearchManager.search();
-		//basic search response should now be cached
-		List<CertifiedProductFlatSearchResult> response2 = certifiedProductSearchManager.search();
-		//responses should be the same object
-		assertEquals(response, response2);
-		
-		//expect cache to clear properly the first time; prefetched cache was not cached
-		Future<Boolean> isEvictDone = cacheUpdater.updateBasicSearch(); 
-		isEvictDone.get();
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
-		// Verify that the preFetchedCache gets populated
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
-		List<CertifiedProductFlatSearchResult> response3 = certifiedProductSearchManager.search();
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
-		assertNotSame(response2, response3); 
-		
-		//make sure the cache also clears the second time; prefetched cache was cached
-		isEvictDone = cacheUpdater.updateBasicSearch();
-		isEvictDone.get();
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
-		// Verify that the preFetchedCache gets populated
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
-		List<CertifiedProductFlatSearchResult> response4 = certifiedProductSearchManager.search();
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS).getSize() > 0);
-		assertTrue(manager.getCache(CacheNames.COLLECTIONS_LISTINGS).getSize() > 0);
-		assertNotSame(response3, response4);
 	}
 }
