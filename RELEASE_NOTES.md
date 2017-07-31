@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD)
+
+## Minor Features
+* Enforce ICS codes with 2 numbers (00-99) instead of just 1 number.
+
+---
+
 ## Version 12.3.0
 _31 July 2017_
 

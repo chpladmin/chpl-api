@@ -55,7 +55,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	
 	protected Boolean hasIcsConflict;
 	
-	protected Integer icsCode;
+	protected Integer icsCodeInteger;
 	
 	Pattern urlRegex;
 	
@@ -123,9 +123,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			//validate that these pieces match up with data
-			String icsCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
-			if(StringUtils.isEmpty(icsCode) || 
-				!icsCode.matches("^0|1$")) {
+			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
+			if(StringUtils.isEmpty(additionalSoftwareCode) || 
+				!additionalSoftwareCode.matches("^0|1$")) {
 				return false;
 			}
 		}
@@ -137,9 +137,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			//validate that these pieces match up with data
-			String icsCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
-			if(StringUtils.isEmpty(icsCode) || 
-				!icsCode.matches("^[0-9]{"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
+			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+			if(StringUtils.isEmpty(certifiedDateCode) || 
+				!certifiedDateCode.matches("^[0-9]{"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
@@ -187,7 +187,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
 							CertifiedProductDTO.ICS_CODE_LENGTH));
 		} else {
-			icsCode = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+			icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
 		}
 		String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 		String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
@@ -272,11 +272,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		hasIcsConflict = false;
-		if(icsCode != null) {
-			if(icsCode.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
+		if(icsCodeInteger != null) {
+			if(icsCodeInteger.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
 				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
 				hasIcsConflict = true;
-			} else if(icsCode.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
+			} else if(icsCodeInteger.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
 				hasIcsConflict = true;
 			}
@@ -371,7 +371,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
 								CertifiedProductDTO.ICS_CODE_LENGTH));
 			} else {
-				icsCode = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+				icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
 			}
 			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
@@ -409,7 +409,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 			
 			hasIcsConflict = false;
-			if(icsCode != null && icsCode.intValue() == 0) {
+			if(icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
 				if(product.getIcs() != null && product.getIcs().getParents() != null && 
 						product.getIcs().getParents().size() > 0) {
 					product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
@@ -422,7 +422,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			} else if(product.getIcs() == null || product.getIcs().getInherits() == null ||
 					product.getIcs().getInherits().equals(Boolean.FALSE) && 
-					icsCode != null && icsCode.intValue() > 0) {
+					icsCodeInteger != null && icsCodeInteger.intValue() > 0) {
 				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 				hasIcsConflict = true;
 			}

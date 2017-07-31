@@ -12,7 +12,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
 	private Long id;
 	private String productCode;
 	private String versionCode;
-	private Integer icsCode;
+	private String icsCode;
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
     private Long testingLabId;
@@ -71,7 +71,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     	this.testingLabCode = entity.getTestingLabCode();
     	this.productCode = entity.getProductCode();
     	this.versionCode = entity.getVersionCode();
-    	this.icsCode = entity.getIcsCode() == null ? null : new Integer(entity.getIcsCode());
+    	this.icsCode = entity.getIcsCode();
     	this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
     	this.creationDate = entity.getCreationDate();
     	this.certifiedDateCode = entity.getCertifiedDateCode();
@@ -351,11 +351,11 @@ public class CertifiedProductDetailsDTO implements Serializable {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public Integer getIcsCode() {
+	public String getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(Integer icsCode) {
+	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
 
