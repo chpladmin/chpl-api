@@ -210,7 +210,7 @@ public class CertifiedProductControllerTest {
 		InheritedCertificationStatus ics = new InheritedCertificationStatus();
 		ics.setInherits(false);
 		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
-		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.0.1.160402");
+		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 			listingUpdateRequest.setListing(updateRequest);
@@ -408,7 +408,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);
@@ -537,7 +537,7 @@ public class CertifiedProductControllerTest {
 		InheritedCertificationStatus ics = new InheritedCertificationStatus();
 		ics.setInherits(true);
 		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
-		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.0.1.160402");
+		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 			listingUpdateRequest.setListing(updateRequest);
@@ -655,7 +655,7 @@ public class CertifiedProductControllerTest {
 		InheritedCertificationStatus ics = new InheritedCertificationStatus();
 		ics.setInherits(true);
 		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
-		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.0.1.160402");
+		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
 		ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 		listingUpdateRequest.setListing(updateRequest);
 		try{
@@ -759,7 +759,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);
@@ -857,7 +857,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);
@@ -955,7 +955,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);

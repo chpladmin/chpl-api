@@ -110,11 +110,11 @@ public class MeaningfulUseControllerTest extends TestCase {
 		MeaningfulUseUser meaningfulUseUser1 = new MeaningfulUseUser("CHP-024050", 10L); // MeaningfulUseUser 0
 		MeaningfulUseUser meaningfulUseUser2 = new MeaningfulUseUser("CHP-024051", 20L); // MeaningfulUseUser 1
 		MeaningfulUseUser meaningfulUseUser3 = new MeaningfulUseUser(" CHP-024052 ", 30L); // MeaningfulUseUser 2
-		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser(" 15.01.01.1009.IC13.36.2.1.160402 ", 40L); // MeaningfulUseUser 3
+		MeaningfulUseUser meaningfulUseUser4 = new MeaningfulUseUser(" 15.01.01.1009.IC13.36.02.1.160402 ", 40L); // MeaningfulUseUser 3
 		MeaningfulUseUser meaningfulUseUser5 = new MeaningfulUseUser("wrongChplProductNumber", 50L); // Errors 0
 		MeaningfulUseUser meaningfulUseUser6 = new MeaningfulUseUser(" CHPL-024053 ", 60L); // Errors 1
-		MeaningfulUseUser meaningfulUseUser7 = new MeaningfulUseUser("15.02.03.9876.AB01.01.0.1.123456", 70L); // Errors 2
-		MeaningfulUseUser meaningfulUseUser8 = new MeaningfulUseUser("15.01.01.1009.IC13.36.2.1.160402", 70L); // Errors 3 (because duplicate of MeaningfulUseUser 3
+		MeaningfulUseUser meaningfulUseUser7 = new MeaningfulUseUser("15.02.03.9876.AB01.01.00.1.123456", 70L); // Errors 2
+		MeaningfulUseUser meaningfulUseUser8 = new MeaningfulUseUser("15.01.01.1009.IC13.36.02.1.160402", 70L); // Errors 3 (because duplicate of MeaningfulUseUser 3
 		logger.info("Created 8 of MeaningfulUseUser to be updated in the database");
 		
 		List<MeaningfulUseUser> meaningfulUseUserList = new ArrayList<MeaningfulUseUser>();
@@ -186,7 +186,7 @@ public class MeaningfulUseControllerTest extends TestCase {
 				assertEquals(30, muu.getNumberOfUsers().longValue());
 				assertEquals(3, muu.getCertifiedProductId().longValue());
 			}
-			else if(muu.getProductNumber().equals("15.01.01.1009.IC13.36.2.1.160402")){
+			else if(muu.getProductNumber().equals("15.01.01.1009.IC13.36.02.1.160402")){
 				assertEquals(40, muu.getNumberOfUsers().longValue());
 				assertEquals(6, muu.getCertifiedProductId().longValue());
 			}
@@ -204,12 +204,12 @@ public class MeaningfulUseControllerTest extends TestCase {
 				assertNotNull(muu.getError());
 				hasError=true;
 			}
-			else if(muu.getProductNumber().equals("15.02.03.9876.AB01.01.0.1.123456")){
+			else if(muu.getProductNumber().equals("15.02.03.9876.AB01.01.00.1.123456")){
 				assertEquals(70, muu.getNumberOfUsers().longValue());
 				assertNotNull(muu.getError());
 				hasError=true;
 			}
-			else if(muu.getProductNumber().equals("15.01.01.1009.IC13.36.2.1.160402")){
+			else if(muu.getProductNumber().equals("15.01.01.1009.IC13.36.02.1.160402")){
 				assertEquals(70, muu.getNumberOfUsers().longValue());
 				assertNotNull(muu.getError());
 				hasError=true;
