@@ -180,15 +180,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String developerCode = uniqueIdParts[CertifiedProductDTO.DEVELOPER_CODE_INDEX];
 		String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
 		String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
-		
-		if(!validateIcsCodeCharacters(product.getUniqueId())) {
-			product.getErrorMessages().add(
-					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
-							CertifiedProductDTO.ICS_CODE_LENGTH));
-		} else {
-			icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
-		}
 		String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 		String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 		
@@ -272,13 +263,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		hasIcsConflict = false;
-		if(icsCodeInteger != null) {
-			if(icsCodeInteger.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
-				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
-				hasIcsConflict = true;
-			} else if(icsCodeInteger.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
-				product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
-				hasIcsConflict = true;
+		if(!validateIcsCodeCharacters(product.getUniqueId())) {
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.ICS_CODE_LENGTH));
+		} else {
+			icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+			if(icsCodeInteger != null) {
+				if(icsCodeInteger.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
+					product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
+					hasIcsConflict = true;
+				} else if(icsCodeInteger.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
+					product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
+					hasIcsConflict = true;
+				}
 			}
 		}
 		
@@ -365,14 +364,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			
 			//validate that these pieces match up with data
-			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
-				product.getErrorMessages().add(
-						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
-								CertifiedProductDTO.ICS_CODE_LENGTH));
-			} else {
-				icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
-			}
 			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 			
@@ -409,22 +400,30 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 			
 			hasIcsConflict = false;
-			if(icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-				if(product.getIcs() != null && product.getIcs().getParents() != null && 
-						product.getIcs().getParents().size() > 0) {
-					product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
-				} 
-					
-				if(product.getIcs() != null && product.getIcs().getInherits() != null && 
-						product.getIcs().getInherits().equals(Boolean.TRUE)) {
-					product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.ICS_CODE_LENGTH));
+			} else {
+				icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+				if(icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
+					if(product.getIcs() != null && product.getIcs().getParents() != null && 
+							product.getIcs().getParents().size() > 0) {
+						product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
+					} 
+						
+					if(product.getIcs() != null && product.getIcs().getInherits() != null && 
+							product.getIcs().getInherits().equals(Boolean.TRUE)) {
+						product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+						hasIcsConflict = true;
+					}
+				} else if(product.getIcs() == null || product.getIcs().getInherits() == null ||
+						product.getIcs().getInherits().equals(Boolean.FALSE) && 
+						icsCodeInteger != null && icsCodeInteger.intValue() > 0) {
+					product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 					hasIcsConflict = true;
 				}
-			} else if(product.getIcs() == null || product.getIcs().getInherits() == null ||
-					product.getIcs().getInherits().equals(Boolean.FALSE) && 
-					icsCodeInteger != null && icsCodeInteger.intValue() > 0) {
-				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
-				hasIcsConflict = true;
 			}
 			
 			if(!validateAdditionalSoftwareCodeCharacters(product.getChplProductNumber())) {
