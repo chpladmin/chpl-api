@@ -2386,8 +2386,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
 		
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
-		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.IC13.36.2.1.160402", 20L);
-		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.IC10.99.1.1.160403", 30L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.IC13.36.02.1.160402", 20L);
+		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.IC10.99.01.1.160403", 30L);
 		muuSet.add(u1);
 		muuSet.add(u2);
 		muuSet.add(u3);
@@ -2395,10 +2395,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
 		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.IC13.36.2.1.160402"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.IC13.36.02.1.160402"));
 		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 		assertTrue(results.getErrors().get(0).getError() != null);
-		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.IC10.99.1.1.160403"));
+		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.IC10.99.01.1.160403"));
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 30L);
 	}
 	
