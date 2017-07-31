@@ -7,9 +7,15 @@ basePath=/rest
 questionableActivityEmail=theonc.certification@hhs.gov;onc_chpl@hhs.gov
 questionableActivityThresholdDays=0
 maxActivityRangeInDays=60
+
+#cache properties
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
+#how long to wait before first loading the prefetched listing cache
+listingCacheRefreshInitialDelayMillis=300000
+#how to long to wait after prefetched listing cache has loaded before starting to load it again
+listingCacheRefreshDelayMillis=60000
 
 #chpl/app/statistics/SummaryStatistics properties
 summaryEmail=chpl@ainq.com

@@ -27,7 +27,7 @@ import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
-import gov.healthit.chpl.caching.ClearBasicSearch;
+
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -293,7 +293,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, 
 			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
-	@ClearBasicSearch
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
@@ -860,11 +859,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
-	@Transactional(readOnly = false)
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, 
+			JsonProcessingException.class, AccessDeniedException.class, InvalidArgumentsException.class})
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, 
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.SEARCH, 
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
-	@ClearBasicSearch
 	public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, 
 			EntityCreationException, InvalidArgumentsException {
@@ -948,7 +947,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * @param updatedIcs
 	 */
 	private void updateIcsParents(Long listingId, InheritedCertificationStatus existingIcs, 
-			InheritedCertificationStatus updatedIcs) {
+			InheritedCertificationStatus updatedIcs) throws EntityCreationException {
 		//update ics parents as necessary
 		List<Long> parentIdsToAdd = new ArrayList<Long>();
 		List<Long> parentIdsToRemove = new ArrayList<Long>();
@@ -1026,7 +1025,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	 * @param updatedIcs
 	 */
 	private void updateIcsChildren(Long listingId, InheritedCertificationStatus existingIcs, 
-			InheritedCertificationStatus updatedIcs) {
+			InheritedCertificationStatus updatedIcs) throws EntityCreationException {
 		//update ics children as necessary
 		List<Long> childIdsToAdd = new ArrayList<Long>();
 		List<Long> childIdsToRemove = new ArrayList<Long>();

@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -85,10 +90,11 @@ public class ProductVersionController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public ProductVersion updateVersion(@RequestBody(required=true) UpdateVersionsRequest versionInfo) throws 
+	public ResponseEntity<ProductVersion> updateVersion(@RequestBody(required=true) UpdateVersionsRequest versionInfo) throws 
 		EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
 		
 		ProductVersionDTO result = null;
+		HttpHeaders responseHeaders = new HttpHeaders();
 		
 		if(versionInfo.getVersionIds() == null || versionInfo.getVersionIds().size() == 0) {
 			throw new InvalidArgumentsException("At least one version id must be provided in the request.");
@@ -102,6 +108,7 @@ public class ProductVersionController {
 					toUpdate.setProductId(versionInfo.getNewProductId());
 				}
 				result = pvManager.update(toUpdate);
+				responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			}
 		} else {
 			if(versionInfo.getVersionIds().size() > 1) {
@@ -115,7 +122,7 @@ public class ProductVersionController {
 				newVersion.setVersion(versionInfo.getVersion().getVersion());
 				newVersion.setProductId(versionInfo.getNewProductId());				
 				result = pvManager.merge(versionInfo.getVersionIds(), newVersion);
-				
+				responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			} else if(versionInfo.getVersionIds().size() == 1) {
 				//update the given version id with new data
 				ProductVersionDTO toUpdate = new ProductVersionDTO();
@@ -125,13 +132,13 @@ public class ProductVersionController {
 					toUpdate.setProductId(versionInfo.getNewProductId());
 				}
 				result = pvManager.update(toUpdate);
+				responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			}	
 		}
 
 		if(result == null) {
 			throw new EntityCreationException("There was an error inserting or updating the version information.");
 		}
-		return new ProductVersion(result);
-		
+		return new ResponseEntity<ProductVersion>(new ProductVersion(result), responseHeaders, HttpStatus.OK);		
 	}
 }

@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -54,6 +55,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
@@ -77,6 +79,7 @@ public class CertifiedProductController {
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	@Autowired CertifiedProductManager cpManager;
+	@Autowired CertifiedProductSearchManager searchManager;
 	@Autowired PendingCertifiedProductManager pcpManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
@@ -213,12 +216,12 @@ public class CertifiedProductController {
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing, changedProduct);
 		
+		 HttpHeaders responseHeaders = new HttpHeaders();
+		 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		if(!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
-			 HttpHeaders responseHeaders = new HttpHeaders();
 			 responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
-			return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
 		}
-		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, HttpStatus.OK);
+		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="List pending certified products.", 
@@ -316,7 +319,7 @@ public class CertifiedProductController {
 					+ " and administrative authority on the ACB is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public synchronized @ResponseBody CertifiedProductSearchDetails confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
+	public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(@RequestBody(required = true) PendingCertifiedProductDetails pendingCp) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, 
 		EntityRetrievalException, JsonProcessingException, ObjectMissingValidationException {
 		
@@ -338,7 +341,10 @@ public class CertifiedProductController {
 			CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
 			pcpManager.confirm(acbId, pendingCp.getId());
 			CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
-			return result;
+			
+			HttpHeaders responseHeaders = new HttpHeaders();
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+			return new ResponseEntity<CertifiedProductSearchDetails>(result, responseHeaders, HttpStatus.OK);
 		}
 		return null;
 	}
@@ -463,14 +469,17 @@ public class CertifiedProductController {
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						uploadedProducts.add(details);
 					} catch(EntityCreationException ex) {
-						logger.error("Error creating pending certified product: " + cpToAdd.getUniqueId());
+						String error = "Error creating pending certified product " + cpToAdd.getUniqueId() +
+								". Error was: " + ex.getMessage();
+						logger.error(error);
+						throw new ValidationException(error);
 					} catch(EntityRetrievalException ex) {
 						logger.error("Error retreiving pending certified product.", ex);
 					}
-				}				
+				}
 			}
 		} catch(IOException ioEx) {
-			logger.error("Could not get input stream for uploaded file " + file.getName());			
+			logger.error("Could not get input stream for uploaded file " + file.getName());
 			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}

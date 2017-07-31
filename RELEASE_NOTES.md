@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 12.3.0
+_31 July 2017_
+
+## Minor Features
+* Improve capturing of database errors on listing upload or update.
+* Improve error handling for invalid length/format codes in the CHPL unique product id.
+* Send a cache-cleared header when the search cache has been evicted
+* Eliminate on-demand listing search cache eviction
+* Add timed refresh of listings search
+
+---
+
 ## Version 12.2.0
 _17 July 2017_
 

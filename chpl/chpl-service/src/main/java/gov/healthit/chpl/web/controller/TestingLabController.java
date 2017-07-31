@@ -8,7 +8,10 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.acls.model.Permission;
@@ -29,8 +32,10 @@ import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ChplPermission;
 import gov.healthit.chpl.domain.PermittedUser;
 import gov.healthit.chpl.domain.TestingLab;
@@ -132,7 +137,7 @@ public class TestingLabController {
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
-	public TestingLab update(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
+	public ResponseEntity<TestingLab> update(@RequestBody TestingLab atlInfo) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
 		TestingLabDTO toUpdate = new TestingLabDTO();
 		toUpdate.setId(atlInfo.getId());
 		toUpdate.setTestingLabCode(atlInfo.getAtlCode());
@@ -157,7 +162,10 @@ public class TestingLabController {
 		toUpdate.setAddress(address);
 		
 		TestingLabDTO result = atlManager.update(toUpdate);
-		return new TestingLab(result);
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+		TestingLab response = new TestingLab(result);
+		return new ResponseEntity<TestingLab>(response, responseHeaders, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Delete an ATL.", 

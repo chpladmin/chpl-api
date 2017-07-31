@@ -39,7 +39,7 @@ public class CertifiedProductDetailsEntity {
     private String versionCode;
     
     @Column(name = "ics_code")
-    private Integer icsCode;
+    private String icsCode;
     
     @Column(name = "additional_software_code")
     private String additionalSoftwareCode;
@@ -547,11 +547,11 @@ public class CertifiedProductDetailsEntity {
 		this.developerCode = developerCode;
 	}
 
-	public Integer getIcsCode() {
+	public String getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(Integer icsCode) {
+	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
 	

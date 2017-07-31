@@ -7,6 +7,12 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -18,7 +24,9 @@ import gov.healthit.chpl.entity.AccessibilityStandardEntity;
 
 @Repository("accessibilityStandardDAO")
 public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements AccessibilityStandardDAO {
-	
+	private static final Logger logger = LogManager.getLogger(AccessibilityStandardDAOImpl.class);
+	@Autowired MessageSource messageSource;
+
 	@Override
 	public AccessibilityStandardDTO create(AccessibilityStandardDTO dto)
 			throws EntityCreationException {
@@ -31,13 +39,19 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
-			entity = new AccessibilityStandardEntity();
-			entity.setCreationDate(new Date());
-			entity.setDeleted(false);
-			entity.setLastModifiedDate(new Date());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			entity.setName(dto.getName());
-			create(entity);
+			try {
+				entity = new AccessibilityStandardEntity();
+				entity.setCreationDate(new Date());
+				entity.setDeleted(false);
+				entity.setLastModifiedDate(new Date());
+				entity.setLastModifiedUser(Util.getCurrentUser().getId());
+				entity.setName(dto.getName());
+				create(entity);
+			} catch(Exception ex) {
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badAccessibilityStandard"), LocaleContextHolder.getLocale()), dto.getName());
+				logger.error(msg, ex);
+				throw new EntityCreationException(msg);
+			}
 			return new AccessibilityStandardDTO(entity);
 		}		
 	}

@@ -27,6 +27,9 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +46,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -169,7 +173,7 @@ public class SurveillanceController implements MessageSourceAware {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public synchronized @ResponseBody Surveillance createSurveillance(
+	public synchronized ResponseEntity<Surveillance> createSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
 				CertificationBodyAccessException, UserPermissionRetrievalException, EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		survToInsert.getErrorMessages().clear();
@@ -195,9 +199,11 @@ public class SurveillanceController implements MessageSourceAware {
 		}
 		
 		//insert the surveillance
+		HttpHeaders responseHeaders = new HttpHeaders();
 		Long insertedSurv = null;
 		try{
 			insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		} catch(SurveillanceAuthorityAccessDeniedException ex){
 			logger.error("User lacks authority to delete surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
@@ -212,7 +218,8 @@ public class SurveillanceController implements MessageSourceAware {
 				"Surveillance was added to certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
 		//query the inserted surveillance
-		return survManager.getById(insertedSurv);
+		Surveillance result = survManager.getById(insertedSurv);
+		return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Add documentation to an existing nonconformity.", 
@@ -270,7 +277,7 @@ public class SurveillanceController implements MessageSourceAware {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/update", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public synchronized @ResponseBody Surveillance updateSurveillance(
+	public synchronized ResponseEntity<Surveillance> updateSurveillance(
 			@RequestBody(required = true) Surveillance survToUpdate) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		survToUpdate.getErrorMessages().clear();
@@ -294,8 +301,10 @@ public class SurveillanceController implements MessageSourceAware {
 		}
 		
 		//update the surveillance
+		HttpHeaders responseHeaders = new HttpHeaders();
 		try {
 			survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		} catch(SurveillanceAuthorityAccessDeniedException ex){
 			logger.error("User lacks authority to update surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
@@ -309,7 +318,8 @@ public class SurveillanceController implements MessageSourceAware {
 				"Surveillance was updated on certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
 		//query the inserted surveillance
-		return survManager.getById(survToUpdate.getId());
+		Surveillance result = survManager.getById(survToUpdate.getId());
+		return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Delete a surveillance activity for a certified product.", 
@@ -319,7 +329,7 @@ public class SurveillanceController implements MessageSourceAware {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/{surveillanceId}/delete", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public synchronized @ResponseBody String deleteSurveillance(
+	public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
 			@PathVariable(value = "surveillanceId") Long surveillanceId) 
 		throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
 		Surveillance survToDelete = survManager.getById(surveillanceId);
@@ -342,9 +352,11 @@ public class SurveillanceController implements MessageSourceAware {
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 		
+		HttpHeaders responseHeaders = new HttpHeaders();
 		//delete it
 		try {
 			survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			survManager.sendSuspiciousActivityEmail(survToDelete);
 		} catch(SurveillanceAuthorityAccessDeniedException ex){
 			logger.error("User lacks authority to delete surveillance");
@@ -357,7 +369,7 @@ public class SurveillanceController implements MessageSourceAware {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
 				"Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
-		return "{\"success\" : true }";
+		return new ResponseEntity<String>("{\"success\" : true }", responseHeaders, HttpStatus.OK);
 	}
 	
 	@ApiOperation(value="Remove documentation from a nonconformity.", 
@@ -449,13 +461,13 @@ public class SurveillanceController implements MessageSourceAware {
 					+ " and administrative authority on the ACB associated with the certified product is required.")
 	@RequestMapping(value="/pending/confirm", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
-	public synchronized @ResponseBody Surveillance confirmPendingSurveillance(
+	public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
 			@RequestBody(required = true) Surveillance survToInsert) throws ValidationException, EntityRetrievalException, 
 				EntityCreationException, JsonProcessingException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		if(survToInsert == null || survToInsert.getId() == null) {
 			throw new ValidationException("An id must be provided in the request body.");
 		}
-		
+		HttpHeaders responseHeaders = new HttpHeaders();
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 		CertificationBodyDTO owningAcb = null;
 		try {
@@ -478,6 +490,7 @@ public class SurveillanceController implements MessageSourceAware {
 			
 			//insert or update the surveillance
 			Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			if(insertedSurv == null) {
 				throw new EntityCreationException("Error creating new surveillance.");
 			}
@@ -496,7 +509,8 @@ public class SurveillanceController implements MessageSourceAware {
 							survToInsert.getCertifiedProduct().getId(),
 							survToInsert.getSurveillanceIdToReplace());
 					CertifiedProductDTO survToReplaceOwningCp = cpManager.getById(survToReplace.getCertifiedProduct().getId());
-					survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
+					survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+					responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 				}
 			} catch(Exception ex) {
 				logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
@@ -507,7 +521,8 @@ public class SurveillanceController implements MessageSourceAware {
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(), 
 					"Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 			//query the inserted surveillance
-			return survManager.getById(insertedSurv);
+			Surveillance result = survManager.getById(insertedSurv);
+			return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
 		}
 		return null;
 	}

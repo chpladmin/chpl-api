@@ -24,6 +24,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
@@ -127,7 +128,7 @@ public class ListingGraphDaoTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void testCreateListingMap() {
+	public void testCreateListingMap() throws EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(authUser);
 
 		ListingToListingMapDTO dto = new ListingToListingMapDTO();

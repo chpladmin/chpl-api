@@ -1,12 +1,10 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.xerces.impl.dtd.models.CMStateSet;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,12 +31,10 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
-import gov.healthit.chpl.domain.CertificationResultMacraMeasure;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestParticipant;
@@ -55,11 +51,9 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -83,7 +77,6 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Autowired private CertificationStatusDAO certStatusDao;
 	@Autowired private CertifiedProductManager cpManager;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
-	@Autowired private QmsStandardDAO qmsDao;
 	
 	@Rule
     @Autowired
@@ -117,9 +110,15 @@ public class CertifiedProductManagerTest extends TestCase {
 		List<CertificationResult> certs = details.getCertificationResults();
 		assertNotNull(certs);
 		assertEquals(2, certs.size());
-		assertEquals("170.315 (a)(1)", certs.get(0).getNumber());
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certWithTestTasks = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().longValue() == 7) {
+				assertEquals("170.315 (a)(1)", cert.getNumber());
+				certWithTestTasks = cert;
+			} 
+		}
+		assertNotNull(certWithTestTasks);
+		List<CertificationResultTestTask> certTasks = certWithTestTasks.getTestTasks();
 		assertNotNull(certTasks);
 		assertEquals(1, certTasks.size());
 		CertificationResultTestTask certTask = certTasks.get(0);
@@ -1964,12 +1963,19 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long acbId = 1L;
 		Long listingId = 5L;
+		Long certResultId = 7L;
+		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = updatedListing.getCertificationResults();
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
 		
@@ -1984,8 +1990,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		cert = certs.get(0);
-		certTasks = cert.getTestTasks();
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		boolean changedParticipantExists = false;
@@ -2009,13 +2019,19 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long listingId = 5L;
 		Long acbId = -1L;
+		Long certResultId = 7L;
 		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = updatedListing.getCertificationResults();
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
 		
@@ -2029,8 +2045,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		cert = certs.get(0);
-		certTasks = cert.getTestTasks();
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		assertEquals(10, taskParts.size());
@@ -2049,12 +2069,19 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long listingId = 5L;
 		Long acbId = -1L;
+		Long certResultId = 7L;
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = updatedListing.getCertificationResults();
-		CertificationResult cert = certs.get(0);
-		List<CertificationResultTestTask> certTasks = cert.getTestTasks();
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		
+		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
 		
@@ -2069,8 +2096,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		certs = existingListing.getCertificationResults();
-		cert = certs.get(0);
-		certTasks = cert.getTestTasks();
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
+		certTasks = certToUpdate.getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		for(CertificationResultTestParticipant part : taskParts) {
@@ -2091,12 +2122,18 @@ public class CertifiedProductManagerTest extends TestCase {
 
 		Long listingId = 5L;
 		Long acbId = -1L;
+		Long certResultId = 7L;
 		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<CertificationResult> certs = toUpdateListing.getCertificationResults();
-		CertificationResult certToUpdate = certs.get(0);
+		CertificationResult certToUpdate = null;
+		for(CertificationResult cert : certs) {
+			if(cert.getId().equals(certResultId)) {
+				certToUpdate = cert;
+			}
+		}
 		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
 		CertificationResultTestTask certTask = certTasks.get(0);
 		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
@@ -2349,8 +2386,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		Set<MeaningfulUseUser> muuSet = new LinkedHashSet<MeaningfulUseUser>();
 		
 		MeaningfulUseUser u1 = new MeaningfulUseUser("CHP-024050", 10L);
-		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.EIC13.36.2.1.160402", 20L);
-		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.EIC10.99.1.1.160403", 30L);
+		MeaningfulUseUser u2 = new MeaningfulUseUser("15.01.01.1009.IC13.36.2.1.160402", 20L);
+		MeaningfulUseUser u3 = new MeaningfulUseUser("14.99.01.1000.IC10.99.1.1.160403", 30L);
 		muuSet.add(u1);
 		muuSet.add(u2);
 		muuSet.add(u3);
@@ -2358,10 +2395,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(results);
 		assertTrue(results.getMeaningfulUseUsers().get(0).getProductNumber().equalsIgnoreCase("CHP-024050"));
 		assertTrue(results.getMeaningfulUseUsers().get(0).getNumberOfUsers() == 10L);
-		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.EIC13.36.2.1.160402"));
+		assertTrue(results.getMeaningfulUseUsers().get(1).getProductNumber().equalsIgnoreCase("15.01.01.1009.IC13.36.2.1.160402"));
 		assertTrue(results.getMeaningfulUseUsers().get(1).getNumberOfUsers() == 20L);
 		assertTrue(results.getErrors().get(0).getError() != null);
-		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.EIC10.99.1.1.160403"));
+		assertTrue(results.getErrors().get(0).getProductNumber().equalsIgnoreCase("14.99.01.1000.IC10.99.1.1.160403"));
 		assertTrue(results.getErrors().get(0).getNumberOfUsers() == 30L);
 	}
 	
