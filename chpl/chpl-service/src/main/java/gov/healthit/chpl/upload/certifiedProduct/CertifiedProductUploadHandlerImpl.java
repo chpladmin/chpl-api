@@ -34,6 +34,7 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProductUploadHandler {
 	@Autowired protected CertifiedProductDAO certifiedProductDao;
@@ -75,7 +76,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 		dateFormatter = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
 	}
 	
-	public abstract PendingCertifiedProductEntity handle();
+	public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 	public abstract List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
 	public abstract Long getDefaultStatusId();
 	

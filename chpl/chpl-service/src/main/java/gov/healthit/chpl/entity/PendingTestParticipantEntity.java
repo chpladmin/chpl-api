@@ -29,12 +29,18 @@ public class PendingTestParticipantEntity {
 	@Column(name = "gender")
 	private String gender;
 
+	@Column(name = "user_entered_education_type")
+	private String userEnteredEducation;
+	
 	@Column( name = "education_type_id", nullable = false  )
 	private Long educationTypeId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "education_type_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private EducationTypeEntity education;
+	
+	@Column(name = "user_entered_age")
+	private String userEnteredAge;
 	
 	@Column( name = "test_participant_age_id", nullable = false  )
 	private Long ageRangeId;
@@ -201,5 +207,21 @@ public class PendingTestParticipantEntity {
 
 	public void setAgeRange(AgeRangeEntity ageRange) {
 		this.ageRange = ageRange;
+	}
+
+	public String getUserEnteredEducation() {
+		return userEnteredEducation;
+	}
+
+	public void setUserEnteredEducation(String userEnteredEducation) {
+		this.userEnteredEducation = userEnteredEducation;
+	}
+
+	public String getUserEnteredAge() {
+		return userEnteredAge;
+	}
+
+	public void setUserEnteredAge(String userEnteredAge) {
+		this.userEnteredAge = userEnteredAge;
 	}
 }

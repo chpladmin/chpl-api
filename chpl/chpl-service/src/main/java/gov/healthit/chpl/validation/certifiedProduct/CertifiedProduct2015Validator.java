@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
@@ -207,16 +209,22 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						} else {
 							for(PendingCertificationResultTestTaskDTO task : certCriteria.getTestTasks()) {
 								if(task.getTaskParticipants() == null || task.getTaskParticipants().size() < 10) {
-									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskParticipantsSize"), LocaleContextHolder.getLocale()), 
+											task.getPendingTestTask().getUniqueId(), certCriteria.getNumber()));
 								}
 								for(PendingCertificationResultTestTaskParticipantDTO part : task.getTaskParticipants()) {
 									if(part.getTestParticipant().getEducationTypeId() == null) {
-										product.getErrorMessages().add("Found no matching eduation level for test participant (gender: " + part.getTestParticipant().getGender() 
-												+ ") related to " + certCriteria.getNumber() + ".");
+										product.getErrorMessages().add(String.format(messageSource.getMessage(
+												new DefaultMessageSourceResolvable("listing.criteria.badParticipantEducationLevel"), LocaleContextHolder.getLocale()), 
+												(part.getTestParticipant().getUserEnteredEducationType() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredEducationType()), 
+												part.getTestParticipant().getUniqueId()));
 									}
 									if(part.getTestParticipant().getAgeRangeId() == null) {
-										product.getErrorMessages().add("Found no matching age range for test participant (gender: " + part.getTestParticipant().getGender() 
-												+ ") related to " + certCriteria.getNumber() + ".");
+										product.getErrorMessages().add(String.format(messageSource.getMessage(
+												new DefaultMessageSourceResolvable("listing.criteria.badParticipantAgeRange"), LocaleContextHolder.getLocale()), 
+												(part.getTestParticipant().getUserEnteredAgeRange() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredAgeRange()), 
+												part.getTestParticipant().getUniqueId()));
 									}
 								}
 							}
