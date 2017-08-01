@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
@@ -29,6 +31,7 @@ import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
@@ -36,6 +39,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Contact;
@@ -48,8 +52,10 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
@@ -74,6 +80,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 	@Autowired SurveillanceDAO survDao;
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired UserDAO userDAO;
+	@Autowired private NotificationDAO notificationDao;
 	@Autowired SurveillanceValidator validator;
 	@Autowired UserPermissionDAO userPermissionDao;
 	
@@ -413,12 +420,25 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 				+ "<p>To view the details of this activity go to: " + 
 				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
 		
-		String emailAddr = env.getProperty("questionableActivityEmail");
-		String[] emailAddrs = emailAddr.split(";");
-		try {
-			sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-		} catch(MessagingException me) {
-			logger.error("Could not send questionable activity email", me);
+		
+		Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+		permissions.add(new GrantedPermission("ROLE_ADMIN"));
+		List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
+				notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
+		if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
+			String[] emailAddrs = new String[questionableActivityRecipients.size()];
+			for(int i = 0; i < questionableActivityRecipients.size(); i++) {
+				RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
+				emailAddrs[i] = recip.getEmail();
+			}
+			
+			try {
+				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+			} catch(MessagingException me) {
+				logger.error("Could not send questionable activity email", me);
+			}
+		} else {
+			logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
 		}
 	}
 	

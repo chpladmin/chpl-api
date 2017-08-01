@@ -1,7 +1,9 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.mail.MessagingException;
 
@@ -18,20 +20,24 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.caching.CacheNames;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -47,6 +53,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 	@Autowired private DeveloperDAO devDao;
 	@Autowired private ProductDAO prodDao;
 	@Autowired private CertifiedProductDAO cpDao;
+	@Autowired private NotificationDAO notificationDao;
 	@Autowired private Environment env;
 	@Autowired private ActivityManager activityManager;
 	
@@ -207,12 +214,24 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		}
 		
 		if(sendMsg) {
-			String emailAddr = env.getProperty("questionableActivityEmail");
-			String[] emailAddrs = emailAddr.split(";");
-			try {
-				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-			} catch(MessagingException me) {
-				logger.error("Could not send questionable activity email", me);
+			Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+			permissions.add(new GrantedPermission("ROLE_ADMIN"));
+			List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
+					notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
+			if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
+				String[] emailAddrs = new String[questionableActivityRecipients.size()];
+				for(int i = 0; i < questionableActivityRecipients.size(); i++) {
+					RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
+					emailAddrs[i] = recip.getEmail();
+				}
+				
+				try {
+					sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+				} catch(MessagingException me) {
+					logger.error("Could not send questionable activity email", me);
+				}
+			} else {
+				logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
 			}
 		}	
 	}

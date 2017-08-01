@@ -4,7 +4,6 @@ jndiName=java:comp/env/jdbc/openchpl
 persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
-questionableActivityEmail=theonc.certification@hhs.gov;onc_chpl@hhs.gov
 questionableActivityThresholdDays=0
 maxActivityRangeInDays=60
 
@@ -18,7 +17,6 @@ listingCacheRefreshInitialDelayMillis=300000
 listingCacheRefreshDelayMillis=60000
 
 #chpl/app/statistics/SummaryStatistics properties
-summaryEmail=chpl@ainq.com
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 

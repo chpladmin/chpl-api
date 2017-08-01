@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
 
@@ -46,6 +47,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -68,6 +70,7 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -130,6 +133,7 @@ import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -180,6 +184,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertificationStatusDAO certStatusDao;
 	@Autowired ListingGraphDAO listingGraphDao;
+	@Autowired NotificationDAO notificationDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -1771,12 +1776,24 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 		
 		if(sendMsg) {
-			String emailAddr = env.getProperty("questionableActivityEmail");
-			String[] emailAddrs = emailAddr.split(";");
-			try {
-				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-			} catch(MessagingException me) {
-				logger.error("Could not send questionable activity email", me);
+			Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+			permissions.add(new GrantedPermission("ROLE_ADMIN"));
+			List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
+					notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
+			if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
+				String[] emailAddrs = new String[questionableActivityRecipients.size()];
+				for(int i = 0; i < questionableActivityRecipients.size(); i++) {
+					RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
+					emailAddrs[i] = recip.getEmail();
+				}
+				
+				try {
+					sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+				} catch(MessagingException me) {
+					logger.error("Could not send questionable activity email", me);
+				}
+			} else {
+				logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
 			}
 		}
 	}
