@@ -73,7 +73,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 	private List<PendingTestParticipantEntity> participants;
 	private List<PendingTestTaskEntity> tasks;
 	
-	public PendingCertifiedProductEntity handle() {
+	public PendingCertifiedProductEntity handle() throws InvalidArgumentsException {
 		participants = new ArrayList<PendingTestParticipantEntity>();
 		tasks = new ArrayList<PendingTestTaskEntity>();
 		
@@ -568,21 +568,30 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		} 
 	}
 	
-	private void parseTestParticipants(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProductEntity) {
+	private void parseTestParticipants(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProductEntity) 
+	throws InvalidArgumentsException {
 		int colIndex = 33;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
 			PendingTestParticipantEntity participant = new PendingTestParticipantEntity(); 
 			participant.setUniqueId(record.get(colIndex++).trim());
 			participant.setGender(record.get(colIndex++).trim());
 			String ageStr = record.get(colIndex++).trim();
+			if(StringUtils.isEmpty(ageStr)) {
+				throw new InvalidArgumentsException("An age range is required for participant " + participant.getUniqueId());
+			}
+			participant.setUserEnteredAge(ageStr);
 			AgeRangeDTO ageDto = ageDao.getByName(ageStr);
 			if(ageDto != null) {
 				participant.setAgeRangeId(ageDto.getId());
 			} else {
-				logger.error("Age rante '" + ageStr + "' does not match any of the allowed values.");
+				logger.error("Age range '" + ageStr + "' does not match any of the allowed values.");
 			}
 			
 			String educationLevel = record.get(colIndex++).trim();
+			if(StringUtils.isEmpty(educationLevel)) {
+				throw new InvalidArgumentsException("An education level is required for participant " + participant.getUniqueId());
+			}
+			participant.setUserEnteredEducation(educationLevel);
 			EducationTypeDTO educationDto = educationDao.getByName(educationLevel);
 			if(educationDto != null) {
 				participant.setEducationTypeId(educationDto.getId());
