@@ -2,12 +2,8 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.mail.MessagingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,21 +18,16 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.caching.CacheNames;
-
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
-import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
@@ -44,7 +35,6 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -54,17 +44,15 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
-public class DeveloperManagerImpl implements DeveloperManager {
+public class DeveloperManagerImpl extends QuestionableActivityHandlerImpl implements DeveloperManager {
 	private static final Logger logger = LogManager.getLogger(DeveloperManagerImpl.class);
 	
-	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	
 	@Autowired DeveloperDAO developerDao;	
 	@Autowired ProductManager productManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired CertificationBodyDAO certificationBodyDao;
-	@Autowired NotificationDAO notificationDao;
 
 	@Autowired
 	ActivityManager activityManager;
@@ -220,7 +208,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		
 		DeveloperDTO after = getById(developer.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(), "Developer "+developer.getName()+" was updated.", beforeDev, after);
-		checkSuspiciousActivity(beforeDev, after);
+		handleActivity(beforeDev, after);
 
 		return after;
 	}
@@ -358,46 +346,38 @@ public class DeveloperManagerImpl implements DeveloperManager {
 		ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
 		return ddr;
 	}
+
+	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+		String message = "";
+		if(!(src instanceof DeveloperDTO)) {
+			logger.error("Cannot use object of type " + src.getClass());
+		} else {
+			DeveloperDTO original = (DeveloperDTO) src;
+			message = "<p>Activity was detected on developer " + original.getName() + ".</p>" 
+					+ "<p>To view the details of this activity go to: " + 
+					env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		} 
+		return message;
+	}
 	
-	@Override
-	public void checkSuspiciousActivity(DeveloperDTO original, DeveloperDTO changed) {
-		String subject = "CHPL Questionable Activity";
-		String htmlMessage = "<p>Activity was detected on developer " + original.getName() + ".</p>" 
-				+ "<p>To view the details of this activity go to: " + 
-				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
-		
-		boolean sendMsg = false;
-		
-		if( (original.getName() != null && changed.getName() == null) ||
-			(original.getName() == null && changed.getName() != null) ||
-			!original.getName().equals(changed.getName()) ) {
-			sendMsg = true;
-		}
-		
-		sendMsg = sendMsg || isStatusHistoryUpdated(original, changed);
-		
-		if(sendMsg) {
-			Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-			permissions.add(new GrantedPermission("ROLE_ADMIN"));
-			List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
-					notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
+	public boolean isQuestionableActivity(Object src, Object dest) {
+		boolean isQuestionable = false;
+
+		if(!(src instanceof DeveloperDTO && dest instanceof DeveloperDTO)) {
+			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type DeveloperDTO.");
+		} else {
+			DeveloperDTO original = (DeveloperDTO) src;
+			DeveloperDTO changed = (DeveloperDTO) dest;
 			
-			if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
-				String[] emailAddrs = new String[questionableActivityRecipients.size()];
-				for(int i = 0; i < questionableActivityRecipients.size(); i++) {
-					RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
-					emailAddrs[i] = recip.getEmail();
-				}
-				
-				try {
-					sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-				} catch(MessagingException me) {
-					logger.error("Could not send questionable activity email", me);
-				}
-			} else {
-				logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
+			if( (original.getName() != null && changed.getName() == null) ||
+				(original.getName() == null && changed.getName() != null) ||
+				!original.getName().equals(changed.getName()) ) {
+				isQuestionable = true;
 			}
-		}	
+			
+			isQuestionable = isQuestionable || isStatusHistoryUpdated(original, changed);
+		}
+		return isQuestionable;
 	}
 	
 	private boolean isStatusHistoryUpdated(DeveloperDTO original, DeveloperDTO changed) {

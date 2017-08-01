@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -23,12 +22,9 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
-
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -47,7 +43,6 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
-import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
@@ -70,7 +65,6 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
-import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -133,7 +127,6 @@ import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -148,10 +141,9 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl implements CertifiedProductManager {
+public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl implements CertifiedProductManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
 	
-	@Autowired SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	
 	@Autowired CertifiedProductDAO cpDao;
@@ -184,7 +176,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertificationStatusDAO certStatusDao;
 	@Autowired ListingGraphDAO listingGraphDao;
-	@Autowired NotificationDAO notificationDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -1692,110 +1683,105 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		return meaningfulUseUserResults;
 	}
 	
-	@Override
-	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed) {
-		boolean sendMsg = false;
-		String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-		String subject = "CHPL Questionable Activity";
-		String htmlMessage = "<p>Activity was detected on certified product " + original.getChplProductNumber(); 
-		if(activityThresholdDaysStr.equals("0")) {
-			htmlMessage += ".";
+	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+		String message = "";
+		if(!(src instanceof CertifiedProductSearchDetails)) {
+			logger.error("Cannot use object of type " + src.getClass());
 		} else {
-			htmlMessage += " more than " + activityThresholdDaysStr + " days after it was certified.";
-		}
-		htmlMessage += "</p>"
-				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
-		
-		
-		if(original.getCertificationEdition().get("name").equals("2011")) {
-			sendMsg = true;
-		} else {
-			int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-			long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
-			if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
-			   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
-				//if they changed something outside of the suspicious activity window, 
-				//check if the change was something that should trigger an email
-				
-				if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
-					sendMsg = true;
-				}
-				
-				if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
-					(original.getCqmResults() != null && changed.getCqmResults() == null) ||
-					(original.getCqmResults().size() != changed.getCqmResults().size())) {
-					sendMsg = true;
-				} else if(original.getCqmResults().size() == changed.getCqmResults().size()) {
-					for(CQMResultDetails origCqm : original.getCqmResults()) {
-						for(CQMResultDetails changedCqm : changed.getCqmResults()) {
-							if(origCqm.getCmsId().equals(changedCqm.getCmsId())) {
-								if(origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
-									sendMsg = true;
-								}
-							}
-						}
-					}
-				}
-				if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
-					(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
-					(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
-					sendMsg = true;
-				} else if(original.getCertificationResults().size() == changed.getCertificationResults().size()) {
-					for(CertificationResult origCert : original.getCertificationResults()) {
-						for(CertificationResult changedCert : changed.getCertificationResults()) {
-							if(origCert.getNumber().equals(changedCert.getNumber())) {
-								if(origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
-									sendMsg = true;
-								}
-								if(origCert.isG1Success() != null || changedCert.isG1Success() != null) {
-									if(	(origCert.isG1Success() == null && changedCert.isG1Success() != null) ||
-										(origCert.isG1Success() != null && changedCert.isG1Success() == null) ||
-										(origCert.isG1Success().booleanValue() != changedCert.isG1Success().booleanValue())) {
-										sendMsg = true;
-									}
-								}
-								if(origCert.isG2Success() != null || changedCert.isG2Success() != null) {
-									if(	(origCert.isG2Success() == null && changedCert.isG2Success() != null) ||
-										(origCert.isG2Success() != null && changedCert.isG2Success() == null) ||
-										(origCert.isG2Success().booleanValue() != changedCert.isG2Success().booleanValue())) {
-										sendMsg = true;
-									}
-								}
-								if(origCert.isGap() != null || changedCert.isGap() != null) {
-									if(	(origCert.isGap() == null && changedCert.isGap() != null) ||
-										(origCert.isGap() != null && changedCert.isGap() == null) ||
-										(origCert.isGap().booleanValue() != changedCert.isGap().booleanValue())) {
-										sendMsg = true;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		if(sendMsg) {
-			Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-			permissions.add(new GrantedPermission("ROLE_ADMIN"));
-			List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
-					notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
-			if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
-				String[] emailAddrs = new String[questionableActivityRecipients.size()];
-				for(int i = 0; i < questionableActivityRecipients.size(); i++) {
-					RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
-					emailAddrs[i] = recip.getEmail();
-				}
-				
-				try {
-					sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-				} catch(MessagingException me) {
-					logger.error("Could not send questionable activity email", me);
-				}
+			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
+			String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
+			message = "<p>Activity was detected on certified product " + original.getChplProductNumber(); 
+			if(activityThresholdDaysStr.equals("0")) {
+				message += ".";
 			} else {
-				logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
+				message += " more than " + activityThresholdDaysStr + " days after it was certified.";
+			}
+			message += "</p>"
+					+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
+			
+		} 
+		return message;
+	}
+	
+	public boolean isQuestionableActivity(Object src, Object dest) {
+		boolean isQuestionable = false;
+		String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
+
+		if(!(src instanceof CertifiedProductSearchDetails && dest instanceof CertifiedProductSearchDetails)) {
+			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type CertifiedProductSearchDetails.");
+		} else {
+			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
+			CertifiedProductSearchDetails changed = (CertifiedProductSearchDetails) dest;
+			
+			if(original.getCertificationEdition().get("name").equals("2011")) {
+				isQuestionable = true;
+			} else {
+				int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
+				long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
+				if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
+				   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
+					//if they changed something outside of the suspicious activity window, 
+					//check if the change was something that should trigger an email
+					
+					if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
+						isQuestionable = true;
+					}
+					
+					if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
+						(original.getCqmResults() != null && changed.getCqmResults() == null) ||
+						(original.getCqmResults().size() != changed.getCqmResults().size())) {
+						isQuestionable = true;
+					} else if(original.getCqmResults().size() == changed.getCqmResults().size()) {
+						for(CQMResultDetails origCqm : original.getCqmResults()) {
+							for(CQMResultDetails changedCqm : changed.getCqmResults()) {
+								if(origCqm.getCmsId().equals(changedCqm.getCmsId())) {
+									if(origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
+										isQuestionable = true;
+									}
+								}
+							}
+						}
+					}
+					if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
+						(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
+						(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
+						isQuestionable = true;
+					} else if(original.getCertificationResults().size() == changed.getCertificationResults().size()) {
+						for(CertificationResult origCert : original.getCertificationResults()) {
+							for(CertificationResult changedCert : changed.getCertificationResults()) {
+								if(origCert.getNumber().equals(changedCert.getNumber())) {
+									if(origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
+										isQuestionable = true;
+									}
+									if(origCert.isG1Success() != null || changedCert.isG1Success() != null) {
+										if(	(origCert.isG1Success() == null && changedCert.isG1Success() != null) ||
+											(origCert.isG1Success() != null && changedCert.isG1Success() == null) ||
+											(origCert.isG1Success().booleanValue() != changedCert.isG1Success().booleanValue())) {
+											isQuestionable = true;
+										}
+									}
+									if(origCert.isG2Success() != null || changedCert.isG2Success() != null) {
+										if(	(origCert.isG2Success() == null && changedCert.isG2Success() != null) ||
+											(origCert.isG2Success() != null && changedCert.isG2Success() == null) ||
+											(origCert.isG2Success().booleanValue() != changedCert.isG2Success().booleanValue())) {
+											isQuestionable = true;
+										}
+									}
+									if(origCert.isGap() != null || changedCert.isGap() != null) {
+										if(	(origCert.isGap() == null && changedCert.isGap() != null) ||
+											(origCert.isGap() != null && changedCert.isGap() == null) ||
+											(origCert.isGap().booleanValue() != changedCert.isGap().booleanValue())) {
+											isQuestionable = true;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
+		return isQuestionable;
 	}
 	
 	private class QmsStandardPair {

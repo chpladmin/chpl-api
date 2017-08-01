@@ -1,11 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.mail.MessagingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,20 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.caching.CacheNames;
-
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
-import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -43,7 +34,6 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -51,20 +41,17 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
-public class ProductManagerImpl implements ProductManager {
+public class ProductManagerImpl extends QuestionableActivityHandlerImpl implements ProductManager {
 	private static final Logger logger = LogManager.getLogger(ProductManagerImpl.class);
 	
-	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	@Autowired private MessageSource messageSource;
 	@Autowired ProductDAO productDao;
 	@Autowired ProductVersionDAO versionDao;
 	@Autowired DeveloperDAO devDao;
 	@Autowired CertifiedProductDAO cpDao;
-	@Autowired NotificationDAO notificationDao;
 	@Autowired CertifiedProductDetailsManager cpdManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired CertifiedProductValidatorFactory cpValidatorFactory;
@@ -163,7 +150,7 @@ public class ProductManagerImpl implements ProductManager {
 		String activityMsg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, result);
 		if(lookForSuspiciousActivity) {
-			checkSuspiciousActivity(beforeDTO, result);
+			handleActivity(beforeDTO, result);
 		}
 		return result;
 		
@@ -287,68 +274,59 @@ public class ProductManagerImpl implements ProductManager {
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeProduct.getId(), "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct, afterProduct);
 		}	
 		
-		checkSuspiciousActivity(oldProduct, newProduct);
+		handleActivity(oldProduct, newProduct);
 		return getById(newProduct.getId());
 	}
 	
-	@Override
-	public void checkSuspiciousActivity(ProductDTO original, ProductDTO changed) {
-		String subject = "CHPL Questionable Activity";
-		String htmlMessage = "<p>Activity was detected on product " + original.getName() + ".</p>" 
-				+ "<p>To view the details of this activity go to: " + 
-				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
-		
-		boolean sendMsg = false;
-		
-		//check name change
-		if( (original.getName() != null && changed.getName() == null) ||
-			(original.getName() == null && changed.getName() != null) ||
-			!original.getName().equals(changed.getName()) ) {
-			sendMsg = true;
-		}
-		
-		//if there was a different amount of owner history
-		if( (original.getOwnerHistory() != null && changed.getOwnerHistory() == null) ||
-			(original.getOwnerHistory() == null && changed.getOwnerHistory() != null) ||
-			(original.getOwnerHistory().size() != changed.getOwnerHistory().size()) ) {
-			sendMsg = true;
+	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+		String message = "";
+		if(!(src instanceof ProductDTO)) {
+			logger.error("Cannot use object of type " + src.getClass());
 		} else {
-			//the same counts of owner history are there but we should check the contents
-			for(ProductOwnerDTO originalOwner : original.getOwnerHistory()) {
-				boolean foundOriginalOwner = false;
-				for(ProductOwnerDTO changedOwner : changed.getOwnerHistory()) {
-					if(originalOwner.getDeveloper().getId().longValue() == changedOwner.getDeveloper().getId().longValue()) {
-						foundOriginalOwner = true;
-					}
-				}
-				if(!foundOriginalOwner) {
-					sendMsg = true;
-				}
-			}
-		}
-		
-		if(sendMsg) {
-			Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-			permissions.add(new GrantedPermission("ROLE_ADMIN"));
-			List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
-					notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
-			
-			if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
-				String[] emailAddrs = new String[questionableActivityRecipients.size()];
-				for(int i = 0; i < questionableActivityRecipients.size(); i++) {
-					RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
-					emailAddrs[i] = recip.getEmail();
-				}
-				
-				try {
-					sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-				} catch(MessagingException me) {
-					logger.error("Could not send questionable activity email", me);
-				}
-			} else {
-				logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
-			}
-		}	
+			ProductDTO original = (ProductDTO) src;
+			message = "<p>Activity was detected on product " + original.getName() + ".</p>" 
+					+ "<p>To view the details of this activity go to: " + 
+					env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		} 
+		return message;
 	}
 	
+	public boolean isQuestionableActivity(Object src, Object dest) {
+		boolean isQuestionable = false;
+
+		if(!(src instanceof ProductDTO && dest instanceof ProductDTO)) {
+			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type ProductDTO.");
+		} else {
+			ProductDTO original = (ProductDTO) src;
+			ProductDTO changed = (ProductDTO) dest;
+			
+			//check name change
+			if( (original.getName() != null && changed.getName() == null) ||
+				(original.getName() == null && changed.getName() != null) ||
+				!original.getName().equals(changed.getName()) ) {
+				isQuestionable = true;
+			}
+			
+			//if there was a different amount of owner history
+			if( (original.getOwnerHistory() != null && changed.getOwnerHistory() == null) ||
+				(original.getOwnerHistory() == null && changed.getOwnerHistory() != null) ||
+				(original.getOwnerHistory().size() != changed.getOwnerHistory().size()) ) {
+				isQuestionable = true;
+			} else {
+				//the same counts of owner history are there but we should check the contents
+				for(ProductOwnerDTO originalOwner : original.getOwnerHistory()) {
+					boolean foundOriginalOwner = false;
+					for(ProductOwnerDTO changedOwner : changed.getOwnerHistory()) {
+						if(originalOwner.getDeveloper().getId().longValue() == changedOwner.getDeveloper().getId().longValue()) {
+							foundOriginalOwner = true;
+						}
+					}
+					if(!foundOriginalOwner) {
+						isQuestionable = true;
+					}
+				}
+			}
+		}
+		return isQuestionable;
+	}
 }

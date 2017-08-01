@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.logging.log4j.LogManager;
@@ -24,22 +21,18 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserDAO;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
-
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Contact;
@@ -52,10 +45,8 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
-import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
@@ -72,15 +63,13 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 @Service
-public class SurveillanceManagerImpl implements SurveillanceManager {
+public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl implements SurveillanceManager {
 	private static final Logger logger = LogManager.getLogger(SurveillanceManagerImpl.class);
-	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	
 	@Autowired SurveillanceDAO survDao;
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired UserDAO userDAO;
-	@Autowired private NotificationDAO notificationDao;
 	@Autowired SurveillanceValidator validator;
 	@Autowired UserPermissionDAO userPermissionDao;
 	
@@ -410,36 +399,24 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
 		validator.validate(surveillance);
 	}
 	
-	@Override
-	public void sendSuspiciousActivityEmail(Surveillance questionableSurv) {
+	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
-		
-		String subject = "CHPL Questionable Activity";
-		String htmlMessage = "<p>Questionable activity was detected on " + questionableSurv.getCertifiedProduct().getChplProductNumber() + ". "
-				+ "An action was taken related to surveillance " + fmt.format(questionableSurv.getStartDate()) + ".<p>"
-				+ "<p>To view the details of this activity go to: " + 
-				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
-		
-		
-		Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-		permissions.add(new GrantedPermission("ROLE_ADMIN"));
-		List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
-				notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
-		if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
-			String[] emailAddrs = new String[questionableActivityRecipients.size()];
-			for(int i = 0; i < questionableActivityRecipients.size(); i++) {
-				RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
-				emailAddrs[i] = recip.getEmail();
-			}
-			
-			try {
-				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-			} catch(MessagingException me) {
-				logger.error("Could not send questionable activity email", me);
-			}
+		String message = "";
+		if(!(src instanceof Surveillance)) {
+			logger.error("Cannot use object of type " + src.getClass());
 		} else {
-			logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
-		}
+			Surveillance original = (Surveillance) src;
+			message =  "<p>Questionable activity was detected on " + original.getCertifiedProduct().getChplProductNumber() + ". "
+					+ "An action was taken related to surveillance " + fmt.format(original.getStartDate()) + ".<p>"
+					+ "<p>To view the details of this activity go to: " + 
+					env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		} 
+		return message;
+	}
+	
+	public boolean isQuestionableActivity(Object src, Object dest) {
+		//it's questionable if the surveillance was deleted (dest is null)
+		return src instanceof Surveillance && dest == null;
 	}
 	
 	@Override

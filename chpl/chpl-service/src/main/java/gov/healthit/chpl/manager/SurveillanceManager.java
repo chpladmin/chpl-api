@@ -20,11 +20,10 @@ import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
-public interface SurveillanceManager {
+public interface SurveillanceManager extends QuestionableActivityHandler {
 	public File getDownloadFile(String filename) throws IOException;
 	public File getProtectedDownloadFile(String filename) throws IOException;
 	public void validate(Surveillance surveillance);
-	public void sendSuspiciousActivityEmail(Surveillance questionableSurv);
 	
 	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc);
