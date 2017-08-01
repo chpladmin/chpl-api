@@ -579,17 +579,19 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			if(StringUtils.isEmpty(ageStr)) {
 				throw new InvalidArgumentsException("An age range is required for participant " + participant.getUniqueId());
 			}
+			participant.setUserEnteredAge(ageStr);
 			AgeRangeDTO ageDto = ageDao.getByName(ageStr);
 			if(ageDto != null) {
 				participant.setAgeRangeId(ageDto.getId());
 			} else {
-				logger.error("Age rante '" + ageStr + "' does not match any of the allowed values.");
+				logger.error("Age range '" + ageStr + "' does not match any of the allowed values.");
 			}
 			
 			String educationLevel = record.get(colIndex++).trim();
 			if(StringUtils.isEmpty(educationLevel)) {
 				throw new InvalidArgumentsException("An education level is required for participant " + participant.getUniqueId());
 			}
+			participant.setUserEnteredEducation(educationLevel);
 			EducationTypeDTO educationDto = educationDao.getByName(educationLevel);
 			if(educationDto != null) {
 				participant.setEducationTypeId(educationDto.getId());

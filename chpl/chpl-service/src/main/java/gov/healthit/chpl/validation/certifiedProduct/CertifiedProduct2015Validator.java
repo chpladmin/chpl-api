@@ -217,12 +217,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 									if(part.getTestParticipant().getEducationTypeId() == null) {
 										product.getErrorMessages().add(String.format(messageSource.getMessage(
 												new DefaultMessageSourceResolvable("listing.criteria.badParticipantEducationLevel"), LocaleContextHolder.getLocale()), 
-												part.getTestParticipant().getUserEnteredEducationType(), part.getTestParticipant().getUniqueId()));
+												(part.getTestParticipant().getUserEnteredEducationType() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredEducationType()), 
+												part.getTestParticipant().getUniqueId()));
 									}
 									if(part.getTestParticipant().getAgeRangeId() == null) {
 										product.getErrorMessages().add(String.format(messageSource.getMessage(
 												new DefaultMessageSourceResolvable("listing.criteria.badParticipantAgeRange"), LocaleContextHolder.getLocale()), 
-												part.getTestParticipant().getUserEnteredAgeRange(), part.getTestParticipant().getUniqueId()));
+												(part.getTestParticipant().getUserEnteredAgeRange() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredAgeRange()), 
+												part.getTestParticipant().getUniqueId()));
 									}
 								}
 							}
