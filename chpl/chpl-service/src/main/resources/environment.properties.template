@@ -17,6 +17,7 @@ listingCacheRefreshInitialDelayMillis=300000
 listingCacheRefreshDelayMillis=60000
 
 #chpl/app/statistics/SummaryStatistics properties
+summaryEmailSubject=CHPL - Weekly Summary Statistics Report (Local)
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
 
