@@ -212,7 +212,7 @@ public class CertifiedProductController {
 		
 		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-		cpManager.checkSuspiciousActivity(existingListing, changedProduct);
+		cpManager.handleActivity(existingListing, changedProduct);
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing, changedProduct);
 		
