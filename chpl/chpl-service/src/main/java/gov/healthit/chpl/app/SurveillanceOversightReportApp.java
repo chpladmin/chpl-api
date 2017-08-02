@@ -62,7 +62,7 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
         	htmlMessage += "</ul>";
         }
         
-        htmlMessage += this.TRIGGER_DESCRIPTIONS;
+        htmlMessage += TRIGGER_DESCRIPTIONS;
         return htmlMessage;
 	}
 

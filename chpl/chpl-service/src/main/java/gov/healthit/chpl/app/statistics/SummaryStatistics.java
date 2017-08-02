@@ -10,8 +10,10 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.Future;
 
@@ -24,10 +26,15 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.app.AppConfig;
 import gov.healthit.chpl.app.LocalContext;
 import gov.healthit.chpl.app.LocalContextFactory;
+import gov.healthit.chpl.app.NotificationEmailerReportApp;
 import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
+import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
 @Component("summaryStatistics")
 public class SummaryStatistics {
@@ -38,6 +45,7 @@ public class SummaryStatistics {
 	private static Integer numDaysInPeriod;
 	private Properties props;
 	private AsynchronousStatisticsInitializor asynchronousStatisticsInitializor;
+	private NotificationDAO notificationDao;
 	
 	public SummaryStatistics(){}
 
@@ -79,9 +87,22 @@ public class SummaryStatistics {
 		 File csvFile = new File(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
 		 files.add(csvFile);
 		 String htmlMessage = summaryStats.createHtmlMessage(emailBodyStats, files);
-		 logger.info("Sending email to " + props.getProperty("summaryEmail").toString());
-		 SendMailUtil mailUtil = new SendMailUtil();
-		 mailUtil.sendEmail(props.getProperty("summaryEmail").toString().split(";"), props.getProperty("summaryEmailSubject").toString(), htmlMessage, files, props);
+		 
+		 //send the email
+		 Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+		 permissions.add(new GrantedPermission("ROLE_ADMIN"));
+		 List<RecipientWithSubscriptionsDTO> recipients = summaryStats.getNotificationDao().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.WEEKLY_STATISTICS, null);
+		 if(recipients != null && recipients.size() > 0) {
+			 String[] emailAddrs = new String[recipients.size()];
+			 for(int i = 0; i < recipients.size(); i++) {
+				 RecipientWithSubscriptionsDTO recip = recipients.get(i);
+				 emailAddrs[i] = recip.getEmail();
+				 logger.info("Sending email to " + recip.getEmail());
+			 }
+			 SendMailUtil mailUtil = new SendMailUtil();
+			 mailUtil.sendEmail(null, emailAddrs, props.getProperty("summaryEmailSubject").toString(), htmlMessage, files, props);
+		 }
+		 
 		 logger.info("Completed SummaryStatistics execution.");
 		 context.close();
 	}
@@ -133,6 +154,8 @@ public class SummaryStatistics {
 	private void initializeSpringClasses(AbstractApplicationContext context){
 		 logger.info(context.getClassLoader());
 		 setAsynchronousStatisticsInitializor((AsynchronousStatisticsInitializor)context.getBean("asynchronousStatisticsInitializor"));
+		 setNotificationDao((NotificationDAO)context.getBean("notificationDAO"));
+
 	}
 	
 	/**
@@ -398,6 +421,14 @@ public class SummaryStatistics {
 			}
 		}
 		return count;
+	}
+
+	public NotificationDAO getNotificationDao() {
+		return notificationDao;
+	}
+
+	public void setNotificationDao(NotificationDAO notificationDao) {
+		this.notificationDao = notificationDao;
 	}
 
 }
