@@ -6,6 +6,7 @@ _Date TBD_
 ## Minor Features
 * Enforce ICS codes with 2 numbers (00-99) instead of just 1 number.
 * Improve error messages returned for unknown user-entered values for SED age and education levels.
+* Use subscriptions for weekly statistics email and questionable activity emails
 
 ---
 
