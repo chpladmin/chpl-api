@@ -50,7 +50,7 @@ public abstract class QuestionableActivityHandlerImpl implements QuestionableAct
 			}
 			
 			try {
-				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
+				sendMailService.sendEmail(null, emailAddrs, subject, htmlMessage);
 			} catch(MessagingException me) {
 				logger.error("Could not send questionable activity email", me);
 			}

@@ -100,7 +100,7 @@ public class SummaryStatistics {
 				 logger.info("Sending email to " + recip.getEmail());
 			 }
 			 SendMailUtil mailUtil = new SendMailUtil();
-			 mailUtil.sendEmail(emailAddrs, props.getProperty("summaryEmailSubject").toString(), htmlMessage, files, props);
+			 mailUtil.sendEmail(null, emailAddrs, props.getProperty("summaryEmailSubject").toString(), htmlMessage, files, props);
 		 }
 		 
 		 logger.info("Completed SummaryStatistics execution.");
