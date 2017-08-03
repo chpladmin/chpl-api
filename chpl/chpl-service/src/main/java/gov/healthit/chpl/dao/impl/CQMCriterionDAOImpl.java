@@ -11,7 +11,6 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;

@@ -1,11 +1,13 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class UpdateProductsRequest {
+public class UpdateProductsRequest implements Serializable {
+	private static final long serialVersionUID = -5814847900559692235L;
 	private List<Long> productIds;
 	private Product product;
-	private Long newVendorId;
+	private Long newDeveloperId;
 	
 	public List<Long> getProductIds() {
 		return productIds;
@@ -19,10 +21,10 @@ public class UpdateProductsRequest {
 	public void setProduct(Product product) {
 		this.product = product;
 	}
-	public Long getNewVendorId() {
-		return newVendorId;
+	public Long newDeveloperId() {
+		return newDeveloperId;
 	}
-	public void setNewVendorId(Long newVendorId) {
-		this.newVendorId = newVendorId;
+	public void setNewDeveloperId(Long newDeveloperId) {
+		this.newDeveloperId = newDeveloperId;
 	}
 }

@@ -1,22 +1,23 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
-
+import java.io.Serializable;
 import java.util.Date;
 
-public class CertificationCriterionDTO {
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
+public class CertificationCriterionDTO implements Serializable {
+	private static final long serialVersionUID = -1129602624256345286L;
 	private Long id;
 	private Boolean automatedMeasureCapable;
 	private Boolean automatedNumeratorCapable;
 	private Long certificationEditionId;
+	private String certificationEdition;
 	private Date creationDate;
 	private Boolean deleted;
 	private String description;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private String number;
-	private Long parentCriterionId;
 	private Boolean requiresSed;
 	private String title;
 	
@@ -27,19 +28,15 @@ public class CertificationCriterionDTO {
 		this.automatedMeasureCapable = entity.isAutomatedMeasureCapable();
 		this.automatedNumeratorCapable = entity.isAutomatedNumeratorCapable();
 		this.certificationEditionId = entity.getCertificationEditionId();
+		if(entity.getCertificationEdition() != null) {
+			this.certificationEdition = entity.getCertificationEdition().getYear();
+		}
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
 		this.description = entity.getDescription();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.number = entity.getNumber();
-		
-		if (!(entity.getParentCriterion() == null)){
-			this.parentCriterionId = entity.getParentCriterion().getId();
-		} else {
-			this.parentCriterionId = null;
-		}
-		
 		
 		this.requiresSed = entity.isRequiresSed();
 		this.title = entity.getTitle();
@@ -107,12 +104,6 @@ public class CertificationCriterionDTO {
 	public void setNumber(String number) {
 		this.number = number;
 	}
-	public Long getParentCriterionId() {
-		return parentCriterionId;
-	}
-	public void setParentCriterionId(Long parentCriterionId) {
-		this.parentCriterionId = parentCriterionId;
-	}
 	public Boolean getRequiresSed() {
 		return requiresSed;
 	}
@@ -125,5 +116,10 @@ public class CertificationCriterionDTO {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+	public String getCertificationEdition() {
+		return certificationEdition;
+	}
+	public void setCertificationEdition(String certificationEdition) {
+		this.certificationEdition = certificationEdition;
+	}
 }

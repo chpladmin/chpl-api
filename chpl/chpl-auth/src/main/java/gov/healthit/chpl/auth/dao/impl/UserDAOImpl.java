@@ -1,6 +1,19 @@
 package gov.healthit.chpl.auth.dao.impl;
 
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Query;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserContactDAO;
@@ -10,23 +23,9 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserContactEntity;
 import gov.healthit.chpl.auth.entity.UserEntity;
-import gov.healthit.chpl.auth.manager.impl.SecuredUserManagerImpl;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Query;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 
 @Repository(value="userDAO")
@@ -59,6 +58,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			
 			userEntity.setFirstName(user.getFirstName());
 			userEntity.setLastName(user.getLastName());
+			userEntity.setComplianceSignature(user.getComplianceSignatureDate());
+			userEntity.setFailedLoginCount(0);
 			userEntity.setAccountEnabled(user.isAccountEnabled());
 			userEntity.setAccountExpired(user.isAccountExpired());
 			userEntity.setAccountLocked(user.isAccountLocked());
@@ -95,6 +96,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
+		userEntity.setComplianceSignature(user.getComplianceSignatureDate());
+		userEntity.setFailedLoginCount(user.getFailedLoginCount());
 		userEntity.getContact().setEmail(user.getEmail());
 		userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
 		userEntity.getContact().setSignatureDate(user.getSignatureDate());
@@ -348,6 +351,26 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		UserEntity userEntity = this.getEntityByName(uname);
 		userEntity.setPassword(encodedPassword);
+		update(userEntity);
+		
+	}
+	
+	@Override
+	@Transactional
+	public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userEntity.setFailedLoginCount(failedLoginCount);
+		update(userEntity);
+		
+	}
+	
+	@Override
+	@Transactional
+	public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userEntity.setAccountLocked(locked);
 		update(userEntity);
 		
 	}

@@ -1,19 +1,253 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+import org.apache.commons.lang.StringUtils;
+
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
-public class CertificationResult {
+/**
+ * Criteria to which a given listing attests.
+ */
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class CertificationResult implements Serializable {
+	private static final long serialVersionUID = -4917413876078419868L;
+	public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
 	
+	@XmlTransient
+	private Long id;
 	
+	/**
+	 * Criteria number, i.e. 170.314 (a)(1)
+	 */
+	@XmlElement(required = true)
 	private String number;
-	private String title;
-	private boolean success;
 	
-	public CertificationResult(){}
+	/**
+	 * Short description of the criteria
+	 */
+	@XmlElement(required = true)
+	private String title;
+	
+	/**
+	 * Whether or not this criteria was met.
+	 */
+	@XmlElement(required = true)
+	private Boolean success;
+	
+	/**
+	 * This variable indicates if the certification criteria was gap certified. 
+	 * It is a binary variable that takes true or false value, and is applicable 
+	 * to 2014 and 2015 Edition. 
+	 */
+	@XmlElement(required = false, nillable=true)
+	private Boolean gap;
+	
+	/**
+	 * This variable indicates if the corresponding certification criteria was 
+	 * submitted for safety-enhanced design attestation during certification testing. 
+	 * It is a binary variable that takes either true or false value, and is only 
+	 * applicable to 2014 Edition. 
+	 */
+	@XmlElement(required = false, nillable=true)
+	private Boolean sed;
+	
+	/**
+	 * This variable indicates if the corresponding certification criteria 
+	 * was successfully tested for automated numerator recording. It is applicable 
+	 * for the 2014 edition, and it is a binary variable that takes either true or false value.
+	 */
+	@XmlElement(required = false, nillable=true)
+	private Boolean g1Success;
+	
+	/**
+	 * This variable indicates if the corresponding certification criteria was 
+	 * successfully tested for automated measure calculation. It is a binary 
+	 * variable that takes either true or false, and is applicable to 2014 Edition. 
+	 */
+	@XmlElement(required = false, nillable=true)
+	private Boolean g2Success;
+	
+	/**
+	 * The hyperlink to access an application programming interface (API)'s documentation 
+	 * and terms of use. This variable is applicable for only 2015 Edition. 
+	 * It is fully qualified URL which is reachable via web browser validation and verification.
+	 */
+	@XmlElement(required = false, nillable=true)
+	private String apiDocumentation;
+	
+	/**
+	 * This variable explains the way in which each privacy and security 
+	 * criterion was addressed for the purposes of certification. It is applicable 
+	 * for 2015 Edition and takes either of Approach 1 and Approach 2. 
+	 */
+	@XmlElement(required = false, nillable=true)
+	private String privacySecurityFramework;
+	
+	@XmlTransient
+	private List<MacraMeasure> allowedMacraMeasures;
+	
+	/**
+	 * The user-centered design (UCD) process applied for the corresponding 
+	 * certification criteria. This variable is applicable for 2014 and 2015 Edition, 
+	 * and a string variable that does not take any restrictions on formatting or values. 
+	 */
+	@XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
+	@XmlElement(name = "ucdProcess")
+	private List<CertificationResultUcdProcess> ucdProcesses;
+	
+	/**
+	 * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) 
+	 * capabilities within a certification criterion to which the Health IT module was 
+	 * tested and certified. For example, within the 2015 certification criteria 170.315(a), 
+	 * the optional functionality to include a 'reason for order' field should be 
+	 * denoted as (a)(1)(ii).
+	 * You can find a list of potential values in the 2014 or 2015 Functionality and 
+	 * Standards Reference Tables. It is applicable for 2014 and 2015 Edition.
+	 */
+	@XmlElementWrapper(name = "testFunctionalityList", nillable = true, required = false)
+	@XmlElement(name = "testFunctionality")
+	private List<CertificationResultTestFunctionality> testFunctionality;
+	
+	/**
+	 * The test procedures used for the certification criteria
+	 */
+	@XmlElementWrapper(name = "testProcedures", nillable = true, required = false)
+	@XmlElement(name = "testProcedure")
+	private List<CertificationResultTestProcedure> testProcedures;
+	
+	/**
+	 * The versions of the test data being used for the certification criteria
+	 */
+	@XmlElementWrapper(name = "testDataList", nillable = true, required = false)
+	@XmlElement(name = "testData")
+	private List<CertificationResultTestData> testDataUsed;
+	
+	/**
+	 * This variable indicates if any additional software is relied upon by the Health 
+	 * IT Module to demonstrate its compliance with a certification criterion or criteria. 
+	 * It is applicable for 2014 and 2015 Edition. 
+	 */
+	@XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
+	@XmlElement(name = "additionalSoftware")
+	private List<CertificationResultAdditionalSoftware> additionalSoftware;
+	
+	/**
+	 * A standard used to meet a certification criterion for 2014 and 2015 Edition. 
+	 * You can find a list of potential values in the 2014 or 2015 Functionality and 
+	 * Standards Reference Tables. 
+	 * Allowed values are the corresponding paragraph number for the standard within the regulation.
+	 */
+	@XmlElementWrapper(name = "testStandards", nillable = true, required = false)
+	@XmlElement(name = "testStandard")
+	private List<CertificationResultTestStandard> testStandards;
+	
+	/**
+	 * The test tool used to certify the Health IT Module to the corresponding certification 
+	 * criteria Allowable values are based on the NIST 2014 and 2015 Edition Test Tools.  
+	 * This variable is applicable for 2014 and 2015 Edition, and allowable values are based 
+	 * on the NIST 2014 and 2015 Edition Test Tools: HL7 CDA Cancer Registry 
+	 * Reporting Validation Tool, HL7v2 Immunization Test Suite, HL7v2 Syndromic Surveillance 
+	 * Test Suite, HL7v2 Electronic Laboratory Reporting Validation Tool, Electronic Prescribing, 
+	 * HL7 CDA National Health Care Surveys Validator, Edge Test Tool, 2015 Direct Certificate 
+	 * Discovery Tool, Cypress, HL7 v2 Electronic Laboratory Reporting (ELR) Validation Tool, 
+	 * HL7 v2 Immunization Information System (IIS) Reporting Validation Tool, 
+	 * HL7 v2 Laboratory Results Interface (LRI) Validation Tool, HL7 v2 Syndromic Surveillance 
+	 * Reporting Validation Tool
+	 */
+	@XmlElementWrapper(name = "testTools", nillable = true, required = false)
+	@XmlElement(name = "testTool")
+	private List<CertificationResultTestTool> testToolsUsed;
+	
+	/**
+	 * This variable indicates if the corresponding certification criteria was 
+	 * successfully tested for automated numerator recording. 
+	 * It is applicable for the 2015 edition. The allowable values vary by 
+	 * certification criteria, and include values such as "EP", "EH/CAH", "EP Individual", 
+	 * "EC Individual (TIN/NPI)", "EC Group", etc. 
+	 */
+	@XmlElementWrapper(name = "g1MacraMeasures", nillable = true, required = false)
+	@XmlElement(name = "macraMeasure")
+	private List<MacraMeasure> g1MacraMeasures;
+	
+	/**
+	 * This variable indicates if the corresponding certification criteria was 
+	 * successfully tested for automated measure calculation.  It is applicable 
+	 * for the 2015 edition. The allowable values vary by certification criteria, 
+	 * and include values such as "EP", "EH/CAH", "EP Individual", 
+	 * "EC Individual (TIN/NPI)", "EC Group", etc. 
+	 */
+	@XmlElementWrapper(name = "g2MacraMeasures", nillable = true, required = false)
+	@XmlElement(name = "macraMeasure")
+	private List<MacraMeasure> g2MacraMeasures;
+	
+	/**
+	 * Tasks used for SED testing
+	 */
+	@XmlElementWrapper(name = "testTasks", nillable = true, required = false)
+	@XmlElement(name = "testTask")
+	private List<CertificationResultTestTask> testTasks;
+	
+	public CertificationResult(){
+		allowedMacraMeasures = new ArrayList<MacraMeasure>();
+		ucdProcesses = new ArrayList<CertificationResultUcdProcess>();
+		 additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+		 testStandards = new ArrayList<CertificationResultTestStandard>();
+		 testToolsUsed = new ArrayList<CertificationResultTestTool>();
+		 testDataUsed = new ArrayList<CertificationResultTestData>();
+		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
+		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+		 testTasks = new ArrayList<CertificationResultTestTask>();
+		 g1MacraMeasures = new ArrayList<MacraMeasure>();
+		 g2MacraMeasures = new ArrayList<MacraMeasure>();
+	}
+
+	public Long getId() {
+		return id;
+	}
+
 	public CertificationResult(CertificationResultDetailsDTO certResult) {
+		this();
+		this.setId(certResult.getId());
 		this.setNumber(certResult.getNumber());
 		this.setSuccess(certResult.getSuccess());
-		this.setTitle(certResult.getTitle());	
+		this.setTitle(certResult.getTitle());
+		this.setGap(certResult.getGap() == null ? Boolean.FALSE : certResult.getGap());
+		this.setSed(certResult.getSed() == null ? Boolean.FALSE : certResult.getSed());
+		this.setG1Success(certResult.getG1Success() == null ? Boolean.FALSE : certResult.getG1Success());
+		this.setG2Success(certResult.getG2Success() == null ? Boolean.FALSE : certResult.getG2Success());
+		this.setApiDocumentation(certResult.getApiDocumentation());
+		this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public List<MacraMeasure> getAllowedMacraMeasures() {
+		return allowedMacraMeasures;
+	}
+
+	public void setAllowedMacraMeasures(List<MacraMeasure> allowedMacraMeasures) {
+		this.allowedMacraMeasures = allowedMacraMeasures;
+	}
+
+	public List<CertificationResultTestProcedure> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
+		this.testProcedures = testProcedures;
 	}
 	
 	public String getNumber() {
@@ -28,11 +262,136 @@ public class CertificationResult {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public boolean isSuccess() {
+	public Boolean isSuccess() {
 		return success;
 	}
-	public void setSuccess(boolean successful) {
+	public void setSuccess(Boolean successful) {
 		this.success = successful;
 	}
+	public List<CertificationResultAdditionalSoftware> getAdditionalSoftware() {
+		return additionalSoftware;
+	}
+	public void setAdditionalSoftware(List<CertificationResultAdditionalSoftware> additionalSoftware) {
+		this.additionalSoftware = additionalSoftware;
+	}
+	public Boolean isGap() {
+		return gap;
+	}
+	public void setGap(Boolean gap) {
+		this.gap = gap;
+	}
+	public Boolean isSed() {
+		return sed;
+	}
+	public void setSed(Boolean sed) {
+		this.sed = sed;
+	}
+	public Boolean isG1Success() {
+		return g1Success;
+	}
+	public void setG1Success(Boolean g1Success) {
+		this.g1Success = g1Success;
+	}
+	public Boolean isG2Success() {
+		return g2Success;
+	}
+	public void setG2Success(Boolean g2Success) {
+		this.g2Success = g2Success;
+	}
+
+	public List<CertificationResultTestTool> getTestToolsUsed() {
+		return testToolsUsed;
+	}
+
+	public void setTestToolsUsed(List<CertificationResultTestTool> testToolsUsed) {
+		this.testToolsUsed = testToolsUsed;
+	}
+
+	public List<CertificationResultTestStandard> getTestStandards() {
+		return testStandards;
+	}
+
+	public void setTestStandards(List<CertificationResultTestStandard> testStandards) {
+		this.testStandards = testStandards;
+	}
 	
+	public List<CertificationResultTestData> getTestDataUsed() {
+		return testDataUsed;
+	}
+
+	public void setTestDataUsed(List<CertificationResultTestData> testDataUsed) {
+		this.testDataUsed = testDataUsed;
+	}
+
+	public List<CertificationResultTestFunctionality> getTestFunctionality() {
+		return testFunctionality;
+	}
+
+	public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
+		this.testFunctionality = testFunctionality;
+	}
+
+	public List<CertificationResultUcdProcess> getUcdProcesses() {
+		return ucdProcesses;
+	}
+
+	public void setUcdProcesses(List<CertificationResultUcdProcess> ucdProcesses) {
+		this.ucdProcesses = ucdProcesses;
+	}
+
+	public List<CertificationResultTestTask> getTestTasks() {
+		return testTasks;
+	}
+
+	public void setTestTasks(List<CertificationResultTestTask> testTasks) {
+		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
+	}
+	
+	public List<MacraMeasure> getG1MacraMeasures() {
+		return g1MacraMeasures;
+	}
+
+	public void setG1MacraMeasures(List<MacraMeasure> g1MacraMeasures) {
+		this.g1MacraMeasures = g1MacraMeasures;
+	}
+
+	public List<MacraMeasure> getG2MacraMeasures() {
+		return g2MacraMeasures;
+	}
+
+	public void setG2MacraMeasures(List<MacraMeasure> g2MacraMeasures) {
+		this.g2MacraMeasures = g2MacraMeasures;
+	}
+	
+	public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework){
+		if(StringUtils.isEmpty(privacyAndSecurityFramework)) {
+			return privacyAndSecurityFramework;
+		}
+		privacyAndSecurityFramework = privacyAndSecurityFramework.replace(",", PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+		StringBuilder result = new StringBuilder();
+		String[] frameworks = privacyAndSecurityFramework.split(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+		for(int i = 0; i < frameworks.length; i++) {
+			if(result.length() > 0) {
+				result.append(PRIVACY_SECURITY_FRAMEWORK_DELIMITER);
+			}
+			result.append(frameworks[i].trim());
+		}
+		return result.toString();
+	}
 }

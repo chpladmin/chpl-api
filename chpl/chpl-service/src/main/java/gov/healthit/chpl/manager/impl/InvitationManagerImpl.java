@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.acls.domain.BasePermission;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.Util;
+import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.dao.InvitationDAO;
 import gov.healthit.chpl.auth.dao.InvitationPermissionDAO;
 import gov.healthit.chpl.auth.dao.UserDAO;
@@ -30,6 +31,7 @@ import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
@@ -56,13 +58,13 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Autowired
 	private InvitationPermissionDAO invitationPermissionDao;
 	
+	@Autowired Authenticator userAuthenticator;
 	@Autowired private UserManager userManager;
 	@Autowired private CertificationBodyManager acbManager;
 	@Autowired private TestingLabManager atlManager;
 	
 	private static final Logger logger = LogManager.getLogger(InvitationManagerImpl.class);
 
-	
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -251,18 +253,28 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Transactional
 	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO toUpdate) 
 		throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
+		User loggedInUser = gov.healthit.chpl.auth.Util.getCurrentUser();
+		
+		//have to give temporary permission to see all ACBs and ATLs 
+		//because the logged in user wouldn't already have permission on them
 		Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
 		SecurityContextHolder.getContext().setAuthentication(authenticator);
-		
+			
 		handleInvitation(invitation, toUpdate);
-		
+			
 		//delete invitation and permissions, we are done with it
 		for(InvitationPermissionDTO permission : invitation.getPermissions()) {
 			invitationPermissionDao.delete(permission.getId());
 		}
 		invitationDao.delete(invitation.getId());
+			
+		//put the permissions back how they were
+		if(loggedInUser == null) {
+			SecurityContextHolder.getContext().setAuthentication(null);
+		} else {
+			SecurityContextHolder.getContext().setAuthentication(loggedInUser);
+		}
 		
-		SecurityContextHolder.getContext().setAuthentication(null);
 		return toUpdate;
 	}
 	

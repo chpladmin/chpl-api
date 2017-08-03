@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,12 +17,14 @@ import org.springframework.security.acls.model.MutableAclService;
 import org.springframework.security.acls.model.ObjectIdentity;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -29,12 +32,11 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import junit.framework.TestCase;
 
@@ -50,6 +52,10 @@ public class TestingLabDaoTest extends TestCase {
 	@Autowired private TestingLabDAO atlDao;
 	@Autowired private MutableAclService mutableAclService;
 	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+	
 	private static JWTAuthenticatedUser adminUser;
 
 	@BeforeClass
@@ -63,16 +69,30 @@ public class TestingLabDaoTest extends TestCase {
 	}
 
 	@Test
+	@Transactional
+	public void testGetMaxAtlCode() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		String maxCode = atlDao.getMaxCode();
+		assertNotNull(maxCode);
+		assertEquals("01", maxCode);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test
+	@Transactional
 	public void testGetAllAtls() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-		List<TestingLabDTO> atls = atlDao.findAll();
+		List<TestingLabDTO> atls = atlDao.findAll(false);
 		assertNotNull(atls);
 		assertEquals(1, atls.size());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testCreateAtlWithoutAddress() throws EntityCreationException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		TestingLabDTO atl = new TestingLabDTO();
@@ -93,6 +113,8 @@ public class TestingLabDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testCreateAtlWithAddress() throws EntityCreationException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -125,8 +147,10 @@ public class TestingLabDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testUpdateAtl() {
-		TestingLabDTO toUpdate = atlDao.findAll().get(0);
+		TestingLabDTO toUpdate = atlDao.findAll(false).get(0);
 		toUpdate.setName("UPDATED NAME");
 		
 		TestingLabDTO result = null;
@@ -148,6 +172,8 @@ public class TestingLabDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testDeleteAtl() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long deleteId = -1L;
@@ -159,6 +185,7 @@ public class TestingLabDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void listUsersForAtl() {
 		Long atlIdWithUsers=-1L;
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atlIdWithUsers);

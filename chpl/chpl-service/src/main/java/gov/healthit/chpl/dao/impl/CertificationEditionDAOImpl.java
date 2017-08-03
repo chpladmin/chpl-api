@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.Query;
 
-import org.hibernate.validator.internal.util.privilegedactions.GetMethodFromPropertyName;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -95,6 +94,22 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 			dto = new CertificationEditionDTO(entity);
 		}
 		return dto;
+	}
+	
+	@Override
+	public List<CertificationEditionDTO> getEditions(List<Long> listingIds){
+		Query query = entityManager.createQuery( "SELECT DISTINCT edition "
+				+ "FROM CertificationEditionEntity edition, CertifiedProductEntity listing "
+				+ "WHERE listing.deleted <> true "
+				+ "AND listing.certificationEditionId = edition.id "
+				+ "AND listing.id IN (:listingIds) ", CertificationEditionEntity.class );
+		query.setParameter("listingIds", listingIds);
+		List<CertificationEditionEntity> editions = query.getResultList();
+		List<CertificationEditionDTO> results = new ArrayList<CertificationEditionDTO>();
+		for(CertificationEditionEntity edition : editions) {
+			results.add(new CertificationEditionDTO(edition));
+		}
+		return results;
 	}
 	
 	@Override

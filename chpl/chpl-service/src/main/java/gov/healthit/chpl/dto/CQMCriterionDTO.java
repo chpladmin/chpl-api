@@ -1,11 +1,12 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.CQMCriterionEntity;
-
+import java.io.Serializable;
 import java.util.Date;
 
-public class CQMCriterionDTO {
+import gov.healthit.chpl.entity.CQMCriterionEntity;
 
+public class CQMCriterionDTO implements Serializable {
+	private static final long serialVersionUID = -2794095309532708038L;
 	private String cmsId;
 	private Long cqmCriterionTypeId;
 	private String cqmDomain;
@@ -22,10 +23,11 @@ public class CQMCriterionDTO {
 	private String title;
 	private Boolean retired;
 	
-	public CQMCriterionDTO(){}
+	public CQMCriterionDTO(){
+	}
 	
 	public CQMCriterionDTO(CQMCriterionEntity entity){
-		
+		this();
 		this.cmsId = entity.getCmsId();
 		this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();
 		this.cqmDomain = entity.getCqmDomain();
@@ -135,5 +137,4 @@ public class CQMCriterionDTO {
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
-	
 }

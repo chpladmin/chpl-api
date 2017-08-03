@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.entity.CertificationResultDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 
 
 @Repository(value = "certificationResultDetailsDAO")
@@ -20,7 +20,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
 	public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
 			Long certifiedProductId) throws EntityRetrievalException {
 		List<CertificationResultDetailsEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
-		List<CertificationResultDetailsDTO> dtos = new ArrayList<CertificationResultDetailsDTO>();
+		List<CertificationResultDetailsDTO> dtos = new ArrayList<CertificationResultDetailsDTO>(entities.size());
 		
 		for (CertificationResultDetailsEntity entity : entities){
 			dtos.add(new CertificationResultDetailsDTO(entity));

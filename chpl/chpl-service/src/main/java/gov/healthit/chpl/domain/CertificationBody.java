@@ -1,14 +1,17 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
-public class CertificationBody {
-	
+public class CertificationBody implements Serializable {
+	private static final long serialVersionUID = 5328477887912042588L;
 	private Long id;
 	private String acbCode;
 	private String name;
 	private String website;
 	private Address address;
+	private boolean isDeleted;
 	
 	public CertificationBody() {}
 	
@@ -20,6 +23,7 @@ public class CertificationBody {
 		if(dto.getAddress() != null) {
 			this.address = new Address(dto.getAddress());
 		}
+		this.isDeleted = dto.getDeleted();
 	}
 	
 	public Long getId() {
@@ -53,6 +57,14 @@ public class CertificationBody {
 
 	public void setAcbCode(String acbCode) {
 		this.acbCode = acbCode;
+	}
+	
+	public boolean getIsDeleted(){
+		return isDeleted;
+	}
+	
+	public void setIsDeleted(boolean deleted){
+		this.isDeleted = deleted;
 	}
 	
 }

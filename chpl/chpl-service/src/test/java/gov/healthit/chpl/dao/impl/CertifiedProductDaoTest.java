@@ -2,29 +2,39 @@ package gov.healthit.chpl.dao.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = gov.healthit.chpl.CHPLTestConfig.class)
@@ -37,9 +47,14 @@ public class CertifiedProductDaoTest {
 
 	@Autowired
 	private CertifiedProductDAO productDao;
+	static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 
 	private static JWTAuthenticatedUser authUser;
-
+	private static Pattern urlPattern = Pattern.compile(URL_PATTERN);
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		authUser = new JWTAuthenticatedUser();
@@ -49,19 +64,25 @@ public class CertifiedProductDaoTest {
 	}
 
 	@Test
-	public void getAllCertifiedProducts() {
-		List<CertifiedProductDetailsDTO> results = productDao.findAll();
-		assertNotNull(results);
-		assertEquals(4, results.size());
-	}
-
-	@Test
-	public void getLargedChplNumber() {
-		String largest = productDao.getLargestChplNumber();
-		assertEquals("CHP-024052", largest);
+	public void testUrlPattern() {
+		String badUrl = "www.google.com";
+		
+		assertEquals(false, urlPattern.matcher(badUrl).matches());
+		
+		String goodUrl = "http://www.google.com";
+		assertEquals(true, urlPattern.matcher(goodUrl).matches());
 	}
 	
 	@Test
+	@Transactional(readOnly = true)
+	public void getAllCertifiedProducts() {
+		List<CertifiedProductDetailsDTO> results = productDao.findAll();
+		assertNotNull(results);
+		assertEquals(16, results.size());
+	}
+	
+	@Test
+	@Transactional(readOnly = true)
 	public void getById() {
 		Long productId = 1L;
 		CertifiedProductDTO product = null;
@@ -75,11 +96,65 @@ public class CertifiedProductDaoTest {
 	}
 	
 	@Test
+	@Transactional(readOnly = true)
 	public void getProductsByVersion() {
 		Long versionId = 1L;
 		List<CertifiedProductDetailsDTO> products = null;
 		products = productDao.getDetailsByVersionId(versionId);
 		assertNotNull(products);
 		assertEquals(1, products.size());
+	}
+	
+	@Test
+	@Transactional(readOnly = true)
+	public void getDetailsByChplNumbers() {
+		List<String> chplProductNumbers = new ArrayList<String>();
+		chplProductNumbers.add("CHP-024050");
+		chplProductNumbers.add("CHP-024051");
+		chplProductNumbers.add("CHP-024052");
+		List<CertifiedProductDetailsDTO> products = null;
+		products = productDao.getDetailsByChplNumbers(chplProductNumbers);
+		assertNotNull(products);
+		assertEquals(3, products.size());
+	}
+	
+	/**
+	 * Given that I am ROLE_ONC_STAFF or ROLE_ADMIN
+	 * When I update a CHPL Product Number's count of meaningfulUseUsers
+	 * Then the database shows the change for only the CHPL Product Number's meaningfulUseUsers
+	 * @throws EntityRetrievalException
+	 * @throws IOException 
+	 */
+	@Test
+	@Transactional(readOnly = true)
+	@Rollback
+	public void updateMeaningfulUseUsers() throws EntityRetrievalException, IOException {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
+		CertifiedProductDTO dto = new CertifiedProductDTO();
+		dto.setChplProductNumber("CHP-024050");
+		dto.setMeaningfulUseUsers(11L);
+		CertifiedProductDTO dtoResponse = new CertifiedProductDTO();
+		dtoResponse = productDao.updateMeaningfulUseUsers(dto);
+		assertNotNull(dtoResponse);
+		assertTrue(dtoResponse.getChplProductNumber().equalsIgnoreCase("CHP-024050"));
+		assertTrue(dtoResponse.getMeaningfulUseUsers() == 11L);
+		assertTrue(dtoResponse.getCertificationEditionId() != null);
+	}
+	
+	/**
+	 * Given that I am authenticated as an admin
+	 * When I delete a certified product
+	 * Then that certified product no longer exists in the database
+	 * @throws EntityRetrievalException 
+	 */
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
+	public void delete() throws EntityRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(authUser);
+		Long productId = 1L;
+		productDao.delete(productId);
+		CertifiedProductDTO deletedProduct = productDao.getById(productId);
+		assertTrue(deletedProduct.getDeleted());
 	}
 }

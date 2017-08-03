@@ -1,65 +1,82 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.CertificationResultEntity;
-
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 
-public class CertificationResultDTO {
-
-	private Boolean automatedMeasureCapable;
-	private Boolean automatedNumerator;
+public class CertificationResultDTO implements Serializable {
+	private static final long serialVersionUID = 4640517836460510236L;
+	private Long id;
 	private Long certificationCriterionId;
 	private Long certifiedProductId;
 	private Date creationDate;
 	private Boolean deleted;
 	private Boolean gap;
-	private Long id;
-	private Boolean inherited;
+	private Boolean sed;
+	private Boolean successful;
+	private Boolean g1Success;
+	private Boolean g2Success;
+	private String apiDocumentation;
+	private String privacySecurityFramework;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	private Boolean sedInherited;
-	private Boolean sedSuccessful;
-	private Boolean successful;
-	private Long testDataVersionId;
-	private Long testProcedureVersionId;
 	
-	public CertificationResultDTO(){}
+	private List<CertificationResultUcdProcessDTO> ucdProcesses;
+	private List<CertificationResultTestFunctionalityDTO> testFunctionality;
+	private List<CertificationResultTestProcedureDTO> testProcedures;
+ 	private List<CertificationResultTestDataDTO> testData;
+	private List<CertificationResultTestToolDTO> testTools;
+	private List<CertificationResultTestStandardDTO> testStandards;
+	private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
+	private List<CertificationResultTestTaskDTO> testTasks;
+	private List<CertificationResultMacraMeasureDTO> g1Measures;
+	private List<CertificationResultMacraMeasureDTO> g2Measures;
+	
+	public CertificationResultDTO(){
+		ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
+		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
+		testStandards = new ArrayList<CertificationResultTestStandardDTO>();
+		testTools = new ArrayList<CertificationResultTestToolDTO>();
+		testData = new ArrayList<CertificationResultTestDataDTO>();
+		testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
+		testFunctionality = new ArrayList<CertificationResultTestFunctionalityDTO>();
+		testTasks = new ArrayList<CertificationResultTestTaskDTO>();
+		g1Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
+		g2Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
+	}
 	
 	public CertificationResultDTO(CertificationResultEntity entity){
-	
+		this();
 		this.id = entity.getId();
-		
-		this.automatedMeasureCapable = entity.isAutomatedMeasureCapable();
-		this.automatedNumerator = entity.isAutomatedNumerator();
 		this.certificationCriterionId = entity.getCertificationCriterionId();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.creationDate = entity.getCreationDate();
 		this.gap = entity.isGap();
-		this.inherited = entity.isInherited();
+		this.sed = entity.getSed();
+		this.g1Success = entity.getG1Success();
+		this.g2Success = entity.getG2Success();
+		this.apiDocumentation = entity.getApiDocumentation();
+		this.privacySecurityFramework = entity.getPrivacySecurityFramework();
+		this.successful = entity.isSuccess();
+		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
-		this.sedInherited = entity.isSedInherited();
-		this.sedSuccessful = entity.isSedSuccessful();
-		this.successful = entity.isSuccess();
-		this.testDataVersionId = entity.getTestDataVersionId();
-		this.testProcedureVersionId = entity.getTestProcedureVersionId();
-		this.deleted = entity.isDeleted();
-		
 	}
 	
+	public CertificationResultDTO(CertificationResult domain){
+		this();
+		this.gap = domain.isGap();
+		this.sed = domain.isSed();
+		this.g1Success = domain.isG1Success();
+		this.g2Success = domain.isG2Success();
+		this.apiDocumentation = domain.getApiDocumentation();
+		this.privacySecurityFramework = domain.getPrivacySecurityFramework();
+		this.successful = domain.isSuccess();
+	}
 	
-	public Boolean getAutomatedMeasureCapable() {
-		return automatedMeasureCapable;
-	}
-	public void setAutomatedMeasureCapable(Boolean automatedMeasureCapable) {
-		this.automatedMeasureCapable = automatedMeasureCapable;
-	}
-	public Boolean getAutomatedNumerator() {
-		return automatedNumerator;
-	}
-	public void setAutomatedNumerator(Boolean automatedNumerator) {
-		this.automatedNumerator = automatedNumerator;
-	}
 	public Long getCertificationCriterionId() {
 		return certificationCriterionId;
 	}
@@ -96,12 +113,6 @@ public class CertificationResultDTO {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Boolean getInherited() {
-		return inherited;
-	}
-	public void setInherited(Boolean inherited) {
-		this.inherited = inherited;
-	}
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
@@ -114,35 +125,135 @@ public class CertificationResultDTO {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public Boolean getSedInherited() {
-		return sedInherited;
-	}
-	public void setSedInherited(Boolean sedInherited) {
-		this.sedInherited = sedInherited;
-	}
-	public Boolean getSedSuccessful() {
-		return sedSuccessful;
-	}
-	public void setSedSuccessful(Boolean sedSuccessful) {
-		this.sedSuccessful = sedSuccessful;
-	}
 	public Boolean getSuccessful() {
 		return successful;
 	}
 	public void setSuccessful(Boolean successful) {
 		this.successful = successful;
 	}
-	public Long getTestDataVersionId() {
-		return testDataVersionId;
+
+	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftware() {
+		return additionalSoftware;
 	}
-	public void setTestDataVersionId(Long testDataVersionId) {
-		this.testDataVersionId = testDataVersionId;
+
+	public void setAdditionalSoftware(List<CertificationResultAdditionalSoftwareDTO> list) {
+		this.additionalSoftware = list;
 	}
-	public Long getTestProcedureVersionId() {
-		return testProcedureVersionId;
+
+	public Boolean getSed() {
+		return sed;
 	}
-	public void setTestProcedureVersionId(Long testProcedureVersionId) {
-		this.testProcedureVersionId = testProcedureVersionId;
+
+	public void setSed(Boolean sed) {
+		this.sed = sed;
+	}
+
+	public Boolean getG1Success() {
+		return g1Success;
+	}
+
+	public void setG1Success(Boolean g1Success) {
+		this.g1Success = g1Success;
+	}
+
+	public Boolean getG2Success() {
+		return g2Success;
+	}
+
+	public void setG2Success(Boolean g2Success) {
+		this.g2Success = g2Success;
+	}
+
+	public void setCertifiedProductId(Long certifiedProductId) {
+		this.certifiedProductId = certifiedProductId;
+	}
+
+	public List<CertificationResultTestStandardDTO> getTestStandards() {
+		return testStandards;
+	}
+
+	public void setTestStandards(List<CertificationResultTestStandardDTO> testStandards) {
+		this.testStandards = testStandards;
+	}
+
+	public List<CertificationResultTestToolDTO> getTestTools() {
+		return testTools;
+	}
+
+	public void setTestTools(List<CertificationResultTestToolDTO> testTools) {
+		this.testTools = testTools;
+	}
+
+	public List<CertificationResultTestDataDTO> getTestData() {
+		return testData;
+	}
+
+	public void setTestData(List<CertificationResultTestDataDTO> testData) {
+		this.testData = testData;
+	}
+
+	public List<CertificationResultTestFunctionalityDTO> getTestFunctionality() {
+		return testFunctionality;
+	}
+
+	public void setTestFunctionality(List<CertificationResultTestFunctionalityDTO> testFunctionality) {
+		this.testFunctionality = testFunctionality;
+	}
+
+	public List<CertificationResultUcdProcessDTO> getUcdProcesses() {
+		return ucdProcesses;
+	}
+
+	public void setUcdProcesses(List<CertificationResultUcdProcessDTO> ucdProcesses) {
+		this.ucdProcesses = ucdProcesses;
+	}
+
+	public List<CertificationResultTestTaskDTO> getTestTasks() {
+		return testTasks;
+	}
+
+	public void setTestTasks(List<CertificationResultTestTaskDTO> testTasks) {
+		this.testTasks = testTasks;
+	}
+
+	public String getApiDocumentation() {
+		return apiDocumentation;
+	}
+
+	public void setApiDocumentation(String apiDocumentation) {
+		this.apiDocumentation = apiDocumentation;
+	}
+
+	public String getPrivacySecurityFramework() {
+		return privacySecurityFramework;
+	}
+
+	public void setPrivacySecurityFramework(String privacySecurityFramework) {
+		this.privacySecurityFramework = privacySecurityFramework;
 	}
 	
+	public List<CertificationResultMacraMeasureDTO> getG1Measures() {
+		return g1Measures;
+	}
+
+	public void setG1Measures(List<CertificationResultMacraMeasureDTO> g1Measures) {
+		this.g1Measures = g1Measures;
+	}
+
+	public List<CertificationResultMacraMeasureDTO> getG2Measures() {
+		return g2Measures;
+	}
+
+	public void setG2Measures(List<CertificationResultMacraMeasureDTO> g2Measures) {
+		this.g2Measures = g2Measures;
+	}
+
+	public List<CertificationResultTestProcedureDTO> getTestProcedures() {
+		return testProcedures;
+	}
+
+	public void setTestProcedures(List<CertificationResultTestProcedureDTO> testProcedures) {
+		this.testProcedures = testProcedures;
+	}
+
 }

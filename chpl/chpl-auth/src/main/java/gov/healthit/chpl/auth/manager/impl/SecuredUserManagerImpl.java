@@ -1,18 +1,6 @@
 package gov.healthit.chpl.auth.manager.impl;
 
 
-import gov.healthit.chpl.auth.dao.UserContactDAO;
-import gov.healthit.chpl.auth.dao.UserDAO;
-import gov.healthit.chpl.auth.dao.UserPermissionDAO;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-import gov.healthit.chpl.auth.entity.UserEntity;
-import gov.healthit.chpl.auth.manager.SecuredUserManager;
-import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
-import gov.healthit.chpl.auth.user.UserCreationException;
-import gov.healthit.chpl.auth.user.UserManagementException;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
-
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +20,18 @@ import org.springframework.security.acls.model.Permission;
 import org.springframework.security.acls.model.Sid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import gov.healthit.chpl.auth.dao.UserContactDAO;
+import gov.healthit.chpl.auth.dao.UserDAO;
+import gov.healthit.chpl.auth.dao.UserPermissionDAO;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
+import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.auth.manager.SecuredUserManager;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserCreationException;
+import gov.healthit.chpl.auth.user.UserManagementException;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 
 @Service
 public class SecuredUserManagerImpl implements SecuredUserManager {
@@ -190,11 +190,23 @@ public class SecuredUserManagerImpl implements SecuredUserManager {
 		
 	}
 	
+	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#user, admin)")
 	public void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException{
 		userDAO.updatePassword(user.getSubjectName(), encodedPassword);
 	}
 	
+	@Override
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR')")
+	public void updateFailedLoginCount(UserDTO user) throws UserRetrievalException {
+		userDAO.updateFailedLoginCount(user.getSubjectName(), user.getFailedLoginCount());
+	}
+	
+	@Override
+	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR')")
+	public void updateAccountLockedStatus(UserDTO user) throws UserRetrievalException {
+		userDAO.updateAccountLockedStatus(user.getSubjectName(), user.isAccountLocked());
+	}
 	
 	@Override
 	@PreAuthorize("hasRole('ROLE_USER_AUTHENTICATOR') or hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasPermission(#user, 'read') or hasPermission(#user, admin)")

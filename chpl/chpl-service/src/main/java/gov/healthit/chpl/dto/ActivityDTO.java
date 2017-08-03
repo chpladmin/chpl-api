@@ -1,13 +1,15 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.domain.ActivityConcept;
-import gov.healthit.chpl.entity.ActivityEntity;
-
+import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.entity.ActivityEntity;
 
-public class ActivityDTO {
 
+public class ActivityDTO implements Serializable {
+	private static final long serialVersionUID = -8364552955791049631L;
 	private Long id;
 	private String description;
 	private String originalData;
@@ -19,6 +21,7 @@ public class ActivityDTO {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private Boolean deleted;
+	private UserDTO user;
 	
 	public ActivityDTO(){}
 	
@@ -36,6 +39,9 @@ public class ActivityDTO {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.deleted = entity.getDeleted();
 		
+		if(entity.getUser() != null) {
+			this.user = new UserDTO(entity.getUser());
+		}
 	}
 	
 	public Long getId() {
@@ -107,5 +113,13 @@ public class ActivityDTO {
 
 	public void setNewData(String newData) {
 		this.newData = newData;
+	}
+
+	public UserDTO getUser() {
+		return user;
+	}
+
+	public void setUser(UserDTO user) {
+		this.user = user;
 	}
 }

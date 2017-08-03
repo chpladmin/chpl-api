@@ -1,17 +1,19 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.ProductVersionEntity;
-
+import java.io.Serializable;
 import java.util.Date;
 
-public class ProductVersionDTO {
+import gov.healthit.chpl.entity.ProductVersionEntity;
 
+public class ProductVersionDTO implements Serializable {
+	private static final long serialVersionUID = -1371133241003414009L;
 	private Long id;
 	private Date creationDate;
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private Long productId;
+	private String productName;
 	private String version;
 	
 	public ProductVersionDTO(){}
@@ -23,8 +25,11 @@ public class ProductVersionDTO {
 			this.deleted = entity.isDeleted();
 			this.lastModifiedDate = entity.getLastModifiedDate();
 			this.lastModifiedUser = entity.getLastModifiedUser();
-			this.productId = entity.getProductId();
 			this.version = entity.getVersion();
+			if(entity.getProduct() != null) {
+				this.productId = entity.getProduct().getId();
+				this.productName = entity.getProduct().getName();
+			}
 		}
 	}
 	
@@ -59,17 +64,26 @@ public class ProductVersionDTO {
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
 	}
-	public Long getProductId() {
-		return productId;
-	}
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
 	public String getVersion() {
 		return version;
 	}
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	
+
+	public Long getProductId() {
+		return productId;
+	}
+
+	public void setProductId(Long productId) {
+		this.productId = productId;
+	}
+
+	public String getProductName() {
+		return productName;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
 }

@@ -1,13 +1,13 @@
 package gov.healthit.chpl.auth.user;
 
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
+
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 
 public class JWTAuthenticatedUser implements User {

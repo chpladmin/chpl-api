@@ -13,6 +13,7 @@
   <packaging>war</packaging>
   <name>chpl-service Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  
   <dependencies>
     	<dependency>
 			<groupId>gov.healthit.chpl</groupId>
@@ -52,7 +53,7 @@
 	      <groupId>org.hibernate</groupId>
 	      <artifactId>hibernate-core</artifactId>
 	      <version>3.6.3.Final</version>
-	      <scope>compile</scope>
+	      <scope>compile</scope> 
 	    </dependency>
 	    
 	    <dependency>
@@ -61,6 +62,13 @@
 	      <version>3.6.3.Final</version>
 	      <scope>compile</scope>
 	    </dependency>
+	    
+	    <dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20090211</version>
+		    <scope>test</scope>
+		</dependency>
 	    
 	    <dependency>
     		<groupId>org.hibernate.javax.persistence</groupId>
@@ -85,30 +93,62 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.4</version>
 		</dependency>
-		
+
+        <!-- Optional for caching. Used to log stuff 
+        <dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.0.13</version>
+		</dependency> -->
+
+		<!-- Spring caching framework inside this -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>4.1.1.RELEASE</version>
+		</dependency>
+
+		<!-- Support for Ehcache and others -->
 		<dependency>
 			<groupId>org.bitbucket.b_c</groupId>
 			<artifactId>jose4j</artifactId>
 			<version>0.4.1</version>
 		</dependency>
 		
-		
 		<dependency>
 		  <groupId>com.fasterxml.jackson.core</groupId>
 		  <artifactId>jackson-core</artifactId>
-		  <version>2.2.2</version>
+		  <version>2.8.5</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.2.2</version>
+			<version>2.8.5</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>net.sf.ehcache</groupId>
 			<artifactId>ehcache</artifactId>
-			<version>2.10.0</version>
+			<version>2.9.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${org.springframework.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.8.10</version>
 		</dependency>
 		
 		<dependency>
@@ -147,7 +187,6 @@
 			<artifactId>castor-xml</artifactId>
 			<version>1.4.0</version>
 		</dependency>
-		
 		
 		<!-- for unit/integration testing of the dao calls -->
 
@@ -218,9 +257,22 @@
 			<artifactId>springfox-core</artifactId>
 			<version>2.3.0</version>
 		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xerces</artifactId>
+			<version>2.4.0</version>
+		</dependency>
+
+		<dependency>
+    		<groupId>org.apache.logging.log4j</groupId>
+    		<artifactId>log4j-slf4j-impl</artifactId>
+    		<version>2.7</version>
+		</dependency>
+		
   </dependencies>
   <build>
     <finalName>chpl-service</finalName>
+      
   	<plugins>
   		<plugin>
 			<groupId>org.apache.maven.plugins</groupId>
@@ -246,6 +298,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-beta-5</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -255,6 +308,7 @@
           </execution>
         </executions>
         <configuration>
+        
           <archive>
             <manifest>
               <mainClass>gov.healthit.chpl.app.App</mainClass>
@@ -265,6 +319,154 @@
           </descriptorRefs>
         </configuration>
       </plugin>
+      
+       <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>jaxb2-maven-plugin</artifactId>
+            <version>2.3.1</version>
+            <configuration>
+            	<clearOutputDir>true</clearOutputDir>
+            	<verbose>true</verbose>
+            	<createJavaDocAnnotations>true</createJavaDocAnnotations>
+				<sources>
+					<source>src/main/java/gov/healthit/chpl/domain/Address.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultAdditionalSoftware.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestData.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestFunctionality.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestParticipant.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestProcedure.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestStandard.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTask.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTool.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultUcdProcess.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProduct.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductAccessibilityStandard.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductDownloadResponse.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductQmsStandard.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSearchDetails.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductTargetedUser.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/Contact.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CQMResultCertification.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CQMResultDetails.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/Developer.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/DeveloperStatus.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/DeveloperStatusEvent.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/Product.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/ProductOwner.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/ProductVersion.java</source>					
+					<source>src/main/java/gov/healthit/chpl/domain/Surveillance.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformity.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformityDocument.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceNonconformityStatus.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceRequirement.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceRequirementType.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceResultType.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/SurveillanceType.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/TransparencyAttestationMap.java</source>
+				</sources>
+			</configuration>
+            <executions>
+                <execution>
+                    <id>schemagen</id>
+                    <goals>
+                        <goal>schemagen</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 	</plugins>
   </build>
+  
+  <reporting>
+      <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jxr-plugin</artifactId>
+            <version>2.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>2.17</version>
+          <configuration>
+          	<configLocation>chpl-checkstyle-checks.xml</configLocation>
+          </configuration>
+          <reportSets>
+            <reportSet>
+              <reports>
+                <report>checkstyle</report>
+              </reports>
+            </reportSet>
+          </reportSets>
+        </plugin>
+      </plugins>
+   </reporting>
+    
+  <profiles>
+    <profile>
+        <id>environment-specific</id>
+        <activation>
+            <property>
+                <name>env</name>
+            </property>
+        </activation>
+        <build>
+        <plugins>  
+        <!-- this plugin copies the correct resource into the jar --> 
+         <plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-resources-plugin</artifactId>
+	        <version>2.7</version>
+	        <executions>
+	          <execution>
+	            <id>copy-resources</id>
+	            <!-- here the phase you need -->
+	            <phase>validate</phase>
+	            <goals>
+	              <goal>copy-resources</goal>
+	            </goals>
+	            <configuration>
+	              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+	              <resources>          
+	                <resource>
+	                  <directory>src/main/resources-${env}</directory>
+	                </resource>
+	              </resources>              
+	            </configuration>            
+	          </execution>
+	        </executions>
+     	 </plugin>
+      
+          <!-- this plugin will allow files in environment-specific folders like resources-prod or resources-test
+         to be added to the resulting war's classpath under WEB-INF/classes
+         to activate the profile, simply add '-Denv=production' to your maven build command 
+         this also works fine with war:inplace and war:exploded 
+   		 -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <version>2.4</version>
+            <configuration>
+                <webResources>
+                    <!-- note the order of the following resource elements are important. 
+                         if there are duplicate files, the first file copied will win
+                    -->
+                    <resource>
+                        <!-- this is relative to the pom.xml directory -->                        
+                        <directory>src/main/resources-${env}</directory>
+                        <!-- override default destination at root of war -->
+                        <targetPath>WEB-INF/classes</targetPath>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                        <targetPath>WEB-INF/classes</targetPath>
+                    </resource>
+                </webResources>
+            </configuration>
+          </plugin>             
+        </plugins>
+        </build>
+    </profile>
+  </profiles>
 </project>

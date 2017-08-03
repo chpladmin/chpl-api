@@ -1,9 +1,11 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CorrectiveActionPlanResults {
+public class CorrectiveActionPlanResults implements Serializable {
+	private static final long serialVersionUID = 8597873999181093677L;
 	private List<CorrectiveActionPlanDetails> plans;
 	
 	public CorrectiveActionPlanResults() {

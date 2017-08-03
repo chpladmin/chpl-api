@@ -1,12 +1,10 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
-import junit.framework.TestCase;
-
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +19,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.caching.CacheUtil;
+import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.domain.SearchRequest;
+import gov.healthit.chpl.domain.SearchResponse;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.manager.CertifiedProductSearchManager;
+import junit.framework.TestCase;
+import net.sf.ehcache.CacheException;
+import net.sf.ehcache.CacheManager;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -31,22 +42,26 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductSearchManagerTest extends TestCase {
 	
-	
 	@Autowired
 	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
+	@Autowired private CacheUtil cacheUtil;
+	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	@Test
 	@Transactional
-	public void testSearchVendor(){
+	public void testSearchDeveloper(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setVendor("Test Vendor 1");
+		searchRequest.setDeveloper("Test Developer 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(2, response.getResults().size());
+		assertEquals(5, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getVendor().get("name").toString().startsWith("Test Vendor 1"));
+			assertTrue(result.getDeveloper().get("name").toString().startsWith("Test Developer 1"));
 		}
 	}
 	
@@ -57,7 +72,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setProduct("Test Product 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(2, response.getResults().size());
+		assertEquals(3, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getProduct().get("name").toString().startsWith("Test Product 1"));
@@ -71,7 +86,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVersion("1.0.1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(1, response.getResults().size());
+		assertEquals(2, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getProduct().get("version").toString().startsWith("1.0.1"));
@@ -83,7 +98,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	public void testSearchCertificationEdition(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setCertificationEdition("2014");
+		searchRequest.getCertificationEditions().add("2014");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals(2, response.getResults().size());
 		
@@ -97,8 +112,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	public void testSearchCertificationBody(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setCertificationBody("InfoGard");
-		searchRequest.setVisibleOnCHPL("BOTH");
+		searchRequest.getCertificationBodies().add("InfoGard");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals(4, response.getResults().size());
 		
@@ -106,29 +120,13 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 			assertTrue(result.getCertifyingBody().get("name").toString().startsWith("InfoGard"));
 		}
 	}
-	
-	@Test
-	@Transactional
-	public void testSearchProductClassificationType(){
-		
-		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setProductClassification("Complete EHR");
-		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(1, response.getResults().size());
-		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getClassificationType().get("name").toString().startsWith("Complete EHR"));
-		}
-		
-	}
-	
+
 	@Test
 	@Transactional
 	public void testSearchPracticeType(){
 		
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
-		searchRequest.setVisibleOnCHPL("BOTH");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
 		assertEquals(4, response.getResults().size());
 		
@@ -137,20 +135,76 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		}
 	}
 	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeStartDateOnly(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateStart("2015-08-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(11, response.getResults().size());
+		
+		boolean foundFirstProduct = false;
+		boolean foundSecondProduct = false;
+		for (CertifiedProductSearchResult result : response.getResults() ){
+			if(result.getId().longValue() == 1L) {
+				foundFirstProduct = true;
+			}
+			if(result.getId().longValue() == 2L) {
+				foundSecondProduct = true;
+			}
+		}
+		assertTrue(foundFirstProduct && foundSecondProduct);
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeEndDateOnly(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateEnd("2015-08-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(12, response.getResults().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeStartAndEndDate(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateStart("2015-08-01");
+		searchRequest.setCertificationDateEnd("2015-10-31");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(12, response.getResults().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeStartDateOnlyNoResults(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateStart("2015-12-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(0, response.getResults().size());
+	}
+	
+	@Test
+	@Transactional
+	public void testSearchCertificationDateRangeEndDateOnlyNoResults(){
+		
+		SearchRequest searchRequest = new SearchRequest();
+		searchRequest.setCertificationDateEnd("2015-01-20");
+		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(0, response.getResults().size());
+	}
 	
 	@Test
 	@Transactional
 	public void testSearchVisibleOnCHPL(){
 		
 		SearchRequest searchRequest = new SearchRequest();
-		searchRequest.setVisibleOnCHPL("YES");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(2, response.getResults().size());
-		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getVisibleOnChpl());
-		}
-		
+		assertEquals(12, response.getResults().size());
 	}
 	
 	@Test
@@ -160,14 +214,12 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		
 		searchRequest.setSearchTerm("Test");
-		searchRequest.setVendor("Test Vendor");
+		searchRequest.setDeveloper("Test Developer");
 		searchRequest.setProduct("Test");
-		searchRequest.setVersion("1.0.1");
-		searchRequest.setCertificationEdition("2014");
-		searchRequest.setCertificationBody("InfoGard");
-		searchRequest.setProductClassification("Complete EHR");
+		searchRequest.setVersion("2.0");
+		searchRequest.getCertificationEditions().add("2014");
+		searchRequest.getCertificationBodies().add("InfoGard");
 		searchRequest.setPracticeType("Ambulatory");
-		searchRequest.setVisibleOnCHPL("YES");
 		searchRequest.setOrderBy("product");
 		searchRequest.setSortDescending(true);
 		searchRequest.setPageNumber(0);
@@ -177,4 +229,45 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 	}
 	
+	@Test
+	@Transactional(readOnly = true)
+	public void testBasicSearch() {
+		List<CertifiedProductFlatSearchResult> response = certifiedProductSearchManager.search();
+		
+		assertNotNull(response);
+		assertNotNull(response);
+		assertEquals(16, response.size());
+		
+		boolean checkedCriteria = false;
+		boolean checkedCqms = false;
+		for(gov.healthit.chpl.domain.search.CertifiedProductSearchResult result : response) {
+			if(result instanceof CertifiedProductBasicSearchResult) {
+				CertifiedProductBasicSearchResult basicResult = (CertifiedProductBasicSearchResult) result;
+				if(result.getId().longValue() == 1L) {
+					checkedCriteria = true;
+					assertNotNull(basicResult.getCriteriaMet().size());
+					assertEquals(4, basicResult.getCriteriaMet().size());
+				}
+				if(result.getId().longValue() == 2L) {
+					checkedCqms = true;
+					assertNotNull(basicResult.getCqmsMet().size());
+					assertEquals(2, basicResult.getCqmsMet().size());
+				}
+			} else if(result instanceof CertifiedProductFlatSearchResult) {
+				CertifiedProductFlatSearchResult flatResult = (CertifiedProductFlatSearchResult) result;
+				if(result.getId().longValue() == 1L) {
+					checkedCriteria = true;
+					assertNotNull(flatResult.getCriteriaMet());
+					assertTrue(flatResult.getCriteriaMet().length() > 0);
+				}
+				if(result.getId().longValue() == 2L) {
+					checkedCqms = true;
+					assertNotNull(flatResult.getCqmsMet());
+					assertTrue(flatResult.getCqmsMet().length() > 0);
+				}
+			}
+		}
+		assertTrue(checkedCriteria);
+		assertTrue(checkedCqms);
+	}
 }

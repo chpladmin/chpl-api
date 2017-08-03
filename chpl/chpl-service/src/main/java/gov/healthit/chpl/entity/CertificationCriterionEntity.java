@@ -1,8 +1,8 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -24,7 +24,7 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table(name = "certification_criterion", schema = "openchpl")
+@Table(name = "certification_criterion")
 public class CertificationCriterionEntity implements Serializable {
 
 	/** Serial Version UID. */
@@ -33,7 +33,8 @@ public class CertificationCriterionEntity implements Serializable {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column( name = "certification_criterion_id", nullable = false  )
+    @Column (name = "certification_criterion_id", nullable = false)
+    @JoinColumn (name = "certification_criterion_id", nullable = false)
 	private Long id;
 
 	@Basic( optional = true )
@@ -44,11 +45,15 @@ public class CertificationCriterionEntity implements Serializable {
 	@Column( name = "automated_numerator_capable"  )
 	private Boolean automatedNumeratorCapable;
 	
-	
 	@Basic( optional = false )
 	@Column( name = "certification_edition_id", nullable = false  )
 	private Long certificationEditionId;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "certification_edition_id", unique=true, nullable = true, insertable=false, updatable= false)
+	private CertificationEditionEntity certificationEdition;
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -74,11 +79,6 @@ public class CertificationCriterionEntity implements Serializable {
 	@Basic( optional = true )
 	@Column( length = 15  )
 	private String number;
-	
-	@ManyToOne(fetch = FetchType.LAZY )
-	@Basic( optional = true )
-	@JoinColumn(name = "parent_criterion_id", nullable = true )
-	private CertificationCriterionEntity parentCriterion;
 	
 	@Basic( optional = true )
 	@Column( name = "requires_sed"  )
@@ -296,24 +296,6 @@ public class CertificationCriterionEntity implements Serializable {
 	}
 
 	 /**
-	 * Return the value associated with the column: parentCriterion.
-	 * @return A CertificationCriterion object (this.parentCriterion)
-	 */
-	public CertificationCriterionEntity getParentCriterion() {
-		return this.parentCriterion;
-		
-	}
-
-  
-	 /**  
-	 * Set the value related to the column: parentCriterion.
-	 * @param parentCriterion the parentCriterion value you wish to set
-	 */
-	public void setParentCriterion(final CertificationCriterionEntity parentCriterion) {
-		this.parentCriterion = parentCriterion;
-	}
-
-	 /**
 	 * Return the value associated with the column: requiresSed.
 	 * @return A Boolean object (this.requiresSed)
 	 */
@@ -373,5 +355,12 @@ public class CertificationCriterionEntity implements Serializable {
 		sb.append("title: " + this.getTitle());
 		return sb.toString();		
 	}
-	
+
+	public CertificationEditionEntity getCertificationEdition() {
+		return certificationEdition;
+	}
+
+	public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
+		this.certificationEdition = certificationEdition;
+	}
 }

@@ -3,18 +3,21 @@ package gov.healthit.chpl.manager.impl;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.acls.domain.BasePermission;
 import org.springframework.security.acls.domain.PrincipalSid;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
@@ -24,6 +27,7 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -42,6 +46,9 @@ public class CertificationBodyManagerTest extends TestCase {
 	@Autowired private CertificationBodyManager acbManager;
 	@Autowired private CertificationBodyDAO acbDao;
 	@Autowired private UserDAO userDao;
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -56,6 +63,7 @@ public class CertificationBodyManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetUsersOnAcb() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationBodyDTO acb = acbDao.getById(-3L);
@@ -66,6 +74,8 @@ public class CertificationBodyManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testAddReadUserToAcb() throws UserRetrievalException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
@@ -87,6 +97,8 @@ public class CertificationBodyManagerTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
+	@Rollback
 	public void testDeleteUserFromAcb() throws UserRetrievalException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 

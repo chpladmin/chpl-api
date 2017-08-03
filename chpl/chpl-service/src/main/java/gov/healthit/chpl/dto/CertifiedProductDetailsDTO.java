@@ -1,13 +1,14 @@
 package gov.healthit.chpl.dto;
 
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-import gov.healthit.chpl.entity.CertifiedProductDetailsEntity;
+import org.springframework.util.StringUtils;
 
-public class CertifiedProductDetailsDTO {
-	
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+
+public class CertifiedProductDetailsDTO implements Serializable {
+	private static final long serialVersionUID = 6238278848984479683L;
 	private Long id;
 	private String productCode;
 	private String versionCode;
@@ -19,6 +20,9 @@ public class CertifiedProductDetailsDTO {
     private String testingLabCode;
     private String chplProductNumber;
     private String reportFileLocation;
+    private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
     private String acbCertificationId;
     private Long practiceTypeId;
     private String practiceTypeName;
@@ -26,41 +30,38 @@ public class CertifiedProductDetailsDTO {
     private String otherAcb;
     private Long certificationStatusId;
     private String certificationStatusName;
+    private Date certificationStatusDate;
     private Long certificationEditionId;
     private String year;
     private Long certificationBodyId;
     private String certificationBodyName;
     private String certificationBodyCode;
     private String productClassificationName;
-    private Long productVersionId;
-    private String productVersion;
-    private Long productId;
-    private String productName;
-    private Long vendorId;
-    private String vendorName;
-    private String vendorCode;
+    private DeveloperDTO developer;
+    private DeveloperStatusEventDTO developerCurrentStatus;
+    private ProductDTO product;
+    private ProductVersionDTO version;
+    private Date creationDate;
     private Date certificationDate;
+    private Date decertificationDate;
     private Integer countCertifications;
     private Integer countCqms;
-    private Integer countCorrectiveActionPlans;
-    private Boolean visibleOnChpl;
+    private Integer countSurveillance;
+    private Integer countOpenSurveillance;
+    private Integer countClosedSurveillance;
+    private Integer countOpenNonconformities;
+    private Integer countClosedNonconformities;
     private Date lastModifiedDate;
-    private Boolean privacyAttestation;
-	private String termsOfUse;
-	private String apiDocumentation;
-	private String ics;
+	private Boolean ics;
 	private Boolean sedTesting;
 	private Boolean qmsTesting;
-	private Boolean transparencyAttestation;
-	
-    private List<CertificationResultDetailsDTO> certResults;
-    private List<CQMResultDetailsDTO> cqmResults;
-    private List<AdditionalSoftwareDTO> additionalSoftware;
+	private Boolean accessibilityCertified;
+	private String productAdditionalSoftware;
+	private String transparencyAttestation;
+	private String transparencyAttestationUrl;
+	private Long numMeaningfulUse;
     
     public CertifiedProductDetailsDTO(){
-    	certResults = new ArrayList<CertificationResultDetailsDTO>();
-    	cqmResults = new ArrayList<CQMResultDetailsDTO>();
-    	additionalSoftware = new ArrayList<AdditionalSoftwareDTO>();
     }
     
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
@@ -72,6 +73,7 @@ public class CertifiedProductDetailsDTO {
     	this.versionCode = entity.getVersionCode();
     	this.icsCode = entity.getIcsCode();
     	this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
+    	this.creationDate = entity.getCreationDate();
     	this.certifiedDateCode = entity.getCertifiedDateCode();
     	this.acbCertificationId = entity.getAcbCertificationId();
     	this.certificationBodyId = entity.getCertificationBodyId();
@@ -80,35 +82,89 @@ public class CertifiedProductDetailsDTO {
     	this.certificationEditionId = entity.getCertificationEditionId();
     	this.certificationStatusId = entity.getCertificationStatusId();
     	this.certificationStatusName = entity.getCertificationStatusName();
+    	this.certificationStatusDate = entity.getCertificationStatusDate();
     	this.chplProductNumber = entity.getChplProductNumber();
     	this.otherAcb = entity.getOtherAcb();
     	this.practiceTypeId = entity.getPracticeTypeId();
        	this.practiceTypeName = entity.getPracticeTypeName();
     	this.productClassificationName = entity.getProductClassificationName();
     	this.productClassificationTypeId = entity.getProductClassificationTypeId();
-    	this.productId = entity.getProductId();
-    	this.productName = entity.getProductName();
-    	this.productVersion = entity.getProductVersion();
-    	this.productVersionId = entity.getProductVersionId();
     	this.reportFileLocation = entity.getReportFileLocation();
+    	this.sedReportFileLocation = entity.getSedReportFileLocation();
+    	this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
+    	this.sedTestingEnd = entity.getSedTestingEnd();
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
-    	this.vendorId = entity.getVendorId();
-    	this.vendorName = entity.getVendorName();
-    	this.vendorCode = entity.getVendorCode();
-    	this.visibleOnChpl = entity.getVisibleOnChpl();
-    	this.privacyAttestation = entity.getPrivacyAttestation();
-    	this.termsOfUse = entity.getTermsOfUse();
-    	this.apiDocumentation = entity.getApiDocumentation();
+    	this.numMeaningfulUse = entity.getMeaningfulUseUsers();
+    	
+		this.developer = new DeveloperDTO();
+    	this.developer.setId(entity.getDeveloperId());
+    	this.developer.setName(entity.getDeveloperName());
+    	this.developer.setDeveloperCode(entity.getDeveloperCode());
+    	this.developer.setWebsite(entity.getDeveloperWebsite());
+    	
+    	if(entity.getDeveloperStatusId() != null) {
+    		developerCurrentStatus = new DeveloperStatusEventDTO();
+    		developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
+    		DeveloperStatusDTO statusObj = new DeveloperStatusDTO();
+    		statusObj.setId(entity.getDeveloperStatusId());
+    		statusObj.setStatusName(entity.getDeveloperStatusName());
+    		developerCurrentStatus.setStatus(statusObj);
+    		developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
+    		this.developer.getStatusEvents().add(developerCurrentStatus);
+    	}
+    	
+    	if(entity.getAddressId() != null) {
+    		AddressDTO developerAddress = new AddressDTO();
+    		developerAddress.setId(entity.getAddressId());
+    		developerAddress.setStreetLineOne(entity.getStreetLine1());
+    		developerAddress.setStreetLineTwo(entity.getStreetLine2());
+    		developerAddress.setCity(entity.getCity());
+    		developerAddress.setState(entity.getState());
+    		developerAddress.setZipcode(entity.getZipcode());
+    		developerAddress.setCountry(entity.getCountry());
+    		this.developer.setAddress(developerAddress);
+    	}
+    	if(entity.getContactId() != null) {
+    		ContactDTO developerContact = new ContactDTO();
+    		developerContact.setId(entity.getContactId());
+    		developerContact.setFirstName(entity.getFirstName());
+    		developerContact.setLastName(entity.getLastName());
+    		developerContact.setEmail(entity.getEmail());
+    		developerContact.setPhoneNumber(entity.getPhoneNumber());
+    		developerContact.setTitle(entity.getTitle());
+    		this.developer.setContact(developerContact);
+    	}
+    	
+    	if(entity.getProduct() != null) {
+    		this.product = new ProductDTO(entity.getProduct());
+    	}
+    	
+    	if(entity.getProductVersionId() != null) {
+    		this.version = new ProductVersionDTO();
+    		this.version.setId(entity.getProductVersionId());
+    		this.version.setVersion(entity.getProductVersion());
+    	}
+    	
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
-    	this.transparencyAttestation = entity.getTransparencyAttestation();
+    	this.accessibilityCertified = entity.getAccessibilityCertified();
+    	this.productAdditionalSoftware = entity.getProductAdditionalSoftware();
+    	if(entity.getTransparencyAttestation() != null) {
+    		this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+    	}
+    	this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
     	this.year = entity.getYear();
     	this.certificationDate = entity.getCertificationDate();
+    	this.decertificationDate = entity.getDecertificationDate();
     	this.countCqms = entity.getCountCqms();
     	this.countCertifications = entity.getCountCertifications();
-    	this.countCorrectiveActionPlans = entity.getCountCorrectiveActionPlans();
+    	this.countSurveillance = entity.getCountSurveillance();
+    	this.countOpenSurveillance = entity.getCountOpenSurveillance();
+    	this.countClosedSurveillance = entity.getCountClosedSurveillance();
+    	this.countOpenNonconformities = entity.getCountOpenNonconformities();
+    	this.countClosedNonconformities = entity.getCountClosedNonconformities();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
     
@@ -191,47 +247,17 @@ public class CertifiedProductDetailsDTO {
 	public void setCertificationBodyName(String certificationBodyName) {
 		this.certificationBodyName = certificationBodyName;
 	}
-	public Long getProductVersionId() {
-		return productVersionId;
-	}
-	public void setProductVersionId(Long productVersionId) {
-		this.productVersionId = productVersionId;
-	}
-	public String getProductVersion() {
-		return productVersion;
-	}
-	public void setProductVersion(String productVersion) {
-		this.productVersion = productVersion;
-	}
-	public Long getProductId() {
-		return productId;
-	}
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
-	public String getProductName() {
-		return productName;
-	}
-	public void setProductName(String productName) {
-		this.productName = productName;
-	}
-	public Long getVendorId() {
-		return vendorId;
-	}
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
-	}
-	public String getVendorName() {
-		return vendorName;
-	}
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
-	}
 	public String getPracticeTypeName() {
 		return practiceTypeName;
 	}
 	public void setPracticeTypeName(String practiceTypeName) {
 		this.practiceTypeName = practiceTypeName;
+	}
+	public Date getCreationDate(){
+		return creationDate;
+	}
+	public void setCreationDate(Date creationDate){
+		this.creationDate = creationDate;
 	}
 	public Date getCertificationDate() {
 		return certificationDate;
@@ -257,12 +283,6 @@ public class CertifiedProductDetailsDTO {
 	public void setCountCqms(Integer countCqms) {
 		this.countCqms = countCqms;
 	}
-	public Boolean getVisibleOnChpl() {
-		return visibleOnChpl;
-	}
-	public void setVisibleOnChpl(Boolean visibleOnChpl) {
-		this.visibleOnChpl = visibleOnChpl;
-	}
 
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
@@ -279,46 +299,18 @@ public class CertifiedProductDetailsDTO {
 	public void setCertificationStatusName(String certificationStatusName) {
 		this.certificationStatusName = certificationStatusName;
 	}
-
-	public Boolean getPrivacyAttestation() {
-		return privacyAttestation;
+	
+	public String getYearCode() {
+		if(StringUtils.isEmpty(this.getYear())) {
+			return "";
+		} else if(this.getYear().length() == 2) {
+			return this.getYear();
+		} else if(this.getYear().length() == 4) {
+			return this.getYear().substring(this.getYear().length()-2);
+		} 
+		return "??";
 	}
-
-	public void setPrivacyAttestation(Boolean privacyAttestation) {
-		this.privacyAttestation = privacyAttestation;
-	}
-
-	public Integer getCountCorrectiveActionPlans() {
-		return countCorrectiveActionPlans;
-	}
-
-	public void setCountCorrectiveActionPlans(Integer countCorrectiveActionPlans) {
-		this.countCorrectiveActionPlans = countCorrectiveActionPlans;
-	}
-	public List<CertificationResultDetailsDTO> getCertResults() {
-		return certResults;
-	}
-
-	public void setCertResults(List<CertificationResultDetailsDTO> certResults) {
-		this.certResults = certResults;
-	}
-
-	public List<CQMResultDetailsDTO> getCqmResults() {
-		return cqmResults;
-	}
-
-	public void setCqmResults(List<CQMResultDetailsDTO> cqmResults) {
-		this.cqmResults = cqmResults;
-	}
-
-	public List<AdditionalSoftwareDTO> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-
-	public void setAdditionalSoftware(List<AdditionalSoftwareDTO> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-
+	
 	public String getProductCode() {
 		return productCode;
 	}
@@ -359,14 +351,6 @@ public class CertifiedProductDetailsDTO {
 		this.certificationBodyCode = certificationBodyCode;
 	}
 
-	public String getVendorCode() {
-		return vendorCode;
-	}
-
-	public void setVendorCode(String vendorCode) {
-		this.vendorCode = vendorCode;
-	}
-
 	public String getIcsCode() {
 		return icsCode;
 	}
@@ -375,27 +359,11 @@ public class CertifiedProductDetailsDTO {
 		this.icsCode = icsCode;
 	}
 
-	public String getTermsOfUse() {
-		return termsOfUse;
-	}
-
-	public void setTermsOfUse(String termsOfUse) {
-		this.termsOfUse = termsOfUse;
-	}
-
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
-
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
-	}
-
-	public Boolean getTransparencyAttestation() {
+	public String getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
 
-	public void setTransparencyAttestation(Boolean transparencyAttestation) {
+	public void setTransparencyAttestation(String transparencyAttestation) {
 		this.transparencyAttestation = transparencyAttestation;
 	}
 
@@ -415,11 +383,11 @@ public class CertifiedProductDetailsDTO {
 		this.testingLabCode = testingLabCode;
 	}
 
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
 
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 
@@ -437,5 +405,149 @@ public class CertifiedProductDetailsDTO {
 
 	public void setQmsTesting(Boolean qmsTesting) {
 		this.qmsTesting = qmsTesting;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public String getProductAdditionalSoftware() {
+		return productAdditionalSoftware;
+	}
+
+	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+		this.productAdditionalSoftware = productAdditionalSoftware;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
+	}
+
+	public DeveloperDTO getDeveloper() {
+		return developer;
+	}
+
+	public void setDeveloper(DeveloperDTO developer) {
+		this.developer = developer;
+	}
+
+	public ProductDTO getProduct() {
+		return product;
+	}
+
+	public void setProduct(ProductDTO product) {
+		this.product = product;
+	}
+
+	public ProductVersionDTO getVersion() {
+		return version;
+	}
+
+	public void setVersion(ProductVersionDTO version) {
+		this.version = version;
+	}
+
+	public Long getNumMeaningfulUse() {
+		return numMeaningfulUse;
+	}
+
+	public void setNumMeaningfulUse(Long numMeaningfulUse) {
+		this.numMeaningfulUse = numMeaningfulUse;
+	}
+
+	public Integer getCountSurveillance() {
+		return countSurveillance;
+	}
+
+	public void setCountSurveillance(Integer countSurveillance) {
+		this.countSurveillance = countSurveillance;
+	}
+
+	public Integer getCountOpenSurveillance() {
+		return countOpenSurveillance;
+	}
+
+	public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+		this.countOpenSurveillance = countOpenSurveillance;
+	}
+
+	public Integer getCountClosedSurveillance() {
+		return countClosedSurveillance;
+	}
+
+	public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+		this.countClosedSurveillance = countClosedSurveillance;
+	}
+
+	public Integer getCountOpenNonconformities() {
+		return countOpenNonconformities;
+	}
+
+	public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+		this.countOpenNonconformities = countOpenNonconformities;
+	}
+
+	public Integer getCountClosedNonconformities() {
+		return countClosedNonconformities;
+	}
+
+	public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+		this.countClosedNonconformities = countClosedNonconformities;
+	}
+
+	public Date getCertificationStatusDate() {
+		return certificationStatusDate;
+	}
+
+	public void setCertificationStatusDate(Date certificationStatusDate) {
+		this.certificationStatusDate = certificationStatusDate;
+	}
+
+	public Date getDecertificationDate() {
+		return decertificationDate;
+	}
+
+	public void setDecertificationDate(Date decertificationDate) {
+		this.decertificationDate = decertificationDate;
+	}
+
+	public DeveloperStatusEventDTO getDeveloperCurrentStatus() {
+		return developerCurrentStatus;
+	}
+
+	public void setDeveloperCurrentStatus(DeveloperStatusEventDTO developerCurrentStatus) {
+		this.developerCurrentStatus = developerCurrentStatus;
 	}
 }

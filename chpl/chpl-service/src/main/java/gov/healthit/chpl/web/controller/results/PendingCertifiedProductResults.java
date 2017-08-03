@@ -1,12 +1,13 @@
 package gov.healthit.chpl.web.controller.results;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
-public class PendingCertifiedProductResults {
+public class PendingCertifiedProductResults implements Serializable {
+	private static final long serialVersionUID = 4239063235095932795L;
 	private List<PendingCertifiedProductDetails> pendingCertifiedProducts;
 
 	public PendingCertifiedProductResults() {

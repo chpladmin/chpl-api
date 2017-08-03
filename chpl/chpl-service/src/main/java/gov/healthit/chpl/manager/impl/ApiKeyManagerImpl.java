@@ -5,20 +5,17 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
 import gov.healthit.chpl.dao.ApiKeyDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.ActivityConcept;
 import gov.healthit.chpl.domain.ApiKeyActivity;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -43,15 +40,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		ApiKeyDTO created = apiKeyDAO.create(toCreate);
 		
 		String activityMsg = "API Key "+created.getApiKey()+" was created.";
-		
-		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
-		
-		try {
-			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(-3L));
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
-		} finally {
-			SecurityContextHolder.getContext().setAuthentication(tmp);
-		}
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, created.getId(), activityMsg, null, created);
 		return created;
 		
 	}
@@ -66,14 +55,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
 		
 		apiKeyDAO.delete(keyId);
-		
-		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
-		try {
-			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
-		} finally {
-			SecurityContextHolder.getContext().setAuthentication(tmp);
-		}
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
 	}
 	
 	@Override
@@ -86,15 +68,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		String activityMsg = "API Key "+toDelete.getApiKey()+" was revoked.";
 		
 		apiKeyDAO.delete(toDelete.getId());
-		
-		Authentication tmp = SecurityContextHolder.getContext().getAuthentication();
-		try {
-			SecurityContextHolder.getContext().setAuthentication(Util.getUnprivilegedUser(null));
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
-		} finally {
-			SecurityContextHolder.getContext().setAuthentication(tmp);
-		}
-		
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, toDelete.getId(), activityMsg, toDelete, null);
 	}
 
 	@Override
@@ -125,7 +99,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
@@ -154,10 +128,9 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		return activity;
 	}
 	
-	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
@@ -185,8 +158,6 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		}
 		return activity;
 	}
-	
-	
 
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -195,7 +166,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	}
 
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException {
 		
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll();
@@ -224,33 +195,44 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		return activity;
 	}
 	
+	/* Gets API key activity within the constraints of the provided parameters
+	 * Parameters: 
+	 * String apiKeyFilter - string of API key(s)
+	 * Integer pageNumber - The page for the API key activity
+	 * Integer pageSize - Number of API keys on the page
+	 * boolean dateAscending - True if dateAscending; false if dateDescending
+	 * Long startDate - Start date, in milliseconds, for API key creation
+	 * Long endDate - End date, in milliseconds, for API key creation
+	 * Returns: list of ApiKeyActivity
+	 */
 	@Override
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public List<ApiKeyActivity> getApiKeyActivity(Integer pageNumber, Integer pageSize) throws EntityRetrievalException {
-		
-		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll(pageNumber, pageSize) ;
-		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+	public List<ApiKeyActivity> getApiKeyActivity
+	(String apiKeyFilter, Integer pageNumber, Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) 
+			throws EntityRetrievalException {	
+		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.getApiKeyActivity
+				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
+		List<ApiKeyActivity> apiKeyActivitiesList = new ArrayList<ApiKeyActivity>();
 		
 		for (ApiKeyActivityDTO dto : activityDTOs){
-			
-			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
+			ApiKeyDTO apiKey = findKey(dto.getApiKeyId()); 
 			if (apiKey == null){
 				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
 			}
 			
 			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
-				
+			
 			apiKeyActivity.setApiKey(apiKey.getApiKey());
 			apiKeyActivity.setApiKeyId(apiKey.getId());	
 			apiKeyActivity.setEmail(apiKey.getEmail());
 			apiKeyActivity.setName(apiKey.getNameOrganization());
+			
 			apiKeyActivity.setId(dto.getId());
 			apiKeyActivity.setCreationDate(dto.getCreationDate());
 			apiKeyActivity.setApiCallPath(dto.getApiCallPath());
 				
-			activity.add(apiKeyActivity);
+			apiKeyActivitiesList.add(apiKeyActivity);
 		}
-		return activity;
+		return apiKeyActivitiesList;
 	}
-	
 }

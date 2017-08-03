@@ -1,5 +1,11 @@
 package gov.healthit.chpl.auth.manager;
 
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.security.acls.model.Permission;
+import org.springframework.security.acls.model.Sid;
+
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserEntity;
@@ -7,12 +13,6 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.security.acls.model.Permission;
-import org.springframework.security.acls.model.Sid;
 
 
 public interface SecuredUserManager {
@@ -43,7 +43,8 @@ public interface SecuredUserManager {
 	public void removeAdmin(String userName) throws UserPermissionRetrievalException, UserRetrievalException, UserManagementException;
 	
 	public void updatePassword(UserDTO user, String encodedPassword) throws UserRetrievalException;
-	
+	public void updateFailedLoginCount(UserDTO user) throws UserRetrievalException;
+	public void updateAccountLockedStatus(UserDTO user) throws UserRetrievalException;
 	public Set<UserPermissionDTO> getGrantedPermissionsForUser(UserDTO user);
 
 	public UserDTO getBySubjectName(String userName) throws UserRetrievalException;

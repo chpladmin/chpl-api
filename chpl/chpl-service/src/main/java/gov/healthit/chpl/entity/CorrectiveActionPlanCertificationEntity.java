@@ -34,16 +34,20 @@ public class CorrectiveActionPlanCertificationEntity {
 	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
 	private CertificationCriterionEntity certificationCriterion;
 	
-	@Basic( optional = false )
-	@Column(name = "acb_summary")
-	private String acbSummary;
+	@Column(name = "summary")
+	private String summary;
 	
-	@Basic( optional = false )
-	@Column(name = "developer_summary")
-	private String developerSummaryDescription;
+	@Column(name = "developer_explanation")
+	private String developerExplanation;
 	
 	@Column(name = "resolution")
 	private String resolution;
+	
+	@Column(name = "num_sites_passed")
+	private Integer numSitesPassed;
+	
+	@Column(name ="num_sites_total")
+	private Integer numSitesTotal;
 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -87,22 +91,6 @@ public class CorrectiveActionPlanCertificationEntity {
 		this.certificationCriterion = certificationCriterion;
 	}
 
-	public String getAcbSummary() {
-		return acbSummary;
-	}
-
-	public void setAcbSummary(String acbSummary) {
-		this.acbSummary = acbSummary;
-	}
-
-	public String getDeveloperSummaryDescription() {
-		return developerSummaryDescription;
-	}
-
-	public void setDeveloperSummaryDescription(String developerSummaryDescription) {
-		this.developerSummaryDescription = developerSummaryDescription;
-	}
-
 	public String getResolution() {
 		return resolution;
 	}
@@ -141,5 +129,37 @@ public class CorrectiveActionPlanCertificationEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getDeveloperExplanation() {
+		return developerExplanation;
+	}
+
+	public void setDeveloperExplanation(String developerExplanation) {
+		this.developerExplanation = developerExplanation;
+	}
+
+	public Integer getNumSitesPassed() {
+		return numSitesPassed;
+	}
+
+	public void setNumSitesPassed(Integer numSitesPassed) {
+		this.numSitesPassed = numSitesPassed;
+	}
+
+	public Integer getNumSitesTotal() {
+		return numSitesTotal;
+	}
+
+	public void setNumSitesTotal(Integer numSitesTotal) {
+		this.numSitesTotal = numSitesTotal;
 	}
 }

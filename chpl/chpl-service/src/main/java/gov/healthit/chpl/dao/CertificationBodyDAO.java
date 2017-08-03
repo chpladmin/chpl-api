@@ -1,8 +1,8 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-
 import java.util.List;
+
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public interface CertificationBodyDAO {
 	
@@ -10,11 +10,13 @@ public interface CertificationBodyDAO {
 
 	public void delete(Long acbId);
 
-	public List<CertificationBodyDTO> findAll();
+	public List<CertificationBodyDTO> findAll(boolean showDeleted);
 
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-	public CertificationBodyDTO getByName(String name);
+	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
+	public CertificationBodyDTO getByName(String name);
+	public String getMaxCode();
 	public CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
 	
 }

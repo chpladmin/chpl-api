@@ -1,15 +1,16 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class PopulateSearchOptions {
-
+public class PopulateSearchOptions implements Serializable {
+	private static final long serialVersionUID = 448737963706046739L;
 	private Set<KeyValueModel> productClassifications;
 	private Set<KeyValueModel> editions;
 	private Set<KeyValueModel> certificationStatuses;
 	private Set<KeyValueModel> practiceTypeNames;
-	private Set<KeyValueModel> productNames;
-	private Set<KeyValueModel> vendorNames;
+	private Set<KeyValueModelStatuses> productNames;
+	private Set<KeyValueModelStatuses> developerNames;
 	private Set<KeyValueModel> certBodyNames;
 	private Set<DescriptiveModel> certificationCriterionNumbers;
 	private Set<DescriptiveModel> cqmCriterionNumbers;
@@ -31,17 +32,17 @@ public class PopulateSearchOptions {
 	public void setPracticeTypeNames(Set<KeyValueModel> practiceTypeNames) {
 		this.practiceTypeNames = practiceTypeNames;
 	}
-	public Set<KeyValueModel> getProductNames() {
+	public Set<KeyValueModelStatuses> getProductNames() {
 		return productNames;
 	}
-	public void setProductNames(Set<KeyValueModel> productNames) {
+	public void setProductNames(Set<KeyValueModelStatuses> productNames) {
 		this.productNames = productNames;
 	}
-	public Set<KeyValueModel> getVendorNames() {
-		return vendorNames;
+	public Set<KeyValueModelStatuses> getDeveloperNames() {
+		return developerNames;
 	}
-	public void setVendorNames(Set<KeyValueModel> vendorNames) {
-		this.vendorNames = vendorNames;
+	public void setDeveloperNames(Set<KeyValueModelStatuses> developerNames) {
+		this.developerNames = developerNames;
 	}
 	public Set<KeyValueModel> getCertBodyNames() {
 		return certBodyNames;

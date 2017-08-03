@@ -10,8 +10,10 @@ public interface TestingLabDAO {
 	public TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException;
 	public void delete(Long id) throws EntityRetrievalException;
 	
-	public List<TestingLabDTO> findAll();
+	public List<TestingLabDTO> findAll(boolean showDeleted);
 	
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException;
+	public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public TestingLabDTO getByName(String name);
+	public String getMaxCode();
 }

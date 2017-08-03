@@ -1,31 +1,41 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.entity.CQMResultDetailsEntity;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CQMResultDetailsDTO {
+import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
 
+public class CQMResultDetailsDTO implements Serializable {
+	private static final long serialVersionUID = 7190018955877689390L;
 	private Long id;
 	private Boolean success;
 	private Long cqmCriterionId;
 	private String number;
 	private String cmsId;
 	private String title;
+	private String description;
 	private String nqfNumber;
 	private Long cqmCriterionTypeId;
 	private String domain;
 	private Long cqmVersionId;
 	private String version;
 	
-	public CQMResultDetailsDTO(){}
+	private List<CQMResultCriteriaDTO> criteria;
+	
+	public CQMResultDetailsDTO(){
+		criteria = new ArrayList<CQMResultCriteriaDTO>();
+	}
 	
 	public CQMResultDetailsDTO(CQMResultDetailsEntity entity){
-		
+		this();
 		this.id = entity.getId();
 		this.success = entity.getSuccess();
 		this.cqmCriterionId = entity.getCqmCriterionId();
 		this.number = entity.getNumber();
 		this.cmsId = entity.getCmsId();
 		this.title = entity.getTitle();
+		this.description = entity.getDescription();
 		this.nqfNumber = entity.getNqfNumber();
 		this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();
 		this.domain = entity.getDomain();
@@ -101,6 +111,22 @@ public class CQMResultDetailsDTO {
 
 	public void setDomain(String domain) {
 		this.domain = domain;
+	}
+
+	public List<CQMResultCriteriaDTO> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(List<CQMResultCriteriaDTO> criteria) {
+		this.criteria = criteria;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

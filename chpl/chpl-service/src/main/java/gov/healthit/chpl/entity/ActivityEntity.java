@@ -1,18 +1,25 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.domain.ActivityConcept;
-
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
 
 
 @Entity
@@ -65,6 +72,11 @@ public class ActivityEntity {
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false )
 	private Boolean deleted;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@Fetch(FetchMode.JOIN)
+	@JoinColumn(name = "last_modified_user", unique=true, nullable = true, insertable=false, updatable= false)
+	private UserEntity user;
 	
 	transient ActivityConcept concept;
 
@@ -181,6 +193,14 @@ public class ActivityEntity {
 
 	public void setNewData(String newData) {
 		this.newData = newData;
+	}
+
+	public UserEntity getUser() {
+		return user;
+	}
+
+	public void setUser(UserEntity user) {
+		this.user = user;
 	}
 
 	

@@ -1,73 +1,109 @@
 package gov.healthit.chpl.dto;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import gov.healthit.chpl.domain.AdditionalSoftware;
+import org.springframework.util.StringUtils;
+
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertificationResultTestData;
+import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
+import gov.healthit.chpl.domain.CertificationResultTestParticipant;
+import gov.healthit.chpl.domain.CertificationResultTestProcedure;
+import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertificationResultTestTask;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
+import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.entity.PendingCertificationCriterionEntity;
+import gov.healthit.chpl.entity.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
-public class PendingCertifiedProductDTO {
-	
+public class PendingCertifiedProductDTO implements Serializable {
+	private static final long serialVersionUID = 8778880570983282001L;
 	private Long id;
 	private Long practiceTypeId;
-    private Long vendorId;
-	private AddressDTO vendorAddress;    
+    private Long developerId;
+	private AddressDTO developerAddress; 
     private Long productId;
     private Long productVersionId;    
     private Long certificationEditionId;    
     private Long certificationBodyId;    
     private Long productClassificationId;
-    private Long additionalSoftwareId;
-    private List<String> errorMessages;
-    private List<String> warningMessages;
+    private Long testingLabId;
+    private Boolean deleted;
+    private Long lastModifiedUser;
+    private Set<String> errorMessages;
+    private Set<String> warningMessages;
     
     /**
     * fields directly from the spreadsheet
     **/
     private String uniqueId;    
     private String recordStatus;    
-    private String practiceType;    
-    private String vendorName;    
+    private String practiceType; 
+    private String testingLabName;
+    private String developerName;    
     private String productName;    
     private String productVersion;    
     private String certificationEdition;    
     private String acbCertificationId;    
     private String certificationBodyName;
     private String productClassificationName;
-    private String productClassificationModule;
     private Date certificationDate;
-    private String vendorStreetAddress;
-    private String vendorCity;
-    private String vendorState;
-    private String vendorZipCode;
-    private String vendorWebsite;
-    private String vendorEmail;
-    private String additionalSoftware;
-    private String uploadNotes;
+    private String developerStreetAddress;
+    private String developerCity;
+    private String developerState;
+    private String developerZipCode;
+    private String developerWebsite;
+    private String developerEmail;
+    private String developerContactName;
+    private String developerPhoneNumber;
+    private Long developerContactId;
     private String reportFileLocation;
-	private List<PendingCertificationCriterionDTO> certificationCriterion;
+    private String sedReportFileLocation;
+    private String sedIntendedUserDescription;
+    private Date sedTestingEnd;
+	private Boolean ics;
+	private Boolean accessibilityCertified;
+	private String transparencyAttestation;
+	private String transparencyAttestationUrl;
+	
+	private List<PendingCertificationResultDTO> certificationCriterion;
 	private List<PendingCqmCriterionDTO> cqmCriterion;
+	private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
+	private List<PendingCertifiedProductTargetedUserDTO> targetedUsers; 
+	private List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards;
+	
 	private Date uploadDate;
-	private String ics;
-	private Boolean sedTesting;
-	private Boolean qmsTesting;
 	
 	public PendingCertifiedProductDTO(){
-		this.errorMessages = new ArrayList<String>();	
-		this.warningMessages = new ArrayList<String>();
-		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
+		this.errorMessages = new HashSet<String>();	
+		this.warningMessages = new HashSet<String>();
+		this.certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
+		this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
+		this.targetedUsers = new ArrayList<PendingCertifiedProductTargetedUserDTO>();
+		this.accessibilityStandards = new ArrayList<PendingCertifiedProductAccessibilityStandardDTO>();
 	}
 	
 	public PendingCertifiedProductDTO(PendingCertifiedProductDetails details) {
+		this();
 		this.id = details.getId();
 		if(details.getPracticeType().get("id") != null) {
 			String practiceTypeId = details.getPracticeType().get("id").toString();
@@ -77,52 +113,45 @@ public class PendingCertifiedProductDTO {
 			this.practiceType = details.getPracticeType().get("name").toString();
 		}
 		
-		if(details.getVendor().get("id") != null) {
-			String vendorId = details.getVendor().get("id").toString();
-			this.vendorId = new Long(vendorId);
+		if(details.getTestingLab() != null && details.getTestingLab().get("id") != null) {
+			this.testingLabId = new Long(details.getTestingLab().get("id").toString());
 		}
-		if(details.getVendor().get("name") != null) {
-			this.vendorName = details.getVendor().get("name").toString();
-		}
-		if(details.getVendor().get("website") != null) {
-			this.vendorWebsite = details.getVendor().get("website").toString();
-		}
-		if(details.getVendor().get("email") != null) {
-			this.vendorEmail = details.getVendor().get("email").toString();
+		if(details.getTestingLab() != null && details.getTestingLab().get("name") != null) {
+			this.testingLabName = details.getTestingLab().get("name").toString();
 		}
 		
-		AddressDTO address = new AddressDTO();
-		if(details.getVendorAddress().get("id") != null) {
-			String addressId = details.getVendor().get("id").toString();
-			address.setId(new Long(addressId));
+		this.developerId = details.getDeveloper().getDeveloperId();
+		this.developerName = details.getDeveloper().getName();
+		this.developerWebsite = details.getDeveloper().getWebsite();
+		if(details.getDeveloper().getContact() != null) {
+			this.developerEmail = details.getDeveloper().getContact().getEmail();
+			this.developerContactName = details.getDeveloper().getContact().getLastName();
+			this.developerPhoneNumber = details.getDeveloper().getContact().getPhoneNumber();
 		}
-		if(details.getVendorAddress().get("line1") != null) {
-			address.setStreetLineOne(details.getVendorAddress().get("line1").toString());
+		if(details.getDeveloper().getAddress() != null) {
+			AddressDTO address = new AddressDTO();
+			address.setId(details.getDeveloper().getAddress().getAddressId());
+			address.setStreetLineOne(details.getDeveloper().getAddress().getLine1());
+			address.setCity(details.getDeveloper().getAddress().getCity());
+			address.setState(details.getDeveloper().getAddress().getState());
+			address.setZipcode(details.getDeveloper().getAddress().getZipcode());
+			address.setCountry("US");
+			this.developerAddress = address;
 		}
-		if(details.getVendorAddress().get("city") != null) {
-			address.setCity(details.getVendorAddress().get("city").toString());
-		}
-		if(details.getVendorAddress().get("state") != null) {
-			address.setState(details.getVendorAddress().get("state").toString());
-		}
-		if(details.getVendorAddress().get("zipcode") != null) {
-			address.setZipcode(details.getVendorAddress().get("zipcode").toString());
-		}
-		this.vendorAddress = address;
 		
-		if(details.getProduct().get("id") != null) {
-			String productId = details.getProduct().get("id").toString();
+		if(details.getProduct() != null && details.getProduct().getProductId() != null) {
+			String productId = details.getProduct().getProductId().toString();
 			this.productId = new Long(productId);
 		}
-		if(details.getProduct().get("name") != null) {
-			this.productName = details.getProduct().get("name").toString();
+		if(details.getProduct() != null && !StringUtils.isEmpty(details.getProduct().getName())) {
+			this.productName = details.getProduct().getName();
 		}
-		if(details.getProduct().get("versionId") != null) {
-			String productVersionId = details.getProduct().get("versionId").toString();
+		if(details.getVersion() != null && details.getVersion().getVersionId() != null) {
+			String productVersionId = details.getVersion().getVersionId().toString();
 			this.productVersionId = new Long(productVersionId);
 		}
-		if(details.getProduct().get("version") != null) {
-			this.productVersion = details.getProduct().get("version").toString();
+		if(details.getVersion() != null && !StringUtils.isEmpty(details.getVersion().getVersion())) {
+			this.productVersion = details.getVersion().getVersion();
 		}
 		
 		if(details.getCertificationEdition().get("id") != null) {
@@ -148,39 +177,219 @@ public class PendingCertifiedProductDTO {
 		if(details.getClassificationType().get("name") != null) {
 			this.productClassificationName = details.getClassificationType().get("name").toString();
 		}
-		
-		if(details.getAdditionalSoftware() != null && details.getAdditionalSoftware().size() > 0) {
-			AdditionalSoftware software = details.getAdditionalSoftware().get(0);
-			this.additionalSoftwareId = software.getAdditionalSoftwareid();
-		}
-		
+
 		if(details.getCertificationDate() != null) {
 			this.certificationDate = new Date(details.getCertificationDate());
 		}
 		
-		this.uniqueId = details.getOncId();
+		this.uniqueId = details.getChplProductNumber();
 		this.recordStatus = details.getRecordStatus();
 		this.acbCertificationId = details.getAcbCertificationId(); 
-		this.uploadNotes = details.getUploadNotes();
 		this.reportFileLocation = details.getReportFileLocation();
-		this.ics = details.getIcs();
-		this.sedTesting = details.getSedTesting();
-		this.qmsTesting = details.getQmsTesting();
+		this.sedReportFileLocation = details.getSedReportFileLocation();
+		this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
+		this.sedTestingEnd = details.getSedTestingEnd();
+		this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? false : details.getIcs().getInherits();
+		this.accessibilityCertified = details.getAccessibilityCertified();
+		this.transparencyAttestation = details.getTransparencyAttestation();
+		this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
+		this.accessibilityCertified = details.getAccessibilityCertified();
 		
-		//this.productClassificationModule = entity.getProductClassificationModule();
-		//this.uploadDate = entity.getCreationDate();
+		List<CertifiedProductQmsStandard> qmsStandards = details.getQmsStandards();
+		if(qmsStandards != null && qmsStandards.size() > 0) {
+			for(CertifiedProductQmsStandard qms : qmsStandards) {
+				PendingCertifiedProductQmsStandardDTO qmsDto = new PendingCertifiedProductQmsStandardDTO();
+				qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
+				qmsDto.setModification(qms.getQmsModification());
+				qmsDto.setQmsStandardId(qms.getQmsStandardId());
+				qmsDto.setName(qms.getQmsStandardName());
+				this.qmsStandards.add(qmsDto);
+			}
+		}
 		
-		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
-		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
+		List<CertifiedProductTargetedUser> targetedUsers = details.getTargetedUsers();
+		if(targetedUsers != null && targetedUsers.size() > 0) {
+			for(CertifiedProductTargetedUser tu : targetedUsers) {
+				PendingCertifiedProductTargetedUserDTO tuDto = new PendingCertifiedProductTargetedUserDTO();
+				tuDto.setTargetedUserId(tu.getTargetedUserId());
+				tuDto.setName(tu.getTargetedUserName());
+				this.targetedUsers.add(tuDto);
+			}
+		}
+		
+		List<CertifiedProductAccessibilityStandard> accStds = details.getAccessibilityStandards();
+		if(accStds != null && accStds.size() > 0) {
+			for(CertifiedProductAccessibilityStandard as : accStds) {
+				PendingCertifiedProductAccessibilityStandardDTO asDto = new PendingCertifiedProductAccessibilityStandardDTO();
+				asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
+				asDto.setName(as.getAccessibilityStandardName());
+				this.accessibilityStandards.add(asDto);
+			}
+		}
 		
 		List<CertificationResult> certificationResults = details.getCertificationResults();
 		for(CertificationResult crResult : certificationResults) {
-			PendingCertificationCriterionDTO certDto = new PendingCertificationCriterionDTO();
+			PendingCertificationResultDTO certDto = new PendingCertificationResultDTO();
 			certDto.setNumber(crResult.getNumber());
 			certDto.setTitle(crResult.getTitle());
 			certDto.setMeetsCriteria(crResult.isSuccess());
+			certDto.setGap(crResult.isGap());
+			certDto.setG1Success(crResult.isG1Success());
+			certDto.setG2Success(crResult.isG2Success());
+			certDto.setSed(crResult.isSed());
+			certDto.setApiDocumentation(crResult.getApiDocumentation());
+			certDto.setPrivacySecurityFramework(crResult.getPrivacySecurityFramework());
+			
+			if(crResult.getUcdProcesses() != null && crResult.getUcdProcesses().size() > 0) {
+				for(CertificationResultUcdProcess ucd : crResult.getUcdProcesses()) {
+					PendingCertificationResultUcdProcessDTO ucdDto = new PendingCertificationResultUcdProcessDTO();
+					ucdDto.setUcdProcessId(ucd.getUcdProcessId());
+					ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
+					ucdDto.setUcdProcessName(ucd.getUcdProcessName());
+					certDto.getUcdProcesses().add(ucdDto);
+				}
+			}
+			
+			if(crResult.getAdditionalSoftware() != null && crResult.getAdditionalSoftware().size() > 0) {
+				for(CertificationResultAdditionalSoftware software : crResult.getAdditionalSoftware()) {
+					PendingCertificationResultAdditionalSoftwareDTO as = new PendingCertificationResultAdditionalSoftwareDTO();
+					as.setCertifiedProductId(software.getCertifiedProductId());
+					as.setChplId(software.getCertifiedProductNumber());
+					as.setJustification(software.getJustification());
+					as.setName(software.getName());
+					as.setVersion(software.getVersion());
+					as.setGrouping(software.getGrouping());
+					certDto.getAdditionalSoftware().add(as);
+				}
+			}
+			
+			if(crResult.getTestDataUsed() != null && crResult.getTestDataUsed().size() > 0) {
+				for(CertificationResultTestData testData : crResult.getTestDataUsed()) {
+					PendingCertificationResultTestDataDTO testDto = new PendingCertificationResultTestDataDTO();
+					testDto.setAlteration(testData.getAlteration());
+					testDto.setVersion(testData.getVersion());
+					certDto.getTestData().add(testDto);
+				}
+			}
+			
+			if(crResult.getTestFunctionality() != null && crResult.getTestFunctionality().size() > 0) {
+				for(CertificationResultTestFunctionality func : crResult.getTestFunctionality()) {
+					PendingCertificationResultTestFunctionalityDTO funcDto = new PendingCertificationResultTestFunctionalityDTO();
+					funcDto.setNumber(func.getName());
+					funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
+					certDto.getTestFunctionality().add(funcDto);
+				}
+			}
+			
+			if(crResult.getTestProcedures() != null && crResult.getTestProcedures().size() > 0) {
+				for(CertificationResultTestProcedure proc : crResult.getTestProcedures()) {
+					PendingCertificationResultTestProcedureDTO procDto = new PendingCertificationResultTestProcedureDTO();
+					procDto.setTestProcedureId(proc.getTestProcedureId());
+					procDto.setVersion(proc.getTestProcedureVersion());
+					certDto.getTestProcedures().add(procDto);
+				}
+			}
+			
+			if(crResult.getTestStandards() != null && crResult.getTestStandards().size() > 0) {
+				for(CertificationResultTestStandard std : crResult.getTestStandards()) {
+					PendingCertificationResultTestStandardDTO stdDto = new PendingCertificationResultTestStandardDTO();
+					stdDto.setName(std.getTestStandardName());
+					stdDto.setTestStandardId(std.getTestStandardId());
+					certDto.getTestStandards().add(stdDto);
+				}
+			}
+			
+			if(crResult.getTestToolsUsed() != null && crResult.getTestToolsUsed().size() > 0) {
+				for(CertificationResultTestTool tool : crResult.getTestToolsUsed()) {
+					PendingCertificationResultTestToolDTO toolDto = new PendingCertificationResultTestToolDTO();
+					toolDto.setName(tool.getTestToolName());
+					toolDto.setVersion(tool.getTestToolVersion());
+					toolDto.setTestToolId(tool.getTestToolId());
+					certDto.getTestTools().add(toolDto);
+				}
+			}
+			
+			if(crResult.getG1MacraMeasures() != null && crResult.getG1MacraMeasures().size() > 0) {
+				for(MacraMeasure mm : crResult.getG1MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					mmDto.setMacraMeasureId(mm.getId());
+
+					MacraMeasureDTO measure = new MacraMeasureDTO();
+					measure.setId(mm.getId());
+					measure.setValue(mm.getAbbreviation());
+					mmDto.setMacraMeasure(measure);
+					certDto.getG1MacraMeasures().add(mmDto);
+				}
+			}
+			
+			if(crResult.getG2MacraMeasures() != null && crResult.getG2MacraMeasures().size() > 0) {
+				for(MacraMeasure mm : crResult.getG2MacraMeasures()) {
+					PendingCertificationResultMacraMeasureDTO mmDto = new PendingCertificationResultMacraMeasureDTO();
+					mmDto.setId(mm.getId());
+					mmDto.setMacraMeasureId(mm.getId());
+						
+					MacraMeasureDTO measure = new MacraMeasureDTO();
+					measure.setId(mm.getId());
+					measure.setValue(mm.getAbbreviation());
+					mmDto.setMacraMeasure(measure);
+					certDto.getG2MacraMeasures().add(mmDto);
+				}
+			}
+			
+			if(crResult.getTestTasks() != null && crResult.getTestTasks().size() > 0) {
+				for(CertificationResultTestTask task : crResult.getTestTasks()) {
+					PendingCertificationResultTestTaskDTO crTaskDto = new PendingCertificationResultTestTaskDTO();
+					PendingTestTaskDTO taskDto = new PendingTestTaskDTO();
+					taskDto.setDescription(task.getDescription());
+					taskDto.setTaskErrors(task.getTaskErrors());
+					taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev());
+					taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
+					taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
+					taskDto.setTaskRating(task.getTaskRating());
+					taskDto.setTaskRatingScale(task.getTaskRatingScale());
+					taskDto.setTaskRatingStddev(task.getTaskRatingStddev());
+					taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage());
+					taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev());
+					taskDto.setTaskTimeAvg(task.getTaskTimeAvg());
+					taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
+					taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
+					taskDto.setTaskTimeStddev(task.getTaskTimeStddev());
+					taskDto.setUniqueId(task.getUniqueId());
+					crTaskDto.setPendingTestTask(taskDto);
+					
+					for(CertificationResultTestParticipant part : task.getTestParticipants()) {
+						PendingCertificationResultTestTaskParticipantDTO crPartDto = new PendingCertificationResultTestTaskParticipantDTO();
+						PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
+						partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
+						partDto.setComputerExperienceMonths(part.getComputerExperienceMonths());
+						
+						partDto.setEducationTypeId(part.getEducationTypeId());
+						EducationTypeDTO etDto = new EducationTypeDTO();
+						etDto.setName(part.getEducationTypeName());
+						etDto.setId(part.getEducationTypeId());
+						
+						partDto.setAgeRangeId(part.getAgeRangeId());
+						AgeRangeDTO ageDto = new AgeRangeDTO();
+						ageDto.setAge(part.getAgeRange());
+						ageDto.setId(part.getAgeRangeId());
+						partDto.setAgeRange(ageDto);
+						
+						partDto.setGender(part.getGender());
+						partDto.setOccupation(part.getOccupation());
+						partDto.setProductExperienceMonths(part.getProductExperienceMonths());
+						partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths());
+						partDto.setUniqueId(part.getUniqueId());
+						crPartDto.setTestParticipant(partDto);
+						crTaskDto.getTaskParticipants().add(crPartDto);
+					}
+					certDto.getTestTasks().add(crTaskDto);
+				}
+			}
+			
 			this.certificationCriterion.add(certDto);
 		}
+		
 		List<CQMResultDetails> cqmResults = details.getCqmResults();
 		for(CQMResultDetails cqmResult : cqmResults) {
 			if(cqmResult.getSuccessVersions() != null && cqmResult.getSuccessVersions().size() > 0) {
@@ -194,6 +403,13 @@ public class PendingCertifiedProductDTO {
 					cqmDto.setDomain(cqmResult.getDomain());
 					cqmDto.setMeetsCriteria(Boolean.TRUE);
 					cqmDto.setVersion(version);
+					for(CQMResultCertification cqmCert : cqmResult.getCriteria()) {
+						PendingCqmCertificationCriterionDTO pendingCqmCert = new PendingCqmCertificationCriterionDTO();
+						pendingCqmCert.setCertificationCriteriaNumber(cqmCert.getCertificationNumber());
+						pendingCqmCert.setCertificationId(cqmCert.getCertificationId());
+						pendingCqmCert.setCqmId(cqmDto.getId());
+						cqmDto.getCertifications().add(pendingCqmCert);
+					}
 					this.cqmCriterion.add(cqmDto);
 				}
 			} else {
@@ -208,55 +424,82 @@ public class PendingCertifiedProductDTO {
 				this.cqmCriterion.add(cqmDto);	
 			}
 		}	
-		this.errorMessages = new ArrayList<String>();	
-		this.warningMessages = new ArrayList<String>();
 	}
 	
-	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){		
+	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){	
+		this();
 		this.id = entity.getId();
 		this.practiceTypeId = entity.getPracticeTypeId();
-		this.vendorId = entity.getVendorId();
-		this.vendorAddress = new AddressDTO(entity.getVendorAddress());
+		this.testingLabId = entity.getTestingLabId();
+		this.deleted = entity.getDeleted();
+		this.lastModifiedUser = entity.getLastModifiedUser();
+		this.developerId = entity.getDeveloperId();
+		//this.developerAddress = new AddressDTO(entity.getDeveloperAddress());
 		this.productId = entity.getProductId();
 		this.productVersionId = entity.getProductVersionId();
 		this.certificationEditionId = entity.getCertificationEditionId();
 		this.certificationBodyId = entity.getCertificationBodyId();
 		this.productClassificationId = entity.getProductClassificationId();
-		this.additionalSoftwareId = entity.getAdditionalSoftwareId();
 		
 		this.uniqueId = entity.getUniqueId();
 		this.recordStatus = entity.getRecordStatus();
 		this.practiceType = entity.getPracticeType();
-		this.vendorName = entity.getVendorName();
+		this.testingLabName = entity.getTestingLabName();
+		this.developerName = entity.getDeveloperName();
 		this.productName = entity.getProductName();
 		this.productVersion = entity.getProductVersion();
 		this.certificationEdition = entity.getCertificationEdition();
 		this.acbCertificationId = entity.getAcbCertificationId();
 		this.certificationBodyName = entity.getCertificationBodyName();
 		this.productClassificationName = entity.getProductClassificationName();
-		this.productClassificationModule = entity.getProductClassificationModule();
 		this.certificationDate = entity.getCertificationDate();
-		this.vendorStreetAddress = entity.getVendorStreetAddress();
-		this.vendorCity = entity.getVendorCity();
-		this.vendorState = entity.getVendorState();
-		this.vendorZipCode = entity.getVendorZipCode();
-		this.vendorWebsite = entity.getVendorWebsite();
-		this.vendorEmail = entity.getVendorEmail();
-		this.additionalSoftware = entity.getAdditionalSoftware();
-		this.uploadNotes = entity.getUploadNotes();
+		this.developerStreetAddress = entity.getDeveloperStreetAddress();
+		this.developerCity = entity.getDeveloperCity();
+		this.developerState = entity.getDeveloperState();
+		this.developerZipCode = entity.getDeveloperZipCode();
+		this.developerWebsite = entity.getDeveloperWebsite();
+		this.developerEmail = entity.getDeveloperEmail();
+		this.developerContactName = entity.getDeveloperContactName();
+		this.developerPhoneNumber = entity.getDeveloperPhoneNumber();
+		this.developerContactId = entity.getDeveloperContactId();
 		this.reportFileLocation = entity.getReportFileLocation();
+		this.sedReportFileLocation = entity.getSedReportFileLocation();
+		this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
+		this.sedTestingEnd = entity.getSedTestingEnd();
 		this.ics = entity.getIcs();
-		this.sedTesting = entity.getSedTesting();
-		this.qmsTesting = entity.getQmsTesting();
+		this.accessibilityCertified = entity.getAccessibilityCertified();
+		if(entity.getTransparencyAttestation() != null) {
+			this.transparencyAttestation = entity.getTransparencyAttestation().toString();
+		}
+		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
+		
 		this.uploadDate = entity.getCreationDate();
 		
-		this.certificationCriterion = new ArrayList<PendingCertificationCriterionDTO>();
-		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
+		Set<PendingCertifiedProductQmsStandardEntity> qmsStandards = entity.getQmsStandards();
+		if(qmsStandards != null && qmsStandards.size() > 0) {
+			for(PendingCertifiedProductQmsStandardEntity qmsStandard : qmsStandards) {
+				this.qmsStandards.add(new PendingCertifiedProductQmsStandardDTO(qmsStandard));
+			}
+		}
 		
-		Set<PendingCertificationCriterionEntity> criterionEntities = entity.getCertificationCriterion();
+		Set<PendingCertifiedProductTargetedUserEntity> targetedUsers = entity.getTargetedUsers();
+		if(targetedUsers != null && targetedUsers.size() > 0) {
+			for(PendingCertifiedProductTargetedUserEntity tu : targetedUsers) {
+				this.targetedUsers.add(new PendingCertifiedProductTargetedUserDTO(tu));
+			}
+		}
+		
+		Set<PendingCertifiedProductAccessibilityStandardEntity> accStds = entity.getAccessibilityStandards();
+		if(accStds != null && accStds.size() > 0) {
+			for(PendingCertifiedProductAccessibilityStandardEntity as : accStds) {
+				this.accessibilityStandards.add(new PendingCertifiedProductAccessibilityStandardDTO(as));
+			}
+		}
+		
+		Set<PendingCertificationResultEntity> criterionEntities = entity.getCertificationCriterion();
 		if(criterionEntities != null && criterionEntities.size() > 0) {
-			for(PendingCertificationCriterionEntity crEntity : criterionEntities) {
-				this.certificationCriterion.add(new PendingCertificationCriterionDTO(crEntity));
+			for(PendingCertificationResultEntity crEntity : criterionEntities) {
+				this.certificationCriterion.add(new PendingCertificationResultDTO(crEntity));
 			}
 		}
 		Set<PendingCqmCriterionEntity> cqmEntities = entity.getCqmCriterion();
@@ -265,8 +508,6 @@ public class PendingCertifiedProductDTO {
 				this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
 			}	
 		}
-		this.errorMessages = new ArrayList<String>();	
-		this.warningMessages = new ArrayList<String>();	
 	}
 
 	
@@ -285,20 +526,20 @@ public class PendingCertifiedProductDTO {
 		this.practiceTypeId = practiceTypeId;
 	}
 
-	public Long getVendorId() {
-		return vendorId;
+	public Long getDeveloperId() {
+		return developerId;
 	}
 
-	public void setVendorId(Long vendorId) {
-		this.vendorId = vendorId;
+	public void setDeveloperId(Long developerId) {
+		this.developerId = developerId;
 	}
 
-	public AddressDTO getVendorAddress() {
-		return vendorAddress;
+	public AddressDTO getDeveloperAddress() {
+		return developerAddress;
 	}
 
-	public void setVendorAddress(AddressDTO vendorAddress) {
-		this.vendorAddress = vendorAddress;
+	public void setDeveloperAddress(AddressDTO developerAddress) {
+		this.developerAddress = developerAddress;
 	}
 
 	public Long getProductId() {
@@ -365,12 +606,12 @@ public class PendingCertifiedProductDTO {
 		this.practiceType = practiceType;
 	}
 
-	public String getVendorName() {
-		return vendorName;
+	public String getDeveloperName() {
+		return developerName;
 	}
 
-	public void setVendorName(String vendorName) {
-		this.vendorName = vendorName;
+	public void setDeveloperName(String developerName) {
+		this.developerName = developerName;
 	}
 
 	public String getProductName() {
@@ -421,14 +662,6 @@ public class PendingCertifiedProductDTO {
 		this.productClassificationName = productClassificationName;
 	}
 
-	public String getProductClassificationModule() {
-		return productClassificationModule;
-	}
-
-	public void setProductClassificationModule(String productClassificationModule) {
-		this.productClassificationModule = productClassificationModule;
-	}
-
 	public Date getCertificationDate() {
 		return certificationDate;
 	}
@@ -437,68 +670,52 @@ public class PendingCertifiedProductDTO {
 		this.certificationDate = certificationDate;
 	}
 
-	public String getVendorStreetAddress() {
-		return vendorStreetAddress;
+	public String getDeveloperStreetAddress() {
+		return developerStreetAddress;
 	}
 
-	public void setVendorStreetAddress(String vendorStreetAddress) {
-		this.vendorStreetAddress = vendorStreetAddress;
+	public void setDeveloperStreetAddress(String developerStreetAddress) {
+		this.developerStreetAddress = developerStreetAddress;
 	}
 
-	public String getVendorCity() {
-		return vendorCity;
+	public String getDeveloperCity() {
+		return developerCity;
 	}
 
-	public void setVendorCity(String vendorCity) {
-		this.vendorCity = vendorCity;
+	public void setDeveloperCity(String developerCity) {
+		this.developerCity = developerCity;
 	}
 
-	public String getVendorState() {
-		return vendorState;
+	public String getDeveloperState() {
+		return developerState;
 	}
 
-	public void setVendorState(String vendorState) {
-		this.vendorState = vendorState;
+	public void setDeveloperState(String developerState) {
+		this.developerState = developerState;
 	}
 
-	public String getVendorZipCode() {
-		return vendorZipCode;
+	public String getDeveloperZipCode() {
+		return developerZipCode;
 	}
 
-	public void setVendorZipCode(String vendorZipCode) {
-		this.vendorZipCode = vendorZipCode;
+	public void setDeveloperZipCode(String developerZipCode) {
+		this.developerZipCode = developerZipCode;
 	}
 
-	public String getVendorWebsite() {
-		return vendorWebsite;
+	public String getDeveloperWebsite() {
+		return developerWebsite;
 	}
 
-	public void setVendorWebsite(String vendorWebsite) {
-		this.vendorWebsite = vendorWebsite;
+	public void setDeveloperWebsite(String developerWebsite) {
+		this.developerWebsite = developerWebsite;
 	}
 
-	public String getVendorEmail() {
-		return vendorEmail;
+	public String getDeveloperEmail() {
+		return developerEmail;
 	}
 
-	public void setVendorEmail(String vendorEmail) {
-		this.vendorEmail = vendorEmail;
-	}
-
-	public String getAdditionalSoftware() {
-		return additionalSoftware;
-	}
-
-	public void setAdditionalSoftware(String additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
-
-	public String getUploadNotes() {
-		return uploadNotes;
-	}
-
-	public void setUploadNotes(String uploadNotes) {
-		this.uploadNotes = uploadNotes;
+	public void setDeveloperEmail(String developerEmail) {
+		this.developerEmail = developerEmail;
 	}
 
 	public String getReportFileLocation() {
@@ -509,11 +726,11 @@ public class PendingCertifiedProductDTO {
 		this.reportFileLocation = reportFileLocation;
 	}
 
-	public List<PendingCertificationCriterionDTO> getCertificationCriterion() {
+	public List<PendingCertificationResultDTO> getCertificationCriterion() {
 		return certificationCriterion;
 	}
 
-	public void setCertificationCriterion(List<PendingCertificationCriterionDTO> certificationCriterion) {
+	public void setCertificationCriterion(List<PendingCertificationResultDTO> certificationCriterion) {
 		this.certificationCriterion = certificationCriterion;
 	}
 
@@ -525,14 +742,6 @@ public class PendingCertifiedProductDTO {
 		this.cqmCriterion = cqmCriterion;
 	}
 
-	public Long getAdditionalSoftwareId() {
-		return additionalSoftwareId;
-	}
-
-	public void setAdditionalSoftwareId(Long additionalSoftwareId) {
-		this.additionalSoftwareId = additionalSoftwareId;
-	}
-
 	public Date getUploadDate() {
 		return uploadDate;
 	}
@@ -541,43 +750,155 @@ public class PendingCertifiedProductDTO {
 		this.uploadDate = uploadDate;
 	}
 
-	public List<String> getErrorMessages() {
+	public Set<String> getErrorMessages() {
 		return errorMessages;
 	}
 
-	public void setErrorMessages(List<String> errorMessages) {
+	public void setErrorMessages(Set<String> errorMessages) {
 		this.errorMessages = errorMessages;
 	}
 
-	public List<String> getWarningMessages() {
+	public Set<String> getWarningMessages() {
 		return warningMessages;
 	}
 
-	public void setWarningMessages(List<String> warningMessages) {
+	public void setWarningMessages(Set<String> warningMessages) {
 		this.warningMessages = warningMessages;
 	}
 
-	public String getIcs() {
+	public Boolean getIcs() {
 		return ics;
 	}
 
-	public void setIcs(String ics) {
+	public void setIcs(Boolean ics) {
 		this.ics = ics;
 	}
 
-	public Boolean getSedTesting() {
-		return sedTesting;
+	public Long getTestingLabId() {
+		return testingLabId;
 	}
 
-	public void setSedTesting(Boolean sedTesting) {
-		this.sedTesting = sedTesting;
+	public void setTestingLabId(Long testingLabId) {
+		this.testingLabId = testingLabId;
 	}
 
-	public Boolean getQmsTesting() {
-		return qmsTesting;
+	public String getTestingLabName() {
+		return testingLabName;
 	}
 
-	public void setQmsTesting(Boolean qmsTesting) {
-		this.qmsTesting = qmsTesting;
+	public void setTestingLabName(String testingLabName) {
+		this.testingLabName = testingLabName;
+	}
+
+	public String getDeveloperContactName() {
+		return developerContactName;
+	}
+
+	public void setDeveloperContactName(String developerContactName) {
+		this.developerContactName = developerContactName;
+	}
+
+	public String getDeveloperPhoneNumber() {
+		return developerPhoneNumber;
+	}
+
+	public void setDeveloperPhoneNumber(String developerPhoneNumber) {
+		this.developerPhoneNumber = developerPhoneNumber;
+	}
+
+	public String getSedReportFileLocation() {
+		return sedReportFileLocation;
+	}
+
+	public void setSedReportFileLocation(String sedReportFileLocation) {
+		this.sedReportFileLocation = sedReportFileLocation;
+	}
+
+	public List<PendingCertifiedProductQmsStandardDTO> getQmsStandards() {
+		return qmsStandards;
+	}
+
+	public void setQmsStandards(List<PendingCertifiedProductQmsStandardDTO> qmsStandards) {
+		this.qmsStandards = qmsStandards;
+	}
+
+	public String getTransparencyAttestation() {
+		return transparencyAttestation;
+	}
+
+	public void setTransparencyAttestation(String transparencyAttestation) {
+		this.transparencyAttestation = transparencyAttestation;
+	}
+
+	public Long getDeveloperContactId() {
+		return developerContactId;
+	}
+
+	public void setDeveloperContactId(Long developerContactId) {
+		this.developerContactId = developerContactId;
+	}
+
+	public String getTransparencyAttestationUrl() {
+		return transparencyAttestationUrl;
+	}
+
+	public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+		this.transparencyAttestationUrl = transparencyAttestationUrl;
+	}
+
+	public List<PendingCertifiedProductTargetedUserDTO> getTargetedUsers() {
+		return targetedUsers;
+	}
+
+	public void setTargetedUsers(List<PendingCertifiedProductTargetedUserDTO> targetedUsers) {
+		this.targetedUsers = targetedUsers;
+	}
+
+	public Boolean getAccessibilityCertified() {
+		return accessibilityCertified;
+	}
+
+	public void setAccessibilityCertified(Boolean accessibilityCertified) {
+		this.accessibilityCertified = accessibilityCertified;
+	}
+
+	public List<PendingCertifiedProductAccessibilityStandardDTO> getAccessibilityStandards() {
+		return accessibilityStandards;
+	}
+
+	public void setAccessibilityStandards(List<PendingCertifiedProductAccessibilityStandardDTO> accessibilityStandards) {
+		this.accessibilityStandards = accessibilityStandards;
+	}
+
+	public String getSedIntendedUserDescription() {
+		return sedIntendedUserDescription;
+	}
+
+	public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+		this.sedIntendedUserDescription = sedIntendedUserDescription;
+	}
+
+	public Date getSedTestingEnd() {
+		return sedTestingEnd;
+	}
+
+	public void setSedTestingEnd(Date sedTestingEnd) {
+		this.sedTestingEnd = sedTestingEnd;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
+
+	public Long getLastModifiedUser() {
+		return lastModifiedUser;
+	}
+
+	public void setLastModifiedUser(Long lastModifiedUser) {
+		this.lastModifiedUser = lastModifiedUser;
 	}
 }

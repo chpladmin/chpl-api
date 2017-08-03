@@ -2,6 +2,7 @@ package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,7 +21,7 @@ import javax.persistence.Transient;
  */
 
 @Entity
-@Table(name = "product_classification_type", catalog = "openchpl", schema = "openchpl")
+@Table(name = "product_classification_type")
 public class ProductClassificationTypeEntity implements Serializable {
 
 	/** Serial Version UID. */

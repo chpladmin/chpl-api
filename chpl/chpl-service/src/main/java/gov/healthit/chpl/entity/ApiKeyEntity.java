@@ -47,7 +47,6 @@ public class ApiKeyEntity {
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false )
 	private Boolean deleted;
-	
 
 	public Long getId() {
 		return id;

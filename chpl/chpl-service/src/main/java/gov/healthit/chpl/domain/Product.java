@@ -1,20 +1,93 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.ProductDTO;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Product {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+
+import gov.healthit.chpl.dto.ProductDTO;
+import gov.healthit.chpl.dto.ProductOwnerDTO;
+
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Product implements Serializable {
+	private static final long serialVersionUID = 2177195816284265811L;
+	
+	/**
+	 * Product internal ID
+	 */
+	@XmlElement(required = true)
 	private Long productId;
+	
+	/**
+	 * The name of the product being uploaded. It is applicable for 2014 and 2015 Edition. 
+	 */
+	@XmlElement(required = true)
 	private String name;
+	
+	/**
+	 * A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules 
+	 * that can be accessed by the public. This variable is applicable to 2014 Edition. 
+	 * Fully qualified URL which is reachable via web browser validation and verification.
+	 */
+	@XmlElement(required = false, nillable=true)
 	private String reportFileLocation;
+	
+	/**
+	 * The point of contact for the product
+	 */
+	@XmlElement(required = false, nillable=true)
+	private Contact contact;
+	
+	/**
+	 * The developer that owns this product.
+	 */
+	@XmlElement(required = true)
+	private Developer owner;
+	
+	/**
+	 * History of which developers have owned this product.
+	 */
+	@XmlElementWrapper(name = "ownerHistory", nillable = true, required = false)
+	@XmlElement(name = "owner")
+	private List<ProductOwner> ownerHistory;
+	
+	@XmlTransient
 	private String lastModifiedDate;
 	
-	public Product() {}
+	public Product() {
+		ownerHistory = new ArrayList<ProductOwner>();
+	}
 	
 	public Product(ProductDTO dto) {
+		this();
 		this.productId = dto.getId();
 		this.name = dto.getName();
 		this.reportFileLocation = dto.getReportFileLocation();
-		this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		if(dto.getLastModifiedDate() != null) {
+			this.lastModifiedDate = dto.getLastModifiedDate().getTime()+"";
+		}
+		if(dto.getContact() != null) {
+			this.contact = new Contact(dto.getContact());
+		}
+		if(dto.getDeveloperId() != null) {
+			this.owner = new Developer();
+			this.owner.setDeveloperId(dto.getDeveloperId());
+			this.owner.setName(dto.getDeveloperName());
+			this.owner.setDeveloperCode(dto.getDeveloperCode());
+		}
+		if(dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
+			for(ProductOwnerDTO prevOwnerDto : dto.getOwnerHistory()) {
+				ProductOwner prevOwner = new ProductOwner(prevOwnerDto);
+				this.ownerHistory.add(prevOwner);
+			}
+		}
 	}
 
 	public Long getProductId() {
@@ -47,6 +120,30 @@ public class Product {
 
 	public void setLastModifiedDate(String lastModifiedDate) {
 		this.lastModifiedDate = lastModifiedDate;
+	}
+
+	public Developer getOwner() {
+		return owner;
+	}
+
+	public void setOwner(Developer owner) {
+		this.owner = owner;
+	}
+
+	public List<ProductOwner> getOwnerHistory() {
+		return ownerHistory;
+	}
+
+	public void setOwnerHistory(List<ProductOwner> ownerHistory) {
+		this.ownerHistory = ownerHistory;
+	}
+
+	public Contact getContact() {
+		return contact;
+	}
+
+	public void setContact(Contact contact) {
+		this.contact = contact;
 	}
 	
 

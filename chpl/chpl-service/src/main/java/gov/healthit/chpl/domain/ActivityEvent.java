@@ -1,14 +1,16 @@
 package gov.healthit.chpl.domain;
 
 
-import gov.healthit.chpl.domain.ActivityConcept;
-
+import java.io.Serializable;
 import java.util.Date;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ActivityEvent {
-	
+import gov.healthit.chpl.auth.json.User;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
+
+public class ActivityEvent implements Serializable {
+	private static final long serialVersionUID = -8220712127605295980L;
 	private Long id;
 	private String description;
 	private JsonNode originalData;
@@ -16,6 +18,7 @@ public class ActivityEvent {
 	private Date activityDate;
 	private Long activityObjectId;
 	private ActivityConcept concept;
+	private User responsibleUser;
 	
 	public ActivityEvent(){}
 	
@@ -60,5 +63,13 @@ public class ActivityEvent {
 	}
 	public void setNewData(JsonNode newData) {
 		this.newData = newData;
+	}
+
+	public User getResponsibleUser() {
+		return responsibleUser;
+	}
+
+	public void setResponsibleUser(User responsibleUser) {
+		this.responsibleUser = responsibleUser;
 	}
 }

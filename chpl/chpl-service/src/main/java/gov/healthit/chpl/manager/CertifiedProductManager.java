@@ -1,50 +1,44 @@
 package gov.healthit.chpl.manager;
 
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.dto.AdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
+
+import javax.persistence.EntityNotFoundException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-public interface CertifiedProductManager {
+
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
+public interface CertifiedProductManager extends QuestionableActivityHandler {
 
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
+	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException;
+	public boolean chplIdExists(String id) throws EntityRetrievalException;
+	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getAll();
 	public List<CertifiedProductDetailsDTO> getAllWithEditPermission();
+	public List<CertifiedProductDetailsDTO> getByProduct(Long productId);
 	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId);
-	public List<CertifiedProductDetailsDTO> getByVersions(List<Long> versionIds);
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
 	
-//	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityRetrievalException, EntityCreationException;
-//	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, CertifiedProductDTO dto) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO updateCertifiedProductVersion(Long certifiedProductId, Long newVersionId) throws EntityRetrievalException;
-//	public void delete(CertifiedProductDTO dto) throws EntityRetrievalException;
-//	public void delete(Long certifiedProductId) throws EntityRetrievalException;
+	public CertifiedProductDTO update(Long acbId, 
+			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
+			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, InvalidArgumentsException;
+	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing) 
+			throws EntityNotFoundException;
+	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
+			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
-	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDetails pendingCp) 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	//public void replaceCertifications(Long acbId, CertifiedProductDTO dto, Map<CertificationCriterionDTO, Boolean> certResults)
-	//		throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	//public void replaceCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
-	//		throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	//public void replaceAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware) 
-	//		throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public void updateCertifications(Long acbId, CertifiedProductDTO productDto, Map<CertificationCriterionDTO, Boolean> certResults)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	public void updateCqms(Long acbId, CertifiedProductDTO productDto, Map<CQMCriterionDTO, Boolean> cqmResults)
-			throws EntityCreationException, EntityRetrievalException,
-			JsonProcessingException;
-	public void updateAdditionalSoftware(Long acbId, CertifiedProductDTO productDto, List<AdditionalSoftwareDTO> newSoftware)
-			throws EntityCreationException, EntityRetrievalException,
-			JsonProcessingException;
-	
+	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;	
 }

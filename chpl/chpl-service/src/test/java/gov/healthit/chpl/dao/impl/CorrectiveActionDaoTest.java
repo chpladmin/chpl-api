@@ -5,10 +5,12 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -22,6 +24,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanCertificationResultDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanDAO;
@@ -50,6 +53,10 @@ public class CorrectiveActionDaoTest extends TestCase {
 	@Autowired
 	private CertificationCriterionDAO certDao;
 	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+	
 	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
@@ -63,6 +70,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetCorrectiveActionPlanById() throws EntityRetrievalException {
 		CorrectiveActionPlanDTO plan = capDao.getById(0L);
 		assertNotNull(plan);
@@ -71,6 +79,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testPlanCertificationsExist() throws EntityRetrievalException {
 		List<CorrectiveActionPlanCertificationResultDTO> capResults = capCertDao.getAllForCorrectiveActionPlan(0L);
 		assertNotNull(capResults);
@@ -79,6 +88,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetPlanCertificationById() throws EntityRetrievalException {
 		CorrectiveActionPlanCertificationResultDTO capResult = capCertDao.getById(0L);
 		assertNotNull(capResult);
@@ -87,6 +97,7 @@ public class CorrectiveActionDaoTest extends TestCase {
 	}
 	
 	@Test
+	@Transactional
 	public void testGetPlanByCertifiedProduct() throws EntityRetrievalException {
 		List<CorrectiveActionPlanDTO> plans = capDao.getAllForCertifiedProduct(1L);
 		assertNotNull(plans);
@@ -97,33 +108,32 @@ public class CorrectiveActionDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testUpdatePlan() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		CorrectiveActionPlanDTO plan = capDao.getById(0L);
-		String resolution = "This has been resolved";
-		plan.setResolution(resolution);
+		Date startDate = new Date();
+		plan.setStartDate(startDate);
 		capDao.update(plan);
 		
 		plan = capDao.getById(0L);
 		assertNotNull(plan);
-		assertEquals(resolution, plan.getResolution());
+		assertEquals(startDate, plan.getStartDate());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testCreatePlan() throws EntityRetrievalException, EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		CorrectiveActionPlanDTO plan = new CorrectiveActionPlanDTO();
-		plan.setAcbSummary("Some summary");
-		plan.setApprovalDate(new Date());
+		plan.setSurveillanceStartDate(new Date());
 		plan.setCertifiedProductId(1L);
-		plan.setDeveloperSummary("Developer summary");
-		plan.setEffectiveDate(new Date());
-		plan.setEstimatedCompletionDate(new Date());
-		plan.setNoncomplainceDate(new Date());
+		plan.setSurveillanceResult(Boolean.FALSE);
+		plan.setNonComplianceDeterminationDate(new Date());
 		CorrectiveActionPlanDTO createdPlan = capDao.create(plan);
 		assertNotNull(createdPlan);
 		assertNotNull(createdPlan.getId());
@@ -131,17 +141,15 @@ public class CorrectiveActionDaoTest extends TestCase {
 	
 	@Test
 	@Transactional
+	@Rollback
 	public void testCreatePlanWithCerts() throws EntityRetrievalException, EntityCreationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		CorrectiveActionPlanDTO plan = new CorrectiveActionPlanDTO();
-		plan.setAcbSummary("Some summary");
-		plan.setApprovalDate(new Date());
+		plan.setSurveillanceStartDate(new Date());
 		plan.setCertifiedProductId(1L);
-		plan.setDeveloperSummary("Developer summary");
-		plan.setEffectiveDate(new Date());
-		plan.setEstimatedCompletionDate(new Date());
-		plan.setNoncomplainceDate(new Date());
+		plan.setSurveillanceResult(Boolean.FALSE);
+		plan.setNonComplianceDeterminationDate(new Date());
 		CorrectiveActionPlanDTO createdPlan = capDao.create(plan);
 		assertNotNull(createdPlan);
 		assertNotNull(createdPlan.getId());
@@ -149,10 +157,10 @@ public class CorrectiveActionDaoTest extends TestCase {
 		CertificationCriterionDTO cert = certDao.getById(1L);
 		CorrectiveActionPlanCertificationResultDTO planCert = new CorrectiveActionPlanCertificationResultDTO();
 		planCert.setId(2L);
-		planCert.setAcbSummary("cert acb summary");
+		planCert.setSummary("cert acb summary");
 		planCert.setCertCriterion(cert);
 		planCert.setCorrectiveActionPlanId(createdPlan.getId());
-		planCert.setDeveloperSummary("some dev summary");
+		planCert.setDeveloperExplanation("some dev summary");
 		planCert.setResolution("fixed!");
 		CorrectiveActionPlanCertificationResultDTO createdPlanCert = capCertDao.create(planCert);
 		assertNotNull(createdPlanCert);
