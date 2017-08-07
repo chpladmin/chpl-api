@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Repository("listingStatisticsDAO")
 public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStatisticsDAO {
@@ -121,10 +122,16 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	 */
 	@Override
 	public Long getTotalCPsSuspended2014Listings(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
+		Query query = entityManager.createQuery("SELECT DISTINCT "
+				+ " CONCAT(UPPER(productName), UPPER(developerName)) "
+				+ " FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
+				+ " AND ("
+				+ "	(deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
+				+ " OR "
+				+ "	(deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate "
+				+ "	AND lastModifiedDate > :creationEndDate)"
+				+ ") ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
@@ -135,7 +142,9 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	 */
 	@Override
 	public Long getTotalCPs2015Listings(DateRange dateRange) {
-		Query query = entityManager.createQuery("SELECT DISTINCT CONCAT(UPPER(productName), UPPER(developerName)) FROM CertifiedProductDetailsEntity "
+		Query query = entityManager.createQuery("SELECT DISTINCT "
+				+ " CONCAT(UPPER(productName), UPPER(developerName)) "
+				+ " FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2015' "
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
@@ -205,7 +214,10 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	@Override
 	public Long getTotalActive2014Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2014' AND UPPER(certificationStatusName) = 'ACTIVE' "
+				+ " WHERE year = '2014' AND UPPER(certificationStatusName) IN ('" +
+				CertificationStatusType.Active.getName().toUpperCase() + "', '" +
+				CertificationStatusType.SuspendedByAcb.getName().toUpperCase() + "', '" +
+				CertificationStatusType.SuspendedByOnc.getName().toUpperCase() + "')"
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());
@@ -245,7 +257,10 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	@Override
 	public Long getTotalActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
-				+ " WHERE year = '2015' AND UPPER(certificationStatusName) = 'ACTIVE' "
+				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('" +
+				CertificationStatusType.Active.getName().toUpperCase() + "', '" + 
+				CertificationStatusType.SuspendedByAcb.getName().toUpperCase() + "', '" +
+				CertificationStatusType.SuspendedByOnc.getName().toUpperCase() + "')"
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
 				+ " OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
 		query.setParameter("creationStartDate", dateRange.getStartDate());

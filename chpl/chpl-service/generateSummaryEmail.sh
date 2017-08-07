@@ -14,6 +14,16 @@ log=logs/log.generateSummaryEmail.$TIMESTAMP.txt
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
 
+# get start date as same day of week as today but within the 7 days on or before 4-1-2016
+STARTDATE=$(date -d '2016-04-01' "+%Y-%m-%d")
+STARTDATEDOW=$(date -d "$STARTDATE" "+%u")
+DAYOFWEEK=$(date "+%u")
+while [[ $STARTDATEDOW -ne $DAYOFWEEK ]]
+do
+        STARTDATE=$(date -d "$STARTDATE - 1 day" '+%F')
+        STARTDATEDOW=$(date -d "$STARTDATE" "+%u")
+done
+
 # get current time as formatted timestamp to input as command-line argument
 ENDDATE=$(date "+%F")
 
@@ -21,7 +31,7 @@ ENDDATE=$(date "+%F")
 echo "Generate summary email at: " $TIMESTAMP >> $log
 echo "####################################" >> $log
 # ParseActivities application takes three parameters: startDate, endDate, numDaysInPeriod. The dates have this format: yyyy-mm-dd
-java -Xmx800m -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.statistics.SummaryStatistics 2016-04-01 $ENDDATE 7 2>&1 >> $log
+java -Xmx800m -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.statistics.SummaryStatistics $STARTDATE $ENDDATE 7 2>&1 >> $log
 echo "####################################" >> $log
 
 # restore filename delimiters
