@@ -9,7 +9,7 @@ public enum NotificationTypeConcept implements Serializable {
 	ONC_DAILY_SURVEILLANCE_BROKEN_RULES("ONC Daily Surveillance Broken Rules"),
 	ONC_WEEKLY_SURVEILLANCE_BROKEN_RULES("ONC Weekly Surveillance Broken Rules"),
 	ONC_WEEKLY_ICS_FAMILY_ERRORS("ONC Weekly ICS Family Errors"),
-	WEEKLY_STATISTICS("Weekly Statistics"),
+	SUMMARY_STATISTICS("Summary Statistics"),
 	QUESTIONABLE_ACTIVITY("Questionable Activity");
 	
 	private String name;
