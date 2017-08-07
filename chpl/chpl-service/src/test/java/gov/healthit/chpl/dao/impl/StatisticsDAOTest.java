@@ -285,7 +285,7 @@ public class StatisticsDAOTest extends TestCase {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
 		Long totalActive2015Listings = listingStatisticsDao.getTotalActive2015Listings(dateRange);
 		assertNotNull(totalActive2015Listings);
-		assertEquals(2L, totalActive2015Listings.longValue()); 
+		assertEquals(3L, totalActive2015Listings.longValue()); 
 	}
 	
 	/**
