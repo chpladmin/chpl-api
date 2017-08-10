@@ -11,24 +11,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
 
 /**
  * Participant in a given test task.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CertificationResultTestParticipant implements Serializable {
-	private static final long serialVersionUID = -5404897845633867927L;
+public class TestParticipant implements Serializable {
+	private static final long serialVersionUID = -3771155258451736516L;
+	private static final Logger logger = LogManager.getLogger(TestParticipant.class);
 
-	private static final Logger logger = LogManager.getLogger(CertificationResultTestParticipant.class);
-
-	/**
-	 * Test task to participant mapping internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
-	
 	/**
 	 * An ONC-ACB designated identifier for an individual SED participant. 
 	 * This variable is a string variable only applicable to 2015 Edition, 
@@ -42,7 +35,7 @@ public class CertificationResultTestParticipant implements Serializable {
 	 * Participant internal ID
 	 */
 	@XmlElement(required = true)
-	private Long testParticipantId;
+	private Long id;
 	
 	/**
 	 * Self-reported gender of the corresponding participant. 
@@ -115,54 +108,23 @@ public class CertificationResultTestParticipant implements Serializable {
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String assistiveTechnologyNeeds;
-
-	public CertificationResultTestParticipant() {
-		super();
-	}
 	
-	public CertificationResultTestParticipant(CertificationResultTestTaskParticipantDTO dto) {
+	public TestParticipant(TestParticipantDTO dto) {
 		this.id = dto.getId();
-		this.testParticipantId = dto.getTestParticipantId();
-		if(dto.getTestParticipant() != null) {
-			this.gender = dto.getTestParticipant().getGender();
-			this.educationTypeId = dto.getTestParticipant().getEducationTypeId();
-			if(dto.getTestParticipant().getEducationType() != null) {
-				this.educationTypeName = dto.getTestParticipant().getEducationType().getName();
-			}
-			this.ageRangeId = dto.getTestParticipant().getAgeRangeId();
-			if(dto.getTestParticipant().getAgeRange() != null) {
-				this.ageRange = dto.getTestParticipant().getAgeRange().getAge();
-			}
-			this.occupation = dto.getTestParticipant().getOccupation();
-			this.professionalExperienceMonths = dto.getTestParticipant().getProfessionalExperienceMonths();
-			this.computerExperienceMonths = dto.getTestParticipant().getComputerExperienceMonths();
-			this.productExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
-			this.assistiveTechnologyNeeds = dto.getTestParticipant().getAssistiveTechnologyNeeds();
+		this.gender = dto.getGender();
+		this.educationTypeId = dto.getEducationTypeId();
+		if(dto.getEducationType() != null) {
+			this.educationTypeName = dto.getEducationType().getName();
 		}
-	}
-	
-	public CertificationResultTestParticipant(TestParticipant participant) {
-		this.testParticipantId = participant.getId();
-		this.gender = participant.getGender();
-		this.educationTypeId = participant.getEducationTypeId();
-		this.educationTypeName = participant.getEducationTypeName();
-		this.ageRangeId = participant.getAgeRangeId();
-		this.ageRange = participant.getAgeRange();
-		this.occupation = participant.getOccupation();
-		this.professionalExperienceMonths = participant.getProfessionalExperienceMonths();
-		this.computerExperienceMonths = participant.getComputerExperienceMonths();
-		this.productExperienceMonths = participant.getProductExperienceMonths();
-		this.assistiveTechnologyNeeds = participant.getAssistiveTechnologyNeeds();
-	}
-	
-	public boolean matches(CertificationResultTestParticipant anotherParticipant) {
-		boolean result = false;
-		if(this.getTestParticipantId() != null && 
-			anotherParticipant.getTestParticipantId() != null && 
-			this.getTestParticipantId().longValue() == anotherParticipant.getTestParticipantId().longValue()) {
-			result = true;
+		this.ageRangeId = dto.getAgeRangeId();
+		if(dto.getAgeRange() != null) {
+			this.ageRange = dto.getAgeRange().getAge();
 		}
-		return result;
+		this.occupation = dto.getOccupation();
+		this.professionalExperienceMonths = dto.getProfessionalExperienceMonths();
+		this.computerExperienceMonths = dto.getComputerExperienceMonths();
+		this.productExperienceMonths = dto.getProductExperienceMonths();
+		this.assistiveTechnologyNeeds = dto.getAssistiveTechnologyNeeds();
 	}
 	
 	public Long getId() {
@@ -171,14 +133,6 @@ public class CertificationResultTestParticipant implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getTestParticipantId() {
-		return testParticipantId;
-	}
-
-	public void setTestParticipantId(Long testParticipantId) {
-		this.testParticipantId = testParticipantId;
 	}
 
 	public String getGender() {

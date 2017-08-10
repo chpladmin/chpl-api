@@ -2,7 +2,9 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -14,24 +16,24 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.TestTaskDTO;
 
 /**
  * A task used for SED testing for a given criteria
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CertificationResultTestTask implements Serializable {
-	private static final long serialVersionUID = -5239080984125704737L;
-
-	private static final Logger logger = LogManager.getLogger(CertificationResultTestTask.class);
+public class TestTask implements Serializable {
+	private static final long serialVersionUID = -3761135258451736516L;
+	
+	private static final Logger logger = LogManager.getLogger(TestTask.class);
 
 	/**
-	 * Test task to certification result mapping internal ID
+	 * Test task internal ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
-
+	
 	/**
 	 * An ONC-ACB designated identifier for an individual SED task and 
 	 * that must be unique to a particular task. 
@@ -40,12 +42,6 @@ public class CertificationResultTestTask implements Serializable {
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String uniqueId;
-	
-	/**
-	 * Test task internal ID
-	 */
-	@XmlElement(required = true)
-	private Long testTaskId;
 	
 	/**
 	 * Brief description of task performed during SED/usability testing. This variable is only applicable to 2015 Edition, and a string variable that does not take any restrictions on formatting or values.
@@ -146,59 +142,41 @@ public class CertificationResultTestTask implements Serializable {
 	private Float taskRatingStddev;
 	
 	/**
+	 * The set of criteria within a listing to which this task is applied.
+	 */
+	@XmlElement(required = false, nillable = true)
+	private Set<CertificationCriterion> criteria;
+	
+	/**
 	 * Participants in the test task.
 	 */
 	@XmlElementWrapper(name = "participants", nillable = true, required = false)
 	@XmlElement(name = "participant")
-	private List<CertificationResultTestParticipant> testParticipants;
-
-	public CertificationResultTestTask() {
+	private List<TestParticipant> testParticipants;
+	
+	
+	public TestTask() {
 		super();
-		testParticipants = new ArrayList<CertificationResultTestParticipant>();
+		testParticipants = new ArrayList<TestParticipant>();
+		criteria = new HashSet<CertificationCriterion>();
 	}
 	
-	public CertificationResultTestTask(CertificationResultTestTaskDTO dto) {
+	public TestTask(TestTaskDTO dto) {
 		this();
-		this.id = dto.getId();
-		this.testTaskId = dto.getTestTaskId();
-		if(dto.getTestTask() != null) {
-			this.description = dto.getTestTask().getDescription();
-			this.taskSuccessAverage = dto.getTestTask().getTaskSuccessAverage();
-			this.taskSuccessStddev = dto.getTestTask().getTaskSuccessStddev();
-			this.taskPathDeviationObserved = dto.getTestTask().getTaskPathDeviationObserved();
-			this.taskPathDeviationOptimal = dto.getTestTask().getTaskPathDeviationOptimal();
-			this.taskTimeAvg = dto.getTestTask().getTaskTimeAvg();
-			this.taskTimeStddev = dto.getTestTask().getTaskTimeStddev();
-			this.taskTimeDeviationObservedAvg = dto.getTestTask().getTaskTimeDeviationObservedAvg();
-			this.taskTimeDeviationOptimalAvg = dto.getTestTask().getTaskTimeDeviationOptimalAvg();
-			this.taskErrors = dto.getTestTask().getTaskErrors();
-			this.taskErrorsStddev = dto.getTestTask().getTaskErrorsStddev();
-			this.taskRatingScale = dto.getTestTask().getTaskRatingScale();
-			this.taskRating = dto.getTestTask().getTaskRating();
-			this.taskRatingStddev = dto.getTestTask().getTaskRatingStddev();
-		}
-	}
-	
-	public CertificationResultTestTask(TestTask task) {
-		this();
-		this.testTaskId = task.getId();
-		this.description = task.getDescription();
-		this.taskSuccessAverage = task.getTaskSuccessAverage();
-		this.taskSuccessStddev = task.getTaskSuccessStddev();
-		this.taskPathDeviationObserved = task.getTaskPathDeviationObserved();
-		this.taskPathDeviationOptimal = task.getTaskPathDeviationOptimal();
-		this.taskTimeAvg = task.getTaskTimeAvg();
-		this.taskTimeStddev = task.getTaskTimeStddev();
-		this.taskTimeDeviationObservedAvg = task.getTaskTimeDeviationObservedAvg();
-		this.taskTimeDeviationOptimalAvg = task.getTaskTimeDeviationOptimalAvg();
-		this.taskErrors = task.getTaskErrors();
-		this.taskErrorsStddev = task.getTaskErrorsStddev();
-		this.taskRatingScale = task.getTaskRatingScale();
-		this.taskRating = task.getTaskRating();
-		this.taskRatingStddev = task.getTaskRatingStddev();
-		for(TestParticipant participant : task.getTestParticipants()) {
-			this.testParticipants.add(new CertificationResultTestParticipant(participant));
-		}
+		this.description = dto.getDescription();
+		this.taskSuccessAverage = dto.getTaskSuccessAverage();
+		this.taskSuccessStddev = dto.getTaskSuccessStddev();
+		this.taskPathDeviationObserved = dto.getTaskPathDeviationObserved();
+		this.taskPathDeviationOptimal = dto.getTaskPathDeviationOptimal();
+		this.taskTimeAvg = dto.getTaskTimeAvg();
+		this.taskTimeStddev = dto.getTaskTimeStddev();
+		this.taskTimeDeviationObservedAvg = dto.getTaskTimeDeviationObservedAvg();
+		this.taskTimeDeviationOptimalAvg = dto.getTaskTimeDeviationOptimalAvg();
+		this.taskErrors = dto.getTaskErrors();
+		this.taskErrorsStddev = dto.getTaskErrorsStddev();
+		this.taskRatingScale = dto.getTaskRatingScale();
+		this.taskRating = dto.getTaskRating();
+		this.taskRatingStddev = dto.getTaskRatingStddev();
 	}
 	
 	public Long getId() {
@@ -208,15 +186,7 @@ public class CertificationResultTestTask implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public Long getTestTaskId() {
-		return testTaskId;
-	}
-
-	public void setTestTaskId(Long testTaskId) {
-		this.testTaskId = testTaskId;
-	}
-
+	
 	public String getDescription() {
 		return description;
 	}
@@ -357,11 +327,11 @@ public class CertificationResultTestTask implements Serializable {
 		this.taskRating = taskRating;
 	}
 
-	public List<CertificationResultTestParticipant> getTestParticipants() {
+	public List<TestParticipant> getTestParticipants() {
 		return testParticipants;
 	}
 
-	public void setTestParticipants(List<CertificationResultTestParticipant> testParticipants) {
+	public void setTestParticipants(List<TestParticipant> testParticipants) {
 		this.testParticipants = testParticipants;
 	}
 
@@ -379,5 +349,13 @@ public class CertificationResultTestTask implements Serializable {
 
 	public void setTaskRatingStddev(Float taskRatingStddev) {
 		this.taskRatingStddev = taskRatingStddev;
+	}
+
+	public Set<CertificationCriterion> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Set<CertificationCriterion> criteria) {
+		this.criteria = criteria;
 	}
 }

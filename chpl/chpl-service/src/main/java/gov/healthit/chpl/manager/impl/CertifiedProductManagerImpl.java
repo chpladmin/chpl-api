@@ -2,8 +2,10 @@ package gov.healthit.chpl.manager.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
@@ -657,6 +659,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 				
 				if(certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
+					//Map<Long, Long> pendingTaskToConfirmedTaskMap = new HashMap<Long, Long>();
 					for(PendingCertificationResultTestTaskDTO certTask : certResult.getTestTasks()) {
 						//have we already added this one?
 						TestTaskDTO existingTt = null;
@@ -668,24 +671,29 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 						}
 						if(existingTt == null && certTask.getPendingTestTask() != null) {
 							PendingTestTaskDTO pendingTask = certTask.getPendingTestTask();
-							TestTaskDTO tt = new TestTaskDTO();
-							tt.setDescription(pendingTask.getDescription());
-							tt.setTaskErrors(pendingTask.getTaskErrors());
-							tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
-							tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
-							tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
-							tt.setTaskRating(pendingTask.getTaskRating());
-							tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
-							tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
-							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
-							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
-							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
-							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
-							tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
-							tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
-							
-							//add test task
-							existingTt = testTaskDao.create(tt);
+							//if(pendingTaskToConfirmedTaskMap.get(pendingTask.getId()) != null) {
+							//	existingTt = testTaskDao.getById(pendingTaskToConfirmedTaskMap.get(pendingTask.getId()));
+							//} else {
+								TestTaskDTO tt = new TestTaskDTO();
+								tt.setDescription(pendingTask.getDescription());
+								tt.setTaskErrors(pendingTask.getTaskErrors());
+								tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
+								tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
+								tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
+								tt.setTaskRating(pendingTask.getTaskRating());
+								tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
+								tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
+								tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
+								tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
+								tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
+								tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
+								tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
+								tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
+								
+								//add test task
+								existingTt = testTaskDao.create(tt);
+								//pendingTaskToConfirmedTaskMap.put(pendingTask.getId(), existingTt.getId());
+							//}
 							existingTt.setPendingUniqueId(pendingTask.getUniqueId());
 							testTasksAdded.add(existingTt);
 						}
