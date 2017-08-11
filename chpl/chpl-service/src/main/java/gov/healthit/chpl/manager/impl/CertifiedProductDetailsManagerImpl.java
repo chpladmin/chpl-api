@@ -2,6 +2,8 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.SynchronousQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +45,8 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.IcsFamilyTree;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
@@ -124,6 +128,34 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		loadCQMCriteria();
 		loadCriteriaMacraMeasures();
+	}
+	
+	@Override
+	@Transactional
+	public IcsFamilyTree getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
+		
+		IcsFamilyTree familyTree = new IcsFamilyTree();
+		Queue<CertifiedProduct> todo = new SynchronousQueue<CertifiedProduct>();
+		
+		CertifiedProductSearchDetails dto = getCertifiedProductDetails(certifiedProductId);
+		
+		IcsFamilyTreeNode first = new IcsFamilyTreeNode(dto);
+		
+		familyTree.getIcsNodes().add(first);
+		
+		todo.addAll(dto.getIcs().getChildren());
+		todo.addAll(dto.getIcs().getParents());
+		
+		while(todo.peek() != null){
+			CertifiedProduct curr = todo.remove();
+			CertifiedProductSearchDetails details = getCertifiedProductDetails(curr.getId());
+			IcsFamilyTreeNode node = new IcsFamilyTreeNode(details);
+			familyTree.getIcsNodes().add(node);
+			todo.addAll(details.getIcs().getChildren());
+			todo.addAll(details.getIcs().getParents());
+		}
+		
+		return familyTree;
 	}
 	
 

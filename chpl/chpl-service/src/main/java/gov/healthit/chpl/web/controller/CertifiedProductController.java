@@ -41,6 +41,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IcsFamilyTree;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -138,6 +139,16 @@ public class CertifiedProductController {
 		}
 		
 		return certifiedProduct;
+	}
+	
+	@ApiOperation(value="Get the ICS family tree for the specified certified product.", 
+			notes="Returns all member of the family tree conected to the specified certified product.")
+	@RequestMapping(value="/{certifiedProductId}/ics_relationships", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody IcsFamilyTree getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+		IcsFamilyTree familyTree = cpdManager.getIcsFamilyTree(certifiedProductId);
+		
+		return familyTree;
 	}
 	
 	@ApiOperation(value="Update an existing certified product.", 

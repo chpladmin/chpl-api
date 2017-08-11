@@ -29,6 +29,7 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IcsFamilyTree;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
@@ -56,6 +57,14 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		assertNotNull(certifiedProductDetailsManager.getCertifiedProductDetails(1L));
 		
+	}
+	
+	@Test
+	@Transactional
+	public void testIcsFamilyTree() throws EntityRetrievalException{
+		IcsFamilyTree tree = certifiedProductDetailsManager.getIcsFamilyTree(1L);
+		assertNotNull(tree.getIcsNodes());
+		assertNotNull(tree);
 	}
 	
 	@Test
