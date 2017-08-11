@@ -241,7 +241,7 @@ public class CertifiedProductController {
 		JsonProcessingException, ValidationException {
 		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
-		//TODO: clear out all tasks and participants in this existingListing object
+		//replace tasks and participants in this existingListing object
 		//and put the update request sed into the appropriate criteria for the listing
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		for(CertificationResult certResult : updatedListing.getCertificationResults()) {
