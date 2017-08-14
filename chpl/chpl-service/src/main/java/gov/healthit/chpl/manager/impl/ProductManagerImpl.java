@@ -3,8 +3,6 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.caching.CacheNames;
-
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -45,13 +41,11 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
-public class ProductManagerImpl implements ProductManager {
+public class ProductManagerImpl extends QuestionableActivityHandlerImpl implements ProductManager {
 	private static final Logger logger = LogManager.getLogger(ProductManagerImpl.class);
 	
-	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	@Autowired private MessageSource messageSource;
 	@Autowired ProductDAO productDao;
@@ -156,7 +150,7 @@ public class ProductManagerImpl implements ProductManager {
 		String activityMsg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, result);
 		if(lookForSuspiciousActivity) {
-			checkSuspiciousActivity(beforeDTO, result);
+			handleActivity(beforeDTO, result);
 		}
 		return result;
 		
@@ -280,55 +274,59 @@ public class ProductManagerImpl implements ProductManager {
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeProduct.getId(), "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct, afterProduct);
 		}	
 		
-		checkSuspiciousActivity(oldProduct, newProduct);
+		handleActivity(oldProduct, newProduct);
 		return getById(newProduct.getId());
 	}
 	
-	@Override
-	public void checkSuspiciousActivity(ProductDTO original, ProductDTO changed) {
-		String subject = "CHPL Questionable Activity";
-		String htmlMessage = "<p>Activity was detected on product " + original.getName() + ".</p>" 
-				+ "<p>To view the details of this activity go to: " + 
-				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
-		
-		boolean sendMsg = false;
-		
-		//check name change
-		if( (original.getName() != null && changed.getName() == null) ||
-			(original.getName() == null && changed.getName() != null) ||
-			!original.getName().equals(changed.getName()) ) {
-			sendMsg = true;
-		}
-		
-		//if there was a different amount of owner history
-		if( (original.getOwnerHistory() != null && changed.getOwnerHistory() == null) ||
-			(original.getOwnerHistory() == null && changed.getOwnerHistory() != null) ||
-			(original.getOwnerHistory().size() != changed.getOwnerHistory().size()) ) {
-			sendMsg = true;
+	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+		String message = "";
+		if(!(src instanceof ProductDTO)) {
+			logger.error("Cannot use object of type " + src.getClass());
 		} else {
-			//the same counts of owner history are there but we should check the contents
-			for(ProductOwnerDTO originalOwner : original.getOwnerHistory()) {
-				boolean foundOriginalOwner = false;
-				for(ProductOwnerDTO changedOwner : changed.getOwnerHistory()) {
-					if(originalOwner.getDeveloper().getId().longValue() == changedOwner.getDeveloper().getId().longValue()) {
-						foundOriginalOwner = true;
-					}
-				}
-				if(!foundOriginalOwner) {
-					sendMsg = true;
-				}
-			}
-		}
-		
-		if(sendMsg) {
-			String emailAddr = env.getProperty("questionableActivityEmail");
-			String[] emailAddrs = emailAddr.split(";");
-			try {
-				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-			} catch(MessagingException me) {
-				logger.error("Could not send questionable activity email", me);
-			}
-		}	
+			ProductDTO original = (ProductDTO) src;
+			message = "<p>Activity was detected on product " + original.getName() + ".</p>" 
+					+ "<p>To view the details of this activity go to: " + 
+					env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		} 
+		return message;
 	}
 	
+	public boolean isQuestionableActivity(Object src, Object dest) {
+		boolean isQuestionable = false;
+
+		if(!(src instanceof ProductDTO && dest instanceof ProductDTO)) {
+			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type ProductDTO.");
+		} else {
+			ProductDTO original = (ProductDTO) src;
+			ProductDTO changed = (ProductDTO) dest;
+			
+			//check name change
+			if( (original.getName() != null && changed.getName() == null) ||
+				(original.getName() == null && changed.getName() != null) ||
+				!original.getName().equals(changed.getName()) ) {
+				isQuestionable = true;
+			}
+			
+			//if there was a different amount of owner history
+			if( (original.getOwnerHistory() != null && changed.getOwnerHistory() == null) ||
+				(original.getOwnerHistory() == null && changed.getOwnerHistory() != null) ||
+				(original.getOwnerHistory().size() != changed.getOwnerHistory().size()) ) {
+				isQuestionable = true;
+			} else {
+				//the same counts of owner history are there but we should check the contents
+				for(ProductOwnerDTO originalOwner : original.getOwnerHistory()) {
+					boolean foundOriginalOwner = false;
+					for(ProductOwnerDTO changedOwner : changed.getOwnerHistory()) {
+						if(originalOwner.getDeveloper().getId().longValue() == changedOwner.getDeveloper().getId().longValue()) {
+							foundOriginalOwner = true;
+						}
+					}
+					if(!foundOriginalOwner) {
+						isQuestionable = true;
+					}
+				}
+			}
+		}
+		return isQuestionable;
+	}
 }

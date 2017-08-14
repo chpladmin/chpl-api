@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 12.4.0
+_14 August 2017_
+
+## Minor Features
+* Enforce ICS codes with 2 numbers (00-99) instead of just 1 number.
+* Improve error messages returned for unknown user-entered values for SED age and education levels.
+* Use subscriptions for weekly statistics email and questionable activity emails
+
+## Bugs Fixed
+* Summary statistics CSV should show same day of week that script was run
+* Fixed summary statistics incorrect email counts
+
+---
+
 ## Version 12.3.0
 _31 July 2017_
 

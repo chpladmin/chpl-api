@@ -20,5 +20,4 @@ public interface ProductManager {
 	public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode, List<ProductVersionDTO> newProductVersions) throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public void checkSuspiciousActivity(ProductDTO original, ProductDTO changed);
 }

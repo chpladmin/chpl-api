@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
@@ -207,16 +209,22 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						} else {
 							for(PendingCertificationResultTestTaskDTO task : certCriteria.getTestTasks()) {
 								if(task.getTaskParticipants() == null || task.getTaskParticipants().size() < 10) {
-									product.getErrorMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskParticipantsSize"), LocaleContextHolder.getLocale()), 
+											task.getPendingTestTask().getUniqueId(), certCriteria.getNumber()));
 								}
 								for(PendingCertificationResultTestTaskParticipantDTO part : task.getTaskParticipants()) {
 									if(part.getTestParticipant().getEducationTypeId() == null) {
-										product.getErrorMessages().add("Found no matching eduation level for test participant (gender: " + part.getTestParticipant().getGender() 
-												+ ") related to " + certCriteria.getNumber() + ".");
+										product.getErrorMessages().add(String.format(messageSource.getMessage(
+												new DefaultMessageSourceResolvable("listing.criteria.badParticipantEducationLevel"), LocaleContextHolder.getLocale()), 
+												(part.getTestParticipant().getUserEnteredEducationType() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredEducationType()), 
+												part.getTestParticipant().getUniqueId()));
 									}
 									if(part.getTestParticipant().getAgeRangeId() == null) {
-										product.getErrorMessages().add("Found no matching age range for test participant (gender: " + part.getTestParticipant().getGender() 
-												+ ") related to " + certCriteria.getNumber() + ".");
+										product.getErrorMessages().add(String.format(messageSource.getMessage(
+												new DefaultMessageSourceResolvable("listing.criteria.badParticipantAgeRange"), LocaleContextHolder.getLocale()), 
+												(part.getTestParticipant().getUserEnteredAgeRange() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredAgeRange()), 
+												part.getTestParticipant().getUniqueId()));
 									}
 								}
 							}
@@ -431,7 +439,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						if(tt == null) {
 							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
 						}
-						else if(tt.isRetired() && super.icsCode.intValue() == 0) {
+						else if(tt.isRetired() && super.icsCodeInteger.intValue() == 0) {
 							if(super.hasIcsConflict){
 								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
@@ -662,7 +670,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		if(product.getIcs() == null || product.getIcs().getInherits() == null) {
 			product.getErrorMessages().add("ICS is required.");
-		} else if(product.getIcs().getInherits().equals(Boolean.TRUE) && icsCode.intValue() > 0) {
+		} else if(product.getIcs().getInherits().equals(Boolean.TRUE) && icsCodeInteger.intValue() > 0) {
 			//if ICS is nonzero, warn about providing parents
 			if(product.getIcs() == null || product.getIcs().getParents() == null || 
 					product.getIcs().getParents().size() == 0) {
@@ -686,9 +694,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				
 				//this listing's ICS code must be greater than the max of parent ICS codes
 				Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
-				if(largestIcs != null && icsCode.intValue() != (largestIcs.intValue()+1)) {
+				if(largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue()+1)) {
 					product.getErrorMessages().add("The ICS Code for this listing was given as '" + 
-							icsCode + "' but it was expected to be one more than the " +
+							icsCodeInteger + "' but it was expected to be one more than the " +
 							"largest inherited ICS code '" + largestIcs + "'.");
 				}
 			}
@@ -719,7 +727,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						if(tt == null){
 							product.getErrorMessages().add("No test tool with " + testTool.getTestToolName() + " was found for criteria " + cert.getNumber() + ".");
 						}
-						else if(tt.isRetired() && super.icsCode.intValue() == 0) {
+						else if(tt.isRetired() && super.icsCodeInteger.intValue() == 0) {
 							if(super.hasIcsConflict) {
 								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
