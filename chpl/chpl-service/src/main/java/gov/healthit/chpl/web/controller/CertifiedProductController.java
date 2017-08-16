@@ -41,7 +41,6 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
@@ -226,65 +225,6 @@ public class CertifiedProductController {
 		if(!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
 			 responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
 		}
-		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
-	}
-	
-	@ApiOperation(value="Update all SED data for an existing certified product.", 
-			notes="Updates all SED tasks and participants after first validating the request. The logged in"
-					+ " user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative "
-					+ " authority on the ACB that certified the product.")
-	@RequestMapping(value="/{listingId}/sed/update", method=RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public ResponseEntity<CertifiedProductSearchDetails> updateSedForListing(@PathVariable("listingId") Long listingId, 
-			@RequestBody(required=true) SedUpdateRequest updateRequest) 
-		throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, 
-		JsonProcessingException, ValidationException {
-		
-		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
-		//replace tasks and participants in this existingListing object
-		//and put the update request sed into the appropriate criteria for the listing
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		for(CertificationResult certResult : updatedListing.getCertificationResults()) {
-			certResult.getTestTasks().clear();
-			for(TestTask task : updateRequest.getTestTasks()) {
-				boolean isApplicable = false;
-				for(CertificationCriterion criteriaForTask : task.getCriteria()) {
-					if(criteriaForTask.getId() != null && certResult.getId() != null && 
-						criteriaForTask.getId().longValue() == certResult.getId().longValue()) {
-						isApplicable = true;
-					} else if(criteriaForTask.getNumber() != null && certResult.getNumber() != null && 
-							criteriaForTask.getNumber().equalsIgnoreCase(certResult.getNumber())) {
-						isApplicable = true;
-					}
-				}
-				if(isApplicable) {
-					CertificationResultTestTask certTestTask = new CertificationResultTestTask(task);
-					certResult.getTestTasks().add(certTestTask);
-				}
-			}
-		}
-		//validate
-		CertifiedProductValidator validator = validatorFactory.getValidator(updatedListing);
-		if(validator != null) {
-			validator.validate(updatedListing);
-		}
-		
-		Long acbId = new Long(existingListing.getCertifyingBody().get("id").toString());
-		
-		//update the listing
-		ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
-		listingUpdateRequest.setBanDeveloper(false);
-		listingUpdateRequest.setListing(updatedListing);
-		cpManager.update(acbId, listingUpdateRequest, existingListing);
-		
-		//search for the product by id to get it with all the updates
-		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(listingId);
-		cpManager.handleActivity(existingListing, changedProduct);
-		
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing, changedProduct);
-		
-		HttpHeaders responseHeaders = new HttpHeaders();
-		responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
 	}
 	

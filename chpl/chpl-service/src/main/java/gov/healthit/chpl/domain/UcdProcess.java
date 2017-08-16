@@ -1,6 +1,8 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -17,7 +19,7 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CertificationResultUcdProcess implements Serializable {
+public class UcdProcess implements Serializable {
 	private static final long serialVersionUID = 7248865611086710891L;
 	
 	/**
@@ -46,18 +48,26 @@ public class CertificationResultUcdProcess implements Serializable {
 	@XmlElement(required = false, nillable=true)
 	private String ucdProcessDetails;
 
-	public CertificationResultUcdProcess() {
+	/**
+	 * The set of criteria within a listing to which this UCD process is applied.
+	 */
+	@XmlElement(required = false, nillable = true)
+	private Set<CertificationCriterion> criteria;
+	
+	public UcdProcess() {
 		super();
+		this.criteria = new HashSet<CertificationCriterion>();
 	}
 	
-	public CertificationResultUcdProcess(CertificationResultUcdProcessDTO dto) {
+	public UcdProcess(CertificationResultUcdProcessDTO dto) {
+		this();
 		this.id = dto.getId();
 		this.ucdProcessId = dto.getUcdProcessId();
 		this.ucdProcessName = dto.getUcdProcessName();
 		this.ucdProcessDetails = dto.getUcdProcessDetails();
 	}
 	
-	public boolean matches(CertificationResultUcdProcess anotherUcd) {
+	public boolean matches(UcdProcess anotherUcd) {
 		boolean result = false;
 		if(this.getUcdProcessId() != null && anotherUcd.getUcdProcessId() != null && 
 				this.getUcdProcessId().longValue() == anotherUcd.getUcdProcessId().longValue() && 
@@ -103,5 +113,13 @@ public class CertificationResultUcdProcess implements Serializable {
 
 	public void setUcdProcessDetails(String ucdProcessDetails) {
 		this.ucdProcessDetails = ucdProcessDetails;
+	}
+
+	public Set<CertificationCriterion> getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Set<CertificationCriterion> criteria) {
+		this.criteria = criteria;
 	}
 }

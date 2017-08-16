@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -40,12 +37,6 @@ public class CertificationResultTestTaskEntity {
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private TestTaskEntity testTask;
-	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "certificationResultTestTaskId"  )
-	@Basic( optional = false )
-	@Column( name = "certification_result_test_task_id", nullable = false  )
-	private Set<CertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<CertificationResultTestTaskParticipantEntity>();
-	
 	
 	public Long getId() {
 		return id;
@@ -118,13 +109,5 @@ public class CertificationResultTestTaskEntity {
 
 	public void setTestTask(TestTaskEntity testTaskEntity) {
 		this.testTask = testTaskEntity;
-	}
-
-	public Set<CertificationResultTestTaskParticipantEntity> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(Set<CertificationResultTestTaskParticipantEntity> testParticipants) {
-		this.testParticipants = testParticipants;
 	}
 }

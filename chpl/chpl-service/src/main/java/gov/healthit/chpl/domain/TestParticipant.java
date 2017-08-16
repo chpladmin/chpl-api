@@ -109,7 +109,10 @@ public class TestParticipant implements Serializable {
 	@XmlElement(required = false, nillable=true)
 	private String assistiveTechnologyNeeds;
 	
+	public TestParticipant() {}
+	
 	public TestParticipant(TestParticipantDTO dto) {
+		this();
 		this.id = dto.getId();
 		this.gender = dto.getGender();
 		this.educationTypeId = dto.getEducationTypeId();
@@ -125,6 +128,30 @@ public class TestParticipant implements Serializable {
 		this.computerExperienceMonths = dto.getComputerExperienceMonths();
 		this.productExperienceMonths = dto.getProductExperienceMonths();
 		this.assistiveTechnologyNeeds = dto.getAssistiveTechnologyNeeds();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other == null || !(other instanceof TestParticipant)) {
+			return false;
+		}
+		TestParticipant anotherTask = (TestParticipant) other;
+		return matches(anotherTask);
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getId().hashCode();
+	}
+	
+	public boolean matches(TestParticipant anotherParticipant) {
+		boolean result = false;
+		if(this.getId() != null && anotherParticipant.getId() != null && 
+				this.getId().longValue() == anotherParticipant.getId().longValue()) {
+			result = true;
+		} 
+		//TODO: should we compare all the values??
+		return result;
 	}
 	
 	public Long getId() {

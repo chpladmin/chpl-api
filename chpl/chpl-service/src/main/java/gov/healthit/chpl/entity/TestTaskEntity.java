@@ -2,15 +2,21 @@ package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+
+import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 
 @Entity
 @Table(name = "test_task")
@@ -65,6 +71,12 @@ public class TestTaskEntity implements Cloneable, Serializable {
 	@Column(name = "task_rating_stddev")
 	private Float taskRatingStddev;
 
+ 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "testTaskId"  )
+	@Basic( optional = false )
+	@Column( name = "test_task_id", nullable = false  )
+	private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
+	
+ 	
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
@@ -234,5 +246,13 @@ public class TestTaskEntity implements Cloneable, Serializable {
 
 	public void setTaskRatingStddev(Float taskRatingStddev) {
 		this.taskRatingStddev = taskRatingStddev;
+	}
+
+	public Set<TestTaskParticipantMapEntity> getTestParticipants() {
+		return testParticipants;
+	}
+
+	public void setTestParticipants(Set<TestTaskParticipantMapEntity> testParticipants) {
+		this.testParticipants = testParticipants;
 	}
 }

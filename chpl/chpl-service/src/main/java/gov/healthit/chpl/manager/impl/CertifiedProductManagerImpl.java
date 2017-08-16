@@ -2,10 +2,8 @@ package gov.healthit.chpl.manager.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
@@ -83,7 +81,6 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -178,6 +175,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertificationStatusDAO certStatusDao;
 	@Autowired ListingGraphDAO listingGraphDao;
+	@Autowired CertificationResultDAO certResultDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -728,11 +726,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 										existingPart.setPendingUniqueId(certPart.getUniqueId());
 										testParticipantsAdded.add(existingPart);
 									}
-									
-									CertificationResultTestTaskParticipantDTO certPartDto = new CertificationResultTestTaskParticipantDTO();
-									certPartDto.setTestParticipantId(existingPart.getId());
-									certPartDto.setCertTestTaskId(taskDto.getId());
-									taskDto.getTaskParticipants().add(certPartDto);
+									taskDto.getTestTask().getParticipants().add(existingPart);
 								}
 							}
 						}
@@ -939,7 +933,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()), new Date(updatedListing.getCertificationDate()));
 			updateCertificationStatusEvents(listingId, new Long(existingListing.getCertificationStatus().get("id").toString()),
 					new Long(updatedListing.getCertificationStatus().get("id").toString()));
-			updateCertifications(result, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+			updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
 			updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
 		}
 		return result;
@@ -1359,7 +1353,9 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 	}
 	
-	private int updateCertifications(CertifiedProductDTO listing, 
+	private int updateCertifications(Long acbId, 
+			CertifiedProductSearchDetails existingListing,
+			CertifiedProductSearchDetails updatedListing, 
 			List<CertificationResult> existingCertifications, 
 			List<CertificationResult> updatedCertifications)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -1375,7 +1371,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				if(!StringUtils.isEmpty(updatedItem.getNumber()) && 
 					!StringUtils.isEmpty(existingItem.getNumber()) &&
 					updatedItem.getNumber().equals(existingItem.getNumber())) {
-					numChanges += certResultManager.update(listing.getCertificationBodyId(), listing, existingItem, updatedItem);
+					numChanges += certResultManager.update(acbId, 
+							existingListing, updatedListing, existingItem, updatedItem);
 				}
 			}
 		}

@@ -12,21 +12,22 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
-import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.entity.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
@@ -240,16 +241,6 @@ public class PendingCertifiedProductDTO implements Serializable {
 			certDto.setApiDocumentation(crResult.getApiDocumentation());
 			certDto.setPrivacySecurityFramework(crResult.getPrivacySecurityFramework());
 			
-			if(crResult.getUcdProcesses() != null && crResult.getUcdProcesses().size() > 0) {
-				for(CertificationResultUcdProcess ucd : crResult.getUcdProcesses()) {
-					PendingCertificationResultUcdProcessDTO ucdDto = new PendingCertificationResultUcdProcessDTO();
-					ucdDto.setUcdProcessId(ucd.getUcdProcessId());
-					ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
-					ucdDto.setUcdProcessName(ucd.getUcdProcessName());
-					certDto.getUcdProcesses().add(ucdDto);
-				}
-			}
-			
 			if(crResult.getAdditionalSoftware() != null && crResult.getAdditionalSoftware().size() > 0) {
 				for(CertificationResultAdditionalSoftware software : crResult.getAdditionalSoftware()) {
 					PendingCertificationResultAdditionalSoftwareDTO as = new PendingCertificationResultAdditionalSoftwareDTO();
@@ -337,53 +328,82 @@ public class PendingCertifiedProductDTO implements Serializable {
 				}
 			}
 			
-			if(crResult.getTestTasks() != null && crResult.getTestTasks().size() > 0) {
-				for(CertificationResultTestTask task : crResult.getTestTasks()) {
-					PendingCertificationResultTestTaskDTO crTaskDto = new PendingCertificationResultTestTaskDTO();
-					PendingTestTaskDTO taskDto = new PendingTestTaskDTO();
-					taskDto.setDescription(task.getDescription());
-					taskDto.setTaskErrors(task.getTaskErrors());
-					taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev());
-					taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
-					taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
-					taskDto.setTaskRating(task.getTaskRating());
-					taskDto.setTaskRatingScale(task.getTaskRatingScale());
-					taskDto.setTaskRatingStddev(task.getTaskRatingStddev());
-					taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage());
-					taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev());
-					taskDto.setTaskTimeAvg(task.getTaskTimeAvg());
-					taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
-					taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
-					taskDto.setTaskTimeStddev(task.getTaskTimeStddev());
-					taskDto.setUniqueId(task.getUniqueId());
-					crTaskDto.setPendingTestTask(taskDto);
-					
-					for(CertificationResultTestParticipant part : task.getTestParticipants()) {
-						PendingCertificationResultTestTaskParticipantDTO crPartDto = new PendingCertificationResultTestTaskParticipantDTO();
-						PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
-						partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
-						partDto.setComputerExperienceMonths(part.getComputerExperienceMonths());
-						
-						partDto.setEducationTypeId(part.getEducationTypeId());
-						EducationTypeDTO etDto = new EducationTypeDTO();
-						etDto.setName(part.getEducationTypeName());
-						etDto.setId(part.getEducationTypeId());
-						
-						partDto.setAgeRangeId(part.getAgeRangeId());
-						AgeRangeDTO ageDto = new AgeRangeDTO();
-						ageDto.setAge(part.getAgeRange());
-						ageDto.setId(part.getAgeRangeId());
-						partDto.setAgeRange(ageDto);
-						
-						partDto.setGender(part.getGender());
-						partDto.setOccupation(part.getOccupation());
-						partDto.setProductExperienceMonths(part.getProductExperienceMonths());
-						partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths());
-						partDto.setUniqueId(part.getUniqueId());
-						crPartDto.setTestParticipant(partDto);
-						crTaskDto.getTaskParticipants().add(crPartDto);
+			
+			if(details.getSed() != null && details.getSed().getUcdProcesses() != null &&
+					details.getSed().getUcdProcesses().size() > 0) {
+				for(UcdProcess ucd : details.getSed().getUcdProcesses()) {
+					boolean hasCriteria = false;
+					for(CertificationCriterion criteria : ucd.getCriteria()) {
+						if(criteria.getNumber().equals(certDto.getNumber())) {
+							hasCriteria = true;
+						}
 					}
-					certDto.getTestTasks().add(crTaskDto);
+					if(hasCriteria) {
+						PendingCertificationResultUcdProcessDTO ucdDto = new PendingCertificationResultUcdProcessDTO();
+						ucdDto.setUcdProcessId(ucd.getUcdProcessId());
+						ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
+						ucdDto.setUcdProcessName(ucd.getUcdProcessName());
+						certDto.getUcdProcesses().add(ucdDto);
+					}
+				}
+			}
+			
+			if(details.getSed() != null && details.getSed().getTestTasks() != null && 
+					details.getSed().getTestTasks().size() > 0) {
+				for(TestTask task : details.getSed().getTestTasks()) {
+					boolean hasCriteria = false;
+					for(CertificationCriterion criteria : task.getCriteria()) {
+						if(criteria.getNumber().equals(certDto.getNumber())) {
+							hasCriteria = true;
+						}
+					}
+					if(hasCriteria) {
+						PendingCertificationResultTestTaskDTO crTaskDto = new PendingCertificationResultTestTaskDTO();
+						PendingTestTaskDTO taskDto = new PendingTestTaskDTO();
+						taskDto.setDescription(task.getDescription());
+						taskDto.setTaskErrors(task.getTaskErrors());
+						taskDto.setTaskErrorsStddev(task.getTaskErrorsStddev());
+						taskDto.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
+						taskDto.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
+						taskDto.setTaskRating(task.getTaskRating());
+						taskDto.setTaskRatingScale(task.getTaskRatingScale());
+						taskDto.setTaskRatingStddev(task.getTaskRatingStddev());
+						taskDto.setTaskSuccessAverage(task.getTaskSuccessAverage());
+						taskDto.setTaskSuccessStddev(task.getTaskSuccessStddev());
+						taskDto.setTaskTimeAvg(task.getTaskTimeAvg());
+						taskDto.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
+						taskDto.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
+						taskDto.setTaskTimeStddev(task.getTaskTimeStddev());
+						taskDto.setUniqueId(task.getUniqueId());
+						crTaskDto.setPendingTestTask(taskDto);
+						
+						for(TestParticipant part : task.getTestParticipants()) {
+							PendingCertificationResultTestTaskParticipantDTO crPartDto = new PendingCertificationResultTestTaskParticipantDTO();
+							PendingTestParticipantDTO partDto = new PendingTestParticipantDTO();
+							partDto.setAssistiveTechnologyNeeds(part.getAssistiveTechnologyNeeds());
+							partDto.setComputerExperienceMonths(part.getComputerExperienceMonths());
+							
+							partDto.setEducationTypeId(part.getEducationTypeId());
+							EducationTypeDTO etDto = new EducationTypeDTO();
+							etDto.setName(part.getEducationTypeName());
+							etDto.setId(part.getEducationTypeId());
+							
+							partDto.setAgeRangeId(part.getAgeRangeId());
+							AgeRangeDTO ageDto = new AgeRangeDTO();
+							ageDto.setAge(part.getAgeRange());
+							ageDto.setId(part.getAgeRangeId());
+							partDto.setAgeRange(ageDto);
+							
+							partDto.setGender(part.getGender());
+							partDto.setOccupation(part.getOccupation());
+							partDto.setProductExperienceMonths(part.getProductExperienceMonths());
+							partDto.setProfessionalExperienceMonths(part.getProfessionalExperienceMonths());
+							partDto.setUniqueId(part.getUniqueId());
+							crPartDto.setTestParticipant(partDto);
+							crTaskDto.getTaskParticipants().add(crPartDto);
+						}
+						certDto.getTestTasks().add(crTaskDto);
+					}
 				}
 			}
 			

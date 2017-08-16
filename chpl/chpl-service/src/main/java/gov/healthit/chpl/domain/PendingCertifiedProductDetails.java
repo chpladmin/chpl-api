@@ -208,6 +208,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		
 		List<CertificationResult> certList = new ArrayList<CertificationResult>();
 		for(PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
+			CertificationCriterion criteria = new CertificationCriterion();
+			criteria.setNumber(certCriterion.getNumber());
+			criteria.setTitle(certCriterion.getTitle());
+			
 			CertificationResult cert = new CertificationResult();
 			cert.setNumber(certCriterion.getNumber());
 			cert.setTitle(certCriterion.getTitle());
@@ -218,17 +222,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cert.setG2Success(certCriterion.getG2Success());
 			cert.setApiDocumentation(certCriterion.getApiDocumentation());
 			cert.setPrivacySecurityFramework(certCriterion.getPrivacySecurityFramework());
-			
-			if(certCriterion.getUcdProcesses() != null && certCriterion.getUcdProcesses().size() > 0) {
-				for(PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
-					CertificationResultUcdProcess ucd = new CertificationResultUcdProcess();
-					ucd.setUcdProcessId(ucdDto.getUcdProcessId());
-					ucd.setUcdProcessName(ucdDto.getUcdProcessName());
-					ucd.setUcdProcessDetails(ucdDto.getUcdProcessDetails());
-					cert.getUcdProcesses().add(ucd);
-				}
-				cert.setSed(Boolean.TRUE);
-			}
 			
 			if(certCriterion.getAdditionalSoftware() != null) {
 				for(PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {
@@ -331,33 +324,57 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				cert.setG2MacraMeasures(null);
 			}
 			
+			//set all sed data: ucd processes and test tasks
+			
+			if(certCriterion.getUcdProcesses() != null && certCriterion.getUcdProcesses().size() > 0) {
+				for(PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
+					boolean alreadyExists = false;
+					UcdProcess newUcd = new UcdProcess();
+					newUcd.setUcdProcessId(ucdDto.getUcdProcessId());
+					newUcd.setUcdProcessName(ucdDto.getUcdProcessName());
+					newUcd.setUcdProcessDetails(ucdDto.getUcdProcessDetails());
+					for(UcdProcess currUcd : this.getSed().getUcdProcesses()) {
+						if(newUcd.matches(currUcd)) {
+							alreadyExists = true;
+							currUcd.getCriteria().add(criteria);
+						}
+					}
+					if(!alreadyExists) {
+						newUcd.getCriteria().add(criteria);
+						this.getSed().getUcdProcesses().add(newUcd);
+					}
+				}
+				cert.setSed(Boolean.TRUE);
+			}
+			
 			if(certCriterion.getTestTasks() != null && certCriterion.getTestTasks().size() > 0) {
 				cert.setSed(Boolean.TRUE);
 				for(PendingCertificationResultTestTaskDTO ttDto : certCriterion.getTestTasks()) {
 					if(ttDto.getPendingTestTask() != null) {
+						boolean alreadyExists = false;
 						PendingTestTaskDTO tt = ttDto.getPendingTestTask();
-						CertificationResultTestTask task = new CertificationResultTestTask();
-						task.setUniqueId(tt.getUniqueId());
-						task.setDescription(tt.getDescription());
-						task.setTaskErrors(tt.getTaskErrors());
-						task.setTaskErrorsStddev(tt.getTaskErrorsStddev());
-						task.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved()== null ? "" : tt.getTaskPathDeviationObserved()+"");
-						task.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal() == null ? "" : tt.getTaskPathDeviationOptimal()+"");
-						task.setTaskRating(tt.getTaskRating());
-						task.setTaskRatingScale(tt.getTaskRatingScale());
-						task.setTaskRatingStddev(tt.getTaskRatingStddev());
-						task.setTaskSuccessAverage(tt.getTaskSuccessAverage());
-						task.setTaskSuccessStddev(tt.getTaskSuccessStddev());
-						task.setTaskTimeAvg(tt.getTaskTimeAvg() == null ? "" : tt.getTaskTimeAvg()+"");
-						task.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg() == null ? "" : tt.getTaskTimeDeviationObservedAvg()+"");
-						task.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg() == null ? "" : tt.getTaskTimeDeviationOptimalAvg()+"");
-						task.setTaskTimeStddev(tt.getTaskTimeStddev() == null ? "" : tt.getTaskTimeStddev()+"");
+						TestTask newTask = new TestTask();
+						newTask.setUniqueId(tt.getUniqueId());
+						newTask.setDescription(tt.getDescription());
+						newTask.setTaskErrors(tt.getTaskErrors());
+						newTask.setTaskErrorsStddev(tt.getTaskErrorsStddev());
+						newTask.setTaskPathDeviationObserved(tt.getTaskPathDeviationObserved()== null ? "" : tt.getTaskPathDeviationObserved()+"");
+						newTask.setTaskPathDeviationOptimal(tt.getTaskPathDeviationOptimal() == null ? "" : tt.getTaskPathDeviationOptimal()+"");
+						newTask.setTaskRating(tt.getTaskRating());
+						newTask.setTaskRatingScale(tt.getTaskRatingScale());
+						newTask.setTaskRatingStddev(tt.getTaskRatingStddev());
+						newTask.setTaskSuccessAverage(tt.getTaskSuccessAverage());
+						newTask.setTaskSuccessStddev(tt.getTaskSuccessStddev());
+						newTask.setTaskTimeAvg(tt.getTaskTimeAvg() == null ? "" : tt.getTaskTimeAvg()+"");
+						newTask.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg() == null ? "" : tt.getTaskTimeDeviationObservedAvg()+"");
+						newTask.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg() == null ? "" : tt.getTaskTimeDeviationOptimalAvg()+"");
+						newTask.setTaskTimeStddev(tt.getTaskTimeStddev() == null ? "" : tt.getTaskTimeStddev()+"");
 						
 						if(ttDto.getTaskParticipants() != null) {
 							for(PendingCertificationResultTestTaskParticipantDTO ptDto : ttDto.getTaskParticipants()) {
 								if(ptDto.getTestParticipant() != null) {
 									PendingTestParticipantDTO pt = ptDto.getTestParticipant();
-									CertificationResultTestParticipant part = new CertificationResultTestParticipant();
+									TestParticipant part = new TestParticipant();
 									part.setUniqueId(pt.getUniqueId());
 									part.setAgeRangeId(pt.getAgeRangeId());
 									if(pt.getAgeRange() != null) {
@@ -373,16 +390,24 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 									part.setOccupation(pt.getOccupation());
 									part.setProductExperienceMonths(pt.getProductExperienceMonths() == null ? "" : pt.getProductExperienceMonths()+"");
 									part.setProfessionalExperienceMonths(pt.getProfessionalExperienceMonths() == null ? "" : pt.getProfessionalExperienceMonths()+"");
-									task.getTestParticipants().add(part);
+									newTask.getTestParticipants().add(part);
 								}
 							}
 						}
-						cert.getTestTasks().add(task);
+						
+						for(TestTask currTask : this.getSed().getTestTasks()) {
+							if(newTask.matches(currTask)) {
+								alreadyExists = true;
+								currTask.getCriteria().add(criteria);
+							}
+						}
+						if(!alreadyExists) {
+							newTask.getCriteria().add(criteria);
+							this.getSed().getTestTasks().add(newTask);
+						}
 					}
 				}
-			} else {
-				cert.setTestTasks(null);
-			}
+			} 
 			
 			certList.add(cert);
 		}

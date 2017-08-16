@@ -1,11 +1,8 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity;
 
 public class CertificationResultTestTaskDTO implements Serializable {
 	private static final long serialVersionUID = -2963883181763817735L;
@@ -13,10 +10,8 @@ public class CertificationResultTestTaskDTO implements Serializable {
 	private Long certificationResultId;
 	private Long testTaskId;
 	private TestTaskDTO testTask;
-	private Set<CertificationResultTestTaskParticipantDTO> taskParticipants;
 	
 	public CertificationResultTestTaskDTO(){
-		this.taskParticipants = new HashSet<CertificationResultTestTaskParticipantDTO>();
 	}
 	
 	public CertificationResultTestTaskDTO(CertificationResultTestTaskEntity entity){
@@ -26,12 +21,6 @@ public class CertificationResultTestTaskDTO implements Serializable {
 		this.testTaskId = entity.getTestTaskId();
 		if(entity.getTestTask() != null) {
 			this.testTask = new TestTaskDTO(entity.getTestTask());
-		}
-		if(entity.getTestParticipants() != null && entity.getTestParticipants().size() > 0) {
-			for(CertificationResultTestTaskParticipantEntity tpEntity : entity.getTestParticipants()) {
-				CertificationResultTestTaskParticipantDTO tpDto = new CertificationResultTestTaskParticipantDTO(tpEntity);
-				this.taskParticipants.add(tpDto);
-			}
 		}
 	}
 
@@ -65,13 +54,5 @@ public class CertificationResultTestTaskDTO implements Serializable {
 
 	public void setTestTask(TestTaskDTO testTask) {
 		this.testTask = testTask;
-	}
-
-	public Set<CertificationResultTestTaskParticipantDTO> getTaskParticipants() {
-		return taskParticipants;
-	}
-
-	public void setTaskParticipants(Set<CertificationResultTestTaskParticipantDTO> taskParticipants) {
-		this.taskParticipants = taskParticipants;
 	}
 }

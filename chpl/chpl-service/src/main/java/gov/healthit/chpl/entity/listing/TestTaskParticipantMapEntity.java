@@ -17,23 +17,18 @@ import gov.healthit.chpl.entity.TestParticipantEntity;
 
 
 @Entity
-@Table(name = "certification_result_test_task_participant")
-public class CertificationResultTestTaskParticipantEntity {
+@Table(name = "test_task_participant_map")
+public class TestTaskParticipantMapEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certification_result_test_task_participant_id")
+	@Column(name = "id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column(name = "certification_result_test_task_id", nullable = false )	
-	private Long certificationResultTestTaskId;
-
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_result_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private CertificationResultTestTaskEntity certTestTask;
+	@Column(name = "test_task_id", nullable = false )	
+	private Long testTaskId;
 	
 	@Basic( optional = false )
 	@Column(name = "test_participant_id", nullable = false )	
@@ -43,14 +38,6 @@ public class CertificationResultTestTaskParticipantEntity {
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_participant_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private TestParticipantEntity testParticipant;
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -67,6 +54,15 @@ public class CertificationResultTestTaskParticipantEntity {
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
+	
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 	public Date getCreationDate() {
 		return creationDate;
@@ -109,19 +105,11 @@ public class CertificationResultTestTaskParticipantEntity {
 		this.testParticipant = testParticipantEntity;
 	}
 
-	public Long getCertificationResultTestTaskId() {
-		return certificationResultTestTaskId;
+	public Long getTestTaskId() {
+		return testTaskId;
 	}
 
-	public void setCertificationResultTestTaskId(Long certificationResultTestTaskId) {
-		this.certificationResultTestTaskId = certificationResultTestTaskId;
-	}
-
-	public CertificationResultTestTaskEntity getCertTestTask() {
-		return certTestTask;
-	}
-
-	public void setCertTestTask(CertificationResultTestTaskEntity certTestTask) {
-		this.certTestTask = certTestTask;
+	public void setTestTaskId(Long testTaskId) {
+		this.testTaskId = testTaskId;
 	}
 }

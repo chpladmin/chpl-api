@@ -16,6 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 
 /**
@@ -163,6 +165,7 @@ public class TestTask implements Serializable {
 	
 	public TestTask(TestTaskDTO dto) {
 		this();
+		this.id = dto.getId();
 		this.description = dto.getDescription();
 		this.taskSuccessAverage = dto.getTaskSuccessAverage();
 		this.taskSuccessStddev = dto.getTaskSuccessStddev();
@@ -177,6 +180,40 @@ public class TestTask implements Serializable {
 		this.taskRatingScale = dto.getTaskRatingScale();
 		this.taskRating = dto.getTaskRating();
 		this.taskRatingStddev = dto.getTaskRatingStddev();
+		if(dto.getParticipants() != null && dto.getParticipants().size() > 0) {
+			for(TestParticipantDTO participantDto : dto.getParticipants()) {
+				this.testParticipants.add(new TestParticipant(participantDto));
+			}
+		}
+	}
+	
+	public TestTask(CertificationResultTestTaskDTO dto) {
+		this(dto.getTestTask());
+		this.id = dto.getTestTaskId();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(other == null || !(other instanceof TestTask)) {
+			return false;
+		}
+		TestTask anotherTask = (TestTask) other;
+		return matches(anotherTask);
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.getId().hashCode();
+	}
+	
+	public boolean matches(TestTask anotherTask) {
+		boolean result = false;
+		if(this.getId() != null && anotherTask.getId() != null && 
+				this.getId().longValue() == anotherTask.getId().longValue()) {
+			result = true;
+		} 
+		//TODO: should we compare all the values??
+		return result;
 	}
 	
 	public Long getId() {
