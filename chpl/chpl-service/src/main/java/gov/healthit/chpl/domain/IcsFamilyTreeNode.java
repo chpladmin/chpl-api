@@ -26,7 +26,7 @@ public class IcsFamilyTreeNode implements Serializable{
 	private String chplId;
 	
 	@XmlElement(required = true)
-	private Map<String, Object> certificationStatus;
+	private CertificationStatus certificationStatus;
 	
 	@XmlElement(required = false)
 	private List<CertifiedProduct> parents;
@@ -37,7 +37,7 @@ public class IcsFamilyTreeNode implements Serializable{
 	public IcsFamilyTreeNode(CertifiedProductSearchDetails cpsd){
 		this.id = cpsd.getId();
 		this.chplId = cpsd.getChplProductNumber();
-		certificationStatus = new HashMap<String, Object>(cpsd.getCertificationStatus());
+		certificationStatus = new CertificationStatus(cpsd.getCertificationStatus());
 		parents = new ArrayList<CertifiedProduct>(cpsd.getIcs().getParents());
 		children = new ArrayList<CertifiedProduct>(cpsd.getIcs().getChildren());
 	}
@@ -58,11 +58,11 @@ public class IcsFamilyTreeNode implements Serializable{
 		this.chplId = chplId;
 	}
 
-	public Map<String, Object> getCertificationStatus() {
+	public CertificationStatus getCertificationStatus() {
 		return certificationStatus;
 	}
 
-	public void setCertificationStatus(Map<String, Object> certificationStatus) {
+	public void setCertificationStatus(CertificationStatus certificationStatus) {
 		this.certificationStatus = certificationStatus;
 	}
 

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -29,7 +30,8 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.IcsFamilyTree;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import junit.framework.TestCase;
@@ -59,12 +61,13 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Test
 	@Transactional
 	public void testIcsFamilyTree() throws EntityRetrievalException{
-		IcsFamilyTree tree = certifiedProductDetailsManager.getIcsFamilyTree(1L);
-		assertNotNull(tree.getIcsNodes());
+		ArrayList<IcsFamilyTreeNode> tree = certifiedProductDetailsManager.getIcsFamilyTree(5L);
 		assertNotNull(tree);
+		assertEquals(5,tree.size());
 	}
 	
 	@Test

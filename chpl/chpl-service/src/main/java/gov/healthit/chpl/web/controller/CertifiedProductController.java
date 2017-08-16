@@ -41,7 +41,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.IcsFamilyTree;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -145,8 +145,8 @@ public class CertifiedProductController {
 			notes="Returns all member of the family tree conected to the specified certified product.")
 	@RequestMapping(value="/{certifiedProductId}/ics_relationships", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody IcsFamilyTree getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-		IcsFamilyTree familyTree = cpdManager.getIcsFamilyTree(certifiedProductId);
+	public @ResponseBody ArrayList<IcsFamilyTreeNode> getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+		ArrayList<IcsFamilyTreeNode> familyTree = cpdManager.getIcsFamilyTree(certifiedProductId);
 		
 		return familyTree;
 	}

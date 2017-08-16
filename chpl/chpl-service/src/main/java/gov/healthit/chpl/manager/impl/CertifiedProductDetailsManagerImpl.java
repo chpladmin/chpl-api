@@ -1,7 +1,10 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.concurrent.SynchronousQueue;
 
@@ -45,7 +48,6 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.IcsFamilyTree;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
@@ -132,27 +134,40 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Override
 	@Transactional
-	public IcsFamilyTree getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
+	public ArrayList<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
 		
-		IcsFamilyTree familyTree = new IcsFamilyTree();
-		Queue<CertifiedProduct> todo = new SynchronousQueue<CertifiedProduct>();
+		ArrayList<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
+		Map<Long,Boolean> queue = new HashMap<Long,Boolean>();
+		ArrayList<Long> toAdd = new ArrayList<Long>();
 		
-		CertifiedProductSearchDetails dto = getCertifiedProductDetails(certifiedProductId);
+		// add first element to processing queue
+		queue.put(certifiedProductId, false);
 		
-		IcsFamilyTreeNode first = new IcsFamilyTreeNode(dto);
-		
-		familyTree.getIcsNodes().add(first);
-		
-		todo.addAll(dto.getIcs().getChildren());
-		todo.addAll(dto.getIcs().getParents());
-		
-		while(todo.peek() != null){
-			CertifiedProduct curr = todo.remove();
-			CertifiedProductSearchDetails details = getCertifiedProductDetails(curr.getId());
-			IcsFamilyTreeNode node = new IcsFamilyTreeNode(details);
-			familyTree.getIcsNodes().add(node);
-			todo.addAll(details.getIcs().getChildren());
-			todo.addAll(details.getIcs().getParents());
+		// while queue contains elements that need processing
+		while(queue.containsValue(false)){
+			for(Entry<Long,Boolean> cp: queue.entrySet()){
+				Boolean isProcessed = cp.getValue();
+				Long cpId = cp.getKey();
+				if(!isProcessed){
+					CertifiedProductSearchDetails details = getCertifiedProductDetails(cpId);
+					IcsFamilyTreeNode node = new IcsFamilyTreeNode(details);
+					// add family to array that will be used to add to processing array
+					for(CertifiedProduct child: details.getIcs().getChildren())
+						toAdd.add(child.getId());
+					for(CertifiedProduct parent: details.getIcs().getParents())
+						toAdd.add(parent.getId());
+					familyTree.add(node);
+					// done processing node - set processed to true
+					queue.put(cpId, true);
+				}
+			}
+			// add elements from toAdd array to queue if they are not already there
+			for(Long id: toAdd){
+				if(!queue.containsKey(id)){
+					queue.put(id, false);
+				}
+			}
+			toAdd.clear();
 		}
 		
 		return familyTree;
