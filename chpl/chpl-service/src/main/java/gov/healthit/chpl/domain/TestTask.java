@@ -154,12 +154,12 @@ public class TestTask implements Serializable {
 	 */
 	@XmlElementWrapper(name = "participants", nillable = true, required = false)
 	@XmlElement(name = "participant")
-	private List<TestParticipant> testParticipants;
+	private Set<TestParticipant> testParticipants;
 	
 	
 	public TestTask() {
 		super();
-		testParticipants = new ArrayList<TestParticipant>();
+		testParticipants = new HashSet<TestParticipant>();
 		criteria = new HashSet<CertificationCriterion>();
 	}
 	
@@ -364,11 +364,11 @@ public class TestTask implements Serializable {
 		this.taskRating = taskRating;
 	}
 
-	public List<TestParticipant> getTestParticipants() {
+	public Set<TestParticipant> getTestParticipants() {
 		return testParticipants;
 	}
 
-	public void setTestParticipants(List<TestParticipant> testParticipants) {
+	public void setTestParticipants(Set<TestParticipant> testParticipants) {
 		this.testParticipants = testParticipants;
 	}
 

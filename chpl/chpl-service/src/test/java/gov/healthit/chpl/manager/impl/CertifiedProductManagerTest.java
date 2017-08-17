@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -2022,9 +2023,9 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		List<TestTask> certTasks = updatedListing.getSed().getTestTasks();
 		TestTask certTask = certTasks.get(0);
-		List<TestParticipant> taskParts = certTask.getTestParticipants();
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
-		TestParticipant firstPart = taskParts.get(0);
+		TestParticipant firstPart = taskParts.iterator().next();
 		final long changedParticipantId = firstPart.getId();
 		firstPart.setEducationTypeId(1L);
 		firstPart.setEducationTypeName("No high school degree");
@@ -2072,7 +2073,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		}
 		List<TestTask> certTasks = updatedListing.getSed().getTestTasks();
 		TestTask certTask = certTasks.get(0);
-		List<TestParticipant> taskParts = certTask.getTestParticipants();
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
 		for(TestParticipant part : taskParts) {
 			part.setOccupation("Teacher");
@@ -2122,7 +2123,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		List<TestTask> certTasks = updatedListing.getSed().getTestTasks();
 		TestTask certTask = certTasks.get(0);
-		List<TestParticipant> taskParts = certTask.getTestParticipants();
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
 		for(TestParticipant part : taskParts) {
 			part.setEducationTypeId(2L);
@@ -2175,7 +2176,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		}
 		List<TestTask> certTasks = toUpdateListing.getSed().getTestTasks();
 		TestTask certTask = certTasks.get(0);
-		List<TestParticipant> taskParts = certTask.getTestParticipants();
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
 		for(TestParticipant part : taskParts) {
 			part.setAgeRangeId(4L);

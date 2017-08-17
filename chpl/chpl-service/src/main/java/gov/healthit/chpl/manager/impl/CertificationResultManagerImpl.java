@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -1129,8 +1130,8 @@ public class CertificationResultManagerImpl implements
 	}
 	
 	private int updateTaskParticipants(Long testTaskId,
-			List<TestParticipant> existingParticipants,
-			List<TestParticipant> updatedParticipants) 
+			Collection<TestParticipant> existingParticipants,
+			Collection<TestParticipant> updatedParticipants) 
 	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		Set<TestParticipantDTO> participantsToAdd = new HashSet<TestParticipantDTO>();

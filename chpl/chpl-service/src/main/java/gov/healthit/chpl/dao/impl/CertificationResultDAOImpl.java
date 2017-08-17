@@ -1110,22 +1110,22 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		
 		List<CertificationResultTestTaskEntity> toDeleteList = query.getResultList();
 		if(toDeleteList != null && toDeleteList.size() > 0) {
-			CertificationResultTestTaskEntity toDelete = toDeleteList.get(0);
-			if(toDelete.getTestTask() != null && toDelete.getTestTask().getTestParticipants() != null && 
-				toDelete.getTestTask().getTestParticipants().size() > 0) {
-				for(TestTaskParticipantMapEntity partMappingToDelete : toDelete.getTestTask().getTestParticipants()) {
-					partMappingToDelete.setDeleted(true);
-					partMappingToDelete.setLastModifiedDate(new Date());
-					partMappingToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-					entityManager.persist(partMappingToDelete);
+			for(CertificationResultTestTaskEntity toDelete : toDeleteList) {
+				if(toDelete.getTestTask() != null && toDelete.getTestTask().getTestParticipants() != null && 
+					toDelete.getTestTask().getTestParticipants().size() > 0) {
+					for(TestTaskParticipantMapEntity partMappingToDelete : toDelete.getTestTask().getTestParticipants()) {
+						partMappingToDelete.setDeleted(true);
+						partMappingToDelete.setLastModifiedDate(new Date());
+						partMappingToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+						entityManager.persist(partMappingToDelete);
+					}
 				}
-				entityManager.flush();
-			}
 			
-			toDelete.setDeleted(true);
-			toDelete.setLastModifiedDate(new Date());
-			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-			entityManager.persist(toDelete);
+				toDelete.setDeleted(true);
+				toDelete.setLastModifiedDate(new Date());
+				toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+				entityManager.persist(toDelete);
+			}
 			entityManager.flush();
 		}
 	}
@@ -1213,7 +1213,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				TestTaskParticipantMapEntity.class );
 		otherParticipantMappingsQuery.setParameter("testParticipantId", testParticipantId);
 		List<TestTaskParticipantMapEntity> otherParticipantMappingsResults = otherParticipantMappingsQuery.getResultList();
-		if(otherParticipantMappingsResults != null || otherParticipantMappingsResults.size() == 0) {
+		if(otherParticipantMappingsResults == null || otherParticipantMappingsResults.size() == 0) {
 			TestParticipantEntity participantEntity = entityManager.find(TestParticipantEntity.class, testParticipantId);
 			participantEntity.setDeleted(true);
 			participantEntity.setLastModifiedDate(new Date());
