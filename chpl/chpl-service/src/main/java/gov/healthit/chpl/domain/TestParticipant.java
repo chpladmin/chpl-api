@@ -23,6 +23,12 @@ public class TestParticipant implements Serializable {
 	private static final Logger logger = LogManager.getLogger(TestParticipant.class);
 
 	/**
+	 * Participant internal ID
+	 */
+	@XmlElement(required = true)
+	private Long id;
+	
+	/**
 	 * An ONC-ACB designated identifier for an individual SED participant. 
 	 * This variable is a string variable only applicable to 2015 Edition, 
 	 * but must be unique to a particular participant. 
@@ -30,12 +36,6 @@ public class TestParticipant implements Serializable {
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String uniqueId;
-	
-	/**
-	 * Participant internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
 	
 	/**
 	 * Self-reported gender of the corresponding participant. 

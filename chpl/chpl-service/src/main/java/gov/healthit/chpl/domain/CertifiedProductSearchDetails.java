@@ -303,7 +303,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 */
 	@XmlElementWrapper(name = "sed", nillable = true, required = false)
 	@XmlElement(name = "sed")
-	private CertificationResultSed sed;
+	private CertifiedProductSed sed;
 	
 	@XmlTransient
 	private Set<String> warningMessages = new HashSet<String>();
@@ -312,7 +312,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	private Set<String> errorMessages = new HashSet<String>();
 	
 	public CertifiedProductSearchDetails() {
-		sed = new CertificationResultSed();
+		sed = new CertifiedProductSed();
 	}
 	
 	public Long getId() {
@@ -573,11 +573,11 @@ public class CertifiedProductSearchDetails implements Serializable {
 		this.decertificationDate = decertificationDate;
 	}
 
-	public CertificationResultSed getSed() {
+	public CertifiedProductSed getSed() {
 		return sed;
 	}
 
-	public void setSed(CertificationResultSed sed) {
+	public void setSed(CertifiedProductSed sed) {
 		this.sed = sed;
 	}
 }

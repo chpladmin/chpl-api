@@ -29,16 +29,10 @@ public class UcdProcess implements Serializable {
 	private Long id;
 	
 	/**
-	 * UCD process internal ID
-	 */
-	@XmlElement(required = true)
-	private Long ucdProcessId;
-	
-	/**
 	 * The user-centered design (UCD) process applied for the corresponding certification criteria
 	 */
 	@XmlElement(required = true)
-	private String ucdProcessName;
+	private String name;
 	
 	/**
 	 * A description of the UCD process used. This variable is applicable 
@@ -46,7 +40,7 @@ public class UcdProcess implements Serializable {
 	 * on formatting or values. 
 	 */
 	@XmlElement(required = false, nillable=true)
-	private String ucdProcessDetails;
+	private String details;
 
 	/**
 	 * The set of criteria within a listing to which this UCD process is applied.
@@ -61,25 +55,17 @@ public class UcdProcess implements Serializable {
 	
 	public UcdProcess(CertificationResultUcdProcessDTO dto) {
 		this();
-		this.id = dto.getId();
-		this.ucdProcessId = dto.getUcdProcessId();
-		this.ucdProcessName = dto.getUcdProcessName();
-		this.ucdProcessDetails = dto.getUcdProcessDetails();
+		this.id = dto.getUcdProcessId();
+		this.name = dto.getUcdProcessName();
+		this.details = dto.getUcdProcessDetails();
 	}
 	
 	public boolean matches(UcdProcess anotherUcd) {
 		boolean result = false;
-		if(this.getUcdProcessId() != null && anotherUcd.getUcdProcessId() != null && 
-				this.getUcdProcessId().longValue() == anotherUcd.getUcdProcessId().longValue() && 
-				((StringUtils.isEmpty(this.getUcdProcessDetails()) && StringUtils.isEmpty(anotherUcd.getUcdProcessDetails())) || 
-				this.getUcdProcessDetails().equals(anotherUcd.getUcdProcessDetails()))) {
+		if(this.getId() != null && anotherUcd.getId() != null && 
+				this.getId().longValue() == anotherUcd.getId().longValue()) {
 			result = true;
-		} else if(!StringUtils.isEmpty(this.getUcdProcessName()) && !StringUtils.isEmpty(anotherUcd.getUcdProcessName()) && 
-				this.getUcdProcessName().equalsIgnoreCase(anotherUcd.getUcdProcessName()) && 
-				((StringUtils.isEmpty(this.getUcdProcessDetails()) && StringUtils.isEmpty(anotherUcd.getUcdProcessDetails())) || 
-				this.getUcdProcessDetails().equals(anotherUcd.getUcdProcessDetails()))) {
-			result = true;
-		}
+		} 
 		return result;
 	}
 	
@@ -91,28 +77,20 @@ public class UcdProcess implements Serializable {
 		this.id = id;
 	}
 
-	public Long getUcdProcessId() {
-		return ucdProcessId;
+	public String getName() {
+		return name;
 	}
 
-	public void setUcdProcessId(Long ucdProcessId) {
-		this.ucdProcessId = ucdProcessId;
+	public void setName(String ucdProcessName) {
+		this.name = ucdProcessName;
 	}
 
-	public String getUcdProcessName() {
-		return ucdProcessName;
+	public String getDetails() {
+		return details;
 	}
 
-	public void setUcdProcessName(String ucdProcessName) {
-		this.ucdProcessName = ucdProcessName;
-	}
-
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
-
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
+	public void setDetails(String ucdProcessDetails) {
+		this.details = ucdProcessDetails;
 	}
 
 	public Set<CertificationCriterion> getCriteria() {

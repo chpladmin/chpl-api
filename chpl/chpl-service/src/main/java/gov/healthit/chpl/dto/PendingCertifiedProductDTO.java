@@ -340,9 +340,9 @@ public class PendingCertifiedProductDTO implements Serializable {
 					}
 					if(hasCriteria) {
 						PendingCertificationResultUcdProcessDTO ucdDto = new PendingCertificationResultUcdProcessDTO();
-						ucdDto.setUcdProcessId(ucd.getUcdProcessId());
-						ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
-						ucdDto.setUcdProcessName(ucd.getUcdProcessName());
+						ucdDto.setUcdProcessId(ucd.getId());
+						ucdDto.setUcdProcessDetails(ucd.getDetails());
+						ucdDto.setUcdProcessName(ucd.getName());
 						certDto.getUcdProcesses().add(ucdDto);
 					}
 				}

@@ -243,6 +243,30 @@ public class CertificationResultManagerImpl implements
 			}
 			if(updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null && 
 					updatedListing.getSed().getTestTasks().size() > 0) {
+				//go through all test participants for all tasks; 
+				//some may have negative IDs which means they are new 
+				//but comparing those ids is the only way to know if the participants
+				//are meant to be re-used
+				for(TestTask task : updatedListing.getSed().getTestTasks()) {
+					for(TestParticipant participant : task.getTestParticipants()) {
+						if(participant.getId() == null || participant.getId().longValue() < 0) {
+							long prevId = participant.getId() == null ? 0L : participant.getId().longValue();
+							TestParticipantDTO created = testParticipantDAO.create(convert(participant));
+							participant.setId(created.getId());
+							
+							//look for any other participants with the same prev id
+							for(TestTask otherTask : updatedListing.getSed().getTestTasks()) {
+								for(TestParticipant otherParticipant : otherTask.getTestParticipants()) {
+									if(otherParticipant.getId() != null && otherParticipant.getId().longValue() == prevId) {
+										otherParticipant.setId(created.getId());
+									}
+								}
+							}
+						}
+					}
+				}
+				
+				//now find appropriate test tasks for this certification result
 				for(TestTask updatedTask : updatedListing.getSed().getTestTasks()) {
 					boolean taskMeetsCriteria = false;
 					for(CertificationCriterion taskCriteria : updatedTask.getCriteria()) {
@@ -454,15 +478,15 @@ public class CertificationResultManagerImpl implements
 		if(updatedUcdProcesses != null && updatedUcdProcesses.size() > 0) {
 			//fill in potentially missing ucd process id
 			for(UcdProcess updatedItem : updatedUcdProcesses) {
-				if(updatedItem.getUcdProcessId() == null && !StringUtils.isEmpty(updatedItem.getUcdProcessName())) {
-					UcdProcessDTO foundUcd = ucdDao.getByName(updatedItem.getUcdProcessName());
+				if(updatedItem.getId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
+					UcdProcessDTO foundUcd = ucdDao.getByName(updatedItem.getName());
 					if(foundUcd == null) {
 						UcdProcessDTO ucdToCreate = new UcdProcessDTO();
-						ucdToCreate.setName(updatedItem.getUcdProcessName());
+						ucdToCreate.setName(updatedItem.getName());
 						UcdProcessDTO created = ucdDao.create(ucdToCreate);
-						updatedItem.setUcdProcessId(created.getId());
+						updatedItem.setId(created.getId());
 					} else {
-						updatedItem.setUcdProcessId(foundUcd.getId());
+						updatedItem.setId(foundUcd.getId());
 					}
 				}
 			}
@@ -514,29 +538,29 @@ public class CertificationResultManagerImpl implements
 		for(UcdProcess toAdd : ucdToAdd) {
 			CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
 			toAddDto.setCertificationResultId(certResult.getId());
-			toAddDto.setUcdProcessId(toAdd.getUcdProcessId());
-			toAddDto.setUcdProcessDetails(toAdd.getUcdProcessDetails());
+			toAddDto.setUcdProcessId(toAdd.getId());
+			toAddDto.setUcdProcessDetails(toAdd.getDetails());
 			certResultDAO.addUcdProcessMapping(toAddDto);
 		}
 		
 		for(CertificationResultUcdProcessPair toUpdate : ucdToUpdate) {
 			boolean hasChanged = false;
-			if(!ObjectUtils.equals(toUpdate.getOrig().getUcdProcessDetails(), 
-					toUpdate.getUpdated().getUcdProcessDetails())) {
+			if(!ObjectUtils.equals(toUpdate.getOrig().getDetails(), 
+					toUpdate.getUpdated().getDetails())) {
 				hasChanged = true;
 			}
 			if(hasChanged) {
 				CertificationResultUcdProcessDTO toUpdateDto = new CertificationResultUcdProcessDTO();
 				toUpdateDto.setId(toUpdate.getOrig().getId());
 				toUpdateDto.setCertificationResultId(certResult.getId());
-				toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getUcdProcessId());
-				toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getUcdProcessDetails());
+				toUpdateDto.setUcdProcessId(toUpdate.getUpdated().getId());
+				toUpdateDto.setUcdProcessDetails(toUpdate.getUpdated().getDetails());
 				certResultDAO.updateUcdProcessMapping(toUpdateDto);
 			}
 		}
 		
 		for(Long idToRemove : idsToRemove) {
-			certResultDAO.deleteUcdProcessMapping(idToRemove);
+			certResultDAO.deleteUcdProcessMapping(certResult.getId(), idToRemove);
 		}	
 		return numChanges;
 	}
@@ -1060,7 +1084,7 @@ public class CertificationResultManagerImpl implements
 			throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		numChanges += updateTaskParticipants(task.getId(), task.getTestParticipants(), null);
-		certResultDAO.deleteTestTaskMapping(task.getId());
+		certResultDAO.deleteTestTaskMapping(certResult.getId(), task.getId());
 		numChanges++;
 		
 		if(task.getId() != null) {

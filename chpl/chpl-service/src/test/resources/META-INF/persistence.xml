@@ -30,11 +30,11 @@
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity</class>
-		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity</class>
+		<class>gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
-		<class>gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>

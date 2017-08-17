@@ -279,8 +279,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		return new CertificationResultUcdProcessDTO(mapping);
 	}
 	
-	public void deleteUcdProcessMapping(Long mappingId){
-		CertificationResultUcdProcessEntity toDelete = getCertificationResultUcdProcessById(mappingId);
+	public void deleteUcdProcessMapping(Long certResultId, Long ucdProcessId){
+		CertificationResultUcdProcessEntity toDelete= getCertificationResultUcdProcessById(certResultId, ucdProcessId);
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -291,7 +291,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	}
 	
 	public void updateUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityRetrievalException {
-		CertificationResultUcdProcessEntity toUpdate = getCertificationResultUcdProcessById(dto.getId());
+		CertificationResultUcdProcessEntity toUpdate = getCertificationResultUcdProcessById(dto.getCertificationResultId(), dto.getUcdProcessId());
 		if(toUpdate == null) {
 			throw new EntityRetrievalException("Could not find UCD process mapping with id " + dto.getId());
 		}
@@ -310,15 +310,18 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		}
 	}
 	
-	private CertificationResultUcdProcessEntity getCertificationResultUcdProcessById(Long id) {
+	private CertificationResultUcdProcessEntity getCertificationResultUcdProcessById(Long certResultId, Long ucdProcessId) {
 		CertificationResultUcdProcessEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT up "
-				+ "FROM CertificationResultUcdProcessEntity up "
-				+ "LEFT OUTER JOIN FETCH up.ucdProcess "
-				+ "where (NOT up.deleted = true) AND (certification_result_ucd_process_id = :id) ", 
+		Query query = entityManager.createQuery( "SELECT certUcd "
+				+ "FROM CertificationResultUcdProcessEntity certUcd "
+				+ "LEFT OUTER JOIN FETCH certUcd.ucdProcess ucd "
+				+ "WHERE (NOT certUcd.deleted = true) "
+				+ "AND (ucd.id = :ucdProcessId) "
+				+ "AND certUcd.certificationResultId = :certResultId ", 
 				CertificationResultUcdProcessEntity.class );
-		query.setParameter("id", id);
+		query.setParameter("ucdProcessId", ucdProcessId);
+		query.setParameter("certResultId", certResultId);
 		List<CertificationResultUcdProcessEntity> result = query.getResultList();
 
 		if (result.size() > 0){
@@ -1092,9 +1095,22 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	}
 
 	@Override
-	public void deleteTestTaskMapping(Long mappingId){
-		CertificationResultTestTaskEntity toDelete = getCertificationResultTestTaskById(mappingId);
-		if(toDelete != null) {
+	public void deleteTestTaskMapping(Long certResultId, Long taskId){
+		Query query = entityManager.createQuery( "SELECT tp "
+				+ "FROM CertificationResultTestTaskEntity tp "
+				+ "LEFT OUTER JOIN FETCH tp.testTask task "
+				+ "LEFT OUTER JOIN FETCH task.testParticipants participantMappings "
+				+ "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
+				+ "WHERE (NOT tp.deleted = true) "
+				+ "AND (task.id = :taskId) "
+				+ "AND tp.certificationResultId = :certResultId ", 
+				CertificationResultTestTaskEntity.class );
+		query.setParameter("taskId", taskId);
+		query.setParameter("certResultId", certResultId);
+		
+		List<CertificationResultTestTaskEntity> toDeleteList = query.getResultList();
+		if(toDeleteList != null && toDeleteList.size() > 0) {
+			CertificationResultTestTaskEntity toDelete = toDeleteList.get(0);
 			if(toDelete.getTestTask() != null && toDelete.getTestTask().getTestParticipants() != null && 
 				toDelete.getTestTask().getTestParticipants().size() > 0) {
 				for(TestTaskParticipantMapEntity partMappingToDelete : toDelete.getTestTask().getTestParticipants()) {

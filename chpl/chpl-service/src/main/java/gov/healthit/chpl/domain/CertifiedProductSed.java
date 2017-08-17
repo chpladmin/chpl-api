@@ -17,7 +17,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CertificationResultSed implements Serializable {
+public class CertifiedProductSed implements Serializable {
 	private static final long serialVersionUID = -4131156681875211447L;
 	
 	/**
@@ -37,7 +37,7 @@ public class CertificationResultSed implements Serializable {
 	private List<TestTask> testTasks;
 	
 	
-	public CertificationResultSed() {
+	public CertifiedProductSed() {
 		super();
 		this.ucdProcesses = new ArrayList<UcdProcess>();
 		this.testTasks = new ArrayList<TestTask>();

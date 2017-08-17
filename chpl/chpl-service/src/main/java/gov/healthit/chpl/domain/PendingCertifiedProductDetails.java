@@ -330,9 +330,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				for(PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
 					boolean alreadyExists = false;
 					UcdProcess newUcd = new UcdProcess();
-					newUcd.setUcdProcessId(ucdDto.getUcdProcessId());
-					newUcd.setUcdProcessName(ucdDto.getUcdProcessName());
-					newUcd.setUcdProcessDetails(ucdDto.getUcdProcessDetails());
+					newUcd.setId(ucdDto.getUcdProcessId());
+					newUcd.setName(ucdDto.getUcdProcessName());
+					newUcd.setDetails(ucdDto.getUcdProcessDetails());
 					for(UcdProcess currUcd : this.getSed().getUcdProcesses()) {
 						if(newUcd.matches(currUcd)) {
 							alreadyExists = true;
