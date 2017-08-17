@@ -301,8 +301,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	/**
 	 * All data related to safety-enhanced design for this listing.
 	 */
-	@XmlElementWrapper(name = "sed", nillable = true, required = false)
-	@XmlElement(name = "sed")
+	@XmlElement(name = "sed", nillable = true, required = false)
 	private CertifiedProductSed sed;
 	
 	@XmlTransient
