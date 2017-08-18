@@ -13,7 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 import gov.healthit.chpl.entity.TestParticipantEntity;
+import gov.healthit.chpl.entity.TestTaskEntity;
 
 
 @Entity
@@ -30,6 +33,12 @@ public class TestTaskParticipantMapEntity {
 	@Column(name = "test_task_id", nullable = false )	
 	private Long testTaskId;
 	
+	@Basic( optional = true )
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@Where(clause="deleted <> 'true'")
+	private TestTaskEntity testTask;
+	
 	@Basic( optional = false )
 	@Column(name = "test_participant_id", nullable = false )	
 	private Long testParticipantId;
@@ -37,6 +46,7 @@ public class TestTaskParticipantMapEntity {
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_participant_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@Where(clause="deleted <> 'true'")
 	private TestParticipantEntity testParticipant;
 
 	@Basic( optional = false )
@@ -111,5 +121,13 @@ public class TestTaskParticipantMapEntity {
 
 	public void setTestTaskId(Long testTaskId) {
 		this.testTaskId = testTaskId;
+	}
+
+	public TestTaskEntity getTestTask() {
+		return testTask;
+	}
+
+	public void setTestTask(TestTaskEntity testTask) {
+		this.testTask = testTask;
 	}
 }

@@ -16,6 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.Where;
+
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 
 @Entity
@@ -74,6 +76,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "testTaskId"  )
 	@Basic( optional = false )
 	@Column( name = "test_task_id", nullable = false  )
+ 	@Where(clause="deleted <> 'true'")
 	private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
 	
  	

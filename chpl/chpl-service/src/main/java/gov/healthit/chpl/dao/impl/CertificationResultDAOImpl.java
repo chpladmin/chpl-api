@@ -8,6 +8,7 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.annotations.Where;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -20,6 +21,7 @@ import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestParticipantDAO;
+import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
@@ -33,6 +35,7 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
+import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity;
@@ -51,6 +54,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	private static final Logger logger = LogManager.getLogger(CertificationResultDAOImpl.class);
 	
 	@Autowired TestParticipantDAO participantDao;
+	@Autowired TestTaskDAO testTaskDao;
 	@Autowired MessageSource messageSource;
 	
 	@Override
@@ -1096,14 +1100,14 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 
 	@Override
 	public void deleteTestTaskMapping(Long certResultId, Long taskId){
-		Query query = entityManager.createQuery( "SELECT tp "
-				+ "FROM CertificationResultTestTaskEntity tp "
-				+ "LEFT OUTER JOIN FETCH tp.testTask task "
+		Query query = entityManager.createQuery( "SELECT ttMapping "
+				+ "FROM CertificationResultTestTaskEntity ttMapping "
+				+ "LEFT OUTER JOIN FETCH ttMapping.testTask task "
 				+ "LEFT OUTER JOIN FETCH task.testParticipants participantMappings "
 				+ "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
-				+ "WHERE (NOT tp.deleted = true) "
+				+ "WHERE (ttMapping.deleted <> true) "
 				+ "AND (task.id = :taskId) "
-				+ "AND tp.certificationResultId = :certResultId ", 
+				+ "AND ttMapping.certificationResultId = :certResultId ", 
 				CertificationResultTestTaskEntity.class );
 		query.setParameter("taskId", taskId);
 		query.setParameter("certResultId", certResultId);
@@ -1111,16 +1115,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		List<CertificationResultTestTaskEntity> toDeleteList = query.getResultList();
 		if(toDeleteList != null && toDeleteList.size() > 0) {
 			for(CertificationResultTestTaskEntity toDelete : toDeleteList) {
-				if(toDelete.getTestTask() != null && toDelete.getTestTask().getTestParticipants() != null && 
-					toDelete.getTestTask().getTestParticipants().size() > 0) {
-					for(TestTaskParticipantMapEntity partMappingToDelete : toDelete.getTestTask().getTestParticipants()) {
-						partMappingToDelete.setDeleted(true);
-						partMappingToDelete.setLastModifiedDate(new Date());
-						partMappingToDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-						entityManager.persist(partMappingToDelete);
-					}
-				}
-			
 				toDelete.setDeleted(true);
 				toDelete.setLastModifiedDate(new Date());
 				toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -1128,23 +1122,30 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			}
 			entityManager.flush();
 		}
-	}
-	
-	private CertificationResultTestTaskEntity getCertificationResultTestTaskById(Long id) {
-		CertificationResultTestTaskEntity entity = null;
 		
-		Query query = entityManager.createQuery( "SELECT tp "
-				+ "FROM CertificationResultTestTaskEntity tp "
-				+ "LEFT OUTER JOIN FETCH tp.testTask "
-				+ "where (NOT tp.deleted = true) AND (tp.id = :entityid) ", 
+		//is this test task used anywhere else? if not, delete it and all of its participants
+		query = entityManager.createQuery( "SELECT ttMapping "
+				+ "FROM CertificationResultTestTaskEntity ttMapping "
+				+ "LEFT OUTER JOIN FETCH ttMapping.testTask task "
+				+ "LEFT OUTER JOIN FETCH task.testParticipants participantMappings "
+				+ "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
+				+ "WHERE (ttMapping.deleted <> true) "
+				+ "AND (task.id = :taskId) ", 
 				CertificationResultTestTaskEntity.class );
-		query.setParameter("entityid", id);
-		List<CertificationResultTestTaskEntity> result = query.getResultList();
-
-		if (result.size() > 0){
-			entity = result.get(0);
+		query.setParameter("taskId", taskId);
+		
+		List<CertificationResultTestTaskEntity> otherMappingsForTestTask = query.getResultList();
+		if(otherMappingsForTestTask == null || otherMappingsForTestTask.size() == 0) {
+			TestTaskEntity taskToDelete = entityManager.find(TestTaskEntity.class, taskId);
+			testTaskDao.delete(taskId);
+			
+			//check each participant
+			if(taskToDelete.getTestParticipants() != null && taskToDelete.getTestParticipants().size() > 0) {
+				for(TestTaskParticipantMapEntity participantMap : taskToDelete.getTestParticipants()) {
+					deleteTestParticipantMapping(taskId, participantMap.getTestParticipantId());
+				}
+			}
 		}
-		return entity;
 	}
 	
 	private List<CertificationResultTestTaskEntity> getTestTasksForCertification(Long certificationResultId){

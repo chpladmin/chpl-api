@@ -1084,14 +1084,8 @@ public class CertificationResultManagerImpl implements
 	private int deleteTestTask(CertificationResult certResult, TestTask task) 
 			throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
-		numChanges += updateTaskParticipants(task.getId(), task.getTestParticipants(), null);
 		certResultDAO.deleteTestTaskMapping(certResult.getId(), task.getId());
 		numChanges++;
-		
-		if(task.getId() != null) {
-			testTaskDAO.delete(task.getId());
-			numChanges++;
-		}
 		return numChanges;
 	}
 	
