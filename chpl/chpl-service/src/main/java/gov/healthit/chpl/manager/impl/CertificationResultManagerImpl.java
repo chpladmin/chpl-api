@@ -244,22 +244,30 @@ public class CertificationResultManagerImpl implements
 			}
 			if(updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null && 
 					updatedListing.getSed().getTestTasks().size() > 0) {
-				//go through all test participants for all tasks; 
-				//some may have negative IDs which means they are new 
-				//but comparing those ids is the only way to know if the participants
-				//are meant to be re-used
+				//Go through all the updated test tasks and participants.
+				//Any with a negative ID are new and need to be added and the 
+				//negative ID could be repeated so a task/participant with a negative id 
+				//needs to be added once and then that ID needs to be replaced with
+				//the created item's ID anywhere else that it is found
 				for(TestTask task : updatedListing.getSed().getTestTasks()) {
+					if(task.getId() < 0) {
+						long prevId = task.getId();
+						TestTaskDTO createdTask = testTaskDAO.create(convert(task));
+						for(TestTask otherTask : updatedListing.getSed().getTestTasks()) {
+							if(otherTask.getId().longValue() == prevId) {
+								otherTask.setId(createdTask.getId());
+							}
+						}
+					}
+					
 					for(TestParticipant participant : task.getTestParticipants()) {
-						if(participant.getId() == null || participant.getId().longValue() < 0) {
-							long prevId = participant.getId() == null ? 0L : participant.getId().longValue();
-							TestParticipantDTO created = testParticipantDAO.create(convert(participant));
-							participant.setId(created.getId());
-							
-							//look for any other participants with the same prev id
+						if(participant.getId() < 0) {
+							long prevId = participant.getId();
+							TestParticipantDTO createdParticipant = testParticipantDAO.create(convert(participant));
 							for(TestTask otherTask : updatedListing.getSed().getTestTasks()) {
 								for(TestParticipant otherParticipant : otherTask.getTestParticipants()) {
-									if(otherParticipant.getId() != null && otherParticipant.getId().longValue() == prevId) {
-										otherParticipant.setId(created.getId());
+									if(otherParticipant.getId().longValue() == prevId) {
+										otherParticipant.setId(createdParticipant.getId());
 									}
 								}
 							}
@@ -1070,13 +1078,14 @@ public class CertificationResultManagerImpl implements
 		int numChanges = 1;
 		TestTaskDTO taskToCreate = convert(task);
 		TestTaskDTO createdTask = testTaskDAO.create(taskToCreate);
+		taskToCreate.setId(createdTask.getId());
+		
 		CertificationResultTestTaskDTO certResultTask = new CertificationResultTestTaskDTO();
 		certResultTask.setCertificationResultId(certResult.getId());
-		certResultTask.setTestTaskId(createdTask.getId());
+		certResultTask.setTestTaskId(taskToCreate.getId());
+		certResultTask.setTestTask(taskToCreate);
 		certResultTask = certResultDAO.addTestTaskMapping(certResultTask);
-		
-		numChanges += updateTaskParticipants(certResultTask.getId(), new ArrayList<TestParticipant>(), 
-						task.getTestParticipants());
+
 		return numChanges;
 	}
 	
@@ -1118,12 +1127,12 @@ public class CertificationResultManagerImpl implements
 			numChanges++;
 		}
 		
-		numChanges += updateTaskParticipants(existingTask.getId(), 
+		numChanges += updateTaskParticipants(existingTask, 
 				existingTask.getTestParticipants(), updatedTask.getTestParticipants());
 		return numChanges;
 	}
 	
-	private int updateTaskParticipants(Long testTaskId,
+	private int updateTaskParticipants(TestTask testTask,
 			Collection<TestParticipant> existingParticipants,
 			Collection<TestParticipant> updatedParticipants) 
 	throws EntityCreationException, EntityRetrievalException {
@@ -1196,6 +1205,10 @@ public class CertificationResultManagerImpl implements
 		
 		numChanges = participantsToAdd.size() + idsToRemove.size();
 		
+		for(TestParticipantDTO participantToAdd : participantsToAdd) {
+			certResultDAO.addTestParticipantMapping(convert(testTask), participantToAdd);
+		}
+		
 		for(TestParticipantPair toUpdate : participantsToUpdate) {
 			boolean isDifferent = false;
 			TestParticipant existingPart = toUpdate.getOrig();
@@ -1219,7 +1232,7 @@ public class CertificationResultManagerImpl implements
 		}
 		
 		for(Long idToRemove : idsToRemove) {
-			certResultDAO.deleteTestParticipantMapping(testTaskId, idToRemove);
+			certResultDAO.deleteTestParticipantMapping(testTask.getId(), idToRemove);
 		}	
 		return numChanges;
 	}
@@ -1254,6 +1267,11 @@ public class CertificationResultManagerImpl implements
 		result.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
 		result.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
 		result.setTaskTimeStddev(task.getTaskTimeStddev());
+		if(task.getTestParticipants() != null && task.getTestParticipants().size() > 0) {
+			for(TestParticipant part : task.getTestParticipants()) {
+				result.getParticipants().add(convert(part));
+			}
+		}
 		return result;
 	}
 	
