@@ -12,6 +12,7 @@ public class CertificationResultTestTaskDTO implements Serializable {
 	private TestTaskDTO testTask;
 	
 	public CertificationResultTestTaskDTO(){
+		this.testTask = new TestTaskDTO();
 	}
 	
 	public CertificationResultTestTaskDTO(CertificationResultTestTaskEntity entity){

@@ -1166,19 +1166,35 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 	}
 	
 	public TestParticipantDTO addTestParticipantMapping(TestTaskDTO task, TestParticipantDTO participant) throws EntityCreationException {
+		boolean createMapping = false;
 		if(participant.getId() == null) {
 			participant = participantDao.create(participant);
+			createMapping = true;
+		} else {
+			Query query = entityManager.createQuery("SELECT participantMap "
+					+ "FROM TestTaskParticipantMapEntity participantMap "
+					+ "WHERE participantMap.deleted <> true "
+					+ "AND participantMap.testTaskId = :testTaskId "
+					+ "AND participantMap.testParticipantId = :testParticipantId", TestTaskParticipantMapEntity.class);
+			query.setParameter("testTaskId", task.getId());
+			query.setParameter("testParticipantId", participant.getId());
+			List<TestTaskParticipantMapEntity> existingMappings = query.getResultList();
+			if(existingMappings == null || existingMappings.size() == 0) {
+				createMapping = true;
+			}
 		}
 		
-		TestTaskParticipantMapEntity mapping = new TestTaskParticipantMapEntity();
-		mapping.setTestParticipantId(participant.getId());
-		mapping.setTestTaskId(task.getId());
-		mapping.setCreationDate(new Date());
-		mapping.setDeleted(false);
-		mapping.setLastModifiedDate(new Date());
-		mapping.setLastModifiedUser(Util.getCurrentUser().getId());
-		entityManager.persist(mapping);
-		entityManager.flush();
+		if(createMapping) {
+			TestTaskParticipantMapEntity mapping = new TestTaskParticipantMapEntity();
+			mapping.setTestParticipantId(participant.getId());
+			mapping.setTestTaskId(task.getId());
+			mapping.setCreationDate(new Date());
+			mapping.setDeleted(false);
+			mapping.setLastModifiedDate(new Date());
+			mapping.setLastModifiedUser(Util.getCurrentUser().getId());
+			entityManager.persist(mapping);
+			entityManager.flush();
+		}
 		
 		return participant;
 	}

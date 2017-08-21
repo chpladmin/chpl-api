@@ -699,7 +699,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 						CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
 						taskDto.setTestTaskId(existingTt.getId());
 						taskDto.setCertificationResultId(createdCert.getId());
-							
+						taskDto.setTestTask(existingTt);
+						
 						if(certTask.getTaskParticipants() != null) {
 							for(PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask.getTaskParticipants()) {
 								PendingTestParticipantDTO certPart = certTaskPart.getTestParticipant();
