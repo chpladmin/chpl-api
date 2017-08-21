@@ -16,14 +16,16 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -580,13 +582,29 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 				//check for full set of UCD data
 				for(CertificationResult certCriteria : product.getCertificationResults()) {
 					if(certCriteria.getNumber().equals(ucdRequiredCerts[i])) {
-						if(certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
+						//make sure at least one UCD process has this criteria number
+						if(product.getSed() == null || product.getSed().getUcdProcesses() == null || 
+								product.getSed().getUcdProcesses().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one UCD process.");
+						} else {
+							boolean foundCriteria = false;
+							for(UcdProcess ucd : product.getSed().getUcdProcesses()) {
+								for(CertificationCriterion criteria : ucd.getCriteria()) {
+									if(criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
+										foundCriteria = true;
+									}
+								}
+							}
+							if(!foundCriteria) {
+								product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one UCD process.");
+							}
 						}
-						if(certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
+						
+						if(product.getSed() == null || product.getSed().getTestTasks() == null || 
+								product.getSed().getTestTasks().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
 						} else {
-							for(CertificationResultTestTask task : certCriteria.getTestTasks()) {
+							for(TestTask task : product.getSed().getTestTasks()) {
 								if(task.getTestParticipants() == null || task.getTestParticipants().size() < 10) {
 									product.getWarningMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
 								}

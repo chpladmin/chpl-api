@@ -10,9 +10,10 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
+import gov.healthit.chpl.dto.TestTaskDTO;
 
 public interface CertificationResultDAO {
 	
@@ -62,15 +63,14 @@ public interface CertificationResultDAO {
 	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
 	public CertificationResultUcdProcessDTO lookupUcdProcessMapping(Long certificationResultId, Long ucdProcessId);
 	public CertificationResultUcdProcessDTO addUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityCreationException;
-	public void deleteUcdProcessMapping(Long mappingId);
+	public void deleteUcdProcessMapping(Long certResultId, Long ucdProcessId);
 	public void updateUcdProcessMapping(CertificationResultUcdProcessDTO dto) throws EntityRetrievalException;
 	
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long taskId);
 	public CertificationResultTestTaskDTO addTestTaskMapping(CertificationResultTestTaskDTO dto) throws EntityCreationException;
-	public void deleteTestTaskMapping(Long mappingId);
+	public void deleteTestTaskMapping(Long certResultId, Long testTaskId);
 	
-	public CertificationResultTestTaskParticipantDTO addTestParticipantMapping(CertificationResultTestTaskParticipantDTO dto) throws EntityCreationException;
-	public void deleteTestParticipantMapping(Long mappingId);
+	public TestParticipantDTO addTestParticipantMapping(TestTaskDTO task, TestParticipantDTO dto) throws EntityCreationException;
+	public void deleteTestParticipantMapping(Long testTaskId, Long testParticipantId);
 }
 

@@ -1,8 +1,11 @@
 package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import gov.healthit.chpl.entity.TestTaskEntity;
+import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 
 public class TestTaskDTO implements Serializable {
 	private static final long serialVersionUID = 1595127061190153672L;
@@ -21,13 +24,16 @@ public class TestTaskDTO implements Serializable {
 	private String taskRatingScale;
 	private Float taskRating;
 	private Float taskRatingStddev;
-
 	private String pendingUniqueId;
+	private List<TestParticipantDTO> participants;
 	
-	public TestTaskDTO(){}
+	public TestTaskDTO(){
+		participants = new ArrayList<TestParticipantDTO>();
+	}
 	
-	public TestTaskDTO(TestTaskEntity entity)
-	{
+	public TestTaskDTO(TestTaskEntity entity) {
+		this();
+		
 		if(entity != null) {
 			this.id = entity.getId();
 			this.description = entity.getDescription();
@@ -44,6 +50,11 @@ public class TestTaskDTO implements Serializable {
 			this.taskRatingScale = entity.getTaskRatingScale();
 			this.taskRating = entity.getTaskRating();
 			this.taskRatingStddev = entity.getTaskRatingStddev();
+			if(entity.getTestParticipants() != null) {
+				for(TestTaskParticipantMapEntity participantMap : entity.getTestParticipants()) {
+					this.participants.add(new TestParticipantDTO(participantMap.getTestParticipant()));
+				}
+			}
 		}
 	}
 	
@@ -172,5 +183,13 @@ public class TestTaskDTO implements Serializable {
 
 	public void setTaskRatingStddev(Float taskRatingStddev) {
 		this.taskRatingStddev = taskRatingStddev;
+	}
+
+	public List<TestParticipantDTO> getParticipants() {
+		return participants;
+	}
+
+	public void setParticipants(List<TestParticipantDTO> participants) {
+		this.participants = participants;
 	}
 }

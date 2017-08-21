@@ -81,7 +81,6 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -176,6 +175,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertificationStatusDAO certStatusDao;
 	@Autowired ListingGraphDAO listingGraphDao;
+	@Autowired CertificationResultDAO certResultDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -657,6 +657,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 				
 				if(certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
+					//Map<Long, Long> pendingTaskToConfirmedTaskMap = new HashMap<Long, Long>();
 					for(PendingCertificationResultTestTaskDTO certTask : certResult.getTestTasks()) {
 						//have we already added this one?
 						TestTaskDTO existingTt = null;
@@ -668,24 +669,29 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 						}
 						if(existingTt == null && certTask.getPendingTestTask() != null) {
 							PendingTestTaskDTO pendingTask = certTask.getPendingTestTask();
-							TestTaskDTO tt = new TestTaskDTO();
-							tt.setDescription(pendingTask.getDescription());
-							tt.setTaskErrors(pendingTask.getTaskErrors());
-							tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
-							tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
-							tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
-							tt.setTaskRating(pendingTask.getTaskRating());
-							tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
-							tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
-							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
-							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
-							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
-							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
-							tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
-							tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
-							
-							//add test task
-							existingTt = testTaskDao.create(tt);
+							//if(pendingTaskToConfirmedTaskMap.get(pendingTask.getId()) != null) {
+							//	existingTt = testTaskDao.getById(pendingTaskToConfirmedTaskMap.get(pendingTask.getId()));
+							//} else {
+								TestTaskDTO tt = new TestTaskDTO();
+								tt.setDescription(pendingTask.getDescription());
+								tt.setTaskErrors(pendingTask.getTaskErrors());
+								tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
+								tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
+								tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
+								tt.setTaskRating(pendingTask.getTaskRating());
+								tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
+								tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
+								tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
+								tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
+								tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
+								tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
+								tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
+								tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
+								
+								//add test task
+								existingTt = testTaskDao.create(tt);
+								//pendingTaskToConfirmedTaskMap.put(pendingTask.getId(), existingTt.getId());
+							//}
 							existingTt.setPendingUniqueId(pendingTask.getUniqueId());
 							testTasksAdded.add(existingTt);
 						}
@@ -693,7 +699,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 						CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
 						taskDto.setTestTaskId(existingTt.getId());
 						taskDto.setCertificationResultId(createdCert.getId());
-							
+						taskDto.setTestTask(existingTt);
+						
 						if(certTask.getTaskParticipants() != null) {
 							for(PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask.getTaskParticipants()) {
 								PendingTestParticipantDTO certPart = certTaskPart.getTestParticipant();
@@ -720,11 +727,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 										existingPart.setPendingUniqueId(certPart.getUniqueId());
 										testParticipantsAdded.add(existingPart);
 									}
-									
-									CertificationResultTestTaskParticipantDTO certPartDto = new CertificationResultTestTaskParticipantDTO();
-									certPartDto.setTestParticipantId(existingPart.getId());
-									certPartDto.setCertTestTaskId(taskDto.getId());
-									taskDto.getTaskParticipants().add(certPartDto);
+									taskDto.getTestTask().getParticipants().add(existingPart);
 								}
 							}
 						}
@@ -931,7 +934,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()), new Date(updatedListing.getCertificationDate()));
 			updateCertificationStatusEvents(listingId, new Long(existingListing.getCertificationStatus().get("id").toString()),
 					new Long(updatedListing.getCertificationStatus().get("id").toString()));
-			updateCertifications(result, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+			updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
 			updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
 		}
 		return result;
@@ -1351,7 +1354,9 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 	}
 	
-	private int updateCertifications(CertifiedProductDTO listing, 
+	private int updateCertifications(Long acbId, 
+			CertifiedProductSearchDetails existingListing,
+			CertifiedProductSearchDetails updatedListing, 
 			List<CertificationResult> existingCertifications, 
 			List<CertificationResult> updatedCertifications)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -1367,7 +1372,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				if(!StringUtils.isEmpty(updatedItem.getNumber()) && 
 					!StringUtils.isEmpty(existingItem.getNumber()) &&
 					updatedItem.getNumber().equals(existingItem.getNumber())) {
-					numChanges += certResultManager.update(listing.getCertificationBodyId(), listing, existingItem, updatedItem);
+					numChanges += certResultManager.update(acbId, 
+							existingListing, updatedListing, existingItem, updatedItem);
 				}
 			}
 		}

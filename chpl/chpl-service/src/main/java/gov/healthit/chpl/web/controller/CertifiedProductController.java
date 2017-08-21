@@ -39,11 +39,15 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.SedUpdateRequest;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -216,8 +220,8 @@ public class CertifiedProductController {
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing, changedProduct);
 		
-		 HttpHeaders responseHeaders = new HttpHeaders();
-		 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		if(!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
 			 responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
 		}

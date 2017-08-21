@@ -7,24 +7,24 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
 
 /**
  * Participant in a given test task.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class CertificationResultTestParticipant implements Serializable {
-	private static final long serialVersionUID = -5404897845633867927L;
-
-	private static final Logger logger = LogManager.getLogger(CertificationResultTestParticipant.class);
+public class TestParticipant implements Serializable {
+	private static final long serialVersionUID = -3771155258451736516L;
+	private static final Logger logger = LogManager.getLogger(TestParticipant.class);
 
 	/**
-	 * Test task to participant mapping internal ID
+	 * Participant internal ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
@@ -37,12 +37,6 @@ public class CertificationResultTestParticipant implements Serializable {
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String uniqueId;
-	
-	/**
-	 * Participant internal ID
-	 */
-	@XmlElement(required = true)
-	private Long testParticipantId;
 	
 	/**
 	 * Self-reported gender of the corresponding participant. 
@@ -115,37 +109,90 @@ public class CertificationResultTestParticipant implements Serializable {
 	 */
 	@XmlElement(required = false, nillable=true)
 	private String assistiveTechnologyNeeds;
-
-	public CertificationResultTestParticipant() {
-		super();
-	}
 	
-	public CertificationResultTestParticipant(CertificationResultTestTaskParticipantDTO dto) {
+	public TestParticipant() {}
+	
+	public TestParticipant(TestParticipantDTO dto) {
+		this();
 		this.id = dto.getId();
-		this.testParticipantId = dto.getTestParticipantId();
-		if(dto.getTestParticipant() != null) {
-			this.gender = dto.getTestParticipant().getGender();
-			this.educationTypeId = dto.getTestParticipant().getEducationTypeId();
-			if(dto.getTestParticipant().getEducationType() != null) {
-				this.educationTypeName = dto.getTestParticipant().getEducationType().getName();
-			}
-			this.ageRangeId = dto.getTestParticipant().getAgeRangeId();
-			if(dto.getTestParticipant().getAgeRange() != null) {
-				this.ageRange = dto.getTestParticipant().getAgeRange().getAge();
-			}
-			this.occupation = dto.getTestParticipant().getOccupation();
-			this.professionalExperienceMonths = dto.getTestParticipant().getProfessionalExperienceMonths();
-			this.computerExperienceMonths = dto.getTestParticipant().getComputerExperienceMonths();
-			this.productExperienceMonths = dto.getTestParticipant().getProductExperienceMonths();
-			this.assistiveTechnologyNeeds = dto.getTestParticipant().getAssistiveTechnologyNeeds();
+		this.gender = dto.getGender();
+		this.educationTypeId = dto.getEducationTypeId();
+		if(dto.getEducationType() != null) {
+			this.educationTypeName = dto.getEducationType().getName();
 		}
+		this.ageRangeId = dto.getAgeRangeId();
+		if(dto.getAgeRange() != null) {
+			this.ageRange = dto.getAgeRange().getAge();
+		}
+		this.occupation = dto.getOccupation();
+		this.professionalExperienceMonths = dto.getProfessionalExperienceMonths();
+		this.computerExperienceMonths = dto.getComputerExperienceMonths();
+		this.productExperienceMonths = dto.getProductExperienceMonths();
+		this.assistiveTechnologyNeeds = dto.getAssistiveTechnologyNeeds();
 	}
 	
-	public boolean matches(CertificationResultTestParticipant anotherParticipant) {
+	@Override
+	public boolean equals(Object other) {
+		if(other == null || !(other instanceof TestParticipant)) {
+			return false;
+		}
+		TestParticipant anotherTask = (TestParticipant) other;
+		return matches(anotherTask);
+	}
+	
+	@Override
+	public int hashCode() {
+		int hashCode = 0;
+		if(this.getId() != null) {
+			hashCode = this.getId().hashCode();
+		} else {
+			if(this.getAgeRange() != null) {
+				hashCode += this.getAgeRange().hashCode();
+			} else if(this.getAgeRangeId() != null) {
+				hashCode += this.getAgeRangeId().hashCode();
+			}
+			if(this.getAssistiveTechnologyNeeds() != null) {
+				hashCode += this.getAssistiveTechnologyNeeds().hashCode();
+			}
+			if(this.getComputerExperienceMonths() != null) {
+				hashCode += this.getComputerExperienceMonths().hashCode();
+			}
+			if(this.getEducationTypeName() != null) {
+				hashCode += this.getEducationTypeName().hashCode();
+			} else if(this.getEducationTypeId() != null) {
+				hashCode += this.getEducationTypeId().hashCode();
+			}
+			if(this.getGender() != null) {
+				hashCode += this.getGender().hashCode();
+			}
+			if(this.getOccupation() != null) {
+				hashCode += this.getOccupation().hashCode();
+			}
+			if(this.getProductExperienceMonths() != null) {
+				hashCode += this.getProductExperienceMonths().hashCode();
+			}
+			if(this.getProfessionalExperienceMonths() != null) {
+				hashCode += this.getProfessionalExperienceMonths().hashCode();
+			}
+		}
+		return hashCode;
+	}
+	
+	public boolean matches(TestParticipant anotherParticipant) {
 		boolean result = false;
-		if(this.getTestParticipantId() != null && 
-			anotherParticipant.getTestParticipantId() != null && 
-			this.getTestParticipantId().longValue() == anotherParticipant.getTestParticipantId().longValue()) {
+		if(this.getId() != null && anotherParticipant.getId() != null && 
+				this.getId().longValue() == anotherParticipant.getId().longValue()) {
+			result = true;
+		} else if(StringUtils.equals(this.getAgeRange(), anotherParticipant.getAgeRange()) && 
+				ObjectUtils.equals(this.getAgeRangeId(), anotherParticipant.getAgeRangeId()) && 
+				StringUtils.equals(this.getAssistiveTechnologyNeeds(), anotherParticipant.getAssistiveTechnologyNeeds()) && 
+				ObjectUtils.equals(this.getComputerExperienceMonths(), anotherParticipant.getComputerExperienceMonths()) && 
+				StringUtils.equals(this.getEducationTypeName(), anotherParticipant.getEducationTypeName()) && 
+				ObjectUtils.equals(this.getEducationTypeId(), anotherParticipant.getEducationTypeId()) && 
+				StringUtils.equals(this.getGender(), anotherParticipant.getGender()) &&
+				StringUtils.equals(this.getOccupation(), anotherParticipant.getOccupation()) && 
+				ObjectUtils.equals(this.getProductExperienceMonths(), anotherParticipant.getProductExperienceMonths()) && 
+				ObjectUtils.equals(this.getProfessionalExperienceMonths(), anotherParticipant.getProfessionalExperienceMonths())) {
 			result = true;
 		}
 		return result;
@@ -157,14 +204,6 @@ public class CertificationResultTestParticipant implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Long getTestParticipantId() {
-		return testParticipantId;
-	}
-
-	public void setTestParticipantId(Long testParticipantId) {
-		this.testParticipantId = testParticipantId;
 	}
 
 	public String getGender() {

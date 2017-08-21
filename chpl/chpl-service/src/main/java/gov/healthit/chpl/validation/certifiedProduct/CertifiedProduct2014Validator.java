@@ -4,10 +4,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -189,16 +190,18 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 //		}
 		
 		//check sed/ucd/tasks
-		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
-				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if (certCriteria.getTestTasks() != null && certCriteria.getTestTasks().size() > 0){
-						for(CertificationResultTestTask task : certCriteria.getTestTasks()) {
-							if(task.getTestParticipants() == null || task.getTestParticipants().size() < 5) {
-								product.getWarningMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 5 participants.");
-							}
-						}
+		if(product.getSed() != null && product.getSed().getTestTasks() != null) {
+			for(TestTask task : product.getSed().getTestTasks()) {
+				StringBuffer criteriaNumbers = new StringBuffer();
+				for(CertificationCriterion criteria : task.getCriteria()) {
+					if(criteriaNumbers.length() > 0) { 
+						criteriaNumbers.append(",");
 					}
+					criteriaNumbers.append(criteria.getNumber());
+				}
+				if(task.getTestParticipants() == null || task.getTestParticipants().size() < 5) {
+					product.getWarningMessages().add("A test task for certification(s) " + criteriaNumbers.toString() + 
+							" requires at least 5 participants and only has " + task.getTestParticipants().size() + ".");
 				}
 			}
 		}

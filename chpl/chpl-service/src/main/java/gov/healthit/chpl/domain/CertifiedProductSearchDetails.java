@@ -298,11 +298,21 @@ public class CertifiedProductSearchDetails implements Serializable {
 	@XmlElement(name = "certificationEvent")
 	private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 	
+	/**
+	 * All data related to safety-enhanced design for this listing.
+	 */
+	@XmlElement(name = "sed", nillable = true, required = false)
+	private CertifiedProductSed sed;
+	
 	@XmlTransient
 	private Set<String> warningMessages = new HashSet<String>();
 	
 	@XmlTransient
 	private Set<String> errorMessages = new HashSet<String>();
+	
+	public CertifiedProductSearchDetails() {
+		sed = new CertifiedProductSed();
+	}
 	
 	public Long getId() {
 		return id;
@@ -560,5 +570,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 	}
 	public void setDecertificationDate(Long decertificationDate) {
 		this.decertificationDate = decertificationDate;
+	}
+
+	public CertifiedProductSed getSed() {
+		return sed;
+	}
+
+	public void setSed(CertifiedProductSed sed) {
+		this.sed = sed;
 	}
 }
