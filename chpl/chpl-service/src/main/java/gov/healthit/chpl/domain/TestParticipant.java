@@ -7,9 +7,10 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.TestParticipantDTO;
 
@@ -141,7 +142,40 @@ public class TestParticipant implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		return this.getId().hashCode();
+		int hashCode = 0;
+		if(this.getId() != null) {
+			hashCode = this.getId().hashCode();
+		} else {
+			if(this.getAgeRange() != null) {
+				hashCode += this.getAgeRange().hashCode();
+			} else if(this.getAgeRangeId() != null) {
+				hashCode += this.getAgeRangeId().hashCode();
+			}
+			if(this.getAssistiveTechnologyNeeds() != null) {
+				hashCode += this.getAssistiveTechnologyNeeds().hashCode();
+			}
+			if(this.getComputerExperienceMonths() != null) {
+				hashCode += this.getComputerExperienceMonths().hashCode();
+			}
+			if(this.getEducationTypeName() != null) {
+				hashCode += this.getEducationTypeName().hashCode();
+			} else if(this.getEducationTypeId() != null) {
+				hashCode += this.getEducationTypeId().hashCode();
+			}
+			if(this.getGender() != null) {
+				hashCode += this.getGender().hashCode();
+			}
+			if(this.getOccupation() != null) {
+				hashCode += this.getOccupation().hashCode();
+			}
+			if(this.getProductExperienceMonths() != null) {
+				hashCode += this.getProductExperienceMonths().hashCode();
+			}
+			if(this.getProfessionalExperienceMonths() != null) {
+				hashCode += this.getProfessionalExperienceMonths().hashCode();
+			}
+		}
+		return hashCode;
 	}
 	
 	public boolean matches(TestParticipant anotherParticipant) {
@@ -149,8 +183,18 @@ public class TestParticipant implements Serializable {
 		if(this.getId() != null && anotherParticipant.getId() != null && 
 				this.getId().longValue() == anotherParticipant.getId().longValue()) {
 			result = true;
-		} 
-		//TODO: should we compare all the values??
+		} else if(StringUtils.equals(this.getAgeRange(), anotherParticipant.getAgeRange()) && 
+				ObjectUtils.equals(this.getAgeRangeId(), anotherParticipant.getAgeRangeId()) && 
+				StringUtils.equals(this.getAssistiveTechnologyNeeds(), anotherParticipant.getAssistiveTechnologyNeeds()) && 
+				ObjectUtils.equals(this.getComputerExperienceMonths(), anotherParticipant.getComputerExperienceMonths()) && 
+				StringUtils.equals(this.getEducationTypeName(), anotherParticipant.getEducationTypeName()) && 
+				ObjectUtils.equals(this.getEducationTypeId(), anotherParticipant.getEducationTypeId()) && 
+				StringUtils.equals(this.getGender(), anotherParticipant.getGender()) &&
+				StringUtils.equals(this.getOccupation(), anotherParticipant.getOccupation()) && 
+				ObjectUtils.equals(this.getProductExperienceMonths(), anotherParticipant.getProductExperienceMonths()) && 
+				ObjectUtils.equals(this.getProfessionalExperienceMonths(), anotherParticipant.getProfessionalExperienceMonths())) {
+			result = true;
+		}
 		return result;
 	}
 	

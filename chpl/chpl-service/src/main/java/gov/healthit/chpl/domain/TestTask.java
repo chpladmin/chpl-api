@@ -12,9 +12,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
@@ -203,7 +204,54 @@ public class TestTask implements Serializable {
 	
 	@Override
 	public int hashCode() {
-		return this.getId().hashCode();
+		int hashCode = 0;
+		if(this.getId() != null) {
+			hashCode = this.getId().hashCode();
+		} else {
+			if(this.getDescription() != null) {
+				hashCode += this.getDescription().hashCode();
+			}
+			if(this.getTaskErrors() != null) {
+				hashCode += this.getTaskErrors().hashCode();
+			}
+			if(this.getTaskErrorsStddev() != null) {
+				hashCode += this.getTaskErrorsStddev().hashCode();
+			}
+			if(this.getTaskPathDeviationObserved() != null) {
+				hashCode += this.getTaskPathDeviationObserved().hashCode();
+			}
+			if(this.getTaskPathDeviationOptimal() != null) {
+				hashCode += this.getTaskPathDeviationOptimal().hashCode();
+			}
+			if(this.getTaskRating() != null) {
+				hashCode += this.getTaskRating().hashCode();
+			}
+			if(this.getTaskRatingScale() != null) {
+				hashCode += this.getTaskRatingScale().hashCode();
+			}
+			if(this.getTaskRatingStddev() != null) {
+				hashCode += this.getTaskRatingStddev().hashCode();
+			}
+			if(this.getTaskSuccessAverage() != null) {
+				hashCode += this.getTaskSuccessAverage().hashCode();
+			}
+			if(this.getTaskSuccessStddev() != null) {
+				hashCode += this.getTaskSuccessStddev().hashCode();
+			}
+			if(this.getTaskTimeAvg() != null) {
+				hashCode += this.getTaskTimeAvg().hashCode();
+			}
+			if(this.getTaskTimeDeviationObservedAvg() != null) {
+				hashCode += this.getTaskTimeDeviationObservedAvg().hashCode();
+			}
+			if(this.getTaskTimeDeviationOptimalAvg() != null) {
+				hashCode += this.getTaskTimeDeviationOptimalAvg().hashCode();
+			}
+			if(this.getTaskTimeStddev() != null) {
+				hashCode += this.getTaskTimeStddev().hashCode();
+			}
+		}
+		return hashCode;
 	}
 	
 	public boolean matches(TestTask anotherTask) {
@@ -211,8 +259,22 @@ public class TestTask implements Serializable {
 		if(this.getId() != null && anotherTask.getId() != null && 
 				this.getId().longValue() == anotherTask.getId().longValue()) {
 			result = true;
-		} 
-		//TODO: should we compare all the values??
+		} else if (StringUtils.equals(this.getDescription(), anotherTask.getDescription()) && 
+				ObjectUtils.equals(this.getTaskErrors(), anotherTask.getTaskErrors()) && 
+				ObjectUtils.equals(this.getTaskErrorsStddev(), anotherTask.getTaskErrorsStddev()) && 
+				ObjectUtils.equals(this.getTaskPathDeviationObserved(), anotherTask.getTaskPathDeviationObserved()) && 
+				ObjectUtils.equals(this.getTaskPathDeviationOptimal(), anotherTask.getTaskPathDeviationOptimal()) && 
+				ObjectUtils.equals(this.getTaskRating(), anotherTask.getTaskRating()) && 
+				StringUtils.equals(this.getTaskRatingScale(), anotherTask.getTaskRatingScale()) && 
+				ObjectUtils.equals(this.getTaskRatingStddev(), anotherTask.getTaskRatingStddev()) && 
+				ObjectUtils.equals(this.getTaskSuccessAverage(), anotherTask.getTaskSuccessAverage()) && 
+				ObjectUtils.equals(this.getTaskSuccessStddev(), anotherTask.getTaskSuccessStddev()) && 
+				ObjectUtils.equals(this.getTaskTimeAvg(), anotherTask.getTaskTimeAvg()) && 
+				ObjectUtils.equals(this.getTaskTimeDeviationObservedAvg(), anotherTask.getTaskTimeDeviationObservedAvg()) && 
+				ObjectUtils.equals(this.getTaskTimeDeviationOptimalAvg(), anotherTask.getTaskTimeDeviationOptimalAvg()) && 
+				ObjectUtils.equals(this.getTaskTimeStddev(), anotherTask.getTaskTimeStddev())) {
+				result = true;
+			}
 		return result;
 	}
 	

@@ -3,6 +3,9 @@
 ## Version 12.4.0
 _14 August 2017_
 
+## Major Features
+* Reorganize SED data within the listing details request and response. UCD and Test tasks/participants are now located under a "sed" field. Listing update code has changed significantly as a result.
+
 ## Minor Features
 * Enforce ICS codes with 2 numbers (00-99) instead of just 1 number.
 * Improve error messages returned for unknown user-entered values for SED age and education levels.
