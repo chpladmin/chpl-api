@@ -1979,6 +1979,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		toAdd.getCriteria().add(crit);
 		for(int i = 0; i < 10; i++) {
 			TestParticipant tp = new TestParticipant();
+			tp.setId((i+1)*-1000L);
 			tp.setAgeRangeId(1L);
 			tp.setAgeRange("0-9");
 			tp.setAssistiveTechnologyNeeds("some needs");

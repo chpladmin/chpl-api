@@ -676,43 +676,43 @@
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 
-	<test_task_participant_map id="1"
+	<test_task_participant_map id="-1"
 		test_task_id="-1" test_participant_id="-1"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_task_participant_map id="2"
+	<test_task_participant_map id="-2"
 		test_task_id="-1" test_participant_id="-2"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />	
-	<test_task_participant_map id="3"
+	<test_task_participant_map id="-3"
 		test_task_id="-1" test_participant_id="-3"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_task_participant_map id="4"
+	<test_task_participant_map id="-4"
 		test_task_id="-1" test_participant_id="-4"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_task_participant_map id="5"
+	<test_task_participant_map id="-5"
 		test_task_id="-1" test_participant_id="-5"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />				
-	<test_task_participant_map id="6"
+	<test_task_participant_map id="-6"
 		test_task_id="-1" test_participant_id="-6"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_task_participant_map id="7"
+	<test_task_participant_map id="-7"
 		test_task_id="-1" test_participant_id="-7"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_task_participant_map id="8"
+	<test_task_participant_map id="-8"
 		test_task_id="-1" test_participant_id="-8"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_task_participant_map id="9"
+	<test_task_participant_map id="-9"
 		test_task_id="-1" test_participant_id="-9"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
-	<test_task_participant_map id="10"
+	<test_task_participant_map id="-10"
 		test_task_id="-1" test_participant_id="-10"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
