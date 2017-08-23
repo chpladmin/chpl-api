@@ -60,31 +60,38 @@ public class DownloadableResourceCreatorApp {
 		}
 
 		//set up data source context
-		 LocalContext ctx = LocalContextFactory.createLocalContext(props.getProperty("dbDriverClass"));
-		 ctx.addDataSource(props.getProperty("dataSourceName"),props.getProperty("dataSourceConnection"), 
-				 props.getProperty("dataSourceUsername"), props.getProperty("dataSourcePassword"));
+		LocalContext ctx = LocalContextFactory.createLocalContext(props.getProperty("dbDriverClass"));
+		ctx.addDataSource(props.getProperty("dataSourceName"),props.getProperty("dataSourceConnection"), 
+				props.getProperty("dataSourceUsername"), props.getProperty("dataSourcePassword"));
+		
+		//init spring classes
+		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+		DownloadableResourceCreatorApp app = new DownloadableResourceCreatorApp();
+		app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
+		app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
+		app.setCriteriaDao((CertificationCriterionDAO)context.getBean("certificationCriterionDAO"));
+		
+		//maps the year to the list of products for that year
+		Map<String, CertifiedProductDownloadResponse> resultMap = 
+				new HashMap<String, CertifiedProductDownloadResponse>();
 		 
-		 //init spring classes
-		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		 DownloadableResourceCreatorApp app = new DownloadableResourceCreatorApp();
-		 app.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
-		 app.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		 app.setCriteriaDao((CertificationCriterionDAO)context.getBean("certificationCriterionDAO"));
-		 
-		 //maps the year to the list of products for that year
-		 Map<String, CertifiedProductDownloadResponse> resultMap = 
-				 new HashMap<String, CertifiedProductDownloadResponse>();
-        
-        //write out the file to a different location so as not to 
-        //overwrite the existing download file
-        List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
-        //List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findWithSurveillance();
+		logger.info("Finding the list of all certified products.");
+		Date start = new Date();
+		List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findAll();
+		Date end = new Date();
+		logger.info("Found the " + allCertifiedProducts.size() + " certified products in " + (end.getTime() - start.getTime())/1000 + " seconds");
+		
+		//List<CertifiedProductDetailsDTO> allCertifiedProducts = app.getCertifiedProductDAO().findWithSurveillance();
 		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
 		//for(int i = 1; i < 10; i++) {
 			//CertifiedProductDetailsDTO currProduct = allCertifiedProducts.get(i);
 			try {
-				
+				logger.info("Getting details for listing ID " + currProduct.getId());
+				start = new Date();
 				CertifiedProductSearchDetails product = app.getCpdManager().getCertifiedProductDetails(currProduct.getId());
+				end = new Date();
+				logger.info("Got details for listing ID " + currProduct.getId() + " in " + (end.getTime() - start.getTime())/1000 + " seconds"); 
+				
 				String certificationYear = product.getCertificationEdition().get("name").toString();
 				certificationYear = certificationYear.trim();
 				if(!certificationYear.startsWith("20")) {
@@ -126,7 +133,11 @@ public class DownloadableResourceCreatorApp {
 	        	xmlFile.delete();
 	        }
 	        CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+	        logger.info("Writing " + year + " XML file");
+	        start = new Date();
 	        xmlPresenter.presentAsFile(xmlFile, resultMap.get(year));
+	        end = new Date();
+	        logger.info("Wrote " + year + " XML file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 	        
 	        //present as csv
 	        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + 
@@ -145,7 +156,12 @@ public class DownloadableResourceCreatorApp {
 	        }
 	        List<CertificationCriterionDTO> criteria = app.getCriteriaDao().findByCertificationEditionYear(year);
 	        csvPresenter.setApplicableCriteria(criteria);
+	        
+	        logger.info("Writing " + year + " CSV file");
+	        start = new Date();
 	        csvPresenter.presentAsFile(csvFile, resultMap.get(year));
+	        end = new Date();
+	        logger.info("Wrote " + year + " CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
         }
         
         //put all of the products together
@@ -166,7 +182,12 @@ public class DownloadableResourceCreatorApp {
         	allCpXmlFile.delete();
         }
         CertifiedProductXmlPresenter presenter = new CertifiedProductXmlPresenter();
+        
+        logger.info("Writing ALL XML file");
+        start = new Date();
         presenter.presentAsFile(allCpXmlFile, allResults);
+        end = new Date();
+        logger.info("Wrote ALL XML file in " + (end.getTime() - start.getTime())/1000 + " seconds");
         
         //write out a csv file containing all surveillance
         String allSurvCsvFilename = downloadFolder.getAbsolutePath() + File.separator + 
@@ -179,7 +200,12 @@ public class DownloadableResourceCreatorApp {
         }
         SurveillanceCsvPresenter survCsvPresenter = new SurveillanceCsvPresenter();
         survCsvPresenter.setProps(props);
+        
+        logger.info("Writing all surveillance CSV file");
+        start = new Date();
         survCsvPresenter.presentAsFile(allSurvCsvFile, allResults);
+        end = new Date();
+        logger.info("Wrote all surveillance CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
         
         //write out a csv file containing surveillance with nonconformities       
         String nonconformityCsvFilename = downloadFolder.getAbsolutePath() + File.separator + 
@@ -193,7 +219,11 @@ public class DownloadableResourceCreatorApp {
         
         NonconformityCsvPresenter ncCsvPresenter = new NonconformityCsvPresenter();
         ncCsvPresenter.setProps(props);
+        logger.info("Writing nonconformity CSV file");
+        start = new Date();
         ncCsvPresenter.presentAsFile(nonconformityCsvFile, allResults);
+        end = new Date();
+        logger.info("Wrote nonconformity CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
         
         //write out a csv file containing surveillance basic report     
         String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator + 
@@ -207,7 +237,11 @@ public class DownloadableResourceCreatorApp {
         
         SurveillanceReportCsvPresenter basicReportCsvPresenter = new SurveillanceReportCsvPresenter();
         basicReportCsvPresenter.setProps(props);
+        logger.info("Writing basic surveillance report file");
+        start = new Date();
         basicReportCsvPresenter.presentAsFile(basicReportCsvFile, allResults);
+        end = new Date();
+        logger.info("Wrote basic surveillance report file in " + (end.getTime() - start.getTime())/1000 + " seconds");
         
         context.close();
 	}
