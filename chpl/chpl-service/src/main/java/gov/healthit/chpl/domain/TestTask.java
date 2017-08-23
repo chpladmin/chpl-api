@@ -28,7 +28,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TestTask implements Serializable {
 	private static final long serialVersionUID = -3761135258451736516L;
-	
+
 	private static final Logger logger = LogManager.getLogger(TestTask.class);
 
 	/**
@@ -36,134 +36,134 @@ public class TestTask implements Serializable {
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
-	 * An ONC-ACB designated identifier for an individual SED task and 
-	 * that must be unique to a particular task. 
-	 * This variable is only applicable to 2015 Edition and for internal 
+	 * An ONC-ACB designated identifier for an individual SED task and
+	 * that must be unique to a particular task.
+	 * This variable is only applicable to 2015 Edition and for internal
 	 * use within an upload file only.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String uniqueId;
-	
+
 	/**
 	 * Brief description of task performed during SED/usability testing. This variable is only applicable to 2015 Edition, and a string variable that does not take any restrictions on formatting or values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String description;
-	
+
 	/**
-	 * Mean task success rate (in percentages). 
+	 * Mean task success rate (in percentages).
 	 * It is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Float taskSuccessAverage;
-	
+
 	/**
-	 * Standard deviation of the task success rate (in percentages). 
+	 * Standard deviation of the task success rate (in percentages).
 	 * It is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Float taskSuccessStddev;
-	
+
 	/**
-	 * This variable indicates observed number of steps taken for the corresponding task. It is applicable to 2015 Edition, and takes only positive integer values. 
+	 * This variable indicates observed number of steps taken for the corresponding task. It is applicable to 2015 Edition, and takes only positive integer values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer taskPathDeviationObserved;
-	
+
 	/**
-	 * This variable indicates optimal number of steps for the corresponding task. It is only applicable to 2015 Edition, and only takes positive integer(i.e. no decimals) values. 
+	 * This variable indicates optimal number of steps for the corresponding task. It is only applicable to 2015 Edition, and only takes positive integer(i.e. no decimals) values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer taskPathDeviationOptimal;
-	
+
 	/**
-	 * Average time of completion for the corresponding task, in seconds. 
+	 * Average time of completion for the corresponding task, in seconds.
 	 * It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Long taskTimeAvg;
-	
+
 	/**
 	 * Standard deviation for task time, in seconds. It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer taskTimeStddev;
-	
+
 	/**
-	 * Observed number of time (in seconds) taken for the corresponding task.  
+	 * Observed number of time (in seconds) taken for the corresponding task.
 	 * It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer taskTimeDeviationObservedAvg;
-	
+
 	/**
-	 * Optimal number of time (in seconds) taken for the corresponding task.  
+	 * Optimal number of time (in seconds) taken for the corresponding task.
 	 * It is only applicable to 2015 Edition, and takes only positive integer number values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer taskTimeDeviationOptimalAvg;
-	
+
 	/**
 	 * Mean task error rate (in percentages). It is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Float taskErrors;
-	
+
 	/**
 	 * Standard deviation of the task error rate (in percentages). This variable is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Float taskErrorsStddev;
-	
+
 	/**
-	 * This variable indicates the type of scale that was used to rate the usability of the task. 
-	 * System Usability Scale is preferred. Likert Scale is also accepted.  
-	 * If the scale type is System Usability Scale, only positive integers between 1-100 are allowed. 
-	 * If the scale type is the Likert scale, positive decimal numbers are allowed. 
+	 * This variable indicates the type of scale that was used to rate the usability of the task.
+	 * System Usability Scale is preferred. Likert Scale is also accepted.
+	 * If the scale type is System Usability Scale, only positive integers between 1-100 are allowed.
+	 * If the scale type is the Likert scale, positive decimal numbers are allowed.
 	 * It is only applicable to 2015 Edition.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String taskRatingScale;
-	
+
 	/**
-	 * This variable indicates mean usability rating of the corresponding task, 
-	 * based on the specified scale type. If the scale type is System Usability Scale, 
-	 * only positive integers between 1-100 are allowed. If the scale type is the 
+	 * This variable indicates mean usability rating of the corresponding task,
+	 * based on the specified scale type. If the scale type is System Usability Scale,
+	 * only positive integers between 1-100 are allowed. If the scale type is the
 	 * Likert scale, positive decimal numbers are allowed. It is only applicable to 2015 Edition.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Float taskRating;
-	
+
 	/**
-	 * Standard deviation of the mean usability rating of the corresponding task, 
-	 * based on the specified scale type. 
-	 * It is only applicable to 2015 Edition, and takes only positive decimal numbers. 
+	 * Standard deviation of the mean usability rating of the corresponding task,
+	 * based on the specified scale type.
+	 * It is only applicable to 2015 Edition, and takes only positive decimal numbers.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Float taskRatingStddev;
-	
+
 	/**
 	 * The set of criteria within a listing to which this task is applied.
 	 */
-	@XmlElement(required = false, nillable = true)
+	@XmlElement(required = true)
 	private Set<CertificationCriterion> criteria;
-	
+
 	/**
 	 * Participants in the test task.
 	 */
-	@XmlElementWrapper(name = "participants", nillable = true, required = false)
+	@XmlElementWrapper(name = "participants", required = true)
 	@XmlElement(name = "participant")
 	private Set<TestParticipant> testParticipants;
-	
-	
+
+
 	public TestTask() {
 		super();
 		testParticipants = new HashSet<TestParticipant>();
 		criteria = new HashSet<CertificationCriterion>();
 	}
-	
+
 	public TestTask(TestTaskDTO dto) {
 		this();
 		this.id = dto.getId();
@@ -187,12 +187,12 @@ public class TestTask implements Serializable {
 			}
 		}
 	}
-	
+
 	public TestTask(CertificationResultTestTaskDTO dto) {
 		this(dto.getTestTask());
 		this.id = dto.getTestTaskId();
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if(other == null || !(other instanceof TestTask)) {
@@ -201,7 +201,7 @@ public class TestTask implements Serializable {
 		TestTask anotherTask = (TestTask) other;
 		return matches(anotherTask);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hashCode = 0;
@@ -253,31 +253,31 @@ public class TestTask implements Serializable {
 		}
 		return hashCode;
 	}
-	
+
 	public boolean matches(TestTask anotherTask) {
 		boolean result = false;
-		if(this.getId() != null && anotherTask.getId() != null && 
+		if(this.getId() != null && anotherTask.getId() != null &&
 				this.getId().longValue() == anotherTask.getId().longValue()) {
 			result = true;
-		} else if (StringUtils.equals(this.getDescription(), anotherTask.getDescription()) && 
-				ObjectUtils.equals(this.getTaskErrors(), anotherTask.getTaskErrors()) && 
-				ObjectUtils.equals(this.getTaskErrorsStddev(), anotherTask.getTaskErrorsStddev()) && 
-				ObjectUtils.equals(this.getTaskPathDeviationObserved(), anotherTask.getTaskPathDeviationObserved()) && 
-				ObjectUtils.equals(this.getTaskPathDeviationOptimal(), anotherTask.getTaskPathDeviationOptimal()) && 
-				ObjectUtils.equals(this.getTaskRating(), anotherTask.getTaskRating()) && 
-				StringUtils.equals(this.getTaskRatingScale(), anotherTask.getTaskRatingScale()) && 
-				ObjectUtils.equals(this.getTaskRatingStddev(), anotherTask.getTaskRatingStddev()) && 
-				ObjectUtils.equals(this.getTaskSuccessAverage(), anotherTask.getTaskSuccessAverage()) && 
-				ObjectUtils.equals(this.getTaskSuccessStddev(), anotherTask.getTaskSuccessStddev()) && 
-				ObjectUtils.equals(this.getTaskTimeAvg(), anotherTask.getTaskTimeAvg()) && 
-				ObjectUtils.equals(this.getTaskTimeDeviationObservedAvg(), anotherTask.getTaskTimeDeviationObservedAvg()) && 
-				ObjectUtils.equals(this.getTaskTimeDeviationOptimalAvg(), anotherTask.getTaskTimeDeviationOptimalAvg()) && 
+		} else if (StringUtils.equals(this.getDescription(), anotherTask.getDescription()) &&
+				ObjectUtils.equals(this.getTaskErrors(), anotherTask.getTaskErrors()) &&
+				ObjectUtils.equals(this.getTaskErrorsStddev(), anotherTask.getTaskErrorsStddev()) &&
+				ObjectUtils.equals(this.getTaskPathDeviationObserved(), anotherTask.getTaskPathDeviationObserved()) &&
+				ObjectUtils.equals(this.getTaskPathDeviationOptimal(), anotherTask.getTaskPathDeviationOptimal()) &&
+				ObjectUtils.equals(this.getTaskRating(), anotherTask.getTaskRating()) &&
+				StringUtils.equals(this.getTaskRatingScale(), anotherTask.getTaskRatingScale()) &&
+				ObjectUtils.equals(this.getTaskRatingStddev(), anotherTask.getTaskRatingStddev()) &&
+				ObjectUtils.equals(this.getTaskSuccessAverage(), anotherTask.getTaskSuccessAverage()) &&
+				ObjectUtils.equals(this.getTaskSuccessStddev(), anotherTask.getTaskSuccessStddev()) &&
+				ObjectUtils.equals(this.getTaskTimeAvg(), anotherTask.getTaskTimeAvg()) &&
+				ObjectUtils.equals(this.getTaskTimeDeviationObservedAvg(), anotherTask.getTaskTimeDeviationObservedAvg()) &&
+				ObjectUtils.equals(this.getTaskTimeDeviationOptimalAvg(), anotherTask.getTaskTimeDeviationOptimalAvg()) &&
 				ObjectUtils.equals(this.getTaskTimeStddev(), anotherTask.getTaskTimeStddev())) {
 				result = true;
 			}
 		return result;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -285,7 +285,7 @@ public class TestTask implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
@@ -327,7 +327,7 @@ public class TestTask implements Serializable {
 	public Integer getTaskPathDeviationOptimal() {
 		return taskPathDeviationOptimal;
 	}
-	
+
 	public void setTaskPathDeviationOptimal(String value) {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
@@ -337,11 +337,11 @@ public class TestTask implements Serializable {
 	        }
 		}
     }
-	
+
 	public Long getTaskTimeAvg() {
 		return taskTimeAvg;
 	}
-	
+
 	public void setTaskTimeAvg(String value) {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
@@ -351,7 +351,7 @@ public class TestTask implements Serializable {
 	        }
 		}
     }
-	
+
 	public Integer getTaskTimeStddev() {
 		return taskTimeStddev;
 	}
@@ -365,11 +365,11 @@ public class TestTask implements Serializable {
 	        }
 		}
     }
-	
+
 	public Integer getTaskTimeDeviationObservedAvg() {
 		return taskTimeDeviationObservedAvg;
 	}
-	
+
 	public void setTaskTimeDeviationObservedAvg(String value) {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
@@ -379,7 +379,7 @@ public class TestTask implements Serializable {
 	        }
 		}
     }
-	
+
 	public Integer getTaskTimeDeviationOptimalAvg() {
 		return taskTimeDeviationOptimalAvg;
 	}
@@ -390,10 +390,10 @@ public class TestTask implements Serializable {
 	        	taskTimeDeviationOptimalAvg = Math.round(new Float(value));
 	        } catch (NumberFormatException e) {
 	        	logger.error("can't parse " + value + " as a float or integer.");
-	        }	
+	        }
 		}
     }
-	
+
 	public Float getTaskErrors() {
 		return taskErrors;
 	}
