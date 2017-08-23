@@ -54,7 +54,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 		value = value.trim();
 		
 		if(StringUtils.isEmpty(value)) {
-			return false;
+			return null;
 		}
 		
 		//look for a string
