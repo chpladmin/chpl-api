@@ -1970,9 +1970,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		toAdd.setTaskRatingStddev(1.5F);
 		toAdd.setTaskSuccessAverage(95.1F);
 		toAdd.setTaskSuccessStddev(90.0F);
-		toAdd.setTaskTimeAvg("1.5min");
-		toAdd.setTaskTimeDeviationObservedAvg("10min");
-		toAdd.setTaskTimeDeviationOptimalAvg("1min");
+		toAdd.setTaskTimeAvg("1.5");
+		toAdd.setTaskTimeStddev("5");
+		toAdd.setTaskTimeDeviationObservedAvg("10");
+		toAdd.setTaskTimeDeviationOptimalAvg("1");
 		CertificationCriterion crit = new CertificationCriterion();
 		crit.setId(1L);
 		crit.setNumber("170.315 (a)(1)");
