@@ -28,90 +28,90 @@ public class TestParticipant implements Serializable {
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
-	 * An ONC-ACB designated identifier for an individual SED participant. 
-	 * This variable is a string variable only applicable to 2015 Edition, 
-	 * but must be unique to a particular participant. 
+	 * An ONC-ACB designated identifier for an individual SED participant.
+	 * This variable is a string variable only applicable to 2015 Edition,
+	 * but must be unique to a particular participant.
 	 * It is for internal use within an upload file only.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String uniqueId;
-	
+
 	/**
-	 * Self-reported gender of the corresponding participant. 
-	 * This variable is only applicable for 2015 Edition. 
+	 * Self-reported gender of the corresponding participant.
+	 * This variable is only applicable for 2015 Edition.
 	 * The following are allowable values for the 'Participant Gender' field: Male, Female, Unknown.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String gender;
-	
+
 	/**
 	 * Education internal ID
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Long educationTypeId;
-	
+
 	/**
-	 * Highest education level attained by corresponding participant. This variable is only applicable for 2015 Edition. 
-	 * The following are allowable values for the 'Participant Education' field: 
-	 * No high school degree; High school graduate, diploma or the equivalent (for example: GED); 
-	 * Some college credit, no degree; Trade/technical/vocational training; Associate degree; 
+	 * Highest education level attained by corresponding participant. This variable is only applicable for 2015 Edition.
+	 * The following are allowable values for the 'Participant Education' field:
+	 * No high school degree; High school graduate, diploma or the equivalent (for example: GED);
+	 * Some college credit, no degree; Trade/technical/vocational training; Associate degree;
 	 * Bachelor's degree; Master's degree; Doctorate degree (e.g., MD, DNP, DMD, PhD).
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String educationTypeName;
-	
+
 	/**
 	 * Age range internal ID
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Long ageRangeId;
-	
+
 	/**
-	 * The age range for the corresponding participant. 
+	 * The age range for the corresponding participant.
 	 * The following are allowable values for the 'Participant Age' field: 0-9, 10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, 90-99, 100+
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String ageRange;
-	
+
 	/**
-	 * This variable illustrates occupation or role of corresponding participant. It is only applicable to 2015 Edition and a string variable that does not take any restrictions on formatting or values. 
+	 * This variable illustrates occupation or role of corresponding participant. It is only applicable to 2015 Edition and a string variable that does not take any restrictions on formatting or values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String occupation;
-	
+
 	/**
-	 * Professional experience of the corresponding participant, in number of months. 
-	 * This variable is only applicable to 2015 Edition, and takes only positive 
-	 * integers (i.e. no decimals) values. 
+	 * Professional experience of the corresponding participant, in number of months.
+	 * This variable is only applicable to 2015 Edition, and takes only positive
+	 * integers (i.e. no decimals) values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer professionalExperienceMonths;
-	
+
 	/**
-	 * The corresponding participant's experience with computers (in general), in number of months. It is only applicable for 2015 Edition and takes only positive integers (i.e. no decimals). 
+	 * The corresponding participant's experience with computers (in general), in number of months. It is only applicable for 2015 Edition and takes only positive integers (i.e. no decimals).
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer computerExperienceMonths;
-	
+
 	/**
-	 * The corresponding participant's experience with the certified product/ health IT 
-	 * capabilities (SED criterion) being tested, in number of months. This variable is 
-	 * applicable to 2015 Edition, and only takes positive integers 
-	 * (i.e. no decimals are allowed) values. 
+	 * The corresponding participant's experience with the certified product/ health IT
+	 * capabilities (SED criterion) being tested, in number of months. This variable is
+	 * applicable to 2015 Edition, and only takes positive integers
+	 * (i.e. no decimals are allowed) values.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private Integer productExperienceMonths;
-	
+
 	/**
-	 * Any assistive technology needs as identified by the corresponding participant. This variable is a string variable that does not take any restrictions on formatting or values and is only applicable for 2015 Edition. 
+	 * Any assistive technology needs as identified by the corresponding participant. This variable is a string variable that does not take any restrictions on formatting or values and is only applicable for 2015 Edition.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = true)
 	private String assistiveTechnologyNeeds;
-	
+
 	public TestParticipant() {}
-	
+
 	public TestParticipant(TestParticipantDTO dto) {
 		this();
 		this.id = dto.getId();
@@ -130,7 +130,7 @@ public class TestParticipant implements Serializable {
 		this.productExperienceMonths = dto.getProductExperienceMonths();
 		this.assistiveTechnologyNeeds = dto.getAssistiveTechnologyNeeds();
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if(other == null || !(other instanceof TestParticipant)) {
@@ -139,7 +139,7 @@ public class TestParticipant implements Serializable {
 		TestParticipant anotherTask = (TestParticipant) other;
 		return matches(anotherTask);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hashCode = 0;
@@ -177,27 +177,27 @@ public class TestParticipant implements Serializable {
 		}
 		return hashCode;
 	}
-	
+
 	public boolean matches(TestParticipant anotherParticipant) {
 		boolean result = false;
-		if(this.getId() != null && anotherParticipant.getId() != null && 
+		if(this.getId() != null && anotherParticipant.getId() != null &&
 				this.getId().longValue() == anotherParticipant.getId().longValue()) {
 			result = true;
-		} else if(StringUtils.equals(this.getAgeRange(), anotherParticipant.getAgeRange()) && 
-				ObjectUtils.equals(this.getAgeRangeId(), anotherParticipant.getAgeRangeId()) && 
-				StringUtils.equals(this.getAssistiveTechnologyNeeds(), anotherParticipant.getAssistiveTechnologyNeeds()) && 
-				ObjectUtils.equals(this.getComputerExperienceMonths(), anotherParticipant.getComputerExperienceMonths()) && 
-				StringUtils.equals(this.getEducationTypeName(), anotherParticipant.getEducationTypeName()) && 
-				ObjectUtils.equals(this.getEducationTypeId(), anotherParticipant.getEducationTypeId()) && 
+		} else if(StringUtils.equals(this.getAgeRange(), anotherParticipant.getAgeRange()) &&
+				ObjectUtils.equals(this.getAgeRangeId(), anotherParticipant.getAgeRangeId()) &&
+				StringUtils.equals(this.getAssistiveTechnologyNeeds(), anotherParticipant.getAssistiveTechnologyNeeds()) &&
+				ObjectUtils.equals(this.getComputerExperienceMonths(), anotherParticipant.getComputerExperienceMonths()) &&
+				StringUtils.equals(this.getEducationTypeName(), anotherParticipant.getEducationTypeName()) &&
+				ObjectUtils.equals(this.getEducationTypeId(), anotherParticipant.getEducationTypeId()) &&
 				StringUtils.equals(this.getGender(), anotherParticipant.getGender()) &&
-				StringUtils.equals(this.getOccupation(), anotherParticipant.getOccupation()) && 
-				ObjectUtils.equals(this.getProductExperienceMonths(), anotherParticipant.getProductExperienceMonths()) && 
+				StringUtils.equals(this.getOccupation(), anotherParticipant.getOccupation()) &&
+				ObjectUtils.equals(this.getProductExperienceMonths(), anotherParticipant.getProductExperienceMonths()) &&
 				ObjectUtils.equals(this.getProfessionalExperienceMonths(), anotherParticipant.getProfessionalExperienceMonths())) {
 			result = true;
 		}
 		return result;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -243,11 +243,11 @@ public class TestParticipant implements Serializable {
 	        }
 		}
     }
-	
+
 	public Integer getComputerExperienceMonths() {
 		return computerExperienceMonths;
 	}
-	
+
 	public void setComputerExperienceMonths(String value) {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
@@ -257,7 +257,7 @@ public class TestParticipant implements Serializable {
 	        }
 		}
     }
-	
+
 	public Integer getProductExperienceMonths() {
 		return productExperienceMonths;
 	}
@@ -271,7 +271,7 @@ public class TestParticipant implements Serializable {
 	        }
 		}
     }
-	
+
 	public String getAssistiveTechnologyNeeds() {
 		return assistiveTechnologyNeeds;
 	}

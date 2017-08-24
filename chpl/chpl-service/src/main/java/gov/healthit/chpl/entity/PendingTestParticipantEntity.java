@@ -16,70 +16,70 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_test_participant")
 public class PendingTestParticipantEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_test_participant_id", nullable = false  )
 	private Long id;
-	
-	@Basic(optional = false) 
-	@Column(name = "test_participant_unique_id", nullable = false) 
+
+	@Basic(optional = false)
+	@Column(name = "test_participant_unique_id", nullable = false)
 	private String uniqueId;
-	
-	@Column(name = "gender")
+
+	@Column(name = "gender", nullable = false )
 	private String gender;
 
-	@Column(name = "user_entered_education_type")
+	@Column(name = "user_entered_education_type", nullable = false)
 	private String userEnteredEducation;
-	
+
 	@Column( name = "education_type_id", nullable = false  )
 	private Long educationTypeId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+
+	@OneToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "education_type_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private EducationTypeEntity education;
-	
-	@Column(name = "user_entered_age")
+
+	@Column(name = "user_entered_age", nullable = false)
 	private String userEnteredAge;
-	
+
 	@Column( name = "test_participant_age_id", nullable = false  )
 	private Long ageRangeId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
+
+	@OneToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_participant_age_id", unique=true, nullable = true, insertable=false, updatable=false)
 	private AgeRangeEntity ageRange;
-	
-	@Column(name = "occupation")
+
+	@Column(name = "occupation", nullable = false)
 	private String occupation;
-	
-	@Column(name = "professional_experience_months")
+
+	@Column(name = "professional_experience_months", nullable = false)
 	private Integer professionalExperienceMonths;
-	
-	@Column(name = "computer_experience_months")
+
+	@Column(name = "computer_experience_months", nullable = false)
 	private Integer computerExperienceMonths;
-	
-	@Column(name = "product_experience_months")
+
+	@Column(name = "product_experience_months", nullable = false)
 	private Integer productExperienceMonths;
-	
-	@Column(name = "assistive_technology_needs")
+
+	@Column(name = "assistive_technology_needs", nullable = false)
 	private String assistiveTechnologyNeeds;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -88,7 +88,7 @@ public class PendingTestParticipantEntity {
 		this.id = id;
 	}
 
-	
+
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
