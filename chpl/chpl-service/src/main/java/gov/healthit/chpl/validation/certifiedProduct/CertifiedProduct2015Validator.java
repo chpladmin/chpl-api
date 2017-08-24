@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -38,6 +39,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -209,25 +211,121 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						if(certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
 						} else {
-							for(PendingCertificationResultTestTaskDTO task : certCriteria.getTestTasks()) {
-								if(task.getTaskParticipants() == null || task.getTaskParticipants().size() < 10) {
+							for(PendingCertificationResultTestTaskDTO certResultTask : certCriteria.getTestTasks()) {
+                                PendingTestTaskDTO task = certResultTask.getPendingTestTask();
+								if(certResultTask.getTaskParticipants() == null || certResultTask.getTaskParticipants().size() < 10) {
 									product.getErrorMessages().add(String.format(messageSource.getMessage(
 											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskParticipantsSize"), LocaleContextHolder.getLocale()), 
-											task.getPendingTestTask().getUniqueId(), certCriteria.getNumber()));
+											task.getUniqueId(), certCriteria.getNumber()));
 								}
-								for(PendingCertificationResultTestTaskParticipantDTO part : task.getTaskParticipants()) {
+                                if(StringUtils.isEmpty(task.getDescription())) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestDescription"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskSuccessAverage() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskSuccessAverage"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskSuccessStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskSuccessStddev"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskPathDeviationObserved() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskPathDeviationObserved"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskPathDeviationOptimal() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskPathDeviationOptimal"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskTimeAvg() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskTimeAvg"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskTimeStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskTimeStddev"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskTimeDeviationObservedAvg() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskTimeDeviationObservedAvg"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskTimeDeviationOptimalAvg() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskTimeDeviationOptimalAvg"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskErrors() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskErrors"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskErrorsStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskErrorsStddev"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(StringUtils.isEmpty(task.getTaskRatingScale())) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskRatingScale"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskRating() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskRating"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+                                if(task.getTaskRatingStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badTestTaskRatingStddev"), LocaleContextHolder.getLocale()), 
+											task.getUniqueId(), certCriteria.getNumber()));
+                                }
+								for(PendingCertificationResultTestTaskParticipantDTO part : certResultTask.getTaskParticipants()) {
 									if(part.getTestParticipant().getEducationTypeId() == null) {
 										product.getErrorMessages().add(String.format(messageSource.getMessage(
-												new DefaultMessageSourceResolvable("listing.criteria.badParticipantEducationLevel"), LocaleContextHolder.getLocale()), 
-												(part.getTestParticipant().getUserEnteredEducationType() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredEducationType()), 
-												part.getTestParticipant().getUniqueId()));
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantEducationLevel"), LocaleContextHolder.getLocale()), 
+											(part.getTestParticipant().getUserEnteredEducationType() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredEducationType()), 
+											part.getTestParticipant().getUniqueId()));
 									}
 									if(part.getTestParticipant().getAgeRangeId() == null) {
 										product.getErrorMessages().add(String.format(messageSource.getMessage(
-												new DefaultMessageSourceResolvable("listing.criteria.badParticipantAgeRange"), LocaleContextHolder.getLocale()), 
-												(part.getTestParticipant().getUserEnteredAgeRange() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredAgeRange()), 
-												part.getTestParticipant().getUniqueId()));
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantAgeRange"), LocaleContextHolder.getLocale()), 
+											(part.getTestParticipant().getUserEnteredAgeRange() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredAgeRange()), 
+											part.getTestParticipant().getUniqueId()));
 									}
+                                    if(StringUtils.isEmpty(part.getTestParticipant().getOccupation())) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantOccupation"), LocaleContextHolder.getLocale()), 
+                                            part.getTestParticipant().getUniqueId()));
+                                    }
+                                    if(StringUtils.isEmpty(part.getTestParticipant().getAssistiveTechnologyNeeds())) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantAssistiveTechnologyNeeds"), LocaleContextHolder.getLocale()), 
+                                            part.getTestParticipant().getUniqueId()));
+                                    }
+                                    if(part.getTestParticipant().getProfessionalExperienceMonths() == null) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantProfessionalExperienceMonths"), LocaleContextHolder.getLocale()), 
+                                            part.getTestParticipant().getUniqueId()));
+                                    }
+                                    if(part.getTestParticipant().getProductExperienceMonths() == null) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantProductExperienceMonths"), LocaleContextHolder.getLocale()), 
+                                            part.getTestParticipant().getUniqueId()));
+                                    }
+                                    if(part.getTestParticipant().getComputerExperienceMonths() == null) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantComputerExperienceMonths"), LocaleContextHolder.getLocale()), 
+                                            part.getTestParticipant().getUniqueId()));
+                                    }
 								}
 							}
 						}
@@ -599,15 +697,125 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 								product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one UCD process.");
 							}
 						}
-						
+
 						if(product.getSed() == null || product.getSed().getTestTasks() == null || 
 								product.getSed().getTestTasks().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
 						} else {
 							for(TestTask task : product.getSed().getTestTasks()) {
+                                String description = StringUtils.isEmpty(task.getDescription()) ? "unknown" : task.getDescription();
 								if(task.getTestParticipants() == null || task.getTestParticipants().size() < 10) {
-									product.getWarningMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 10 participants.");
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskParticipantsSize"), LocaleContextHolder.getLocale()), 
+                                            description));
 								}
+                                if(StringUtils.isEmpty(task.getDescription())) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestDescription"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskSuccessAverage() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskSuccessAverage"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskSuccessStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskSuccessStddev"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskPathDeviationObserved() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskPathDeviationObserved"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskPathDeviationOptimal() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskPathDeviationOptimal"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskTimeAvg() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskTimeAvg"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskTimeStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskTimeStddev"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskTimeDeviationObservedAvg() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskTimeDeviationObservedAvg"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskTimeDeviationOptimalAvg() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskTimeDeviationOptimalAvg"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskErrors() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskErrors"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskErrorsStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskErrorsStddev"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(StringUtils.isEmpty(task.getTaskRatingScale())) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskRatingScale"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskRating() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskRating"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                if(task.getTaskRatingStddev() == null) {
+									product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badTestTaskRatingStddev"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                }
+                                for(TestParticipant part : task.getTestParticipants()) {
+                                    if(part.getEducationTypeId() == null) {
+										product.getErrorMessages().add(String.format(messageSource.getMessage(
+    										new DefaultMessageSourceResolvable("listing.sed.badParticipantEducationLevel"), LocaleContextHolder.getLocale()), 
+                                            description));
+									}
+									if(part.getAgeRangeId() == null) {
+										product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badParticipantAgeRange"), LocaleContextHolder.getLocale()), 
+											description));
+									}
+                                    if(StringUtils.isEmpty(part.getOccupation())) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badParticipantOccupation"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                    }
+                                    if(StringUtils.isEmpty(part.getAssistiveTechnologyNeeds())) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badParticipantAssistiveTechnologyNeeds"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                    }
+                                    if(part.getProfessionalExperienceMonths() == null) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badParticipantProfessionalExperienceMonths"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                    }
+                                    if(part.getProductExperienceMonths() == null) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badParticipantProductExperienceMonths"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                    }
+                                    if(part.getComputerExperienceMonths() == null) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badParticipantComputerExperienceMonths"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                    }
+                                }
 							}
 						}
 					}

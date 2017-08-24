@@ -577,27 +577,29 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			participant.setGender(record.get(colIndex++).trim());
 			String ageStr = record.get(colIndex++).trim();
 			if(StringUtils.isEmpty(ageStr)) {
-				throw new InvalidArgumentsException("An age range is required for participant " + participant.getUniqueId());
-			}
-			participant.setUserEnteredAge(ageStr);
-			AgeRangeDTO ageDto = ageDao.getByName(ageStr);
-			if(ageDto != null) {
-				participant.setAgeRangeId(ageDto.getId());
+                logger.error("Age range is empty.");
 			} else {
-				logger.error("Age range '" + ageStr + "' does not match any of the allowed values.");
-			}
+                participant.setUserEnteredAge(ageStr);
+                AgeRangeDTO ageDto = ageDao.getByName(ageStr);
+                if(ageDto != null) {
+                    participant.setAgeRangeId(ageDto.getId());
+                } else {
+                    logger.error("Age range '" + ageStr + "' does not match any of the allowed values.");
+                }
+            }
 			
 			String educationLevel = record.get(colIndex++).trim();
 			if(StringUtils.isEmpty(educationLevel)) {
-				throw new InvalidArgumentsException("An education level is required for participant " + participant.getUniqueId());
-			}
-			participant.setUserEnteredEducation(educationLevel);
-			EducationTypeDTO educationDto = educationDao.getByName(educationLevel);
-			if(educationDto != null) {
-				participant.setEducationTypeId(educationDto.getId());
+				logger.error("Education level is empty.");
 			} else {
-				logger.error("Education level '" + educationLevel + "' does not match any of the allowed options.");
-			}
+                participant.setUserEnteredEducation(educationLevel);
+                EducationTypeDTO educationDto = educationDao.getByName(educationLevel);
+                if(educationDto != null) {
+                    participant.setEducationTypeId(educationDto.getId());
+                } else {
+                    logger.error("Education level '" + educationLevel + "' does not match any of the allowed options.");
+                }
+            }
 			participant.setOccupation(record.get(colIndex++).trim());
 			String profExperienceStr = record.get(colIndex++).trim();
 			try {

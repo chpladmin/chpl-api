@@ -13,74 +13,74 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_test_task")
 public class PendingTestTaskEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_test_task_id", nullable = false  )
 	private Long id;
-	
-	@Basic(optional = false) 
-	@Column(name = "test_task_unique_id", nullable = false) 
+
+	@Basic(optional = false)
+	@Column(name = "test_task_unique_id", nullable = false)
 	private String uniqueId;
-	
-	@Column(name = "description")
+
+	@Column(name = "description", nullable = false)
 	private String description;
-	
-	@Column(name = "task_success_avg_pct" )
+
+	@Column(name = "task_success_avg_pct", nullable = false)
 	private Float taskSuccessAverage;
 
-	@Column(name = "task_success_stddev_pct" )
+	@Column(name = "task_success_stddev_pct", nullable = false)
 	private Float taskSuccessStddev;
-	
+
 	@Column( name = "task_path_deviation_observed", nullable = false  )
 	private Integer taskPathDeviationObserved;
-	
+
 	@Column( name = "task_path_deviation_optimal", nullable = false  )
 	private Integer taskPathDeviationOptimal;
-	
+
 	@Column( name = "task_time_avg_seconds", nullable = false  )
 	private Long taskTimeAvg;
-	
+
 	@Column( name = "task_time_stddev_seconds", nullable = false  )
 	private Integer taskTimeStddev;
-	
+
 	@Column( name = "task_time_deviation_observed_avg_seconds", nullable = false  )
 	private Integer taskTimeDeviationObservedAvg;
-	
+
 	@Column( name = "task_time_deviation_optimal_avg_seconds", nullable = false  )
 	private Integer taskTimeDeviationOptimalAvg;
-	
-	@Column(name = "task_errors_pct" )
+
+	@Column(name = "task_errors_pct", nullable = false)
 	private Float taskErrors;
 
-	@Column(name = "task_errors_stddev_pct" )
+	@Column(name = "task_errors_stddev_pct", nullable = false)
 	private Float taskErrorsStddev;
-	
-	@Column(name = "task_rating_scale" )
+
+	@Column(name = "task_rating_scale", nullable = false)
 	private String taskRatingScale;
 
-	@Column(name = "task_rating" )
+	@Column(name = "task_rating", nullable = false)
 	private Float taskRating;
-	
-	@Column(name = "task_rating_stddev" )
+
+	@Column(name = "task_rating_stddev", nullable = false)
 	private Float taskRatingStddev;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -89,7 +89,6 @@ public class PendingTestTaskEntity {
 		this.id = id;
 	}
 
-	
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
