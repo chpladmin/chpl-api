@@ -339,22 +339,22 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if( (cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
-				if(cert.getG1Success() != null) {
+				if(cert.getG1Success() != null && cert.getG1Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "G1 Success"));
 				}
-				if(cert.getG2Success() != null) {
+				if(cert.getG2Success() != null && cert.getG2Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "G2 Success"));
 				}
-				if(cert.getGap() != null) {
+				if(cert.getGap() != null && cert.getGap().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "GAP"));
 				}
-				if(cert.getSed() != null) {
+				if(cert.getSed() != null && cert.getSed().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "SED"));
@@ -568,22 +568,22 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if( (cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
-				if(cert.isG1Success() != null) {
+				if(cert.isG1Success() != null && cert.isG1Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "G1 Success"));
 				}
-				if(cert.isG2Success() != null) {
+				if(cert.isG2Success() != null && cert.isG2Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "G2 Success"));
 				}
-				if(cert.isGap() != null) {
+				if(cert.isGap() != null && cert.isGap().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "GAP"));
 				}
-				if(cert.isSed() != null) {
+				if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
 							cert.getNumber(), "SED"));
