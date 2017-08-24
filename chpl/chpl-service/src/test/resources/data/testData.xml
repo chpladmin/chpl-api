@@ -627,6 +627,7 @@
 		task_time_deviation_observed_avg_seconds="8"
 		task_time_deviation_optimal_avg_seconds="11" task_errors_pct="0.5"
 		task_errors_stddev_pct="0.64" task_rating_scale="SCALE" task_rating="1.1"
+		task_rating_stddev="0.6"
 		creation_date="2015-08-20 13:14:00" last_modified_user="-2"
 		last_modified_date="2015-08-20 13:15:00" deleted="false" />
 	<certification_result_test_task
