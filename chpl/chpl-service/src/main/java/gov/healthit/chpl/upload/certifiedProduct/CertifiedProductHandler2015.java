@@ -914,9 +914,9 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			}
 		}
 		
-		if(cert.isHasAdditionalSoftware() && cert.getAdditionalSoftware().size() == 0) {
+		if(cert.getHasAdditionalSoftware() != null && cert.getHasAdditionalSoftware().booleanValue() == true && cert.getAdditionalSoftware().size() == 0) {
 			product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates additional software should be present but none was found.");
-		} else if(!cert.isHasAdditionalSoftware() && cert.getAdditionalSoftware().size() > 0) {
+		} else if((cert.getHasAdditionalSoftware() == null || cert.getHasAdditionalSoftware().booleanValue() == false) && cert.getAdditionalSoftware().size() > 0) {
 			product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates additional software should not be present but some was found.");
 		}
 	}

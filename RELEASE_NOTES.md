@@ -8,6 +8,7 @@ _Backwards compatibility breaking changes_
 * Reorganize SED data within the listing details request and response. UCD and Test tasks/participants are now located under a "sed" field. Listing update code has changed significantly as a result
 
 ## Minor Features
+* Add warnings for 'phantom' criteria data where criteria is not attested to but has associated data from the upload.
 * Added SED Task/Participant required fields
 * Added errors on edit/upload/confirm
 * Allowed uploads to complete with missing age range/education

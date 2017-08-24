@@ -20,9 +20,12 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -335,6 +338,89 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if( (cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
+				if(cert.getG1Success() != null && cert.getG1Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Success"));
+				}
+				if(cert.getG2Success() != null && cert.getG2Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Success"));
+				}
+				if(cert.getGap() != null && cert.getGap().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "GAP"));
+				}
+				if(cert.getSed() != null && cert.getSed().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "SED"));
+				}
+				if(!StringUtils.isEmpty(cert.getApiDocumentation())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "API Documentation"));
+				}
+				if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "API Documentation"));
+				}
+				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Additional Software"));
+				}
+				if(cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Macra Measures"));
+				}
+				if(cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Macra Measures"));
+				}
+				if(cert.getTestData() != null && cert.getTestData().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Data"));
+				}
+				if(cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Functionality"));
+				}
+				if(cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Procedures"));
+				}
+				if(cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Standards"));
+				}
+				if(cert.getTestTasks() != null && cert.getTestTasks().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Tasks"));
+				}
+				if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Tools"));
+				}
+				if(cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "UCD Processes"));
+				}
+			}
+			
 			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
@@ -345,7 +431,16 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
 				}
 			}
-			
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
+				if(foundPrivacyAndSecurityFramework == null){
+					product.getErrorMessages().add("Certification " + cert.getNumber() + 
+							" contains Privacy and Security Framework value '" + 
+							formattedPrivacyAndSecurityFramework + "' which must match one of " +
+							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+				}
+			}
 			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 				for(PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
 					if(!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
@@ -472,6 +567,102 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
+			if( (cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
+				if(cert.isG1Success() != null && cert.isG1Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Success"));
+				}
+				if(cert.isG2Success() != null && cert.isG2Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Success"));
+				}
+				if(cert.isGap() != null && cert.isGap().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "GAP"));
+				}
+				if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "SED"));
+				}
+				if(!StringUtils.isEmpty(cert.getApiDocumentation())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "API Documentation"));
+				}
+				if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "API Documentation"));
+				}
+				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Additional Software"));
+				}
+				if(cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Macra Measures"));
+				}
+				if(cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Macra Measures"));
+				}
+				if(cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Data"));
+				}
+				if(cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Functionality"));
+				}
+				if(cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Procedures"));
+				}
+				if(cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Standards"));
+				}
+				if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Tools"));
+				}
+				
+				if(product.getSed() != null && product.getSed().getTestTasks() != null && product.getSed().getTestTasks().size() > 0) {
+					for(TestTask tt : product.getSed().getTestTasks()) {
+						for(CertificationCriterion ttCriteria : tt.getCriteria()) {
+							if(ttCriteria.getNumber() != null && ttCriteria.getNumber().equals(cert.getNumber())) {
+								product.getWarningMessages().add(String.format(messageSource.getMessage(
+										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+										cert.getNumber(), "Test Tasks"));
+							} 
+						}
+					}
+				}
+				if(product.getSed() != null && product.getSed().getUcdProcesses() != null && product.getSed().getUcdProcesses().size() > 0) {
+					for(UcdProcess ucd : product.getSed().getUcdProcesses()) {
+						for(CertificationCriterion ucdCriteria : ucd.getCriteria()) {
+							if(ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
+								product.getWarningMessages().add(String.format(messageSource.getMessage(
+										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+										cert.getNumber(), "UCD Processes"));
+							} 
+						}
+					}
+				}
+			}
+			
 			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);

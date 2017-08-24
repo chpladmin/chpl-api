@@ -112,19 +112,30 @@ public class CertificationResultManagerImpl implements
 			CertificationResultDTO toUpdate = new CertificationResultDTO();
 			toUpdate.setId(orig.getId());
 			toUpdate.setCertifiedProductId(updatedListing.getId());
-			toUpdate.setApiDocumentation(updated.getApiDocumentation());
-			toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
-			toUpdate.setG1Success(updated.isG1Success());
-			toUpdate.setG2Success(updated.isG2Success());
-			toUpdate.setGap(updated.isGap());
-			toUpdate.setSed(updated.isSed());
-			toUpdate.setSuccessful(updated.isSuccess());
 			CertificationCriterionDTO criteria = criteriaDao.getByName(orig.getNumber());
 			if(criteria == null || criteria.getId() == null) {
 				throw new EntityCreationException("Cannot add certification result mapping for unknown criteria " + orig.getNumber());
 			} else {
 				toUpdate.setCertificationCriterionId(criteria.getId());
 			}
+			toUpdate.setSuccessful(updated.isSuccess());
+			
+			if(toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
+				toUpdate.setApiDocumentation(updated.getApiDocumentation());
+				toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
+				toUpdate.setG1Success(updated.isG1Success());
+				toUpdate.setG2Success(updated.isG2Success());
+				toUpdate.setGap(updated.isGap());
+				toUpdate.setSed(updated.isSed());
+			} else {
+				toUpdate.setApiDocumentation(null);
+				toUpdate.setPrivacySecurityFramework(null);
+				toUpdate.setG1Success(null);
+				toUpdate.setG2Success(null);
+				toUpdate.setGap(null);
+				toUpdate.setSed(null);
+			}
+			
 			certResultDAO.update(toUpdate);
 			numChanges++;
 		}
