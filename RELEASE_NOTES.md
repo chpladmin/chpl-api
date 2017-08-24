@@ -6,6 +6,9 @@ _Date TBD_
 ## Major Features
 * Reorganize SED data within the listing details request and response. UCD and Test tasks/participants are now located under a "sed" field. Listing update code has changed significantly as a result
 
+## Minor Features
+* Add warnings for 'phantom' criteria data where criteria is not attested to but has associated data from the upload.
+
 ---
 
 ## Version 12.4.0
