@@ -673,7 +673,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 		
 		//g3 checks
 		boolean needsG3 = false;
-		for(int i = 0; i < ucdRequiredCerts.length && !needsG3; i++) {
+		for(int i = 0; i < ucdRequiredCerts.length; i++) {
 			if(hasCert(ucdRequiredCerts[i], allMetCerts)) {
 				needsG3 = true;
 				

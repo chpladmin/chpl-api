@@ -13,6 +13,9 @@ _Backwards compatibility breaking changes_
 * Added errors on edit/upload/confirm
 * Allowed uploads to complete with missing age range/education
 
+## Bug Fixes
+* Show all errors when editing a listing and a criteria that requires SED does not have it (was previously stopping at the first criteria in error)
+
 ---
 
 ## Version 12.4.0
