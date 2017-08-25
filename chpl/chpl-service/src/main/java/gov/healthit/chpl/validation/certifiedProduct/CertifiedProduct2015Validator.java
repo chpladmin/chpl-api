@@ -210,7 +210,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						} 
 						if(certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
-						} else {
+						} 
+						
+						if(certCriteria.getTestTasks() != null) {
 							for(PendingCertificationResultTestTaskDTO certResultTask : certCriteria.getTestTasks()) {
                                 PendingTestTaskDTO task = certResultTask.getPendingTestTask();
 								if(certResultTask.getTaskParticipants() == null || certResultTask.getTaskParticipants().size() < 10) {
@@ -702,6 +704,20 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 								product.getSed().getTestTasks().size() == 0) {
 							product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
 						} else {
+							boolean foundCriteria = false;
+							for(TestTask tt : product.getSed().getTestTasks()) {
+								for(CertificationCriterion criteria : tt.getCriteria()) {
+									if(criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
+										foundCriteria = true;
+									}
+								}
+							}
+							if(!foundCriteria) {
+								product.getErrorMessages().add("Certification " + certCriteria.getNumber() + " requires at least one test task.");
+							}
+						}
+						
+						if(product.getSed() != null && product.getSed().getTestTasks() != null) {
 							for(TestTask task : product.getSed().getTestTasks()) {
                                 String description = StringUtils.isEmpty(task.getDescription()) ? "unknown" : task.getDescription();
 								if(task.getTestParticipants() == null || task.getTestParticipants().size() < 10) {
