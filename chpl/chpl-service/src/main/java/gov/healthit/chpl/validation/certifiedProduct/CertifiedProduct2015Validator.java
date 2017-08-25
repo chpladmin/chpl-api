@@ -303,6 +303,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 											(part.getTestParticipant().getUserEnteredAgeRange() == null ? "'unknown'" : part.getTestParticipant().getUserEnteredAgeRange()), 
 											part.getTestParticipant().getUniqueId()));
 									}
+                                    if(StringUtils.isEmpty(part.getTestParticipant().getGender())) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.criteria.badParticipantGender"), LocaleContextHolder.getLocale()), 
+                                            part.getTestParticipant().getUniqueId()));
+                                    }
                                     if(StringUtils.isEmpty(part.getTestParticipant().getOccupation())) {
                                         product.getErrorMessages().add(String.format(messageSource.getMessage(
 											new DefaultMessageSourceResolvable("listing.criteria.badParticipantOccupation"), LocaleContextHolder.getLocale()), 
@@ -806,6 +811,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 											new DefaultMessageSourceResolvable("listing.sed.badParticipantAgeRange"), LocaleContextHolder.getLocale()), 
 											description));
 									}
+                                    if(StringUtils.isEmpty(part.getGender())) {
+                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+											new DefaultMessageSourceResolvable("listing.sed.badParticipantGender"), LocaleContextHolder.getLocale()), 
+                                            description));
+                                    }
                                     if(StringUtils.isEmpty(part.getOccupation())) {
                                         product.getErrorMessages().add(String.format(messageSource.getMessage(
 											new DefaultMessageSourceResolvable("listing.sed.badParticipantOccupation"), LocaleContextHolder.getLocale()), 
