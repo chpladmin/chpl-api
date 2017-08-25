@@ -367,7 +367,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
 							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
-							cert.getNumber(), "API Documentation"));
+							cert.getNumber(), "Privacy and Security Framework"));
 				}
 				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
