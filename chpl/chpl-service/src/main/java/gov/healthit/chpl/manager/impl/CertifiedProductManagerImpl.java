@@ -477,23 +477,23 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				certResultToCreate.setCertificationCriterionId(criterion.getId());
 				certResultToCreate.setCertifiedProduct(newCertifiedProduct.getId());
 				certResultToCreate.setSuccessful(certResult.getMeetsCriteria());
-				if(certResultToCreate.getSuccessful() != null && certResultToCreate.getSuccessful().booleanValue() == true) {
-					certResultToCreate.setGap(certResult.getGap());
-					certResultToCreate.setG1Success(certResult.getG1Success());
-					certResultToCreate.setG2Success(certResult.getG2Success());
-					if(certResult.getSed() == null) {
-						if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
-							certResultToCreate.setSed(Boolean.TRUE);
-						} else {
-							certResultToCreate.setSed(Boolean.FALSE);
-						}
+				boolean isCertified = (certResultToCreate.getSuccessful() != null && certResultToCreate.getSuccessful().booleanValue() == true);
+				certResultToCreate.setGap(isCertified ? certResult.getGap() : null);
+				certResultToCreate.setG1Success(isCertified ? certResult.getG1Success() : null);
+				certResultToCreate.setG2Success(isCertified ? certResult.getG2Success() : null);
+				if(isCertified && certResult.getSed() == null) {
+					if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
+						certResultToCreate.setSed(Boolean.TRUE);
 					} else {
-						certResultToCreate.setSed(certResult.getSed());
+						certResultToCreate.setSed(Boolean.FALSE);
 					}
-					certResultToCreate.setApiDocumentation(certResult.getApiDocumentation());
-					certResultToCreate.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
-					CertificationResultDTO createdCert = certDao.create(certResultToCreate);
-					
+				} else {
+					certResultToCreate.setSed(isCertified ? certResult.getSed() : null);
+				}
+				certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
+				certResultToCreate.setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
+				CertificationResultDTO createdCert = certDao.create(certResultToCreate);
+				if(isCertified) {
 					if(certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
 						for(PendingCertificationResultAdditionalSoftwareDTO software : certResult.getAdditionalSoftware()) {
 							CertificationResultAdditionalSoftwareDTO as = new CertificationResultAdditionalSoftwareDTO();
