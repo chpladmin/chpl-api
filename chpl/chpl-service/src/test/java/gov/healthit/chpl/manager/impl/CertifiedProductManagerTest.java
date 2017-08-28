@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,16 +34,15 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
-import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -50,6 +50,8 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -110,20 +112,21 @@ public class CertifiedProductManagerTest extends TestCase {
 		List<CertificationResult> certs = details.getCertificationResults();
 		assertNotNull(certs);
 		assertEquals(2, certs.size());
-		CertificationResult certWithTestTasks = null;
-		for(CertificationResult cert : certs) {
-			if(cert.getId().longValue() == 7) {
-				assertEquals("170.315 (a)(1)", cert.getNumber());
-				certWithTestTasks = cert;
-			} 
+		
+		assertNotNull(details.getSed());
+		List<TestTask> testTasks = details.getSed().getTestTasks();
+		assertEquals(1, testTasks.size());
+		TestTask task = testTasks.get(0);
+		
+		boolean foundExpectedCert = false;
+		for(CertificationCriterion criteria : task.getCriteria()) {
+			if(criteria.getNumber().equals("170.315 (a)(1)")) {
+				foundExpectedCert = true;
+			}
 		}
-		assertNotNull(certWithTestTasks);
-		List<CertificationResultTestTask> certTasks = certWithTestTasks.getTestTasks();
-		assertNotNull(certTasks);
-		assertEquals(1, certTasks.size());
-		CertificationResultTestTask certTask = certTasks.get(0);
-		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
-		assertNotNull(taskParts);
+		assertTrue(foundExpectedCert);		
+		assertNotNull(task.getTestParticipants());
+		assertEquals(10, task.getTestParticipants().size());
 	}
 	
 	@Test
@@ -1123,11 +1126,16 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(toUpdateListing.getSed());
+		
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				CertificationResultUcdProcess ucdToAdd = new CertificationResultUcdProcess();
-				ucdToAdd.setUcdProcessId(1L);
-				cert.getUcdProcesses().add(ucdToAdd);
+				UcdProcess ucdToAdd = new UcdProcess();
+				ucdToAdd.setId(1L);
+				CertificationCriterion criteria = new CertificationCriterion();
+				criteria.setNumber(cert.getNumber());
+				ucdToAdd.getCriteria().add(criteria);
+				toUpdateListing.getSed().getUcdProcesses().add(ucdToAdd);
 			}
 		}
 		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
@@ -1136,16 +1144,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		assertNotNull(updatedListing);
-		boolean foundCert = false;
-		for(CertificationResult cert : updatedListing.getCertificationResults()) {
-			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				foundCert = true;
-				assertEquals(1, cert.getUcdProcesses().size());
-				CertificationResultUcdProcess added = cert.getUcdProcesses().get(0);
-				assertEquals(1, added.getUcdProcessId().longValue());
-			}
-		}
-		assertTrue(foundCert);
+		assertNotNull(updatedListing.getSed());
+		assertNotNull(updatedListing.getSed().getUcdProcesses());
+		assertEquals(1, updatedListing.getSed().getUcdProcesses().size());
+		
+		UcdProcess ucd = updatedListing.getSed().getUcdProcesses().get(0);
+		assertNotNull(ucd.getCriteria());
+		assertEquals(1, ucd.getCriteria().size());
 	}
 	
 	@Test
@@ -1164,11 +1169,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				CertificationResultUcdProcess ucdToAdd = new CertificationResultUcdProcess();
-				ucdToAdd.setUcdProcessId(1L);
-				ucdToAdd.setUcdProcessDetails("Some details");
-				cert.getUcdProcesses().add(ucdToAdd);
-			}
+				UcdProcess ucdToAdd = new UcdProcess();
+				ucdToAdd.setId(1L);
+				ucdToAdd.setDetails("Some details");
+				CertificationCriterion criteria = new CertificationCriterion();
+				criteria.setNumber(cert.getNumber());
+				ucdToAdd.getCriteria().add(criteria);
+				toUpdateListing.getSed().getUcdProcesses().add(ucdToAdd);			}
 		}
 		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
 		updateRequest.setListing(toUpdateListing);
@@ -1177,11 +1184,8 @@ public class CertifiedProductManagerTest extends TestCase {
 		//now update the details
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
-		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
-			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				CertificationResultUcdProcess ucdToUpdate = cert.getUcdProcesses().get(0);
-				ucdToUpdate.setUcdProcessDetails("NEW DETAILS");
-			}
+		for(UcdProcess ucd : toUpdateListing.getSed().getUcdProcesses()) {
+			ucd.setDetails("NEW DETAILS");
 		}
 		updateRequest = new ListingUpdateRequest();
 		updateRequest.setListing(toUpdateListing);
@@ -1189,16 +1193,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		assertNotNull(updatedListing);
-		boolean foundCert = false;
-		for(CertificationResult cert : updatedListing.getCertificationResults()) {
-			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				foundCert = true;
-				assertEquals(1, cert.getUcdProcesses().size());
-				CertificationResultUcdProcess updated = cert.getUcdProcesses().get(0);
-				assertEquals("NEW DETAILS", updated.getUcdProcessDetails());
-			}
-		}
-		assertTrue(foundCert);
+		assertNotNull(updatedListing.getSed());
+		assertNotNull(updatedListing.getSed().getUcdProcesses());
+		assertEquals(1, updatedListing.getSed().getUcdProcesses().size());
+		UcdProcess ucd = updatedListing.getSed().getUcdProcesses().get(0);
+		assertEquals("NEW DETAILS", ucd.getDetails());
 	}
 	
 	@Test
@@ -1217,10 +1216,13 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				CertificationResultUcdProcess ucdToAdd = new CertificationResultUcdProcess();
-				ucdToAdd.setUcdProcessId(1L);
-				ucdToAdd.setUcdProcessDetails("Some details");
-				cert.getUcdProcesses().add(ucdToAdd);
+				UcdProcess ucdToAdd = new UcdProcess();
+				ucdToAdd.setId(1L);
+				ucdToAdd.setDetails("Some details");
+				CertificationCriterion criteria = new CertificationCriterion();
+				criteria.setNumber(cert.getNumber());
+				ucdToAdd.getCriteria().add(criteria);
+				toUpdateListing.getSed().getUcdProcesses().add(ucdToAdd);
 			}
 		}
 		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
@@ -1230,25 +1232,16 @@ public class CertifiedProductManagerTest extends TestCase {
 		//remove the ucd
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
-		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
-			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				cert.getUcdProcesses().clear();
-			}
-		}
+		toUpdateListing.getSed().getUcdProcesses().clear();
 		updateRequest = new ListingUpdateRequest();
 		updateRequest.setListing(toUpdateListing);
 		cpManager.update(acbId, updateRequest, existingListing);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
 		assertNotNull(updatedListing);
-		boolean foundCert = false;
-		for(CertificationResult cert : updatedListing.getCertificationResults()) {
-			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
-				foundCert = true;
-				assertEquals(0, cert.getUcdProcesses().size());
-			}
-		}
-		assertTrue(foundCert);
+		assertNotNull(updatedListing.getSed());
+		assertNotNull(updatedListing.getSed().getUcdProcesses());
+		assertEquals(0, updatedListing.getSed().getUcdProcesses().size());
 	}
 	
 	/*********************
@@ -1956,6 +1949,68 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Test
 	@Transactional(readOnly = false)
 	@Rollback
+	public void testAddTestTask() 
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+			InvalidArgumentsException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+		Long acbId = 1L;
+		Long listingId = 5L;
+		Long certResultId = 7L;
+		
+		TestTask toAdd = new TestTask();
+		toAdd.setId(-700L);
+		toAdd.setDescription("description of the task");
+		toAdd.setTaskErrors(6.5F);
+		toAdd.setTaskErrorsStddev(4.5F);
+		toAdd.setTaskPathDeviationObserved("123");
+		toAdd.setTaskPathDeviationOptimal("0");
+		toAdd.setTaskRating(5.0F);
+		toAdd.setTaskRatingScale("Likert");
+		toAdd.setTaskRatingStddev(1.5F);
+		toAdd.setTaskSuccessAverage(95.1F);
+		toAdd.setTaskSuccessStddev(90.0F);
+		toAdd.setTaskTimeAvg("1.5");
+		toAdd.setTaskTimeStddev("5");
+		toAdd.setTaskTimeDeviationObservedAvg("10");
+		toAdd.setTaskTimeDeviationOptimalAvg("1");
+		CertificationCriterion crit = new CertificationCriterion();
+		crit.setId(1L);
+		crit.setNumber("170.315 (a)(1)");
+		toAdd.getCriteria().add(crit);
+		for(int i = 0; i < 10; i++) {
+			TestParticipant tp = new TestParticipant();
+			tp.setId((i+1)*-1000L);
+			tp.setAgeRangeId(1L);
+			tp.setAgeRange("0-9");
+			tp.setAssistiveTechnologyNeeds("some needs");
+			tp.setComputerExperienceMonths("5");
+			tp.setEducationTypeId(1L);
+			tp.setEducationTypeName("No high school degree");
+			tp.setGender("Female");
+			tp.setOccupation("Doctor");
+			tp.setProductExperienceMonths("4");
+			tp.setProfessionalExperienceMonths("65");
+			toAdd.getTestParticipants().add(tp);
+		}
+		
+		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		List<TestTask> certTasks = updatedListing.getSed().getTestTasks();
+		long origNumTasks = certTasks.size();
+		certTasks.add(toAdd);
+		
+		ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+		updateRequest.setListing(updatedListing);
+		cpManager.update(acbId, updateRequest, existingListing);
+		
+		existingListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertEquals(origNumTasks+1, existingListing.getSed().getTestTasks().size());
+	}
+	
+	@Test
+	@Transactional(readOnly = false)
+	@Rollback
 	public void testUpdateEducationForOneParticipant() 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
 			InvalidArgumentsException {
@@ -1968,18 +2023,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		List<CertificationResult> certs = updatedListing.getCertificationResults();
-		CertificationResult certToUpdate = null;
-		for(CertificationResult cert : certs) {
-			if(cert.getId().equals(certResultId)) {
-				certToUpdate = cert;
-			}
-		}
-		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
-		CertificationResultTestTask certTask = certTasks.get(0);
-		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
+		List<TestTask> certTasks = updatedListing.getSed().getTestTasks();
+		TestTask certTask = certTasks.get(0);
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
-		CertificationResultTestParticipant firstPart = taskParts.get(0);
+		TestParticipant firstPart = taskParts.iterator().next();
 		final long changedParticipantId = firstPart.getId();
 		firstPart.setEducationTypeId(1L);
 		firstPart.setEducationTypeName("No high school degree");
@@ -1989,17 +2037,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		cpManager.update(acbId, updateRequest, existingListing);
 		
 		existingListing = cpdManager.getCertifiedProductDetails(listingId);
-		certs = existingListing.getCertificationResults();
-		for(CertificationResult cert : certs) {
-			if(cert.getId().equals(certResultId)) {
-				certToUpdate = cert;
-			}
-		}
-		certTasks = certToUpdate.getTestTasks();
+		certTasks = existingListing.getSed().getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		boolean changedParticipantExists = false;
-		for(CertificationResultTestParticipant part : taskParts) {
+		for(TestParticipant part : taskParts) {
 			if(changedParticipantId == part.getId().longValue()) {
 				changedParticipantExists = true;
 				assertNotNull(part.getEducationTypeId());
@@ -2031,11 +2073,11 @@ public class CertifiedProductManagerTest extends TestCase {
 				certToUpdate = cert;
 			}
 		}
-		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
-		CertificationResultTestTask certTask = certTasks.get(0);
-		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
+		List<TestTask> certTasks = updatedListing.getSed().getTestTasks();
+		TestTask certTask = certTasks.get(0);
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
-		for(CertificationResultTestParticipant part : taskParts) {
+		for(TestParticipant part : taskParts) {
 			part.setOccupation("Teacher");
 		}
 		
@@ -2050,11 +2092,11 @@ public class CertifiedProductManagerTest extends TestCase {
 				certToUpdate = cert;
 			}
 		}
-		certTasks = certToUpdate.getTestTasks();
+		certTasks = existingListing.getSed().getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		assertEquals(10, taskParts.size());
-		for(CertificationResultTestParticipant part : taskParts) {
+		for(TestParticipant part : taskParts) {
 			assertEquals("Teacher", part.getOccupation());
 		}		
 	}
@@ -2081,11 +2123,11 @@ public class CertifiedProductManagerTest extends TestCase {
 			}
 		}
 		
-		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
-		CertificationResultTestTask certTask = certTasks.get(0);
-		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
+		List<TestTask> certTasks = updatedListing.getSed().getTestTasks();
+		TestTask certTask = certTasks.get(0);
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
-		for(CertificationResultTestParticipant part : taskParts) {
+		for(TestParticipant part : taskParts) {
 			part.setEducationTypeId(2L);
 			part.setEducationTypeName("High school graduate, diploma or the equivalent (for example: GED)");
 		}
@@ -2101,10 +2143,10 @@ public class CertifiedProductManagerTest extends TestCase {
 				certToUpdate = cert;
 			}
 		}
-		certTasks = certToUpdate.getTestTasks();
+		certTasks = existingListing.getSed().getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
-		for(CertificationResultTestParticipant part : taskParts) {
+		for(TestParticipant part : taskParts) {
 			assertNotNull(part.getEducationTypeId());
 			assertEquals(2, part.getEducationTypeId().longValue());
 		}		
@@ -2134,11 +2176,11 @@ public class CertifiedProductManagerTest extends TestCase {
 				certToUpdate = cert;
 			}
 		}
-		List<CertificationResultTestTask> certTasks = certToUpdate.getTestTasks();
-		CertificationResultTestTask certTask = certTasks.get(0);
-		List<CertificationResultTestParticipant> taskParts = certTask.getTestParticipants();
+		List<TestTask> certTasks = toUpdateListing.getSed().getTestTasks();
+		TestTask certTask = certTasks.get(0);
+		Collection<TestParticipant> taskParts = certTask.getTestParticipants();
 		
-		for(CertificationResultTestParticipant part : taskParts) {
+		for(TestParticipant part : taskParts) {
 			part.setAgeRangeId(4L);
 			part.setAgeRange("30-39");
 		}
@@ -2156,11 +2198,11 @@ public class CertifiedProductManagerTest extends TestCase {
 			}
 		}
 		assertNotNull(updatedCert);
-		certTasks = updatedCert.getTestTasks();
+		certTasks = existingListing.getSed().getTestTasks();
 		certTask = certTasks.get(0);
 		taskParts = certTask.getTestParticipants();
 		assertEquals(10, taskParts.size());
-		for(CertificationResultTestParticipant part : taskParts) {
+		for(TestParticipant part : taskParts) {
 			assertEquals(4, part.getAgeRangeId().longValue());
 			assertEquals("30-39", part.getAgeRange());
 		}		

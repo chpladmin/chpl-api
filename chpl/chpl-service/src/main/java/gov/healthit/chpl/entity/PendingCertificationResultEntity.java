@@ -22,7 +22,7 @@ import javax.persistence.Transient;
 public class PendingCertificationResultEntity {
 	
 	@Transient 
-	private boolean hasAdditionalSoftware;
+	private Boolean hasAdditionalSoftware;
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -290,11 +290,11 @@ public class PendingCertificationResultEntity {
 		this.ucdProcesses = ucdProcesses;
 	}
 
-	public boolean isHasAdditionalSoftware() {
+	public Boolean getHasAdditionalSoftware() {
 		return hasAdditionalSoftware;
 	}
 
-	public void setHasAdditionalSoftware(boolean hasAdditionalSoftware) {
+	public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
 		this.hasAdditionalSoftware = hasAdditionalSoftware;
 	}
 	

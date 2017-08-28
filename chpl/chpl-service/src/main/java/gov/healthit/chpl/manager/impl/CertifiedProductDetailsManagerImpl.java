@@ -31,16 +31,15 @@ import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestParticipant;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
-import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertificationResultUcdProcess;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
@@ -54,6 +53,7 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -65,7 +65,6 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -75,6 +74,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -343,17 +343,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setTestStandards(null);
 			}
 			
-			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
-				List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(certResult.getId());
-				for(CertificationResultUcdProcessDTO currResult : ucdProcesses) {
-					CertificationResultUcdProcess ucdResult = new CertificationResultUcdProcess(currResult);
-					result.getUcdProcesses().add(ucdResult);
-				}
-			} else {
-				result.setUcdProcesses(null);
-				result.setSed(null);
-			}
-			
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
 				List<CertificationResultTestToolDTO> testTools = certResultManager.getTestToolsForCertificationResult(certResult.getId());
 				for(CertificationResultTestToolDTO currResult : testTools) {
@@ -413,27 +402,49 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			} else {
 				result.setG2MacraMeasures(null);
 			}
+			//get all SED data for the listing
+			//ucd processes and test tasks with participants
+			CertificationCriterion criteria = new CertificationCriterion();
+			criteria.setNumber(result.getNumber());
+			criteria.setTitle(result.getTitle());
+			
+			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+				List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(result.getId());
+				for(CertificationResultUcdProcessDTO currResult : ucdProcesses) {
+					boolean alreadyExists = false;
+					UcdProcess newUcd = new UcdProcess(currResult);
+					for(UcdProcess currUcd : searchDetails.getSed().getUcdProcesses()) {
+						if(newUcd.matches(currUcd)) {
+							alreadyExists = true;
+							currUcd.getCriteria().add(criteria);
+						}
+					}
+					if(!alreadyExists) {
+						newUcd.getCriteria().add(criteria);
+						searchDetails.getSed().getUcdProcesses().add(newUcd);
+					}
+				}
+			}else {
+				result.setSed(null);
+			}
 			
 			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
 				List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
 				for(CertificationResultTestTaskDTO currResult : testTask) {
-					CertificationResultTestTask testTaskResult = new CertificationResultTestTask(currResult);
-					
-					if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PARTICIPANT)) {
-						List<CertificationResultTestTaskParticipantDTO> testParticipant = certResultManager.getTestParticipantsForTask(testTaskResult.getId());
-						for(CertificationResultTestTaskParticipantDTO currParticipant : testParticipant) {
-							CertificationResultTestParticipant testParticipantResult = new CertificationResultTestParticipant(currParticipant);
-							testTaskResult.getTestParticipants().add(testParticipantResult);
+					boolean alreadyExists = false;
+					TestTask newTestTask = new TestTask(currResult);
+					for(TestTask currTestTask : searchDetails.getSed().getTestTasks()) {
+						if(newTestTask.matches(currTestTask)) {
+							alreadyExists = true;
+							currTestTask.getCriteria().add(criteria);
 						}
-					} else {
-						testTaskResult.setTestParticipants(null);
 					}
-					
-					result.getTestTasks().add(testTaskResult);
+					if(!alreadyExists) {
+						newTestTask.getCriteria().add(criteria);
+						searchDetails.getSed().getTestTasks().add(newTestTask);
+					}
 				}
-			} else {
-				result.setTestTasks(null);
-			}
+			} 
 			
 			//set allowed macra measures (if any)
 			for(MacraMeasure measure : macraMeasures) {

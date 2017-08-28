@@ -13,27 +13,31 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Where;
+
 import gov.healthit.chpl.entity.TestParticipantEntity;
+import gov.healthit.chpl.entity.TestTaskEntity;
 
 
 @Entity
-@Table(name = "certification_result_test_task_participant")
-public class CertificationResultTestTaskParticipantEntity {
+@Table(name = "test_task_participant_map")
+public class TestTaskParticipantMapEntity {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
-	@Column(name = "certification_result_test_task_participant_id")
+	@Column(name = "id")
 	private Long id;
 	
 	@Basic( optional = false )
-	@Column(name = "certification_result_test_task_id", nullable = false )	
-	private Long certificationResultTestTaskId;
-
+	@Column(name = "test_task_id", nullable = false )	
+	private Long testTaskId;
+	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_result_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private CertificationResultTestTaskEntity certTestTask;
+	@JoinColumn(name = "test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@Where(clause="deleted <> 'true'")
+	private TestTaskEntity testTask;
 	
 	@Basic( optional = false )
 	@Column(name = "test_participant_id", nullable = false )	
@@ -42,15 +46,8 @@ public class CertificationResultTestTaskParticipantEntity {
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_participant_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@Where(clause="deleted <> 'true'")
 	private TestParticipantEntity testParticipant;
-	
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
@@ -67,6 +64,15 @@ public class CertificationResultTestTaskParticipantEntity {
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
+	
+	
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 	public Date getCreationDate() {
 		return creationDate;
@@ -109,19 +115,19 @@ public class CertificationResultTestTaskParticipantEntity {
 		this.testParticipant = testParticipantEntity;
 	}
 
-	public Long getCertificationResultTestTaskId() {
-		return certificationResultTestTaskId;
+	public Long getTestTaskId() {
+		return testTaskId;
 	}
 
-	public void setCertificationResultTestTaskId(Long certificationResultTestTaskId) {
-		this.certificationResultTestTaskId = certificationResultTestTaskId;
+	public void setTestTaskId(Long testTaskId) {
+		this.testTaskId = testTaskId;
 	}
 
-	public CertificationResultTestTaskEntity getCertTestTask() {
-		return certTestTask;
+	public TestTaskEntity getTestTask() {
+		return testTask;
 	}
 
-	public void setCertTestTask(CertificationResultTestTaskEntity certTestTask) {
-		this.certTestTask = certTestTask;
+	public void setTestTask(TestTaskEntity testTask) {
+		this.testTask = testTask;
 	}
 }

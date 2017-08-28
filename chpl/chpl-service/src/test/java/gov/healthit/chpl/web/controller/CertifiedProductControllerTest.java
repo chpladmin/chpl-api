@@ -147,6 +147,8 @@ public class CertifiedProductControllerTest {
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
 		updateRequest.getCertifyingBody().put("id", "-1");
+		updateRequest.getSed().setTestTasks(null);
+		updateRequest.getSed().setUcdProcesses(null);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -162,7 +164,6 @@ public class CertifiedProductControllerTest {
 		cr.setTestFunctionality(null);
 		cr.setTestProcedures(null);
 		cr.setTestStandards(null);
-		cr.setTestTasks(null);
 		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
 		CertificationResultTestTool crtt = new CertificationResultTestTool();
 		crtt.setId(2L);
@@ -172,7 +173,6 @@ public class CertifiedProductControllerTest {
 		crttList.add(crtt);
 		cr.setTestToolsUsed(crttList);
 		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
-		cr.setUcdProcesses(null);
 		certificationResults.add(cr);
 		updateRequest.setCertificationResults(certificationResults);
 		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
@@ -474,6 +474,8 @@ public class CertifiedProductControllerTest {
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
 		updateRequest.getCertifyingBody().put("id", "-1");
+		updateRequest.getSed().setTestTasks(null);
+		updateRequest.getSed().setUcdProcesses(null);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -489,7 +491,6 @@ public class CertifiedProductControllerTest {
 		cr.setTestFunctionality(null);
 		cr.setTestProcedures(null);
 		cr.setTestStandards(null);
-		cr.setTestTasks(null);
 		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
 		CertificationResultTestTool crtt = new CertificationResultTestTool();
 		crtt.setId(2L);
@@ -499,7 +500,6 @@ public class CertifiedProductControllerTest {
 		crttList.add(crtt);
 		cr.setTestToolsUsed(crttList);
 		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
-		cr.setUcdProcesses(null);
 		certificationResults.add(cr);
 		updateRequest.setCertificationResults(certificationResults);
 		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
@@ -592,6 +592,8 @@ public class CertifiedProductControllerTest {
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
 		updateRequest.getCertifyingBody().put("id", "-1");
+		updateRequest.getSed().setTestTasks(null);
+		updateRequest.getSed().setUcdProcesses(null);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -607,7 +609,6 @@ public class CertifiedProductControllerTest {
 		cr.setTestFunctionality(null);
 		cr.setTestProcedures(null);
 		cr.setTestStandards(null);
-		cr.setTestTasks(null);
 		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
 		CertificationResultTestTool crtt = new CertificationResultTestTool();
 		crtt.setId(2L);
@@ -617,7 +618,6 @@ public class CertifiedProductControllerTest {
 		crttList.add(crtt);
 		cr.setTestToolsUsed(crttList);
 		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
-		cr.setUcdProcesses(null);
 		certificationResults.add(cr);
 		updateRequest.setCertificationResults(certificationResults);
 		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
