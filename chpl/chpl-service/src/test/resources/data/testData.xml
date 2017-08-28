@@ -1114,7 +1114,6 @@
     <pending_certification_result_test_procedure pending_certification_result_test_procedure_id="-1" pending_certification_result_id="-1" 
        test_procedure_id="-1" test_procedure_version="1.1.0.1" creation_date="2016-04-01 23:46:27.721" last_modified_date="2017-04-27 11:15:54.086"
        last_modified_user="-3" deleted="FALSE" />
->>>>>>> 5ea22bfd4fc9a7302b41695607d8e498e136acac
 
 	<vendor vendor_id="-1" address_id="-1" vendor_status_id="1"
 		vendor_code="1009" name="Test Developer 1" website="http://www.google.com"
