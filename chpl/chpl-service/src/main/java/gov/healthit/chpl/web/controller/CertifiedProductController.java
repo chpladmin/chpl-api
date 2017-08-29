@@ -145,8 +145,8 @@ public class CertifiedProductController {
 			notes="Returns all member of the family tree conected to the specified certified product.")
 	@RequestMapping(value="/{certifiedProductId}/ics_relationships", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody ArrayList<IcsFamilyTreeNode> getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-		ArrayList<IcsFamilyTreeNode> familyTree = cpdManager.getIcsFamilyTree(certifiedProductId);
+	public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+		List<IcsFamilyTreeNode> familyTree = cpdManager.getIcsFamilyTree(certifiedProductId);
 		
 		return familyTree;
 	}
