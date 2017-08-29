@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.notification.NotificationType;
 
 public interface SearchMenuManager {
 	public Set<NotificationType> getNotificationTypes();
+	public Set<KeyValueModel> getJobTypes();
 	public Set<KeyValueModel> getClassificationNames();
 	public Set<KeyValueModel> getEditionNames(Boolean simple);
 	public Set<KeyValueModel> getCertificationStatuses();

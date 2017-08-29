@@ -59,6 +59,8 @@
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
+		<class>gov.healthit.chpl.entity.JobEntity</class>
+		<class>gov.healthit.chpl.entity.JobTypeEntity</class>		
 		<class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
 		<class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
 		<class>gov.healthit.chpl.entity.MacraMeasureEntity</class>

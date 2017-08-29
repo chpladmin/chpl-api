@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.JobEntity;
-import gov.healthit.chpl.entity.UcdProcessEntity;
 
 public class JobDTO implements Serializable {
 	private static final long serialVersionUID = -7841496230766066264L;

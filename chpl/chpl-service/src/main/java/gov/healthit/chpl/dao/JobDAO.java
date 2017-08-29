@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.JobDTO;
+import gov.healthit.chpl.dto.JobTypeDTO;
 
 public interface JobDAO {
 	
@@ -11,6 +12,8 @@ public interface JobDAO {
 	public void delete(Long id) throws EntityRetrievalException;
 	
 	public List<JobDTO> findAll();
+	public List<JobDTO> findAllRunning();
+	public List<JobTypeDTO> findAllTypes();
 	public JobDTO getById(Long id);
-	public JobDTO getByUser(Long contactId);
+	public List<JobDTO> getByUser(Long contactId);
 }

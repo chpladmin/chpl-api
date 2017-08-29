@@ -18,11 +18,10 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.JobDAO;
-import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dto.JobDTO;
-import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.JobTypeDTO;
 import gov.healthit.chpl.entity.JobEntity;
-import gov.healthit.chpl.entity.UcdProcessEntity;
+import gov.healthit.chpl.entity.JobTypeEntity;
 
 @Repository("jobDAO")
 public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
@@ -37,18 +36,24 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		}
 		
 		if (entity != null) {
-			throw new EntityCreationException("A job entity with this ID already exists.");
+			throw new EntityCreationException(
+					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.exists"), LocaleContextHolder.getLocale()), 
+					dto.getId()+""));			
 		} else {
 			entity = new JobEntity();
 			if(dto.getContact() != null && dto.getContact().getId() != null) {
 				entity.setContactId(dto.getContact().getId());
 			} else {
-				throw new EntityCreationException("A contact ID must be specified when creating a new job.");
+				throw new EntityCreationException(
+						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.missingRequiredData"), LocaleContextHolder.getLocale()), 
+						"A contact ID "));			
 			}
 			if(dto.getJobType() != null && dto.getJobType().getId() != null) {
 				entity.setJobTypeId(dto.getJobType().getId());
 			} else {
-				throw new EntityCreationException("A job type ID must be specified when creating a new job.");
+				throw new EntityCreationException(
+						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.missingRequiredData"), LocaleContextHolder.getLocale()), 
+						"A type ID "));
 			}
 			entity.setData(dto.getData());
 			entity.setStartTime(dto.getStartTime());
@@ -62,8 +67,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				entityManager.persist(entity);
 				entityManager.flush();
 			} catch(Exception ex) {
-				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()), 
-						dto.getName());
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.couldNotCreate"), LocaleContextHolder.getLocale()));
 				logger.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
@@ -75,7 +79,9 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	public JobDTO update(JobDTO dto) throws EntityRetrievalException {
 		JobEntity entity = this.getEntityById(dto.getId());
 		if(entity == null) {
-			throw new EntityRetrievalException("Job entity with id " + dto.getId() + " does not exist");
+			throw new EntityRetrievalException(
+					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.doesNotExist"), LocaleContextHolder.getLocale()), 
+					dto.getId()+""));		
 		}
 		if(dto.getContact() != null && dto.getContact().getId() != null) {
 			entity.setContactId(dto.getContact().getId());
@@ -118,6 +124,23 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 	
 	@Override
+	public List<JobDTO> getByUser(Long contactId) {
+		Query query = entityManager.createQuery( "SELECT job "
+				+ "FROM JobEntity job "
+				+ "WHERE (job.deleted <> true) "
+				+ "AND (job.contactId = :contactId) ", JobEntity.class );
+		query.setParameter("contactId", contactId);
+		List<JobEntity> entities = query.getResultList();
+		
+		List<JobDTO> dtos = new ArrayList<JobDTO>();
+		for (JobEntity entity : entities) {
+			JobDTO dto = new JobDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;		
+	}
+	
+	@Override
 	public List<JobDTO> findAll() {
 		List<JobEntity> entities = getAllEntities();
 		List<JobDTO> dtos = new ArrayList<JobDTO>();
@@ -127,7 +150,34 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 			dtos.add(dto);
 		}
 		return dtos;
+	}
+	
+	@Override
+	public List<JobDTO> findAllRunning() {
+		List<JobEntity> entities = entityManager.createQuery( "SELECT job "
+				+ "FROM JobEntity job "
+				+ "WHERE (job.deleted <> true) "
+				+ "AND (job.endTime IS NULL OR job.endTime < NOW())", JobEntity.class).getResultList();
+		List<JobDTO> dtos = new ArrayList<JobDTO>();
+		for (JobEntity entity : entities) {
+			JobDTO dto = new JobDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
+	public List<JobTypeDTO> findAllTypes() {
+		List<JobTypeEntity> entities = entityManager.createQuery( "SELECT type "
+				+ "FROM JobTypeEntity type "
+				+ "WHERE (type.deleted <> true) ", JobTypeEntity.class).getResultList();
 		
+		List<JobTypeDTO> dtos = new ArrayList<JobTypeDTO>();
+		for (JobTypeEntity entity : entities) {
+			JobTypeDTO dto = new JobTypeDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
 	}
 	
 	private List<JobEntity> getAllEntities() {

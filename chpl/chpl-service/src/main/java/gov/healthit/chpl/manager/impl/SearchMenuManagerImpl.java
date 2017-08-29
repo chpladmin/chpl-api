@@ -23,6 +23,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
@@ -61,6 +62,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.JobTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
@@ -111,6 +113,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private ProductDAO productDAO;
 	
 	@Autowired
+	private JobDAO jobDao;
+	
+	@Autowired
 	private PracticeTypeDAO practiceTypeDAO;
 	
 	@Autowired
@@ -130,6 +135,19 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return results;
 	}
 
+	@Transactional
+	@Override
+	@Cacheable(CacheNames.JOB_TYPES)
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	public Set<KeyValueModel> getJobTypes() {
+		List<JobTypeDTO> jobTypes = jobDao.findAllTypes();
+		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+		for(JobTypeDTO dto : jobTypes) {
+			results.add(new KeyValueModel(dto.getId(), dto.getName()));
+		}
+		return results;
+	}
+	
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CLASSIFICATION_NAMES)
