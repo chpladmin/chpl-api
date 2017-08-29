@@ -65,7 +65,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	@Test
 	@Transactional
 	public void testIcsFamilyTree() throws EntityRetrievalException{
-		ArrayList<IcsFamilyTreeNode> tree = certifiedProductDetailsManager.getIcsFamilyTree(5L);
+		List<IcsFamilyTreeNode> tree = certifiedProductDetailsManager.getIcsFamilyTree(5L);
 		assertNotNull(tree);
 		assertEquals(5,tree.size());
 	}
