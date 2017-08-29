@@ -8,16 +8,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationStatus implements Serializable{
 	
 	private static final long serialVersionUID = 818896721132619130L;
 
-	@XmlElement(required = true)
 	private Long id;
 	
-	@XmlElement(required = true)
 	private String name;
 	
 	public CertificationStatus(Map<String, Object> certStatus){

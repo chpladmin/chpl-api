@@ -13,25 +13,18 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class IcsFamilyTreeNode implements Serializable{
 	
 	private static final long serialVersionUID = 4170181178663367311L;
 
-	@XmlElement(required = true)
 	private Long id;
-	
-	@XmlElement(required = true)
+
 	private String chplId;
 	
-	@XmlElement(required = true)
 	private CertificationStatus certificationStatus;
 	
-	@XmlElement(required = false)
 	private List<CertifiedProduct> parents;
 	
-	@XmlElement(required = false)
 	private List<CertifiedProduct> children;
 	
 	public IcsFamilyTreeNode(CertifiedProductSearchDetails cpsd){

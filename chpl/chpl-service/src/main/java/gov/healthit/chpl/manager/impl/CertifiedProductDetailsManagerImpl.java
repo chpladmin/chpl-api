@@ -134,11 +134,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	
 	@Override
 	@Transactional
-	public ArrayList<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
+	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
 		
-		ArrayList<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
+		List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
 		Map<Long,Boolean> queue = new HashMap<Long,Boolean>();
-		ArrayList<Long> toAdd = new ArrayList<Long>();
+		List<Long> toAdd = new ArrayList<Long>();
 		
 		// add first element to processing queue
 		queue.put(certifiedProductId, false);
