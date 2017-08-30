@@ -11,7 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.manager.UserManager;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Job;
@@ -39,8 +45,10 @@ public class JobController {
 	
 	private static final Logger logger = LogManager.getLogger(JobController.class);
 	@Autowired JobManager jobManager;
-
-	@ApiOperation(value = "Get the list of all jobs currently running in the system.")
+	@Autowired UserManager userManager;
+	
+	@ApiOperation(value = "Get the list of all jobs currently running in the system and those"
+			+ "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
 	public @ResponseBody JobResults getAllRunningJobs() {
 		List<JobDTO> jobDtos = jobManager.getAllRunningJobs();
@@ -57,13 +65,14 @@ public class JobController {
 	}
 	
 	@ApiOperation(value="Creates and starts a new job.", 
-			notes="ROLE_ADMIN or ROLE_ACB_ADMIN are required. ")
-	@RequestMapping(value="/create", method=RequestMethod.POST,
+			notes="The 'jobTypeName' URL path parameter may be any of the names returned in the /data/job_types call."
+					+ "User must be logged in to make this API call.")
+	@RequestMapping(value="/create/{jobTypeName}", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized ResponseEntity<Job> createJob(
-			@RequestBody(required = true) Job job, 
+			@PathVariable("jobTypeName") String jobTypeName,
 			@RequestParam("file") MultipartFile file) throws MaxUploadSizeExceededException, ValidationException, 
-			EntityCreationException, EntityRetrievalException {
+			EntityCreationException, EntityRetrievalException, AccessDeniedException {
 
 		if (file.isEmpty()) {
 			throw new ValidationException("You cannot upload an empty file!");
@@ -75,8 +84,36 @@ public class JobController {
 			throw new ValidationException("File must be a CSV document.");
 		}
 		
-		if(job.getUser() == null || job.getType() == null) {
-			throw new ValidationException("Both a contact and type must be provided for the new job.");
+		//determine the job type
+		if(StringUtils.isEmpty(jobTypeName)) {
+			logger.error("Job Type was not specified.");
+			return new ResponseEntity<Job>(HttpStatus.BAD_REQUEST);
+		}
+		JobTypeDTO jobType = null;
+		List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
+		for(JobTypeDTO jt : jobTypes) {
+			if(jt.getName().equalsIgnoreCase(jobTypeName)) {
+				jobType = jt;
+			}
+		}
+		if(jobType == null) {
+			logger.error("Job Type " + jobTypeName + " is not recognized.");
+			return new ResponseEntity<Job>(HttpStatus.BAD_REQUEST);
+		}
+		
+		if(Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
+			throw new AccessDeniedException("User must be logged in to create a job.");
+		}
+		
+		//figure out the user
+		UserDTO currentUser = null;
+		try {
+			currentUser = userManager.getById(Util.getCurrentUser().getId());
+		} catch(UserRetrievalException ex) {
+			throw new AccessDeniedException("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
+		}
+		if(currentUser == null) {
+			throw new AccessDeniedException("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
 		}
 		
 		//read the file into a string
@@ -94,21 +131,13 @@ public class JobController {
 		JobDTO toCreate = new JobDTO();
 		toCreate.setData(data.toString());
 		ContactDTO contact = new ContactDTO();
-		if(job.getUser() != null) {
-			contact.setId(job.getUser().getContactId());
-			contact.setFirstName(job.getUser().getFirstName());
-			contact.setLastName(job.getUser().getLastName());
-			contact.setEmail(job.getUser().getEmail());
-			contact.setPhoneNumber(job.getUser().getPhoneNumber());
-			contact.setTitle(job.getUser().getTitle());
-		}
+		contact.setFirstName(currentUser.getFirstName());
+		contact.setLastName(currentUser.getLastName());
+		contact.setEmail(currentUser.getEmail());
+		contact.setPhoneNumber(currentUser.getPhoneNumber());
+		contact.setTitle(currentUser.getTitle());
 		toCreate.setContact(contact);
-		JobTypeDTO type = new JobTypeDTO();
-		if(job.getType() != null) {
-			type.setId(job.getType().getId());
-			type.setName(job.getType().getName());
-		}
-		toCreate.setJobType(type);
+		toCreate.setJobType(jobType);
 		JobDTO insertedJob = jobManager.createJob(toCreate);
 		JobDTO created = jobManager.getJobById(insertedJob.getId());
 		jobManager.start(created);

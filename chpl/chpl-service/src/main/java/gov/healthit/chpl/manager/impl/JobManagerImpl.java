@@ -18,6 +18,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.JobDTO;
+import gov.healthit.chpl.dto.JobTypeDTO;
 import gov.healthit.chpl.manager.JobManager;
 
 @Service
@@ -67,12 +68,14 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 		return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date());
 	}
 	
+	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<JobDTO> getAllRunningJobs() {
 		return jobDao.findAllRunning();
 	}
 	
+	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<JobDTO> getJobsForUser(ContactDTO user) throws EntityRetrievalException {
@@ -83,6 +86,13 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 			throw new EntityRetrievalException("No contact could be found with the provided information.");
 		}
 		return jobDao.getByUser(user.getId());
+	}
+	
+	@Override
+	@Transactional
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	public List<JobTypeDTO> getAllJobTypes() {
+		return jobDao.findAllTypes();
 	}
 	
 	@Override
