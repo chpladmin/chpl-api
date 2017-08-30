@@ -39,15 +39,12 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.SedUpdateRequest;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -104,7 +101,7 @@ public class CertifiedProductController {
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
 			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) {
 		List<CertifiedProductDetailsDTO> certifiedProductList = null;
-		
+
 		if(versionId != null && versionId > 0) {
 			if(editable) {
 				certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
@@ -142,6 +139,16 @@ public class CertifiedProductController {
 		}
 		
 		return certifiedProduct;
+	}
+	
+	@ApiOperation(value="Get the ICS family tree for the specified certified product.", 
+			notes="Returns all member of the family tree conected to the specified certified product.")
+	@RequestMapping(value="/{certifiedProductId}/ics_relationships", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+		List<IcsFamilyTreeNode> familyTree = cpdManager.getIcsFamilyTree(certifiedProductId);
+		
+		return familyTree;
 	}
 	
 	@ApiOperation(value="Update an existing certified product.", 
