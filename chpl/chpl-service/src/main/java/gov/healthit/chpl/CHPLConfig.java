@@ -20,12 +20,14 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -115,6 +117,14 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 		return new APIKeyAuthenticationFilter(apiKeyManager);
 	}
 	
+	@Bean
+	public TaskExecutor taskExecutor() {
+		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+		te.setCorePoolSize(10);
+		te.setMaxPoolSize(100);
+		return te;
+	}
+
 	@Bean
 	public Marshaller marshaller()
 	{

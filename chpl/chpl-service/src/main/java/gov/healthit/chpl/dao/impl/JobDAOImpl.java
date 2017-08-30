@@ -127,6 +127,8 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	public List<JobDTO> getByUser(Long contactId) {
 		Query query = entityManager.createQuery( "SELECT job "
 				+ "FROM JobEntity job "
+				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.jobType type "
 				+ "WHERE (job.deleted <> true) "
 				+ "AND (job.contactId = :contactId) ", JobEntity.class );
 		query.setParameter("contactId", contactId);
@@ -156,6 +158,8 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate) {
 		Query query = entityManager.createQuery( "SELECT job "
 				+ "FROM JobEntity job "
+				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.jobType type "
 				+ "WHERE "
 				//not deleted and still running
 				+ "(job.deleted <> true AND job.endTime IS NULL) "
@@ -177,6 +181,8 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	public List<JobDTO> findAllRunning() {
 		List<JobEntity> entities = entityManager.createQuery( "SELECT job "
 				+ "FROM JobEntity job "
+				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.jobType type "
 				+ "WHERE (job.deleted <> true) "
 				+ "AND (job.endTime IS NULL OR job.endTime < NOW())", JobEntity.class).getResultList();
 		List<JobDTO> dtos = new ArrayList<JobDTO>();
@@ -204,6 +210,8 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	private List<JobEntity> getAllEntities() {
 		return entityManager.createQuery( "SELECT job "
 				+ "FROM JobEntity job "
+				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.jobType type "
 				+ "WHERE (job.deleted <> true) ", JobEntity.class).getResultList();
 	}
 	
@@ -212,6 +220,8 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 			
 		Query query = entityManager.createQuery( "SELECT job "
 				+ "FROM JobEntity job "
+				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.jobType type "
 				+ "WHERE (job.deleted <> true) "
 				+ "AND (job.id = :entityid) ", JobEntity.class );
 		query.setParameter("entityid", id);

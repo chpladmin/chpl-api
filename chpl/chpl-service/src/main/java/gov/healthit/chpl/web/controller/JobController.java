@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.JobDTO;
 import gov.healthit.chpl.dto.JobTypeDTO;
+import gov.healthit.chpl.job.NoJobTypeException;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.JobResults;
@@ -67,10 +68,10 @@ public class JobController {
 	@ApiOperation(value="Creates and starts a new job.", 
 			notes="The 'jobTypeName' URL path parameter may be any of the names returned in the /data/job_types call."
 					+ "User must be logged in to make this API call.")
-	@RequestMapping(value="/create/{jobTypeName}", method=RequestMethod.POST,
+	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public synchronized ResponseEntity<Job> createJob(
-			@PathVariable("jobTypeName") String jobTypeName,
+			@RequestParam(value = "jobType", required = true) String jobTypeName,
 			@RequestParam("file") MultipartFile file) throws MaxUploadSizeExceededException, ValidationException, 
 			EntityCreationException, EntityRetrievalException, AccessDeniedException {
 
@@ -140,10 +141,14 @@ public class JobController {
 		toCreate.setJobType(jobType);
 		JobDTO insertedJob = jobManager.createJob(toCreate);
 		JobDTO created = jobManager.getJobById(insertedJob.getId());
-		jobManager.start(created);
+		
+		boolean started = jobManager.start(created);
+		created = jobManager.getJobById(insertedJob.getId());
+		if(!started) {
+			return new ResponseEntity<Job>(new Job(created), HttpStatus.BAD_REQUEST);
+		}
 		
 		//query the now running surveillance
-		created = jobManager.getJobById(insertedJob.getId());
 		return new ResponseEntity<Job>(new Job(created), HttpStatus.OK);
 	}
 	

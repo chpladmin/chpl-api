@@ -24,8 +24,10 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.AclPermissionEvaluator;
@@ -162,6 +164,14 @@ public class CHPLTestConfig implements EnvironmentAware {
 		bean.getObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 
 		return bean;
+	}
+	
+	@Bean
+	public TaskExecutor taskExecutor() {
+		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+		te.setCorePoolSize(10);
+		te.setMaxPoolSize(100);
+		return te;
 	}
 	
 	@Bean

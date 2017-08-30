@@ -16,5 +16,5 @@ public interface JobManager {
 	public List<JobDTO> getJobsForUser(ContactDTO contact) throws EntityRetrievalException;
 	public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException;
 	
-	public void start(JobDTO job);
+	public boolean start(JobDTO job);
 }
