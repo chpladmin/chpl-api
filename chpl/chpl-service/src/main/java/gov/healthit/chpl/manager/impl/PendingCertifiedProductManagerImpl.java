@@ -26,7 +26,6 @@ import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
@@ -121,6 +120,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			+ "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	public List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(Long acbId) {
 		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
+		updateCertResults(products);
 		validate(products);
 		
 		return products;
@@ -255,6 +255,12 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 				}
 				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
 					certResult.setG2Success(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)) {
+					certResult.setG1MacraMeasures(null);
+				}
+				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
+					certResult.setG2MacraMeasures(null);
 				}
 				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
 					certResult.setApiDocumentation(null);

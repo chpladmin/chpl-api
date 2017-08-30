@@ -1,7 +1,12 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
+import java.util.concurrent.SynchronousQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +47,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
@@ -124,6 +130,47 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		
 		loadCQMCriteria();
 		loadCriteriaMacraMeasures();
+	}
+	
+	@Override
+	@Transactional
+	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
+		
+		List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
+		Map<Long,Boolean> queue = new HashMap<Long,Boolean>();
+		List<Long> toAdd = new ArrayList<Long>();
+		
+		// add first element to processing queue
+		queue.put(certifiedProductId, false);
+		
+		// while queue contains elements that need processing
+		while(queue.containsValue(false)){
+			for(Entry<Long,Boolean> cp: queue.entrySet()){
+				Boolean isProcessed = cp.getValue();
+				Long cpId = cp.getKey();
+				if(!isProcessed){
+					CertifiedProductSearchDetails details = getCertifiedProductDetails(cpId);
+					IcsFamilyTreeNode node = new IcsFamilyTreeNode(details);
+					// add family to array that will be used to add to processing array
+					for(CertifiedProduct child: details.getIcs().getChildren())
+						toAdd.add(child.getId());
+					for(CertifiedProduct parent: details.getIcs().getParents())
+						toAdd.add(parent.getId());
+					familyTree.add(node);
+					// done processing node - set processed to true
+					queue.put(cpId, true);
+				}
+			}
+			// add elements from toAdd array to queue if they are not already there
+			for(Long id: toAdd){
+				if(!queue.containsKey(id)){
+					queue.put(id, false);
+				}
+			}
+			toAdd.clear();
+		}
+		
+		return familyTree;
 	}
 	
 
@@ -355,7 +402,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			} else {
 				result.setG2MacraMeasures(null);
 			}
-			
+
 			//get all SED data for the listing
 			//ucd processes and test tasks with participants
 			CertificationCriterion criteria = new CertificationCriterion();

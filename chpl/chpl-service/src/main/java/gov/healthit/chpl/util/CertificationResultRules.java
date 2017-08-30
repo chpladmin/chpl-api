@@ -28,8 +28,10 @@ public class CertificationResultRules {
 	public static final String STANDARDS_TESTED = "standardsTested";
 	public static final String FUNCTIONALITY_TESTED = "functionalityTested";
 	public static final String API_DOCUMENTATION = "apiDocumentation";
-	public static final String G1_SUCCESS = "g1";
-	public static final String G2_SUCCESS = "g2";
+	public static final String G1_SUCCESS = "g1Success";
+	public static final String G2_SUCCESS = "g2Success";
+	public static final String G1_MACRA = "g1Macra";
+	public static final String G2_MACRA = "g2Macra";
 	public static final String ADDITIONAL_SOFTWARE = "additionalSoftware";
 	public static final String TEST_TOOLS_USED = "testTool";
 	public static final String TEST_PROCEDURE_VERSION = "testProcedure";

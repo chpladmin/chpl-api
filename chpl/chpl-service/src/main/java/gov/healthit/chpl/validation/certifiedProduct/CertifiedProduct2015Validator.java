@@ -491,7 +491,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) &&
 						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
 					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
 						if(pendingMeasureMap.getMacraMeasureId() == null) {
@@ -505,7 +505,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 				
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) &&
 						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
 					for(PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
 						if(pendingMeasureMap.getMacraMeasureId() == null) {
@@ -1040,7 +1040,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 			
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) &&
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) &&
 						cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
 					for(int i = 0; i < cert.getG1MacraMeasures().size(); i++) {
 						MacraMeasure measure = cert.getG1MacraMeasures().get(i);
@@ -1062,7 +1062,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 				
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) &&
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) &&
 						cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
 					for(int i = 0; i < cert.getG2MacraMeasures().size(); i++) {
 						MacraMeasure measure = cert.getG2MacraMeasures().get(i);

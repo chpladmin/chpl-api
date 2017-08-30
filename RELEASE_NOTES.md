@@ -12,6 +12,7 @@ _Backwards compatibility breaking changes_
 * Added SED Task/Participant required fields
 * Added errors on edit/upload/confirm
 * Allowed uploads to complete with missing age range/education
+* Added API call to retrieve a Listing's entire ICS family
 
 ## Bug Fixes
 * Show all errors when editing a listing and a criteria that requires SED does not have it (was previously stopping at the first criteria in error)
