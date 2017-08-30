@@ -1,9 +1,13 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.Date;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +22,10 @@ import gov.healthit.chpl.manager.JobManager;
 
 @Service
 public class JobManagerImpl extends ApplicationObjectSupport implements JobManager {
-
+	private static final Logger logger = LogManager.getLogger(JobManagerImpl.class);
+	private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
+	
+	@Autowired private Environment env;
 	@Autowired private JobDAO jobDao;
 	@Autowired private ContactDAO contactDao;
 	
@@ -38,25 +45,36 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 	}
 	
 	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public JobDTO getJobById(Long jobId) {
 		return jobDao.getById(jobId);
 	}
 	
+	/**
+	 * Gets the jobs that are either currently running or have completed within a configurable window of time
+	 */
 	@Transactional
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	public List<JobDTO> getAllJobs() {
-		return jobDao.findAll();
+		String completedJobThresholdDaysStr = env.getProperty("jobThresholdDays");
+		Integer completedJobThresholdDays = 0;
+		try {
+			completedJobThresholdDays = Integer.parseInt(completedJobThresholdDaysStr);
+		} catch(NumberFormatException ex) {
+			logger.error("Could not format " + completedJobThresholdDaysStr + " as an integer. Defaulting to 0 instead.");
+		}
+		Long earliestCompletedJobMillis = System.currentTimeMillis() - (completedJobThresholdDays * MILLIS_PER_DAY);
+		return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date());
 	}
 	
 	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<JobDTO> getAllRunningJobs() {
 		return jobDao.findAllRunning();
 	}
 	
 	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<JobDTO> getJobsForUser(ContactDTO user) throws EntityRetrievalException {
 		if(user != null && user.getId() == null) {
 			user = contactDao.getByValues(user);

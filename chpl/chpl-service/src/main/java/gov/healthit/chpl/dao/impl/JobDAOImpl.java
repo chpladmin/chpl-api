@@ -153,6 +153,27 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 	
 	@Override
+	public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate) {
+		Query query = entityManager.createQuery( "SELECT job "
+				+ "FROM JobEntity job "
+				+ "WHERE "
+				//not deleted and still running
+				+ "(job.deleted <> true AND job.endTime IS NULL) "
+				+ "OR "
+				//completed between start and end date
+				+ "(job.endTime IS NOT NULL AND job.endTime >= :startDate AND job.endTime <= :endDate)", JobEntity.class);
+		query.setParameter("startDate", startDate);
+		query.setParameter("endDate", endDate);
+		List<JobEntity> entities = query.getResultList();
+		List<JobDTO> dtos = new ArrayList<JobDTO>();
+		for (JobEntity entity : entities) {
+			JobDTO dto = new JobDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+	
+	@Override
 	public List<JobDTO> findAllRunning() {
 		List<JobEntity> entities = entityManager.createQuery( "SELECT job "
 				+ "FROM JobEntity job "

@@ -179,6 +179,122 @@ public class JobDaoTest extends TestCase {
 	@Test
 	@Rollback(true)
 	@Transactional
+	public void testFindRunningJobsBetweenDatesNoCompletedJob() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		JobDTO job = new JobDTO();
+		JobTypeDTO jobType = new JobTypeDTO();
+		jobType.setId(1L);
+		ContactDTO contact = new ContactDTO();
+		contact.setId(-2L);
+		job.setJobType(jobType);
+		job.setContact(contact);
+		String data = "Some,CSV,Data";
+		job.setData(data);
+		Date startTime = new Date();
+		job.setStartTime(startTime);
+		
+		try {
+			job = jobDao.create(job);
+		} catch(EntityCreationException ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertNotNull(job);
+		assertNotNull(job.getId());
+		assertTrue(job.getId() > 0);
+		
+		job = new JobDTO();
+		job.setJobType(jobType);
+		job.setContact(contact);
+		job.setData(data);
+		Date oldStartTime = new Date(System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000);
+		job.setStartTime(oldStartTime);
+		Date oldEndTime = new Date(System.currentTimeMillis() - 14 * 20 * 60 * 60 * 1000);
+		job.setEndTime(oldEndTime);
+		
+		try {
+			job = jobDao.create(job);
+		} catch(EntityCreationException ex) {
+			fail(ex.getMessage());
+		}
+		
+		try {
+			jobDao.delete(job.getId());
+		} catch(EntityRetrievalException ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertNotNull(job);
+		assertNotNull(job.getId());
+		assertTrue(job.getId() > 0);
+		
+		Date searchStartTime = new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000);
+		List<JobDTO> jobs = jobDao.findAllRunningAndCompletedBetweenDates(searchStartTime, new Date());
+		assertNotNull(jobs);
+		assertEquals(1, jobs.size());
+	}
+	
+	@Test
+	@Rollback(true)
+	@Transactional
+	public void testFindRunningJobsBetweenDatesWithCompletedJob() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		JobDTO job = new JobDTO();
+		JobTypeDTO jobType = new JobTypeDTO();
+		jobType.setId(1L);
+		ContactDTO contact = new ContactDTO();
+		contact.setId(-2L);
+		job.setJobType(jobType);
+		job.setContact(contact);
+		String data = "Some,CSV,Data";
+		job.setData(data);
+		Date startTime = new Date();
+		job.setStartTime(startTime);
+		
+		try {
+			job = jobDao.create(job);
+		} catch(EntityCreationException ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertNotNull(job);
+		assertNotNull(job.getId());
+		assertTrue(job.getId() > 0);
+		
+		job = new JobDTO();
+		job.setJobType(jobType);
+		job.setContact(contact);
+		job.setData(data);
+		Date oldStartTime = new Date(System.currentTimeMillis() - 4 * 24 * 60 * 60 * 1000);
+		job.setStartTime(oldStartTime);
+		Date oldEndTime = new Date(System.currentTimeMillis() - 4 * 20 * 60 * 60 * 1000);
+		job.setEndTime(oldEndTime);
+		
+		try {
+			job = jobDao.create(job);
+		} catch(EntityCreationException ex) {
+			fail(ex.getMessage());
+		}
+		
+		try {
+			jobDao.delete(job.getId());
+		} catch(EntityRetrievalException ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertNotNull(job);
+		assertNotNull(job.getId());
+		assertTrue(job.getId() > 0);
+		
+		Date searchStartTime = new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000);
+		List<JobDTO> jobs = jobDao.findAllRunningAndCompletedBetweenDates(searchStartTime, new Date());
+		assertNotNull(jobs);
+		assertEquals(2, jobs.size());
+	}
+	
+	@Test
+	@Rollback(true)
+	@Transactional
 	public void testFindJobsByUserWithJob() {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		JobDTO job = new JobDTO();
