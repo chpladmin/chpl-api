@@ -402,6 +402,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 			} else {
 				result.setG2MacraMeasures(null);
 			}
+
 			//get all SED data for the listing
 			//ucd processes and test tasks with participants
 			CertificationCriterion criteria = new CertificationCriterion();
@@ -424,7 +425,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 						searchDetails.getSed().getUcdProcesses().add(newUcd);
 					}
 				}
-			}else {
+			} else {
 				result.setSed(null);
 			}
 			
