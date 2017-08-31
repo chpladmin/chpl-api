@@ -19,12 +19,9 @@ public class RunnableJobFactory {
 		}
 		
 		//find the job type enum value
-		JobTypeConcept jobTypeConcept = null;
-		JobTypeConcept[] availableJobTypes = JobTypeConcept.values();
-		for(int i = 0; i < availableJobTypes.length && jobTypeConcept == null; i++) {
-			if(availableJobTypes[i].getName().equalsIgnoreCase(jobType.getName())) {
-				jobTypeConcept = availableJobTypes[i];
-			}
+		JobTypeConcept jobTypeConcept = JobTypeConcept.findByName(jobType.getName());
+		if(jobTypeConcept == null) {
+			throw new NoJobTypeException();
 		}
 		
 		switch(jobTypeConcept) {

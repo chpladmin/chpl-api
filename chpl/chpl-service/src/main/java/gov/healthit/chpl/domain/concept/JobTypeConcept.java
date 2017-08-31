@@ -11,4 +11,16 @@ public enum JobTypeConcept {
 	public String getName() {
 		return name;
 	}
+	
+	public static JobTypeConcept findByName(String jobTypeName) {
+		JobTypeConcept result = null;
+		JobTypeConcept[] availableJobTypes = values();
+		for(int i = 0; i < availableJobTypes.length && result == null; i++) {
+			if(availableJobTypes[i].getName().equalsIgnoreCase(jobTypeName) || 
+				availableJobTypes[i].name().equalsIgnoreCase(jobTypeName)) {
+				result = availableJobTypes[i];
+			}
+		}
+		return result;
+	}
 }

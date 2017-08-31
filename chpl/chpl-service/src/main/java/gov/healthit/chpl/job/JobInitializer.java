@@ -19,6 +19,7 @@ public class JobInitializer {
 	private static final Logger logger = LogManager.getLogger(JobInitializer.class);
 	
 	@Autowired private TaskExecutor taskExecutor;
+	@Autowired private RunnableJobFactory jobFactory;
 	@Autowired private JobDAO jobDao;
 	
 	@PostConstruct
@@ -28,8 +29,16 @@ public class JobInitializer {
 		
 		logger.info("Found " + runningJobs.size() + " jobs to start.");
 		for(JobDTO job : runningJobs) {
-			logger.info("Starting job with ID " + job.getId() + " for " + job.getContact().getFirstName());
-			taskExecutor.execute(new MeaningfulUseUploadJob(job));
+			RunnableJob runnableJob = null;
+			try {
+				runnableJob = jobFactory.getRunnableJob(job);
+			} catch(NoJobTypeException ex) {
+				logger.error("No runnable job type found for " + job.getJobType().getName());
+			}
+			if(runnableJob != null) {
+				logger.info("Starting job with ID " + job.getId() + " for " + job.getContact().getFirstName());
+				taskExecutor.execute(runnableJob);
+			}
 		}
 	}
 	
