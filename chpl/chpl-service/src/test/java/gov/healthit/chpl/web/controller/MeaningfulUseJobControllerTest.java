@@ -21,6 +21,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -88,12 +89,11 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);		
 		File file = createMuuCsv();
 		
+		ResponseEntity<Job> response = null;
 		try {
 			FileInputStream input = new FileInputStream(file);
 			MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
-			
-			ResponseEntity<Job> response = jobController.createJob("Bad Name", multipartFile);
-			
+			response = jobController.createJob("Bad Name", multipartFile);
 			input.close();
 			file.delete();
 		} catch(IOException ex) {
@@ -101,6 +101,9 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		} catch(EntityRetrievalException | EntityCreationException | ValidationException ex) {
 			fail(ex.getMessage());
 		}
+		
+		assertNotNull(response);
+		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 	
 	@Transactional

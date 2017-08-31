@@ -64,7 +64,7 @@ public class JobController {
 	}
 	
 	@ApiOperation(value="Creates and starts a new job.", 
-			notes="The 'jobTypeName' URL path parameter may be any of the names returned in the /data/job_types call."
+			notes="The 'jobType' URL path parameter may be any of the names returned in the /data/job_types call."
 					+ "User must be logged in to make this API call.")
 	@RequestMapping(value="/create", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
