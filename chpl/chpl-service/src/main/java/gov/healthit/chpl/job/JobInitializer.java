@@ -36,7 +36,7 @@ public class JobInitializer {
 				logger.error("No runnable job type found for " + job.getJobType().getName());
 			}
 			if(runnableJob != null) {
-				logger.info("Starting job with ID " + job.getId() + " for " + job.getContact().getFirstName());
+				logger.info("Starting job with ID " + job.getId() + " for user " + job.getUser().getSubjectName());
 				taskExecutor.execute(runnableJob);
 			}
 		}

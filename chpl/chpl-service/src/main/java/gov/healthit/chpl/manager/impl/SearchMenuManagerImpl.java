@@ -143,7 +143,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		List<JobTypeDTO> jobTypes = jobDao.findAllTypes();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
 		for(JobTypeDTO dto : jobTypes) {
-			results.add(new KeyValueModel(dto.getId(), dto.getName()));
+			results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
 		}
 		return results;
 	}

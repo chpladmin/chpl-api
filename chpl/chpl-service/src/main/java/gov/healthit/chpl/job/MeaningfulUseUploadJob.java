@@ -7,8 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -16,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -39,7 +36,6 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 		this.job = job;
 	}
 	
-	@Transactional
 	public void run() {
 		super.run();
 		
@@ -61,60 +57,64 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 				updateStatus(100, JobStatusType.Error);
 				try { parser.close(); } catch(Exception ignore) {}
 				try { reader.close(); } catch(Exception ignore) {}
+			} else {
+				CSVRecord heading = null;
+				for(int i = 1; i <= records.size(); i++){
+					CSVRecord currRecord = records.get(i-1);
+					MeaningfulUseUser muu = new MeaningfulUseUser();
+					
+					// add header if something similar to "chpl_product_number" and "num_meaningful_use" exists
+					if(heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim()) && currRecord.get(0).trim().contains("product")
+							&& !StringUtils.isEmpty(currRecord.get(1).trim()) && currRecord.get(1).trim().contains("meaning")) {
+						heading = currRecord;
+					}
+					// populate MeaningfulUseUserResults
+					else {
+						String chplProductNumber = currRecord.get(0).trim();
+						Long numMeaningfulUseUsers = null;
+						try{
+							numMeaningfulUseUsers = Long.parseLong(currRecord.get(1).trim());
+							muu.setProductNumber(chplProductNumber);
+							muu.setNumberOfUsers(numMeaningfulUseUsers);
+							muu.setCsvLineNumber(i);
+							// check if product number has already been updated
+							if(uniqueMuusFromFile.contains(muu.getProductNumber())){
+								throw new IOException();
+							}
+							muusToUpdate.add(muu);
+							uniqueMuusFromFile.add(muu.getProductNumber());
+						} catch (NumberFormatException e){
+							muu.setProductNumber(chplProductNumber);
+							muu.setCsvLineNumber(i);
+							String error = "Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_use\" with value \"" + currRecord.get(1).trim() + "\" is invalid. "
+									+ "Value in field \"num_meaningful_use\" must be an integer.";
+							muu.setError(error);
+							muusToUpdate.add(muu);
+							uniqueMuusFromFile.add(muu.getProductNumber());
+						}
+						catch (IOException e){
+							muu.setProductNumber(chplProductNumber);
+							muu.setCsvLineNumber(i);
+							Integer dupLineNumber = null;
+							// get line number with duplicate chpl_product_number
+							for (MeaningfulUseUser entry: muusToUpdate) {
+								if (entry.getProductNumber().equals(muu.getProductNumber())){
+									dupLineNumber = entry.getCsvLineNumber();
+								}
+							}
+							
+							String error = "Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
+									+ "Duplicate \"chpl_product_number\" at line " + dupLineNumber;
+							muu.setError(error);
+							muusToUpdate.add(muu);
+						}
+					}
+				}
 			}
 			
-			CSVRecord heading = null;
-			for(int i = 1; i <= records.size(); i++){
-				CSVRecord currRecord = records.get(i-1);
-				MeaningfulUseUser muu = new MeaningfulUseUser();
-				
-				// add header if something similar to "chpl_product_number" and "num_meaningful_use" exists
-				if(heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim()) && currRecord.get(0).trim().contains("product")
-						&& !StringUtils.isEmpty(currRecord.get(1).trim()) && currRecord.get(1).trim().contains("meaning")) {
-					heading = currRecord;
-				}
-				// populate MeaningfulUseUserResults
-				else {
-					String chplProductNumber = currRecord.get(0).trim();
-					Long numMeaningfulUseUsers = null;
-					try{
-						numMeaningfulUseUsers = Long.parseLong(currRecord.get(1).trim());
-						muu.setProductNumber(chplProductNumber);
-						muu.setNumberOfUsers(numMeaningfulUseUsers);
-						muu.setCsvLineNumber(i);
-						// check if product number has already been updated
-						if(uniqueMuusFromFile.contains(muu.getProductNumber())){
-							throw new IOException();
-						}
-						muusToUpdate.add(muu);
-						uniqueMuusFromFile.add(muu.getProductNumber());
-					} catch (NumberFormatException e){
-						muu.setProductNumber(chplProductNumber);
-						muu.setCsvLineNumber(i);
-						String error = "Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_use\" with value \"" + currRecord.get(1).trim() + "\" is invalid. "
-								+ "Value in field \"num_meaningful_use\" must be an integer.";
-						muu.setError(error);
-						muusToUpdate.add(muu);
-						uniqueMuusFromFile.add(muu.getProductNumber());
-					}
-					catch (IOException e){
-						muu.setProductNumber(chplProductNumber);
-						muu.setCsvLineNumber(i);
-						Integer dupLineNumber = null;
-						// get line number with duplicate chpl_product_number
-						for (MeaningfulUseUser entry: muusToUpdate) {
-							if (entry.getProductNumber().equals(muu.getProductNumber())){
-								dupLineNumber = entry.getCsvLineNumber();
-							}
-						}
-						
-						String error = "Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
-								+ "Duplicate \"chpl_product_number\" at line " + dupLineNumber;
-						muu.setError(error);
-						muusToUpdate.add(muu);
-					}
-				}
-			}
+			//finished parsing the file, say that's 25% of the job done
+			jobPercentComplete = 25;
+			updateStatus(jobPercentComplete, JobStatusType.In_Progress);
 		} catch(IOException ioEx) {
 			String msg = "Could not get input stream for job data string for job with ID " + job.getId();
 			logger.error(msg);
@@ -123,10 +123,6 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 			try { parser.close(); } catch(Exception ignore) {}
 			try { reader.close(); } catch(Exception ignore) {}
 		}
-		
-		//finished parsing the file, say that's 25% of the job done
-		jobPercentComplete = 25;
-		updateStatus(jobPercentComplete, JobStatusType.In_Progress);
 		
 		//now load everything that was parsed	
 		for(MeaningfulUseUser muu : muusToUpdate){
@@ -163,21 +159,25 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 									+ "The provided \"chpl_product_number\" does not exist.");
 						}
 					}
-				} catch (Exception ex){	
+				} catch(EntityRetrievalException ex) {
 					String msg = "Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
 							+ "The provided \"chpl_product_number\" does not exist.";
 					addJobMessage(msg);
+				} catch (Exception ex){	
+					String msg = "Line " + muu.getCsvLineNumber() + ": An unexpected error occurred. " + ex.getMessage();
+					logger.error(msg, ex);
+					addJobMessage(msg);
+					
 				}
 			} else {
 				addJobMessage(muu.getError());
 			}
 			
 			//update the status
-			jobPercentComplete += (75/muusToUpdate.size());
+			jobPercentComplete += 75.0/(double)muusToUpdate.size();
 			updateStatus(jobPercentComplete, JobStatusType.In_Progress);
 		}
 		
-		updateStatus(100, JobStatusType.Complete);
 		this.complete();
 	}
 	

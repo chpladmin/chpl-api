@@ -55,7 +55,6 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
-import gov.healthit.chpl.job.RunnableJobFactory;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
@@ -73,6 +72,7 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 	private static final String CSV_SEPARATOR = ",";
 	
 	@Autowired JobController jobController;
+	@Autowired MeaningfulUseController muuController;
 	@Autowired JobManager jobManager;
 	@Autowired UserManager userManager;
 	@Autowired CertifiedProductDAO cpDao;
@@ -93,30 +93,10 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
-
-	@Test
-	public void testCreateJobWithInvalidType() {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);		
-		File file = createMuuCsv();
-		
-		ResponseEntity<Job> response = null;
-		try {
-			FileInputStream input = new FileInputStream(file);
-			MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
-			response = jobController.createJob("Bad Name", multipartFile);
-			input.close();
-			file.delete();
-		} catch(IOException ex) {
-			fail(ex.getMessage());
-		} catch(EntityRetrievalException | EntityCreationException | ValidationException ex) {
-			fail(ex.getMessage());
-		}
-		
-		assertNotNull(response);
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-	}
 	
 	@Test()
+	@Transactional
+	@Rollback(true)
 	public void testCreateJobAsUnauthenticatedUser() {
 		SecurityContextHolder.getContext().setAuthentication(null);		
 		File file = createMuuCsv();
@@ -125,7 +105,7 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		try {
 			FileInputStream input = new FileInputStream(file);
 			MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
-			response = jobController.createJob("MUU Upload", multipartFile);
+			response = muuController.uploadMeaningfulUseUsers(multipartFile);
 			input.close();
 			file.delete();
 		} catch(IOException ex) {
@@ -149,7 +129,7 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		try {
 			FileInputStream input = new FileInputStream(file);
 			MultipartFile multipartFile = new MockMultipartFile("file", file.getName(), "text/csv", IOUtils.toByteArray(input));
-			response = jobController.createJob("MUU Upload", multipartFile);
+			response = muuController.uploadMeaningfulUseUsers(multipartFile);
 			input.close();
 			file.delete();
 		} catch(IOException ex) {
@@ -159,6 +139,8 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		}
 		assertNotNull(response);
 		assertEquals(HttpStatus.OK, response.getStatusCode());
+		//NOTE: The MUU processing will continue on a separate thread until this unit test exists; 
+		//there may be some exceptions regarding transactions ending that print out if that thread continues
 	}
 	
 	@Transactional
@@ -209,13 +191,9 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 		}
 		JobDTO toCreate = new JobDTO();
 		toCreate.setData(data.toString());
-		ContactDTO contact = new ContactDTO();
-		contact.setFirstName(currentUser.getFirstName());
-		contact.setLastName(currentUser.getLastName());
-		contact.setEmail(currentUser.getEmail());
-		contact.setPhoneNumber(currentUser.getPhoneNumber());
-		contact.setTitle(currentUser.getTitle());
-		toCreate.setContact(contact);
+		UserDTO user = new UserDTO();
+		user.setId(currentUser.getId());
+		toCreate.setUser(user);
 		toCreate.setJobType(jobType);
 		JobDTO insertedJob = jobManager.createJob(toCreate);
 		JobDTO createdJob = jobManager.getJobById(insertedJob.getId());

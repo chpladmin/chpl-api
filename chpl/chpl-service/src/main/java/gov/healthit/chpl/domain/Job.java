@@ -3,13 +3,14 @@ package gov.healthit.chpl.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.auth.json.User;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobMessageDTO;
 
 public class Job {
 	private Long id;
 	private JobType type;
-	private Contact user;
+	private User user;
 	private JobStatus status;
 	private Long startTime;
 	private Long endTime;
@@ -23,11 +24,11 @@ public class Job {
 		this();
 		this.id = dto.getId();
 		this.type = new JobType(dto.getJobType());
-		this.user = new Contact(dto.getContact());
+		this.user = new User(dto.getUser());
 		if(dto.getStatus() != null) {
 			this.status = new JobStatus(dto.getStatus());
 		}
-		this.startTime = dto.getStartTime().getTime();
+		this.startTime = dto.getStartTime() == null ? null : dto.getStartTime().getTime();
 		this.endTime = dto.getEndTime() == null ? null : dto.getEndTime().getTime();
 		if(dto.getMessages() != null) {
 			for(JobMessageDTO message : dto.getMessages()) {
@@ -47,10 +48,10 @@ public class Job {
 	public void setType(JobType type) {
 		this.type = type;
 	}
-	public Contact getUser() {
+	public User getUser() {
 		return user;
 	}
-	public void setUser(Contact user) {
+	public void setUser(User user) {
 		this.user = user;
 	}
 	public Long getStartTime() {

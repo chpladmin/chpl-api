@@ -21,16 +21,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.JobDAO;
-import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
-import gov.healthit.chpl.entity.job.JobStatusType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -69,10 +68,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		
@@ -89,8 +88,8 @@ public class JobDaoTest extends TestCase {
 		job = jobDao.getById(job.getId());
 		assertNotNull(job.getJobType());
 		assertEquals(job.getJobType().getId().longValue(), jobType.getId().longValue());
-		assertNotNull(job.getContact());
-		assertEquals(job.getContact().getId().longValue(), contact.getId().longValue());
+		assertNotNull(job.getUser());
+		assertEquals(job.getUser().getId().longValue(), user.getId().longValue());
 		assertEquals(data, job.getData());
 		assertNull(job.getStartTime());
 	}
@@ -103,10 +102,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		
@@ -123,8 +122,8 @@ public class JobDaoTest extends TestCase {
 		job = jobDao.getById(job.getId());
 		assertNotNull(job.getJobType());
 		assertEquals(job.getJobType().getId().longValue(), jobType.getId().longValue());
-		assertNotNull(job.getContact());
-		assertEquals(job.getContact().getId().longValue(), contact.getId().longValue());
+		assertNotNull(job.getUser());
+		assertEquals(job.getUser().getId().longValue(), user.getId().longValue());
 		assertEquals(data, job.getData());
 		assertNull(job.getStartTime());
 		
@@ -143,10 +142,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		
@@ -163,8 +162,8 @@ public class JobDaoTest extends TestCase {
 		job = jobDao.getById(job.getId());
 		assertNotNull(job.getJobType());
 		assertEquals(job.getJobType().getId().longValue(), jobType.getId().longValue());
-		assertNotNull(job.getContact());
-		assertEquals(job.getContact().getId().longValue(), contact.getId().longValue());
+		assertNotNull(job.getUser());
+		assertEquals(job.getUser().getId().longValue(), user.getId().longValue());
 		assertEquals(data, job.getData());
 		assertNull(job.getStartTime());
 		
@@ -185,10 +184,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();
@@ -215,10 +214,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();
@@ -236,7 +235,7 @@ public class JobDaoTest extends TestCase {
 		
 		job = new JobDTO();
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		job.setData(data);
 		job.setStartTime(startTime);
 		job.setEndTime(new Date());
@@ -264,10 +263,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();
@@ -285,7 +284,7 @@ public class JobDaoTest extends TestCase {
 		
 		job = new JobDTO();
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		job.setData(data);
 		Date oldStartTime = new Date(System.currentTimeMillis() - 14 * 24 * 60 * 60 * 1000);
 		job.setStartTime(oldStartTime);
@@ -309,7 +308,7 @@ public class JobDaoTest extends TestCase {
 		assertTrue(job.getId() > 0);
 		
 		Date searchStartTime = new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000);
-		List<JobDTO> jobs = jobDao.findAllRunningAndCompletedBetweenDates(searchStartTime, new Date());
+		List<JobDTO> jobs = jobDao.findAllRunningAndCompletedBetweenDates(searchStartTime, new Date(), null);
 		assertNotNull(jobs);
 		assertEquals(1, jobs.size());
 	}
@@ -322,10 +321,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();
@@ -343,7 +342,7 @@ public class JobDaoTest extends TestCase {
 		
 		job = new JobDTO();
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		job.setData(data);
 		Date oldStartTime = new Date(System.currentTimeMillis() - 4 * 24 * 60 * 60 * 1000);
 		job.setStartTime(oldStartTime);
@@ -367,7 +366,7 @@ public class JobDaoTest extends TestCase {
 		assertTrue(job.getId() > 0);
 		
 		Date searchStartTime = new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000);
-		List<JobDTO> jobs = jobDao.findAllRunningAndCompletedBetweenDates(searchStartTime, new Date());
+		List<JobDTO> jobs = jobDao.findAllRunningAndCompletedBetweenDates(searchStartTime, new Date(), null);
 		assertNotNull(jobs);
 		assertEquals(2, jobs.size());
 	}
@@ -380,10 +379,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();
@@ -395,7 +394,7 @@ public class JobDaoTest extends TestCase {
 			fail(ex.getMessage());
 		}
 		
-		List<JobDTO> allJobs = jobDao.getByUser(contact.getId());
+		List<JobDTO> allJobs = jobDao.getByUser(user.getId());
 		assertEquals(1, allJobs.size());
 		assertNotNull(allJobs.get(0));
 		assertNotNull(allJobs.get(0).getId());
@@ -410,10 +409,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();
@@ -437,10 +436,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();
@@ -467,8 +466,8 @@ public class JobDaoTest extends TestCase {
 		job = jobDao.getById(job.getId());
 		assertNotNull(job.getJobType());
 		assertEquals(job.getJobType().getId().longValue(), jobType.getId().longValue());
-		assertNotNull(job.getContact());
-		assertEquals(job.getContact().getId().longValue(), contact.getId().longValue());
+		assertNotNull(job.getUser());
+		assertEquals(job.getUser().getId().longValue(), user.getId().longValue());
 		assertEquals(data, job.getData());
 		assertNotNull(job.getStartTime());
 		assertEquals(startTime.getTime(), job.getStartTime().getTime());
@@ -484,10 +483,10 @@ public class JobDaoTest extends TestCase {
 		JobDTO job = new JobDTO();
 		JobTypeDTO jobType = new JobTypeDTO();
 		jobType.setId(1L);
-		ContactDTO contact = new ContactDTO();
-		contact.setId(-2L);
+		UserDTO user = new UserDTO();
+		user.setId(adminUser.getId());
 		job.setJobType(jobType);
-		job.setContact(contact);
+		job.setUser(user);
 		String data = "Some,CSV,Data";
 		job.setData(data);
 		Date startTime = new Date();

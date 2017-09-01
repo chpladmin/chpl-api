@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.job.JobEntity;
 import gov.healthit.chpl.entity.job.JobMessageEntity;
@@ -13,7 +14,7 @@ public class JobDTO implements Serializable {
 	private static final long serialVersionUID = -7841496230766066264L;
 	private Long id;
 	private JobTypeDTO jobType;
-	private ContactDTO contact;
+	private UserDTO user;
 	private JobStatusDTO status;
 	private Date startTime;
 	private Date endTime;
@@ -38,11 +39,11 @@ public class JobDTO implements Serializable {
 			this.jobType.setId(entity.getJobTypeId());
 		}
 		
-		if(entity.getContact() != null) {
-			this.contact = new ContactDTO(entity.getContact());
+		if(entity.getUser() != null) {
+			this.user = new UserDTO(entity.getUser());
 		} else {
-			this.contact = new ContactDTO();
-			this.contact.setId(entity.getContactId());
+			this.user = new UserDTO();
+			this.user.setId(entity.getUserId());
 		}
 		
 		if(entity.getStatus() != null) {
@@ -70,14 +71,6 @@ public class JobDTO implements Serializable {
 
 	public void setJobType(JobTypeDTO jobType) {
 		this.jobType = jobType;
-	}
-
-	public ContactDTO getContact() {
-		return contact;
-	}
-
-	public void setContact(ContactDTO contact) {
-		this.contact = contact;
 	}
 
 	public Date getStartTime() {
@@ -118,5 +111,13 @@ public class JobDTO implements Serializable {
 
 	public void setMessages(List<JobMessageDTO> messages) {
 		this.messages = messages;
+	}
+
+	public UserDTO getUser() {
+		return user;
+	}
+
+	public void setUser(UserDTO user) {
+		this.user = user;
 	}
 }

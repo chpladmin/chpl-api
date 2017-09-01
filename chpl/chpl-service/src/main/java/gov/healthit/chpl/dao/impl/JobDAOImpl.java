@@ -13,6 +13,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -33,6 +34,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	@Autowired MessageSource messageSource;
 	
 	@Override
+	@Transactional
 	public JobDTO create(JobDTO dto) throws EntityCreationException {
 		JobEntity entity = null;
 		if (dto.getId() != null){
@@ -45,12 +47,12 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 					dto.getId()+""));			
 		} else {
 			entity = new JobEntity();
-			if(dto.getContact() != null && dto.getContact().getId() != null) {
-				entity.setContactId(dto.getContact().getId());
+			if(dto.getUser() != null && dto.getUser().getId() != null) {
+				entity.setUserId(dto.getUser().getId());
 			} else {
 				throw new EntityCreationException(
 						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.missingRequiredData"), LocaleContextHolder.getLocale()), 
-						"A contact ID "));			
+						"A user ID "));			
 			}
 			if(dto.getJobType() != null && dto.getJobType().getId() != null) {
 				entity.setJobTypeId(dto.getJobType().getId());
@@ -65,7 +67,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			entity.setLastModifiedDate(new Date());
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
+			entity.setLastModifiedUser(dto.getUser().getId());
 			
 			try {
 				entityManager.persist(entity);
@@ -80,45 +82,62 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 
 	@Override
+	@Transactional
 	public void markStarted(JobDTO dto) throws EntityRetrievalException {
-		JobStatusDTO status = updateStatus(dto, 0, JobStatusType.In_Progress);
+		JobEntity jobEntity = this.getEntityById(dto.getId());
+		//delete any messages that currently exist for this job
+		if(jobEntity.getMessages() != null && jobEntity.getMessages().size() > 0) {
+			for(JobMessageEntity message : jobEntity.getMessages()) {
+				message.setDeleted(true);
+				message.setLastModifiedDate(new Date());
+				message.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : jobEntity.getUserId());
+				entityManager.merge(message);
+			}
+			entityManager.flush();
+		}
 		
+		JobStatusDTO status = updateStatus(dto, 0, JobStatusType.In_Progress);
 		dto.setStartTime(new Date());
+		dto.setEndTime(null);
 		dto.setStatus(status);
 		update(dto);		
 	}
 	
 	@Override
+	@Transactional
 	public JobStatusDTO updateStatus(JobDTO dto, Integer percentComplete, JobStatusType status) throws EntityRetrievalException {
 		JobEntity entity = this.getEntityById(dto.getId());
-		entity.setEndTime(new Date());
-		entityManager.merge(entity);
-
-		JobStatusEntity endStatus = null;
+		if(status != null && (status == JobStatusType.Complete || status == JobStatusType.Error)) {
+			entity.setEndTime(new Date());
+			entityManager.merge(entity);
+		}
+		
+		JobStatusEntity updatedStatus = null;
 		if(entity.getStatus() != null) {
-			endStatus = entity.getStatus();
-			endStatus.setPercentComplete(percentComplete);
-			endStatus.setStatus(status);
-			endStatus.setLastModifiedUser(Util.getCurrentUser().getId());
-			endStatus.setCreationDate(new Date());
-			endStatus.setDeleted(false);
-			endStatus.setLastModifiedDate(new Date());
-			entityManager.merge(endStatus);
+			updatedStatus = entity.getStatus();
+			updatedStatus.setPercentComplete(percentComplete);
+			updatedStatus.setStatus(status);
+			updatedStatus.setLastModifiedUser(entity.getUserId());
+			updatedStatus.setCreationDate(new Date());
+			updatedStatus.setDeleted(false);
+			updatedStatus.setLastModifiedDate(new Date());
+			entityManager.merge(updatedStatus);
 		} else {
-			endStatus = new JobStatusEntity();
-			endStatus.setPercentComplete(percentComplete);
-			endStatus.setStatus(status);
-			endStatus.setLastModifiedUser(Util.getCurrentUser().getId());
-			endStatus.setCreationDate(new Date());
-			endStatus.setDeleted(false);
-			endStatus.setLastModifiedDate(new Date());
-			entityManager.persist(endStatus);
+			updatedStatus = new JobStatusEntity();
+			updatedStatus.setPercentComplete(percentComplete);
+			updatedStatus.setStatus(status);
+			updatedStatus.setLastModifiedUser(entity.getUserId());
+			updatedStatus.setCreationDate(new Date());
+			updatedStatus.setDeleted(false);
+			updatedStatus.setLastModifiedDate(new Date());
+			entityManager.persist(updatedStatus);
 		}
 		entityManager.flush();
-		return new JobStatusDTO(endStatus);
+		return new JobStatusDTO(updatedStatus);
 	}
 	
 	@Override
+	@Transactional
 	public void addJobMessage(JobDTO job, String message) {
 		JobMessageEntity entity = new JobMessageEntity();
 		entity.setJobId(job.getId());
@@ -126,11 +145,13 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		entity.setDeleted(false);
 		entity.setCreationDate(new Date());
 		entity.setLastModifiedDate(new Date());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		entity.setLastModifiedUser(job.getUser().getId());
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
 	
+	@Override
+	@Transactional
 	public JobDTO update(JobDTO dto) throws EntityRetrievalException {
 		JobEntity entity = this.getEntityById(dto.getId());
 		if(entity == null) {
@@ -138,8 +159,8 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.doesNotExist"), LocaleContextHolder.getLocale()), 
 					dto.getId()+""));		
 		}
-		if(dto.getContact() != null && dto.getContact().getId() != null) {
-			entity.setContactId(dto.getContact().getId());
+		if(dto.getUser() != null && dto.getUser().getId() != null) {
+			entity.setUserId(dto.getUser().getId());
 		}
 		if(dto.getJobType() != null && dto.getJobType().getId() != null) {
 			entity.setJobTypeId(dto.getJobType().getId());
@@ -150,7 +171,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		entity.setData(dto.getData());
 		entity.setStartTime(dto.getStartTime());
 		entity.setEndTime(dto.getEndTime());
-		entity.setLastModifiedUser(Util.getCurrentUser().getId());
+		entity.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : entity.getUserId());
 		entity.setLastModifiedDate(new Date());
 		entityManager.merge(entity);		
 		entityManager.flush();
@@ -158,20 +179,21 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 
 	@Override
+	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
 		JobEntity toDelete = getEntityById(id);
 		
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
-			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+			toDelete.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
 			entityManager.merge(toDelete);
 			
 			if(toDelete.getStatus() != null) {
 				JobStatusEntity status = toDelete.getStatus();
 				status.setDeleted(true);
 				status.setLastModifiedDate(new Date());
-				status.setLastModifiedUser(Util.getCurrentUser().getId());
+				status.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
 				entityManager.merge(status);
 			}
 			
@@ -179,7 +201,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				for(JobMessageEntity message : toDelete.getMessages()) {
 					message.setDeleted(true);
 					message.setLastModifiedDate(new Date());
-					message.setLastModifiedUser(Util.getCurrentUser().getId());
+					message.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
 					entityManager.merge(message);
 				}
 			}
@@ -189,6 +211,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 
 	@Override
+	@Transactional
 	public JobDTO getById(Long id) {
 		
 		JobDTO dto = null;
@@ -200,18 +223,20 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 	
 	@Override
-	public List<JobDTO> getByUser(Long contactId) {
+	@Transactional
+	public List<JobDTO> getByUser(Long userId) {
 		entityManager.clear();
 		
-		Query query = entityManager.createQuery( "SELECT job "
+		Query query = entityManager.createQuery( "SELECT DISTINCT job "
 				+ "FROM JobEntity job "
-				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.user user "
+				+ "LEFT OUTER JOIN FETCH user.contact contact "
 				+ "JOIN FETCH job.jobType type "
 				+ "LEFT OUTER JOIN FETCH job.status status "
 				+ "LEFT OUTER JOIN FETCH job.messages messages "
 				+ "WHERE (job.deleted <> true) "
-				+ "AND (job.contactId = :contactId) ", JobEntity.class );
-		query.setParameter("contactId", contactId);
+				+ "AND (job.userId = :userId) ", JobEntity.class );
+		query.setParameter("userId", userId);
 		List<JobEntity> entities = query.getResultList();
 		
 		List<JobDTO> dtos = new ArrayList<JobDTO>();
@@ -223,6 +248,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 	
 	@Override
+	@Transactional
 	public List<JobDTO> findAll() {
 		List<JobEntity> entities = getAllEntities();
 		List<JobDTO> dtos = new ArrayList<JobDTO>();
@@ -235,23 +261,33 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 	
 	@Override
-	public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate) {
+	@Transactional
+	public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate, Long userId) {
 		entityManager.clear();
 
-		Query query = entityManager.createQuery( "SELECT job "
+		String queryStr = "SELECT DISTINCT job "
 				+ "FROM JobEntity job "
-				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.user user "
+				+ "LEFT OUTER JOIN FETCH user.contact contact "
 				+ "JOIN FETCH job.jobType type "
 				+ "LEFT OUTER JOIN FETCH job.status status "
 				+ "LEFT OUTER JOIN FETCH job.messages messages "
 				+ "WHERE "
 				//not deleted and still running
-				+ "(job.deleted <> true AND job.endTime IS NULL) "
+				+ "((job.deleted <> true AND job.endTime IS NULL) "
 				+ "OR "
 				//completed between start and end date
-				+ "(job.endTime IS NOT NULL AND job.endTime >= :startDate AND job.endTime <= :endDate)", JobEntity.class);
+				+ "(job.endTime IS NOT NULL AND job.endTime >= :startDate AND job.endTime <= :endDate))";
+		if(userId != null && userId > 0) {
+			queryStr += " AND user.id = :userId";
+		}
+		
+		Query query = entityManager.createQuery(queryStr, JobEntity.class);
 		query.setParameter("startDate", startDate);
 		query.setParameter("endDate", endDate);
+		if(userId != null && userId > 0) {
+			query.setParameter("userId", userId);
+		}
 		List<JobEntity> entities = query.getResultList();
 		List<JobDTO> dtos = new ArrayList<JobDTO>();
 		for (JobEntity entity : entities) {
@@ -262,17 +298,19 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 	
 	@Override
+	@Transactional
 	public List<JobDTO> findAllRunning() {
 		entityManager.clear();
 
-		List<JobEntity> entities = entityManager.createQuery( "SELECT job "
+		List<JobEntity> entities = entityManager.createQuery( "SELECT DISTINCT job "
 				+ "FROM JobEntity job "
-				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.user user "
+				+ "LEFT OUTER JOIN FETCH user.contact contact "
 				+ "JOIN FETCH job.jobType type "
 				+ "LEFT OUTER JOIN FETCH job.status status "
 				+ "LEFT OUTER JOIN FETCH job.messages messages "
-				+ "WHERE (job.deleted <> true) "
-				+ "AND (job.endTime IS NULL OR job.endTime < NOW())", JobEntity.class).getResultList();
+				+ "WHERE job.deleted <> true "
+				+ "AND (job.endTime IS NULL OR status.percentComplete != 100 OR status.status != '" + JobStatusType.Complete.toString() + "')", JobEntity.class).getResultList();
 		List<JobDTO> dtos = new ArrayList<JobDTO>();
 		for (JobEntity entity : entities) {
 			JobDTO dto = new JobDTO(entity);
@@ -282,6 +320,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	}
 	
 	@Override
+	@Transactional
 	public List<JobTypeDTO> findAllTypes() {
 		List<JobTypeEntity> entities = entityManager.createQuery( "SELECT type "
 				+ "FROM JobTypeEntity type "
@@ -297,9 +336,10 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	
 	private List<JobEntity> getAllEntities() {
 		entityManager.clear();
-		return entityManager.createQuery( "SELECT job "
+		return entityManager.createQuery( "SELECT DISTINCT job "
 				+ "FROM JobEntity job "
-				+ "JOIN FETCH job.contact contact "
+				+ "JOIN FETCH job.user user "
+				+ "LEFT OUTER JOIN FETCH user.contact contact "
 				+ "JOIN FETCH job.jobType type "
 				+ "LEFT OUTER JOIN FETCH job.status status "
 				+ "LEFT OUTER JOIN FETCH job.messages messages "
@@ -310,9 +350,10 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		entityManager.clear();
 		JobEntity entity = null;
 			
-		Query query = entityManager.createQuery( "SELECT job "
+		Query query = entityManager.createQuery( "SELECT DISTINCT job "
 				+ "FROM JobEntity job "
-				+ "LEFT OUTER JOIN FETCH job.contact contact "
+				+ "LEFT OUTER JOIN FETCH job.user user "
+				+ "LEFT OUTER JOIN FETCH user.contact contact "
 				+ "LEFT OUTER JOIN FETCH job.jobType type "
 				+ "LEFT OUTER JOIN FETCH job.status status "
 				+ "LEFT OUTER JOIN FETCH job.messages messages "

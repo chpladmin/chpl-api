@@ -19,7 +19,7 @@ public interface JobDAO {
 	
 	public List<JobDTO> findAll();
 	public List<JobDTO> findAllRunning();
-	public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate);
+	public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate, Long userId);
 	public List<JobTypeDTO> findAllTypes();
 	public JobDTO getById(Long id);
 	public List<JobDTO> getByUser(Long contactId);

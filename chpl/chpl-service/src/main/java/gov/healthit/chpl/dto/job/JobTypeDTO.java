@@ -8,6 +8,7 @@ public class JobTypeDTO implements Serializable {
 	private static final long serialVersionUID = -7845596230766088264L;
 	private Long id;
 	private String name;
+	private String description;
 	private String successMessage;
 	
 	public JobTypeDTO(){}
@@ -15,6 +16,7 @@ public class JobTypeDTO implements Serializable {
 	public JobTypeDTO(JobTypeEntity entity){		
 		this.id = entity.getId();
 		this.name = entity.getName();
+		this.description = entity.getDescription();
 		this.successMessage = entity.getSuccessMessage();
 	}
 
@@ -40,5 +42,13 @@ public class JobTypeDTO implements Serializable {
 
 	public void setSuccessMessage(String successMessage) {
 		this.successMessage = successMessage;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

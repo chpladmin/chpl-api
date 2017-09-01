@@ -5,10 +5,12 @@ import javax.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobMessageDTO;
@@ -21,12 +23,20 @@ public class RunnableJob implements Runnable {
 	@Autowired protected SendMailUtil mailUtils;
 	@Autowired protected JobDAO jobDao;
 	protected JobDTO job;
+	protected User user; //run this job as this user
 
 	public JobDTO getJob() {
 		return job;
 	}
 	public void setJob(JobDTO job) {
 		this.job = job;
+	}
+	
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
 	}
 	
 	public JobDAO getJobDao() {
@@ -37,6 +47,8 @@ public class RunnableJob implements Runnable {
 	}
 	
 	protected void start() {
+		SecurityContextHolder.getContext().setAuthentication(this.user);		
+		logger.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
 		try {
 			jobDao.markStarted(this.job);
 		} catch(Exception ex) {
@@ -65,27 +77,28 @@ public class RunnableJob implements Runnable {
 	 * Email should say the job is done and include any status or messages from the job execution.
 	 */
 	public void complete() {
+		updateStatus(100, JobStatusType.Complete);
+
 		JobDTO completedJob = jobDao.getById(this.job.getId());
 		this.job = completedJob;
 		
-		if(StringUtils.isEmpty(this.job.getContact().getEmail())) {
-			logger.fatal("Cannot send email message regarding job ID " + this.job.getId() + " because email address is blank for contact id " + this.job.getContact().getId());
+		if(this.job.getUser() == null || StringUtils.isEmpty(this.job.getUser().getEmail())) {
+			logger.fatal("Cannot send email message regarding job ID " + this.job.getId() + " because email address is blank.");
 			return;
 		} else {
-			logger.info("Sending email to " + this.job.getContact().getEmail());
+			logger.info("Sending email to " + this.job.getUser().getEmail());
 		}
 		
-		String[] to = {this.job.getContact().getEmail()};
+		String[] to = {this.job.getUser().getEmail()};
 		String subject = "Your Job '" + this.job.getJobType().getName() + "' Has Completed";
 		String htmlMessage = "<h3>Job Details:</h3>"
 				+ "<ul>"
 				+ "<li>Started: " + this.job.getStartTime() + "</li>"
 				+ "<li>Ended: " + this.job.getEndTime() + "</li>"
-				+ "<li>Completion Status: " + this.job.getStatus().getStatus().toString() + "</li>"
+				+ "<li>Status: " + this.job.getStatus().getStatus().toString() + "</li>"
 				+ "</ul>";
 		if(this.job.getMessages() != null && this.job.getMessages().size() > 0) {
-			htmlMessage += "<br/><br/>"
-				+ "The following messages were generated: " 
+			htmlMessage += "<h4>The following messages were generated: </h4>" 
 				+ "<ul>";
 			for(JobMessageDTO message : this.job.getMessages()) {
 				htmlMessage += "<li>" + message.getMessage() + "</li>";
@@ -96,9 +109,12 @@ public class RunnableJob implements Runnable {
 		}
 		
 		try {
-			mailUtils.sendEmail(to, subject, htmlMessage, null);
+			mailUtils.sendEmail(to, null, subject, htmlMessage);
 		} catch(MessagingException ex) {
 			logger.error("Error sending email " + ex.getMessage(), ex);
+		} finally {
+			logger.info("Completed " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
+			SecurityContextHolder.getContext().setAuthentication(null);		
 		}
 	}
 	

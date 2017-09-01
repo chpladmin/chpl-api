@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.auth.entity.UserEntity;
 
 
 @Entity
@@ -37,12 +37,12 @@ public class JobEntity {
 	@JoinColumn(name = "job_type_id", insertable = false, updatable = false)
 	private JobTypeEntity jobType;
 	
-	@Column(name = "contact_id")
-	private Long contactId;
+	@Column(name = "user_id")
+	private Long userId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contact_id", insertable = false, updatable = false)
-	private ContactEntity contact;
+	@JoinColumn(name = "user_id", insertable = false, updatable = false)
+	private UserEntity user;
 	
 	@Column(name = "job_status_id")
 	private Long statusId;
@@ -102,22 +102,6 @@ public class JobEntity {
 
 	public void setJobType(JobTypeEntity jobType) {
 		this.jobType = jobType;
-	}
-
-	public Long getContactId() {
-		return contactId;
-	}
-
-	public void setContactId(Long contactId) {
-		this.contactId = contactId;
-	}
-
-	public ContactEntity getContact() {
-		return contact;
-	}
-
-	public void setContact(ContactEntity contact) {
-		this.contact = contact;
 	}
 
 	public Date getStartTime() {
@@ -191,5 +175,21 @@ public class JobEntity {
 
 	public void setStatusId(Long statusId) {
 		this.statusId = statusId;
+	}
+
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+
+	public UserEntity getUser() {
+		return user;
+	}
+
+	public void setUser(UserEntity user) {
+		this.user = user;
 	}
 }

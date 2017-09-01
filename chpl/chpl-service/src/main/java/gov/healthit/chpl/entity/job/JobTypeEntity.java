@@ -22,6 +22,9 @@ public class JobTypeEntity {
 	@Column(name = "name")
 	private String name;
 	
+	@Column(name = "description")
+	private String description;
+	
 	@Column(name = "success_message")
 	private String successMessage;
 	
@@ -84,5 +87,13 @@ public class JobTypeEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }
