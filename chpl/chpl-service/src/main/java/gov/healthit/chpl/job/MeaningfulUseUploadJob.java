@@ -112,8 +112,8 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 				}
 			}
 			
-			//finished parsing the file, say that's 25% of the job done
-			jobPercentComplete = 25;
+			//finished parsing the file which is pretty quick, say that's 10% of the job done
+			jobPercentComplete = 10;
 			updateStatus(jobPercentComplete, JobStatusType.In_Progress);
 		} catch(IOException ioEx) {
 			String msg = "Could not get input stream for job data string for job with ID " + job.getId();
@@ -174,7 +174,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 			}
 			
 			//update the status
-			jobPercentComplete += 75.0/(double)muusToUpdate.size();
+			jobPercentComplete += 90.0/(double)muusToUpdate.size();
 			updateStatus(jobPercentComplete, JobStatusType.In_Progress);
 		}
 		
