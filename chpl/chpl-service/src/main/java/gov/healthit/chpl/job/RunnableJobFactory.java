@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
-import gov.healthit.chpl.dto.JobDTO;
-import gov.healthit.chpl.dto.JobTypeDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 
 @Component
 public class RunnableJobFactory {
@@ -26,7 +26,7 @@ public class RunnableJobFactory {
 		
 		switch(jobTypeConcept) {
 		case MUU_UPLOAD:
-			result = getMuuJob();
+			result = getMeaningfulUseUploadJob();
 			result.setJob(job);
 			break;
 		default:
@@ -36,7 +36,7 @@ public class RunnableJobFactory {
 	}
 	
 	@Lookup
-	public MeaningfulUseUploadJob getMuuJob(){
+	public MeaningfulUseUploadJob getMeaningfulUseUploadJob(){
 		//spring will override this method
 		//and create a new instance of MeaningfulUseUploadJob
 		return null;

@@ -1,8 +1,8 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.job;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.JobTypeEntity;
+import gov.healthit.chpl.entity.job.JobTypeEntity;
 
 public class JobTypeDTO implements Serializable {
 	private static final long serialVersionUID = -7845596230766088264L;

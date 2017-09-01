@@ -18,8 +18,8 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.JobDTO;
-import gov.healthit.chpl.dto.JobTypeDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.job.NoJobTypeException;
 import gov.healthit.chpl.job.RunnableJob;
@@ -47,6 +47,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 		if(contact == null || contact.getId() == null) {
 			throw new EntityRetrievalException("No contact could be found with the provided information.");
 		}
+		job.setContact(contact);
 		
 		JobDTO created = jobDao.create(job);
 		return created;
@@ -103,7 +104,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 	}
 	
 	@Override
-	public boolean start(JobDTO job) {
+	@Transactional
+	public boolean start(JobDTO job) throws EntityRetrievalException {
 		RunnableJob runnableJob = null;
 		try {
 			runnableJob = jobFactory.getRunnableJob(job);
@@ -118,6 +120,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 			return false;
 		}
 		
+		job.setStartTime(new Date());
+		jobDao.update(job);
 		taskExecutor.execute(runnableJob);
 		return true;
 	}

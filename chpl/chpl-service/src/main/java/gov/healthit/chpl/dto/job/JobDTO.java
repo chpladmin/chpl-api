@@ -1,22 +1,31 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.dto.job;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import gov.healthit.chpl.entity.JobEntity;
+import gov.healthit.chpl.dto.ContactDTO;
+import gov.healthit.chpl.entity.job.JobEntity;
+import gov.healthit.chpl.entity.job.JobMessageEntity;
 
 public class JobDTO implements Serializable {
 	private static final long serialVersionUID = -7841496230766066264L;
 	private Long id;
 	private JobTypeDTO jobType;
 	private ContactDTO contact;
+	private JobStatusDTO status;
 	private Date startTime;
 	private Date endTime;
 	private String data;
+	private List<JobMessageDTO> messages;
 	
-	public JobDTO(){}
+	public JobDTO(){
+		messages = new ArrayList<JobMessageDTO>();
+	}
 	
-	public JobDTO(JobEntity entity){		
+	public JobDTO(JobEntity entity){
+		this();
 		this.id = entity.getId();
 		this.startTime = entity.getStartTime();
 		this.endTime = entity.getEndTime();
@@ -34,6 +43,16 @@ public class JobDTO implements Serializable {
 		} else {
 			this.contact = new ContactDTO();
 			this.contact.setId(entity.getContactId());
+		}
+		
+		if(entity.getStatus() != null) {
+			this.status = new JobStatusDTO(entity.getStatus());
+		}
+		
+		if(entity.getMessages() != null) {
+			for(JobMessageEntity message : entity.getMessages()) {
+				this.messages.add(new JobMessageDTO(message));
+			}
 		}
 	}
 
@@ -83,5 +102,21 @@ public class JobDTO implements Serializable {
 
 	public void setData(String data) {
 		this.data = data;
+	}
+
+	public JobStatusDTO getStatus() {
+		return status;
+	}
+
+	public void setStatus(JobStatusDTO status) {
+		this.status = status;
+	}
+
+	public List<JobMessageDTO> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(List<JobMessageDTO> messages) {
+		this.messages = messages;
 	}
 }

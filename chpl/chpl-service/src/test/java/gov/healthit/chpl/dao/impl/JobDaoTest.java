@@ -28,8 +28,9 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.JobDTO;
-import gov.healthit.chpl.dto.JobTypeDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
+import gov.healthit.chpl.entity.job.JobStatusType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -74,8 +75,6 @@ public class JobDaoTest extends TestCase {
 		job.setContact(contact);
 		String data = "Some,CSV,Data";
 		job.setData(data);
-		Date startTime = new Date();
-		job.setStartTime(startTime);
 		
 		try {
 			job = jobDao.create(job);
@@ -93,8 +92,89 @@ public class JobDaoTest extends TestCase {
 		assertNotNull(job.getContact());
 		assertEquals(job.getContact().getId().longValue(), contact.getId().longValue());
 		assertEquals(data, job.getData());
-		assertNotNull(job.getStartTime());
-		assertEquals(startTime.getTime(), job.getStartTime().getTime());
+		assertNull(job.getStartTime());
+	}
+	
+	@Test
+	@Rollback(true)
+	@Transactional
+	public void testCreateAndStartJob() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		JobDTO job = new JobDTO();
+		JobTypeDTO jobType = new JobTypeDTO();
+		jobType.setId(1L);
+		ContactDTO contact = new ContactDTO();
+		contact.setId(-2L);
+		job.setJobType(jobType);
+		job.setContact(contact);
+		String data = "Some,CSV,Data";
+		job.setData(data);
+		
+		try {
+			job = jobDao.create(job);
+		} catch(EntityCreationException ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertNotNull(job);
+		assertNotNull(job.getId());
+		assertTrue(job.getId() > 0);
+		
+		job = jobDao.getById(job.getId());
+		assertNotNull(job.getJobType());
+		assertEquals(job.getJobType().getId().longValue(), jobType.getId().longValue());
+		assertNotNull(job.getContact());
+		assertEquals(job.getContact().getId().longValue(), contact.getId().longValue());
+		assertEquals(data, job.getData());
+		assertNull(job.getStartTime());
+		
+		try {
+			jobDao.markStarted(job);
+		} catch(EntityRetrievalException ex) {
+			fail(ex.getMessage());
+		}
+	}
+	
+	@Test
+	@Rollback(true)
+	@Transactional
+	public void testCreateAndStartJobWithMessage() {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		JobDTO job = new JobDTO();
+		JobTypeDTO jobType = new JobTypeDTO();
+		jobType.setId(1L);
+		ContactDTO contact = new ContactDTO();
+		contact.setId(-2L);
+		job.setJobType(jobType);
+		job.setContact(contact);
+		String data = "Some,CSV,Data";
+		job.setData(data);
+		
+		try {
+			job = jobDao.create(job);
+		} catch(EntityCreationException ex) {
+			fail(ex.getMessage());
+		}
+		
+		assertNotNull(job);
+		assertNotNull(job.getId());
+		assertTrue(job.getId() > 0);
+		
+		job = jobDao.getById(job.getId());
+		assertNotNull(job.getJobType());
+		assertEquals(job.getJobType().getId().longValue(), jobType.getId().longValue());
+		assertNotNull(job.getContact());
+		assertEquals(job.getContact().getId().longValue(), contact.getId().longValue());
+		assertEquals(data, job.getData());
+		assertNull(job.getStartTime());
+		
+		try {
+			jobDao.markStarted(job);
+		} catch(EntityRetrievalException ex) {
+			fail(ex.getMessage());
+		}
+		
+		jobDao.addJobMessage(job, "A message!");
 	}
 	
 	@Test

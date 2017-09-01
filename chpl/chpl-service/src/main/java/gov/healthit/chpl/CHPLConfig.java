@@ -8,6 +8,7 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -39,6 +41,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
@@ -184,5 +187,11 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+    
+    @Bean
+    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
+		return new MeaningfulUseUploadJob();
+	}
 	
 }

@@ -5,8 +5,8 @@ import java.util.List;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.JobDTO;
-import gov.healthit.chpl.dto.JobTypeDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 
 public interface JobManager {
 	public JobDTO getJobById(Long id);
@@ -16,5 +16,5 @@ public interface JobManager {
 	public List<JobDTO> getJobsForUser(ContactDTO contact) throws EntityRetrievalException;
 	public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException;
 	
-	public boolean start(JobDTO job);
+	public boolean start(JobDTO job) throws EntityRetrievalException;
 }

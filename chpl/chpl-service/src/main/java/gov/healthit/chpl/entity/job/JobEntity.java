@@ -1,7 +1,10 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.job;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,8 +12,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.entity.ContactEntity;
 
 
 @Entity
@@ -36,6 +44,14 @@ public class JobEntity {
 	@JoinColumn(name = "contact_id", insertable = false, updatable = false)
 	private ContactEntity contact;
 	
+	@Column(name = "job_status_id")
+	private Long statusId;
+	
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+ 	@Where(clause="deleted <> 'true'")
+	@JoinColumn(name = "job_status_id", insertable = false, updatable = false)
+	private JobStatusEntity status;
+	
 	@Column(name = "start_time")
 	private Date startTime;
 	
@@ -45,6 +61,13 @@ public class JobEntity {
 	@Column(name = "job_data")
 	private String data;
 	
+ 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "jobId"  )
+	@Basic( optional = false )
+	@Column( name = "job_id", nullable = false  )
+ 	@Where(clause="deleted <> 'true'")
+	private Set<JobMessageEntity> messages = new HashSet<JobMessageEntity>();
+	
+ 	
 	@Column( name = "deleted")
 	private Boolean deleted;
 	
@@ -144,5 +167,29 @@ public class JobEntity {
 	}
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public JobStatusEntity getStatus() {
+		return status;
+	}
+
+	public void setStatus(JobStatusEntity status) {
+		this.status = status;
+	}
+
+	public Set<JobMessageEntity> getMessages() {
+		return messages;
+	}
+
+	public void setMessages(Set<JobMessageEntity> messages) {
+		this.messages = messages;
+	}
+
+	public Long getStatusId() {
+		return statusId;
+	}
+
+	public void setStatusId(Long statusId) {
+		this.statusId = statusId;
 	}
 }

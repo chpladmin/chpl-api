@@ -62,7 +62,6 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.JobTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
@@ -73,6 +72,7 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 

@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.JobDAO;
-import gov.healthit.chpl.dto.JobDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
 
 @Component
 public class JobInitializer {

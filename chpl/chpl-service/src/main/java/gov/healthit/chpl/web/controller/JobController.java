@@ -29,8 +29,8 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.JobDTO;
-import gov.healthit.chpl.dto.JobTypeDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.JobResults;
@@ -71,8 +71,11 @@ public class JobController {
 	public synchronized ResponseEntity<Job> createJob(
 			@RequestParam(value = "jobType", required = true) String jobTypeName,
 			@RequestParam("file") MultipartFile file) throws MaxUploadSizeExceededException, ValidationException, 
-			EntityCreationException, EntityRetrievalException, AccessDeniedException {
-
+			EntityCreationException, EntityRetrievalException {
+		if(Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
+			return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
+		}
+		
 		if (file.isEmpty()) {
 			throw new ValidationException("You cannot upload an empty file!");
 		}
@@ -100,19 +103,17 @@ public class JobController {
 			return new ResponseEntity<Job>(HttpStatus.BAD_REQUEST);
 		}
 		
-		if(Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
-			throw new AccessDeniedException("User must be logged in to create a job.");
-		}
-		
 		//figure out the user
 		UserDTO currentUser = null;
 		try {
 			currentUser = userManager.getById(Util.getCurrentUser().getId());
 		} catch(UserRetrievalException ex) {
-			throw new AccessDeniedException("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
+			logger.error("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
+			return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
 		}
 		if(currentUser == null) {
-			throw new AccessDeniedException("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
+			logger.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
+			return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
 		}
 		
 		//read the file into a string
@@ -120,7 +121,13 @@ public class JobController {
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-			data.append(reader.readLine());
+			String line = null;
+			while((line = reader.readLine()) != null) {
+				if(data.length() > 0) {
+					data.append(System.getProperty("line.separator"));
+				}
+				data.append(line);
+			}		
 		} catch(IOException ex) {
 			String msg = "Could not read file: " + ex.getMessage();
 			logger.error(msg);
@@ -138,16 +145,22 @@ public class JobController {
 		toCreate.setContact(contact);
 		toCreate.setJobType(jobType);
 		JobDTO insertedJob = jobManager.createJob(toCreate);
-		JobDTO created = jobManager.getJobById(insertedJob.getId());
+		JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
 		
-		boolean started = jobManager.start(created);
-		created = jobManager.getJobById(insertedJob.getId());
-		if(!started) {
-			return new ResponseEntity<Job>(new Job(created), HttpStatus.BAD_REQUEST);
+		try {
+			boolean isStarted = jobManager.start(createdJob);
+			if(!isStarted) {
+				return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.BAD_REQUEST);
+			} else {
+				createdJob = jobManager.getJobById(insertedJob.getId());
+			}
+		} catch(EntityRetrievalException ex) {
+			logger.error("Could not mark job " + createdJob.getId() + " as started.");
+			return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 		//query the now running surveillance
-		return new ResponseEntity<Job>(new Job(created), HttpStatus.OK);
+		return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.OK);
 	}
 	
 }

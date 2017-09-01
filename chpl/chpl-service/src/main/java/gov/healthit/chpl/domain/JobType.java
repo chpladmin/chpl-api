@@ -1,7 +1,6 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.JobTypeDTO;
-import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 
 public class JobType {
 	private Long id;

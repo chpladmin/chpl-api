@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -21,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -56,6 +58,7 @@ import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 import gov.healthit.chpl.caching.CacheInitializor;
+import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
@@ -317,5 +320,11 @@ public class CHPLTestConfig implements EnvironmentAware {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+    
+    @Bean
+    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
+		return new MeaningfulUseUploadJob();
+	}
 	
 }
