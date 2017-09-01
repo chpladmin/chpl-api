@@ -162,7 +162,7 @@ public class MeaningfulUseJobControllerTest extends TestCase {
 	}
 	
 	@Transactional
-	@Rollback(false)
+	@Rollback(true)
 	@Test
 	public void testStartMeaningfulUseUploadJobSameThread() throws IOException, ValidationException, EntityCreationException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);		
