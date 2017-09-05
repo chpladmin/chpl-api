@@ -19,7 +19,7 @@ public class IcsFamilyTreeNode implements Serializable{
 
 	private Long id;
 
-	private String chplId;
+	private String chplProductNumber;
 	
 	private CertificationStatus certificationStatus;
 	
@@ -35,16 +35,10 @@ public class IcsFamilyTreeNode implements Serializable{
 	
 	public IcsFamilyTreeNode(CertifiedProductSearchDetails cpsd){
 		this.id = cpsd.getId();
-		this.chplId = cpsd.getChplProductNumber();
-		this.developer = new Developer();
-		this.developer.setDeveloperId(cpsd.getDeveloper().getDeveloperId());
-		this.developer.setName(cpsd.getDeveloper().getName());
-		this.version = new ProductVersion();
-		this.version.setVersionId(cpsd.getVersion().getVersionId());
-		this.version.setVersion(cpsd.getVersion().getVersion());
-		this.product = new Product();
-		this.product.setProductId(cpsd.getProduct().getProductId());
-		this.product.setName(cpsd.getProduct().getName());
+		this.chplProductNumber = cpsd.getChplProductNumber();
+		this.developer = cpsd.getDeveloper();
+		this.version = cpsd.getVersion();
+		this.product = cpsd.getProduct();
 		certificationStatus = new CertificationStatus(cpsd.getCertificationStatus());
 		parents = new ArrayList<CertifiedProduct>(cpsd.getIcs().getParents());
 		children = new ArrayList<CertifiedProduct>(cpsd.getIcs().getChildren());
@@ -58,12 +52,36 @@ public class IcsFamilyTreeNode implements Serializable{
 		this.id = id;
 	}
 
-	public String getChplId() {
-		return chplId;
+	public Developer getDeveloper() {
+		return developer;
 	}
 
-	public void setChplId(String chplId) {
-		this.chplId = chplId;
+	public void setDeveloper(Developer developer) {
+		this.developer = developer;
+	}
+
+	public ProductVersion getVersion() {
+		return version;
+	}
+
+	public void setVersion(ProductVersion version) {
+		this.version = version;
+	}
+
+	public Product getProduct() {
+		return product;
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+
+	public String getChplProductNumber() {
+		return chplProductNumber;
+	}
+
+	public void setChplProductNumber(String chplProductNumber) {
+		this.chplProductNumber = chplProductNumber;
 	}
 
 	public CertificationStatus getCertificationStatus() {
