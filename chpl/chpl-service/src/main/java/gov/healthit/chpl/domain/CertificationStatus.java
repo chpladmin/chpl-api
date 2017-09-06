@@ -16,9 +16,9 @@ public class CertificationStatus implements Serializable{
 	
 	private String name;
 	
-	public CertificationStatus(Map<String, Object> certStatus){
-		this.id = Long.valueOf(certStatus.get("id").toString());
-		this.name = certStatus.get("name").toString();
+	public CertificationStatus(Long id, String name){
+		this.id = id;
+		this.name = name;
 	}
 
 	public Long getId() {

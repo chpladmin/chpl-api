@@ -33,15 +33,16 @@ public class IcsFamilyTreeNode implements Serializable{
 	
 	private Product product;
 	
-	public IcsFamilyTreeNode(CertifiedProductSearchDetails cpsd){
-		this.id = cpsd.getId();
-		this.chplProductNumber = cpsd.getChplProductNumber();
-		this.developer = cpsd.getDeveloper();
-		this.version = cpsd.getVersion();
-		this.product = cpsd.getProduct();
-		certificationStatus = new CertificationStatus(cpsd.getCertificationStatus());
-		parents = new ArrayList<CertifiedProduct>(cpsd.getIcs().getParents());
-		children = new ArrayList<CertifiedProduct>(cpsd.getIcs().getChildren());
+	public IcsFamilyTreeNode(CertifiedProductDetailsDTO cpd){
+		this.id = cpd.getId();
+		this.chplProductNumber = cpd.getChplProductNumber();
+		this.developer = new Developer(cpd.getDeveloper());
+		this.version = new ProductVersion(cpd.getVersion());
+		this.product = new Product(cpd.getProduct());
+		certificationStatus = new CertificationStatus(cpd.getCertificationStatusId(),
+				cpd.getCertificationStatusName());
+		parents = new ArrayList<CertifiedProduct>();
+		children = new ArrayList<CertifiedProduct>();
 	}
 
 	public Long getId() {

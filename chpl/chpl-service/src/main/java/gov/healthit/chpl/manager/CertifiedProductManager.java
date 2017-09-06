@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -40,5 +41,7 @@ public interface CertifiedProductManager extends QuestionableActivityHandler {
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;	
+			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException;
+	public CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException;
 }

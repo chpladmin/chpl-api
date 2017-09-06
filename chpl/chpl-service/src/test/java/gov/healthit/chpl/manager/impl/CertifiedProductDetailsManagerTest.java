@@ -34,6 +34,7 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
 import junit.framework.TestCase;
 
 
@@ -49,6 +50,9 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
+	
+	@Autowired
+	private CertifiedProductManager certifiedProductManager;
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -65,7 +69,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	@Test
 	@Transactional
 	public void testIcsFamilyTree() throws EntityRetrievalException{
-		List<IcsFamilyTreeNode> tree = certifiedProductDetailsManager.getIcsFamilyTree(5L);
+		List<IcsFamilyTreeNode> tree = certifiedProductManager.getIcsFamilyTree(5L);
 		assertNotNull(tree);
 		assertEquals(5,tree.size());
 	}
