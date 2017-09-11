@@ -121,7 +121,7 @@ public class AuthenticationController{
        			+ "<p>Take care,<br/> " +
 				 "The Open Data CHPL Team</p>";
 		String[] toEmails = {userInfo.getEmail()};
-		sendMailService.sendEmail(toEmails, "Open Data CHPL Password Reset", htmlMessage);
+		sendMailService.sendEmail(toEmails, null, "Open Data CHPL Password Reset", htmlMessage);
 		
 		return "{\"passwordReset\" : true }";
 	

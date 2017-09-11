@@ -20,7 +20,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 	protected static final String SUBSEQUENT_ROW_INDICATOR = "SUBELEMENT";
 	protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
 	
-	public abstract PendingCertifiedProductEntity handle();
+	public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 	
 	public Long getDefaultStatusId() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");

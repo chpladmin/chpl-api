@@ -4,10 +4,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTask;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -124,32 +125,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 			product.getErrorMessages().add("A test result summary URL is required.");
 		}
 		
-		// Allow retired test tool only if CP ICS = true
-		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-			if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
-				for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
-					if(StringUtils.isEmpty(testTool.getName())) {
-						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
-					} else {
-						TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
-						if(tt == null) {
-							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
-						}
-						else if(tt.isRetired() && super.icsCode.equals("0")) {
-							if(super.hasIcsConflict){
-								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-							}
-							else {
-								product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
-								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
-							}
-						}
-					}
-				}
-			}
-		}
-		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
 				boolean gapEligibleAndTrue = false;
@@ -158,14 +133,42 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 					gapEligibleAndTrue = true;
 				}
 				
-				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED) &&
-						cert.getSed() == null) {
-					product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
+				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
+					if(cert.getSed() == null) {
+						product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
+					} else if (cert.getSed() != null && cert.getSed().booleanValue() == true && 
+								(cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
+						product.getErrorMessages().add("Critiera " + cert.getNumber() + " indicated SED but no UCD Processes were listed.");
+					}
 				}
+				
 				if(!gapEligibleAndTrue && 
 						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA) &&
 						(cert.getTestData() == null || cert.getTestData().size() == 0)) {
 					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+				}
+				
+				if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+					for(PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
+						if(StringUtils.isEmpty(testTool.getName())) {
+							product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
+						} else {
+							TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
+							if(tt == null) {
+								product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
+							}
+							else if(tt.isRetired() && super.icsCodeInteger != null && super.icsCodeInteger.intValue() == 0) {
+								if(super.hasIcsConflict){
+									product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+								}
+								else {
+									product.getErrorMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber() 
+									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -189,16 +192,18 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 //		}
 		
 		//check sed/ucd/tasks
-		for(CertificationResult cert : product.getCertificationResults()) {
-			if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
-				for(CertificationResult certCriteria : product.getCertificationResults()) {
-					if (certCriteria.getTestTasks() != null && certCriteria.getTestTasks().size() > 0){
-						for(CertificationResultTestTask task : certCriteria.getTestTasks()) {
-							if(task.getTestParticipants() == null || task.getTestParticipants().size() < 5) {
-								product.getWarningMessages().add("A test task for certification " + certCriteria.getNumber() + " requires at least 5 participants.");
-							}
-						}
+		if(product.getSed() != null && product.getSed().getTestTasks() != null) {
+			for(TestTask task : product.getSed().getTestTasks()) {
+				StringBuffer criteriaNumbers = new StringBuffer();
+				for(CertificationCriterion criteria : task.getCriteria()) {
+					if(criteriaNumbers.length() > 0) { 
+						criteriaNumbers.append(",");
 					}
+					criteriaNumbers.append(criteria.getNumber());
+				}
+				if(task.getTestParticipants() == null || task.getTestParticipants().size() < 5) {
+					product.getWarningMessages().add("A test task for certification(s) " + criteriaNumbers.toString() + 
+							" requires at least 5 participants and only has " + task.getTestParticipants().size() + ".");
 				}
 			}
 		}
@@ -277,7 +282,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 						TestToolDTO tt = super.testToolDao.getByName(testTool.getTestToolName());
 						if(tt == null) {
 							product.getErrorMessages().add("No test tool with " + testTool.getTestToolName() + " was found for criteria " + cert.getNumber() + ".");
-						} else if(tt.isRetired() && icsCode != null && icsCode.equals("0")) {
+						} else if(tt.isRetired() && icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
 							if(super.hasIcsConflict) {
 								product.getWarningMessages().add("Test Tool '" + testTool.getTestToolName() + "' can not be used for criteria '" + cert.getNumber() 
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");

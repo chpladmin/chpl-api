@@ -3,8 +3,6 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.caching.CacheNames;
-
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -38,11 +34,8 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
-public class ProductVersionManagerImpl implements ProductVersionManager {
+public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl implements ProductVersionManager {
 	private static final Logger logger = LogManager.getLogger(ProductVersionManagerImpl.class);
-	
-	@Autowired private SendMailUtil sendMailService;
-	
 	@Autowired private ProductVersionDAO dao;
 	@Autowired private DeveloperDAO devDao;
 	@Autowired private ProductDAO prodDao;
@@ -133,7 +126,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		ProductVersionEntity result = dao.update(dto);
 		ProductVersionDTO after = new ProductVersionDTO(result);
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, after.getId(), "Product Version "+dto.getVersion()+" updated for product "+dto.getProductId(), before, after);
-		checkSuspiciousActivity(before, after);
+		handleActivity(before, after);
 		
 		return after;
 	}
@@ -191,29 +184,34 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 		return createdVersion;
 	}
 	
-	@Override
-	public void checkSuspiciousActivity(ProductVersionDTO original, ProductVersionDTO changed) {
-		String subject = "CHPL Questionable Activity";
-		String htmlMessage = "<p>Activity was detected on version " + original.getVersion() + ".</p>" 
-				+ "<p>To view the details of this activity go to: " + 
-				env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
-		
-		boolean sendMsg = false;
-		
-		if( (original.getVersion() != null && changed.getVersion() == null) ||
-			(original.getVersion() == null && changed.getVersion() != null) ||
-			!original.getVersion().equals(changed.getVersion()) ) {
-			sendMsg = true;
-		}
-		
-		if(sendMsg) {
-			String emailAddr = env.getProperty("questionableActivityEmail");
-			String[] emailAddrs = emailAddr.split(";");
-			try {
-				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-			} catch(MessagingException me) {
-				logger.error("Could not send questionable activity email", me);
+	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+		String message = "";
+		if(!(src instanceof ProductVersionDTO)) {
+			logger.error("Cannot use object of type " + src.getClass());
+		} else {
+			ProductVersionDTO original = (ProductVersionDTO) src;
+			message = "<p>Activity was detected on version " + original.getVersion() + ".</p>" 
+					+ "<p>To view the details of this activity go to: " + 
+					env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
+		} 
+		return message;
+	}
+	
+	public boolean isQuestionableActivity(Object src, Object dest) {
+		boolean isQuestionable = false;
+
+		if(!(src instanceof ProductVersionDTO && dest instanceof ProductVersionDTO)) {
+			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type ProductVersionDTO.");
+		} else {
+			ProductVersionDTO original = (ProductVersionDTO) src;
+			ProductVersionDTO changed = (ProductVersionDTO) dest;
+			
+			if( (original.getVersion() != null && changed.getVersion() == null) ||
+				(original.getVersion() == null && changed.getVersion() != null) ||
+				!original.getVersion().equals(changed.getVersion()) ) {
+				isQuestionable = true;
 			}
-		}	
+		}
+		return isQuestionable;
 	}
 }

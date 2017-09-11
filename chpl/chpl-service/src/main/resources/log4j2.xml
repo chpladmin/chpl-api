@@ -17,9 +17,9 @@
    	<Logger name="org.hibernate" level="INFO" additivity="false">
       <AppenderRef ref="STDOUT"/>
     </Logger>
-    <Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+    <!--  Logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
       <AppenderRef ref="STDOUT"/>
-    </Logger>
+    </Logger-->
     <Logger name="org.springframework" level="INFO" additivity="false">
       <AppenderRef ref="STDOUT"/>
     </Logger>

@@ -5,21 +5,20 @@ import java.util.List;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 
 public interface CertificationResultManager {
-	public int update(Long abcId, CertifiedProductDTO updatedListing, CertificationResult orig, CertificationResult updated)
+	public int update(Long abcId, CertifiedProductSearchDetails existingListing, 
+			CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
 			throws EntityCreationException, EntityRetrievalException;
 	
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
@@ -33,5 +32,4 @@ public interface CertificationResultManager {
 	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId);
 	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId);
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestTaskParticipantDTO> getTestParticipantsForTask(Long certificationResultTaskId);
 }

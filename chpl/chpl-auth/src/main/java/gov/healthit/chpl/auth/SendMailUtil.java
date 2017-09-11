@@ -50,7 +50,7 @@ public class SendMailUtil {
 	 * 
 	 * @param invitation
 	 */
-	public void sendEmail(String[] toEmail, String subject, String htmlMessage)
+	public void sendEmail(String[] toEmail, String[] bccEmail, String subject, String htmlMessage)
 			throws AddressException, MessagingException {
 		// do not attempt to send email if we are in a dev environment
 		String mailHost = env.getProperty("smtpHost");
@@ -73,7 +73,7 @@ public class SendMailUtil {
 		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
 		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
 
-		sendEmail(toEmail, subject, htmlMessage, properties);
+		sendEmail(toEmail, bccEmail, subject, htmlMessage, properties);
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class SendMailUtil {
 	 * @throws AddressException
 	 * @throws MessagingException
 	 */
-	public void sendEmail(String[] toEmail, String subject, String htmlMessage, Properties properties)
+	public void sendEmail(String[] toEmail, String[] bccEmail, String subject, String htmlMessage, Properties properties)
 			throws AddressException, MessagingException {
 		// creates a new session with an authenticator
 		javax.mail.Authenticator auth = new javax.mail.Authenticator() {
@@ -113,13 +113,23 @@ public class SendMailUtil {
 		}
 
 		try {
-			InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
-			for (int i = 0; i < toEmail.length; i++) {
-				InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
-				toAddresses[i] = toEmailaddress;
+			if(toEmail != null && toEmail.length > 0) {
+				InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
+				for (int i = 0; i < toEmail.length; i++) {
+					InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
+					toAddresses[i] = toEmailaddress;
+				}
+				msg.setRecipients(Message.RecipientType.TO, toAddresses);
+				logger.debug("Sending email to " + Arrays.toString(toEmail));
+			} else if(bccEmail != null && bccEmail.length > 0) {
+				InternetAddress[] bccAddresses = new InternetAddress[bccEmail.length];
+				for (int i = 0; i < bccEmail.length; i++) {
+					InternetAddress bccAddress = new InternetAddress(bccEmail[i]);
+					bccAddresses[i] = bccAddress;
+				}
+				msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
+				logger.debug("Sending email to " + Arrays.toString(bccEmail));
 			}
-			msg.setRecipients(Message.RecipientType.TO, toAddresses);
-			logger.debug("Sending email to " + Arrays.toString(toEmail));
 		} catch (MessagingException ex) {
 			logger.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
 			throw ex;

@@ -41,6 +41,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
@@ -100,7 +101,7 @@ public class CertifiedProductController {
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
 			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) {
 		List<CertifiedProductDetailsDTO> certifiedProductList = null;
-		
+
 		if(versionId != null && versionId > 0) {
 			if(editable) {
 				certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
@@ -138,6 +139,16 @@ public class CertifiedProductController {
 		}
 		
 		return certifiedProduct;
+	}
+	
+	@ApiOperation(value="Get the ICS family tree for the specified certified product.", 
+			notes="Returns all member of the family tree conected to the specified certified product.")
+	@RequestMapping(value="/{certifiedProductId}/ics_relationships", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+		List<IcsFamilyTreeNode> familyTree = cpdManager.getIcsFamilyTree(certifiedProductId);
+		
+		return familyTree;
 	}
 	
 	@ApiOperation(value="Update an existing certified product.", 
@@ -212,12 +223,12 @@ public class CertifiedProductController {
 		
 		//search for the product by id to get it with all the updates
 		CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-		cpManager.checkSuspiciousActivity(existingListing, changedProduct);
+		cpManager.handleActivity(existingListing, changedProduct);
 		
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(), "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing, changedProduct);
 		
-		 HttpHeaders responseHeaders = new HttpHeaders();
-		 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		if(!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
 			 responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
 		}

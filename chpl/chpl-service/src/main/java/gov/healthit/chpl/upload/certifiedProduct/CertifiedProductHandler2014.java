@@ -554,22 +554,18 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						break;
 					case "SED":
 						cert.setSed(asBoolean(firstRow.get(currIndex++).trim()));
-						
-						PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
 						String ucdProcessName = firstRow.get(currIndex++).trim();
-						if(cert.getSed().equals(Boolean.TRUE) && StringUtils.isEmpty(ucdProcessName)) {
-							pendingCertifiedProduct.getErrorMessages().add(pendingCertifiedProduct.getUniqueId() + " indicates SED should be present but no UCD was entered.");
-						} else if(cert.getSed().equals(Boolean.FALSE) && !StringUtils.isEmpty(ucdProcessName)) {
-							pendingCertifiedProduct.getErrorMessages().add(pendingCertifiedProduct.getUniqueId() + " indicates SED is not present but a UCD process was entered.");
+						String ucdProcessDetails = firstRow.get(currIndex++).trim();
+						if(!StringUtils.isEmpty(ucdProcessName)) {
+							PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
+							ucd.setUcdProcessName(ucdProcessName);
+							ucd.setUcdProcessDetails(ucdProcessDetails);
+							UcdProcessDTO dto = ucdDao.getByName(ucd.getUcdProcessName());
+							if(dto != null) {
+								ucd.setUcdProcessId(dto.getId());
+							}
+							cert.getUcdProcesses().add(ucd);
 						}
-						
-						ucd.setUcdProcessName(ucdProcessName);
-						ucd.setUcdProcessDetails(firstRow.get(currIndex++).trim());
-						UcdProcessDTO dto = ucdDao.getByName(ucd.getUcdProcessName());
-						if(dto != null) {
-							ucd.setUcdProcessId(dto.getId());
-						}
-						cert.getUcdProcesses().add(ucd);
 						break;
 					default:
 						pendingCertifiedProduct.getErrorMessages().add("Invalid column title " + colTitle + " at index " + currIndex);
@@ -647,9 +643,9 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			}
 		}
 		
-		if(cert.isHasAdditionalSoftware() && cert.getAdditionalSoftware().size() == 0) {
+		if(cert.getHasAdditionalSoftware() != null && cert.getHasAdditionalSoftware().booleanValue() == true && cert.getAdditionalSoftware().size() == 0) {
 			product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates additional software should be present but none was found.");
-		} else if(!cert.isHasAdditionalSoftware() && cert.getAdditionalSoftware().size() > 0) {
+		} else if((cert.getHasAdditionalSoftware() == null || cert.getHasAdditionalSoftware().booleanValue() == false) && cert.getAdditionalSoftware().size() > 0) {
 			product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates additional software should not be present but some was found.");
 		}
 	}

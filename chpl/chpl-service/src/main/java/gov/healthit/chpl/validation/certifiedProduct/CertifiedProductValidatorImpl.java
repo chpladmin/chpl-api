@@ -20,9 +20,12 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -55,7 +58,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	
 	protected Boolean hasIcsConflict;
 	
-	protected Integer icsCode;
+	protected Integer icsCodeInteger;
 	
 	Pattern urlRegex;
 	
@@ -123,9 +126,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			//validate that these pieces match up with data
-			String icsCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
-			if(StringUtils.isEmpty(icsCode) || 
-				!icsCode.matches("^0|1$")) {
+			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
+			if(StringUtils.isEmpty(additionalSoftwareCode) || 
+				!additionalSoftwareCode.matches("^0|1$")) {
 				return false;
 			}
 		}
@@ -137,9 +140,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			//validate that these pieces match up with data
-			String icsCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
-			if(StringUtils.isEmpty(icsCode) || 
-				!icsCode.matches("^[0-9]{"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
+			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+			if(StringUtils.isEmpty(certifiedDateCode) || 
+				!certifiedDateCode.matches("^[0-9]{"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
@@ -180,15 +183,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String developerCode = uniqueIdParts[CertifiedProductDTO.DEVELOPER_CODE_INDEX];
 		String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
 		String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
-		
-		if(!validateIcsCodeCharacters(product.getUniqueId())) {
-			product.getErrorMessages().add(
-					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
-							CertifiedProductDTO.ICS_CODE_LENGTH));
-		} else {
-			icsCode = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
-		}
 		String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 		String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 		
@@ -272,13 +266,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		}
 		
 		hasIcsConflict = false;
-		if(icsCode != null) {
-			if(icsCode.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
-				product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
-				hasIcsConflict = true;
-			} else if(icsCode.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
-				product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
-				hasIcsConflict = true;
+		if(!validateIcsCodeCharacters(product.getUniqueId())) {
+			product.getErrorMessages().add(
+					String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+							CertifiedProductDTO.ICS_CODE_LENGTH));
+		} else {
+			icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+			if(icsCodeInteger != null) {
+				if(icsCodeInteger.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
+					product.getErrorMessages().add("The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
+					hasIcsConflict = true;
+				} else if(icsCodeInteger.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
+					product.getErrorMessages().add("The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
+					hasIcsConflict = true;
+				}
 			}
 		}
 		
@@ -336,6 +338,89 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+			if( (cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
+				if(cert.getG1Success() != null && cert.getG1Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Success"));
+				}
+				if(cert.getG2Success() != null && cert.getG2Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Success"));
+				}
+				if(cert.getGap() != null && cert.getGap().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "GAP"));
+				}
+				if(cert.getSed() != null && cert.getSed().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "SED"));
+				}
+				if(!StringUtils.isEmpty(cert.getApiDocumentation())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "API Documentation"));
+				}
+				if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Privacy and Security Framework"));
+				}
+				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Additional Software"));
+				}
+				if(cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Macra Measures"));
+				}
+				if(cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Macra Measures"));
+				}
+				if(cert.getTestData() != null && cert.getTestData().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Data"));
+				}
+				if(cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Functionality"));
+				}
+				if(cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Procedures"));
+				}
+				if(cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Standards"));
+				}
+				if(cert.getTestTasks() != null && cert.getTestTasks().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Tasks"));
+				}
+				if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Tools"));
+				}
+				if(cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "UCD Processes"));
+				}
+			}
+			
 			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
@@ -346,7 +431,16 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
 				}
 			}
-			
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
+				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
+				if(foundPrivacyAndSecurityFramework == null){
+					product.getErrorMessages().add("Certification " + cert.getNumber() + 
+							" contains Privacy and Security Framework value '" + 
+							formattedPrivacyAndSecurityFramework + "' which must match one of " +
+							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
+				}
+			}
 			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 				for(PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
 					if(!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
@@ -365,14 +459,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			
 			//validate that these pieces match up with data
-			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
-				product.getErrorMessages().add(
-						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
-								CertifiedProductDTO.ICS_CODE_LENGTH));
-			} else {
-				icsCode = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
-			}
 			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 			
@@ -409,22 +495,30 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 			
 			hasIcsConflict = false;
-			if(icsCode != null && icsCode.intValue() == 0) {
-				if(product.getIcs() != null && product.getIcs().getParents() != null && 
-						product.getIcs().getParents().size() > 0) {
-					product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
-				} 
-					
-				if(product.getIcs() != null && product.getIcs().getInherits() != null && 
-						product.getIcs().getInherits().equals(Boolean.TRUE)) {
-					product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
+				product.getErrorMessages().add(
+						String.format(messageSource.getMessage(
+								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+								CertifiedProductDTO.ICS_CODE_LENGTH));
+			} else {
+				icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+				if(icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
+					if(product.getIcs() != null && product.getIcs().getParents() != null && 
+							product.getIcs().getParents().size() > 0) {
+						product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
+					} 
+						
+					if(product.getIcs() != null && product.getIcs().getInherits() != null && 
+							product.getIcs().getInherits().equals(Boolean.TRUE)) {
+						product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+						hasIcsConflict = true;
+					}
+				} else if(product.getIcs() == null || product.getIcs().getInherits() == null ||
+						product.getIcs().getInherits().equals(Boolean.FALSE) && 
+						icsCodeInteger != null && icsCodeInteger.intValue() > 0) {
+					product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 					hasIcsConflict = true;
 				}
-			} else if(product.getIcs() == null || product.getIcs().getInherits() == null ||
-					product.getIcs().getInherits().equals(Boolean.FALSE) && 
-					icsCode != null && icsCode.intValue() > 0) {
-				product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
-				hasIcsConflict = true;
 			}
 			
 			if(!validateAdditionalSoftwareCodeCharacters(product.getChplProductNumber())) {
@@ -473,6 +567,102 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		validateDemographics(product);
 		
 		for(CertificationResult cert : product.getCertificationResults()) {
+			if( (cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
+				if(cert.isG1Success() != null && cert.isG1Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Success"));
+				}
+				if(cert.isG2Success() != null && cert.isG2Success().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Success"));
+				}
+				if(cert.isGap() != null && cert.isGap().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "GAP"));
+				}
+				if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "SED"));
+				}
+				if(!StringUtils.isEmpty(cert.getApiDocumentation())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "API Documentation"));
+				}
+				if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "API Documentation"));
+				}
+				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Additional Software"));
+				}
+				if(cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G1 Macra Measures"));
+				}
+				if(cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "G2 Macra Measures"));
+				}
+				if(cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Data"));
+				}
+				if(cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Functionality"));
+				}
+				if(cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Procedures"));
+				}
+				if(cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Standards"));
+				}
+				if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
+					product.getWarningMessages().add(String.format(messageSource.getMessage(
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							cert.getNumber(), "Test Tools"));
+				}
+				
+				if(product.getSed() != null && product.getSed().getTestTasks() != null && product.getSed().getTestTasks().size() > 0) {
+					for(TestTask tt : product.getSed().getTestTasks()) {
+						for(CertificationCriterion ttCriteria : tt.getCriteria()) {
+							if(ttCriteria.getNumber() != null && ttCriteria.getNumber().equals(cert.getNumber())) {
+								product.getWarningMessages().add(String.format(messageSource.getMessage(
+										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+										cert.getNumber(), "Test Tasks"));
+							} 
+						}
+					}
+				}
+				if(product.getSed() != null && product.getSed().getUcdProcesses() != null && product.getSed().getUcdProcesses().size() > 0) {
+					for(UcdProcess ucd : product.getSed().getUcdProcesses()) {
+						for(CertificationCriterion ucdCriteria : ucd.getCriteria()) {
+							if(ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
+								product.getWarningMessages().add(String.format(messageSource.getMessage(
+										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+										cert.getNumber(), "UCD Processes"));
+							} 
+						}
+					}
+				}
+			}
+			
 			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);

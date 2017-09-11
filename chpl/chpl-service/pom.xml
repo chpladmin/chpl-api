@@ -330,16 +330,17 @@
             	<createJavaDocAnnotations>true</createJavaDocAnnotations>
 				<sources>
 					<source>src/main/java/gov/healthit/chpl/domain/Address.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSed.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultAdditionalSoftware.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestData.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestFunctionality.java</source>
-					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestParticipant.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/TestParticipant.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestProcedure.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestStandard.java</source>
-					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTask.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/TestTask.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTool.java</source>
-					<source>src/main/java/gov/healthit/chpl/domain/CertificationResultUcdProcess.java</source>
+					<source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProduct.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductAccessibilityStandard.java</source>
 					<source>src/main/java/gov/healthit/chpl/domain/CertifiedProductDownloadResponse.java</source>

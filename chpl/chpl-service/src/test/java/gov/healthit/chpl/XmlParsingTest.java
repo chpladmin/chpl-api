@@ -24,6 +24,13 @@ public class XmlParsingTest {
 	}
 
 	@Test
+	public void testIntegerParsing() {
+		String toParse = "00";
+		Integer parsed = new Integer(toParse);
+		assertTrue(parsed.intValue() == 0);
+	}
+	
+	@Test
 	public void filenameMatcherTest() {
 		boolean result = "chpl-2011-20161007-122654.csv".matches("^chpl-" + "2011" + "-.+\\." + "csv"+"$");
 		assertTrue(result);

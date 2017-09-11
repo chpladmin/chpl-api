@@ -34,9 +34,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			entity = this.getEntityById(dto.getId());
 		}
 		
-		if (entity != null) {
-			throw new EntityCreationException("An entity with this ID already exists.");
-		} else {
+		if (entity == null) {
 			entity = new TestParticipantEntity();
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
@@ -59,8 +57,8 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 				logger.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
-			return new TestParticipantDTO(entity);
 		}		
+		return new TestParticipantDTO(entity);
 	}
 
 	@Override

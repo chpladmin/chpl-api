@@ -20,11 +20,7 @@ $ git clone https://github.com/chpladmin/chpl-api.git
 
 ## Load the data model
 
-See the instructions in [the Open Data CHPL data model README](openchpl-sql/README.md).
-
-## ETL
-
-See the instructions in [the Open Data CHPL ETL README](chpl/chpl-etl/README.md).
+See the instructions in [the Open Data CHPL data model README](chpl-data-model/README.md).
 
 ## Authentication token & testing databases
 
@@ -37,6 +33,16 @@ chpl/chpl-auth/src/test/resources/environment.auth.test.properties
 chpl/chpl-service/src/test/resources/environment.test.properties
 ```
 
+## Properties files
+
+Copy over the two template files and fill in the keylocation, downloadedFolderPath, and datasourcepassword
+
+```
+chpl/chpl-auth/src/main/resources/environment.auth.properties
+
+chpl/chpl-service/src/main/resources/environment.properties
+```
+
 ## Tomcat server
 
 Modifiy `server.xml` to add a Resource to the GlobalNamingResources
@@ -47,7 +53,9 @@ And add a ResourceLink to the Context in `context.xml`:
 
 `<ResourceLink global="jdbc/DATABASE NAME" name="jdbc/DATABASE NAME" type="javax.sql.DataSource"/>`
 
-Copy the postgres-9.2 jar under PUBLIC\CHPL\DB_Dump into the tomcat install /lib directory
+Change the port number from 8080 to 8181 in the Connector of the server.xml file.
+
+Copy the postgres-9.2 jar under Ai_PUBLIC\CHPL_Public\DB_Dump into the tomcat install /lib directory
 
 ## Package everything
 

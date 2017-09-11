@@ -147,6 +147,8 @@ public class CertifiedProductControllerTest {
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
 		updateRequest.getCertifyingBody().put("id", "-1");
+		updateRequest.getSed().setTestTasks(null);
+		updateRequest.getSed().setUcdProcesses(null);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -162,7 +164,6 @@ public class CertifiedProductControllerTest {
 		cr.setTestFunctionality(null);
 		cr.setTestProcedures(null);
 		cr.setTestStandards(null);
-		cr.setTestTasks(null);
 		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
 		CertificationResultTestTool crtt = new CertificationResultTestTool();
 		crtt.setId(2L);
@@ -172,7 +173,6 @@ public class CertifiedProductControllerTest {
 		crttList.add(crtt);
 		cr.setTestToolsUsed(crttList);
 		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
-		cr.setUcdProcesses(null);
 		certificationResults.add(cr);
 		updateRequest.setCertificationResults(certificationResults);
 		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
@@ -210,7 +210,7 @@ public class CertifiedProductControllerTest {
 		InheritedCertificationStatus ics = new InheritedCertificationStatus();
 		ics.setInherits(false);
 		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
-		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.0.1.160402");
+		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 			listingUpdateRequest.setListing(updateRequest);
@@ -408,7 +408,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);
@@ -474,6 +474,8 @@ public class CertifiedProductControllerTest {
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
 		updateRequest.getCertifyingBody().put("id", "-1");
+		updateRequest.getSed().setTestTasks(null);
+		updateRequest.getSed().setUcdProcesses(null);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -489,7 +491,6 @@ public class CertifiedProductControllerTest {
 		cr.setTestFunctionality(null);
 		cr.setTestProcedures(null);
 		cr.setTestStandards(null);
-		cr.setTestTasks(null);
 		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
 		CertificationResultTestTool crtt = new CertificationResultTestTool();
 		crtt.setId(2L);
@@ -499,7 +500,6 @@ public class CertifiedProductControllerTest {
 		crttList.add(crtt);
 		cr.setTestToolsUsed(crttList);
 		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
-		cr.setUcdProcesses(null);
 		certificationResults.add(cr);
 		updateRequest.setCertificationResults(certificationResults);
 		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
@@ -537,7 +537,7 @@ public class CertifiedProductControllerTest {
 		InheritedCertificationStatus ics = new InheritedCertificationStatus();
 		ics.setInherits(true);
 		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
-		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.0.1.160402");
+		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
 		try {
 			ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 			listingUpdateRequest.setListing(updateRequest);
@@ -592,6 +592,8 @@ public class CertifiedProductControllerTest {
 		certStatus.put("name", "Active");
 		updateRequest.setCertificationStatus(certStatus);
 		updateRequest.getCertifyingBody().put("id", "-1");
+		updateRequest.getSed().setTestTasks(null);
+		updateRequest.getSed().setUcdProcesses(null);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);
@@ -607,7 +609,6 @@ public class CertifiedProductControllerTest {
 		cr.setTestFunctionality(null);
 		cr.setTestProcedures(null);
 		cr.setTestStandards(null);
-		cr.setTestTasks(null);
 		List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
 		CertificationResultTestTool crtt = new CertificationResultTestTool();
 		crtt.setId(2L);
@@ -617,7 +618,6 @@ public class CertifiedProductControllerTest {
 		crttList.add(crtt);
 		cr.setTestToolsUsed(crttList);
 		cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
-		cr.setUcdProcesses(null);
 		certificationResults.add(cr);
 		updateRequest.setCertificationResults(certificationResults);
 		List<CQMResultDetails> cqms = new ArrayList<CQMResultDetails>();
@@ -655,7 +655,7 @@ public class CertifiedProductControllerTest {
 		InheritedCertificationStatus ics = new InheritedCertificationStatus();
 		ics.setInherits(true);
 		updateRequest.setIcs(ics); // Inherited Status = product.getIcs();
-		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.0.1.160402");
+		updateRequest.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
 		ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
 		listingUpdateRequest.setListing(updateRequest);
 		try{
@@ -759,7 +759,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);
@@ -857,7 +857,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);
@@ -955,7 +955,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCertificationEdition(certEdition);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
-		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.0.1.160402");
+		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
 		CertifiedProductValidator validator = validatorFactory.getValidator(pcpDTO);
 		if(validator != null) {
 			validator.validate(pcpDTO);

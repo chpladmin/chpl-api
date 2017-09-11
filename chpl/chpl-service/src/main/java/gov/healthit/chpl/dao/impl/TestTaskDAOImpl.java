@@ -20,6 +20,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestTaskEntity;
+import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 
 @Repository("testTaskDao")
 public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
@@ -34,9 +35,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 			entity = this.getEntityById(dto.getId());
 		}
 		
-		if (entity != null) {
-			throw new EntityCreationException("An entity with this ID already exists.");
-		} else {
+		if (entity == null) {
 			entity = new TestTaskEntity();
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
@@ -65,8 +64,8 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 				logger.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
-			return new TestTaskDTO(entity);
-		}		
+		}	
+		return new TestTaskDTO(entity);
 	}
 
 	@Override
@@ -108,7 +107,8 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
 			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-			update(toDelete);
+			entityManager.merge(toDelete);
+			entityManager.flush();
 		}
 	}
 
@@ -159,7 +159,12 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 		
 		TestTaskEntity entity = null;
 			
-		Query query = entityManager.createQuery( "from TestTaskEntity where (NOT deleted = true) AND (id = :entityid) ", TestTaskEntity.class );
+		Query query = entityManager.createQuery( "SELECT tt "
+				+ "FROM TestTaskEntity tt "
+				+ "LEFT OUTER JOIN FETCH tt.testParticipants participantMappings " 
+				+ "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
+				+ "WHERE (NOT tt.deleted = true) "
+				+ "AND (tt.id = :entityid) ", TestTaskEntity.class );
 		query.setParameter("entityid", id);
 		List<TestTaskEntity> result = query.getResultList();
 

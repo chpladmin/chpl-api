@@ -18,7 +18,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
-public interface CertifiedProductManager {
+public interface CertifiedProductManager extends QuestionableActivityHandler {
 
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
 	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException;
@@ -41,5 +41,4 @@ public interface CertifiedProductManager {
 	
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;	
-	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed);
 }

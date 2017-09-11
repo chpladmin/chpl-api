@@ -17,58 +17,57 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "test_participant")
 public class TestParticipantEntity {
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "test_participant_id", nullable = false  )
 	private Long id;
 
-	@Column(name = "gender")
+	@Column(name = "gender", nullable = false  )
 	private String gender;
 
-	@Column( name = "education_type_id", nullable = true  )
+	@Column( name = "education_type_id", nullable = false  )
 	private Long educationTypeId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "education_type_id", nullable = true, insertable = false, updatable = false)
 	private EducationTypeEntity education;
-	
-	@Column( name = "test_participant_age_id", nullable = true )
+
+	@Column( name = "test_participant_age_id", nullable = false )
 	private Long ageRangeId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_participant_age_id", nullable = true, insertable = false, updatable = false)
 	private AgeRangeEntity ageRange;
-	
-	@Column(name = "occupation")
+
+	@Column(name = "occupation", nullable = false  )
 	private String occupation;
-	
-	@Column(name = "professional_experience_months")
+
+	@Column(name = "professional_experience_months", nullable = false  )
 	private Integer professionalExperienceMonths;
-	
-	@Column(name = "computer_experience_months")
+
+	@Column(name = "computer_experience_months", nullable = false  )
 	private Integer computerExperienceMonths;
-	
-	@Column(name = "product_experience_months")
+
+	@Column(name = "product_experience_months", nullable = false  )
 	private Integer productExperienceMonths;
-	
-	@Column(name = "assistive_technology_needs")
+
+	@Column(name = "assistive_technology_needs", nullable = false  )
 	private String assistiveTechnologyNeeds;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@NotNull
 	@Column( nullable = false  )
 	private Boolean deleted;
-	
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@NotNull
 	@Column( name = "last_modified_user", nullable = false  )

@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.MessagingException;
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -23,11 +22,9 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.SendMailUtil;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ClearAllCaches;
-
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -84,7 +81,6 @@ import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskParticipantDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
@@ -144,10 +140,9 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl implements CertifiedProductManager {
+public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl implements CertifiedProductManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
 	
-	@Autowired SendMailUtil sendMailService;
 	@Autowired private Environment env;
 	
 	@Autowired CertifiedProductDAO cpDao;
@@ -180,6 +175,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 	@Autowired MacraMeasureDAO macraDao;
 	@Autowired CertificationStatusDAO certStatusDao;
 	@Autowired ListingGraphDAO listingGraphDao;
+	@Autowired CertificationResultDAO certResultDao;
 	
 	@Autowired
 	public ActivityManager activityManager;
@@ -389,7 +385,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		toCreate.setProductCode(uniqueIdParts[4]);
 		toCreate.setVersionCode(uniqueIdParts[5]);
-		toCreate.setIcsCode(new Integer(uniqueIdParts[6]));
+		toCreate.setIcsCode(uniqueIdParts[6]);
 		toCreate.setAdditionalSoftwareCode(uniqueIdParts[7]);
 		toCreate.setCertifiedDateCode(uniqueIdParts[8]);
 		
@@ -481,259 +477,264 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				certResultToCreate.setCertificationCriterionId(criterion.getId());
 				certResultToCreate.setCertifiedProduct(newCertifiedProduct.getId());
 				certResultToCreate.setSuccessful(certResult.getMeetsCriteria());
-				certResultToCreate.setGap(certResult.getGap());
-				certResultToCreate.setG1Success(certResult.getG1Success());
-				certResultToCreate.setG2Success(certResult.getG2Success());
-				if(certResult.getSed() == null) {
+				boolean isCertified = (certResultToCreate.getSuccessful() != null && certResultToCreate.getSuccessful().booleanValue() == true);
+				certResultToCreate.setGap(isCertified ? certResult.getGap() : null);
+				certResultToCreate.setG1Success(isCertified ? certResult.getG1Success() : null);
+				certResultToCreate.setG2Success(isCertified ? certResult.getG2Success() : null);
+				if(isCertified && certResult.getSed() == null) {
 					if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
 						certResultToCreate.setSed(Boolean.TRUE);
 					} else {
 						certResultToCreate.setSed(Boolean.FALSE);
 					}
 				} else {
-					certResultToCreate.setSed(certResult.getSed());
+					certResultToCreate.setSed(isCertified ? certResult.getSed() : null);
 				}
-				certResultToCreate.setApiDocumentation(certResult.getApiDocumentation());
-				certResultToCreate.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
+				certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
+				certResultToCreate.setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
 				CertificationResultDTO createdCert = certDao.create(certResultToCreate);
-				
-				if(certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
-					for(PendingCertificationResultAdditionalSoftwareDTO software : certResult.getAdditionalSoftware()) {
-						CertificationResultAdditionalSoftwareDTO as = new CertificationResultAdditionalSoftwareDTO();
-						as.setCertifiedProductId(software.getCertifiedProductId());
-						as.setJustification(software.getJustification());
-						as.setName(software.getName());
-						as.setVersion(software.getVersion());
-						as.setGrouping(software.getGrouping());
-						as.setCertificationResultId(createdCert.getId());
-						certDao.addAdditionalSoftwareMapping(as);
-					}
-				}
-				
-				if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
-					for(PendingCertificationResultUcdProcessDTO ucd : certResult.getUcdProcesses()) {
-						CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
-						if(ucd.getUcdProcessId() == null) {
-							UcdProcessDTO newUcd = new UcdProcessDTO();
-							newUcd.setName(ucd.getUcdProcessName());
-							newUcd = ucdDao.create(newUcd);
-							ucdDto.setUcdProcessId(newUcd.getId());
-						} else {
-							ucdDto.setUcdProcessId(ucd.getUcdProcessId());
+				if(isCertified) {
+					if(certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
+						for(PendingCertificationResultAdditionalSoftwareDTO software : certResult.getAdditionalSoftware()) {
+							CertificationResultAdditionalSoftwareDTO as = new CertificationResultAdditionalSoftwareDTO();
+							as.setCertifiedProductId(software.getCertifiedProductId());
+							as.setJustification(software.getJustification());
+							as.setName(software.getName());
+							as.setVersion(software.getVersion());
+							as.setGrouping(software.getGrouping());
+							as.setCertificationResultId(createdCert.getId());
+							certDao.addAdditionalSoftwareMapping(as);
 						}
-						ucdDto.setCertificationResultId(createdCert.getId());
-						ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
-						certDao.addUcdProcessMapping(ucdDto);
 					}
-				}
-				
-				if(certResult.getTestData() != null && certResult.getTestData().size() > 0) {
-					for(PendingCertificationResultTestDataDTO testData : certResult.getTestData()) {
-						CertificationResultTestDataDTO testDto = new CertificationResultTestDataDTO();
-						testDto.setAlteration(testData.getAlteration());
-						testDto.setVersion(testData.getVersion());
-						testDto.setCertificationResultId(createdCert.getId());
-						certDao.addTestDataMapping(testDto);
+					
+					if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
+						for(PendingCertificationResultUcdProcessDTO ucd : certResult.getUcdProcesses()) {
+							CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
+							if(ucd.getUcdProcessId() == null) {
+								UcdProcessDTO newUcd = new UcdProcessDTO();
+								newUcd.setName(ucd.getUcdProcessName());
+								newUcd = ucdDao.create(newUcd);
+								ucdDto.setUcdProcessId(newUcd.getId());
+							} else {
+								ucdDto.setUcdProcessId(ucd.getUcdProcessId());
+							}
+							ucdDto.setCertificationResultId(createdCert.getId());
+							ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
+							certDao.addUcdProcessMapping(ucdDto);
+						}
 					}
-				}
-				
-				if(certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
-					for(PendingCertificationResultTestFunctionalityDTO func : certResult.getTestFunctionality()) {
-						if(func.getTestFunctionalityId() != null) {
-							CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
-							funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
-							funcDto.setCertificationResultId(createdCert.getId());
-							certDao.addTestFunctionalityMapping(funcDto);
-						} else {
-							//check again for a matching test tool because the user could have edited
-							//it since upload
-							TestFunctionalityDTO match = testFuncDao.getByNumberAndEdition(func.getNumber(), pendingCp.getCertificationEditionId());
-							if(match != null) {
+					
+					if(certResult.getTestData() != null && certResult.getTestData().size() > 0) {
+						for(PendingCertificationResultTestDataDTO testData : certResult.getTestData()) {
+							CertificationResultTestDataDTO testDto = new CertificationResultTestDataDTO();
+							testDto.setAlteration(testData.getAlteration());
+							testDto.setVersion(testData.getVersion());
+							testDto.setCertificationResultId(createdCert.getId());
+							certDao.addTestDataMapping(testDto);
+						}
+					}
+					
+					if(certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
+						for(PendingCertificationResultTestFunctionalityDTO func : certResult.getTestFunctionality()) {
+							if(func.getTestFunctionalityId() != null) {
 								CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
-								funcDto.setTestFunctionalityId(match.getId());
+								funcDto.setTestFunctionalityId(func.getTestFunctionalityId());
 								funcDto.setCertificationResultId(createdCert.getId());
 								certDao.addTestFunctionalityMapping(funcDto);
 							} else {
-								logger.error("Could not insert test functionality with null id. Number was " + func.getNumber() + " and edition id " + pendingCp.getCertificationEditionId());
+								//check again for a matching test tool because the user could have edited
+								//it since upload
+								TestFunctionalityDTO match = testFuncDao.getByNumberAndEdition(func.getNumber(), pendingCp.getCertificationEditionId());
+								if(match != null) {
+									CertificationResultTestFunctionalityDTO funcDto = new CertificationResultTestFunctionalityDTO();
+									funcDto.setTestFunctionalityId(match.getId());
+									funcDto.setCertificationResultId(createdCert.getId());
+									certDao.addTestFunctionalityMapping(funcDto);
+								} else {
+									logger.error("Could not insert test functionality with null id. Number was " + func.getNumber() + " and edition id " + pendingCp.getCertificationEditionId());
+								}
 							}
 						}
 					}
-				}
-				
-				if(certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
-					for(PendingCertificationResultTestProcedureDTO proc : certResult.getTestProcedures()) {
-						CertificationResultTestProcedureDTO procDto = new CertificationResultTestProcedureDTO();
-						if(proc.getTestProcedureId() == null) {
-							TestProcedureDTO tp = new TestProcedureDTO();
-							tp.setVersion(proc.getVersion());
-							tp = testProcDao.create(tp);
-							procDto.setTestProcedureId(tp.getId());
-						} else {
-							procDto.setTestProcedureId(proc.getTestProcedureId());
-						}
-						procDto.setTestProcedureVersion(proc.getVersion());
-						procDto.setCertificationResultId(createdCert.getId());
-						certDao.addTestProcedureMapping(procDto);
-					}
-				}
-				
-				if(certResult.getTestStandards() != null && certResult.getTestStandards().size() > 0) {
-					for(PendingCertificationResultTestStandardDTO std : certResult.getTestStandards()) {
-						CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
-						if(std.getTestStandardId() == null) {
-							//try to look up by name and edition
-							TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(
-									std.getName(), pendingCp.getCertificationEditionId());
-							if(foundTestStandard == null) {
-								//if not found create a new test standard
-								TestStandardDTO ts = new TestStandardDTO();
-								ts.setName(std.getName());
-								ts.setCertificationEditionId(pendingCp.getCertificationEditionId());
-								ts = testStandardDao.create(ts);
-								stdDto.setTestStandardId(ts.getId());
+					
+					if(certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
+						for(PendingCertificationResultTestProcedureDTO proc : certResult.getTestProcedures()) {
+							CertificationResultTestProcedureDTO procDto = new CertificationResultTestProcedureDTO();
+							if(proc.getTestProcedureId() == null) {
+								TestProcedureDTO tp = new TestProcedureDTO();
+								tp.setVersion(proc.getVersion());
+								tp = testProcDao.create(tp);
+								procDto.setTestProcedureId(tp.getId());
 							} else {
-								stdDto.setTestStandardId(foundTestStandard.getId());
+								procDto.setTestProcedureId(proc.getTestProcedureId());
 							}
-						} else {
-							stdDto.setTestStandardId(std.getTestStandardId());
-						}
-						stdDto.setCertificationResultId(createdCert.getId());
-						//make sure this isn't a duplicate test standard for this criteria
-						CertificationResultTestStandardDTO existingMapping = certDao.
-								lookupTestStandardMapping(stdDto.getCertificationResultId(), stdDto.getTestStandardId());
-						if(existingMapping == null) {
-							certDao.addTestStandardMapping(stdDto);
+							procDto.setTestProcedureVersion(proc.getVersion());
+							procDto.setCertificationResultId(createdCert.getId());
+							certDao.addTestProcedureMapping(procDto);
 						}
 					}
-				}
-				
-				if(certResult.getTestTools() != null && certResult.getTestTools().size() > 0) {
-					for(PendingCertificationResultTestToolDTO tool : certResult.getTestTools()) {
-						if(tool.getTestToolId() != null) {
-							CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
-							toolDto.setTestToolId(tool.getTestToolId());
-							toolDto.setTestToolVersion(tool.getVersion());
-							toolDto.setCertificationResultId(createdCert.getId());
-							certDao.addTestToolMapping(toolDto);
-						} else {
-							//check again for a matching test tool because the user could have edited
-							//it since upload
-							TestToolDTO match = testToolDao.getByName(tool.getName());
-							if(match != null) {
+					
+					if(certResult.getTestStandards() != null && certResult.getTestStandards().size() > 0) {
+						for(PendingCertificationResultTestStandardDTO std : certResult.getTestStandards()) {
+							CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
+							if(std.getTestStandardId() == null) {
+								//try to look up by name and edition
+								TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(
+										std.getName(), pendingCp.getCertificationEditionId());
+								if(foundTestStandard == null) {
+									//if not found create a new test standard
+									TestStandardDTO ts = new TestStandardDTO();
+									ts.setName(std.getName());
+									ts.setCertificationEditionId(pendingCp.getCertificationEditionId());
+									ts = testStandardDao.create(ts);
+									stdDto.setTestStandardId(ts.getId());
+								} else {
+									stdDto.setTestStandardId(foundTestStandard.getId());
+								}
+							} else {
+								stdDto.setTestStandardId(std.getTestStandardId());
+							}
+							stdDto.setCertificationResultId(createdCert.getId());
+							//make sure this isn't a duplicate test standard for this criteria
+							CertificationResultTestStandardDTO existingMapping = certDao.
+									lookupTestStandardMapping(stdDto.getCertificationResultId(), stdDto.getTestStandardId());
+							if(existingMapping == null) {
+								certDao.addTestStandardMapping(stdDto);
+							}
+						}
+					}
+					
+					if(certResult.getTestTools() != null && certResult.getTestTools().size() > 0) {
+						for(PendingCertificationResultTestToolDTO tool : certResult.getTestTools()) {
+							if(tool.getTestToolId() != null) {
 								CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
-								toolDto.setTestToolId(match.getId());
+								toolDto.setTestToolId(tool.getTestToolId());
 								toolDto.setTestToolVersion(tool.getVersion());
 								toolDto.setCertificationResultId(createdCert.getId());
 								certDao.addTestToolMapping(toolDto);
 							} else {
-								logger.error("Could not insert test tool with null id. Name was " + tool.getName());
-							}
-						}
-					}
-				}
-				
-				if(certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
-					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
-						//the validator set the macraMeasure value so it's definitely filled in
-						if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
-							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-							crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-							crMeasure.setCertificationResultId(createdCert.getId());
-							certDao.addG1MacraMeasureMapping(crMeasure);
-						} else {
-							logger.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
-						}
-					}
-				}
-				
-				if(certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
-					for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG2MacraMeasures()) {
-						//the validator set the macraMeasure value so it's definitely filled in
-						if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
-							CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-							crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-							crMeasure.setCertificationResultId(createdCert.getId());
-							certDao.addG2MacraMeasureMapping(crMeasure);
-						} else {
-							logger.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
-						}
-					}
-				}
-				
-				if(certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
-					for(PendingCertificationResultTestTaskDTO certTask : certResult.getTestTasks()) {
-						//have we already added this one?
-						TestTaskDTO existingTt = null;
-						for(TestTaskDTO tt : testTasksAdded) {
-							if(certTask.getPendingTestTask() != null && 
-								certTask.getPendingTestTask().getUniqueId().equals(tt.getPendingUniqueId())) {
-								existingTt = tt;
-							}
-						}
-						if(existingTt == null && certTask.getPendingTestTask() != null) {
-							PendingTestTaskDTO pendingTask = certTask.getPendingTestTask();
-							TestTaskDTO tt = new TestTaskDTO();
-							tt.setDescription(pendingTask.getDescription());
-							tt.setTaskErrors(pendingTask.getTaskErrors());
-							tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
-							tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
-							tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
-							tt.setTaskRating(pendingTask.getTaskRating());
-							tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
-							tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
-							tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
-							tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
-							tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
-							tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
-							tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
-							tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
-							
-							//add test task
-							existingTt = testTaskDao.create(tt);
-							existingTt.setPendingUniqueId(pendingTask.getUniqueId());
-							testTasksAdded.add(existingTt);
-						}
-						//add mapping from cert result to test task
-						CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
-						taskDto.setTestTaskId(existingTt.getId());
-						taskDto.setCertificationResultId(createdCert.getId());
-							
-						if(certTask.getTaskParticipants() != null) {
-							for(PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask.getTaskParticipants()) {
-								PendingTestParticipantDTO certPart = certTaskPart.getTestParticipant();
-								if(certPart != null) {
-									TestParticipantDTO existingPart = null;
-									for(TestParticipantDTO currPart : testParticipantsAdded) {
-										if(currPart.getPendingUniqueId().equals(certPart.getUniqueId())) {
-											existingPart = currPart;
-										}
-									}
-									if(existingPart == null) {
-										TestParticipantDTO tp = new TestParticipantDTO();
-										tp.setAgeRangeId(certPart.getAgeRangeId());
-										tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
-										tp.setComputerExperienceMonths(certPart.getComputerExperienceMonths());
-										tp.setEducationTypeId(certPart.getEducationTypeId());
-										tp.setGender(certPart.getGender());
-										tp.setOccupation(certPart.getOccupation());
-										tp.setProductExperienceMonths(certPart.getProductExperienceMonths());
-										tp.setProfessionalExperienceMonths(certPart.getProfessionalExperienceMonths());
-										
-										//add participant
-										existingPart = testParticipantDao.create(tp);
-										existingPart.setPendingUniqueId(certPart.getUniqueId());
-										testParticipantsAdded.add(existingPart);
-									}
-									
-									CertificationResultTestTaskParticipantDTO certPartDto = new CertificationResultTestTaskParticipantDTO();
-									certPartDto.setTestParticipantId(existingPart.getId());
-									certPartDto.setCertTestTaskId(taskDto.getId());
-									taskDto.getTaskParticipants().add(certPartDto);
+								//check again for a matching test tool because the user could have edited
+								//it since upload
+								TestToolDTO match = testToolDao.getByName(tool.getName());
+								if(match != null) {
+									CertificationResultTestToolDTO toolDto = new CertificationResultTestToolDTO();
+									toolDto.setTestToolId(match.getId());
+									toolDto.setTestToolVersion(tool.getVersion());
+									toolDto.setCertificationResultId(createdCert.getId());
+									certDao.addTestToolMapping(toolDto);
+								} else {
+									logger.error("Could not insert test tool with null id. Name was " + tool.getName());
 								}
 							}
 						}
-						
-						certDao.addTestTaskMapping(taskDto);
+					}
+					
+					if(certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
+						for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
+							//the validator set the macraMeasure value so it's definitely filled in
+							if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
+								CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+								crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
+								crMeasure.setCertificationResultId(createdCert.getId());
+								certDao.addG1MacraMeasureMapping(crMeasure);
+							} else {
+								logger.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
+							}
+						}
+					}
+					
+					if(certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
+						for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG2MacraMeasures()) {
+							//the validator set the macraMeasure value so it's definitely filled in
+							if(pendingMeasure.getMacraMeasure() != null && pendingMeasure.getMacraMeasure().getId() != null) {
+								CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+								crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
+								crMeasure.setCertificationResultId(createdCert.getId());
+								certDao.addG2MacraMeasureMapping(crMeasure);
+							} else {
+								logger.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
+							}
+						}
+					}
+					
+					if(certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
+						//Map<Long, Long> pendingTaskToConfirmedTaskMap = new HashMap<Long, Long>();
+						for(PendingCertificationResultTestTaskDTO certTask : certResult.getTestTasks()) {
+							//have we already added this one?
+							TestTaskDTO existingTt = null;
+							for(TestTaskDTO tt : testTasksAdded) {
+								if(certTask.getPendingTestTask() != null && 
+									certTask.getPendingTestTask().getUniqueId().equals(tt.getPendingUniqueId())) {
+									existingTt = tt;
+								}
+							}
+							if(existingTt == null && certTask.getPendingTestTask() != null) {
+								PendingTestTaskDTO pendingTask = certTask.getPendingTestTask();
+								//if(pendingTaskToConfirmedTaskMap.get(pendingTask.getId()) != null) {
+								//	existingTt = testTaskDao.getById(pendingTaskToConfirmedTaskMap.get(pendingTask.getId()));
+								//} else {
+									TestTaskDTO tt = new TestTaskDTO();
+									tt.setDescription(pendingTask.getDescription());
+									tt.setTaskErrors(pendingTask.getTaskErrors());
+									tt.setTaskErrorsStddev(pendingTask.getTaskErrorsStddev());
+									tt.setTaskPathDeviationObserved(pendingTask.getTaskPathDeviationObserved());
+									tt.setTaskPathDeviationOptimal(pendingTask.getTaskPathDeviationOptimal());
+									tt.setTaskRating(pendingTask.getTaskRating());
+									tt.setTaskRatingScale(pendingTask.getTaskRatingScale());
+									tt.setTaskRatingStddev(pendingTask.getTaskRatingStddev());
+									tt.setTaskSuccessAverage(pendingTask.getTaskSuccessAverage());
+									tt.setTaskSuccessStddev(pendingTask.getTaskSuccessStddev());
+									tt.setTaskTimeAvg(pendingTask.getTaskTimeAvg());
+									tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
+									tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
+									tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
+									
+									//add test task
+									existingTt = testTaskDao.create(tt);
+									//pendingTaskToConfirmedTaskMap.put(pendingTask.getId(), existingTt.getId());
+								//}
+								existingTt.setPendingUniqueId(pendingTask.getUniqueId());
+								testTasksAdded.add(existingTt);
+							}
+							//add mapping from cert result to test task
+							CertificationResultTestTaskDTO taskDto = new CertificationResultTestTaskDTO();
+							taskDto.setTestTaskId(existingTt.getId());
+							taskDto.setCertificationResultId(createdCert.getId());
+							taskDto.setTestTask(existingTt);
+							
+							if(certTask.getTaskParticipants() != null) {
+								for(PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask.getTaskParticipants()) {
+									PendingTestParticipantDTO certPart = certTaskPart.getTestParticipant();
+									if(certPart != null) {
+										TestParticipantDTO existingPart = null;
+										for(TestParticipantDTO currPart : testParticipantsAdded) {
+											if(currPart.getPendingUniqueId().equals(certPart.getUniqueId())) {
+												existingPart = currPart;
+											}
+										}
+										if(existingPart == null) {
+											TestParticipantDTO tp = new TestParticipantDTO();
+											tp.setAgeRangeId(certPart.getAgeRangeId());
+											tp.setAssistiveTechnologyNeeds(certPart.getAssistiveTechnologyNeeds());
+											tp.setComputerExperienceMonths(certPart.getComputerExperienceMonths());
+											tp.setEducationTypeId(certPart.getEducationTypeId());
+											tp.setGender(certPart.getGender());
+											tp.setOccupation(certPart.getOccupation());
+											tp.setProductExperienceMonths(certPart.getProductExperienceMonths());
+											tp.setProfessionalExperienceMonths(certPart.getProfessionalExperienceMonths());
+											
+											//add participant
+											existingPart = testParticipantDao.create(tp);
+											existingPart.setPendingUniqueId(certPart.getUniqueId());
+											testParticipantsAdded.add(existingPart);
+										}
+										taskDto.getTestTask().getParticipants().add(existingPart);
+									}
+								}
+							}
+							
+							certDao.addTestTaskMapping(taskDto);
+						}
 					}
 				}
 			}
@@ -935,7 +936,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 			updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()), new Date(updatedListing.getCertificationDate()));
 			updateCertificationStatusEvents(listingId, new Long(existingListing.getCertificationStatus().get("id").toString()),
 					new Long(updatedListing.getCertificationStatus().get("id").toString()));
-			updateCertifications(result, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
+			updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing, existingListing.getCertificationResults(), updatedListing.getCertificationResults());
 			updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
 		}
 		return result;
@@ -1355,7 +1356,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		}
 	}
 	
-	private int updateCertifications(CertifiedProductDTO listing, 
+	private int updateCertifications(Long acbId, 
+			CertifiedProductSearchDetails existingListing,
+			CertifiedProductSearchDetails updatedListing, 
 			List<CertificationResult> existingCertifications, 
 			List<CertificationResult> updatedCertifications)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
@@ -1371,7 +1374,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				if(!StringUtils.isEmpty(updatedItem.getNumber()) && 
 					!StringUtils.isEmpty(existingItem.getNumber()) &&
 					updatedItem.getNumber().equals(existingItem.getNumber())) {
-					numChanges += certResultManager.update(listing.getCertificationBodyId(), listing, existingItem, updatedItem);
+					numChanges += certResultManager.update(acbId, 
+							existingListing, updatedListing, existingItem, updatedItem);
 				}
 			}
 		}
@@ -1687,80 +1691,96 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 		return meaningfulUseUserResults;
 	}
 	
-	@Override
-	public void checkSuspiciousActivity(CertifiedProductSearchDetails original, CertifiedProductSearchDetails changed) {
-		boolean sendMsg = false;
+	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+		String message = "";
+		if(!(src instanceof CertifiedProductSearchDetails)) {
+			logger.error("Cannot use object of type " + src.getClass());
+		} else {
+			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
+			String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
+			message = "<p>Activity was detected on certified product " + original.getChplProductNumber(); 
+			if(activityThresholdDaysStr.equals("0")) {
+				message += ".";
+			} else {
+				message += " more than " + activityThresholdDaysStr + " days after it was certified.";
+			}
+			message += "</p>"
+					+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
+			
+		} 
+		return message;
+	}
+	
+	public boolean isQuestionableActivity(Object src, Object dest) {
+		boolean isQuestionable = false;
 		String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-		String subject = "CHPL Questionable Activity";
-		String htmlMessage = "<p>Activity was detected on certified product " + original.getChplProductNumber(); 
-		if(activityThresholdDaysStr.equals("0")) {
-			htmlMessage += ".";
+
+		if(!(src instanceof CertifiedProductSearchDetails && dest instanceof CertifiedProductSearchDetails)) {
+			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type CertifiedProductSearchDetails.");
 		} else {
-			htmlMessage += " more than " + activityThresholdDaysStr + " days after it was certified.";
-		}
-		htmlMessage += "</p>"
-				+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
-		
-		
-		if(original.getCertificationEdition().get("name").equals("2011")) {
-			sendMsg = true;
-		} else {
-			int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-			long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
-			if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
-			   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
-				//if they changed something outside of the suspicious activity window, 
-				//check if the change was something that should trigger an email
-				
-				if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
-					sendMsg = true;
-				}
-				
-				if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
-					(original.getCqmResults() != null && changed.getCqmResults() == null) ||
-					(original.getCqmResults().size() != changed.getCqmResults().size())) {
-					sendMsg = true;
-				} else if(original.getCqmResults().size() == changed.getCqmResults().size()) {
-					for(CQMResultDetails origCqm : original.getCqmResults()) {
-						for(CQMResultDetails changedCqm : changed.getCqmResults()) {
-							if(origCqm.getCmsId().equals(changedCqm.getCmsId())) {
-								if(origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
-									sendMsg = true;
+			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
+			CertifiedProductSearchDetails changed = (CertifiedProductSearchDetails) dest;
+			
+			if(original.getCertificationEdition().get("name").equals("2011")) {
+				isQuestionable = true;
+			} else {
+				int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
+				long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
+				if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
+				   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
+					//if they changed something outside of the suspicious activity window, 
+					//check if the change was something that should trigger an email
+					
+					if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
+						isQuestionable = true;
+					}
+					
+					if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
+						(original.getCqmResults() != null && changed.getCqmResults() == null) ||
+						(original.getCqmResults().size() != changed.getCqmResults().size())) {
+						isQuestionable = true;
+					} else if(original.getCqmResults().size() == changed.getCqmResults().size()) {
+						for(CQMResultDetails origCqm : original.getCqmResults()) {
+							for(CQMResultDetails changedCqm : changed.getCqmResults()) {
+								if(origCqm.getCmsId().equals(changedCqm.getCmsId())) {
+									if(origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
+										isQuestionable = true;
+									}
 								}
 							}
 						}
 					}
-				}
-				if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
-					(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
-					(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
-					sendMsg = true;
-				} else if(original.getCertificationResults().size() == changed.getCertificationResults().size()) {
-					for(CertificationResult origCert : original.getCertificationResults()) {
-						for(CertificationResult changedCert : changed.getCertificationResults()) {
-							if(origCert.getNumber().equals(changedCert.getNumber())) {
-								if(origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
-									sendMsg = true;
-								}
-								if(origCert.isG1Success() != null || changedCert.isG1Success() != null) {
-									if(	(origCert.isG1Success() == null && changedCert.isG1Success() != null) ||
-										(origCert.isG1Success() != null && changedCert.isG1Success() == null) ||
-										(origCert.isG1Success().booleanValue() != changedCert.isG1Success().booleanValue())) {
-										sendMsg = true;
+					if( (original.getCertificationResults() == null && changed.getCertificationResults() != null) ||
+						(original.getCertificationResults() != null && changed.getCertificationResults() == null) ||
+						(original.getCertificationResults().size() != changed.getCertificationResults().size())) {
+						isQuestionable = true;
+					} else if(original.getCertificationResults().size() == changed.getCertificationResults().size()) {
+						for(CertificationResult origCert : original.getCertificationResults()) {
+							for(CertificationResult changedCert : changed.getCertificationResults()) {
+								if(origCert.getNumber().equals(changedCert.getNumber())) {
+									if(origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
+										isQuestionable = true;
 									}
-								}
-								if(origCert.isG2Success() != null || changedCert.isG2Success() != null) {
-									if(	(origCert.isG2Success() == null && changedCert.isG2Success() != null) ||
-										(origCert.isG2Success() != null && changedCert.isG2Success() == null) ||
-										(origCert.isG2Success().booleanValue() != changedCert.isG2Success().booleanValue())) {
-										sendMsg = true;
+									if(origCert.isG1Success() != null || changedCert.isG1Success() != null) {
+										if(	(origCert.isG1Success() == null && changedCert.isG1Success() != null) ||
+											(origCert.isG1Success() != null && changedCert.isG1Success() == null) ||
+											(origCert.isG1Success().booleanValue() != changedCert.isG1Success().booleanValue())) {
+											isQuestionable = true;
+										}
 									}
-								}
-								if(origCert.isGap() != null || changedCert.isGap() != null) {
-									if(	(origCert.isGap() == null && changedCert.isGap() != null) ||
-										(origCert.isGap() != null && changedCert.isGap() == null) ||
-										(origCert.isGap().booleanValue() != changedCert.isGap().booleanValue())) {
-										sendMsg = true;
+									if(origCert.isG2Success() != null || changedCert.isG2Success() != null) {
+										if(	(origCert.isG2Success() == null && changedCert.isG2Success() != null) ||
+											(origCert.isG2Success() != null && changedCert.isG2Success() == null) ||
+											(origCert.isG2Success().booleanValue() != changedCert.isG2Success().booleanValue())) {
+											isQuestionable = true;
+										}
+									}
+									if(origCert.isGap() != null || changedCert.isGap() != null) {
+										if(	(origCert.isGap() == null && changedCert.isGap() != null) ||
+											(origCert.isGap() != null && changedCert.isGap() == null) ||
+											(origCert.isGap().booleanValue() != changedCert.isGap().booleanValue())) {
+											isQuestionable = true;
+										}
 									}
 								}
 							}
@@ -1769,16 +1789,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 				}
 			}
 		}
-		
-		if(sendMsg) {
-			String emailAddr = env.getProperty("questionableActivityEmail");
-			String[] emailAddrs = emailAddr.split(";");
-			try {
-				sendMailService.sendEmail(emailAddrs, subject, htmlMessage);
-			} catch(MessagingException me) {
-				logger.error("Could not send questionable activity email", me);
-			}
-		}
+		return isQuestionable;
 	}
 	
 	private class QmsStandardPair {

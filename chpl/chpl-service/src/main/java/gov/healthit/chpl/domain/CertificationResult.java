@@ -98,15 +98,6 @@ public class CertificationResult implements Serializable {
 	private List<MacraMeasure> allowedMacraMeasures;
 	
 	/**
-	 * The user-centered design (UCD) process applied for the corresponding 
-	 * certification criteria. This variable is applicable for 2014 and 2015 Edition, 
-	 * and a string variable that does not take any restrictions on formatting or values. 
-	 */
-	@XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
-	@XmlElement(name = "ucdProcess")
-	private List<CertificationResultUcdProcess> ucdProcesses;
-	
-	/**
 	 * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) 
 	 * capabilities within a certification criterion to which the Health IT module was 
 	 * tested and certified. For example, within the 2015 certification criteria 170.315(a), 
@@ -191,25 +182,16 @@ public class CertificationResult implements Serializable {
 	@XmlElement(name = "macraMeasure")
 	private List<MacraMeasure> g2MacraMeasures;
 	
-	/**
-	 * Tasks used for SED testing
-	 */
-	@XmlElementWrapper(name = "testTasks", nillable = true, required = false)
-	@XmlElement(name = "testTask")
-	private List<CertificationResultTestTask> testTasks;
-	
 	public CertificationResult(){
 		allowedMacraMeasures = new ArrayList<MacraMeasure>();
-		ucdProcesses = new ArrayList<CertificationResultUcdProcess>();
-		 additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
-		 testStandards = new ArrayList<CertificationResultTestStandard>();
-		 testToolsUsed = new ArrayList<CertificationResultTestTool>();
-		 testDataUsed = new ArrayList<CertificationResultTestData>();
-		 testProcedures = new ArrayList<CertificationResultTestProcedure>();
-		 testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
-		 testTasks = new ArrayList<CertificationResultTestTask>();
-		 g1MacraMeasures = new ArrayList<MacraMeasure>();
-		 g2MacraMeasures = new ArrayList<MacraMeasure>();
+		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+		testStandards = new ArrayList<CertificationResultTestStandard>();
+		testToolsUsed = new ArrayList<CertificationResultTestTool>();
+		testDataUsed = new ArrayList<CertificationResultTestData>();
+		testProcedures = new ArrayList<CertificationResultTestProcedure>();
+		testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
+		g1MacraMeasures = new ArrayList<MacraMeasure>();
+		g2MacraMeasures = new ArrayList<MacraMeasure>();
 	}
 
 	public Long getId() {
@@ -329,22 +311,6 @@ public class CertificationResult implements Serializable {
 
 	public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
 		this.testFunctionality = testFunctionality;
-	}
-
-	public List<CertificationResultUcdProcess> getUcdProcesses() {
-		return ucdProcesses;
-	}
-
-	public void setUcdProcesses(List<CertificationResultUcdProcess> ucdProcesses) {
-		this.ucdProcesses = ucdProcesses;
-	}
-
-	public List<CertificationResultTestTask> getTestTasks() {
-		return testTasks;
-	}
-
-	public void setTestTasks(List<CertificationResultTestTask> testTasks) {
-		this.testTasks = testTasks;
 	}
 
 	public String getApiDocumentation() {

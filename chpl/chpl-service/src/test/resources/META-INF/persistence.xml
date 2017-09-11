@@ -30,11 +30,11 @@
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity</class>
-		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskParticipantEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity</class>
+		<class>gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity</class>
+		<class>gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
-		<class>gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>
@@ -121,8 +121,8 @@
 		<class>gov.healthit.chpl.entity.notification.NotificationTypeRecipientMapEntity</class>
 		<class>gov.healthit.chpl.entity.notification.RecipientWithSubscriptionsEntity</class>
 		<properties>
-			<property name="hibernate.show_sql" value="true" />
-			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.show_sql" value="false" />
+			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.driver_class" value="org.postgresql.Driver" />
 			<property name="hibernate.connection.datasource" value="java:comp/env/jdbc/openchpl"/>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />

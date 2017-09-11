@@ -176,6 +176,6 @@ public class ApiKeyController {
 				+ "<p>Thanks, <br/>The CHPL Team</p>";
 
 		String[] toEmails = {email};
-		sendMailService.sendEmail(toEmails, subject, htmlMessage);
+		sendMailService.sendEmail(toEmails, null, subject, htmlMessage);
 	}
 }

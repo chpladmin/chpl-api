@@ -26,14 +26,14 @@ public class CertifiedProductDTO implements Serializable {
 	
 	public static final int PRODUCT_CODE_LENGTH = 4;
 	public static final int VERSION_CODE_LENGTH = 2;
-	public static final int ICS_CODE_LENGTH = 1;
+	public static final int ICS_CODE_LENGTH = 2;
 	public static final int ADDITIONAL_SOFTWARE_CODE_LENGTH = 1;
 	public static final int CERTIFIED_DATE_CODE_LENGTH = 6;
 	
 	private Long id;
 	private String productCode;
 	private String versionCode;
-	private Integer icsCode;
+	private String icsCode;
 	private String additionalSoftwareCode;
 	private String certifiedDateCode;
 	private String acbCertificationId;
@@ -69,7 +69,7 @@ public class CertifiedProductDTO implements Serializable {
 		this.id = entity.getId();
 		this.productCode = entity.getProductCode();
 		this.versionCode = entity.getVersionCode();
-		this.icsCode = entity.getIcsCode() == null ? null : new Integer(entity.getIcsCode());
+		this.icsCode = entity.getIcsCode();
 		this.additionalSoftwareCode = entity.getAdditionalSoftwareCode();
 		this.certifiedDateCode = entity.getCertifiedDateCode();
 		this.acbCertificationId = entity.getAcbCertificationId();
@@ -138,7 +138,7 @@ public class CertifiedProductDTO implements Serializable {
 				} else {
 					this.setProductCode(chplProductIdComponents[4]);
 					this.setVersionCode(chplProductIdComponents[5]);
-					this.setIcsCode(new Integer(chplProductIdComponents[6]));
+					this.setIcsCode(chplProductIdComponents[6]);
 					this.setAdditionalSoftwareCode(chplProductIdComponents[7]);
 					this.setCertifiedDateCode(chplProductIdComponents[8]);
 				}
@@ -312,11 +312,11 @@ public class CertifiedProductDTO implements Serializable {
 		this.certifiedDateCode = certifiedDateCode;
 	}
 
-	public Integer getIcsCode() {
+	public String getIcsCode() {
 		return icsCode;
 	}
 
-	public void setIcsCode(Integer icsCode) {
+	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
 

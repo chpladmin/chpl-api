@@ -10,8 +10,10 @@ public class PendingTestParticipantDTO implements Serializable {
 	private String uniqueId;
 	private String gender;
 	private Long educationTypeId;
+	private String userEnteredEducationType;
 	private EducationTypeDTO educationType;
 	private Long ageRangeId;
+	private String userEnteredAgeRange;
 	private AgeRangeDTO ageRange;
 	private String occupation;
 	private Integer professionalExperienceMonths;
@@ -26,10 +28,12 @@ public class PendingTestParticipantDTO implements Serializable {
 		this.uniqueId = entity.getUniqueId();
 		this.gender = entity.getGender();
 		this.educationTypeId = entity.getEducationTypeId();
+		this.userEnteredEducationType = entity.getUserEnteredEducation();
 		if(entity.getEducation() != null) {
 			this.educationType = new EducationTypeDTO(entity.getEducation());
 		}
 		this.ageRangeId = entity.getAgeRangeId();
+		this.userEnteredAgeRange = entity.getUserEnteredAge();
 		if(entity.getAgeRange() != null) {
 			this.ageRange = new AgeRangeDTO(entity.getAgeRange());
 		}
@@ -133,5 +137,21 @@ public class PendingTestParticipantDTO implements Serializable {
 
 	public void setAgeRange(AgeRangeDTO ageRange) {
 		this.ageRange = ageRange;
+	}
+
+	public String getUserEnteredEducationType() {
+		return userEnteredEducationType;
+	}
+
+	public void setUserEnteredEducationType(String userEnteredEducationType) {
+		this.userEnteredEducationType = userEnteredEducationType;
+	}
+
+	public String getUserEnteredAgeRange() {
+		return userEnteredAgeRange;
+	}
+
+	public void setUserEnteredAgeRange(String userEnteredAgeRange) {
+		this.userEnteredAgeRange = userEnteredAgeRange;
 	}
 }
