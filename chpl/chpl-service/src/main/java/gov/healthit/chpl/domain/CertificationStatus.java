@@ -16,7 +16,7 @@ public class CertificationStatus implements Serializable{
 	
 	private String name;
 	
-	public CertificationStatus(Long id, String name){
+	public CertificationStatus(String name){
 		this.id = id;
 		this.name = name;
 	}

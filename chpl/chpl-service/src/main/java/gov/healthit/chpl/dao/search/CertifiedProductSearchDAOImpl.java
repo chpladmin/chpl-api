@@ -12,7 +12,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
+import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
@@ -34,6 +39,22 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			id = result.getId();
 		}
 		return id;
+	}
+	
+	@Override
+	public IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId) {
+		Long id = null;
+		Query query = entityManager.createQuery("SELECT cps "
+				+ "FROM CertifiedProductBasicSearchResultEntity cps "
+				+ "WHERE certified_product_id = :certifiedProductId", 
+				CertifiedProductBasicSearchResultEntity.class);
+		query.setParameter("certifiedProductId", certifiedProductId);
+		List<CertifiedProductBasicSearchResultEntity> searchResult = query.getResultList();
+		CertifiedProductBasicSearchResultEntity result = null;
+		if (searchResult.size() > 0){
+			result = searchResult.get(0);
+		}
+		return convertIcs(result);
 	}
 
 	@Override
@@ -129,5 +150,48 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			results.add(result);
 		}
 		return results;
+	}
+	
+	private IcsFamilyTreeNode convertIcs(CertifiedProductBasicSearchResultEntity result) {
+		IcsFamilyTreeNode node = new IcsFamilyTreeNode();
+		node.setId(result.getId());
+		node.setChplProductNumber(result.getChplProductNumber());
+		node.setCertificationDate(result.getCertificationDate());
+		CertificationStatus cs = new CertificationStatus(result.getCertificationStatus());
+		node.setCertificationStatus(cs);
+		Developer dev = new Developer();
+		dev.setName(result.getDeveloper());
+		node.setDeveloper(dev);
+		Product prod = new Product();
+		prod.setName(result.getProduct());
+		node.setProduct(prod);
+		ProductVersion pv = new ProductVersion();
+		pv.setVersion(result.getVersion());
+		node.setVersion(pv);
+		ArrayList<CertifiedProduct> childrenList = new ArrayList<CertifiedProduct>();
+		if(result.getChild() != null){
+			String[] children = result.getChild().split("☺");
+			for(String child : children){
+				String[] childInfo = child.split(":");
+				CertifiedProduct cp = new CertifiedProduct();
+				cp.setChplProductNumber(childInfo[0]);
+				cp.setId(Long.decode(childInfo[1]));
+				childrenList.add(cp);
+			}
+		}
+		node.setChildren(childrenList);
+		ArrayList<CertifiedProduct> parentList = new ArrayList<CertifiedProduct>();
+		if(result.getParent() != null){
+			String[] parents = result.getParent().split("☺");
+			for(String parent : parents){
+				String[] parentInfo = parent.split(":");
+				CertifiedProduct cp = new CertifiedProduct();
+				cp.setChplProductNumber(parentInfo[0]);
+				cp.setId(Long.decode(parentInfo[1]));
+				parentList.add(cp);
+			}
+		}
+		node.setParents(parentList);
+		return node;
 	}
 }

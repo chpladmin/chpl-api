@@ -309,29 +309,16 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				Boolean isProcessed = cp.getValue();
 				Long cpId = cp.getKey();
 				if(!isProcessed){
-					CertifiedProductDetailsDTO details = getDetailsById(cpId);
-					IcsFamilyTreeNode node = new IcsFamilyTreeNode(details);
+					IcsFamilyTreeNode node = searchDao.getICSFamilyTree(cpId);
 					// add family to array that will be used to add to processing array
-					List<CertifiedProduct> cpChildren = new ArrayList<CertifiedProduct>();
-					List<CertifiedProductDetailsDTO> children = listingGraphDao.getChildren(cpId);
-					if(children != null && children.size() > 0) {
-						for(CertifiedProductDetailsDTO child : children) {
-							cpChildren.add(new CertifiedProduct(child));
-						}
-					}
-					List<CertifiedProduct> cpParent = new ArrayList<CertifiedProduct>();
-					List<CertifiedProductDetailsDTO> parents = listingGraphDao.getParents(cpId);
-					if(parents != null && parents.size() > 0) {
-						for(CertifiedProductDetailsDTO parent : parents) {
-							cpParent.add(new CertifiedProduct(parent));
-						}
-					}
-					for(CertifiedProduct child: cpChildren)
-						toAdd.add(child.getId());
-					for(CertifiedProduct parent: cpParent)
-						toAdd.add(parent.getId());
 					familyTree.add(node);
 					// done processing node - set processed to true
+					for(CertifiedProduct certProd : node.getChildren()){
+						toAdd.add(certProd.getId());
+					}
+					for(CertifiedProduct certProd : node.getParents()){
+						toAdd.add(certProd.getId());
+					}
 					queue.put(cpId, true);
 				}
 			}
