@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 13.0.0
+_11 September 2017_
 
 ## Major Features
 _Backwards compatibility breaking changes_
