@@ -1,5 +1,7 @@
 # Release Notes
 
+* Speen up API call to retrieve a Listing's entire ICS family
+
 ## Version 13.0.0
 _11 September 2017_
 

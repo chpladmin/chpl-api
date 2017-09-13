@@ -30,8 +30,6 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.IcsFamilyTreeNode;
-import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
@@ -63,15 +61,6 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		
 		assertNotNull(certifiedProductDetailsManager.getCertifiedProductDetails(1L));
 		
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Test
-	@Transactional
-	public void testIcsFamilyTree() throws EntityRetrievalException{
-		List<IcsFamilyTreeNode> tree = certifiedProductManager.getIcsFamilyTree(5L);
-		assertNotNull(tree);
-		assertEquals(5,tree.size());
 	}
 	
 	@Test

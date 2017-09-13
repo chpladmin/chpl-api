@@ -42,6 +42,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -102,6 +103,15 @@ public class CertifiedProductManagerTest extends TestCase {
 		testUser3.setLastName("User3");
 		testUser3.setSubjectName("testUser3");
 		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Test
+	@Transactional
+	public void testIcsFamilyTree() throws EntityRetrievalException{
+		List<IcsFamilyTreeNode> tree = cpManager.getIcsFamilyTree(5L);
+		assertNotNull(tree);
+		assertEquals(5,tree.size());
 	}
 	
 	@Test
