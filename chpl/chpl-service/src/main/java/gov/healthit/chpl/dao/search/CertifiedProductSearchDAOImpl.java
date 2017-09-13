@@ -172,7 +172,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		if(result.getChild() != null){
 			String[] children = result.getChild().split("☺");
 			for(String child : children){
-				String[] childInfo = child.split(":");
+				String[] childInfo = child.split("☹");
 				CertifiedProduct cp = new CertifiedProduct();
 				cp.setChplProductNumber(childInfo[0]);
 				cp.setId(Long.decode(childInfo[1]));
@@ -184,7 +184,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		if(result.getParent() != null){
 			String[] parents = result.getParent().split("☺");
 			for(String parent : parents){
-				String[] parentInfo = parent.split(":");
+				String[] parentInfo = parent.split("☹");
 				CertifiedProduct cp = new CertifiedProduct();
 				cp.setChplProductNumber(parentInfo[0]);
 				cp.setId(Long.decode(parentInfo[1]));
