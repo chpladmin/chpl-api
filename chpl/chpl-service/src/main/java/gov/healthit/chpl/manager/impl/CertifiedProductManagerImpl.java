@@ -2,9 +2,12 @@ package gov.healthit.chpl.manager.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -61,6 +64,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
@@ -238,6 +242,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	
 	@Override
 	@Transactional(readOnly = true)
+	public CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException {
+		return cpDao.getDetailsById(ids);
+	}
+	
+	@Override
+	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getAll() {
 		return cpDao.findAll();
 	}
@@ -280,6 +290,48 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			acbIdList.add(dto.getId());
 		}
 		return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
+	}
+	
+	@Override
+	@Transactional
+	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
+		
+		List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
+		Map<Long,Boolean> queue = new HashMap<Long,Boolean>();
+		List<Long> toAdd = new ArrayList<Long>();
+		
+		// add first element to processing queue
+		queue.put(certifiedProductId, false);
+		
+		// while queue contains elements that need processing
+		while(queue.containsValue(false)){
+			for(Entry<Long,Boolean> cp: queue.entrySet()){
+				Boolean isProcessed = cp.getValue();
+				Long cpId = cp.getKey();
+				if(!isProcessed){
+					IcsFamilyTreeNode node = searchDao.getICSFamilyTree(cpId);
+					// add family to array that will be used to add to processing array
+					familyTree.add(node);
+					// done processing node - set processed to true
+					for(CertifiedProduct certProd : node.getChildren()){
+						toAdd.add(certProd.getId());
+					}
+					for(CertifiedProduct certProd : node.getParents()){
+						toAdd.add(certProd.getId());
+					}
+					queue.put(cpId, true);
+				}
+			}
+			// add elements from toAdd array to queue if they are not already there
+			for(Long id: toAdd){
+				if(!queue.containsKey(id)){
+					queue.put(id, false);
+				}
+			}
+			toAdd.clear();
+		}
+		
+		return familyTree;
 	}
 
 	@Override
