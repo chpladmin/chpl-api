@@ -78,6 +78,12 @@ public class CertifiedProductBasicSearchResultEntity {
     
     @Column(name = "cqms")
     private String cqms; // comma-separated list of all cqms met by the certified product
+    
+    @Column(name = "parent")
+    private String parent; // comma-separated list of all parents
+    
+    @Column(name = "child")
+    private String child; // comma-separated list of all children
   
 	public CertifiedProductBasicSearchResultEntity() {
 	}
@@ -88,6 +94,22 @@ public class CertifiedProductBasicSearchResultEntity {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public String getParent() {
+		return parent;
+	}
+
+	public void setParent(String parent) {
+		this.parent = parent;
+	}
+
+	public String getChild() {
+		return child;
+	}
+
+	public void setChild(String child) {
+		this.child = child;
 	}
 
 	public String getChplProductNumber() {

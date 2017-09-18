@@ -3,6 +3,14 @@
 ## Version TBD
 _Date TBD_
 
+## Minor features
+* Speen up API call to retrieve a Listing's entire ICS family
+
+---
+
+## Version 13.0.0
+_11 September 2017_
+
 ## Major Features
 _Backwards compatibility breaking changes_
 * Reorganize SED data within the listing details request and response. UCD and Test tasks/participants are now located under a "sed" field. Listing update code has changed significantly as a result
