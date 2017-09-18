@@ -1,10 +1,8 @@
 package gov.healthit.chpl.job;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.WebApplicationContext;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -14,9 +12,6 @@ import gov.healthit.chpl.dto.job.JobTypeDTO;
 
 @Component
 public class RunnableJobFactory {
-	
-	@Autowired
-    private WebApplicationContext context;
 	
 	public RunnableJob getRunnableJob(JobDTO job) throws NoJobTypeException {
 		RunnableJob result = null;
