@@ -2,20 +2,21 @@ package gov.healthit.chpl.job;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 
 @Component
 public class RunnableJobFactory {
+	
+	@Autowired
+    private WebApplicationContext context;
 	
 	public RunnableJob getRunnableJob(JobDTO job) throws NoJobTypeException {
 		RunnableJob result = null;
@@ -57,6 +58,7 @@ public class RunnableJobFactory {
 	
 	@Lookup
 	public MeaningfulUseUploadJob getMeaningfulUseUploadJob(){
+		//return (MeaningfulUseUploadJob) context.getBean("meaningfulUseUploadJob");
 		//spring will override this method
 		//and create a new instance of MeaningfulUseUploadJob
 		return null;

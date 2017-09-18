@@ -138,7 +138,6 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.JOB_TYPES)
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	public Set<KeyValueModel> getJobTypes() {
 		List<JobTypeDTO> jobTypes = jobDao.findAllTypes();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();

@@ -36,6 +36,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 	@Autowired private JobDAO jobDao;
 	
 	@Transactional
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
 	public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException {
 		UserDTO user = job.getUser();
 		if(user == null || user.getId() == null) {
@@ -47,6 +48,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 	}
 	
 	@Transactional
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
 	public JobDTO getJobById(Long jobId) {
 		return jobDao.getById(jobId);
 	}
@@ -55,6 +57,7 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 	 * Gets the jobs that are either currently running or have completed within a configurable window of time
 	 */
 	@Transactional
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
 	public List<JobDTO> getAllJobs() {
 		String completedJobThresholdDaysStr = env.getProperty("jobThresholdDays").trim();
 		Integer completedJobThresholdDays = 0;
@@ -84,13 +87,13 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 	
 	@Override
 	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<JobTypeDTO> getAllJobTypes() {
 		return jobDao.findAllTypes();
 	}
 	
 	@Override
 	@Transactional
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
 	public boolean start(JobDTO job) throws EntityRetrievalException {
 		RunnableJob runnableJob = null;
 		try {

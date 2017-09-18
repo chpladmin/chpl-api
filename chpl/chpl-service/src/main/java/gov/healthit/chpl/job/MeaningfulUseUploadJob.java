@@ -13,6 +13,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -25,14 +26,18 @@ import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Component
+@Scope("prototype") //tells spring to make a new instance of this class every time it is needed 
 public class MeaningfulUseUploadJob extends RunnableJob {
 	private static final Logger logger = LogManager.getLogger(MeaningfulUseUploadJob.class);
 	
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired CertifiedProductDAO cpDao;
 
-	public MeaningfulUseUploadJob() {}
+	public MeaningfulUseUploadJob() {
+		logger.debug("Created new MUUJob");
+	}
 	public MeaningfulUseUploadJob(JobDTO job) {
+		logger.debug("Created new MUUJob");
 		this.job = job;
 	}
 	
