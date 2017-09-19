@@ -5,6 +5,7 @@ public class CacheNames {
 	public static final String ALL_CERT_IDS = "allCertIds";
 	public static final String ALL_DEVELOPERS = "allDevelopers";
 	public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
+	public static final String JOB_TYPES = "jobTypes";
 	public static final String CERT_BODY_NAMES = "certBodyNames";
 	public static final String EDITION_NAMES = "editionNames";
 	public static final String CERTIFICATION_STATUSES = "certificationStatuses";

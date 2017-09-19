@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import org.dbunit.ext.postgresql.PostgresqlDataTypeFactory;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
@@ -21,11 +22,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
 import org.springframework.security.acls.AclPermissionCacheOptimizer;
 import org.springframework.security.acls.AclPermissionEvaluator;
@@ -54,6 +58,7 @@ import com.github.springtestdbunit.bean.DatabaseConfigBean;
 import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 import gov.healthit.chpl.caching.CacheInitializor;
+import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
@@ -162,6 +167,14 @@ public class CHPLTestConfig implements EnvironmentAware {
 		bean.getObjectMapper().configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
 
 		return bean;
+	}
+	
+	@Bean
+	public TaskExecutor taskExecutor() {
+		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+		te.setCorePoolSize(10);
+		te.setMaxPoolSize(100);
+		return te;
 	}
 	
 	@Bean
@@ -307,5 +320,11 @@ public class CHPLTestConfig implements EnvironmentAware {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+    
+    @Bean
+    @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
+		return new MeaningfulUseUploadJob();
+	}
 	
 }

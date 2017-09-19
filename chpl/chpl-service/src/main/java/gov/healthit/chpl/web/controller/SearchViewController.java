@@ -658,6 +658,14 @@ public class SearchViewController {
 	}
 	
 	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})
+	@ApiOperation(value="Get all possible types of jobs that can be created in the system.")
+	@RequestMapping(value="/data/job_types", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Set<KeyValueModel> getJobTypes() {
+		return searchMenuManager.getJobTypes();
+	}
+	
+	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})
 	@ApiOperation(value="Get all possible types of notifications that a user can sign up for.")
 	@RequestMapping(value="/data/notification_types", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")

@@ -4,7 +4,9 @@
 _Date TBD_
 
 ## Minor features
-* Speen up API call to retrieve a Listing's entire ICS family
+* Speed up API call to retrieve a Listing's entire ICS family
+* Add /data/job_types call to get list of possible background job types that can be run
+* Add background job processing and apply it to meaningful use user upload.
 
 ---
 
