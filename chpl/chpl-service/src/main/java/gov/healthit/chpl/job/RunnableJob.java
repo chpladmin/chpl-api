@@ -90,7 +90,7 @@ public class RunnableJob implements Runnable {
 		}
 		
 		String[] to = {this.job.getUser().getEmail()};
-		String subject = "Your Job '" + this.job.getJobType().getName() + "' Has Completed";
+		String subject = this.job.getJobType().getSuccessMessage();
 		String htmlMessage = "<h3>Job Details:</h3>"
 				+ "<ul>"
 				+ "<li>Started: " + this.job.getStartTime() + "</li>"

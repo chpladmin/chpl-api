@@ -189,7 +189,6 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     }
     
     @Bean
-   // @Scope(value=ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
 		return new MeaningfulUseUploadJob();
 	}
