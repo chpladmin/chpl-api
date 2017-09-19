@@ -165,56 +165,14 @@ public class MeaningfulUseControllerTest extends TestCase {
 			meaningfulUseController.uploadMeaningfulUseUsers(multipartFile);
 		} catch (MaxUploadSizeExceededException e) {
 			e.printStackTrace();
+			fail();
 		} catch (ValidationException e) {
 			e.printStackTrace();
+			fail();
 		}
 		
 		input.close();
 		file.delete();
-//		
-//		for(MeaningfulUseUser muu : apiResult.getMeaningfulUseUsers()){
-//			if(muu.getProductNumber().equals("CHP-024050")){
-//				assertEquals(10, muu.getNumberOfUsers().longValue());
-//				assertEquals(1, muu.getCertifiedProductId().longValue());
-//			}
-//			else if(muu.getProductNumber().equals("CHP-024051")){
-//				assertEquals(20, muu.getNumberOfUsers().longValue());
-//				assertEquals(2, muu.getCertifiedProductId().longValue());
-//			}
-//			else if(muu.getProductNumber().equals("CHP-024052")){
-//				assertEquals(30, muu.getNumberOfUsers().longValue());
-//				assertEquals(3, muu.getCertifiedProductId().longValue());
-//			}
-//			else if(muu.getProductNumber().equals("15.01.01.1009.IC13.36.02.1.160402")){
-//				assertEquals(40, muu.getNumberOfUsers().longValue());
-//				assertEquals(6, muu.getCertifiedProductId().longValue());
-//			}
-//		}
-//		
-//		for(MeaningfulUseUser muu : apiResult.getErrors()){
-//			Boolean hasError = false;
-//			if(muu.getProductNumber().equals("wrongChplProductNumber")){
-//				assertEquals(50L, muu.getNumberOfUsers().longValue());
-//				assertNotNull(muu.getError());
-//				hasError=true;
-//			}
-//			else if(muu.getProductNumber().equals("CHPL-024053")){
-//				assertEquals(60, muu.getNumberOfUsers().longValue());
-//				assertNotNull(muu.getError());
-//				hasError=true;
-//			}
-//			else if(muu.getProductNumber().equals("15.02.03.9876.AB01.01.00.1.123456")){
-//				assertEquals(70, muu.getNumberOfUsers().longValue());
-//				assertNotNull(muu.getError());
-//				hasError=true;
-//			}
-//			else if(muu.getProductNumber().equals("15.01.01.1009.IC13.36.02.1.160402")){
-//				assertEquals(70, muu.getNumberOfUsers().longValue());
-//				assertNotNull(muu.getError());
-//				hasError=true;
-//			}
-//			assertTrue(hasError);
-//		}
 	}
 	
 	/** 
@@ -283,37 +241,14 @@ public class MeaningfulUseControllerTest extends TestCase {
 			meaningfulUseController.uploadMeaningfulUseUsers(multipartFile);
 		} catch (MaxUploadSizeExceededException e) {
 			e.printStackTrace();
+			fail();
 		} catch (ValidationException e) {
 			e.printStackTrace();
+			fail();
 		}
 		
 		input.close();
 		file.delete();
-
-//		assertEquals(0, apiResult.getErrors().size());
-//		assertEquals(5, apiResult.getMeaningfulUseUsers().size());
-//		for(MeaningfulUseUser muu : apiResult.getMeaningfulUseUsers()){
-//			if(muu.getProductNumber().equals("CHP-024050")){
-//				assertEquals(10, muu.getNumberOfUsers().longValue());
-//				assertEquals(1, muu.getCertifiedProductId().longValue());
-//			}
-//			else if(muu.getProductNumber().equals("CHP-024051")){
-//				assertEquals(20, muu.getNumberOfUsers().longValue());
-//				assertEquals(2, muu.getCertifiedProductId().longValue());
-//			}
-//			else if(muu.getProductNumber().equals("CHP-024052")){
-//				assertEquals(30, muu.getNumberOfUsers().longValue());
-//				assertEquals(3, muu.getCertifiedProductId().longValue());
-//			}
-//			else if(muu.getProductNumber().equals(cp1.getChplProductNumber())){
-//				assertEquals(40, muu.getNumberOfUsers().longValue());
-//				assertEquals(cp1.getId().longValue(), muu.getCertifiedProductId().longValue());
-//			}
-//			else if(muu.getProductNumber().equals(cp2.getChplProductNumber())){
-//				assertEquals(50, muu.getNumberOfUsers().longValue());
-//				assertEquals(cp2.getId().longValue(), muu.getCertifiedProductId().longValue());
-//			}
-//		}
 	}
 	
 	/**
