@@ -7,6 +7,7 @@ _Date TBD_
 * Speed up API call to retrieve a Listing's entire ICS family
 * Add /data/job_types call to get list of possible background job types that can be run
 * Add background job processing and apply it to meaningful use user upload.
+* Update 'cleanupXml' script to allow for some parameters
 
 ## Bug Fixes
 * Save ICS family data when going through pending listing confirm workflow.
