@@ -8,6 +8,9 @@ _Date TBD_
 * Add /data/job_types call to get list of possible background job types that can be run
 * Add background job processing and apply it to meaningful use user upload.
 
+## Bug Fixes
+* Save ICS family data when going through pending listing confirm workflow.
+
 ---
 
 ## Version 13.0.0
