@@ -443,6 +443,30 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		
 		CertifiedProductDTO newCertifiedProduct = cpDao.create(toCreate);
 		
+		//ics
+		if(pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
+			for(CertifiedProductDTO parentCpDto : pendingCp.getIcsParents()) {
+				CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
+				if(cp != null) {
+					ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
+					toAdd.setChildId(newCertifiedProduct.getId());
+					toAdd.setParentId(cp.getId());
+					listingGraphDao.createListingMap(toAdd);
+				}
+			}
+		}
+		if(pendingCp.getIcsChildren() != null && pendingCp.getIcsChildren().size() > 0) {
+			for(CertifiedProductDTO childCpDto : pendingCp.getIcsChildren()) {
+				CertifiedProduct cp = searchDao.getByChplProductNumber(childCpDto.getChplProductNumber());
+				if(cp != null) {
+					ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
+					toAdd.setChildId(cp.getId());
+					toAdd.setParentId(newCertifiedProduct.getId());
+					listingGraphDao.createListingMap(toAdd);
+				}
+			}
+		}
+		
 		//qms
 		if(pendingCp.getQmsStandards() != null && pendingCp.getQmsStandards().size() > 0) {
 			for(PendingCertifiedProductQmsStandardDTO qms : pendingCp.getQmsStandards()) {

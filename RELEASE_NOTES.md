@@ -9,6 +9,9 @@ _Date TBD_
 * Add background job processing and apply it to meaningful use user upload.
 * Update 'cleanupXml' script to allow for some parameters
 
+## Bug Fixes
+* Save ICS family data when going through pending listing confirm workflow.
+
 ---
 
 ## Version 13.0.0
