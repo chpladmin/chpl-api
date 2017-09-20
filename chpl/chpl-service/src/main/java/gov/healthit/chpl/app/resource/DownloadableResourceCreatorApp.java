@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app;
+package gov.healthit.chpl.app.resource;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +16,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.app.AppConfig;
+import gov.healthit.chpl.app.LocalContext;
+import gov.healthit.chpl.app.LocalContextFactory;
 import gov.healthit.chpl.app.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.app.presenter.CertifiedProductXmlPresenter;
