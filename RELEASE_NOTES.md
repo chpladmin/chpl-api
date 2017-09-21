@@ -8,6 +8,13 @@ _Date TBD_
 * Add /data/job_types call to get list of possible background job types that can be run
 * Add background job processing and apply it to meaningful use user upload.
 * Update 'cleanupXml' script to allow for some parameters
+* Create separate standalone applications for creating surveillance downloads vs each listing. Will need to make the following cron changes:
+	Remove `15 5 * * * cd /opt/chpl && ./generateXml.sh && ./cleanupXml.sh -dn 15 >> cleanupXml.log 2>&1`
+	Add `0 1 1 1,4,7,10 * cd /opt/chpl && ./generateListingResources.sh 2011`
+	Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2014`
+	Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2015`
+	Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh`
+	Add lines as well for the cleanup script (may have been done by andlar already)
 
 ## Bug Fixes
 * Save ICS family data when going through pending listing confirm workflow.
