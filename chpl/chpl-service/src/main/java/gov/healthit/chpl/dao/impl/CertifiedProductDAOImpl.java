@@ -218,7 +218,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		Query query = entityManager.createQuery(
 				"SELECT cpd " +
 				"FROM CertifiedProductDetailsEntity cpd " +
-				"WHERE cpd.year = :edition ", CertifiedProductDetailsEntity.class);
+				"WHERE (NOT deleted = true) " + 
+				"AND cpd.year = :edition ", CertifiedProductDetailsEntity.class);
 		query.setParameter("edition", edition.trim());
 		List<CertifiedProductDetailsEntity> entities = query.getResultList();
 		List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
