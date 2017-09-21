@@ -34,8 +34,7 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
 		oversightApp.setLocalContext();
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		oversightApp.initiateSpringBeans(context);
-        String downloadFolderPath = oversightApp.getDownloadFolderPath(args);
-        File downloadFolder = oversightApp.getDownloadFolder(downloadFolderPath);
+        File downloadFolder = oversightApp.getDownloadFolder();
 
         // Get ACBs for ONC-ACB emails
      	List<CertificationBodyDTO> acbs = oversightApp.getCertificationBodyDAO().findAll(false);

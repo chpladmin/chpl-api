@@ -20,17 +20,8 @@ public abstract class App {
 				getProperties().getProperty("dataSourceUsername"), getProperties().getProperty("dataSourcePassword"));
 	}
 	
-	protected String getDownloadFolderPath(String[] args) throws IOException {
-		String downloadFolderPath;
-        if (args.length > 0) {
-        	downloadFolderPath = args[0];
-        } else {
-        	downloadFolderPath = getProperties().getProperty("downloadFolderPath");
-        }
-        return downloadFolderPath;
-	}
-	
-	protected File getDownloadFolder(String downloadFolderPath){
+	protected File getDownloadFolder() throws IOException {
+		String downloadFolderPath = getProperties().getProperty("downloadFolderPath");
 		File downloadFolder = new File(downloadFolderPath);
         if(!downloadFolder.exists()) {
         	downloadFolder.mkdirs();
