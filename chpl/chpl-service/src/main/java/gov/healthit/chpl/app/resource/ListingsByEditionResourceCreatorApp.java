@@ -102,7 +102,7 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 			return;
 		}
 		
-		String edition = args[1].trim();
+		String edition = args[0].trim();
 		ListingsByEditionResourceCreatorApp app = new ListingsByEditionResourceCreatorApp(edition);
 		app.setLocalContext();
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
