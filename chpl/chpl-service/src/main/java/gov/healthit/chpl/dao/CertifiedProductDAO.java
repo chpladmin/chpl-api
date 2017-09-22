@@ -17,6 +17,7 @@ public interface CertifiedProductDAO {
 	public void delete(Long productId);
 	
 	public List<CertifiedProductDetailsDTO> findAll();
+	public List<CertifiedProductDetailsDTO> findByEdition(String edition);
 	public List<CertifiedProductDetailsDTO> findWithSurveillance();
 	public List<CertifiedProductDetailsDTO> findWithInheritance();
 

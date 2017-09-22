@@ -403,7 +403,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 			}
 		}
 				
-		//TODO: detailed G6 check
+		//TODO: detailed G6 check; waiting on rule from ONC
 		
 		//h1 plus b1
 		boolean hasH1 = hasCert("170.315 (h)(1)", allMetCerts);
@@ -519,19 +519,13 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 					}
 				}
 				
+				//g1 and g2 are the only criteria that ONC supplies test data for
+				//other criteria probably should have test data but do not have to
 				if(!gapEligibleAndTrue && 
 					(cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)")) &&
 					(cert.getTestData() == null || cert.getTestData().size() == 0)) {
 					product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
 				}
-//				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
-//					if(cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0) {
-//						product.getErrorMessages().add("UCD Fields are required for certification " + cert.getNumber() + ".");
-//					}
-//					if(cert.getTestTasks() == null || cert.getTestTasks().size() == 0) {
-//						product.getErrorMessages().add("Test tasks are required for certification " + cert.getNumber() + ".");
-//					}
-//				}	
 			}
 		}
 		

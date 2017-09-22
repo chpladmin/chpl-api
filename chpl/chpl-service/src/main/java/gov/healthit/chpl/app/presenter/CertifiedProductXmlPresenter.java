@@ -11,7 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import gov.healthit.chpl.app.DownloadableResourceCreatorApp;
+import gov.healthit.chpl.app.resource.DownloadableResourceCreatorApp;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 
 public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {

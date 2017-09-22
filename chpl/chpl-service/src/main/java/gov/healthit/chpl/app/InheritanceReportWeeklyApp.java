@@ -42,8 +42,7 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 		app.setLocalContext();
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		app.initiateSpringBeans(context);
-		String downloadFolderPath = app.getDownloadFolderPath(args);
-        File downloadFolder = app.getDownloadFolder(downloadFolderPath);
+        File downloadFolder = app.getDownloadFolder();
         
 		// Get ACBs for ONC-ACB emails
      	List<CertificationBodyDTO> acbs = app.getCertificationBodyDAO().findAll(false);
