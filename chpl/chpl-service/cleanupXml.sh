@@ -34,7 +34,7 @@ elif [ ! "$edition" = "2011" ] && [ ! "$edition" = "2014" ] && [ ! "$edition" = 
     exit 1
 fi
 # create regex using edition
-expression=".*$edition.*"
+expression=".*chpl-$edition-.*"
 
 # find the folder that has the XML files
 if [ ! -f environment.properties ]; then
