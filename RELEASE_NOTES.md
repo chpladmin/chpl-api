@@ -12,6 +12,9 @@ _Date TBD_
   * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
   * Add lines as well for the cleanup script (may have been done by andlar already)
 
+### Bug Fixes
+* Do not show macra measures for 2014 listings
+
 ---
 
 ## Version 13.1.0
@@ -25,7 +28,6 @@ _25 September 2017_
 
 ### Bug Fixes
 * Save ICS family data when going through pending listing confirm workflow.
-* Do not show macra measures for 2014 listings.
 
 ---
 
