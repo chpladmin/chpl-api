@@ -3,11 +3,7 @@
 ## Version TBD
 _Date TBD_
 
-## Minor features
-* Speed up API call to retrieve a Listing's entire ICS family
-* Add /data/job_types call to get list of possible background job types that can be run
-* Add background job processing and apply it to meaningful use user upload.
-* Update 'cleanupXml' script to allow for some parameters
+### Minor Features
 * Create separate standalone applications for creating surveillance downloads vs each listing. Will need to make the following cron changes:
   * Remove `15 5 * * * cd /opt/chpl && ./generateXml.sh && ./cleanupXml.sh -dn 15 >> cleanupXml.log 2>&1`
   * Add `0 1 1 1,4,7,10 * cd /opt/chpl && ./generateListingResources.sh 2011`
@@ -16,7 +12,18 @@ _Date TBD_
   * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
   * Add lines as well for the cleanup script (may have been done by andlar already)
 
-## Bug Fixes
+---
+
+## Version 13.1.0
+_25 September 2017_
+
+### Minor features
+* Speed up API call to retrieve a Listing's entire ICS family
+* Add /data/job_types call to get list of possible background job types that can be run
+* Add background job processing and apply it to meaningful use user upload.
+* Update 'cleanupXml' script to allow for some parameters
+
+### Bug Fixes
 * Save ICS family data when going through pending listing confirm workflow.
 * Do not show macra measures for 2014 listings.
 
@@ -25,18 +32,18 @@ _Date TBD_
 ## Version 13.0.0
 _11 September 2017_
 
-## Major Features
+### Major Features
 _Backwards compatibility breaking changes_
 * Reorganize SED data within the listing details request and response. UCD and Test tasks/participants are now located under a "sed" field. Listing update code has changed significantly as a result
 
-## Minor Features
+### Minor Features
 * Add warnings for 'phantom' criteria data where criteria is not attested to but has associated data from the upload.
 * Added SED Task/Participant required fields
 * Added errors on edit/upload/confirm
 * Allowed uploads to complete with missing age range/education
 * Added API call to retrieve a Listing's entire ICS family
 
-## Bug Fixes
+### Bug Fixes
 * Show all errors when editing a listing and a criteria that requires SED does not have it (was previously stopping at the first criteria in error)
 
 ---
