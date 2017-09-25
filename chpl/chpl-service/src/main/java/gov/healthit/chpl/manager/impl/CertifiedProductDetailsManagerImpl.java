@@ -342,24 +342,31 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 				result.setTestFunctionality(null);
 			}
 			
-			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
-				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG1MacraMeasuresForCertificationResult(certResult.getId());
-				for(CertificationResultMacraMeasureDTO currResult : measures) {
-					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
-					result.getG1MacraMeasures().add(mmResult);
-				}
-			} else {
+			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA) && 
+				!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
+				result.setAllowedMacraMeasures(null);
 				result.setG1MacraMeasures(null);
-			}
-			
-			if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
-				List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG2MacraMeasuresForCertificationResult(certResult.getId());
-				for(CertificationResultMacraMeasureDTO currResult : measures) {
-					MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
-					result.getG2MacraMeasures().add(mmResult);
-				}
-			} else {
 				result.setG2MacraMeasures(null);
+			} else {
+				if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)) {
+					List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG1MacraMeasuresForCertificationResult(certResult.getId());
+					for(CertificationResultMacraMeasureDTO currResult : measures) {
+						MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
+						result.getG1MacraMeasures().add(mmResult);
+					}
+				} else {
+					result.setG1MacraMeasures(null);
+				}
+				
+				if(certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
+					List<CertificationResultMacraMeasureDTO> measures = certResultManager.getG2MacraMeasuresForCertificationResult(certResult.getId());
+					for(CertificationResultMacraMeasureDTO currResult : measures) {
+						MacraMeasure mmResult = new MacraMeasure(currResult.getMeasure());
+						result.getG2MacraMeasures().add(mmResult);
+					}
+				} else {
+					result.setG2MacraMeasures(null);
+				}
 			}
 
 			//get all SED data for the listing
