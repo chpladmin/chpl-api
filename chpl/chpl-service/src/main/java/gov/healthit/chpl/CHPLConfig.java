@@ -8,6 +8,7 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -17,15 +18,18 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -37,6 +41,7 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
+import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
@@ -116,6 +121,14 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 	
 	@Bean
+	public TaskExecutor taskExecutor() {
+		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+		te.setCorePoolSize(10);
+		te.setMaxPoolSize(100);
+		return te;
+	}
+
+	@Bean
 	public Marshaller marshaller()
 	{
 		logger.info("get Marshaller");
@@ -174,5 +187,10 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
+    
+    @Bean
+	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
+		return new MeaningfulUseUploadJob();
+	}
 	
 }

@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 13.1.0
+_25 September 2017_
+
+## Minor features
+* Speed up API call to retrieve a Listing's entire ICS family
+* Add /data/job_types call to get list of possible background job types that can be run
+* Add background job processing and apply it to meaningful use user upload.
+* Update 'cleanupXml' script to allow for some parameters
+
+## Bug Fixes
+* Save ICS family data when going through pending listing confirm workflow.
+
+---
+
 ## Version 13.0.0
 _11 September 2017_
 
