@@ -18,6 +18,7 @@ _Date TBD_
 
 ## Bug Fixes
 * Save ICS family data when going through pending listing confirm workflow.
+* Do not show macra measures for 2014 listings.
 
 ---
 
