@@ -15,6 +15,7 @@ _Date TBD_
   * Add `0 1 * * * cd /opt/chpl && ./generateListingResources.sh 2015`
   * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
   * Add lines as well for the cleanup script (may have been done by andlar already)
+* Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted.
 
 ## Bug Fixes
 * Save ICS family data when going through pending listing confirm workflow.
