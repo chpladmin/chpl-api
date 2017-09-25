@@ -1,5 +1,8 @@
 package gov.healthit.chpl.web.controller;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -614,6 +617,12 @@ public class SearchViewControllerTest extends TestCase {
 		assertTrue("Response should contain results but is null", resp != null);
 		assertTrue("Response should contain certified product with numMeaningfulUse == 12 but contains numMeaningfulUse of " + resp.getNumMeaningfulUse(),
 				resp.getNumMeaningfulUse() == 12);
+	}
+	
+	@Transactional
+	@Test(expected = EntityRetrievalException.class)
+	public void getMissingCertifiedProductDetailsById() throws EntityRetrievalException, EntityCreationException, IOException {
+		searchViewController.getCertifiedProductDetails(65732843893L);
 	}
 	
 	@Transactional
