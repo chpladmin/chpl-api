@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 13.1.0
+_25 September 2017_
 
 ## Minor features
 * Speed up API call to retrieve a Listing's entire ICS family
