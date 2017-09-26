@@ -63,7 +63,6 @@ public class ChartDataDAOTest {
 	public void createChartData() throws EntityRetrievalException, EntityCreationException {
 		ChartDataEntity chartDataEntity = new ChartDataEntity();
 		chartDataEntity.setDataDate(new Date());
-		chartDataEntity.setId(3L);
 		chartDataEntity.setJsonDataObject("[[09-05-2017, 1]]");
 		chartDataEntity.setLastModifiedDate(new Date());
 		chartDataEntity.setLastModifiedUser(-1L);
