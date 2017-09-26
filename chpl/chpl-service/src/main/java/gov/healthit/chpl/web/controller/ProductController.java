@@ -55,7 +55,7 @@ public class ProductController {
 	
 	@ApiOperation(value="List all products", 
 			notes="Either list all products or optionally just all products belonging to a specific developer.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long developerId) {
 		

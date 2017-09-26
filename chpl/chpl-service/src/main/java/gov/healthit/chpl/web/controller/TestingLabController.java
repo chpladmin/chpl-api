@@ -63,7 +63,7 @@ public class TestingLabController {
 			notes="Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit permissions on."
 					+ "Setting 'showDeleted' to true will include even those ATLs that have been deleted. The logged in user must have ROLE_ADMIN "
 					+ "to see deleted ATLs. The default behavior of this service is to list all of the ATLs in the system that are not deleted.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody TestingLabResults getAtls(@RequestParam(required=false, defaultValue="false") boolean editable,
 			@RequestParam(required=false, defaultValue="false") boolean showDeleted) {

@@ -44,7 +44,7 @@ public class ProductVersionController {
 	
 	@ApiOperation(value="List all versions.", 
 			notes="List all versions associated with a specific product.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required=true) Long productId) {
 		List<ProductVersionDTO> versionList = null;

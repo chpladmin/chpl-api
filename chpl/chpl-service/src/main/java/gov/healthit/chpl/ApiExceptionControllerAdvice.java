@@ -34,7 +34,7 @@ public class ApiExceptionControllerAdvice {
 
 	@ExceptionHandler(EntityRetrievalException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityRetrievalException e) {
-		logger.error(e.getMessage(), e);
+		logger.error(e.getMessage());
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.NOT_FOUND);
 	}
 

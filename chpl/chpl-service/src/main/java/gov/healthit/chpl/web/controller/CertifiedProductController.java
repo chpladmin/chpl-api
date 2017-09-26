@@ -97,7 +97,7 @@ public class CertifiedProductController {
 					+ " certified products that the logged in user has permission to edit as "
 					+ " determined by ACB roles and authorities. Not all information about "
 					+ " every certified product is returned. Call the /details service for more information.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
 			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) {

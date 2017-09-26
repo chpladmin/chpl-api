@@ -54,7 +54,7 @@ public class DeveloperController {
 	@Autowired CertifiedProductManager cpManager;
 
 	@ApiOperation(value="List all developers in the system.", notes="")
-	@RequestMapping(value="/", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public @ResponseBody DeveloperResults getDevelopers(
 			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted){
 		List<DeveloperDTO> developerList = null;

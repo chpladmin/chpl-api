@@ -46,7 +46,7 @@ public class AnnouncementController {
 					+ " Both public and private announcements will be returned to an authenticated user."
 					+ " Scheduled future announcements can be retrieved by setting the 'future' flag to true "
 					+ " and only CHPL users with ROLE_ADMIN will be granted access to that data.")
-	@RequestMapping(value="/", method=RequestMethod.GET,produces="application/json; charset=utf-8")
+	@RequestMapping(value="", method=RequestMethod.GET,produces="application/json; charset=utf-8")
 	public @ResponseBody AnnouncementResults getAnnouncements(
 			@RequestParam(required=false, defaultValue="false") boolean future) {
 		AnnouncementResults results = new AnnouncementResults();

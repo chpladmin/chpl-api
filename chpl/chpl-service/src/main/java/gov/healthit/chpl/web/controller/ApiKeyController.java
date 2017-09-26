@@ -92,7 +92,7 @@ public class ApiKeyController {
 	
 	@ApiOperation(value="List all API keys that have been created.", 
 			notes="This service is only available to CHPL users with ROLE_ADMIN.")
-	@RequestMapping(value="/", method= RequestMethod.GET,
+	@RequestMapping(value="", method= RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public List<ApiKey> listKeys() {
 		
