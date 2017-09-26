@@ -9,12 +9,13 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.ChartDataDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.statistics.ChartDataDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ChartDataDTO;
+import gov.healthit.chpl.dto.ChartDataStatTypeDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.ChartDataEntity;
 import gov.healthit.chpl.manager.ChartDataManager;
@@ -50,8 +51,18 @@ public class ChartDataManagerImpl implements ChartDataManager{
 	}
 	
 	@Transactional(readOnly = true)
-	public List<ChartDataDTO> getAll() {
-		return chartDataDAO.findAll();
+	public List<ChartDataDTO> getAllData() {
+		return chartDataDAO.findAllData();
+	}
+	
+	@Transactional(readOnly = true)
+	public List<ChartDataStatTypeDTO> getAllTypes() {
+		return chartDataDAO.findAllTypes();
+	}
+	
+	@Transactional(readOnly = true)
+	public ChartDataDTO getById(Long id) throws EntityRetrievalException {
+		return chartDataDAO.getById(id);
 	}
 
 }

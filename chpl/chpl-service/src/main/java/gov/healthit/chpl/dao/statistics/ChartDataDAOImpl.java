@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao.impl;
+package gov.healthit.chpl.dao.statistics;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,13 +8,15 @@ import javax.persistence.Query;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.ChartDataDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.ChartDataDTO;
+import gov.healthit.chpl.dto.ChartDataStatTypeDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.ChartDataEntity;
+import gov.healthit.chpl.entity.ChartDataStatTypeEntity;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -107,9 +109,9 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 		
 	}
 
-	public List<ChartDataDTO> findAll(){
+	public List<ChartDataDTO> findAllData(){
 
-		List<ChartDataEntity> entities = getAllEntities();
+		List<ChartDataEntity> entities = getAllDataEntities();
 		List<ChartDataDTO> acbs = new ArrayList<>();
 
 		for (ChartDataEntity entity : entities) {
@@ -117,14 +119,34 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 			acbs.add(acb);
 		}
 		return acbs;
-
 	}
 	
-	public List<ChartDataEntity> getAllEntities() {
+	public List<ChartDataStatTypeDTO> findAllTypes(){
+
+		List<ChartDataStatTypeEntity> entities = getAllTypeEntities();
+		List<ChartDataStatTypeDTO> acbs = new ArrayList<>();
+
+		for (ChartDataStatTypeEntity entity : entities) {
+			ChartDataStatTypeDTO acb = new ChartDataStatTypeDTO(entity);
+			acbs.add(acb);
+		}
+		return acbs;
+	}
+	
+	public List<ChartDataEntity> getAllDataEntities() {
 		
 		List<ChartDataEntity> result;
 		
 		result = entityManager.createQuery( "from ChartDataEntity", ChartDataEntity.class).getResultList();
+
+		return result;
+	}
+	
+	public List<ChartDataStatTypeEntity> getAllTypeEntities() {
+		
+		List<ChartDataStatTypeEntity> result;
+		
+		result = entityManager.createQuery( "from ChartDataStatTypeEntity", ChartDataStatTypeEntity.class).getResultList();
 
 		return result;
 	}

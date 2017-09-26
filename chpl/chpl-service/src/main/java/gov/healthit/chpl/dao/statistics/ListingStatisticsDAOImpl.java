@@ -1,6 +1,8 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -25,6 +27,16 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
+	}
+	
+	public List<Long> getProductsWithChangedCertificationStatusPostApril2016(Date april){
+		Query query = entityManager.createQuery("SELECT DISTINCT certifiedProductId "
+				+ "FROM CertificationStatusEventEntity "
+				+ "WHERE eventDate > :april "
+				+ "GROUP BY certifiedProductId "
+				+ "HAVING count(*) > 1");
+		query.setParameter("april", april);
+		return query.getResultList();
 	}
 	
 	/**

@@ -1,13 +1,15 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.domain;
 
+import gov.healthit.chpl.dto.ChartDataDTO;
 import gov.healthit.chpl.entity.ChartDataEntity;
 
 import java.io.Serializable;
 import java.util.Date;
 
-public class ChartDataDTO implements Serializable {
+public class ChartData implements Serializable {
 	
-	private static final long serialVersionUID = 9045053072631026729L;
+	private static final long serialVersionUID = 3313308808845667852L;
+	
 	private Long id;
 	private Date dataDate;
 	private String jsonDataObject;
@@ -15,7 +17,7 @@ public class ChartDataDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	
-	public ChartDataDTO(ChartDataEntity entity){
+	public ChartData(ChartDataDTO entity){
 		this.id = entity.getId();
 		this.dataDate = entity.getDataDate();
 		this.setJsonDataObject(entity.getJsonDataObject());
@@ -23,7 +25,6 @@ public class ChartDataDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 	}
-	public ChartDataDTO(){}
 	
 	public Long getId() {
 		return id;
