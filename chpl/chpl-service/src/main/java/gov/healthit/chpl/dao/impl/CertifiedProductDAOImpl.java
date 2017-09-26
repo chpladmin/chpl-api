@@ -201,7 +201,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	
 	@Transactional(readOnly=true)
 	public List<CertifiedProductDetailsDTO> findAll(){
-		
 		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery( 
 				"from CertifiedProductDetailsEntity where (NOT deleted = true) ", CertifiedProductDetailsEntity.class).getResultList();
 
@@ -212,7 +211,24 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			products.add(product);
 		}
 		return products;
+	}
+	
+	@Transactional(readOnly = true) 
+	public List<CertifiedProductDetailsDTO> findByEdition(String edition) {
+		Query query = entityManager.createQuery(
+				"SELECT cpd " +
+				"FROM CertifiedProductDetailsEntity cpd " +
+				"WHERE (NOT deleted = true) " + 
+				"AND cpd.year = :edition ", CertifiedProductDetailsEntity.class);
+		query.setParameter("edition", edition.trim());
+		List<CertifiedProductDetailsEntity> entities = query.getResultList();
+		List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
 		
+		for (CertifiedProductDetailsEntity entity : entities) {
+			CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+			products.add(product);
+		}
+		return products;
 	}
 	
 	@Transactional(readOnly=true)

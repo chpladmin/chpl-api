@@ -180,7 +180,8 @@ public class SearchViewController {
 			notes="")
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
+	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(
+			@RequestParam("productId") Long id) throws EntityRetrievalException {
 		
 		CertifiedProductSearchDetails product = certifiedProductDetailsManager.getCertifiedProductDetails(id);
 		return product;
@@ -655,6 +656,14 @@ public class SearchViewController {
 		}
 		
 		return certifiedProductSearchManager.search(searchFilters);
+	}
+	
+	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})
+	@ApiOperation(value="Get all possible types of jobs that can be created in the system.")
+	@RequestMapping(value="/data/job_types", method=RequestMethod.GET,
+			produces="application/json; charset=utf-8")
+	public @ResponseBody Set<KeyValueModel> getJobTypes() {
+		return searchMenuManager.getJobTypes();
 	}
 	
 	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})

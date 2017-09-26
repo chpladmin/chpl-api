@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -85,6 +86,8 @@ public class PendingCertifiedProductDTO implements Serializable {
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	
+	private List<CertifiedProductDTO> icsParents;
+	private List<CertifiedProductDTO> icsChildren;
 	private List<PendingCertificationResultDTO> certificationCriterion;
 	private List<PendingCqmCriterionDTO> cqmCriterion;
 	private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
@@ -96,6 +99,8 @@ public class PendingCertifiedProductDTO implements Serializable {
 	public PendingCertifiedProductDTO(){
 		this.errorMessages = new HashSet<String>();	
 		this.warningMessages = new HashSet<String>();
+		this.icsParents = new ArrayList<CertifiedProductDTO>();
+		this.icsChildren = new ArrayList<CertifiedProductDTO>();
 		this.certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
 		this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
 		this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
@@ -196,6 +201,22 @@ public class PendingCertifiedProductDTO implements Serializable {
 		this.transparencyAttestationUrl = details.getTransparencyAttestationUrl();
 		this.accessibilityCertified = details.getAccessibilityCertified();
 		
+		if(details.getIcs() != null) {
+			if(details.getIcs().getParents() != null && details.getIcs().getParents().size() > 0) {
+				for(CertifiedProduct parent : details.getIcs().getParents()) {
+					CertifiedProductDTO parentCp = new CertifiedProductDTO();
+					parentCp.setChplProductNumber(parent.getChplProductNumber());
+					this.icsParents.add(parentCp);
+				}
+			}
+			if(details.getIcs().getChildren() != null && details.getIcs().getChildren().size() > 0) {
+				for(CertifiedProduct child : details.getIcs().getChildren()) {
+					CertifiedProductDTO childCp = new CertifiedProductDTO();
+					childCp.setChplProductNumber(child.getChplProductNumber());
+					this.icsChildren.add(childCp);
+				}
+			}
+		}
 		List<CertifiedProductQmsStandard> qmsStandards = details.getQmsStandards();
 		if(qmsStandards != null && qmsStandards.size() > 0) {
 			for(CertifiedProductQmsStandard qms : qmsStandards) {
@@ -920,5 +941,21 @@ public class PendingCertifiedProductDTO implements Serializable {
 
 	public void setLastModifiedUser(Long lastModifiedUser) {
 		this.lastModifiedUser = lastModifiedUser;
+	}
+
+	public List<CertifiedProductDTO> getIcsParents() {
+		return icsParents;
+	}
+
+	public void setIcsParents(List<CertifiedProductDTO> icsParents) {
+		this.icsParents = icsParents;
+	}
+
+	public List<CertifiedProductDTO> getIcsChildren() {
+		return icsChildren;
+	}
+
+	public void setIcsChildren(List<CertifiedProductDTO> icsChildren) {
+		this.icsChildren = icsChildren;
 	}
 }

@@ -170,9 +170,9 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		node.setVersion(pv);
 		ArrayList<CertifiedProduct> childrenList = new ArrayList<CertifiedProduct>();
 		if(result.getChild() != null){
-			String[] children = result.getChild().split("☺");
+			String[] children = result.getChild().split("\u263A");
 			for(String child : children){
-				String[] childInfo = child.split("☹");
+				String[] childInfo = child.split("\u2639");
 				CertifiedProduct cp = new CertifiedProduct();
 				cp.setChplProductNumber(childInfo[0]);
 				cp.setId(Long.decode(childInfo[1]));
@@ -182,9 +182,9 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		node.setChildren(childrenList);
 		ArrayList<CertifiedProduct> parentList = new ArrayList<CertifiedProduct>();
 		if(result.getParent() != null){
-			String[] parents = result.getParent().split("☺");
+			String[] parents = result.getParent().split("\u263A");
 			for(String parent : parents){
-				String[] parentInfo = parent.split("☹");
+				String[] parentInfo = parent.split("\u2639");
 				CertifiedProduct cp = new CertifiedProduct();
 				cp.setChplProductNumber(parentInfo[0]);
 				cp.setId(Long.decode(parentInfo[1]));

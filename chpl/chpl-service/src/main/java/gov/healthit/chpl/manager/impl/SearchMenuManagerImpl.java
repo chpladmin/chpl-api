@@ -23,6 +23,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
@@ -71,6 +72,7 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
@@ -111,6 +113,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	private ProductDAO productDAO;
 	
 	@Autowired
+	private JobDAO jobDao;
+	
+	@Autowired
 	private PracticeTypeDAO practiceTypeDAO;
 	
 	@Autowired
@@ -130,6 +135,18 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		return results;
 	}
 
+	@Transactional
+	@Override
+	@Cacheable(CacheNames.JOB_TYPES)
+	public Set<KeyValueModel> getJobTypes() {
+		List<JobTypeDTO> jobTypes = jobDao.findAllTypes();
+		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+		for(JobTypeDTO dto : jobTypes) {
+			results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
+		}
+		return results;
+	}
+	
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CLASSIFICATION_NAMES)

@@ -36,7 +36,6 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {

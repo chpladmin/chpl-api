@@ -5,7 +5,8 @@ persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
 questionableActivityThresholdDays=0
-maxActivityRangeInDays=60
+#display jobs that are currently running or have completed within the last jobThresholdDays days
+jobThresholdDays=7 
 
 #cache properties
 enableCacheInitialization=true

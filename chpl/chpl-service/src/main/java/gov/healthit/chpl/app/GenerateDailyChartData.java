@@ -51,7 +51,7 @@ public class GenerateDailyChartData {
 	public static void main(String[] args) throws Exception {
 		//read in properties - we need these to set up the data source context
 		Properties props = null;
-		InputStream in = DownloadableResourceCreatorApp.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+		InputStream in = GenerateDailyChartData.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 
 		if (in == null) {
 			props = null;

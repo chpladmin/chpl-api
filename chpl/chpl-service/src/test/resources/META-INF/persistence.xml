@@ -61,6 +61,10 @@
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
+		<class>gov.healthit.chpl.entity.job.JobEntity</class>
+		<class>gov.healthit.chpl.entity.job.JobMessageEntity</class>
+		<class>gov.healthit.chpl.entity.job.JobStatusEntity</class>				
+		<class>gov.healthit.chpl.entity.job.JobTypeEntity</class>		
 		<class>gov.healthit.chpl.entity.listing.ListingToListingMapEntity</class>
 		<class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
 		<class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
@@ -138,3 +142,4 @@
 	</persistence-unit>
 
 </persistence>
+>>>>>>> 4cb5002b161eb9a3935f3c6fb5773b69e0698b69

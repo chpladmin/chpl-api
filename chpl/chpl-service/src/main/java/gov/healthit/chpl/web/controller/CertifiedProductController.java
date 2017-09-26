@@ -43,6 +43,7 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.IdListContainer;
+import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -366,7 +367,9 @@ public class CertifiedProductController {
 	@RequestMapping(value="/meaningful_use_users/upload", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8") 
 	@Deprecated
-	public @ResponseBody MeaningfulUseUserResults uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
+	public @ResponseBody ResponseEntity<Job> uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) 
+			throws EntityCreationException, EntityRetrievalException, 
+			ValidationException, MaxUploadSizeExceededException {
 		return meaningfulUseController.uploadMeaningfulUseUsers(file);
 	}
 	
