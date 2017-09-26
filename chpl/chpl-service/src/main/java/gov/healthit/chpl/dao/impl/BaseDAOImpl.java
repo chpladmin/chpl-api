@@ -10,8 +10,7 @@ import org.springframework.context.MessageSource;
 
 public class BaseDAOImpl {
 
-	@PersistenceContext
-	protected EntityManager entityManager;
+	@PersistenceContext protected EntityManager entityManager;
 	@Autowired MessageSource messageSource;
 
 	public EntityManager getEntityManager() {

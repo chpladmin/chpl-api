@@ -9,6 +9,8 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -246,7 +248,10 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		query.setParameter("entityid", entityId);
 		List<CertificationBodyEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("acb.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate certificaiton body id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);

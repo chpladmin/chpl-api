@@ -169,6 +169,13 @@ public class UserManagerTest {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Test(expected=UserRetrievalException.class)
+	public void testGetByIdNotFound() throws UserRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		userManager.getById(-6000L);
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
 	@Test
 	public void testGetByName() throws UserRetrievalException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);

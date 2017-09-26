@@ -23,12 +23,6 @@ public class AuthExceptionControllerAdvice {
 				HttpStatus.UNAUTHORIZED);
 	}
 
-	@ExceptionHandler(UserRetrievalException.class)
-	public ResponseEntity<ErrorJSONObject> exception(UserRetrievalException e) {
-		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()),
-				HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
 	@ExceptionHandler(UserCreationException.class)
 	public ResponseEntity<ErrorJSONObject> exception(UserCreationException e) {
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()),

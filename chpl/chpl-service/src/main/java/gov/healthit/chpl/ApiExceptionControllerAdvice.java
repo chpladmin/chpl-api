@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorJSONObject;
@@ -34,6 +35,12 @@ public class ApiExceptionControllerAdvice {
 
 	@ExceptionHandler(EntityRetrievalException.class)
 	public ResponseEntity<ErrorJSONObject> exception(EntityRetrievalException e) {
+		logger.error(e.getMessage());
+		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.NOT_FOUND);
+	}
+	
+	@ExceptionHandler(UserRetrievalException.class)
+	public ResponseEntity<ErrorJSONObject> exception(UserRetrievalException e) {
 		logger.error(e.getMessage());
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.NOT_FOUND);
 	}

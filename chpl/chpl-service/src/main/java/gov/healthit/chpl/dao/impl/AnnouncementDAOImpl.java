@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -272,6 +274,11 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 					throw new AccessDeniedException("Only logged in member can see non-public announcements.");
 				}
 			}
+		}
+		
+		if(entity == null) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
 		}
 		return entity;
 	}

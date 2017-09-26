@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import javax.persistence.Query;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -276,7 +278,10 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		query.setParameter("entityid", id);
 		List<CertificationIdEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate certificationId id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);

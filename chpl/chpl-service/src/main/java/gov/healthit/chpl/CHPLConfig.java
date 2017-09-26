@@ -8,7 +8,6 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
@@ -18,7 +17,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.Scope;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
@@ -151,44 +149,44 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 	
 	@Bean
-    public ReloadableResourceBundleMessageSource messageSource(){
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
+	public ReloadableResourceBundleMessageSource messageSource(){
+		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		messageSource.setBasename("classpath:/errors");
+		messageSource.setDefaultEncoding("UTF-8");
+		return messageSource;
+	}
 
-    @Bean
-    public CookieLocaleResolver localeResolver(){
-        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
-        localeResolver.setDefaultLocale(Locale.ENGLISH);
-        localeResolver.setCookieName("my-locale-cookie");
-        localeResolver.setCookieMaxAge(3600);
-        return localeResolver;
-    }
+	@Bean
+	public CookieLocaleResolver localeResolver(){
+		CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+		localeResolver.setDefaultLocale(Locale.ENGLISH);
+		localeResolver.setCookieName("my-locale-cookie");
+		localeResolver.setCookieMaxAge(3600);
+		return localeResolver;
+	}
 
-    @Bean
-    public LocaleChangeInterceptor localeInterceptor(){
-        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-        interceptor.setParamName("lang");
-        return interceptor;
-    }
+	@Bean
+	public LocaleChangeInterceptor localeInterceptor(){
+		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+		interceptor.setParamName("lang");
+		return interceptor;
+	}
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(localeInterceptor());
-    }
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(localeInterceptor());
+	}
 
-    @Bean
-    public InternalResourceViewResolver viewResolver(){
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
-        viewResolver.setSuffix(".jsp");
-        return viewResolver;
-    }
-    
-    @Bean
+	@Bean
+	public InternalResourceViewResolver viewResolver(){
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+		viewResolver.setViewClass(JstlView.class);
+		viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
+		viewResolver.setSuffix(".jsp");
+		return viewResolver;
+	}
+
+	@Bean
 	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
 		return new MeaningfulUseUploadJob();
 	}
