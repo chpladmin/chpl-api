@@ -32,7 +32,7 @@ public class ChartDataEntity implements Serializable{
 	private String jsonDataObject;
 	
 	@Basic( optional = false )
-	@Column( name = "type_of_stat", nullable = false  )
+	@Column( name = "chart_data_stat_type_id", nullable = false  )
 	private Long typeOfStatId;
 	
 	@Basic( optional = false )
