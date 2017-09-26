@@ -228,6 +228,9 @@ public class CertifiedProductDetailsEntity {
     		
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
+    
+    @Column(name = "deleted")
+    private Boolean deleted;
 
 	@Column(name = "ics")
 	private Boolean ics;
@@ -857,6 +860,14 @@ public class CertifiedProductDetailsEntity {
 
 	public void setDeveloperStatusDate(Date developerStatusDate) {
 		this.developerStatusDate = developerStatusDate;
+	}
+
+	public Boolean getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 
 }

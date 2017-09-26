@@ -180,7 +180,8 @@ public class SearchViewController {
 			notes="")
 	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(@RequestParam("productId") Long id) throws EntityRetrievalException{
+	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(
+			@RequestParam("productId") Long id) throws EntityRetrievalException {
 		
 		CertifiedProductSearchDetails product = certifiedProductDetailsManager.getCertifiedProductDetails(id);
 		return product;

@@ -16,7 +16,11 @@ import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +36,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		CertifiedProductSearchResultDAO {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchResultDAOImpl.class);
-
+	
 	static final Map<String, String> columnNameRef = new HashMap<String, String>();
 	static {
 		
@@ -128,6 +132,10 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		
 		if (entity != null){
 			dto = new CertifiedProductDetailsDTO(entity);
+		} else {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"), LocaleContextHolder.getLocale()));
+			logger.error("Error retreiving listing with ID " + productId + ": " + msg);
+			throw new EntityRetrievalException(msg);
 		}
 		return dto;
 	}
@@ -154,9 +162,11 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	
 	private CertifiedProductDetailsEntity getEntityById(Long entityId) throws EntityRetrievalException {	
 		CertifiedProductDetailsEntity entity = null;
-		Query query = entityManager.createQuery( "from CertifiedProductDetailsEntity deets "
+		Query query = entityManager.createQuery( "SELECT deets "
+				+ "FROM CertifiedProductDetailsEntity deets "
 				+ "LEFT OUTER JOIN FETCH deets.product "
-				+ "where (deets.id = :entityid) ", CertifiedProductDetailsEntity.class );
+				+ "WHERE (deets.id = :entityid) "
+				+ "AND deets.deleted <> true", CertifiedProductDetailsEntity.class );
 		query.setParameter("entityid", entityId);
 		
 		List<CertifiedProductDetailsEntity> result = query.getResultList();
