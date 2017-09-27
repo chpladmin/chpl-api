@@ -1,29 +1,26 @@
 package gov.healthit.chpl.domain;
 
 import gov.healthit.chpl.dto.ChartDataDTO;
-import gov.healthit.chpl.entity.ChartDataEntity;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class ChartData implements Serializable {
 	
 	private static final long serialVersionUID = 3313308808845667852L;
 	
 	private Long id;
-	private Date dataDate;
-	private String jsonDataObject;
-	private Long typeOfStatId;
-	private Date lastModifiedDate;
-	private Long lastModifiedUser;
+	private Long date;
+	private String data;
+	private ChartDataStatType statisticType;
 	
-	public ChartData(ChartDataDTO entity){
-		this.id = entity.getId();
-		this.dataDate = entity.getDataDate();
-		this.setJsonDataObject(entity.getJsonDataObject());
-		this.typeOfStatId = entity.getTypeOfStatId();
-		this.lastModifiedDate = entity.getLastModifiedDate();
-		this.lastModifiedUser = entity.getLastModifiedUser();
+	public ChartData(ChartDataDTO dto) throws ParseException{
+		this.id = dto.getId();
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-mm-dd");
+		this.date = f.parse(dto.getDate().toString()).getTime();
+		this.data = dto.getData();
+		this.statisticType = new ChartDataStatType(dto.getStatisticType());
 	}
 	
 	public Long getId() {
@@ -32,36 +29,28 @@ public class ChartData implements Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Date getDataDate() {
-		return dataDate;
-	}
-	public void setDataDate(Date dataDate) {
-		this.dataDate = dataDate;
-	}
-	public Long getTypeOfStatId() {
-		return typeOfStatId;
-	}
-	public void setTypeOfStatId(Long typeOfStatId) {
-		this.typeOfStatId = typeOfStatId;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
+
+	public Long getDate() {
+		return date;
 	}
 
-	public String getJsonDataObject() {
-		return jsonDataObject;
+	public void setDate(Long date) {
+		this.date = date;
 	}
 
-	public void setJsonDataObject(String jsonDataObject) {
-		this.jsonDataObject = jsonDataObject;
+	public String getData() {
+		return data;
+	}
+
+	public void setData(String data) {
+		this.data = data;
+	}
+
+	public ChartDataStatType getStatisticType() {
+		return statisticType;
+	}
+
+	public void setStatisticType(ChartDataStatType statisticType) {
+		this.statisticType = statisticType;
 	}
 }

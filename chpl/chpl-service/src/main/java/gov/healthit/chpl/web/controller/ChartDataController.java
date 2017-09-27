@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +48,7 @@ private static final Logger logger = LogManager.getLogger(AnnouncementController
 	
 	@ApiOperation(value="Get all types of statistics")
 	@RequestMapping(value="/statistics", method=RequestMethod.GET,produces="application/json; charset=utf-8")
-	public @ResponseBody List<ChartData> getStatistics() {
+	public @ResponseBody List<ChartData> getStatistics() throws ParseException {
 		List<ChartDataDTO> results = chartDataManager.getAllData();
 		
 		List<ChartData> ret = new ArrayList<ChartData>();

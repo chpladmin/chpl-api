@@ -4,11 +4,14 @@ import static org.junit.Assert.*;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.statistics.ChartDataDAO;
+import gov.healthit.chpl.domain.ChartDataStatType;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.ChartDataDTO;
 import gov.healthit.chpl.dto.ChartDataStatTypeDTO;
 import gov.healthit.chpl.entity.ChartDataEntity;
+import gov.healthit.chpl.entity.ChartDataStatTypeEntity;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -42,31 +45,31 @@ public class ChartDataDAOTest {
 	
 	@Test
 	@Transactional
-	public void getAllChartData() {
+	public void getAllChartData() throws ParseException {
 		List<ChartDataDTO> results = chartDataDao.findAllData();
 		assertNotNull(results);
-		assertNotNull(results.get(0).getDataDate());
-		assertNotNull(results.get(0).getJsonDataObject());
-		assertEquals(results.get(0).getJsonDataObject(), FAKE_CHART_DATA);
+		assertNotNull(results.get(0).getDate());
+		assertNotNull(results.get(0).getData());
+		assertEquals(results.get(0).getData(), FAKE_CHART_DATA);
 		assertEquals(1, results.size());
 	}
 	
 	@Test
 	@Transactional
-	public void getChartDataById() throws EntityRetrievalException {
+	public void getChartDataById() throws EntityRetrievalException, ParseException {
 		ChartDataDTO result = chartDataDao.getById(1L);
 		assertNotNull(result);
 	}
 	
 	@Test
 	@Transactional
-	public void createChartData() throws EntityRetrievalException, EntityCreationException {
+	public void createChartData() throws EntityRetrievalException, EntityCreationException, ParseException {
 		ChartDataEntity chartDataEntity = new ChartDataEntity();
 		chartDataEntity.setDataDate(new Date());
 		chartDataEntity.setJsonDataObject("[[09-05-2017, 1]]");
-		chartDataEntity.setLastModifiedDate(new Date());
-		chartDataEntity.setLastModifiedUser(-1L);
-		chartDataEntity.setTypeOfStatId(1L);
+		ChartDataStatTypeEntity statType = new ChartDataStatTypeEntity();
+		statType.setId(1L);
+		chartDataEntity.setTypeOfStatId(statType);
 		ChartDataDTO chartData = new ChartDataDTO(chartDataEntity);
 		ChartDataDTO toCreate = chartDataDao.create(chartData);
 		assertNotNull(toCreate);
@@ -74,13 +77,16 @@ public class ChartDataDAOTest {
 	
 	@Test
 	@Transactional
-	public void updateChartData() throws EntityRetrievalException, EntityCreationException {
+	public void updateChartData() throws EntityRetrievalException, EntityCreationException, ParseException {
 		ChartDataDTO chartData = chartDataDao.getById(1L);
-		chartData.setTypeOfStatId(2L);
-		chartData.setJsonDataObject("[[09-05-2017, 1]]");
+		ChartDataStatTypeEntity statTypeEntity = new ChartDataStatTypeEntity();
+		statTypeEntity.setId(2L);
+		ChartDataStatTypeDTO statTypeDto = new ChartDataStatTypeDTO(statTypeEntity);
+		chartData.setStatisticType(statTypeDto);
+		chartData.setData("[[09-05-2017, 1]]");
 		ChartDataDTO updated = chartDataDao.update(chartData);
-		assertEquals(2L,updated.getTypeOfStatId().longValue());
-		assertEquals("[[09-05-2017, 1]]",updated.getJsonDataObject());
+		assertEquals(statTypeDto,updated.getStatisticType());
+		assertEquals("[[09-05-2017, 1]]",updated.getData());
 	}
 	
 	@Test

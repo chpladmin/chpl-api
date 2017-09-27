@@ -1,25 +1,15 @@
 package gov.healthit.chpl.app;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
+import gov.healthit.chpl.dao.ChartDataStatTypeDAO;
 import gov.healthit.chpl.dao.statistics.ChartDataDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ChartDataDTO;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
-import gov.healthit.chpl.manager.ChartDataManager;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Month;
@@ -31,9 +21,6 @@ import java.util.Properties;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -45,6 +32,7 @@ public class GenerateDailyChartData {
 	private ChartDataDAO chartDataDao;
 	private CertificationStatusEventDAO certificationStatusEventDao;
 	private CertificationEditionDAO certificationEditionDao;
+	private ChartDataStatTypeDAO chartDataStatTypeDao;
 	
 	public GenerateDailyChartData(){}
 
@@ -78,6 +66,7 @@ public class GenerateDailyChartData {
 		LocalDate begin = LocalDate.of(2016, Month.APRIL, 1);
 		LocalDate end = LocalDate.now();
 		LocalDate current = begin;
+		System.out.println("Starting to compute daily numbers:");
 		while(current.isBefore(end) || current.isEqual(end)){
 			Date date1 = java.sql.Date.valueOf(begin);
 			Date date2 = java.sql.Date.valueOf(current);
@@ -92,6 +81,7 @@ public class GenerateDailyChartData {
 			array.add(uniqueProductsActive.toString());
 			array.add(uniqueProductsActive2014.toString());
 			array.add(uniqueProductsActive2015.toString());
+			System.out.println(array);
 			current = current.plusDays(1);
 			doubleList.add(array);
 		}
@@ -155,10 +145,10 @@ public class GenerateDailyChartData {
 		}
 		System.out.println(doubleList);
 		ChartDataDTO chartData = new ChartDataDTO();
-		chartData.setDataDate(new Date());
-		chartData.setJsonDataObject(doubleList.toString());
+		chartData.setDate(new Date().getTime());
+		chartData.setData(doubleList.toString());
 		chartData.setLastModifiedUser(1L);
-		chartData.setTypeOfStatId(1L);
+		chartData.setStatisticType(1L);
 		app.getChartDataDao().create(chartData);
 		
 	}

@@ -1,14 +1,19 @@
 package gov.healthit.chpl.entity;
 
+import gov.healthit.chpl.domain.ChartDataStatType;
+
 import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -32,8 +37,9 @@ public class ChartDataEntity implements Serializable{
 	private String jsonDataObject;
 	
 	@Basic( optional = false )
-	@Column( name = "chart_data_stat_type_id", nullable = false  )
-	private Long typeOfStatId;
+	@OneToOne(optional = true, fetch = FetchType.LAZY)
+	@JoinColumn( name = "chart_data_stat_type_id", nullable = false  )
+	private ChartDataStatTypeEntity typeOfStatId;
 	
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false)
@@ -67,11 +73,11 @@ public class ChartDataEntity implements Serializable{
 		this.jsonDataObject = jsonDataObject;
 	}
 
-	public Long getTypeOfStatId() {
+	public ChartDataStatTypeEntity getTypeOfStatId() {
 		return typeOfStatId;
 	}
 
-	public void setTypeOfStatId(Long typeOfStatId) {
+	public void setTypeOfStatId(ChartDataStatTypeEntity typeOfStatId) {
 		this.typeOfStatId = typeOfStatId;
 	}
 

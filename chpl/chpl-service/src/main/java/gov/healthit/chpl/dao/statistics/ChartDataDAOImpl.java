@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 	private static final Logger logger = LogManager.getLogger(ChartDataDAOImpl.class);
 
 	@Transactional
-	public ChartDataDTO create(ChartDataDTO dto) throws EntityRetrievalException, EntityCreationException {
+	public ChartDataDTO create(ChartDataDTO dto) throws EntityRetrievalException, EntityCreationException, ParseException {
 		ChartDataEntity entity = null;
 		try {
 			if (dto.getId() != null){
@@ -44,9 +45,11 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 		} else {			
 			entity = new ChartDataEntity();
 			
-			entity.setDataDate(dto.getDataDate());
-			entity.setJsonDataObject(dto.getJsonDataObject());
-			entity.setTypeOfStatId(dto.getTypeOfStatId());
+			entity.setDataDate(new Date(dto.getDate() * 1000));
+			entity.setJsonDataObject(dto.getData());
+			ChartDataStatTypeEntity entity = new ChartDataStatTypeEntity();
+			entity.setId(id);
+			entity.setTypeOfStatId(dto.getStatisticType());
 			
 			if(dto.getLastModifiedUser() != null) {
 				entity.setLastModifiedUser(dto.getLastModifiedUser());
@@ -66,7 +69,7 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 	}
 	
 	@Transactional
-	public ChartDataDTO update(ChartDataDTO dto) throws EntityRetrievalException{
+	public ChartDataDTO update(ChartDataDTO dto) throws EntityRetrievalException, ParseException{
 		
 		ChartDataEntity entity = getEntityById(dto.getId());	
 		if(entity == null) {
@@ -74,12 +77,12 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 		}
 		
 		entity.setDataDate(new Date());
-		if(dto.getJsonDataObject() != null) {
-			entity.setJsonDataObject(dto.getJsonDataObject());
+		if(dto.getData() != null) {
+			entity.setJsonDataObject(dto.getData());
 		}
 		
-		if(dto.getTypeOfStatId() != null) {
-			entity.setTypeOfStatId(dto.getTypeOfStatId());
+		if(dto.getStatisticType() != null) {
+			entity.setTypeOfStatId(dto.getStatisticType());
 		}
 		
 		if(dto.getLastModifiedUser() != null) {
@@ -98,7 +101,7 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 		return new ChartDataDTO(entity);
 	}
 	
-	public ChartDataDTO getById(Long acbId) throws EntityRetrievalException{
+	public ChartDataDTO getById(Long acbId) throws EntityRetrievalException, ParseException{
 		ChartDataEntity entity = this.getEntityById(acbId);
 		
 		ChartDataDTO dto = null;
@@ -109,7 +112,7 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 		
 	}
 
-	public List<ChartDataDTO> findAllData(){
+	public List<ChartDataDTO> findAllData() throws ParseException{
 
 		List<ChartDataEntity> entities = getAllDataEntities();
 		List<ChartDataDTO> acbs = new ArrayList<>();
@@ -162,7 +165,7 @@ public class ChartDataDAOImpl extends BaseDAOImpl implements ChartDataDAO{
 		List<ChartDataEntity> result = query.getResultList();
 
 		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate certificaiton body id in database.");
+			throw new EntityRetrievalException("Data error. Duplicate certificaton body id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
