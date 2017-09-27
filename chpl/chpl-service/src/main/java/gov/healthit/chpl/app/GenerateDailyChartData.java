@@ -159,7 +159,7 @@ public class GenerateDailyChartData {
 		chartData.setJsonDataObject(doubleList.toString());
 		chartData.setLastModifiedUser(1L);
 		chartData.setTypeOfStatId(1L);
-		//app.getChartDataDao().create(chartData);
+		app.getChartDataDao().create(chartData);
 		
 	}
 	
