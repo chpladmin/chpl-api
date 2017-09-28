@@ -77,17 +77,6 @@ public class SearchViewController {
 	private DeveloperManager developerManager;
 		
 	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
-	
-	@ApiOperation(value="Get all data about a certified product.", 
-			notes="")
-	@RequestMapping(value="/certified_product_details", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductDetails(
-			@RequestParam("productId") Long id) throws EntityRetrievalException {
-		
-		CertifiedProductSearchDetails product = certifiedProductDetailsManager.getCertifiedProductDetails(id);
-		return product;
-	}
 
 	@ApiOperation(value="Download the entire CHPL as XML.", 
 			notes="Once per day, the entire certified product listing is written out to an XML "

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
@@ -79,24 +80,26 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 			ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 			String json = ow.writeValueAsString(errorObj);
 			res.getOutputStream().write(json.getBytes());
-			
 		} else {
-			
-			ApiKeyDTO retrievedKey = apiKeyManager.findKey(key);
-			
-			if (retrievedKey == null){
-				// Invalid key. Don't continue. 
-				ErrorJSONObject errorObj = new ErrorJSONObject("Invalid API Key");
-				ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-				String json = ow.writeValueAsString(errorObj);
-				res.getOutputStream().write(json.getBytes());
-			} else {
-				try {
-					apiKeyManager.logApiKeyActivity(key, requestPath);
-				} catch (EntityCreationException e) {
-					throw new ServletException(e);
+			try {
+				ApiKeyDTO retrievedKey = apiKeyManager.findKey(key);
+				
+				if (retrievedKey == null){
+					// Invalid key. Don't continue. 
+					ErrorJSONObject errorObj = new ErrorJSONObject("Invalid API Key");
+					ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+					String json = ow.writeValueAsString(errorObj);
+					res.getOutputStream().write(json.getBytes());
+				} else {
+					try {
+						apiKeyManager.logApiKeyActivity(key, requestPath);
+					} catch (EntityCreationException e) {
+						throw new ServletException(e);
+					}
+					chain.doFilter(req, res); //continue
 				}
-				chain.doFilter(req, res); //continue
+			} catch(EntityRetrievalException ex) {
+				logger.error("Cannot find key for HTTP filter: " + key);
 			}
 		}
 	}

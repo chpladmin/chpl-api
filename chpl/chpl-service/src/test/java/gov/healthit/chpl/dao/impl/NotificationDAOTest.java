@@ -181,7 +181,7 @@ public class NotificationDAOTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void findRecipientByEmail() {
+	public void findRecipientByEmail() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		String email = "katy@ainq.com";
 		RecipientDTO result = notificationDao.findRecipientByEmail(email);
@@ -193,7 +193,7 @@ public class NotificationDAOTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void findRecipientById() {
+	public void findRecipientById() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long id = -1L;
 		RecipientDTO result = notificationDao.getRecipientById(id);
@@ -234,7 +234,7 @@ public class NotificationDAOTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void findRecipientSubscriptionsByIdWithAdminCredentials() {
+	public void findRecipientSubscriptionsByIdWithAdminCredentials() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long id = -1L;
 		RecipientWithSubscriptionsDTO result = notificationDao.getAllNotificationMappingsForRecipient(id, adminUser.getPermissions(), null);
@@ -500,7 +500,7 @@ public class NotificationDAOTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void deleteOneOfManyNotificationsForRecipient() {
+	public void deleteOneOfManyNotificationsForRecipient() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<RecipientWithSubscriptionsDTO> allRecipMappings = notificationDao.getAllNotificationMappings(adminUser.getPermissions(), null);
 		
@@ -523,7 +523,7 @@ public class NotificationDAOTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void deleteAllNotificationsForRecipient() {
+	public void deleteAllNotificationsForRecipient() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<RecipientWithSubscriptionsDTO> origRecipMappings = notificationDao.getAllNotificationMappings(adminUser.getPermissions(), null);
 		

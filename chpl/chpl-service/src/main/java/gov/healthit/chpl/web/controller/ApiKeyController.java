@@ -120,8 +120,8 @@ public class ApiKeyController {
 			@RequestParam(value = "pageSize", required = false) Integer pageSize ,
 			@RequestParam(value = "filter", required = false) String apiKeyFilter,
 			@RequestParam(value = "dateAscending", required = false) boolean dateAscending,
-			@RequestParam(value = "startDate", required = false) Long startDateMilli,
-			@RequestParam(value = "endDate", required=false) Long endDateMilli) throws EntityRetrievalException
+			@RequestParam(value = "start", required = false) Long startDateMilli,
+			@RequestParam(value = "end", required=false) Long endDateMilli) throws EntityRetrievalException
 	{		
 		if (pageNumber == null){
 			pageNumber = 0;
