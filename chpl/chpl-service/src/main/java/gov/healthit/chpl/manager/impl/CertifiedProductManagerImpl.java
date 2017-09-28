@@ -268,19 +268,25 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId) {
+	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId) 
+	throws EntityRetrievalException {
+		versionManager.getById(versionId); //throws 404 if bad id
 		return cpDao.getDetailsByVersionId(versionId);
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> getByProduct(Long productId) {
+	public List<CertifiedProductDetailsDTO> getByProduct(Long productId) 
+	throws EntityRetrievalException {
+		productManager.getById(productId); //throws 404 if bad id
 		return cpDao.getDetailsByProductId(productId);
 	}
 	
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId) {
+	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId) 
+	throws EntityRetrievalException {
+		versionManager.getById(versionId); //throws 404 if bad id
 		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser(false);
 		if(userAcbs == null || userAcbs.size() == 0) {
 			return new ArrayList<CertifiedProductDetailsDTO>();
@@ -295,6 +301,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	@Override
 	@Transactional
 	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
+		getById(certifiedProductId); //sends back 404 if bad id
 		
 		List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
 		Map<Long,Boolean> queue = new HashMap<Long,Boolean>();

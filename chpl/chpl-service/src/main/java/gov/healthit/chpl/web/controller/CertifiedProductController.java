@@ -66,7 +66,6 @@ import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFa
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
-import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -100,7 +99,8 @@ public class CertifiedProductController {
 	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
-			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) {
+			@RequestParam(required=false) Long versionId, @RequestParam(required=false, defaultValue="false") boolean editable) 
+	throws EntityRetrievalException {
 		List<CertifiedProductDetailsDTO> certifiedProductList = null;
 
 		if(versionId != null && versionId > 0) {
@@ -296,7 +296,7 @@ public class CertifiedProductController {
 	@ApiOperation(value="Reject several pending certified products.", 
 			notes="Marks a list of pending certified products as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
 					+ " and administrative authority on the ACB for each pending certified product is required.")
-	@RequestMapping(value="/pending//reject", method=RequestMethod.POST,
+	@RequestMapping(value="/pending/reject", method=RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList) 
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, 

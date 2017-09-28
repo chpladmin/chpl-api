@@ -253,8 +253,9 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 			query.setParameter("entityid", entityId);
 			results = query.getResultList();
 			if(results.size() == 0){
-				throw new EntityRetrievalException("There is no announcement with that id");
-			}else{
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+				throw new EntityRetrievalException(msg);			
+			} else {
 				entity = results.get(0);
 			}
 		}else{
@@ -264,8 +265,9 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 			query.setParameter("entityid", entityId);
 			results = query.getResultList();
 			if(results.size() == 0){
-				throw new EntityRetrievalException("There is no announcement with that id");
-			}else{
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+				throw new EntityRetrievalException(msg);
+			} else {
 				AnnouncementEntity ret = results.get(0);
 				boolean isPublic = ret.getIsPublic();
 				if(isPublic){
@@ -275,11 +277,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 				}
 			}
 		}
-		
-		if(entity == null) {
-			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
-			throw new EntityRetrievalException(msg);
-		}
+
 		return entity;
 	}
 	

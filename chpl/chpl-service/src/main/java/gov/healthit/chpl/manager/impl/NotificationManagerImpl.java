@@ -2,8 +2,6 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
@@ -38,7 +37,11 @@ public class NotificationManagerImpl implements NotificationManager {
 		if(toCreate != null && !StringUtils.isBlank(toCreate.getEmailAddress())) {
 			String email = toCreate.getEmailAddress().trim();
 			logger.debug("Looking for existing recipient with email address " + email);
-			if(notificationDao.findRecipientByEmail(email) != null) {
+			RecipientDTO existingRecip = null;
+			try {
+				existingRecip = notificationDao.findRecipientByEmail(email);
+			} catch(EntityRetrievalException ignore) {}
+			if(existingRecip != null) {
 				throw new EntityCreationException("Recipient with email " + email.trim() + " already exists.");
 			} else {
 				result = notificationDao.createRecipientEmailAddress(email);
@@ -51,7 +54,7 @@ public class NotificationManagerImpl implements NotificationManager {
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
 	@Transactional
 	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping) 
-		throws EntityNotFoundException {
+		throws EntityRetrievalException {
 		if(! notificationDao.hasNotificationType(mapping.getSubscription().getNotificationType(), Util.getCurrentUser().getPermissions())) {
 			throw new AccessDeniedException("User " + Util.getUsername() + " does not have permission to create notification with type " + mapping.getSubscription().getNotificationType().getName());
 		}
@@ -63,9 +66,6 @@ public class NotificationManagerImpl implements NotificationManager {
 			String email = recipient.getEmailAddress().trim();
 			logger.debug("Looking for existing recipient with email address " + email);
 			recipient = notificationDao.findRecipientByEmail(email);
-			if(recipient == null) {
-				throw new EntityNotFoundException("No recipient with email address " + email + " exists.");
-			}
 		} 
 				
 		NotificationTypeRecipientMapDTO result = notificationDao.createNotificationMapping(recipient, mapping.getSubscription().getNotificationType(), mapping.getSubscription().getAcb());
@@ -74,7 +74,8 @@ public class NotificationManagerImpl implements NotificationManager {
 	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
-	public RecipientDTO updateRecipient(Long recipientId, String newEmailAddress) {
+	public RecipientDTO updateRecipient(Long recipientId, String newEmailAddress) 
+	throws EntityRetrievalException {
 		RecipientDTO recipToUpdate = notificationDao.getRecipientById(recipientId);
 		recipToUpdate.setEmailAddress(newEmailAddress);
 		return updateRecipient(recipToUpdate);
@@ -89,7 +90,11 @@ public class NotificationManagerImpl implements NotificationManager {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
 	public boolean recipientEmailExists(String email) {
-		return (notificationDao.findRecipientByEmail(email) == null ? false : true);
+		RecipientDTO recip = null;
+		try {
+			recip = notificationDao.findRecipientByEmail(email);
+		} catch(EntityRetrievalException ignore) {}
+		return (recip == null ? false : true);
 	}
 	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
@@ -105,7 +110,8 @@ public class NotificationManagerImpl implements NotificationManager {
 	
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
-	public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId) {
+	public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId) 
+		throws EntityRetrievalException {
 		List<CertificationBodyDTO> acbs = null;
 		if(!Util.isUserRoleAdmin()) {
 			acbs = acbManager.getAllForUser(true);
@@ -135,11 +141,8 @@ public class NotificationManagerImpl implements NotificationManager {
 	 */
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
-	public void deleteRecipient(Long recipientId) throws EntityNotFoundException {
+	public void deleteRecipient(Long recipientId) throws EntityRetrievalException {
 		RecipientDTO recip = notificationDao.getRecipientById(recipientId);
-		if(recip == null) {
-			throw new EntityNotFoundException("No recipient exists with id " + recipientId);
-		}
 		List<CertificationBodyDTO> acbs = null;
 		if(!Util.isUserRoleAdmin()) {
 			acbs = acbManager.getAllForUser(true);

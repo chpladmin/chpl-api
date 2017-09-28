@@ -3,13 +3,14 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -18,6 +19,7 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
@@ -80,7 +82,13 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return toInsert.getId();
 	}
 	
-	public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc) {
+	public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc) 
+	throws EntityRetrievalException {
+		SurveillanceNonconformityEntity nc = entityManager.find(SurveillanceNonconformityEntity.class, nonconformityId);
+		if(nc == null) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.nonconformity.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		}
 		SurveillanceNonconformityDocumentationEntity docEntity = new SurveillanceNonconformityDocumentationEntity();
 		docEntity.setNonconformityId(nonconformityId);
 		docEntity.setFileData(doc.getFileContents());
@@ -95,7 +103,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return docEntity.getId();
 	}
 	
-	public Long updateSurveillance(Surveillance newSurv) throws UserPermissionRetrievalException {
+	public Long updateSurveillance(Surveillance newSurv) throws EntityRetrievalException, UserPermissionRetrievalException {
 		SurveillanceEntity oldSurv = fetchSurveillanceById(newSurv.getId());
 		populateSurveillanceEntity(oldSurv, newSurv);
 		oldSurv.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -242,16 +250,17 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return null;
 	}
 	
-	public SurveillanceEntity getSurveillanceById(Long id) {
+	public SurveillanceEntity getSurveillanceById(Long id) throws EntityRetrievalException {
 		SurveillanceEntity result = fetchSurveillanceById(id);
 		return result;
 	}
 	
-	public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) throws EntityNotFoundException {
+	public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) 
+			throws EntityRetrievalException {
 		SurveillanceNonconformityDocumentationEntity doc = entityManager.find(SurveillanceNonconformityDocumentationEntity.class, documentId);
 		if(doc == null) {
-			logger.error("Could not find documentation with id " + documentId);
-			throw new EntityNotFoundException("Could not find documentation with id " + documentId);
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.document.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
 		}
 		return doc;
 	}
@@ -335,11 +344,11 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return toInsert.getId();
 	}
 	
-	public void deleteNonconformityDocument(Long documentId) throws EntityNotFoundException {
+	public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException {
 		SurveillanceNonconformityDocumentationEntity doc = entityManager.find(SurveillanceNonconformityDocumentationEntity.class, documentId);
 		if(doc == null) {
-			logger.error("Could not find documentation with id " + documentId);
-			throw new EntityNotFoundException("Could not find documentation with id " + documentId);
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.document.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
 		}
 		doc.setDeleted(true);
 		doc.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -347,13 +356,9 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		entityManager.flush();
 	}
 	
-	public void deleteSurveillance(Surveillance surv) throws EntityNotFoundException {
+	public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
 		logger.debug("Looking for surveillance with id " + surv.getId() + " to delete.");
 		SurveillanceEntity toDelete = fetchSurveillanceById(surv.getId());
-		if(toDelete == null) {
-			throw new EntityNotFoundException("Could not find surveillance with id " + surv.getId());
-		}
-		
 		if(toDelete.getSurveilledRequirements() != null) {
 			for(SurveillanceRequirementEntity reqToDelete : toDelete.getSurveilledRequirements()) {
 				if(reqToDelete.getNonconformities() != null) {
@@ -384,11 +389,8 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		entityManager.flush();
 	}
 	
-	public void deletePendingSurveillance(Surveillance surv) throws EntityNotFoundException {
+	public void deletePendingSurveillance(Surveillance surv) throws EntityRetrievalException {
 		PendingSurveillanceEntity toDelete = fetchPendingSurveillanceById(surv.getId(), true);
-		if(toDelete == null) {
-			throw new EntityNotFoundException("Could not find pending surveillance with id " + surv.getId());
-		}
 		
 		if(toDelete.getValidation() != null) {
 			for(PendingSurveillanceValidationEntity val : toDelete.getValidation()) {
@@ -421,7 +423,8 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		entityManager.flush();
 	}
 	
-	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted) {
+	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted) 
+	throws EntityRetrievalException {
 		PendingSurveillanceEntity entity = fetchPendingSurveillanceById(id, includeDeleted);
 		return entity;
 	}
@@ -665,7 +668,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
-	private SurveillanceEntity fetchSurveillanceById(Long id) {
+	private SurveillanceEntity fetchSurveillanceById(Long id) throws EntityRetrievalException {
 		entityManager.clear();
 		Query query = entityManager.createQuery("SELECT DISTINCT surv " 
 				+ "FROM SurveillanceEntity surv "
@@ -687,10 +690,12 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		query.setParameter("entityid", id);
 		
 		List<SurveillanceEntity> results = query.getResultList();
-		if(results != null && results.size() > 0) {
+		if(results == null || results.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else {
 			return results.get(0);
 		}
-		return null;
 	}
 	
 	private List<SurveillanceEntity> fetchSurveillanceByCertifiedProductId(Long id) {
@@ -718,7 +723,8 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return results;
 	}
 	
-	private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id, boolean includeDeleted) {
+	private PendingSurveillanceEntity fetchPendingSurveillanceById(Long id, boolean includeDeleted) 
+	throws EntityRetrievalException {
 		PendingSurveillanceEntity entity = null;
 		String hql = "SELECT DISTINCT surv " 
 				+ "FROM PendingSurveillanceEntity surv "
@@ -736,7 +742,10 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		query.setParameter("entityid", id);
 		
 		List<PendingSurveillanceEntity> results = query.getResultList();
-		if(results.size() > 0) {
+		if(results == null || results.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.pending.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else {
 			entity = results.get(0);
 		}
 		return entity;

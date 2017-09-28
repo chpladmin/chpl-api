@@ -18,19 +18,19 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
 
 public interface SurveillanceDAO {
 	public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException;
-	public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc);
-	public Long updateSurveillance(Surveillance newSurv) throws UserPermissionRetrievalException;
+	public Long insertNonconformityDocument(Long nonconformityId, SurveillanceNonconformityDocument doc) throws EntityRetrievalException ;
+	public Long updateSurveillance(Surveillance newSurv) throws EntityRetrievalException, UserPermissionRetrievalException;
 	public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId, String survFriendlyId);
-	public SurveillanceEntity getSurveillanceById(Long id);
+	public SurveillanceEntity getSurveillanceById(Long id) throws EntityRetrievalException;
 	public List<SurveillanceEntity> getSurveillanceByCertifiedProductId(Long id);
-	public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) throws EntityNotFoundException;
-	public void deleteSurveillance(Surveillance surv) throws EntityNotFoundException ;
-	public void deleteNonconformityDocument(Long documentId) throws EntityNotFoundException;
+	public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) throws EntityRetrievalException;
+	public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException ;
+	public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException;
 	
 	public Long insertPendingSurveillance(Surveillance surv);
-	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted);
+	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId);
-	public void deletePendingSurveillance(Surveillance surv) throws EntityNotFoundException;
+	public void deletePendingSurveillance(Surveillance surv) throws EntityRetrievalException;
 	
 	public List<SurveillanceType> getAllSurveillanceTypes();
 	public SurveillanceType findSurveillanceType(String type);

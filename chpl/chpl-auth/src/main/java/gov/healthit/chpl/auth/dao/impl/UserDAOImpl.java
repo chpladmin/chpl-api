@@ -285,20 +285,19 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
 	
 	private UserEntity getEntityByName(String uname) throws UserRetrievalException {
-		
 		UserEntity user = null;
 		
 		Query query = entityManager.createQuery( "from UserEntity where ((NOT deleted = true) AND (user_name = (:uname))) ", UserEntity.class );
 		query.setParameter("uname", uname);
 		List<UserEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"), LocaleContextHolder.getLocale()));
+			throw new UserRetrievalException(msg);
+		} else if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user name in database.");
 		} 
 		
-		if(result.size() == 0) {
-			return null;
-		}
 		return result.get(0);
 	}
 

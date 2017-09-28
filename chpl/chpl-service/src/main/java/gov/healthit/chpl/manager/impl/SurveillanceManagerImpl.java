@@ -77,11 +77,8 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	
 	@Override
 	@Transactional(readOnly = true)
-	public Surveillance getById(Long survId) throws EntityNotFoundException {
+	public Surveillance getById(Long survId) throws EntityRetrievalException {
 		SurveillanceEntity surv = survDao.getSurveillanceById(survId);
-		if(surv == null) {
-			throw new EntityNotFoundException("Could not find surveillance with id " + survId);
-		}
 		Surveillance result = convertToDomain(surv);
 		validator.validate(result);
 		return result;
@@ -116,14 +113,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	
 	@Override
 	@Transactional(readOnly = true)
-	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents) {
-		SurveillanceNonconformityDocumentationEntity docEntity = null;
-		
-		try {
-			docEntity = survDao.getDocumentById(docId);
-		} catch(EntityNotFoundException ex) {
-			logger.error("No document with id " + docId + " was found.");
-		}
+	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
+	throws EntityRetrievalException {
+		SurveillanceNonconformityDocumentationEntity docEntity = survDao.getDocumentById(docId);
 		
 		SurveillanceNonconformityDocument doc = null;
 		if(docEntity != null) {
@@ -158,16 +150,10 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) {
+	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) 
+	throws EntityRetrievalException {
 		Long insertedId = null;
-		
-		try {
-			insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
-		} catch(Exception ex) {
-			logger.error("Error inserting nonconformity document.", ex);
-			throw ex;
-		}
-		
+		insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
 		return insertedId;
 	}
 	
@@ -177,7 +163,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
-	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+	public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
 		try{
 			dbSurvEntity = survDao.getSurveillanceById(surv.getId());
@@ -203,15 +189,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
-	public void deleteSurveillance(Long acbId, Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
+	public void deleteSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		checkSurveillanceAuthority(surv);
-		
-		try {
-			survDao.deleteSurveillance(surv);
-		} catch(Exception ex) {
-			logger.error("Error marking surveillance with id " + surv.getId() + " as deleted.", ex);
-			throw ex;
-		}
+		survDao.deleteSurveillance(surv);
 	}
 	
 	@Override
@@ -219,13 +199,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public void deleteNonconformityDocument(Long acbId, Long documentId) {
-		try {
-			survDao.deleteNonconformityDocument(documentId);
-		} catch(Exception ex) {
-			logger.error("Error marking document with id " + documentId + " as deleted.", ex);
-			throw ex;
-		}
+	public void deleteNonconformityDocument(Long acbId, Long documentId) 
+	throws EntityRetrievalException {
+		survDao.deleteNonconformityDocument(documentId);
 	}
 	
 	@Override
@@ -248,11 +224,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@Transactional(readOnly = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityNotFoundException {
+	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) 
+	throws EntityRetrievalException {
 		PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId, includeDeleted);
-		if(pending == null) {
-			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
-		}
 		Surveillance surv = convertToDomain(pending);
 		return surv;
 	}
@@ -277,11 +251,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {		
+	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) 
+	throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {		
 		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
-		if(surv == null) {
-			throw new EntityNotFoundException("Could not find pending surveillance with id " + survId);
-		}
 		CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
 		if(ownerCp == null) {
 			throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");

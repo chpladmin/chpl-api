@@ -27,9 +27,9 @@ public interface CertifiedProductManager extends QuestionableActivityHandler {
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getAll();
 	public List<CertifiedProductDetailsDTO> getAllWithEditPermission();
-	public List<CertifiedProductDetailsDTO> getByProduct(Long productId);
-	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId);
-	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
+	public List<CertifiedProductDetailsDTO> getByProduct(Long productId) throws EntityRetrievalException;
+	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId) throws EntityRetrievalException;
+	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId) throws EntityRetrievalException;
 	
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 	public CertifiedProductDTO update(Long acbId, 

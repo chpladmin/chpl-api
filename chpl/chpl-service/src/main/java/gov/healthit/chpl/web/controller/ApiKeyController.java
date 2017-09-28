@@ -149,8 +149,8 @@ public class ApiKeyController {
 	public List<ApiKeyActivity> listActivityByKey(
 			@PathVariable("apiKey") String apiKey,
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException
-	{
+			@RequestParam(value = "pageSize", required = false) Integer pageSize) 
+	throws EntityRetrievalException {
 		if (pageNumber == null){
 			pageNumber = 0;
 		}
