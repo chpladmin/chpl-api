@@ -19,6 +19,8 @@
 		<class>gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdProductMapEntity</class>
+		<class>gov.healthit.chpl.entity.ChartDataEntity</class>
+		<class>gov.healthit.chpl.entity.ChartDataStatTypeEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity</class>

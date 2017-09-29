@@ -1,5 +1,7 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.DateRange;
@@ -12,6 +14,7 @@ public interface ListingStatisticsDAO {
 	public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(DateRange dateRange);
 	public Long getTotalCertifiedProducts(DateRange dateRange);
 	public Long getTotalCPsActiveListings(DateRange dateRange);
+	public List<Long> getProductsWithChangedCertificationStatusPostApril2016(Date april);
 	// 2011
 	public Long getTotal2011Listings(DateRange dateRange);
 	// 2014
