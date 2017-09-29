@@ -252,7 +252,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 					+ " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
 			query.setParameter("entityid", entityId);
 			results = query.getResultList();
-			if(results.size() == 0){
+			if(results == null || results.size() == 0){
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
 				throw new EntityRetrievalException(msg);			
 			} else {
@@ -264,7 +264,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 					+ " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
 			query.setParameter("entityid", entityId);
 			results = query.getResultList();
-			if(results.size() == 0){
+			if(results == null || results.size() == 0){
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
 				throw new EntityRetrievalException(msg);
 			} else {

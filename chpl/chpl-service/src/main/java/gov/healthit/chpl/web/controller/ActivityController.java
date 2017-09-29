@@ -389,7 +389,7 @@ public class ActivityController {
 			notes="Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
 				+ "The default behavior is to return activity for the specified pending certified product across all dates.")
 	@RequestMapping(value="/pending_certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForPendingCertifiedProducts(@PathVariable("id") Long id, 
+	public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end) 
 			throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
@@ -586,7 +586,7 @@ public class ActivityController {
 			notes="Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
 				+ "The default behavior is to return activity for the specified developer across all dates.")
 	@RequestMapping(value="/developers/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForDevelopers(@PathVariable("id") Long id, 
+	public List<ActivityEvent> activityForDeveloperById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end) 
 		throws JsonParseException, IOException, EntityRetrievalException, ValidationException{

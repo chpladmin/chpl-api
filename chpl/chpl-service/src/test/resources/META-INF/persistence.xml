@@ -11,6 +11,7 @@
 		<class>gov.healthit.chpl.entity.AddressEntity</class>
 		<class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.AgeRangeEntity</class>
+		<class>gov.healthit.chpl.entity.AnnouncementEntity</class>
 		<class>gov.healthit.chpl.entity.ApiKeyEntity</class>
 		<class>gov.healthit.chpl.entity.ApiKeyActivityEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationBodyEntity</class>
