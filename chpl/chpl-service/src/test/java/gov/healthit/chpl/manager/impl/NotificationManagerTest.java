@@ -369,14 +369,13 @@ public class NotificationManagerTest extends TestCase {
 		assertEquals(2, notification.getSubscriptions().size());
 	}
 	
-	@Test
+	@Test(expected = EntityRetrievalException.class)
 	@Transactional
 	@Rollback(true)
 	public void getNotificationsForUserWithoutAcbSubscriptionsAsAcbUser() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(acbUser);
 		Long recipId = -1L;
-		RecipientWithSubscriptionsDTO notification = notificationManager.getAllForRecipient(recipId);
-		assertNull(notification);
+		notificationManager.getAllForRecipient(recipId);
 	}
 	
 	@Test

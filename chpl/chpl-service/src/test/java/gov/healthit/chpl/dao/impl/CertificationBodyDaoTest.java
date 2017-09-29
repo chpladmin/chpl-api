@@ -171,15 +171,13 @@ public class CertificationBodyDaoTest extends TestCase {
 		}
 	}
 	
-	@Test
+	@Test(expected = EntityRetrievalException.class)
 	@Transactional
 	@Rollback
 	public void testDeleteAcb() throws EntityRetrievalException {
 		Long deleteId = -1L;
 		acbDao.delete(deleteId);
-		
-		CertificationBodyDTO deleted = acbDao.getById(deleteId);
-		assertNull(deleted);
+		acbDao.getById(deleteId);
 	}
 	
 	@Test

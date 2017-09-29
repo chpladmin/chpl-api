@@ -1979,7 +1979,7 @@ public class SurveillanceControllerTest {
 	 */
 	@Transactional 
 	@Rollback
-	@Test(expected = ObjectMissingValidationException.class)
+	@Test(expected = EntityRetrievalException.class)
 	public void test_deletePendingSurveillance_alreadyRejected()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException, CertificationBodyAccessException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException, EntityNotFoundException, AccessDeniedException, ObjectsMissingValidationException {
