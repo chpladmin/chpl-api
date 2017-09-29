@@ -520,7 +520,7 @@ public class NotificationDAOTest extends TestCase {
 		assertTrue(foundRecip);
 	}
 	
-	@Test
+	@Test(expected = EntityRetrievalException.class)
 	@Transactional
 	@Rollback(true)
 	public void deleteAllNotificationsForRecipient() throws EntityRetrievalException {
@@ -537,7 +537,6 @@ public class NotificationDAOTest extends TestCase {
 		assertNotNull(queriedRecipients);
 		assertEquals(origRecipMappings.size()-1, queriedRecipients.size());
 		
-		RecipientDTO foundRecipient = notificationDao.findRecipientByEmail(recipToDelete.getEmailAddress());
-		assertNull(foundRecipient);
+		notificationDao.findRecipientByEmail(recipToDelete.getEmailAddress());
 	}
 }

@@ -280,23 +280,22 @@ public class ActivityManagerImpl implements ActivityManager {
 		List<UserActivity> userActivities = new ArrayList<UserActivity>();
 		
 		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
-			
-			UserDTO userDto = userDAO.getById(userEntry.getKey());
-			if(userDto != null){
-				User userObj = new User(userDto);
-				
-				List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-				
-				for (ActivityDTO userEventDTO : userEntry.getValue()){
-					ActivityEvent event = getActivityEventFromDTO(userEventDTO);
-					userActivityEvents.add(event);
+				UserDTO activityUser = userEntry.getValue().get(0).getUser();
+				if(activityUser != null) {
+					User userObj = new User(activityUser);
+					
+					List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
+					
+					for (ActivityDTO userEventDTO : userEntry.getValue()){
+						ActivityEvent event = getActivityEventFromDTO(userEventDTO);
+						userActivityEvents.add(event);
+					}
+					
+					UserActivity userActivity = new UserActivity();
+					userActivity.setUser(userObj);
+					userActivity.setEvents(userActivityEvents);
+					userActivities.add(userActivity);
 				}
-				
-				UserActivity userActivity = new UserActivity();
-				userActivity.setUser(userObj);
-				userActivity.setEvents(userActivityEvents);
-				userActivities.add(userActivity);
-			}
 		}
 		return userActivities;
 	}
@@ -309,11 +308,10 @@ public class ActivityManagerImpl implements ActivityManager {
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInDateRange(startDate, endDate);
 		List<UserActivity> userActivities = new ArrayList<UserActivity>();
 		
-		
-		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
-			UserDTO userDto = userDAO.getById(userEntry.getKey());
-			if(userDto != null){
-				User userObj = new User(userDto);
+		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()) {
+			UserDTO activityUser = userEntry.getValue().get(0).getUser();
+			if(activityUser != null){
+				User userObj = new User(activityUser);
 				
 				List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
 				
