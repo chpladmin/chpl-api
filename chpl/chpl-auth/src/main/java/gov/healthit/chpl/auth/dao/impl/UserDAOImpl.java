@@ -47,9 +47,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		UserEntity userEntity = null;
 		try {
 			userEntity = getEntityByName(user.getSubjectName());
-		} catch (UserRetrievalException e) {
-			throw new UserCreationException(e);
-		}
+		} catch (UserRetrievalException ignore) {}
 		
 		if (userEntity != null) {
 			throw new UserCreationException("user name: "+user.getSubjectName() +" already exists.");
