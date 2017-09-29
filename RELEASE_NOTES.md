@@ -3,6 +3,9 @@
 ## Version TBD
 _Date TBD_
 
+### Backwards compatibility breaking features
+* Remove /certified_product_details?productId= call
+
 ### Minor Features
 * Create separate standalone applications for creating surveillance downloads vs each listing. Will need to make the following cron changes:
   * Remove `15 5 * * * cd /opt/chpl && ./generateXml.sh && ./cleanupXml.sh -dn 15 >> cleanupXml.log 2>&1`
@@ -12,6 +15,8 @@ _Date TBD_
   * Add `0 1 * * * cd /opt/chpl && ./generateSurveillanceResources.sh` 
   * Add lines as well for the cleanup script (may have been done by andlar already)
 * Return HTTP 404 for /certified_products/{id}/details if listing has never existed or has been deleted.
+* Change any URL with an ID in the path to return 404 if that ID is not found.
+* Allow all URLs to be accessed with or without a trailing slash ('/')
 
 ### Bug Fixes
 * Do not show macra measures for 2014 listings
