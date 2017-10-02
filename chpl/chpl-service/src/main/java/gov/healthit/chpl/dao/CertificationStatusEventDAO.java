@@ -6,19 +6,19 @@ import gov.healthit.chpl.dto.CertificationStatusEventDTO;
 
 public interface CertificationStatusEventDAO {
 
-    public CertificationStatusEventDTO create(CertificationStatusEventDTO dto)
+    CertificationStatusEventDTO create(CertificationStatusEventDTO dto)
             throws EntityCreationException, EntityRetrievalException;
 
-    public CertificationStatusEventDTO update(CertificationStatusEventDTO dto) throws EntityRetrievalException;
+    CertificationStatusEventDTO update(CertificationStatusEventDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public CertificationStatusEventDTO getById(Long id) throws EntityRetrievalException;
+    CertificationStatusEventDTO getById(Long id) throws EntityRetrievalException;
 
-    public List<CertificationStatusEventDTO> findAll();
+    List<CertificationStatusEventDTO> findAll();
 
-    public List<CertificationStatusEventDTO> findByCertifiedProductId(Long certifiedProductId);
+    List<CertificationStatusEventDTO> findByCertifiedProductId(Long certifiedProductId);
 
-    public CertificationStatusEventDTO findInitialCertificationEventForCertifiedProduct(Long certifiedProductId);
+    CertificationStatusEventDTO findInitialCertificationEventForCertifiedProduct(Long certifiedProductId);
 
 }

@@ -6,17 +6,17 @@ import gov.healthit.chpl.dto.QmsStandardDTO;
 
 public interface QmsStandardDAO {
 
-    public QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException;
+    QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException;
 
-    public QmsStandardDTO update(QmsStandardDTO dto) throws EntityRetrievalException;
+    QmsStandardDTO update(QmsStandardDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<QmsStandardDTO> findAll();
+    List<QmsStandardDTO> findAll();
 
-    public QmsStandardDTO getById(Long id);
+    QmsStandardDTO getById(Long id);
 
-    public QmsStandardDTO getByName(String name);
+    QmsStandardDTO getByName(String name);
 
-    public QmsStandardDTO findOrCreate(Long id, String name) throws EntityCreationException;
+    QmsStandardDTO findOrCreate(Long id, String name) throws EntityCreationException;
 }

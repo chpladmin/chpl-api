@@ -21,50 +21,50 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 public interface SurveillanceManager extends QuestionableActivityHandler {
-    public File getDownloadFile(String filename) throws IOException;
+    File getDownloadFile(String filename) throws IOException;
 
-    public File getProtectedDownloadFile(String filename) throws IOException;
+    File getProtectedDownloadFile(String filename) throws IOException;
 
-    public void validate(Surveillance surveillance);
+    void validate(Surveillance surveillance);
 
-    public Long createSurveillance(Long abcId, Surveillance surv)
+    Long createSurveillance(Long abcId, Surveillance surv)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
 
-    public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc)
+    Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc)
             throws EntityRetrievalException;
 
-    public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException,
+    void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
 
-    public Surveillance getById(Long survId) throws EntityRetrievalException;
+    Surveillance getById(Long survId) throws EntityRetrievalException;
 
-    public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
+    Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
 
-    public List<Surveillance> getByCertifiedProduct(Long cpId);
+    List<Surveillance> getByCertifiedProduct(Long cpId);
 
-    public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
+    SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
             throws EntityRetrievalException;
 
-    public void deleteSurveillance(Long acbId, Surveillance surv)
+    void deleteSurveillance(Long acbId, Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException;
 
-    public void deleteNonconformityDocument(Long acbId, Long documentId) throws EntityRetrievalException;
+    void deleteNonconformityDocument(Long acbId, Long documentId) throws EntityRetrievalException;
 
-    public List<Surveillance> getPendingByAcb(Long acbId);
+    List<Surveillance> getPendingByAcb(Long acbId);
 
-    public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
+    Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
 
-    public Long createPendingSurveillance(Long acbId, Surveillance surv);
+    Long createPendingSurveillance(Long acbId, Surveillance surv);
 
-    public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
+    void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
             EntityCreationException;
 
-    public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
+    void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException;
 
-    public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
+    boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
             throws EntityRetrievalException, ObjectMissingValidationException;
 
     boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)

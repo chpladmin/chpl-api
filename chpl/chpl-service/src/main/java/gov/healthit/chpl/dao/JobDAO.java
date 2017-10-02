@@ -10,28 +10,28 @@ import gov.healthit.chpl.entity.job.JobStatusType;
 
 public interface JobDAO {
 
-    public JobDTO create(JobDTO dto) throws EntityCreationException;
+    JobDTO create(JobDTO dto) throws EntityCreationException;
 
-    public void markStarted(JobDTO dto) throws EntityRetrievalException;
+    void markStarted(JobDTO dto) throws EntityRetrievalException;
 
-    public JobStatusDTO updateStatus(JobDTO dto, Integer percentComplete, JobStatusType status)
+    JobStatusDTO updateStatus(JobDTO dto, Integer percentComplete, JobStatusType status)
             throws EntityRetrievalException;
 
-    public void addJobMessage(JobDTO job, String message);
+    void addJobMessage(JobDTO job, String message);
 
-    public JobDTO update(JobDTO dto) throws EntityRetrievalException;
+    JobDTO update(JobDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<JobDTO> findAll();
+    List<JobDTO> findAll();
 
-    public List<JobDTO> findAllRunning();
+    List<JobDTO> findAllRunning();
 
-    public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate, Long userId);
+    List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate, Long userId);
 
-    public List<JobTypeDTO> findAllTypes();
+    List<JobTypeDTO> findAllTypes();
 
-    public JobDTO getById(Long id);
+    JobDTO getById(Long id);
 
-    public List<JobDTO> getByUser(Long contactId);
+    List<JobDTO> getByUser(Long contactId);
 }

@@ -7,19 +7,19 @@ import gov.healthit.chpl.entity.AddressEntity;
 
 public interface AddressDAO {
 
-    public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException;
+    AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public AddressEntity update(AddressDTO dto) throws EntityRetrievalException;
+    AddressEntity update(AddressDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<AddressDTO> findAll();
+    List<AddressDTO> findAll();
 
-    public AddressDTO getById(Long id) throws EntityRetrievalException;
+    AddressDTO getById(Long id) throws EntityRetrievalException;
 
-    public AddressEntity getEntityById(Long id) throws EntityRetrievalException;
+    AddressEntity getEntityById(Long id) throws EntityRetrievalException;
 
-    public AddressDTO getByValues(AddressDTO address);
+    AddressDTO getByValues(AddressDTO address);
 
-    public AddressEntity mergeAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException;
+    AddressEntity mergeAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException;
 }

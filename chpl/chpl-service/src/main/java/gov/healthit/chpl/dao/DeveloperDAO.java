@@ -10,37 +10,37 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
 public interface DeveloperDAO {
 
-    public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException;
+    DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
+    DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
 
-    public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException;
+    DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException;
 
-    public void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException;
+    void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<DeveloperDTO> findAll();
+    List<DeveloperDTO> findAll();
 
-    public List<DeveloperDTO> findAllIncludingDeleted();
+    List<DeveloperDTO> findAllIncludingDeleted();
 
-    public DeveloperDTO getById(Long id) throws EntityRetrievalException;
+    DeveloperDTO getById(Long id) throws EntityRetrievalException;
 
-    public DeveloperDTO getByName(String name);
+    DeveloperDTO getByName(String name);
 
-    public DeveloperDTO getByCode(String code);
+    DeveloperDTO getByCode(String code);
 
-    public DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException;
+    DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException;
 
-    public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
+    DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
 
-    public void deleteTransparencyMapping(Long vendorId, Long acbId);
+    void deleteTransparencyMapping(Long vendorId, Long acbId);
 
-    public DeveloperACBMapDTO getTransparencyMapping(Long vendorId, Long acbId);
+    DeveloperACBMapDTO getTransparencyMapping(Long vendorId, Long acbId);
 
-    public List<DeveloperTransparency> getAllDevelopersWithTransparencies();
+    List<DeveloperTransparency> getAllDevelopersWithTransparencies();
 
-    public List<DeveloperACBMapDTO> getAllTransparencyMappings();
+    List<DeveloperACBMapDTO> getAllTransparencyMappings();
 
-    public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers();
+    List<DecertifiedDeveloperDTO> getDecertifiedDevelopers();
 }

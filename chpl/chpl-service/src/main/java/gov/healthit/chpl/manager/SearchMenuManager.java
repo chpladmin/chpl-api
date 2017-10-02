@@ -14,62 +14,62 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.notification.NotificationType;
 
 public interface SearchMenuManager {
-    public Set<NotificationType> getNotificationTypes();
+    Set<NotificationType> getNotificationTypes();
 
-    public Set<KeyValueModel> getJobTypes();
+    Set<KeyValueModel> getJobTypes();
 
-    public Set<KeyValueModel> getClassificationNames();
+    Set<KeyValueModel> getClassificationNames();
 
-    public Set<KeyValueModel> getEditionNames(Boolean simple);
+    Set<KeyValueModel> getEditionNames(Boolean simple);
 
-    public Set<KeyValueModel> getCertificationStatuses();
+    Set<KeyValueModel> getCertificationStatuses();
 
-    public Set<KeyValueModel> getPracticeTypeNames();
+    Set<KeyValueModel> getPracticeTypeNames();
 
-    public Set<KeyValueModelStatuses> getProductNames();
+    Set<KeyValueModelStatuses> getProductNames();
 
-    public Set<KeyValueModelStatuses> getDeveloperNames();
+    Set<KeyValueModelStatuses> getDeveloperNames();
 
-    public Set<KeyValueModel> getCertBodyNames(Boolean showDeleted);
+    Set<KeyValueModel> getCertBodyNames(Boolean showDeleted);
 
-    public Set<KeyValueModel> getAccessibilityStandards();
+    Set<KeyValueModel> getAccessibilityStandards();
 
-    public Set<KeyValueModel> getUcdProcesses();
+    Set<KeyValueModel> getUcdProcesses();
 
-    public Set<KeyValueModel> getQmsStandards();
+    Set<KeyValueModel> getQmsStandards();
 
-    public Set<KeyValueModel> getTargetedUesrs();
+    Set<KeyValueModel> getTargetedUesrs();
 
-    public Set<KeyValueModel> getEducationTypes();
+    Set<KeyValueModel> getEducationTypes();
 
-    public Set<KeyValueModel> getAgeRanges();
+    Set<KeyValueModel> getAgeRanges();
 
-    public Set<TestFunctionality> getTestFunctionality();
+    Set<TestFunctionality> getTestFunctionality();
 
-    public Set<TestStandard> getTestStandards();
+    Set<TestStandard> getTestStandards();
 
-    public Set<KeyValueModel> getTestTools();
+    Set<KeyValueModel> getTestTools();
 
-    public Set<KeyValueModel> getDeveloperStatuses();
+    Set<KeyValueModel> getDeveloperStatuses();
 
-    public Set<KeyValueModel> getSurveillanceTypes();
+    Set<KeyValueModel> getSurveillanceTypes();
 
-    public Set<KeyValueModel> getSurveillanceRequirementTypes();
+    Set<KeyValueModel> getSurveillanceRequirementTypes();
 
-    public Set<KeyValueModel> getSurveillanceResultTypes();
+    Set<KeyValueModel> getSurveillanceResultTypes();
 
-    public Set<KeyValueModel> getNonconformityStatusTypes();
+    Set<KeyValueModel> getNonconformityStatusTypes();
 
-    public SurveillanceRequirementOptions getSurveillanceRequirementOptions();
+    SurveillanceRequirementOptions getSurveillanceRequirementOptions();
 
-    public Set<KeyValueModel> getNonconformityTypeOptions();
+    Set<KeyValueModel> getNonconformityTypeOptions();
 
-    public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures();
+    Set<CriteriaSpecificDescriptiveModel> getMacraMeasures();
 
-    public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
+    Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 
-    public Set<CertificationCriterion> getCertificationCriterion();
+    Set<CertificationCriterion> getCertificationCriterion();
 
-    public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
+    Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
 
 }

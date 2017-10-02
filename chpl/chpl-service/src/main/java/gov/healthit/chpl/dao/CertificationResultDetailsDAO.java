@@ -6,7 +6,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 
 public interface CertificationResultDetailsDAO {
 
-    public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
+    List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
             Long certifiedProductId) throws EntityRetrievalException;
 
 }

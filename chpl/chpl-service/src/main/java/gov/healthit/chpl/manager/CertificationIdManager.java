@@ -12,24 +12,24 @@ import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 
 public interface CertificationIdManager {
-    public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
+    CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 
-    public CertificationIdDTO getById(Long id) throws EntityRetrievalException;
+    CertificationIdDTO getById(Long id) throws EntityRetrievalException;
 
-    public CertificationIdDTO getByCertificationId(String certId) throws EntityRetrievalException;
+    CertificationIdDTO getByCertificationId(String certId) throws EntityRetrievalException;
 
-    public List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
+    List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
 
-    public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
+    Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
 
-    public List<SimpleCertificationId> getAll();
+    List<SimpleCertificationId> getAll();
 
-    public List<SimpleCertificationId> getAllWithProducts();
+    List<SimpleCertificationId> getAllWithProducts();
 
-    public CertificationIdDTO create(List<Long> productIds, String year)
+    CertificationIdDTO create(List<Long> productIds, String year)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
-    public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds);
+    List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds);
 
-    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds);
+    List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds);
 }

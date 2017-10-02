@@ -7,12 +7,12 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public interface CertifiedProductSearchResultDAO {
 
-    public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException;
+    CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException;
 
     // public CertifiedProductDetailsDTO getAllDetailsById(Long productId)
     // throws EntityRetrievalException;
-    public List<CertifiedProductDetailsDTO> search(SearchRequest searchRequest);
+    List<CertifiedProductDetailsDTO> search(SearchRequest searchRequest);
 
-    public Long countMultiFilterSearchResults(SearchRequest searchRequest);
+    Long countMultiFilterSearchResults(SearchRequest searchRequest);
 
 }

@@ -9,25 +9,25 @@ import gov.healthit.chpl.dto.CertificationIdDTO;
 
 public interface CertificationIdDAO {
 
-    public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException;
+    CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException;
 
-    public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException;
+    CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException;
 
-    public List<CertificationIdDTO> findAll();
+    List<CertificationIdDTO> findAll();
 
-    public CertificationIdDTO getById(Long id) throws EntityRetrievalException;
+    CertificationIdDTO getById(Long id) throws EntityRetrievalException;
 
-    public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException;
+    CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException;
 
-    public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts();
+    List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts();
 
-    public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
+    CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException;
 
-    public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
+    Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException;
 
-    public List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
+    List<Long> getProductIdsById(Long id) throws EntityRetrievalException;
 
-    public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds);
+    List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds);
 
-    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds);
+    List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds);
 }

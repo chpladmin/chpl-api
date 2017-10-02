@@ -6,17 +6,17 @@ import gov.healthit.chpl.dto.TargetedUserDTO;
 
 public interface TargetedUserDAO {
 
-    public TargetedUserDTO create(TargetedUserDTO dto) throws EntityCreationException, EntityRetrievalException;
+    TargetedUserDTO create(TargetedUserDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public TargetedUserDTO update(TargetedUserDTO dto) throws EntityRetrievalException;
+    TargetedUserDTO update(TargetedUserDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<TargetedUserDTO> findAll();
+    List<TargetedUserDTO> findAll();
 
-    public TargetedUserDTO getById(Long id);
+    TargetedUserDTO getById(Long id);
 
-    public TargetedUserDTO getByName(String name);
+    TargetedUserDTO getByName(String name);
 
-    public TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException;
+    TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException;
 }

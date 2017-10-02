@@ -17,29 +17,29 @@ import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 public interface PendingCertifiedProductManager {
-    public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
+    PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
             throws EntityNotFoundException, EntityRetrievalException, AccessDeniedException;
 
-    public List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(Long acbId);
+    List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(Long acbId);
 
-    public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
+    PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
-    public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId)
+    void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException;
 
-    public void confirm(Long acbId, Long pendingProductId)
+    void confirm(Long acbId, Long pendingProductId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 
-    public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp)
+    boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ObjectMissingValidationException;
 
-    public boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
+    boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
             throws EntityRetrievalException, ObjectMissingValidationException;
 
-    public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails);
+    void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails);
 
-    public void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails);
+    void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails);
 
 }

@@ -6,15 +6,15 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 
 public interface UcdProcessDAO {
 
-    public UcdProcessDTO create(UcdProcessDTO dto) throws EntityCreationException;
+    UcdProcessDTO create(UcdProcessDTO dto) throws EntityCreationException;
 
-    public UcdProcessDTO update(UcdProcessDTO dto) throws EntityRetrievalException;
+    UcdProcessDTO update(UcdProcessDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<UcdProcessDTO> findAll();
+    List<UcdProcessDTO> findAll();
 
-    public UcdProcessDTO getById(Long id);
+    UcdProcessDTO getById(Long id);
 
-    public UcdProcessDTO getByName(String name);
+    UcdProcessDTO getByName(String name);
 }

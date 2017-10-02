@@ -6,16 +6,16 @@ import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 
 public interface ProductClassificationTypeDAO {
 
-    public void create(ProductClassificationTypeDTO dto) throws EntityCreationException, EntityRetrievalException;
+    void create(ProductClassificationTypeDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public void update(ProductClassificationTypeDTO dto) throws EntityRetrievalException;
+    void update(ProductClassificationTypeDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id);
+    void delete(Long id);
 
-    public List<ProductClassificationTypeDTO> findAll();
+    List<ProductClassificationTypeDTO> findAll();
 
-    public ProductClassificationTypeDTO getById(Long id) throws EntityRetrievalException;
+    ProductClassificationTypeDTO getById(Long id) throws EntityRetrievalException;
 
-    public ProductClassificationTypeDTO getByName(String name);
+    ProductClassificationTypeDTO getByName(String name);
 
 }

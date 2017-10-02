@@ -7,25 +7,25 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 
 public interface ProductDAO {
 
-    public ProductDTO create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
+    ProductDTO create(ProductDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public ProductOwnerDTO addOwnershipHistory(ProductOwnerDTO toAdd);
+    ProductOwnerDTO addOwnershipHistory(ProductOwnerDTO toAdd);
 
-    public void deletePreviousOwner(Long previousOwnershipId) throws EntityRetrievalException;
+    void deletePreviousOwner(Long previousOwnershipId) throws EntityRetrievalException;
 
-    public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException;
+    ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<ProductDTO> findAll();
+    List<ProductDTO> findAll();
 
-    public List<ProductDTO> findAllIncludingDeleted();
+    List<ProductDTO> findAllIncludingDeleted();
 
-    public ProductDTO getById(Long id) throws EntityRetrievalException;
+    ProductDTO getById(Long id) throws EntityRetrievalException;
 
-    public List<ProductDTO> getByDeveloper(Long vendorId);
+    List<ProductDTO> getByDeveloper(Long vendorId);
 
-    public List<ProductDTO> getByDevelopers(List<Long> vendorIds);
+    List<ProductDTO> getByDevelopers(List<Long> vendorIds);
 
-    public ProductDTO getByDeveloperAndName(Long vendorId, String name);
+    ProductDTO getByDeveloperAndName(Long vendorId, String name);
 }

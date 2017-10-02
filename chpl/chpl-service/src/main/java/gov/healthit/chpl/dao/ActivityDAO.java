@@ -9,35 +9,35 @@ import gov.healthit.chpl.dto.ActivityDTO;
 
 public interface ActivityDAO {
 
-    public ActivityDTO create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException;
+    ActivityDTO create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public ActivityDTO update(ActivityDTO dto) throws EntityRetrievalException;
+    ActivityDTO update(ActivityDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public ActivityDTO getById(Long id) throws EntityRetrievalException;
+    ActivityDTO getById(Long id) throws EntityRetrievalException;
 
-    public ActivityDTO getById(boolean showDeleted, Long id) throws EntityRetrievalException;
+    ActivityDTO getById(boolean showDeleted, Long id) throws EntityRetrievalException;
 
-    public List<ActivityDTO> findAll(boolean showDeleted);
+    List<ActivityDTO> findAll(boolean showDeleted);
 
-    public List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept);
+    List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept);
 
-    public List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept);
+    List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept);
 
-    public List<ActivityDTO> findAllInDateRange(boolean showDeleted, Date startDate, Date endDate);
+    List<ActivityDTO> findAllInDateRange(boolean showDeleted, Date startDate, Date endDate);
 
-    public List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate,
+    List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate,
             Date endDate);
 
-    public List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate);
+    List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate);
 
-    public List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate);
+    List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate);
 
-    public List<ActivityDTO> findByUserId(Long userId);
+    List<ActivityDTO> findByUserId(Long userId);
 
-    public Map<Long, List<ActivityDTO>> findAllByUser();
+    Map<Long, List<ActivityDTO>> findAllByUser();
 
-    public Map<Long, List<ActivityDTO>> findAllByUserInDateRange(Date startDate, Date endDate);
+    Map<Long, List<ActivityDTO>> findAllByUserInDateRange(Date startDate, Date endDate);
 
 }

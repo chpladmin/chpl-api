@@ -6,19 +6,19 @@ import gov.healthit.chpl.dto.TestingLabDTO;
 
 public interface TestingLabDAO {
 
-    public TestingLabDTO create(TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException;
+    TestingLabDTO create(TestingLabDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException;
+    TestingLabDTO update(TestingLabDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<TestingLabDTO> findAll(boolean showDeleted);
+    List<TestingLabDTO> findAll(boolean showDeleted);
 
-    public TestingLabDTO getById(Long id) throws EntityRetrievalException;
+    TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
-    public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+    TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
-    public TestingLabDTO getByName(String name);
+    TestingLabDTO getByName(String name);
 
-    public String getMaxCode();
+    String getMaxCode();
 }

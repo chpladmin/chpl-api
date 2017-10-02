@@ -7,20 +7,20 @@ import gov.healthit.chpl.entity.ProductVersionEntity;
 
 public interface ProductVersionDAO {
 
-    public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException;
+    ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public ProductVersionEntity update(ProductVersionDTO dto) throws EntityRetrievalException;
+    ProductVersionEntity update(ProductVersionDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<ProductVersionDTO> findAll();
+    List<ProductVersionDTO> findAll();
 
-    public ProductVersionDTO getById(Long id) throws EntityRetrievalException;
+    ProductVersionDTO getById(Long id) throws EntityRetrievalException;
 
-    public List<ProductVersionDTO> getByProductId(Long productId);
+    List<ProductVersionDTO> getByProductId(Long productId);
 
-    public List<ProductVersionDTO> getByProductIds(List<Long> productId);
+    List<ProductVersionDTO> getByProductIds(List<Long> productId);
 
-    public ProductVersionDTO getByProductAndVersion(Long productId, String version);
+    ProductVersionDTO getByProductAndVersion(Long productId, String version);
 
 }

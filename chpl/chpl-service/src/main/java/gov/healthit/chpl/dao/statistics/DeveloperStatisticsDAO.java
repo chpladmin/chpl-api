@@ -6,20 +6,20 @@ import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
 public interface DeveloperStatisticsDAO {
-    public Long getTotalDevelopers(DateRange dateRange);
+    Long getTotalDevelopers(DateRange dateRange);
 
     // 2014
-    public Long getTotalDevelopersWith2014Listings(DateRange dateRange);
+    Long getTotalDevelopersWith2014Listings(DateRange dateRange);
 
-    public Long getTotalDevelopersWithActive2014Listings(DateRange dateRange);
+    Long getTotalDevelopersWithActive2014Listings(DateRange dateRange);
 
-    public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange);
+    List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange);
 
-    public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
+    List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
             DateRange dateRange);
 
     // 2015
-    public Long getTotalDevelopersWith2015Listings(DateRange dateRange);
+    Long getTotalDevelopersWith2015Listings(DateRange dateRange);
 
-    public Long getTotalDevelopersWithActive2015Listings(DateRange dateRange);
+    Long getTotalDevelopersWithActive2015Listings(DateRange dateRange);
 }

@@ -5,9 +5,9 @@ import java.util.List;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 
 public interface EducationTypeDAO {
-    public EducationTypeDTO getById(Long id) throws EntityRetrievalException;
+    EducationTypeDTO getById(Long id) throws EntityRetrievalException;
 
-    public List<EducationTypeDTO> getAll();
+    List<EducationTypeDTO> getAll();
 
-    public EducationTypeDTO getByName(String typeName);
+    EducationTypeDTO getByName(String typeName);
 }

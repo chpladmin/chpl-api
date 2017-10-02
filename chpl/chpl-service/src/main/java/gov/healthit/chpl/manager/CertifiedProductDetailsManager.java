@@ -8,6 +8,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 
 public interface CertifiedProductDetailsManager {
-    public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
+    CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
             throws EntityRetrievalException;
 }

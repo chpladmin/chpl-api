@@ -6,14 +6,14 @@ import gov.healthit.chpl.dto.ActivityConceptDTO;
 
 public interface ActivityConceptDAO {
 
-    public ActivityConceptDTO create(ActivityConceptDTO dto) throws EntityCreationException, EntityRetrievalException;
+    ActivityConceptDTO create(ActivityConceptDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-    public ActivityConceptDTO update(ActivityConceptDTO dto) throws EntityRetrievalException;
+    ActivityConceptDTO update(ActivityConceptDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public ActivityConceptDTO getById(Long id) throws EntityRetrievalException;
+    ActivityConceptDTO getById(Long id) throws EntityRetrievalException;
 
-    public List<ActivityConceptDTO> findAll();
+    List<ActivityConceptDTO> findAll();
 
 }

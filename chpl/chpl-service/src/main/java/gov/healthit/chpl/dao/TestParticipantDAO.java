@@ -6,13 +6,13 @@ import gov.healthit.chpl.dto.TestParticipantDTO;
 
 public interface TestParticipantDAO {
 
-    public TestParticipantDTO create(TestParticipantDTO dto) throws EntityCreationException;
+    TestParticipantDTO create(TestParticipantDTO dto) throws EntityCreationException;
 
-    public TestParticipantDTO update(TestParticipantDTO dto) throws EntityRetrievalException;
+    TestParticipantDTO update(TestParticipantDTO dto) throws EntityRetrievalException;
 
-    public void delete(Long id) throws EntityRetrievalException;
+    void delete(Long id) throws EntityRetrievalException;
 
-    public List<TestParticipantDTO> findAll();
+    List<TestParticipantDTO> findAll();
 
-    public TestParticipantDTO getById(Long id);
+    TestParticipantDTO getById(Long id);
 }

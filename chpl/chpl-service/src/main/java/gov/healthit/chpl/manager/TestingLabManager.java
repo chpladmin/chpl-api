@@ -16,35 +16,35 @@ import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 
 public interface TestingLabManager {
 
-    public void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException;
+    void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException;
 
-    public void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission);
+    void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission);
 
-    public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
+    void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
 
-    public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
+    void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
 
-    public TestingLabDTO create(TestingLabDTO atl)
+    TestingLabDTO create(TestingLabDTO atl)
             throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-    public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
+    TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException,
             EntityCreationException, UpdateTestingLabException;
 
-    public void undelete(TestingLabDTO atl)
+    void undelete(TestingLabDTO atl)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 
-    public void delete(TestingLabDTO atl)
+    void delete(TestingLabDTO atl)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
 
-    public List<TestingLabDTO> getAllForUser(boolean showDeleted);
+    List<TestingLabDTO> getAllForUser(boolean showDeleted);
 
-    public List<TestingLabDTO> getAll(boolean showDeleted);
+    List<TestingLabDTO> getAll(boolean showDeleted);
 
-    public TestingLabDTO getById(Long id) throws EntityRetrievalException;
+    TestingLabDTO getById(Long id) throws EntityRetrievalException;
 
-    public TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+    TestingLabDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
-    public List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
+    List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl);
 
-    public List<Permission> getPermissionsForUser(TestingLabDTO atl, Sid recipient);
+    List<Permission> getPermissionsForUser(TestingLabDTO atl, Sid recipient);
 }

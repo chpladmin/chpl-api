@@ -8,7 +8,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 public interface CertifiedProductSearchManager {
 
-    public List<CertifiedProductFlatSearchResult> search();
+    List<CertifiedProductFlatSearchResult> search();
 
-    public SearchResponse search(SearchRequest searchRequest);
+    SearchResponse search(SearchRequest searchRequest);
 }

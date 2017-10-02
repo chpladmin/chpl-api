@@ -5,9 +5,9 @@ import java.util.List;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 
 public interface DeveloperStatusDAO {
-    public List<DeveloperStatusDTO> findAll();
+    List<DeveloperStatusDTO> findAll();
 
-    public DeveloperStatusDTO getById(Long id);
+    DeveloperStatusDTO getById(Long id);
 
-    public DeveloperStatusDTO getByName(String name);
+    DeveloperStatusDTO getByName(String name);
 }

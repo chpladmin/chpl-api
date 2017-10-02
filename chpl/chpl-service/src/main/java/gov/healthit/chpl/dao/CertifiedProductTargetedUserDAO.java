@@ -6,15 +6,15 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 
 public interface CertifiedProductTargetedUserDAO {
 
-    public List<CertifiedProductTargetedUserDTO> getTargetedUsersByCertifiedProductId(Long certifiedProductId)
+    List<CertifiedProductTargetedUserDTO> getTargetedUsersByCertifiedProductId(Long certifiedProductId)
             throws EntityRetrievalException;
 
-    public CertifiedProductTargetedUserDTO lookupMapping(Long certifiedProductId, Long tuId)
+    CertifiedProductTargetedUserDTO lookupMapping(Long certifiedProductId, Long tuId)
             throws EntityRetrievalException;
 
-    public CertifiedProductTargetedUserDTO createCertifiedProductTargetedUser(CertifiedProductTargetedUserDTO toCreate)
+    CertifiedProductTargetedUserDTO createCertifiedProductTargetedUser(CertifiedProductTargetedUserDTO toCreate)
             throws EntityCreationException;
 
-    public CertifiedProductTargetedUserDTO deleteCertifiedProductTargetedUser(Long id) throws EntityRetrievalException;
+    CertifiedProductTargetedUserDTO deleteCertifiedProductTargetedUser(Long id) throws EntityRetrievalException;
 
 }

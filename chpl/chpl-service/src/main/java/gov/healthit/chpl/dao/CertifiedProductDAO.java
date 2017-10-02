@@ -8,44 +8,44 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public interface CertifiedProductDAO {
 
-    public CertifiedProductDTO create(CertifiedProductDTO product) throws EntityCreationException;
+    CertifiedProductDTO create(CertifiedProductDTO product) throws EntityCreationException;
 
-    public CertifiedProductDTO update(CertifiedProductDTO product) throws EntityRetrievalException;
+    CertifiedProductDTO update(CertifiedProductDTO product) throws EntityRetrievalException;
 
-    public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO product)
+    CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO product)
             throws EntityRetrievalException, IOException;
 
-    public void delete(Long productId);
+    void delete(Long productId);
 
-    public List<CertifiedProductDetailsDTO> findAll();
+    List<CertifiedProductDetailsDTO> findAll();
 
-    public List<CertifiedProductDetailsDTO> findByEdition(String edition);
+    List<CertifiedProductDetailsDTO> findByEdition(String edition);
 
-    public List<CertifiedProductDetailsDTO> findWithSurveillance();
+    List<CertifiedProductDetailsDTO> findWithSurveillance();
 
-    public List<CertifiedProductDetailsDTO> findWithInheritance();
+    List<CertifiedProductDetailsDTO> findWithInheritance();
 
-    public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
+    CertifiedProductDTO getById(Long productId) throws EntityRetrievalException;
 
-    public CertifiedProductDetailsDTO getDetailsById(Long productId) throws EntityRetrievalException;
+    CertifiedProductDetailsDTO getDetailsById(Long productId) throws EntityRetrievalException;
 
-    public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException;
+    List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException;
 
-    public CertifiedProductDTO getByChplNumber(String chplProductNumber);
+    CertifiedProductDTO getByChplNumber(String chplProductNumber);
 
-    public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
+    CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
 
-    public List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
+    List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
 
-    public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);
+    List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);
 
-    public List<CertifiedProductDetailsDTO> getDetailsByProductId(Long productId);
+    List<CertifiedProductDetailsDTO> getDetailsByProductId(Long productId);
 
-    public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
+    List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds);
 
-    public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
+    List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds);
 
-    public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
+    List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds);
 
-    public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long vendorId);
+    List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long vendorId);
 }

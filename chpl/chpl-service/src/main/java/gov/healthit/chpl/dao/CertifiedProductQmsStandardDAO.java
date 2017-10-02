@@ -6,18 +6,18 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 
 public interface CertifiedProductQmsStandardDAO {
 
-    public List<CertifiedProductQmsStandardDTO> getQmsStandardsByCertifiedProductId(Long certifiedProductId)
+    List<CertifiedProductQmsStandardDTO> getQmsStandardsByCertifiedProductId(Long certifiedProductId)
             throws EntityRetrievalException;
 
-    public CertifiedProductQmsStandardDTO lookupMapping(Long certifiedProductId, Long qmsStandardId)
+    CertifiedProductQmsStandardDTO lookupMapping(Long certifiedProductId, Long qmsStandardId)
             throws EntityRetrievalException;
 
-    public CertifiedProductQmsStandardDTO updateCertifiedProductQms(CertifiedProductQmsStandardDTO toUpdate)
+    CertifiedProductQmsStandardDTO updateCertifiedProductQms(CertifiedProductQmsStandardDTO toUpdate)
             throws EntityRetrievalException;
 
-    public CertifiedProductQmsStandardDTO createCertifiedProductQms(CertifiedProductQmsStandardDTO toCreate)
+    CertifiedProductQmsStandardDTO createCertifiedProductQms(CertifiedProductQmsStandardDTO toCreate)
             throws EntityCreationException;
 
-    public CertifiedProductQmsStandardDTO deleteCertifiedProductQms(Long id) throws EntityRetrievalException;
+    CertifiedProductQmsStandardDTO deleteCertifiedProductQms(Long id) throws EntityRetrievalException;
 
 }

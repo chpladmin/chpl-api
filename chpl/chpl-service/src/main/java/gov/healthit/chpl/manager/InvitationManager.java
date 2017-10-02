@@ -13,33 +13,33 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public interface InvitationManager {
 
-    public InvitationDTO inviteAdmin(String emailAddress, List<String> permissions)
+    InvitationDTO inviteAdmin(String emailAddress, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions)
+    InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    public InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions)
+    InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    public InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions)
+    InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    public InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId,
+    InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId,
             List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 
-    public InvitationDTO getByInvitationHash(String hash);
+    InvitationDTO getByInvitationHash(String hash);
 
-    public InvitationDTO getById(Long id) throws UserRetrievalException;
+    InvitationDTO getById(Long id) throws UserRetrievalException;
 
-    public InvitationDTO getByConfirmationHash(String hash);
+    InvitationDTO getByConfirmationHash(String hash);
 
-    public UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user)
+    UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException, UserCreationException;
 
-    public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException;
+    UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException;
 
-    public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user)
+    UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException;
 }

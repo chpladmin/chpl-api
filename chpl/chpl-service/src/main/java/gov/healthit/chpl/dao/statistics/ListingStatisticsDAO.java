@@ -6,42 +6,42 @@ import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
 public interface ListingStatisticsDAO {
-    public Long getTotalListings(DateRange dateRange);
+    Long getTotalListings(DateRange dateRange);
 
-    public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange);
+    List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange);
 
-    public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange);
+    List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange);
 
-    public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
+    List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
             DateRange dateRange);
 
-    public Long getTotalCertifiedProducts(DateRange dateRange);
+    Long getTotalCertifiedProducts(DateRange dateRange);
 
-    public Long getTotalCPsActiveListings(DateRange dateRange);
+    Long getTotalCPsActiveListings(DateRange dateRange);
 
     // 2011
-    public Long getTotal2011Listings(DateRange dateRange);
+    Long getTotal2011Listings(DateRange dateRange);
 
     // 2014
-    public Long getTotalCPs2014Listings(DateRange dateRange);
+    Long getTotalCPs2014Listings(DateRange dateRange);
 
-    public Long getTotalActive2014Listings(DateRange dateRange);
+    Long getTotalActive2014Listings(DateRange dateRange);
 
-    public Long getTotalCPsSuspended2014Listings(DateRange dateRange);
+    Long getTotalCPsSuspended2014Listings(DateRange dateRange);
 
-    public Long getTotal2014Listings(DateRange dateRange);
+    Long getTotal2014Listings(DateRange dateRange);
 
-    public Long getTotalCPsActive2014Listings(DateRange dateRange);
+    Long getTotalCPsActive2014Listings(DateRange dateRange);
 
     // 2015
-    public Long getTotalCPs2015Listings(DateRange dateRange);
+    Long getTotalCPs2015Listings(DateRange dateRange);
 
-    public Long getTotal2015Listings(DateRange dateRange);
+    Long getTotal2015Listings(DateRange dateRange);
 
-    public Long getTotalActive2015Listings(DateRange dateRange);
+    Long getTotalActive2015Listings(DateRange dateRange);
 
-    public Long getTotalCPsSuspended2015Listings(DateRange dateRange);
+    Long getTotalCPsSuspended2015Listings(DateRange dateRange);
 
-    public Long getTotalCPsActive2015Listings(DateRange dateRange);
+    Long getTotalCPsActive2015Listings(DateRange dateRange);
 
 }

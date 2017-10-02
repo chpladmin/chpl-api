@@ -11,30 +11,30 @@ import gov.healthit.chpl.dto.ApiKeyDTO;
 
 public interface ApiKeyManager {
 
-    public ApiKeyDTO createKey(ApiKeyDTO toCreate)
+    ApiKeyDTO createKey(ApiKeyDTO toCreate)
             throws EntityCreationException, JsonProcessingException, EntityRetrievalException;
 
-    public void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+    void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 
-    public void deleteKey(String keyString)
+    void deleteKey(String keyString)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 
-    public ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException;
+    ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException;
 
-    public ApiKeyDTO findKey(String keyString) throws EntityRetrievalException;
+    ApiKeyDTO findKey(String keyString) throws EntityRetrievalException;
 
-    public List<ApiKeyDTO> findAll();
+    List<ApiKeyDTO> findAll();
 
-    public void logApiKeyActivity(String keyString, String activityPath)
+    void logApiKeyActivity(String keyString, String activityPath)
             throws EntityRetrievalException, EntityCreationException;
 
-    public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException;
+    List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException;
 
-    public List<ApiKeyActivity> getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
+    List<ApiKeyActivity> getApiKeyActivity(String apiKeyFilter, Integer pageNumber, Integer pageSize,
             boolean dateAscending, Long startDate, Long endDate) throws EntityRetrievalException;
 
-    public List<ApiKeyActivity> getApiKeyActivity(String keyString) throws EntityRetrievalException;
+    List<ApiKeyActivity> getApiKeyActivity(String keyString) throws EntityRetrievalException;
 
-    public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize)
+    List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize)
             throws EntityRetrievalException;
 }
