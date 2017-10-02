@@ -57,7 +57,7 @@ public class PendingCertifiedProductEntity {
     
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vendor_address_id", unique=true, nullable = true)
+	@JoinColumn(name = "vendor_address_id", unique = true, nullable = true)
 	private AddressEntity developerAddress;
     
     @Column(name = "product_id")

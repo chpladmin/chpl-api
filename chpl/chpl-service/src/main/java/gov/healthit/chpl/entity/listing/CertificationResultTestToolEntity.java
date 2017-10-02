@@ -39,7 +39,7 @@ public class CertificationResultTestToolEntity {
 	
 	@Basic(optional = true)
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_tool_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "test_tool_id", unique = true, nullable = true, insertable = false, updatable= false)
 	private TestToolEntity testTool;
 	
 	@Basic(optional = true)

@@ -32,19 +32,19 @@ public class CertifiedProduct implements Serializable {
 	/**
 	 * The last time this listing was modified in any way given in milliseconds since epoch.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String lastModifiedDate;
 	
 	/**
 	 * Edition of the listing. Ex: 2011, 2014, or 2015
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String edition;
 	
 	/**
 	 * The date the listing was certified given in milliseconds since epoch.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
     private long certificationDate;
 	
 	public CertifiedProduct() {}

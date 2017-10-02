@@ -129,7 +129,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public Long createSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		Long insertedId = null;
 		checkSurveillanceAuthority(surv);
@@ -162,7 +162,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
 		try{
@@ -188,7 +188,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public void deleteSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		checkSurveillanceAuthority(surv);
 		survDao.deleteSurveillance(surv);

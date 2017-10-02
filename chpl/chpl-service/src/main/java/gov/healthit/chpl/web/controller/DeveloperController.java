@@ -54,9 +54,9 @@ public class DeveloperController {
 	@Autowired CertifiedProductManager cpManager;
 
 	@ApiOperation(value="List all developers in the system.", notes="")
-	@RequestMapping(value="", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="", method = RequestMethod.GET, produces="application/json; charset = utf-8")
 	public @ResponseBody DeveloperResults getDevelopers(
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted){
+			@RequestParam(value = "showDeleted", required = false, defaultValue="false") boolean showDeleted){
 		List<DeveloperDTO> developerList = null;
 		if(showDeleted) {
 			developerList = developerManager.getAllIncludingDeleted();
@@ -79,8 +79,8 @@ public class DeveloperController {
 
 	@ApiOperation(value="Get information about a specific developer.", 
 			notes="")
-	@RequestMapping(value="/{developerId}", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
+	@RequestMapping(value="/{developerId}", method = RequestMethod.GET,
+			produces="application/json; charset = utf-8")
 	public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId) throws EntityRetrievalException {
 		DeveloperDTO developer = developerManager.getById(developerId);
 		
@@ -101,8 +101,8 @@ public class DeveloperController {
 					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public ResponseEntity<Developer> updateDeveloper(@RequestBody(required=true) UpdateDevelopersRequest developerInfo) 
+			produces="application/json; charset = utf-8")
+	public ResponseEntity<Developer> updateDeveloper(@RequestBody(required = true) UpdateDevelopersRequest developerInfo) 
 			throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		DeveloperDTO result = null;
 		HttpHeaders responseHeaders = new HttpHeaders();

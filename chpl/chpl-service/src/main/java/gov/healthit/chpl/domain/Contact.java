@@ -24,7 +24,7 @@ public class Contact implements Serializable {
 	 * Contact first name. This variable is applicable for 2014 and 2015 Edition, 
 	 * and a string variable that does not take any restrictions on formatting or values. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String firstName;
 	
 	/**
@@ -51,7 +51,7 @@ public class Contact implements Serializable {
 	/**
 	 * Contact title (Ms., Mr., Dr., etc)
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String title;
 	
 	public Contact() {}

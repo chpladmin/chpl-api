@@ -45,7 +45,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
 @Configuration
 @EnableWebMvc
-@EnableTransactionManagement(proxyTargetClass=true)
+@EnableTransactionManagement(proxyTargetClass = true)
 @EnableWebSecurity
 @EnableAsync
 @EnableAspectJAutoProxy

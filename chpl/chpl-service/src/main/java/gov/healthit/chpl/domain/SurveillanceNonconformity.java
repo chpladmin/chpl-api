@@ -45,61 +45,61 @@ public class SurveillanceNonconformity implements Serializable {
 	/**
 	 * Corrective action plan approval date
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Date capApprovalDate;
 	
 	/**
 	 * Corrective action plan start date
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Date capStartDate;
 	
 	/**
 	 * Corrective action plan end date
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Date capEndDate;
 	
 	/**
 	 * Corrective action plan must complete date
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Date capMustCompleteDate;
 	
 	/**
 	 * Nonconformity summary
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String summary;
 	
 	/**
 	 * Nonconformity findings.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String findings;
 	
 	/**
 	 * Number of sites passed 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer sitesPassed;
 	
 	/**
 	 * Total number of sites tested
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer totalSites;
 	
 	/**
 	 * Developer explanation for the nonconformity
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String developerExplanation;
 	
 	/**
 	 * Resolution description of the nonconformity
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String resolution;
 	
 	/**

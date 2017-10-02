@@ -33,7 +33,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vendor_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "vendor_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private DeveloperEntity developer;
 	
 	@Column(name = "product_id")

@@ -32,7 +32,7 @@ public class PendingCqmCertificationCriteriaEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false, updatable= false)
 	private CertificationCriterionEntity certificationCriteria;
 
 	@Basic( optional = false )

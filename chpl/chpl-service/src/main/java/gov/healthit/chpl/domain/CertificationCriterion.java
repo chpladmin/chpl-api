@@ -14,22 +14,22 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 public class CertificationCriterion implements Serializable {
 	private static final long serialVersionUID = 5732322243572571895L;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long id;
 	
 	@XmlElement(required = true)
 	private String number;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String title;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long certificationEditionId;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String certificationEdition;
 	
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String description;
 	
 	public CertificationCriterion() {}

@@ -59,7 +59,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private ProductEntity product;
 	
 	

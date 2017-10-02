@@ -125,7 +125,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	
 	@Override
 	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class})
-	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries=true)
+	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
@@ -148,7 +148,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	
 	@Override
 	@Transactional
-	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries=true)
+	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
 	public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId) 
 			throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, 
@@ -179,7 +179,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	
 	@Override
 	@Transactional
-	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries=true)
+	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	public void confirm(Long acbId, Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {

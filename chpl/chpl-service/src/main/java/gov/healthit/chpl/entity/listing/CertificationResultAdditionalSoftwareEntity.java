@@ -45,7 +45,7 @@ public class CertificationResultAdditionalSoftwareEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certified_product_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "certified_product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private CertifiedProductDetailsEntity certifiedProduct;
 	
 	public Long getId() {

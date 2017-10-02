@@ -35,7 +35,7 @@ public class CertificationResultTestProcedureEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_procedure_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "test_procedure_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private TestProcedureEntity testProcedure;
 	
 	public Long getId() {

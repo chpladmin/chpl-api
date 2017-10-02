@@ -31,7 +31,7 @@ public class PendingCertificationResultEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
+	@JoinColumn(name = "certification_criterion_id", unique = true, nullable = true)
 	private CertificationCriterionEntity mappedCriterion;
 	
 	@Basic( optional = false )

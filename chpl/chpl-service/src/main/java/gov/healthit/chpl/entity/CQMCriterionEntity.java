@@ -33,8 +33,8 @@ public class CQMCriterionEntity {
 	@Column( name = "cqm_version_id", length = 10)
 	private Long cqmVersionId;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="cqm_version_id", insertable=false, updatable=false )
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name="cqm_version_id", insertable = false, updatable = false )
 	private CQMVersionEntity cqmVersion;
 	
 	@Basic( optional = false )

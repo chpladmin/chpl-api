@@ -51,7 +51,7 @@ public class CertificationCriterionEntity implements Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_edition_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "certification_edition_id", unique = true, nullable = true, insertable = false, updatable= false)
 	private CertificationEditionEntity certificationEdition;
 
 	@Basic( optional = false )

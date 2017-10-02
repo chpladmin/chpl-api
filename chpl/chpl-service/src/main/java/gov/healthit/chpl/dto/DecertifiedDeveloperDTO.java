@@ -17,10 +17,10 @@ public class DecertifiedDeveloperDTO implements Serializable {
 	
 	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbIdList, String developerStatus, Date decertificationDate, Long numMeaningfulUse){
 		this.setDeveloperId(developerId);
-		this.acbIdList=acbIdList;
-		this.developerStatus=developerStatus;
+		this.acbIdList = acbIdList;
+		this.developerStatus = developerStatus;
 		this.decertificationDate = decertificationDate;
-		this.numMeaningfulUse=numMeaningfulUse;
+		this.numMeaningfulUse = numMeaningfulUse;
 	}
 
 	public String getDeveloperStatus() {

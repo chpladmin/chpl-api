@@ -23,7 +23,7 @@ public class AddressEntity {
 	private Long id;
 	
 	@Basic( optional = false )
-	@Size(min=1)
+	@Size(min = 1)
 	@Column(name="street_line_1")
 	private String streetLineOne;
 	
@@ -31,22 +31,22 @@ public class AddressEntity {
 	private String streetLineTwo;
 	
 	@Basic( optional = false )
-	@Size(min=1)
+	@Size(min = 1)
 	@Column(name = "city")
 	private String city;
 	
 	@Basic( optional = false )
-	@Size(min=1)
+	@Size(min = 1)
 	@Column(name = "state")
 	private String state;
 	
 	@Basic( optional = false )
-	@Size(min=1)
+	@Size(min = 1)
 	@Column(name = "zipcode")
 	private String zipcode;
 	
 	@Basic( optional = false )
-	@Size(min=1)
+	@Size(min = 1)
 	@Column(name = "country")
 	private String country;
 	

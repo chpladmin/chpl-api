@@ -75,7 +75,7 @@ public class ActivityEntity {
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@Fetch(FetchMode.JOIN)
-	@JoinColumn(name = "last_modified_user", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable= false)
 	private UserEntity user;
 	
 	transient ActivityConcept concept;

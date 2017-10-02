@@ -39,7 +39,7 @@ public class SurveillanceRequirement implements Serializable {
 	 * The result for surveillance conducted on each surveillance requirement. 
 	 * Allowable values are "Non-Conformity" or "No Non-Conformity"
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private SurveillanceResultType result;
 	
 	/**

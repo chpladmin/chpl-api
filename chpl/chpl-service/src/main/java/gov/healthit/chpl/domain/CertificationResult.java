@@ -50,7 +50,7 @@ public class CertificationResult implements Serializable {
 	 * It is a binary variable that takes true or false value, and is applicable 
 	 * to 2014 and 2015 Edition. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Boolean gap;
 	
 	/**
@@ -59,7 +59,7 @@ public class CertificationResult implements Serializable {
 	 * It is a binary variable that takes either true or false value, and is only 
 	 * applicable to 2014 Edition. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Boolean sed;
 	
 	/**
@@ -67,7 +67,7 @@ public class CertificationResult implements Serializable {
 	 * was successfully tested for automated numerator recording. It is applicable 
 	 * for the 2014 edition, and it is a binary variable that takes either true or false value.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Boolean g1Success;
 	
 	/**
@@ -75,7 +75,7 @@ public class CertificationResult implements Serializable {
 	 * successfully tested for automated measure calculation. It is a binary 
 	 * variable that takes either true or false, and is applicable to 2014 Edition. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Boolean g2Success;
 	
 	/**
@@ -83,7 +83,7 @@ public class CertificationResult implements Serializable {
 	 * and terms of use. This variable is applicable for only 2015 Edition. 
 	 * It is fully qualified URL which is reachable via web browser validation and verification.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String apiDocumentation;
 	
 	/**
@@ -91,7 +91,7 @@ public class CertificationResult implements Serializable {
 	 * criterion was addressed for the purposes of certification. It is applicable 
 	 * for 2015 Edition and takes either of Approach 1 and Approach 2. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String privacySecurityFramework;
 	
 	@XmlTransient

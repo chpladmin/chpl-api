@@ -19,7 +19,7 @@ public class PreFetchedCaches {
 	@Autowired private CertifiedProductSearchDAO certifiedProductSearchDao;
 	
 	@Transactional
-	@CacheEvict(value=CacheNames.COLLECTIONS_PREFETCHED_LISTINGS, beforeInvocation=true, allEntries=true)
+	@CacheEvict(value = CacheNames.COLLECTIONS_PREFETCHED_LISTINGS, beforeInvocation = true, allEntries = true)
 	@Cacheable(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS)
 	public List<CertifiedProductFlatSearchResult> loadPreFetchedBasicSearch(){
 		logger.info("Loading PreFetchedBasicSearch");

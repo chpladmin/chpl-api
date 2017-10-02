@@ -31,7 +31,7 @@ public class TestingLabEntity implements Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "address_id", unique=true, nullable = true)
+	@JoinColumn(name = "address_id", unique = true, nullable = true)
 	private AddressEntity address;
 	
 	@Column(name = "name")

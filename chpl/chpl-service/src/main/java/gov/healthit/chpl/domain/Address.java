@@ -31,7 +31,7 @@ public class Address implements Serializable {
 	 * Second line of the street address of the health IT developer for 2014 and 2015 Edition. 
 	 * This variable is a string variable that does not have any restrictions on formatting or values. This variable is optional.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String line2;
 	
 	/**

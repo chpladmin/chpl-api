@@ -45,19 +45,19 @@ public class Developer implements Serializable {
 	 * Website of health IT developer. Fully qualified URL which is reachable via web 
 	 * browser validation and verification. This variable is applicable for 2014 and 2015 Edition. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String website;
 	
 	/**
 	 * Developer's physical address
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Address address;
 	
 	/**
 	 * Contact information for the developer.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Contact contact;
 	
 	@XmlTransient
@@ -69,20 +69,20 @@ public class Developer implements Serializable {
 	/**
 	 * Transparency attestations between each certification body and the developer.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private List<TransparencyAttestationMap> transparencyAttestations;
 	
 	/**
 	 * Status changes that have occurred on the developer.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private List<DeveloperStatusEvent> statusEvents;
 	
 	/**
 	 * The status of a developer with certified Health IT. 
 	 * Allowable values are "Active", "Suspended by ONC", or "Under Certification Ban by ONC"
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private DeveloperStatus status;
 	
 	public Developer() {

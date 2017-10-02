@@ -36,7 +36,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	@Column( name = "vendor_id", nullable = false  )
 	private Long id;
 	
-	@Column(name = "vendor_code", insertable=false, updatable = false)
+	@Column(name = "vendor_code", insertable = false, updatable = false)
 	private String developerCode;
 	
 	@Column(name = "name" )
@@ -48,7 +48,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "address_id", unique=true, nullable = true)
+	@JoinColumn(name = "address_id", unique = true, nullable = true)
 	private AddressEntity address;
 	
 	@Basic(optional = true) 
@@ -57,7 +57,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contact_id", unique=true, nullable = true,  insertable = false, updatable = false)
+	@JoinColumn(name = "contact_id", unique = true, nullable = true,  insertable = false, updatable = false)
 	private ContactEntity contact;
 	
 	@Basic( optional = false )
@@ -80,7 +80,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vendor_id", unique=true, nullable = true, insertable = false, updatable = false)
+	@JoinColumn(name = "vendor_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private DeveloperCertificationStatusesEntity developerCertificationStatuses;
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "developerId"  )

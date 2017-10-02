@@ -38,7 +38,7 @@ public class CertificationResultUcdProcessEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "ucd_process_id", unique=true, nullable = true, insertable=false, updatable= false)
+	@JoinColumn(name = "ucd_process_id", unique = true, nullable = true, insertable = false, updatable= false)
 	private UcdProcessEntity ucdProcess;
 	
 	public Long getId() {

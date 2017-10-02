@@ -75,12 +75,12 @@ public class CertificationResultEntity  implements Serializable {
 	
 	@Basic(optional = true)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_result_id", nullable = false, insertable=false, updatable=false)
+	@JoinColumn(name = "certification_result_id", nullable = false, insertable = false, updatable = false)
 	private CertificationResultUcdProcessEntity ucdProcesses;
 	
 	@Basic(optional = true)
 	@ManyToOne
-	@JoinColumn(name = "certified_product_id", nullable = false, insertable=false, updatable=false)
+	@JoinColumn(name = "certified_product_id", nullable = false, insertable = false, updatable = false)
 	private CertifiedProductEntity certifiedProduct;
 	
 	@Basic(optional = false)

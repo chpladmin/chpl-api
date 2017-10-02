@@ -40,7 +40,7 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_body_id", unique=true, nullable = true, insertable = false, updatable = false)
+	@JoinColumn(name = "certification_body_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private CertificationBodyEntity certificationBody;
 	
 	@Column(name = "transparency_attestation")

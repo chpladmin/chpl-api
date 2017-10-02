@@ -48,7 +48,7 @@ public class Surveillance implements Serializable {
 	/**
 	 * Date surveillance ended
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Date endDate;
 	
 	/**
@@ -60,7 +60,7 @@ public class Surveillance implements Serializable {
 	/**
 	 * Number of randomized sites used. Only applicable for randomized surveillance.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer randomizedSitesUsed;
 	
 	/**

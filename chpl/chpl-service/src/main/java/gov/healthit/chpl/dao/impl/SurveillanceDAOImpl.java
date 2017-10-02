@@ -487,7 +487,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return result;
 	}
 	
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<SurveillanceEntity> getAllSurveillance(){
 		Query query = entityManager.createQuery(
 				"from SurveillanceEntity where deleted <> true",
@@ -495,7 +495,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		return query.getResultList();
 	}
 	
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities(){
 		Query query = entityManager.createQuery(
 				"from SurveillanceNonconformityEntity where deleted <> true",

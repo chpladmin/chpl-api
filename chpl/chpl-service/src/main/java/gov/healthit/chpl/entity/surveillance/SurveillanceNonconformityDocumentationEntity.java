@@ -26,7 +26,7 @@ public class SurveillanceNonconformityDocumentationEntity {
 	private Long nonconformityId;
 	
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "surveillance_nonconformity_id", insertable=false, updatable=false)
+	@JoinColumn(name = "surveillance_nonconformity_id", insertable = false, updatable = false)
 	private SurveillanceNonconformityEntity nonconformityEntity;
 	
 	@Column(name = "filename")
@@ -39,11 +39,11 @@ public class SurveillanceNonconformityDocumentationEntity {
 	@Column(name = "filedata")
 	private byte[] fileData;
 	
-	@Column( name = "creation_date", nullable = false, insertable=false, updatable=false  )
+	@Column( name = "creation_date", nullable = false, insertable = false, updatable = false  )
 	private Date creationDate;
 	
 	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false, insertable=false, updatable=false  )
+	@Column( name = "last_modified_date", nullable = false, insertable = false, updatable = false  )
 	private Date lastModifiedDate;
 	
 	@Column( name = "last_modified_user", nullable = false  )

@@ -24,8 +24,8 @@ public class StatusController {
 
 	@ApiOperation(value="Check that the rest services are up and running.", 
 			notes="")
-	@RequestMapping(value="/status", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
+	@RequestMapping(value="/status", method = RequestMethod.GET,
+			produces="application/json; charset = utf-8")
 	public @ResponseBody String getStatus() {
 		logger.warn("/status called");
 		return "{\"status\": \"OK\"}";
@@ -34,7 +34,7 @@ public class StatusController {
 	@ApiOperation(value = "Check if the basic search cache has completed loading. "
 			+ "{ status: 'OK' } is returned if it's finished and { status: 'INITIALIZING' } is returned if not.",
 			notes="")
-	@RequestMapping(value="/cache_status", method=RequestMethod.GET, produces="application/json; charset=utf-8")
+	@RequestMapping(value="/cache_status", method = RequestMethod.GET, produces="application/json; charset = utf-8")
 	public @ResponseBody String getCacheStatus() {
 		CacheManager manager = cacheUtil.getMyCacheManager();
 		Cache basicCache = manager.getCache(CacheNames.COLLECTIONS_LISTINGS);

@@ -19,13 +19,13 @@ public class MacraMeasure implements Serializable {
 	/**
 	 * An internal ID for each valid measure
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long id;
 	
 	/**
 	 * The criteria for which a given measure is valid.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private CertificationCriterion criteria;;
 	
 	@XmlElement(required = true)
@@ -35,14 +35,14 @@ public class MacraMeasure implements Serializable {
 	 * The name of the measure that was successfully tested. For example, 
 	 * "Computerized Provider Order Entry - Medications: Eligible Hospital/Critical"
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String name;
 	
 	/**
 	 * The required test associated with each measure. For example, 
 	 * "Required Test 10: Stage 2 Objective 3 Measure 1 and Stage 3 Objective 4 Measure 1"
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String description;
 	
 	public MacraMeasure() {

@@ -36,7 +36,7 @@ public class CertifiedProductAccessibilityStandardEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "accessibility_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "accessibility_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private AccessibilityStandardEntity accessibilityStandard;
 	
 	public Long getId() {

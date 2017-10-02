@@ -36,13 +36,13 @@ public class Product implements Serializable {
 	 * that can be accessed by the public. This variable is applicable to 2014 Edition. 
 	 * Fully qualified URL which is reachable via web browser validation and verification.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String reportFileLocation;
 	
 	/**
 	 * The point of contact for the product
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Contact contact;
 	
 	/**

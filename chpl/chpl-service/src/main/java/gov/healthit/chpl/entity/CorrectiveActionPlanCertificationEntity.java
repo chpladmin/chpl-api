@@ -26,12 +26,12 @@ public class CorrectiveActionPlanCertificationEntity {
 	
 	@Basic( optional = false )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "corrective_action_plan_id", unique=true, nullable = true)
+	@JoinColumn(name = "corrective_action_plan_id", unique = true, nullable = true)
 	private CorrectiveActionPlanEntity correctiveActionPlan;
 	
 	@Basic( optional = false )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
+	@JoinColumn(name = "certification_criterion_id", unique = true, nullable = true)
 	private CertificationCriterionEntity certificationCriterion;
 	
 	@Column(name = "summary")

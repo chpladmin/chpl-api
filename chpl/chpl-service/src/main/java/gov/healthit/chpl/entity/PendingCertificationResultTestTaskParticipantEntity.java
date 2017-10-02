@@ -28,7 +28,7 @@ public class PendingCertificationResultTestTaskParticipantEntity {
 
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_certification_result_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "pending_certification_result_test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingCertificationResultTestTaskEntity certTestTask;
 	
 	@Basic( optional = false )
@@ -37,7 +37,7 @@ public class PendingCertificationResultTestTaskParticipantEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_test_participant_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "pending_test_participant_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingTestParticipantEntity testParticipant;
 	
 	@Basic( optional = false )

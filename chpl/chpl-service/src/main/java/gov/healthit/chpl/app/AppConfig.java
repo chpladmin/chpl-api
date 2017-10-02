@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
 @Configuration
-@EnableTransactionManagement(proxyTargetClass=true)
+@EnableTransactionManagement(proxyTargetClass = true)
 @ComponentScan(basePackages = {
 		"org.springframework.security.**",
 		"org.springframework.core.env.**",
@@ -31,7 +31,7 @@ import org.springframework.web.servlet.view.JstlView;
 		"gov.healthit.chpl.upload.**",
 		"gov.healthit.chpl.validation.**",
 		"gov.healthit.chpl.app.**"}, 
-	lazyInit=true,
+	lazyInit = true,
 	excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
 public class AppConfig {
 	

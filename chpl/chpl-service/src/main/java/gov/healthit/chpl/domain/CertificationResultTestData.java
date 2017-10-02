@@ -35,7 +35,7 @@ public class CertificationResultTestData implements Serializable {
 	/**
 	 * This variable indicates if test data alterations are made, a description of all modifications made. It is applicable for 2014 and 2015 Edition and a string variable that does not take any restrictions on formatting or values. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String alteration;
 
 	public CertificationResultTestData() {

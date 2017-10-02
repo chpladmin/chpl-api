@@ -43,9 +43,9 @@ public class ProductVersionController {
 	
 	@ApiOperation(value="List all versions.", 
 			notes="List all versions associated with a specific product.")
-	@RequestMapping(value="", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required=true) Long productId) {
+	@RequestMapping(value="", method = RequestMethod.GET,
+			produces="application/json; charset = utf-8")
+	public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) Long productId) {
 		List<ProductVersionDTO> versionList = null;
 		
 		if(productId != null && productId > 0) {
@@ -66,8 +66,8 @@ public class ProductVersionController {
 
 	@ApiOperation(value="Get information about a specific version.", 
 			notes="")
-	@RequestMapping(value="/{versionId}", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
+	@RequestMapping(value="/{versionId}", method = RequestMethod.GET,
+			produces="application/json; charset = utf-8")
 	public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId) throws EntityRetrievalException {
 		ProductVersionDTO version = pvManager.getById(versionId);
 		
@@ -88,8 +88,8 @@ public class ProductVersionController {
 					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
 	@RequestMapping(value="/update", method= RequestMethod.POST, 
 			consumes= MediaType.APPLICATION_JSON_VALUE,
-			produces="application/json; charset=utf-8")
-	public ResponseEntity<ProductVersion> updateVersion(@RequestBody(required=true) UpdateVersionsRequest versionInfo) throws 
+			produces="application/json; charset = utf-8")
+	public ResponseEntity<ProductVersion> updateVersion(@RequestBody(required = true) UpdateVersionsRequest versionInfo) throws 
 		EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
 		
 		ProductVersionDTO result = null;

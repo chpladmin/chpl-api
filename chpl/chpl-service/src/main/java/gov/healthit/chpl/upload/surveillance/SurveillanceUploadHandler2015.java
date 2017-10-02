@@ -49,7 +49,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 	}
 	
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public Surveillance handle() throws InvalidArgumentsException {
 		Surveillance surv = new Surveillance();
 		

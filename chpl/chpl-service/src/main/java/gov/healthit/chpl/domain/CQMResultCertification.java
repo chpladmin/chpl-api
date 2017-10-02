@@ -33,7 +33,7 @@ public class CQMResultCertification implements Serializable {
 	/**
 	 * Certification number (i.e. 170.314 (c)(1)) of the criteria
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String certificationNumber;
 
 	public CQMResultCertification(){

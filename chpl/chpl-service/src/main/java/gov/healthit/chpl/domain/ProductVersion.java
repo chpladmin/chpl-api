@@ -30,7 +30,7 @@ public class ProductVersion implements Serializable {
 	/**
 	 * Details/description of the product version.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String details;
 	
 	@XmlTransient

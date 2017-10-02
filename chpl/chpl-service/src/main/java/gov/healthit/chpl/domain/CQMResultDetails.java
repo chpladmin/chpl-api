@@ -28,7 +28,7 @@ public class CQMResultDetails implements Serializable {
 	/**
 	 * CQM internal ID
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long id;
 	
 	/**
@@ -36,43 +36,43 @@ public class CQMResultDetails implements Serializable {
 	 * It is applicable to 2014 and 2015 Edition. For a list of the clinical quality 
 	 * measures, please reference the CMS eCQM library.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String number;
 	
 	/**
 	 * The CMS ID clinical quality measures to which the Health IT Module has been certified.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String cmsId;
 	
 	/**
 	 * The title of the clinical quality measure.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String title;
 	
 	/**
 	 * The description of the clinical quality measure.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String description;
 	
 	/**
 	 * The NQF Number of the clinical quality measure
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String nqfNumber;
 	
 	/**
 	 * Type of CQM. 1 for Ambulatory, 2 for Inpatient
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long typeId;
 	
 	/**
 	 * Category of the clinial quality measure. Examples include "Population/Public Health" or "Patient and Family Engagement" 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String domain;
 	
 	/**
@@ -80,7 +80,7 @@ public class CQMResultDetails implements Serializable {
 	 * certified to the related listing. It is applicable to 2014 and 2015 Edition and 
 	 * a binary variable that takes either true or false value. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Boolean success;
 	
 	/**
@@ -89,14 +89,14 @@ public class CQMResultDetails implements Serializable {
 	 * For a list of clinical quality measures and their viable versions, please reference 
 	 * the CMS eCQM library.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Set<String> successVersions;
 	
 	/**
 	 * All possible versions of the clinical quality measure. 
 	 * For a list of clinical quality measures and their viable versions, please reference the CMS eCQM library. 
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Set<String> allVersions;
 	
 	/**

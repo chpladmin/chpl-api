@@ -36,7 +36,7 @@ public class CertificationResultTestStandard implements Serializable {
 	/**
 	 * Description of test standard
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String testStandardDescription;
 	
 	/**

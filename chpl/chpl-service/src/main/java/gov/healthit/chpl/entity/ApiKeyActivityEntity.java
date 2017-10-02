@@ -20,11 +20,11 @@ public class ApiKeyActivityEntity {
 	@Column( name = "api_key_activity_id", nullable = false )
 	private Long id;
 	
-	@Basic(optional=false)
+	@Basic(optional = false)
 	@Column(name = "api_key_id")
 	private Long apiKeyId;
 	
-	@Basic(optional=false)
+	@Basic(optional = false)
 	@Column(name = "api_call_path" )
 	private String apiCallPath;
 	

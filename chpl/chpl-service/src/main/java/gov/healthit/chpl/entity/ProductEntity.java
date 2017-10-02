@@ -48,7 +48,7 @@ public class ProductEntity implements Serializable {
 	private Long lastModifiedUser;
 	
 	@Basic( optional = false )
-	@Size(min=1)
+	@Size(min = 1)
 	@Column( name = "name")
 	private String name;
 	
@@ -58,7 +58,7 @@ public class ProductEntity implements Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "contact_id", unique=true, nullable = true, insertable = false, updatable = false)
+	@JoinColumn(name = "contact_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private ContactEntity contact;
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "productId"  )
@@ -76,16 +76,16 @@ public class ProductEntity implements Serializable {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vendor_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "vendor_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private DeveloperEntity developer;
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "product_id", unique=true, nullable = true, insertable = false, updatable = false)
+	@JoinColumn(name = "product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private ProductCertificationStatusesEntity productCertificationStatuses;
 	
-	@OneToMany(fetch=FetchType.LAZY, mappedBy="productId")
-	@Basic(optional=true)
+	@OneToMany(fetch = FetchType.LAZY, mappedBy="productId")
+	@Basic(optional = true)
 	@Column( name = "product_id", nullable = false  )
 	private Set<ProductActiveOwnerEntity> ownerHistory = new HashSet<ProductActiveOwnerEntity>();
 	

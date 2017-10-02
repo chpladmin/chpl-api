@@ -36,7 +36,7 @@ public class PendingTestParticipantEntity {
 	private Long educationTypeId;
 
 	@OneToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "education_type_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "education_type_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private EducationTypeEntity education;
 
 	@Column(name = "user_entered_age", nullable = false)
@@ -46,7 +46,7 @@ public class PendingTestParticipantEntity {
 	private Long ageRangeId;
 
 	@OneToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_participant_age_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "test_participant_age_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private AgeRangeEntity ageRange;
 
 	@Column(name = "occupation", nullable = false)

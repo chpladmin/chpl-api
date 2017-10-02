@@ -209,7 +209,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	}
 	
 	@Override
-	@Transactional(readOnly=true)
+	@Transactional(readOnly = true)
 	public boolean chplIdExists(String id) throws EntityRetrievalException {
 		if(StringUtils.isEmpty(id)) {
 			return false;
@@ -347,7 +347,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	@Transactional(readOnly = false)
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, 
-			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
@@ -947,7 +947,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			JsonProcessingException.class, AccessDeniedException.class, InvalidArgumentsException.class})
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, 
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.SEARCH, 
-			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries=true)
+			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
 			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, 
 			EntityCreationException, InvalidArgumentsException {
@@ -1714,7 +1714,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.SEARCH}, allEntries=true)
+	@CacheEvict(value = {CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.SEARCH}, allEntries = true)
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, IOException {
 		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();

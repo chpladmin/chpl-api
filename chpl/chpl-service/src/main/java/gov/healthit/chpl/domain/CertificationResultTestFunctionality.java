@@ -41,7 +41,7 @@ public class CertificationResultTestFunctionality implements Serializable {
 	/**
 	 * Description of functionality tested
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String description;
 	
 	/**

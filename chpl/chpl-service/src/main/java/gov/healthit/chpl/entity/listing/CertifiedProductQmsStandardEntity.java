@@ -36,7 +36,7 @@ public class CertifiedProductQmsStandardEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "qms_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "qms_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private QmsStandardEntity qmsStandard;
 	
 	@Basic( optional = false )

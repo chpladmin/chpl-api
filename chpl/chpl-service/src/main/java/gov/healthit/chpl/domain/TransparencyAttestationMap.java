@@ -22,7 +22,7 @@ public class TransparencyAttestationMap implements Serializable {
 	/**
 	 * Certification body name
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String acbName;
 	
 	/**

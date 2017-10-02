@@ -23,7 +23,7 @@ public class EducationTypeEntity {
 	private Long id;
 	
 	@Basic( optional = false )
-	@Size(min=1)
+	@Size(min = 1)
 	@Column(name="name")
 	private String name;
 	

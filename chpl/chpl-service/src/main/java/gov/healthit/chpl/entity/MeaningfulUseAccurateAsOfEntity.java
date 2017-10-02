@@ -22,7 +22,7 @@ public class MeaningfulUseAccurateAsOfEntity implements Cloneable, Serializable 
 	@Column(name = "muu_accurate_as_of_date_id", nullable = false)
 	private Long id;
 	
-	@Basic(optional=false)
+	@Basic(optional = false)
 	@Column(name = "accurate_as_of_date", updatable = true, nullable = false)
 	private Date accurateAsOfDate;
 	

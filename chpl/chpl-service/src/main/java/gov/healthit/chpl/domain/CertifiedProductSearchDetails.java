@@ -40,7 +40,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * can be accessed by the public. This variable is applicable to 2014 Edition. 
 	 * Fully qualified URL which is reachable via web browser validation and verification.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
     private String reportFileLocation;
 	
 	/**
@@ -48,19 +48,19 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * applicable for 2014 and 2015 Edition. Fully qualified URL which is reachable via web 
 	 * browser validation and verification.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
     private String sedReportFileLocation;
 	
 	/**
 	 * For SED testing, a description of the intended users of the Health IT
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
     private String sedIntendedUserDescription;
 	
 	/**
 	 * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
     private Date sedTestingEnd;
 	
 	/**
@@ -74,13 +74,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * The classification of the certified product (either complete or modular). 
 	 * It is only applicable to 2014 Edition, and takes values of either Complete EHR or Modular EHR.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
     private Map<String, Object> classificationType = new HashMap<String, Object>();
 	
 	/**
 	 * If there was previously a different certifying body managing this listing this is their name.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
     private String otherAcb;
 	
 	/**
@@ -122,7 +122,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * For 2014 products, the practice setting for which the certified product is designed. 
 	 * It takes value of Ambulatory or Inpatient.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Map<String, Object> practiceType = new HashMap<String, Object>();
 	
 	/**
@@ -137,7 +137,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * 2015 Edition and takes values of: Drummond Group, ICSA Labs, Infogard, 
 	 * National Technical Systems, SLI Global, CCHIT
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Map<String, Object> testingLab = new HashMap<String, Object>();
 	
 	/**
@@ -149,36 +149,36 @@ public class CertifiedProductSearchDetails implements Serializable {
 	/**
 	 * Decertification date represented in milliseconds since epoch
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long decertificationDate;
 	
 	/**
 	 * Number of certification criteria this listing attests to.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer countCerts;
 	/**
 	 * Number of cqms this listing attests to.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer countCqms;
 	
 	/**
 	 * Total count of open+closed surveillance for this listing.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer countSurveillance;
 	
 	/**
 	 * Total count of open surveillance for this listing.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer countOpenSurveillance;
 	
 	/**
 	 * Total count of closed surveillance for this listing.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer countClosedSurveillance;
 	
 	/**
@@ -186,13 +186,13 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * For additional information, please see 'Understanding Surveillance Information 
 	 * in the CHPL', available in the CHPL Public User Guide
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer countOpenNonconformities;
 	
 	/**
 	 * Total count of closed nonconformities for this listing.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Integer countClosedNonconformities;
 	
 	/**
@@ -201,7 +201,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * 2015 Edition and contains the inherited status as well as first-level parents and 
 	 * children.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private InheritedCertificationStatus ics;
 	
 	/**
@@ -209,32 +209,32 @@ public class CertifiedProductSearchDetails implements Serializable {
 	 * accessibility-centered design certification criterion for 2015 Edition. 
 	 * It is a binary variable that takes value of true or false.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Boolean accessibilityCertified;
 	
 	/**
 	 * For legacy CHPL listings, any additional software needed.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String productAdditionalSoftware;
 	
 	/**
 	 * The transparency attestation required by 170.523(k)(2). It is applicable for 
 	 * 2014 and 2015 Edition and takes value of Affirmative, Negative, or N/A.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String transparencyAttestation;
 	
 	/**
 	 * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private String transparencyAttestationUrl;
 	
 	/**
 	 * Number of meaningful use users for this listing as uploaded by the certifying body.
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long numMeaningfulUse;
 	
 	/**

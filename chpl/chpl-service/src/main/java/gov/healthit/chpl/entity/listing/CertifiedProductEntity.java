@@ -101,7 +101,7 @@ public class CertifiedProductEntity {
 	private Long testingLabId;
 	
 	@Basic(optional = true) 
-	@Column(name = "other_acb", length=64)
+	@Column(name = "other_acb", length = 64)
 	private String otherAcb;
 	
 	@Basic(optional = false)
@@ -136,7 +136,7 @@ public class CertifiedProductEntity {
 	
 	@Basic(optional = true)
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "certified_product_id", nullable = false, insertable=false, updatable=false)
+	@JoinColumn(name = "certified_product_id", nullable = false, insertable = false, updatable = false)
 	private CertifiedProductEntity certifiedProduct;
 	
 	/**

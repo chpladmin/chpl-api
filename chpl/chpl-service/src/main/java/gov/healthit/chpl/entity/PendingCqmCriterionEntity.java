@@ -27,7 +27,7 @@ public class PendingCqmCriterionEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "cqm_criterion_id", unique=true, nullable = true)
+	@JoinColumn(name = "cqm_criterion_id", unique = true, nullable = true)
 	private CQMCriterionEntity mappedCriterion;
 	
 	@Column(name="pending_certified_product_id")

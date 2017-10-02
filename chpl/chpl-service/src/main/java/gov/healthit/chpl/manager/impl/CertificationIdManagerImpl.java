@@ -126,7 +126,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	
 	@Override
 	@Transactional(readOnly = false)
-	@CacheEvict(value = {CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS}, allEntries=true)
+	@CacheEvict(value = {CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS}, allEntries = true)
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		
 		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);

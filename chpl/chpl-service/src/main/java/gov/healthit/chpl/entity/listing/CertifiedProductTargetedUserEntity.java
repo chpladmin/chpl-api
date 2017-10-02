@@ -36,7 +36,7 @@ public class CertifiedProductTargetedUserEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "targeted_user_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "targeted_user_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private TargetedUserEntity targetedUser;
 	
 	public Long getId() {

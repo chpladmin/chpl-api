@@ -37,7 +37,7 @@ public class CertificationResultTestTaskEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
 	@Where(clause="deleted <> 'true'")
 	private TestTaskEntity testTask;
 	

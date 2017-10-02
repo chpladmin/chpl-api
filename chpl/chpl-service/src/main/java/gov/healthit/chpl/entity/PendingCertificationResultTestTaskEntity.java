@@ -35,7 +35,7 @@ public class PendingCertificationResultTestTaskEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "pending_test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingTestTaskEntity testTask;
 	
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultTestTaskId"  )

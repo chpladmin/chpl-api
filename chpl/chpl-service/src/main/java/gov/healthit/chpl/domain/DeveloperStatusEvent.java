@@ -18,7 +18,7 @@ public class DeveloperStatusEvent implements Serializable {
 	/**
 	 * Developer status event internal ID
 	 */
-	@XmlElement(required = false, nillable=true)
+	@XmlElement(required = false, nillable = true)
 	private Long id;
 	
 	/**

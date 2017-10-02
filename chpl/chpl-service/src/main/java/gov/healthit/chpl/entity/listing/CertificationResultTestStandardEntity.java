@@ -35,7 +35,7 @@ public class CertificationResultTestStandardEntity {
 	
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
+	@JoinColumn(name = "test_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private TestStandardEntity testStandard;
 	
 	public Long getId() {
