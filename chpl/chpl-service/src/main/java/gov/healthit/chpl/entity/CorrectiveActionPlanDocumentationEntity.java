@@ -62,7 +62,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -70,7 +70,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return correctiveActionPlan;
     }
 
-    public void setCorrectiveActionPlan(CorrectiveActionPlanEntity correctiveActionPlan) {
+    public void setCorrectiveActionPlan(final CorrectiveActionPlanEntity correctiveActionPlan) {
         this.correctiveActionPlan = correctiveActionPlan;
     }
 
@@ -78,7 +78,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -86,7 +86,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -94,7 +94,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -102,7 +102,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -110,7 +110,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
@@ -118,7 +118,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 
@@ -126,7 +126,7 @@ public class CorrectiveActionPlanDocumentationEntity {
         return fileData;
     }
 
-    public void setFileData(byte[] fileData) {
+    public void setFileData(final byte[] fileData) {
         this.fileData = fileData;
     }
 }

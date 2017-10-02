@@ -61,7 +61,7 @@ public class PendingCqmCriterionEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -69,7 +69,7 @@ public class PendingCqmCriterionEntity {
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
@@ -77,7 +77,7 @@ public class PendingCqmCriterionEntity {
         return meetsCriteria;
     }
 
-    public void setMeetsCriteria(Boolean meetsCriteria) {
+    public void setMeetsCriteria(final Boolean meetsCriteria) {
         this.meetsCriteria = meetsCriteria;
     }
 
@@ -85,7 +85,7 @@ public class PendingCqmCriterionEntity {
     // return cqmNumber;
     // }
     //
-    // public void setCqmNumber(String cqmNumber) {
+    // public void setCqmNumber(final String cqmNumber) {
     // this.cqmNumber = cqmNumber;
     // }
     //
@@ -93,7 +93,7 @@ public class PendingCqmCriterionEntity {
     // return cmsId;
     // }
     //
-    // public void setCmsId(String cmsId) {
+    // public void setCmsId(final String cmsId) {
     // this.cmsId = cmsId;
     // }
     //
@@ -101,7 +101,7 @@ public class PendingCqmCriterionEntity {
     // return title;
     // }
     //
-    // public void setTitle(String title) {
+    // public void setTitle(final String title) {
     // this.title = title;
     // }
     //
@@ -109,7 +109,7 @@ public class PendingCqmCriterionEntity {
     // return nqfNumber;
     // }
     //
-    // public void setNqfNumber(String nqfNumber) {
+    // public void setNqfNumber(final String nqfNumber) {
     // this.nqfNumber = nqfNumber;
     // }
     //
@@ -117,7 +117,7 @@ public class PendingCqmCriterionEntity {
     // return version;
     // }
     //
-    // public void setVersion(String version) {
+    // public void setVersion(final String version) {
     // this.version = version;
     // }
 
@@ -125,7 +125,7 @@ public class PendingCqmCriterionEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -133,7 +133,7 @@ public class PendingCqmCriterionEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -141,7 +141,7 @@ public class PendingCqmCriterionEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -149,7 +149,7 @@ public class PendingCqmCriterionEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -157,7 +157,7 @@ public class PendingCqmCriterionEntity {
         return mappedCriterion;
     }
 
-    public void setMappedCriterion(CQMCriterionEntity mappedCriterion) {
+    public void setMappedCriterion(final CQMCriterionEntity mappedCriterion) {
         this.mappedCriterion = mappedCriterion;
     }
 
@@ -165,7 +165,7 @@ public class PendingCqmCriterionEntity {
         return certifications;
     }
 
-    public void setCertifications(Set<PendingCqmCertificationCriteriaEntity> certifications) {
+    public void setCertifications(final Set<PendingCqmCertificationCriteriaEntity> certifications) {
         this.certifications = certifications;
     }
 }

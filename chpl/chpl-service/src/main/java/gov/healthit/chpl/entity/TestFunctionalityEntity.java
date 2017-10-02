@@ -40,7 +40,7 @@ public class TestFunctionalityEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class TestFunctionalityEntity {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -72,7 +72,7 @@ public class TestFunctionalityEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -80,7 +80,7 @@ public class TestFunctionalityEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -88,7 +88,7 @@ public class TestFunctionalityEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -96,7 +96,7 @@ public class TestFunctionalityEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -104,7 +104,7 @@ public class TestFunctionalityEntity {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -112,7 +112,7 @@ public class TestFunctionalityEntity {
         return certificationEditionId;
     }
 
-    public void setCertificationEditionId(Long certificationEditionId) {
+    public void setCertificationEditionId(final Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
     }
 
@@ -120,7 +120,7 @@ public class TestFunctionalityEntity {
         return certificationEdition;
     }
 
-    public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
+    public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
 }

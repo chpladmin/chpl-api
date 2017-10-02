@@ -470,7 +470,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         return recordStatus;
     }
 
-    public void setRecordStatus(String recordStatus) {
+    public void setRecordStatus(final String recordStatus) {
         this.recordStatus = recordStatus;
     }
 }

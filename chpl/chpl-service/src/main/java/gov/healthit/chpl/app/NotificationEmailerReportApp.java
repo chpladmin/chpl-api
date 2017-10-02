@@ -87,7 +87,7 @@ public abstract class NotificationEmailerReportApp extends App {
         return cpdManager;
     }
 
-    public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
+    public void setCpdManager(final CertifiedProductDetailsManager cpdManager) {
         this.cpdManager = cpdManager;
     }
 
@@ -95,7 +95,7 @@ public abstract class NotificationEmailerReportApp extends App {
         return certifiedProductDAO;
     }
 
-    public void setCertifiedProductDAO(CertifiedProductDAO certifiedProductDAO) {
+    public void setCertifiedProductDAO(final CertifiedProductDAO certifiedProductDAO) {
         this.certifiedProductDAO = certifiedProductDAO;
     }
 
@@ -103,7 +103,7 @@ public abstract class NotificationEmailerReportApp extends App {
         return mailUtils;
     }
 
-    public void setMailUtils(SendMailUtil mailUtils) {
+    public void setMailUtils(final SendMailUtil mailUtils) {
         this.mailUtils = mailUtils;
     }
 
@@ -111,7 +111,7 @@ public abstract class NotificationEmailerReportApp extends App {
         return notificationDAO;
     }
 
-    public void setNotificationDAO(NotificationDAO notificationDAO) {
+    public void setNotificationDAO(final NotificationDAO notificationDAO) {
         this.notificationDAO = notificationDAO;
     }
 
@@ -119,7 +119,7 @@ public abstract class NotificationEmailerReportApp extends App {
         return certificationBodyDAO;
     }
 
-    public void setCertificationBodyDAO(CertificationBodyDAO certificationBodyDAO) {
+    public void setCertificationBodyDAO(final CertificationBodyDAO certificationBodyDAO) {
         this.certificationBodyDAO = certificationBodyDAO;
     }
 
@@ -127,7 +127,7 @@ public abstract class NotificationEmailerReportApp extends App {
         return editionDAO;
     }
 
-    public void setEditionDAO(CertificationEditionDAO editionDAO) {
+    public void setEditionDAO(final CertificationEditionDAO editionDAO) {
         this.editionDAO = editionDAO;
     }
 }

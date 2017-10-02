@@ -71,7 +71,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -79,7 +79,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return correctiveActionPlan;
     }
 
-    public void setCorrectiveActionPlan(CorrectiveActionPlanEntity correctiveActionPlan) {
+    public void setCorrectiveActionPlan(final CorrectiveActionPlanEntity correctiveActionPlan) {
         this.correctiveActionPlan = correctiveActionPlan;
     }
 
@@ -87,7 +87,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return certificationCriterion;
     }
 
-    public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
+    public void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
         this.certificationCriterion = certificationCriterion;
     }
 
@@ -95,7 +95,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -103,7 +103,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -111,7 +111,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -119,7 +119,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -127,7 +127,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -135,7 +135,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -143,7 +143,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(String developerExplanation) {
+    public void setDeveloperExplanation(final String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -151,7 +151,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return numSitesPassed;
     }
 
-    public void setNumSitesPassed(Integer numSitesPassed) {
+    public void setNumSitesPassed(final Integer numSitesPassed) {
         this.numSitesPassed = numSitesPassed;
     }
 
@@ -159,7 +159,7 @@ public class CorrectiveActionPlanCertificationEntity {
         return numSitesTotal;
     }
 
-    public void setNumSitesTotal(Integer numSitesTotal) {
+    public void setNumSitesTotal(final Integer numSitesTotal) {
         this.numSitesTotal = numSitesTotal;
     }
 }

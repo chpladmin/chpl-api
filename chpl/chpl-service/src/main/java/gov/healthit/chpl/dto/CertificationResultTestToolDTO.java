@@ -33,7 +33,7 @@ public class CertificationResultTestToolDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -41,7 +41,7 @@ public class CertificationResultTestToolDTO implements Serializable {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -49,7 +49,7 @@ public class CertificationResultTestToolDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -57,7 +57,7 @@ public class CertificationResultTestToolDTO implements Serializable {
         return testToolId;
     }
 
-    public void setTestToolId(Long testToolId) {
+    public void setTestToolId(final Long testToolId) {
         this.testToolId = testToolId;
     }
 
@@ -65,7 +65,7 @@ public class CertificationResultTestToolDTO implements Serializable {
         return testToolName;
     }
 
-    public void setTestToolName(String testToolName) {
+    public void setTestToolName(final String testToolName) {
         this.testToolName = testToolName;
     }
 
@@ -73,7 +73,7 @@ public class CertificationResultTestToolDTO implements Serializable {
         return testToolVersion;
     }
 
-    public void setTestToolVersion(String testToolVersion) {
+    public void setTestToolVersion(final String testToolVersion) {
         this.testToolVersion = testToolVersion;
     }
 
@@ -81,7 +81,7 @@ public class CertificationResultTestToolDTO implements Serializable {
         return retired;
     }
 
-    public void setRetired(boolean retired) {
+    public void setRetired(final boolean retired) {
         this.retired = retired;
     }
 

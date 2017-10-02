@@ -17,7 +17,7 @@ public class ObjectsMissingValidationException extends Exception {
         return exceptions;
     }
 
-    public void setExceptions(List<ObjectMissingValidationException> exceptions) {
+    public void setExceptions(final List<ObjectMissingValidationException> exceptions) {
         this.exceptions = exceptions;
     }
 

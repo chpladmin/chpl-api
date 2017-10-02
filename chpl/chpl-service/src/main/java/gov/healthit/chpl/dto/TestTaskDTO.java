@@ -62,7 +62,7 @@ public class TestTaskDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -70,7 +70,7 @@ public class TestTaskDTO implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -78,7 +78,7 @@ public class TestTaskDTO implements Serializable {
         return taskSuccessAverage;
     }
 
-    public void setTaskSuccessAverage(Float taskSuccessAverage) {
+    public void setTaskSuccessAverage(final Float taskSuccessAverage) {
         this.taskSuccessAverage = taskSuccessAverage;
     }
 
@@ -86,7 +86,7 @@ public class TestTaskDTO implements Serializable {
         return taskSuccessStddev;
     }
 
-    public void setTaskSuccessStddev(Float taskSuccessStddev) {
+    public void setTaskSuccessStddev(final Float taskSuccessStddev) {
         this.taskSuccessStddev = taskSuccessStddev;
     }
 
@@ -94,7 +94,7 @@ public class TestTaskDTO implements Serializable {
         return taskPathDeviationObserved;
     }
 
-    public void setTaskPathDeviationObserved(Integer taskPathDeviationObserved) {
+    public void setTaskPathDeviationObserved(final Integer taskPathDeviationObserved) {
         this.taskPathDeviationObserved = taskPathDeviationObserved;
     }
 
@@ -102,7 +102,7 @@ public class TestTaskDTO implements Serializable {
         return taskPathDeviationOptimal;
     }
 
-    public void setTaskPathDeviationOptimal(Integer taskPathDeviationOptimal) {
+    public void setTaskPathDeviationOptimal(final Integer taskPathDeviationOptimal) {
         this.taskPathDeviationOptimal = taskPathDeviationOptimal;
     }
 
@@ -110,7 +110,7 @@ public class TestTaskDTO implements Serializable {
         return taskTimeAvg;
     }
 
-    public void setTaskTimeAvg(Long taskTimeAvg) {
+    public void setTaskTimeAvg(final Long taskTimeAvg) {
         this.taskTimeAvg = taskTimeAvg;
     }
 
@@ -118,7 +118,7 @@ public class TestTaskDTO implements Serializable {
         return taskTimeStddev;
     }
 
-    public void setTaskTimeStddev(Integer taskTimeStddev) {
+    public void setTaskTimeStddev(final Integer taskTimeStddev) {
         this.taskTimeStddev = taskTimeStddev;
     }
 
@@ -126,7 +126,7 @@ public class TestTaskDTO implements Serializable {
         return taskTimeDeviationObservedAvg;
     }
 
-    public void setTaskTimeDeviationObservedAvg(Integer taskTimeDeviationObservedAvg) {
+    public void setTaskTimeDeviationObservedAvg(final Integer taskTimeDeviationObservedAvg) {
         this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
     }
 
@@ -134,7 +134,7 @@ public class TestTaskDTO implements Serializable {
         return taskTimeDeviationOptimalAvg;
     }
 
-    public void setTaskTimeDeviationOptimalAvg(Integer taskTimeDeviationOptimalAvg) {
+    public void setTaskTimeDeviationOptimalAvg(final Integer taskTimeDeviationOptimalAvg) {
         this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
     }
 
@@ -142,7 +142,7 @@ public class TestTaskDTO implements Serializable {
         return taskErrors;
     }
 
-    public void setTaskErrors(Float taskErrors) {
+    public void setTaskErrors(final Float taskErrors) {
         this.taskErrors = taskErrors;
     }
 
@@ -150,7 +150,7 @@ public class TestTaskDTO implements Serializable {
         return taskErrorsStddev;
     }
 
-    public void setTaskErrorsStddev(Float taskErrorsStddev) {
+    public void setTaskErrorsStddev(final Float taskErrorsStddev) {
         this.taskErrorsStddev = taskErrorsStddev;
     }
 
@@ -158,7 +158,7 @@ public class TestTaskDTO implements Serializable {
         return taskRatingScale;
     }
 
-    public void setTaskRatingScale(String taskRatingScale) {
+    public void setTaskRatingScale(final String taskRatingScale) {
         this.taskRatingScale = taskRatingScale;
     }
 
@@ -166,7 +166,7 @@ public class TestTaskDTO implements Serializable {
         return taskRating;
     }
 
-    public void setTaskRating(Float taskRating) {
+    public void setTaskRating(final Float taskRating) {
         this.taskRating = taskRating;
     }
 
@@ -174,7 +174,7 @@ public class TestTaskDTO implements Serializable {
         return pendingUniqueId;
     }
 
-    public void setPendingUniqueId(String pendingUniqueId) {
+    public void setPendingUniqueId(final String pendingUniqueId) {
         this.pendingUniqueId = pendingUniqueId;
     }
 
@@ -182,7 +182,7 @@ public class TestTaskDTO implements Serializable {
         return taskRatingStddev;
     }
 
-    public void setTaskRatingStddev(Float taskRatingStddev) {
+    public void setTaskRatingStddev(final Float taskRatingStddev) {
         this.taskRatingStddev = taskRatingStddev;
     }
 
@@ -190,7 +190,7 @@ public class TestTaskDTO implements Serializable {
         return participants;
     }
 
-    public void setParticipants(List<TestParticipantDTO> participants) {
+    public void setParticipants(final List<TestParticipantDTO> participants) {
         this.participants = participants;
     }
 }

@@ -57,7 +57,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -65,7 +65,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -73,7 +73,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(final Long productId) {
         this.productId = productId;
     }
 
@@ -81,7 +81,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return transferDate;
     }
 
-    public void setTransferDate(Date transferDate) {
+    public void setTransferDate(final Date transferDate) {
         this.transferDate = transferDate;
     }
 
@@ -89,7 +89,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -97,7 +97,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -105,7 +105,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -113,7 +113,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -121,7 +121,7 @@ public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializabl
         return developer;
     }
 
-    public void setDeveloper(DeveloperEntity developer) {
+    public void setDeveloper(final DeveloperEntity developer) {
         this.developer = developer;
     }
 

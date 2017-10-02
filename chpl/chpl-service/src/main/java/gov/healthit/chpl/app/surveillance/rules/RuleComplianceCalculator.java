@@ -74,7 +74,7 @@ public class RuleComplianceCalculator {
         return props;
     }
 
-    public void setProps(Properties props) {
+    public void setProps(final Properties props) {
         this.props = props;
         lsc.setNumDaysAllowed(new Integer(props.getProperty("suspendedDaysAllowed")).intValue());
         capApproval.setNumDaysAllowed(new Integer(props.getProperty("capApprovalDaysAllowed")).intValue());
@@ -86,7 +86,7 @@ public class RuleComplianceCalculator {
         return lsc;
     }
 
-    public void setLsc(LongSuspensionComplianceChecker lsc) {
+    public void setLsc(final LongSuspensionComplianceChecker lsc) {
         this.lsc = lsc;
     }
 
@@ -94,7 +94,7 @@ public class RuleComplianceCalculator {
         return capApproval;
     }
 
-    public void setCapApproval(CapApprovalComplianceChecker capApproval) {
+    public void setCapApproval(final CapApprovalComplianceChecker capApproval) {
         this.capApproval = capApproval;
     }
 
@@ -102,7 +102,7 @@ public class RuleComplianceCalculator {
         return capStarted;
     }
 
-    public void setCapStarted(CapStartedComplianceChecker capStarted) {
+    public void setCapStarted(final CapStartedComplianceChecker capStarted) {
         this.capStarted = capStarted;
     }
 
@@ -110,7 +110,7 @@ public class RuleComplianceCalculator {
         return capCompleted;
     }
 
-    public void setCapCompleted(CapCompletedComplianceChecker capCompleted) {
+    public void setCapCompleted(final CapCompletedComplianceChecker capCompleted) {
         this.capCompleted = capCompleted;
     }
 
@@ -118,7 +118,7 @@ public class RuleComplianceCalculator {
         return ncOpenCapClosed;
     }
 
-    public void setNcOpenCapClosed(NonconformityOpenCapCompleteComplianceChecker ncOpenCapClosed) {
+    public void setNcOpenCapClosed(final NonconformityOpenCapCompleteComplianceChecker ncOpenCapClosed) {
         this.ncOpenCapClosed = ncOpenCapClosed;
     }
 }

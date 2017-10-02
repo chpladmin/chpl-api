@@ -57,7 +57,7 @@ public class CertificationIdLookupResults implements Serializable {
             return id;
         }
 
-        public void setId(Long id) {
+        public void setId(final Long id) {
             this.id = id;
         }
 
@@ -65,7 +65,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.year;
         }
 
-        public void setYear(String year) {
+        public void setYear(final String year) {
             this.year = year;
         }
 
@@ -73,7 +73,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.version;
         }
 
-        public void setVersion(String version) {
+        public void setVersion(final String version) {
             this.version = version;
         }
 
@@ -81,7 +81,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.chplProductNumber;
         }
 
-        public void setChplProductNumber(String chplProductNumber) {
+        public void setChplProductNumber(final String chplProductNumber) {
             this.chplProductNumber = chplProductNumber;
         }
 
@@ -89,7 +89,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.name;
         }
 
-        public void setName(String name) {
+        public void setName(final String name) {
             this.name = name;
         }
 
@@ -97,7 +97,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.practiceType;
         }
 
-        public void setPracticeType(String practiceType) {
+        public void setPracticeType(final String practiceType) {
             this.practiceType = practiceType;
         }
 
@@ -105,7 +105,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.acb;
         }
 
-        public void setAcb(String acb) {
+        public void setAcb(final String acb) {
             this.acb = acb;
         }
 
@@ -113,7 +113,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.vendor;
         }
 
-        public void setVendor(String vendor) {
+        public void setVendor(final String vendor) {
             this.vendor = vendor;
         }
 
@@ -121,7 +121,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.classification;
         }
 
-        public void setClassification(String classification) {
+        public void setClassification(final String classification) {
             this.classification = classification;
         }
 
@@ -129,7 +129,7 @@ public class CertificationIdLookupResults implements Serializable {
             return this.additionalSoftware;
         }
 
-        public void setAdditionalSoftware(String additionalSoftware) {
+        public void setAdditionalSoftware(final String additionalSoftware) {
             this.additionalSoftware = additionalSoftware;
         }
     }
@@ -144,7 +144,7 @@ public class CertificationIdLookupResults implements Serializable {
         return this.year;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 
@@ -152,7 +152,7 @@ public class CertificationIdLookupResults implements Serializable {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(final List<Product> products) {
         this.products = products;
     }
 
@@ -160,7 +160,7 @@ public class CertificationIdLookupResults implements Serializable {
         return this.ehrCertificationId;
     }
 
-    public void setEhrCertificationId(String ehrCertificationId) {
+    public void setEhrCertificationId(final String ehrCertificationId) {
         this.ehrCertificationId = ehrCertificationId;
     }
 
@@ -168,7 +168,7 @@ public class CertificationIdLookupResults implements Serializable {
         return this.criteria;
     }
 
-    public void setCriteria(Set<String> criteria) {
+    public void setCriteria(final Set<String> criteria) {
         this.criteria = criteria;
     }
 
@@ -176,7 +176,7 @@ public class CertificationIdLookupResults implements Serializable {
         return this.cqms;
     }
 
-    public void setCqms(Set<String> cqms) {
+    public void setCqms(final Set<String> cqms) {
         this.cqms = cqms;
     }
 

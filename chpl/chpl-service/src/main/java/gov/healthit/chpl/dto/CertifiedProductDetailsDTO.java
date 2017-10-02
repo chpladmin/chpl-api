@@ -172,7 +172,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -180,7 +180,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return testingLabId;
     }
 
-    public void setTestingLabId(Long testingLabId) {
+    public void setTestingLabId(final Long testingLabId) {
         this.testingLabId = testingLabId;
     }
 
@@ -188,7 +188,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -196,7 +196,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(String reportFileLocation) {
+    public void setReportFileLocation(final String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -204,7 +204,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(String acbCertificationId) {
+    public void setAcbCertificationId(final String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -212,7 +212,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return practiceTypeId;
     }
 
-    public void setPracticeTypeId(Long practiceTypeId) {
+    public void setPracticeTypeId(final Long practiceTypeId) {
         this.practiceTypeId = practiceTypeId;
     }
 
@@ -220,7 +220,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return productClassificationTypeId;
     }
 
-    public void setProductClassificationTypeId(Long productClassificationTypeId) {
+    public void setProductClassificationTypeId(final Long productClassificationTypeId) {
         this.productClassificationTypeId = productClassificationTypeId;
     }
 
@@ -228,7 +228,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return otherAcb;
     }
 
-    public void setOtherAcb(String otherAcb) {
+    public void setOtherAcb(final String otherAcb) {
         this.otherAcb = otherAcb;
     }
 
@@ -236,7 +236,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationStatusId;
     }
 
-    public void setCertificationStatusId(Long certificationStatusId) {
+    public void setCertificationStatusId(final Long certificationStatusId) {
         this.certificationStatusId = certificationStatusId;
     }
 
@@ -244,7 +244,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationEditionId;
     }
 
-    public void setCertificationEditionId(Long certificationEditionId) {
+    public void setCertificationEditionId(final Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
     }
 
@@ -252,7 +252,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 
@@ -260,7 +260,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationBodyId;
     }
 
-    public void setCertificationBodyId(Long certificationBodyId) {
+    public void setCertificationBodyId(final Long certificationBodyId) {
         this.certificationBodyId = certificationBodyId;
     }
 
@@ -268,7 +268,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationBodyName;
     }
 
-    public void setCertificationBodyName(String certificationBodyName) {
+    public void setCertificationBodyName(final String certificationBodyName) {
         this.certificationBodyName = certificationBodyName;
     }
 
@@ -276,7 +276,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return practiceTypeName;
     }
 
-    public void setPracticeTypeName(String practiceTypeName) {
+    public void setPracticeTypeName(final String practiceTypeName) {
         this.practiceTypeName = practiceTypeName;
     }
 
@@ -284,7 +284,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -292,7 +292,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationDate;
     }
 
-    public void setCertificationDate(Date certificationDate) {
+    public void setCertificationDate(final Date certificationDate) {
         this.certificationDate = certificationDate;
     }
 
@@ -300,7 +300,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return productClassificationName;
     }
 
-    public void setProductClassificationName(String productClassificationName) {
+    public void setProductClassificationName(final String productClassificationName) {
         this.productClassificationName = productClassificationName;
     }
 
@@ -308,7 +308,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return countCertifications;
     }
 
-    public void setCountCertifications(Integer countCertifications) {
+    public void setCountCertifications(final Integer countCertifications) {
         this.countCertifications = countCertifications;
     }
 
@@ -316,7 +316,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return countCqms;
     }
 
-    public void setCountCqms(Integer countCqms) {
+    public void setCountCqms(final Integer countCqms) {
         this.countCqms = countCqms;
     }
 
@@ -324,7 +324,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -332,7 +332,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationStatusName;
     }
 
-    public void setCertificationStatusName(String certificationStatusName) {
+    public void setCertificationStatusName(final String certificationStatusName) {
         this.certificationStatusName = certificationStatusName;
     }
 
@@ -351,7 +351,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return productCode;
     }
 
-    public void setProductCode(String productCode) {
+    public void setProductCode(final String productCode) {
         this.productCode = productCode;
     }
 
@@ -359,7 +359,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return versionCode;
     }
 
-    public void setVersionCode(String versionCode) {
+    public void setVersionCode(final String versionCode) {
         this.versionCode = versionCode;
     }
 
@@ -367,7 +367,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return additionalSoftwareCode;
     }
 
-    public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+    public void setAdditionalSoftwareCode(final String additionalSoftwareCode) {
         this.additionalSoftwareCode = additionalSoftwareCode;
     }
 
@@ -375,7 +375,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certifiedDateCode;
     }
 
-    public void setCertifiedDateCode(String certifiedDateCode) {
+    public void setCertifiedDateCode(final String certifiedDateCode) {
         this.certifiedDateCode = certifiedDateCode;
     }
 
@@ -383,7 +383,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationBodyCode;
     }
 
-    public void setCertificationBodyCode(String certificationBodyCode) {
+    public void setCertificationBodyCode(final String certificationBodyCode) {
         this.certificationBodyCode = certificationBodyCode;
     }
 
@@ -391,7 +391,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return icsCode;
     }
 
-    public void setIcsCode(String icsCode) {
+    public void setIcsCode(final String icsCode) {
         this.icsCode = icsCode;
     }
 
@@ -399,7 +399,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(String transparencyAttestation) {
+    public void setTransparencyAttestation(final String transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 
@@ -407,7 +407,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return testingLabName;
     }
 
-    public void setTestingLabName(String testingLabName) {
+    public void setTestingLabName(final String testingLabName) {
         this.testingLabName = testingLabName;
     }
 
@@ -415,7 +415,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return testingLabCode;
     }
 
-    public void setTestingLabCode(String testingLabCode) {
+    public void setTestingLabCode(final String testingLabCode) {
         this.testingLabCode = testingLabCode;
     }
 
@@ -423,7 +423,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return ics;
     }
 
-    public void setIcs(Boolean ics) {
+    public void setIcs(final Boolean ics) {
         this.ics = ics;
     }
 
@@ -431,7 +431,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return sedTesting;
     }
 
-    public void setSedTesting(Boolean sedTesting) {
+    public void setSedTesting(final Boolean sedTesting) {
         this.sedTesting = sedTesting;
     }
 
@@ -439,7 +439,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return qmsTesting;
     }
 
-    public void setQmsTesting(Boolean qmsTesting) {
+    public void setQmsTesting(final Boolean qmsTesting) {
         this.qmsTesting = qmsTesting;
     }
 
@@ -447,7 +447,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return sedReportFileLocation;
     }
 
-    public void setSedReportFileLocation(String sedReportFileLocation) {
+    public void setSedReportFileLocation(final String sedReportFileLocation) {
         this.sedReportFileLocation = sedReportFileLocation;
     }
 
@@ -455,7 +455,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return productAdditionalSoftware;
     }
 
-    public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+    public void setProductAdditionalSoftware(final String productAdditionalSoftware) {
         this.productAdditionalSoftware = productAdditionalSoftware;
     }
 
@@ -463,7 +463,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return transparencyAttestationUrl;
     }
 
-    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -471,7 +471,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return accessibilityCertified;
     }
 
-    public void setAccessibilityCertified(Boolean accessibilityCertified) {
+    public void setAccessibilityCertified(final Boolean accessibilityCertified) {
         this.accessibilityCertified = accessibilityCertified;
     }
 
@@ -479,7 +479,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return sedIntendedUserDescription;
     }
 
-    public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+    public void setSedIntendedUserDescription(final String sedIntendedUserDescription) {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
@@ -487,7 +487,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return sedTestingEnd;
     }
 
-    public void setSedTestingEnd(Date sedTestingEnd) {
+    public void setSedTestingEnd(final Date sedTestingEnd) {
         this.sedTestingEnd = sedTestingEnd;
     }
 
@@ -495,7 +495,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(DeveloperDTO developer) {
+    public void setDeveloper(final DeveloperDTO developer) {
         this.developer = developer;
     }
 
@@ -503,7 +503,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return product;
     }
 
-    public void setProduct(ProductDTO product) {
+    public void setProduct(final ProductDTO product) {
         this.product = product;
     }
 
@@ -511,7 +511,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return version;
     }
 
-    public void setVersion(ProductVersionDTO version) {
+    public void setVersion(final ProductVersionDTO version) {
         this.version = version;
     }
 
@@ -519,7 +519,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return numMeaningfulUse;
     }
 
-    public void setNumMeaningfulUse(Long numMeaningfulUse) {
+    public void setNumMeaningfulUse(final Long numMeaningfulUse) {
         this.numMeaningfulUse = numMeaningfulUse;
     }
 
@@ -527,7 +527,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return countSurveillance;
     }
 
-    public void setCountSurveillance(Integer countSurveillance) {
+    public void setCountSurveillance(final Integer countSurveillance) {
         this.countSurveillance = countSurveillance;
     }
 
@@ -535,7 +535,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return countOpenSurveillance;
     }
 
-    public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+    public void setCountOpenSurveillance(final Integer countOpenSurveillance) {
         this.countOpenSurveillance = countOpenSurveillance;
     }
 
@@ -543,7 +543,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return countClosedSurveillance;
     }
 
-    public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+    public void setCountClosedSurveillance(final Integer countClosedSurveillance) {
         this.countClosedSurveillance = countClosedSurveillance;
     }
 
@@ -551,7 +551,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return countOpenNonconformities;
     }
 
-    public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+    public void setCountOpenNonconformities(final Integer countOpenNonconformities) {
         this.countOpenNonconformities = countOpenNonconformities;
     }
 
@@ -559,7 +559,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return countClosedNonconformities;
     }
 
-    public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+    public void setCountClosedNonconformities(final Integer countClosedNonconformities) {
         this.countClosedNonconformities = countClosedNonconformities;
     }
 
@@ -567,7 +567,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return certificationStatusDate;
     }
 
-    public void setCertificationStatusDate(Date certificationStatusDate) {
+    public void setCertificationStatusDate(final Date certificationStatusDate) {
         this.certificationStatusDate = certificationStatusDate;
     }
 
@@ -575,7 +575,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return decertificationDate;
     }
 
-    public void setDecertificationDate(Date decertificationDate) {
+    public void setDecertificationDate(final Date decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 
@@ -583,7 +583,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         return developerCurrentStatus;
     }
 
-    public void setDeveloperCurrentStatus(DeveloperStatusEventDTO developerCurrentStatus) {
+    public void setDeveloperCurrentStatus(final DeveloperStatusEventDTO developerCurrentStatus) {
         this.developerCurrentStatus = developerCurrentStatus;
     }
 }

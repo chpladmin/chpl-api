@@ -69,7 +69,7 @@ public class CertificationResultTestData implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -77,7 +77,7 @@ public class CertificationResultTestData implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -85,7 +85,7 @@ public class CertificationResultTestData implements Serializable {
         return alteration;
     }
 
-    public void setAlteration(String alteration) {
+    public void setAlteration(final String alteration) {
         this.alteration = alteration;
     }
 }

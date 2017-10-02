@@ -72,7 +72,7 @@ public class AddressEntity {
         return id;
     }
 
-    public void setId(Long long1) {
+    public void setId(final Long long1) {
         this.id = long1;
     }
 
@@ -80,7 +80,7 @@ public class AddressEntity {
         return streetLineOne;
     }
 
-    public void setStreetLineOne(String streetLineOne) {
+    public void setStreetLineOne(final String streetLineOne) {
         this.streetLineOne = streetLineOne;
     }
 
@@ -88,7 +88,7 @@ public class AddressEntity {
         return streetLineTwo;
     }
 
-    public void setStreetLineTwo(String streetLineTwo) {
+    public void setStreetLineTwo(final String streetLineTwo) {
         this.streetLineTwo = streetLineTwo;
     }
 
@@ -96,7 +96,7 @@ public class AddressEntity {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -104,7 +104,7 @@ public class AddressEntity {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(final String state) {
         this.state = state;
     }
 
@@ -112,7 +112,7 @@ public class AddressEntity {
         return zipcode;
     }
 
-    public void setZipcode(String zipcode) {
+    public void setZipcode(final String zipcode) {
         this.zipcode = zipcode;
     }
 
@@ -120,7 +120,7 @@ public class AddressEntity {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -128,7 +128,7 @@ public class AddressEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -136,7 +136,7 @@ public class AddressEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -144,7 +144,7 @@ public class AddressEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -152,7 +152,7 @@ public class AddressEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 

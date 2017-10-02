@@ -515,7 +515,7 @@ public class SummaryStatistics {
         return notificationDao;
     }
 
-    public void setNotificationDao(NotificationDAO notificationDao) {
+    public void setNotificationDao(final NotificationDAO notificationDao) {
         this.notificationDao = notificationDao;
     }
 

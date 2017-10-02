@@ -60,7 +60,7 @@ public class DeveloperTransparencyEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -68,7 +68,7 @@ public class DeveloperTransparencyEntity {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -76,7 +76,7 @@ public class DeveloperTransparencyEntity {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -84,7 +84,7 @@ public class DeveloperTransparencyEntity {
         return countActiveListings;
     }
 
-    public void setCountActiveListings(Long countActiveListings) {
+    public void setCountActiveListings(final Long countActiveListings) {
         this.countActiveListings = countActiveListings;
     }
 
@@ -92,7 +92,7 @@ public class DeveloperTransparencyEntity {
         return countRetiredListings;
     }
 
-    public void setCountRetiredListings(Long countRetiredListings) {
+    public void setCountRetiredListings(final Long countRetiredListings) {
         this.countRetiredListings = countRetiredListings;
     }
 
@@ -100,7 +100,7 @@ public class DeveloperTransparencyEntity {
         return countPendingListings;
     }
 
-    public void setCountPendingListings(Long countPendingListings) {
+    public void setCountPendingListings(final Long countPendingListings) {
         this.countPendingListings = countPendingListings;
     }
 
@@ -108,7 +108,7 @@ public class DeveloperTransparencyEntity {
         return countWithdrawnByDeveloperListings;
     }
 
-    public void setCountWithdrawnByDeveloperListings(Long countWithdrawnByDeveloperListings) {
+    public void setCountWithdrawnByDeveloperListings(final Long countWithdrawnByDeveloperListings) {
         this.countWithdrawnByDeveloperListings = countWithdrawnByDeveloperListings;
     }
 
@@ -116,7 +116,7 @@ public class DeveloperTransparencyEntity {
         return countWithdrawnByOncAcbListings;
     }
 
-    public void setCountWithdrawnByOncAcbListings(Long countWithdrawnByOncAcbListings) {
+    public void setCountWithdrawnByOncAcbListings(final Long countWithdrawnByOncAcbListings) {
         this.countWithdrawnByOncAcbListings = countWithdrawnByOncAcbListings;
     }
 
@@ -124,7 +124,7 @@ public class DeveloperTransparencyEntity {
         return countSuspendedByOncAcbListings;
     }
 
-    public void setCountSuspendedByOncAcbListings(Long countSuspendedByOncAcbListings) {
+    public void setCountSuspendedByOncAcbListings(final Long countSuspendedByOncAcbListings) {
         this.countSuspendedByOncAcbListings = countSuspendedByOncAcbListings;
     }
 
@@ -132,7 +132,7 @@ public class DeveloperTransparencyEntity {
         return countSuspendedByOncListings;
     }
 
-    public void setCountSuspendedByOncListings(Long countSuspendedByOncListings) {
+    public void setCountSuspendedByOncListings(final Long countSuspendedByOncListings) {
         this.countSuspendedByOncListings = countSuspendedByOncListings;
     }
 
@@ -140,7 +140,7 @@ public class DeveloperTransparencyEntity {
         return countTerminatedByOncListings;
     }
 
-    public void setCountTerminatedByOncListings(Long countTerminatedByOncListings) {
+    public void setCountTerminatedByOncListings(final Long countTerminatedByOncListings) {
         this.countTerminatedByOncListings = countTerminatedByOncListings;
     }
 
@@ -148,7 +148,7 @@ public class DeveloperTransparencyEntity {
         return countWithdrawnByDeveloperUnderSurveillanceListings;
     }
 
-    public void setCountWithdrawnByDeveloperUnderSurveillanceListings(
+    public void setCountWithdrawnByDeveloperUnderSurveillanceListings(final 
             Long countWithdrawnByDeveloperUnderSurveillanceListings) {
         this.countWithdrawnByDeveloperUnderSurveillanceListings = countWithdrawnByDeveloperUnderSurveillanceListings;
     }
@@ -157,7 +157,7 @@ public class DeveloperTransparencyEntity {
         return transparencyAttestationUrls;
     }
 
-    public void setTransparencyAttestationUrls(String transparencyAttestationUrls) {
+    public void setTransparencyAttestationUrls(final String transparencyAttestationUrls) {
         this.transparencyAttestationUrls = transparencyAttestationUrls;
     }
 
@@ -165,7 +165,7 @@ public class DeveloperTransparencyEntity {
         return acbAttestations;
     }
 
-    public void setAcbAttestations(String acbAttestations) {
+    public void setAcbAttestations(final String acbAttestations) {
         this.acbAttestations = acbAttestations;
     }
 }

@@ -105,7 +105,7 @@ public class SurveillanceNonconformityEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -113,7 +113,7 @@ public class SurveillanceNonconformityEntity {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -121,7 +121,7 @@ public class SurveillanceNonconformityEntity {
         return dateOfDetermination;
     }
 
-    public void setDateOfDetermination(Date dateOfDetermination) {
+    public void setDateOfDetermination(final Date dateOfDetermination) {
         this.dateOfDetermination = dateOfDetermination;
     }
 
@@ -129,7 +129,7 @@ public class SurveillanceNonconformityEntity {
         return capApproval;
     }
 
-    public void setCapApproval(Date capApproval) {
+    public void setCapApproval(final Date capApproval) {
         this.capApproval = capApproval;
     }
 
@@ -137,7 +137,7 @@ public class SurveillanceNonconformityEntity {
         return capStart;
     }
 
-    public void setCapStart(Date capStart) {
+    public void setCapStart(final Date capStart) {
         this.capStart = capStart;
     }
 
@@ -145,7 +145,7 @@ public class SurveillanceNonconformityEntity {
         return capMustCompleteDate;
     }
 
-    public void setCapMustCompleteDate(Date capMustCompleteDate) {
+    public void setCapMustCompleteDate(final Date capMustCompleteDate) {
         this.capMustCompleteDate = capMustCompleteDate;
     }
 
@@ -153,7 +153,7 @@ public class SurveillanceNonconformityEntity {
         return capEndDate;
     }
 
-    public void setCapEndDate(Date capEndDate) {
+    public void setCapEndDate(final Date capEndDate) {
         this.capEndDate = capEndDate;
     }
 
@@ -161,7 +161,7 @@ public class SurveillanceNonconformityEntity {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -169,7 +169,7 @@ public class SurveillanceNonconformityEntity {
         return findings;
     }
 
-    public void setFindings(String findings) {
+    public void setFindings(final String findings) {
         this.findings = findings;
     }
 
@@ -177,7 +177,7 @@ public class SurveillanceNonconformityEntity {
         return sitesPassed;
     }
 
-    public void setSitesPassed(Integer sitesPassed) {
+    public void setSitesPassed(final Integer sitesPassed) {
         this.sitesPassed = sitesPassed;
     }
 
@@ -185,7 +185,7 @@ public class SurveillanceNonconformityEntity {
         return totalSites;
     }
 
-    public void setTotalSites(Integer totalSites) {
+    public void setTotalSites(final Integer totalSites) {
         this.totalSites = totalSites;
     }
 
@@ -193,7 +193,7 @@ public class SurveillanceNonconformityEntity {
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(String developerExplanation) {
+    public void setDeveloperExplanation(final String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -201,7 +201,7 @@ public class SurveillanceNonconformityEntity {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -209,7 +209,7 @@ public class SurveillanceNonconformityEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -217,7 +217,7 @@ public class SurveillanceNonconformityEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -225,7 +225,7 @@ public class SurveillanceNonconformityEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -233,7 +233,7 @@ public class SurveillanceNonconformityEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -241,7 +241,7 @@ public class SurveillanceNonconformityEntity {
         return surveillanceRequirementId;
     }
 
-    public void setSurveillanceRequirementId(Long surveillanceRequirementId) {
+    public void setSurveillanceRequirementId(final Long surveillanceRequirementId) {
         this.surveillanceRequirementId = surveillanceRequirementId;
     }
 
@@ -249,7 +249,7 @@ public class SurveillanceNonconformityEntity {
         return certificationCriterionId;
     }
 
-    public void setCertificationCriterionId(Long certificationCriterionId) {
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
     }
 
@@ -257,7 +257,7 @@ public class SurveillanceNonconformityEntity {
         return certificationCriterionEntity;
     }
 
-    public void setCertificationCriterionEntity(CertificationCriterionEntity certificationCriterionEntity) {
+    public void setCertificationCriterionEntity(final CertificationCriterionEntity certificationCriterionEntity) {
         this.certificationCriterionEntity = certificationCriterionEntity;
     }
 
@@ -265,7 +265,7 @@ public class SurveillanceNonconformityEntity {
         return nonconformityStatusId;
     }
 
-    public void setNonconformityStatusId(Long nonconformityStatusId) {
+    public void setNonconformityStatusId(final Long nonconformityStatusId) {
         this.nonconformityStatusId = nonconformityStatusId;
     }
 
@@ -273,7 +273,7 @@ public class SurveillanceNonconformityEntity {
         return nonconformityStatus;
     }
 
-    public void setNonconformityStatus(NonconformityStatusEntity nonconformityStatus) {
+    public void setNonconformityStatus(final NonconformityStatusEntity nonconformityStatus) {
         this.nonconformityStatus = nonconformityStatus;
     }
 
@@ -281,7 +281,7 @@ public class SurveillanceNonconformityEntity {
         return documents;
     }
 
-    public void setDocuments(Set<SurveillanceNonconformityDocumentationEntity> documents) {
+    public void setDocuments(final Set<SurveillanceNonconformityDocumentationEntity> documents) {
         this.documents = documents;
     }
 }

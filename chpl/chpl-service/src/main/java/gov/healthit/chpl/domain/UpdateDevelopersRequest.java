@@ -12,7 +12,7 @@ public class UpdateDevelopersRequest implements Serializable {
         return developerIds;
     }
 
-    public void setDeveloperIds(List<Long> developerIds) {
+    public void setDeveloperIds(final List<Long> developerIds) {
         this.developerIds = developerIds;
     }
 
@@ -20,7 +20,7 @@ public class UpdateDevelopersRequest implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(Developer developer) {
+    public void setDeveloper(final Developer developer) {
         this.developer = developer;
     }
 }

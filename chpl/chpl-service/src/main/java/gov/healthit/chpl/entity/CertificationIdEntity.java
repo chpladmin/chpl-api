@@ -179,7 +179,7 @@ public class CertificationIdEntity implements Serializable {
      * @param certificationId
      *            the certificationId value you wish to set
      */
-    public void setCertificationId(String certId) {
+    public void setCertificationId(final String certId) {
         this.certificationId = certId;
     }
 
@@ -198,7 +198,7 @@ public class CertificationIdEntity implements Serializable {
      * @param key
      *            the key value you wish to set
      */
-    public void setKey(String key) {
+    public void setKey(final String key) {
         this.key = key;
     }
 
@@ -217,7 +217,7 @@ public class CertificationIdEntity implements Serializable {
      * @param practiceTypeId
      *            the practiceTypeId value you wish to set
      */
-    public void setPracticeTypeId(Long practiceTypeId) {
+    public void setPracticeTypeId(final Long practiceTypeId) {
         this.practiceTypeId = practiceTypeId;
     }
 
@@ -236,7 +236,7 @@ public class CertificationIdEntity implements Serializable {
      * @param year
      *            the year value you wish to set
      */
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 

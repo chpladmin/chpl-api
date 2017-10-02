@@ -20,7 +20,7 @@ public class BasicSearchResponse implements Serializable {
         return results;
     }
 
-    public void setResults(List<CertifiedProductFlatSearchResult> results) {
+    public void setResults(final List<CertifiedProductFlatSearchResult> results) {
         this.results = results;
     }
 }

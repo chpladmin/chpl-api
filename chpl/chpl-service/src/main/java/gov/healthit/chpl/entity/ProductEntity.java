@@ -261,7 +261,7 @@ public class ProductEntity implements Serializable {
      * @param developer
      *            the developer value you wish to set
      */
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -282,7 +282,7 @@ public class ProductEntity implements Serializable {
      *            the set of aggregate counts for this product's certification
      *            statuses
      */
-    public void setProductCertificationStatuses(ProductCertificationStatusesEntity productCertificationStatusesEntity) {
+    public void setProductCertificationStatuses(final ProductCertificationStatusesEntity productCertificationStatusesEntity) {
         this.productCertificationStatuses = productCertificationStatusesEntity;
     }
 
@@ -290,7 +290,7 @@ public class ProductEntity implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(DeveloperEntity developer) {
+    public void setDeveloper(final DeveloperEntity developer) {
         this.developer = developer;
     }
 
@@ -298,7 +298,7 @@ public class ProductEntity implements Serializable {
         return ownerHistory;
     }
 
-    public void setOwnerHistory(Set<ProductActiveOwnerEntity> ownerHistory) {
+    public void setOwnerHistory(final Set<ProductActiveOwnerEntity> ownerHistory) {
         this.ownerHistory = ownerHistory;
     }
 
@@ -306,7 +306,7 @@ public class ProductEntity implements Serializable {
         return contact;
     }
 
-    public void setContact(ContactEntity contact) {
+    public void setContact(final ContactEntity contact) {
         this.contact = contact;
     }
 
@@ -314,7 +314,7 @@ public class ProductEntity implements Serializable {
         return contactId;
     }
 
-    public void setContactId(Long contactId) {
+    public void setContactId(final Long contactId) {
         this.contactId = contactId;
     }
 
@@ -322,7 +322,7 @@ public class ProductEntity implements Serializable {
     // return ownerHistory;
     // }
     //
-    // public void setOwnerHistory(List<ProductOwnerEntity> ownerHistory) {
+    // public void setOwnerHistory(final List<ProductOwnerEntity> ownerHistory) {
     // this.ownerHistory = ownerHistory;
     // }
 }

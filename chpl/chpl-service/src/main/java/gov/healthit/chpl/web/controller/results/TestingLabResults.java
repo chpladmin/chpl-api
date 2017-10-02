@@ -18,7 +18,7 @@ public class TestingLabResults implements Serializable {
         return atls;
     }
 
-    public void setAtls(List<TestingLab> atls) {
+    public void setAtls(final List<TestingLab> atls) {
         this.atls = atls;
     }
 }

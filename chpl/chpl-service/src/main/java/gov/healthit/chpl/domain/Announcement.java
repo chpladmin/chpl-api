@@ -38,7 +38,7 @@ public class Announcement implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -46,7 +46,7 @@ public class Announcement implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -54,7 +54,7 @@ public class Announcement implements Serializable {
         return text;
     }
 
-    public void setText(String text) {
+    public void setText(final String text) {
         this.text = text;
     }
 
@@ -62,7 +62,7 @@ public class Announcement implements Serializable {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -70,7 +70,7 @@ public class Announcement implements Serializable {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(final Date endDate) {
         this.endDate = endDate;
     }
 
@@ -78,7 +78,7 @@ public class Announcement implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -86,7 +86,7 @@ public class Announcement implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -94,7 +94,7 @@ public class Announcement implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -102,7 +102,7 @@ public class Announcement implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -110,7 +110,7 @@ public class Announcement implements Serializable {
         return isPublic;
     }
 
-    public void setIsPublic(Boolean isPublic) {
+    public void setIsPublic(final Boolean isPublic) {
         this.isPublic = isPublic;
     }
 

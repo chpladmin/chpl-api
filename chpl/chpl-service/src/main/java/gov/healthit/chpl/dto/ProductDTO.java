@@ -79,7 +79,7 @@ public class ProductDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -87,7 +87,7 @@ public class ProductDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -95,7 +95,7 @@ public class ProductDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -103,7 +103,7 @@ public class ProductDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -111,7 +111,7 @@ public class ProductDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -119,7 +119,7 @@ public class ProductDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -127,7 +127,7 @@ public class ProductDTO implements Serializable {
         return productVersions;
     }
 
-    public void setProductVersions(Set<ProductVersionDTO> productVersions) {
+    public void setProductVersions(final Set<ProductVersionDTO> productVersions) {
         this.productVersions = productVersions;
     }
 
@@ -135,7 +135,7 @@ public class ProductDTO implements Serializable {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(String reportFileLocation) {
+    public void setReportFileLocation(final String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -143,7 +143,7 @@ public class ProductDTO implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -151,7 +151,7 @@ public class ProductDTO implements Serializable {
         return developerName;
     }
 
-    public void setDeveloperName(String developerName) {
+    public void setDeveloperName(final String developerName) {
         this.developerName = developerName;
     }
 
@@ -159,7 +159,7 @@ public class ProductDTO implements Serializable {
         return statuses;
     }
 
-    public void setStatuses(Statuses statuses) {
+    public void setStatuses(final Statuses statuses) {
         this.statuses = statuses;
     }
 
@@ -167,7 +167,7 @@ public class ProductDTO implements Serializable {
         return ownerHistory;
     }
 
-    public void setOwnerHistory(List<ProductOwnerDTO> ownerHistory) {
+    public void setOwnerHistory(final List<ProductOwnerDTO> ownerHistory) {
         this.ownerHistory = ownerHistory;
     }
 
@@ -175,7 +175,7 @@ public class ProductDTO implements Serializable {
         return developerCode;
     }
 
-    public void setDeveloperCode(String developerCode) {
+    public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
     }
 
@@ -183,7 +183,7 @@ public class ProductDTO implements Serializable {
         return contact;
     }
 
-    public void setContact(ContactDTO contact) {
+    public void setContact(final ContactDTO contact) {
         this.contact = contact;
     }
 

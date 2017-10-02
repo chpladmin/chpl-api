@@ -63,7 +63,7 @@ public class PendingCertificationResultTestTaskEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -71,7 +71,7 @@ public class PendingCertificationResultTestTaskEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -79,7 +79,7 @@ public class PendingCertificationResultTestTaskEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -87,7 +87,7 @@ public class PendingCertificationResultTestTaskEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -95,7 +95,7 @@ public class PendingCertificationResultTestTaskEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -103,7 +103,7 @@ public class PendingCertificationResultTestTaskEntity {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -111,7 +111,7 @@ public class PendingCertificationResultTestTaskEntity {
         return pendingTestTaskId;
     }
 
-    public void setPendingTestTaskId(Long pendingTestTaskId) {
+    public void setPendingTestTaskId(final Long pendingTestTaskId) {
         this.pendingTestTaskId = pendingTestTaskId;
     }
 
@@ -119,7 +119,7 @@ public class PendingCertificationResultTestTaskEntity {
         return testTask;
     }
 
-    public void setTestTask(PendingTestTaskEntity testTask) {
+    public void setTestTask(final PendingTestTaskEntity testTask) {
         this.testTask = testTask;
     }
 
@@ -127,7 +127,7 @@ public class PendingCertificationResultTestTaskEntity {
         return testParticipants;
     }
 
-    public void setTestParticipants(Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants) {
+    public void setTestParticipants(final Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants) {
         this.testParticipants = testParticipants;
     }
 }

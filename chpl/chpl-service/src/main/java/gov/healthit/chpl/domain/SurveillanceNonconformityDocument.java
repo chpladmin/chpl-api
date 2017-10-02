@@ -38,7 +38,7 @@ public class SurveillanceNonconformityDocument implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class SurveillanceNonconformityDocument implements Serializable {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
@@ -54,7 +54,7 @@ public class SurveillanceNonconformityDocument implements Serializable {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 
@@ -62,7 +62,7 @@ public class SurveillanceNonconformityDocument implements Serializable {
         return fileContents;
     }
 
-    public void setFileContents(byte[] fileContents) {
+    public void setFileContents(final byte[] fileContents) {
         this.fileContents = fileContents;
     }
 }

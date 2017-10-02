@@ -19,7 +19,7 @@ public class PermittedUser implements Serializable {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(final User user) {
         this.user = user;
     }
 
@@ -27,7 +27,7 @@ public class PermittedUser implements Serializable {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(final List<String> roles) {
         this.roles = roles;
     }
 
@@ -35,7 +35,7 @@ public class PermittedUser implements Serializable {
         return permissions;
     }
 
-    public void setPermissions(List<String> permissions) {
+    public void setPermissions(final List<String> permissions) {
         this.permissions = permissions;
     }
 

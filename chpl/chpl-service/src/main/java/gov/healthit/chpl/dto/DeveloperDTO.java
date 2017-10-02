@@ -67,7 +67,7 @@ public class DeveloperDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -75,7 +75,7 @@ public class DeveloperDTO implements Serializable {
         return address;
     }
 
-    public void setAddress(AddressDTO address) {
+    public void setAddress(final AddressDTO address) {
         this.address = address;
     }
 
@@ -83,7 +83,7 @@ public class DeveloperDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -91,7 +91,7 @@ public class DeveloperDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -99,7 +99,7 @@ public class DeveloperDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -107,7 +107,7 @@ public class DeveloperDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -115,7 +115,7 @@ public class DeveloperDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -123,7 +123,7 @@ public class DeveloperDTO implements Serializable {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(final String website) {
         this.website = website;
     }
 
@@ -131,7 +131,7 @@ public class DeveloperDTO implements Serializable {
         return developerCode;
     }
 
-    public void setDeveloperCode(String developerCode) {
+    public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
     }
 
@@ -139,7 +139,7 @@ public class DeveloperDTO implements Serializable {
         return contact;
     }
 
-    public void setContact(ContactDTO contact) {
+    public void setContact(final ContactDTO contact) {
         this.contact = contact;
     }
 
@@ -147,7 +147,7 @@ public class DeveloperDTO implements Serializable {
         return transparencyAttestationMappings;
     }
 
-    public void setTransparencyAttestationMappings(List<DeveloperACBMapDTO> transparencyAttestationMappings) {
+    public void setTransparencyAttestationMappings(final List<DeveloperACBMapDTO> transparencyAttestationMappings) {
         this.transparencyAttestationMappings = transparencyAttestationMappings;
     }
 
@@ -155,7 +155,7 @@ public class DeveloperDTO implements Serializable {
         return statuses;
     }
 
-    public void setStatuses(Statuses statuses) {
+    public void setStatuses(final Statuses statuses) {
         this.statuses = statuses;
     }
 
@@ -163,7 +163,7 @@ public class DeveloperDTO implements Serializable {
         return statusEvents;
     }
 
-    public void setStatusEvents(List<DeveloperStatusEventDTO> statusEvents) {
+    public void setStatusEvents(final List<DeveloperStatusEventDTO> statusEvents) {
         this.statusEvents = statusEvents;
     }
 

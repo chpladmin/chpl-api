@@ -23,7 +23,7 @@ public class Subscription {
         return acb;
     }
 
-    public void setAcb(CertificationBody acb) {
+    public void setAcb(final CertificationBody acb) {
         this.acb = acb;
     }
 
@@ -31,7 +31,7 @@ public class Subscription {
         return notificationType;
     }
 
-    public void setNotificationType(NotificationType notificationType) {
+    public void setNotificationType(final NotificationType notificationType) {
         this.notificationType = notificationType;
     }
 }

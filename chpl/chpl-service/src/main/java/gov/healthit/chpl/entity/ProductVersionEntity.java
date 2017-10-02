@@ -207,7 +207,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
      * @param product
      *            the product value you wish to set
      */
-    public void setProductId(Long productId) {
+    public void setProductId(final Long productId) {
         this.productId = productId;
     }
 
@@ -254,7 +254,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
         return product;
     }
 
-    public void setProduct(ProductEntity product) {
+    public void setProduct(final ProductEntity product) {
         this.product = product;
     }
 }

@@ -135,7 +135,7 @@ public class Developer implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -143,7 +143,7 @@ public class Developer implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -151,7 +151,7 @@ public class Developer implements Serializable {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(final String website) {
         this.website = website;
     }
 
@@ -159,7 +159,7 @@ public class Developer implements Serializable {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(final Address address) {
         this.address = address;
     }
 
@@ -167,7 +167,7 @@ public class Developer implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(String lastModifiedDate) {
+    public void setLastModifiedDate(final String lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -175,7 +175,7 @@ public class Developer implements Serializable {
         return developerCode;
     }
 
-    public void setDeveloperCode(String developerCode) {
+    public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
     }
 
@@ -183,7 +183,7 @@ public class Developer implements Serializable {
         return contact;
     }
 
-    public void setContact(Contact contact) {
+    public void setContact(final Contact contact) {
         this.contact = contact;
     }
 
@@ -191,7 +191,7 @@ public class Developer implements Serializable {
         return transparencyAttestations;
     }
 
-    public void setTransparencyAttestations(List<TransparencyAttestationMap> transparencyAttestations) {
+    public void setTransparencyAttestations(final List<TransparencyAttestationMap> transparencyAttestations) {
         this.transparencyAttestations = transparencyAttestations;
     }
 
@@ -199,7 +199,7 @@ public class Developer implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -207,7 +207,7 @@ public class Developer implements Serializable {
         return status;
     }
 
-    public void setStatus(DeveloperStatus status) {
+    public void setStatus(final DeveloperStatus status) {
         this.status = status;
     }
 
@@ -215,7 +215,7 @@ public class Developer implements Serializable {
         return statusEvents;
     }
 
-    public void setStatusEvents(List<DeveloperStatusEvent> statusEvents) {
+    public void setStatusEvents(final List<DeveloperStatusEvent> statusEvents) {
         this.statusEvents = statusEvents;
     }
 }

@@ -29,7 +29,7 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
@@ -37,7 +37,7 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 
@@ -45,7 +45,7 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
         return fileData;
     }
 
-    public void setFileData(byte[] fileData) {
+    public void setFileData(final byte[] fileData) {
         this.fileData = fileData;
     }
 
@@ -53,7 +53,7 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -61,7 +61,7 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
         return correctiveActionPlanId;
     }
 
-    public void setCorrectiveActionPlanId(Long correctiveActionPlanId) {
+    public void setCorrectiveActionPlanId(final Long correctiveActionPlanId) {
         this.correctiveActionPlanId = correctiveActionPlanId;
     }
 

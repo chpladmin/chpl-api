@@ -52,7 +52,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -60,7 +60,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -68,7 +68,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -76,7 +76,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -84,7 +84,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -92,7 +92,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -100,7 +100,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return ucdProcessId;
     }
 
-    public void setUcdProcessId(Long ucdProcessId) {
+    public void setUcdProcessId(final Long ucdProcessId) {
         this.ucdProcessId = ucdProcessId;
     }
 
@@ -108,7 +108,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return ucdProcessDetails;
     }
 
-    public void setUcdProcessDetails(String ucdProcessDetails) {
+    public void setUcdProcessDetails(final String ucdProcessDetails) {
         this.ucdProcessDetails = ucdProcessDetails;
     }
 
@@ -116,7 +116,7 @@ public class PendingCertificationResultUcdProcessEntity {
         return ucdProcessName;
     }
 
-    public void setUcdProcessName(String ucdProcessName) {
+    public void setUcdProcessName(final String ucdProcessName) {
         this.ucdProcessName = ucdProcessName;
     }
 

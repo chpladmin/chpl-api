@@ -47,7 +47,7 @@ public class TestParticipantDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -55,7 +55,7 @@ public class TestParticipantDTO implements Serializable {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(final String gender) {
         this.gender = gender;
     }
 
@@ -63,7 +63,7 @@ public class TestParticipantDTO implements Serializable {
         return educationTypeId;
     }
 
-    public void setEducationTypeId(Long educationTypeId) {
+    public void setEducationTypeId(final Long educationTypeId) {
         this.educationTypeId = educationTypeId;
     }
 
@@ -71,7 +71,7 @@ public class TestParticipantDTO implements Serializable {
         return educationType;
     }
 
-    public void setEducationType(EducationTypeDTO educationType) {
+    public void setEducationType(final EducationTypeDTO educationType) {
         this.educationType = educationType;
     }
 
@@ -79,7 +79,7 @@ public class TestParticipantDTO implements Serializable {
         return occupation;
     }
 
-    public void setOccupation(String occupation) {
+    public void setOccupation(final String occupation) {
         this.occupation = occupation;
     }
 
@@ -87,7 +87,7 @@ public class TestParticipantDTO implements Serializable {
         return professionalExperienceMonths;
     }
 
-    public void setProfessionalExperienceMonths(Integer professionalExperienceMonths) {
+    public void setProfessionalExperienceMonths(final Integer professionalExperienceMonths) {
         this.professionalExperienceMonths = professionalExperienceMonths;
     }
 
@@ -95,7 +95,7 @@ public class TestParticipantDTO implements Serializable {
         return computerExperienceMonths;
     }
 
-    public void setComputerExperienceMonths(Integer computerExperienceMonths) {
+    public void setComputerExperienceMonths(final Integer computerExperienceMonths) {
         this.computerExperienceMonths = computerExperienceMonths;
     }
 
@@ -103,7 +103,7 @@ public class TestParticipantDTO implements Serializable {
         return productExperienceMonths;
     }
 
-    public void setProductExperienceMonths(Integer productExperienceMonths) {
+    public void setProductExperienceMonths(final Integer productExperienceMonths) {
         this.productExperienceMonths = productExperienceMonths;
     }
 
@@ -111,7 +111,7 @@ public class TestParticipantDTO implements Serializable {
         return assistiveTechnologyNeeds;
     }
 
-    public void setAssistiveTechnologyNeeds(String assistiveTechnologyNeeds) {
+    public void setAssistiveTechnologyNeeds(final String assistiveTechnologyNeeds) {
         this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
     }
 
@@ -119,7 +119,7 @@ public class TestParticipantDTO implements Serializable {
         return pendingUniqueId;
     }
 
-    public void setPendingUniqueId(String pendingUniqueId) {
+    public void setPendingUniqueId(final String pendingUniqueId) {
         this.pendingUniqueId = pendingUniqueId;
     }
 
@@ -127,7 +127,7 @@ public class TestParticipantDTO implements Serializable {
         return ageRangeId;
     }
 
-    public void setAgeRangeId(Long ageRangeId) {
+    public void setAgeRangeId(final Long ageRangeId) {
         this.ageRangeId = ageRangeId;
     }
 
@@ -135,7 +135,7 @@ public class TestParticipantDTO implements Serializable {
         return ageRange;
     }
 
-    public void setAgeRange(AgeRangeDTO ageRange) {
+    public void setAgeRange(final AgeRangeDTO ageRange) {
         this.ageRange = ageRange;
     }
 

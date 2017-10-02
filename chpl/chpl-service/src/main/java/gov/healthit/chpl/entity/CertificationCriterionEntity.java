@@ -382,7 +382,7 @@ public class CertificationCriterionEntity implements Serializable {
         return certificationEdition;
     }
 
-    public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
+    public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
 }

@@ -134,7 +134,7 @@ public class CertificationResultEntity implements Serializable {
         this.certificationCriterionId = certificationCriterionId;
     }
 
-    public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
+    public void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
         this.certificationCriterion = certificationCriterion;
     }
 
@@ -218,7 +218,7 @@ public class CertificationResultEntity implements Serializable {
         return sed;
     }
 
-    public void setSed(Boolean sed) {
+    public void setSed(final Boolean sed) {
         this.sed = sed;
     }
 
@@ -226,7 +226,7 @@ public class CertificationResultEntity implements Serializable {
         return g1Success;
     }
 
-    public void setG1Success(Boolean g1Success) {
+    public void setG1Success(final Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -234,7 +234,7 @@ public class CertificationResultEntity implements Serializable {
         return g2Success;
     }
 
-    public void setG2Success(Boolean g2Success) {
+    public void setG2Success(final Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
@@ -266,7 +266,7 @@ public class CertificationResultEntity implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -274,7 +274,7 @@ public class CertificationResultEntity implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -282,7 +282,7 @@ public class CertificationResultEntity implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -290,7 +290,7 @@ public class CertificationResultEntity implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -298,7 +298,7 @@ public class CertificationResultEntity implements Serializable {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -306,7 +306,7 @@ public class CertificationResultEntity implements Serializable {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
@@ -314,7 +314,7 @@ public class CertificationResultEntity implements Serializable {
         return certificationResultTestTool;
     }
 
-    public void setCertificationResultTestTool(List<CertificationResultTestToolEntity> certificationResultTestTool) {
+    public void setCertificationResultTestTool(final List<CertificationResultTestToolEntity> certificationResultTestTool) {
         this.certificationResultTestTool = certificationResultTestTool;
     }
 
@@ -322,7 +322,7 @@ public class CertificationResultEntity implements Serializable {
         return certifiedProduct;
     }
 
-    public void setCertifiedProduct(CertifiedProductEntity certifiedProduct) {
+    public void setCertifiedProduct(final CertifiedProductEntity certifiedProduct) {
         this.certifiedProduct = certifiedProduct;
     }
 }

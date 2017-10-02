@@ -81,7 +81,7 @@ public class CertificationResultDTO implements Serializable {
         return certificationCriterionId;
     }
 
-    public void setCertificationCriterionId(Long certificationCriterionId) {
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
     }
 
@@ -89,7 +89,7 @@ public class CertificationResultDTO implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProduct(Long certifiedProductId) {
+    public void setCertifiedProduct(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -97,7 +97,7 @@ public class CertificationResultDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -105,7 +105,7 @@ public class CertificationResultDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -113,7 +113,7 @@ public class CertificationResultDTO implements Serializable {
         return gap;
     }
 
-    public void setGap(Boolean gap) {
+    public void setGap(final Boolean gap) {
         this.gap = gap;
     }
 
@@ -121,7 +121,7 @@ public class CertificationResultDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -129,7 +129,7 @@ public class CertificationResultDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -137,7 +137,7 @@ public class CertificationResultDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -145,7 +145,7 @@ public class CertificationResultDTO implements Serializable {
         return successful;
     }
 
-    public void setSuccessful(Boolean successful) {
+    public void setSuccessful(final Boolean successful) {
         this.successful = successful;
     }
 
@@ -153,7 +153,7 @@ public class CertificationResultDTO implements Serializable {
         return additionalSoftware;
     }
 
-    public void setAdditionalSoftware(List<CertificationResultAdditionalSoftwareDTO> list) {
+    public void setAdditionalSoftware(final List<CertificationResultAdditionalSoftwareDTO> list) {
         this.additionalSoftware = list;
     }
 
@@ -161,7 +161,7 @@ public class CertificationResultDTO implements Serializable {
         return sed;
     }
 
-    public void setSed(Boolean sed) {
+    public void setSed(final Boolean sed) {
         this.sed = sed;
     }
 
@@ -169,7 +169,7 @@ public class CertificationResultDTO implements Serializable {
         return g1Success;
     }
 
-    public void setG1Success(Boolean g1Success) {
+    public void setG1Success(final Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -177,11 +177,11 @@ public class CertificationResultDTO implements Serializable {
         return g2Success;
     }
 
-    public void setG2Success(Boolean g2Success) {
+    public void setG2Success(final Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -189,7 +189,7 @@ public class CertificationResultDTO implements Serializable {
         return testStandards;
     }
 
-    public void setTestStandards(List<CertificationResultTestStandardDTO> testStandards) {
+    public void setTestStandards(final List<CertificationResultTestStandardDTO> testStandards) {
         this.testStandards = testStandards;
     }
 
@@ -197,7 +197,7 @@ public class CertificationResultDTO implements Serializable {
         return testTools;
     }
 
-    public void setTestTools(List<CertificationResultTestToolDTO> testTools) {
+    public void setTestTools(final List<CertificationResultTestToolDTO> testTools) {
         this.testTools = testTools;
     }
 
@@ -205,7 +205,7 @@ public class CertificationResultDTO implements Serializable {
         return testData;
     }
 
-    public void setTestData(List<CertificationResultTestDataDTO> testData) {
+    public void setTestData(final List<CertificationResultTestDataDTO> testData) {
         this.testData = testData;
     }
 
@@ -213,7 +213,7 @@ public class CertificationResultDTO implements Serializable {
         return testFunctionality;
     }
 
-    public void setTestFunctionality(List<CertificationResultTestFunctionalityDTO> testFunctionality) {
+    public void setTestFunctionality(final List<CertificationResultTestFunctionalityDTO> testFunctionality) {
         this.testFunctionality = testFunctionality;
     }
 
@@ -221,7 +221,7 @@ public class CertificationResultDTO implements Serializable {
         return ucdProcesses;
     }
 
-    public void setUcdProcesses(List<CertificationResultUcdProcessDTO> ucdProcesses) {
+    public void setUcdProcesses(final List<CertificationResultUcdProcessDTO> ucdProcesses) {
         this.ucdProcesses = ucdProcesses;
     }
 
@@ -229,7 +229,7 @@ public class CertificationResultDTO implements Serializable {
         return testTasks;
     }
 
-    public void setTestTasks(List<CertificationResultTestTaskDTO> testTasks) {
+    public void setTestTasks(final List<CertificationResultTestTaskDTO> testTasks) {
         this.testTasks = testTasks;
     }
 
@@ -237,7 +237,7 @@ public class CertificationResultDTO implements Serializable {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -245,7 +245,7 @@ public class CertificationResultDTO implements Serializable {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
@@ -253,7 +253,7 @@ public class CertificationResultDTO implements Serializable {
         return g1Measures;
     }
 
-    public void setG1Measures(List<CertificationResultMacraMeasureDTO> g1Measures) {
+    public void setG1Measures(final List<CertificationResultMacraMeasureDTO> g1Measures) {
         this.g1Measures = g1Measures;
     }
 
@@ -261,7 +261,7 @@ public class CertificationResultDTO implements Serializable {
         return g2Measures;
     }
 
-    public void setG2Measures(List<CertificationResultMacraMeasureDTO> g2Measures) {
+    public void setG2Measures(final List<CertificationResultMacraMeasureDTO> g2Measures) {
         this.g2Measures = g2Measures;
     }
 
@@ -269,7 +269,7 @@ public class CertificationResultDTO implements Serializable {
         return testProcedures;
     }
 
-    public void setTestProcedures(List<CertificationResultTestProcedureDTO> testProcedures) {
+    public void setTestProcedures(final List<CertificationResultTestProcedureDTO> testProcedures) {
         this.testProcedures = testProcedures;
     }
 

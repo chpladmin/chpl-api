@@ -10,7 +10,7 @@ public class ProductActivityEvent extends ActivityEvent implements Serializable 
         return developer;
     }
 
-    public void setDeveloper(Developer developer) {
+    public void setDeveloper(final Developer developer) {
         this.developer = developer;
     }
 

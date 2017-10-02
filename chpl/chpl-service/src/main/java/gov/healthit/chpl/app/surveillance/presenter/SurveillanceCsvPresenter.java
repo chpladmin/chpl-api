@@ -296,7 +296,7 @@ public class SurveillanceCsvPresenter {
         return props;
     }
 
-    public void setProps(Properties props) {
+    public void setProps(final Properties props) {
         this.props = props;
     }
 }

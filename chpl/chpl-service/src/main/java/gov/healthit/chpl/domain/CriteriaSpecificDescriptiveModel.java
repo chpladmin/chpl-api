@@ -25,7 +25,7 @@ public class CriteriaSpecificDescriptiveModel extends DescriptiveModel implement
         return criteria;
     }
 
-    public void setCriteria(CertificationCriterion criteria) {
+    public void setCriteria(final CertificationCriterion criteria) {
         this.criteria = criteria;
     }
 }

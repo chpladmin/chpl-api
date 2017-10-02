@@ -352,7 +352,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         return record;
     }
 
-    public void setRecord(List<CSVRecord> record) {
+    public void setRecord(final List<CSVRecord> record) {
         this.record = record;
     }
 
@@ -360,7 +360,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         return heading;
     }
 
-    public void setHeading(CSVRecord heading) {
+    public void setHeading(final CSVRecord heading) {
         this.heading = heading;
     }
 
@@ -368,7 +368,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         return lastDataIndex;
     }
 
-    public void setLastDataIndex(int lastDataIndex) {
+    public void setLastDataIndex(final int lastDataIndex) {
         this.lastDataIndex = lastDataIndex;
     }
 }

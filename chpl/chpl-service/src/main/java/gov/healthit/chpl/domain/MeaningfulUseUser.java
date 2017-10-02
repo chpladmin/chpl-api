@@ -25,7 +25,7 @@ public class MeaningfulUseUser implements Serializable {
         this.csvLineNumber = csvLineNumber;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -33,7 +33,7 @@ public class MeaningfulUseUser implements Serializable {
         return this.certifiedProductId;
     }
 
-    public void setProductNumber(String productNumber) {
+    public void setProductNumber(final String productNumber) {
         this.productNumber = productNumber;
     }
 
@@ -45,7 +45,7 @@ public class MeaningfulUseUser implements Serializable {
         return numberOfUsers;
     }
 
-    public void setNumberOfUsers(Long numberOfUsers) {
+    public void setNumberOfUsers(final Long numberOfUsers) {
         this.numberOfUsers = numberOfUsers;
     }
 
@@ -53,7 +53,7 @@ public class MeaningfulUseUser implements Serializable {
         return csvLineNumber;
     }
 
-    public void setCsvLineNumber(Integer csvLineNumber) {
+    public void setCsvLineNumber(final Integer csvLineNumber) {
         this.csvLineNumber = csvLineNumber;
     }
 
@@ -61,7 +61,7 @@ public class MeaningfulUseUser implements Serializable {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(final String error) {
         this.error = error;
     }
 }

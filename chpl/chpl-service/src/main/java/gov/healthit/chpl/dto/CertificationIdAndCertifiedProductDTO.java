@@ -40,7 +40,7 @@ public class CertificationIdAndCertifiedProductDTO implements Serializable {
         return ehrCertificationId;
     }
 
-    public void setEhrCertificationId(Long ehrCertificationId) {
+    public void setEhrCertificationId(final Long ehrCertificationId) {
         this.ehrCertificationId = ehrCertificationId;
     }
 
@@ -48,7 +48,7 @@ public class CertificationIdAndCertifiedProductDTO implements Serializable {
         return certificationId;
     }
 
-    public void setCertificationId(String certificationId) {
+    public void setCertificationId(final String certificationId) {
         this.certificationId = certificationId;
     }
 
@@ -56,7 +56,7 @@ public class CertificationIdAndCertifiedProductDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -64,7 +64,7 @@ public class CertificationIdAndCertifiedProductDTO implements Serializable {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 }

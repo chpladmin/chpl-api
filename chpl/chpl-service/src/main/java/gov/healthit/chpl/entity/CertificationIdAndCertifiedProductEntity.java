@@ -89,7 +89,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return ehrCertificationId;
     }
 
-    public void setEhrCertificationId(Long ehrCertificationId) {
+    public void setEhrCertificationId(final Long ehrCertificationId) {
         this.ehrCertificationId = ehrCertificationId;
     }
 
@@ -97,7 +97,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return certificationId;
     }
 
-    public void setCertificationId(String certificationId) {
+    public void setCertificationId(final String certificationId) {
         this.certificationId = certificationId;
     }
 
@@ -105,7 +105,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -113,7 +113,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return legacyChplNumber;
     }
 
-    public void setLegacyChplNumber(String legacyChplNumber) {
+    public void setLegacyChplNumber(final String legacyChplNumber) {
         this.legacyChplNumber = legacyChplNumber;
     }
 
@@ -121,7 +121,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return certificationYear;
     }
 
-    public void setCertificationYear(String certificationYear) {
+    public void setCertificationYear(final String certificationYear) {
         this.certificationYear = certificationYear;
     }
 
@@ -129,7 +129,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return atlCode;
     }
 
-    public void setAtlCode(String atlCode) {
+    public void setAtlCode(final String atlCode) {
         this.atlCode = atlCode;
     }
 
@@ -137,7 +137,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return acbCode;
     }
 
-    public void setAcbCode(String acbCode) {
+    public void setAcbCode(final String acbCode) {
         this.acbCode = acbCode;
     }
 
@@ -145,7 +145,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return developerCode;
     }
 
-    public void setDeveloperCode(String developerCode) {
+    public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
     }
 
@@ -153,7 +153,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return productCode;
     }
 
-    public void setProductCode(String productCode) {
+    public void setProductCode(final String productCode) {
         this.productCode = productCode;
     }
 
@@ -161,7 +161,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return versionCode;
     }
 
-    public void setVersionCode(String versionCode) {
+    public void setVersionCode(final String versionCode) {
         this.versionCode = versionCode;
     }
 
@@ -169,7 +169,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return icsCode;
     }
 
-    public void setIcsCode(String icsCode) {
+    public void setIcsCode(final String icsCode) {
         this.icsCode = icsCode;
     }
 
@@ -177,7 +177,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return additionalSoftwareCode;
     }
 
-    public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+    public void setAdditionalSoftwareCode(final String additionalSoftwareCode) {
         this.additionalSoftwareCode = additionalSoftwareCode;
     }
 
@@ -185,7 +185,7 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
         return certifiedDateCode;
     }
 
-    public void setCertifiedDateCode(String certifiedDateCode) {
+    public void setCertifiedDateCode(final String certifiedDateCode) {
         this.certifiedDateCode = certifiedDateCode;
     }
 

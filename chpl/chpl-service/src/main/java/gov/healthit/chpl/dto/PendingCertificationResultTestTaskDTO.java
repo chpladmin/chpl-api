@@ -40,7 +40,7 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -56,7 +56,7 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
         return pendingTestTaskId;
     }
 
-    public void setPendingTestTaskId(Long pendingTestTaskId) {
+    public void setPendingTestTaskId(final Long pendingTestTaskId) {
         this.pendingTestTaskId = pendingTestTaskId;
     }
 
@@ -64,7 +64,7 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
         return pendingTestTask;
     }
 
-    public void setPendingTestTask(PendingTestTaskDTO pendingTestTask) {
+    public void setPendingTestTask(final PendingTestTaskDTO pendingTestTask) {
         this.pendingTestTask = pendingTestTask;
     }
 
@@ -72,7 +72,7 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
         return taskParticipants;
     }
 
-    public void setTaskParticipants(Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants) {
+    public void setTaskParticipants(final Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants) {
         this.taskParticipants = taskParticipants;
     }
 }

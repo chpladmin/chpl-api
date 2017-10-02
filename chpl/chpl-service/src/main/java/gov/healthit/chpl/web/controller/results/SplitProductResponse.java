@@ -10,7 +10,7 @@ public class SplitProductResponse {
         return oldProduct;
     }
 
-    public void setOldProduct(Product oldProduct) {
+    public void setOldProduct(final Product oldProduct) {
         this.oldProduct = oldProduct;
     }
 
@@ -18,7 +18,7 @@ public class SplitProductResponse {
         return newProduct;
     }
 
-    public void setNewProduct(Product newProduct) {
+    public void setNewProduct(final Product newProduct) {
         this.newProduct = newProduct;
     }
 }

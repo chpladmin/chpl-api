@@ -12,13 +12,13 @@ public interface SurveillanceUploadHandler {
 
     public List<CSVRecord> getRecord();
 
-    public void setRecord(List<CSVRecord> record);
+    public void setRecord(final List<CSVRecord> record);
 
     public CSVRecord getHeading();
 
-    public void setHeading(CSVRecord heading);
+    public void setHeading(final CSVRecord heading);
 
     public int getLastDataIndex();
 
-    public void setLastDataIndex(int lastDataIndex);
+    public void setLastDataIndex(final int lastDataIndex);
 }

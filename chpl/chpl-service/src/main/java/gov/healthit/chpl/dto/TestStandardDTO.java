@@ -29,7 +29,7 @@ public class TestStandardDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -37,7 +37,7 @@ public class TestStandardDTO implements Serializable {
         return description;
     }
 
-    public void setDescription(String name) {
+    public void setDescription(final String name) {
         this.description = name;
     }
 
@@ -45,7 +45,7 @@ public class TestStandardDTO implements Serializable {
         return name;
     }
 
-    public void setName(String number) {
+    public void setName(final String number) {
         this.name = number;
     }
 
@@ -53,7 +53,7 @@ public class TestStandardDTO implements Serializable {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 
@@ -61,7 +61,7 @@ public class TestStandardDTO implements Serializable {
         return certificationEditionId;
     }
 
-    public void setCertificationEditionId(Long certificationEditionId) {
+    public void setCertificationEditionId(final Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
     }
 }

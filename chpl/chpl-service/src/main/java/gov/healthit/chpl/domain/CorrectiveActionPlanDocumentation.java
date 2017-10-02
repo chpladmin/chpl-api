@@ -23,7 +23,7 @@ public class CorrectiveActionPlanDocumentation implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -31,7 +31,7 @@ public class CorrectiveActionPlanDocumentation implements Serializable {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
@@ -39,7 +39,7 @@ public class CorrectiveActionPlanDocumentation implements Serializable {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 }

@@ -55,7 +55,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -63,7 +63,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return cqmCriterionId;
     }
 
-    public void setCqmCriterionId(Long cqmCriterionId) {
+    public void setCqmCriterionId(final Long cqmCriterionId) {
         this.cqmCriterionId = cqmCriterionId;
     }
 
@@ -71,7 +71,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
@@ -79,7 +79,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return meetsCriteria;
     }
 
-    public void setMeetsCriteria(boolean meetsCriteria) {
+    public void setMeetsCriteria(final boolean meetsCriteria) {
         this.meetsCriteria = meetsCriteria;
     }
 
@@ -87,7 +87,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return cqmNumber;
     }
 
-    public void setCqmNumber(String cqmNumber) {
+    public void setCqmNumber(final String cqmNumber) {
         this.cqmNumber = cqmNumber;
     }
 
@@ -95,7 +95,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -103,7 +103,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return cmsId;
     }
 
-    public void setCmsId(String cmsId) {
+    public void setCmsId(final String cmsId) {
         this.cmsId = cmsId;
     }
 
@@ -111,7 +111,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return nqfNumber;
     }
 
-    public void setNqfNumber(String nqfNumber) {
+    public void setNqfNumber(final String nqfNumber) {
         this.nqfNumber = nqfNumber;
     }
 
@@ -119,7 +119,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -127,7 +127,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return typeId;
     }
 
-    public void setTypeId(Long typeId) {
+    public void setTypeId(final Long typeId) {
         this.typeId = typeId;
     }
 
@@ -135,7 +135,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return domain;
     }
 
-    public void setDomain(String domain) {
+    public void setDomain(final String domain) {
         this.domain = domain;
     }
 
@@ -143,7 +143,7 @@ public class PendingCqmCriterionDTO implements Serializable {
         return certifications;
     }
 
-    public void setCertifications(List<PendingCqmCertificationCriterionDTO> certifications) {
+    public void setCertifications(final List<PendingCqmCertificationCriterionDTO> certifications) {
         this.certifications = certifications;
     }
 }

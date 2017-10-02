@@ -53,7 +53,7 @@ public class PendingCertificationResultTestDataEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -61,7 +61,7 @@ public class PendingCertificationResultTestDataEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -69,7 +69,7 @@ public class PendingCertificationResultTestDataEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -77,7 +77,7 @@ public class PendingCertificationResultTestDataEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -85,7 +85,7 @@ public class PendingCertificationResultTestDataEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -93,7 +93,7 @@ public class PendingCertificationResultTestDataEntity {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -101,7 +101,7 @@ public class PendingCertificationResultTestDataEntity {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -109,7 +109,7 @@ public class PendingCertificationResultTestDataEntity {
         return alteration;
     }
 
-    public void setAlteration(String alteration) {
+    public void setAlteration(final String alteration) {
         this.alteration = alteration;
     }
 
@@ -117,7 +117,7 @@ public class PendingCertificationResultTestDataEntity {
         return hasAlteration;
     }
 
-    public void setHasAlteration(boolean hasAlteration) {
+    public void setHasAlteration(final boolean hasAlteration) {
         this.hasAlteration = hasAlteration;
     }
 }

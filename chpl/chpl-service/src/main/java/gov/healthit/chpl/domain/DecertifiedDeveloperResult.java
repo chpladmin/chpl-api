@@ -36,7 +36,7 @@ public class DecertifiedDeveloperResult implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(Developer developer) {
+    public void setDeveloper(final Developer developer) {
         this.developer = developer;
     }
 
@@ -44,7 +44,7 @@ public class DecertifiedDeveloperResult implements Serializable {
         return certifyingBody;
     }
 
-    public void setCertifyingBody(List<CertificationBody> certifyingBody) {
+    public void setCertifyingBody(final List<CertificationBody> certifyingBody) {
         this.certifyingBody = certifyingBody;
     }
 
@@ -52,7 +52,7 @@ public class DecertifiedDeveloperResult implements Serializable {
         return estimatedUsers;
     }
 
-    public void setEstimatedUsers(Long estimatedUsers) {
+    public void setEstimatedUsers(final Long estimatedUsers) {
         this.estimatedUsers = estimatedUsers;
     }
 
@@ -60,7 +60,7 @@ public class DecertifiedDeveloperResult implements Serializable {
         return decertificationDate;
     }
 
-    public void setDecertificationDate(Date decertificationDate) {
+    public void setDecertificationDate(final Date decertificationDate) {
         this.decertificationDate = decertificationDate;
     };
 }

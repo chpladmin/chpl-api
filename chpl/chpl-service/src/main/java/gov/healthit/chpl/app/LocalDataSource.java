@@ -38,10 +38,10 @@ class LocalDataSource implements DataSource, Serializable {
         return 0;
     }
 
-    public void setLogWriter(PrintWriter out) throws SQLException {
+    public void setLogWriter(final PrintWriter out) throws SQLException {
     }
 
-    public void setLoginTimeout(int seconds) throws SQLException {
+    public void setLoginTimeout(final int seconds) throws SQLException {
     }
 
     @Override

@@ -13,7 +13,7 @@ public class CreateUserFromInvitationRequest implements Serializable {
         return user;
     }
 
-    public void setUser(UserCreationJSONObject user) {
+    public void setUser(final UserCreationJSONObject user) {
         this.user = user;
     }
 
@@ -21,7 +21,7 @@ public class CreateUserFromInvitationRequest implements Serializable {
         return hash;
     }
 
-    public void setHash(String hash) {
+    public void setHash(final String hash) {
         this.hash = hash;
     }
 }

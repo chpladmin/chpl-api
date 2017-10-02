@@ -82,7 +82,7 @@ public class CQMCriterionEntity {
         return cmsId;
     }
 
-    public void setCmsId(String cmsId) {
+    public void setCmsId(final String cmsId) {
         this.cmsId = cmsId;
     }
 
@@ -90,7 +90,7 @@ public class CQMCriterionEntity {
         return cqmCriterionTypeId;
     }
 
-    public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
+    public void setCqmCriterionTypeId(final Long cqmCriterionTypeId) {
         this.cqmCriterionTypeId = cqmCriterionTypeId;
     }
 
@@ -98,7 +98,7 @@ public class CQMCriterionEntity {
         return cqmDomain;
     }
 
-    public void setCqmDomain(String cqmDomain) {
+    public void setCqmDomain(final String cqmDomain) {
         this.cqmDomain = cqmDomain;
     }
 
@@ -106,7 +106,7 @@ public class CQMCriterionEntity {
         return cqmVersionId;
     }
 
-    public void setCqmVersionId(Long cqmVersion) {
+    public void setCqmVersionId(final Long cqmVersion) {
         this.cqmVersionId = cqmVersion;
     }
 
@@ -114,7 +114,7 @@ public class CQMCriterionEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -122,7 +122,7 @@ public class CQMCriterionEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -130,7 +130,7 @@ public class CQMCriterionEntity {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -138,7 +138,7 @@ public class CQMCriterionEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -146,7 +146,7 @@ public class CQMCriterionEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -154,7 +154,7 @@ public class CQMCriterionEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -162,7 +162,7 @@ public class CQMCriterionEntity {
         return nqfNumber;
     }
 
-    public void setNqfNumber(String nqfNumber) {
+    public void setNqfNumber(final String nqfNumber) {
         this.nqfNumber = nqfNumber;
     }
 
@@ -170,7 +170,7 @@ public class CQMCriterionEntity {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -178,7 +178,7 @@ public class CQMCriterionEntity {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -190,7 +190,7 @@ public class CQMCriterionEntity {
         return retired;
     }
 
-    public void setRetired(Boolean retired) {
+    public void setRetired(final Boolean retired) {
         this.retired = retired;
     }
 

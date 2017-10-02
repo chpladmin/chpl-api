@@ -21,7 +21,7 @@ public abstract class PostgresEnumType implements UserType, ParameterizedType {
     public abstract Object nullSafeGet(ResultSet rs, String[] names, Object owner)
             throws HibernateException, SQLException;
 
-    public void setParameterValues(Properties parameters) {
+    public void setParameterValues(final Properties parameters) {
         String enumClassName = parameters.getProperty("enumClassName");
         try {
             enumClass = (Class<Enum>) Class.forName(enumClassName);

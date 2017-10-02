@@ -21,7 +21,7 @@ public class JobMessageDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -29,7 +29,7 @@ public class JobMessageDTO implements Serializable {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 }

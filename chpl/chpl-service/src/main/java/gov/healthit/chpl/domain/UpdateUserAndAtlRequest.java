@@ -12,7 +12,7 @@ public class UpdateUserAndAtlRequest implements Serializable {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(final Long userId) {
         this.userId = userId;
     }
 
@@ -20,7 +20,7 @@ public class UpdateUserAndAtlRequest implements Serializable {
         return authority;
     }
 
-    public void setAuthority(ChplPermission authority) {
+    public void setAuthority(final ChplPermission authority) {
         this.authority = authority;
     }
 
@@ -28,7 +28,7 @@ public class UpdateUserAndAtlRequest implements Serializable {
         return atlId;
     }
 
-    public void setAtlId(Long atlId) {
+    public void setAtlId(final Long atlId) {
         this.atlId = atlId;
     }
 

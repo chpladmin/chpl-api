@@ -58,7 +58,7 @@ public class CertificationBodyEntity {
         return id;
     }
 
-    public void setId(Long long1) {
+    public void setId(final Long long1) {
         this.id = long1;
     }
 
@@ -66,7 +66,7 @@ public class CertificationBodyEntity {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -74,7 +74,7 @@ public class CertificationBodyEntity {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(final String website) {
         this.website = website;
     }
 
@@ -82,7 +82,7 @@ public class CertificationBodyEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -90,7 +90,7 @@ public class CertificationBodyEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -98,7 +98,7 @@ public class CertificationBodyEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -106,7 +106,7 @@ public class CertificationBodyEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -114,7 +114,7 @@ public class CertificationBodyEntity {
         return address;
     }
 
-    public void setAddress(AddressEntity address) {
+    public void setAddress(final AddressEntity address) {
         this.address = address;
     }
 
@@ -122,7 +122,7 @@ public class CertificationBodyEntity {
         return acbCode;
     }
 
-    public void setAcbCode(String acbCode) {
+    public void setAcbCode(final String acbCode) {
         this.acbCode = acbCode;
     }
 

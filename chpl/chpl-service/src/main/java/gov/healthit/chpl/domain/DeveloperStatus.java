@@ -38,7 +38,7 @@ public class DeveloperStatus implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class DeveloperStatus implements Serializable {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 

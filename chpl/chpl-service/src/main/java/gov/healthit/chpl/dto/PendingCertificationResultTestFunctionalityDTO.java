@@ -25,7 +25,7 @@ public class PendingCertificationResultTestFunctionalityDTO implements Serializa
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -33,7 +33,7 @@ public class PendingCertificationResultTestFunctionalityDTO implements Serializa
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -41,7 +41,7 @@ public class PendingCertificationResultTestFunctionalityDTO implements Serializa
         return testFunctionalityId;
     }
 
-    public void setTestFunctionalityId(Long testFunctionalityId) {
+    public void setTestFunctionalityId(final Long testFunctionalityId) {
         this.testFunctionalityId = testFunctionalityId;
     }
 
@@ -49,7 +49,7 @@ public class PendingCertificationResultTestFunctionalityDTO implements Serializa
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 }

@@ -29,7 +29,7 @@ public class CertificationResultTestProcedureDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -37,7 +37,7 @@ public class CertificationResultTestProcedureDTO implements Serializable {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -45,7 +45,7 @@ public class CertificationResultTestProcedureDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -53,7 +53,7 @@ public class CertificationResultTestProcedureDTO implements Serializable {
         return testProcedureId;
     }
 
-    public void setTestProcedureId(Long testProcedureId) {
+    public void setTestProcedureId(final Long testProcedureId) {
         this.testProcedureId = testProcedureId;
     }
 
@@ -61,7 +61,7 @@ public class CertificationResultTestProcedureDTO implements Serializable {
         return testProcedureVersion;
     }
 
-    public void setTestProcedureVersion(String testProcedureVersion) {
+    public void setTestProcedureVersion(final String testProcedureVersion) {
         this.testProcedureVersion = testProcedureVersion;
     }
 

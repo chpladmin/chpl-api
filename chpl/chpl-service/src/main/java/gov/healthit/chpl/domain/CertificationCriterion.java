@@ -48,7 +48,7 @@ public class CertificationCriterion implements Serializable {
         return certificationEdition;
     }
 
-    public void setCertificationEdition(String certificationEdition) {
+    public void setCertificationEdition(final String certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
 
@@ -56,7 +56,7 @@ public class CertificationCriterion implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -64,7 +64,7 @@ public class CertificationCriterion implements Serializable {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -72,7 +72,7 @@ public class CertificationCriterion implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -80,7 +80,7 @@ public class CertificationCriterion implements Serializable {
         return certificationEditionId;
     }
 
-    public void setCertificationEditionId(Long certificationEditionId) {
+    public void setCertificationEditionId(final Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
     }
 
@@ -88,7 +88,7 @@ public class CertificationCriterion implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 }

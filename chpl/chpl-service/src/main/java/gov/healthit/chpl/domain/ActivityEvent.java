@@ -34,7 +34,7 @@ public class ActivityEvent implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -42,7 +42,7 @@ public class ActivityEvent implements Serializable {
         return activityDate;
     }
 
-    public void setActivityDate(Date activityDate) {
+    public void setActivityDate(final Date activityDate) {
         this.activityDate = activityDate;
     }
 
@@ -50,7 +50,7 @@ public class ActivityEvent implements Serializable {
         return activityObjectId;
     }
 
-    public void setActivityObjectId(Long activityObjectId) {
+    public void setActivityObjectId(final Long activityObjectId) {
         this.activityObjectId = activityObjectId;
     }
 
@@ -58,7 +58,7 @@ public class ActivityEvent implements Serializable {
         return concept;
     }
 
-    public void setConcept(ActivityConcept concept) {
+    public void setConcept(final ActivityConcept concept) {
         this.concept = concept;
     }
 
@@ -66,7 +66,7 @@ public class ActivityEvent implements Serializable {
         return originalData;
     }
 
-    public void setOriginalData(JsonNode originalData) {
+    public void setOriginalData(final JsonNode originalData) {
         this.originalData = originalData;
     }
 
@@ -74,7 +74,7 @@ public class ActivityEvent implements Serializable {
         return newData;
     }
 
-    public void setNewData(JsonNode newData) {
+    public void setNewData(final JsonNode newData) {
         this.newData = newData;
     }
 
@@ -82,7 +82,7 @@ public class ActivityEvent implements Serializable {
         return responsibleUser;
     }
 
-    public void setResponsibleUser(User responsibleUser) {
+    public void setResponsibleUser(final User responsibleUser) {
         this.responsibleUser = responsibleUser;
     }
 }

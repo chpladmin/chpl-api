@@ -14,7 +14,7 @@ public class SedUpdateRequest {
         return testTasks;
     }
 
-    public void setTestTasks(List<TestTask> testTasks) {
+    public void setTestTasks(final List<TestTask> testTasks) {
         this.testTasks = testTasks;
     }
 }

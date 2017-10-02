@@ -32,7 +32,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -40,7 +40,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
@@ -48,7 +48,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
         return qmsStandardId;
     }
 
-    public void setQmsStandardId(Long qmsStandardId) {
+    public void setQmsStandardId(final Long qmsStandardId) {
         this.qmsStandardId = qmsStandardId;
     }
 
@@ -56,7 +56,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -64,7 +64,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
         return modification;
     }
 
-    public void setModification(String modification) {
+    public void setModification(final String modification) {
         this.modification = modification;
     }
 
@@ -72,7 +72,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
         return applicableCriteria;
     }
 
-    public void setApplicableCriteria(String applicableCriteria) {
+    public void setApplicableCriteria(final String applicableCriteria) {
         this.applicableCriteria = applicableCriteria;
     }
 }

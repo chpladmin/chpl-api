@@ -67,7 +67,7 @@ public class CertificationResultTestProcedure implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -75,7 +75,7 @@ public class CertificationResultTestProcedure implements Serializable {
         return testProcedureId;
     }
 
-    public void setTestProcedureId(Long testProcedureId) {
+    public void setTestProcedureId(final Long testProcedureId) {
         this.testProcedureId = testProcedureId;
     }
 
@@ -83,7 +83,7 @@ public class CertificationResultTestProcedure implements Serializable {
         return testProcedureVersion;
     }
 
-    public void setTestProcedureVersion(String testProcedureVersion) {
+    public void setTestProcedureVersion(final String testProcedureVersion) {
         this.testProcedureVersion = testProcedureVersion;
     }
 }

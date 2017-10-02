@@ -40,7 +40,7 @@ public class CertificationIdVerifyResults implements Serializable {
             return this.id;
         }
 
-        public void setId(String id) {
+        public void setId(final String id) {
             this.id = id;
         }
 
@@ -48,7 +48,7 @@ public class CertificationIdVerifyResults implements Serializable {
             return this.valid;
         }
 
-        public void setValid(boolean valid) {
+        public void setValid(final boolean valid) {
             this.valid = valid;
         }
 

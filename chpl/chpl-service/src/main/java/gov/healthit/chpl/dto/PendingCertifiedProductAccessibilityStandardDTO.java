@@ -28,7 +28,7 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
@@ -44,7 +44,7 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -52,7 +52,7 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
         return accessibilityStandardId;
     }
 
-    public void setAccessibilityStandardId(Long accessibilityStandardId) {
+    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
         this.accessibilityStandardId = accessibilityStandardId;
     }
 }

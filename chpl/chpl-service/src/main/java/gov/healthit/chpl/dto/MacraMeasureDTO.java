@@ -43,7 +43,7 @@ public class MacraMeasureDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -51,7 +51,7 @@ public class MacraMeasureDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -59,7 +59,7 @@ public class MacraMeasureDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -67,7 +67,7 @@ public class MacraMeasureDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -75,7 +75,7 @@ public class MacraMeasureDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -83,7 +83,7 @@ public class MacraMeasureDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -91,7 +91,7 @@ public class MacraMeasureDTO implements Serializable {
         return criteriaId;
     }
 
-    public void setCriteriaId(Long criteriaId) {
+    public void setCriteriaId(final Long criteriaId) {
         this.criteriaId = criteriaId;
     }
 
@@ -99,7 +99,7 @@ public class MacraMeasureDTO implements Serializable {
         return criteria;
     }
 
-    public void setCriteria(CertificationCriterionDTO criteria) {
+    public void setCriteria(final CertificationCriterionDTO criteria) {
         this.criteria = criteria;
     }
 
@@ -107,7 +107,7 @@ public class MacraMeasureDTO implements Serializable {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(final String value) {
         this.value = value;
     }
 
@@ -115,7 +115,7 @@ public class MacraMeasureDTO implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 }

@@ -17,7 +17,7 @@ public class AccurateAsOfDate implements Serializable {
         return accurateAsOfDate;
     }
 
-    public void setAccurateAsOfDate(Long accurateAsOfDate) {
+    public void setAccurateAsOfDate(final Long accurateAsOfDate) {
         this.accurateAsOfDate = accurateAsOfDate;
     }
 }

@@ -13,7 +13,7 @@ public class JobResults implements Serializable {
         return results;
     }
 
-    public void setResults(List<Job> results) {
+    public void setResults(final List<Job> results) {
         this.results = results;
     }
 }

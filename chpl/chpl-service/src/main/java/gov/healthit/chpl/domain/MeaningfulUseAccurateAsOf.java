@@ -30,7 +30,7 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -38,7 +38,7 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
         return accurateAsOfDate;
     }
 
-    public void setAccurateAsOfDate(Long accurateAsOfDate) {
+    public void setAccurateAsOfDate(final Long accurateAsOfDate) {
         this.accurateAsOfDate = accurateAsOfDate;
     }
 
@@ -46,7 +46,7 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -54,7 +54,7 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -62,7 +62,7 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Long creationDate) {
+    public void setCreationDate(final Long creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -70,7 +70,7 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Long lastModifiedDate) {
+    public void setLastModifiedDate(final Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 

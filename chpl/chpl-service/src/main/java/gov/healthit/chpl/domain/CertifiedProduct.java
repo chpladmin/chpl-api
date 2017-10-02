@@ -70,7 +70,7 @@ public class CertifiedProduct implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -78,7 +78,7 @@ public class CertifiedProduct implements Serializable {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -86,7 +86,7 @@ public class CertifiedProduct implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(String lastModifiedDate) {
+    public void setLastModifiedDate(final String lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -94,7 +94,7 @@ public class CertifiedProduct implements Serializable {
         return edition;
     }
 
-    public void setEdition(String edition) {
+    public void setEdition(final String edition) {
         this.edition = edition;
     }
 
@@ -102,7 +102,7 @@ public class CertifiedProduct implements Serializable {
         return certificationDate;
     }
 
-    public void setCertificationDate(long certificationDate) {
+    public void setCertificationDate(final long certificationDate) {
         this.certificationDate = certificationDate;
     }
 }

@@ -29,7 +29,7 @@ public class CertifiedProductDownloadResponse implements Serializable {
         return listings;
     }
 
-    public void setListings(List<CertifiedProductSearchDetails> listings) {
+    public void setListings(final List<CertifiedProductSearchDetails> listings) {
         this.listings = listings;
     }
 }

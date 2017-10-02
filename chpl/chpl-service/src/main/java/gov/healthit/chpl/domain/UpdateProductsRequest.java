@@ -13,7 +13,7 @@ public class UpdateProductsRequest implements Serializable {
         return productIds;
     }
 
-    public void setProductIds(List<Long> productIds) {
+    public void setProductIds(final List<Long> productIds) {
         this.productIds = productIds;
     }
 
@@ -21,7 +21,7 @@ public class UpdateProductsRequest implements Serializable {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(final Product product) {
         this.product = product;
     }
 
@@ -29,7 +29,7 @@ public class UpdateProductsRequest implements Serializable {
         return newDeveloperId;
     }
 
-    public void setNewDeveloperId(Long newDeveloperId) {
+    public void setNewDeveloperId(final Long newDeveloperId) {
         this.newDeveloperId = newDeveloperId;
     }
 }

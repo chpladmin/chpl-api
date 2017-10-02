@@ -218,7 +218,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         return cpManager;
     }
 
-    public void setCpManager(CertifiedProductManager cpManager) {
+    public void setCpManager(final CertifiedProductManager cpManager) {
         this.cpManager = cpManager;
     }
 
@@ -226,7 +226,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
         return cpDao;
     }
 
-    public void setCpDao(CertifiedProductDAO cpDao) {
+    public void setCpDao(final CertifiedProductDAO cpDao) {
         this.cpDao = cpDao;
     }
 }

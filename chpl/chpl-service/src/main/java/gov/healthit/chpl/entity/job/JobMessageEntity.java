@@ -40,7 +40,7 @@ public class JobMessageEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class JobMessageEntity {
         return jobId;
     }
 
-    public void setJobId(Long jobId) {
+    public void setJobId(final Long jobId) {
         this.jobId = jobId;
     }
 
@@ -56,7 +56,7 @@ public class JobMessageEntity {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -64,7 +64,7 @@ public class JobMessageEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -72,7 +72,7 @@ public class JobMessageEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -80,7 +80,7 @@ public class JobMessageEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -88,7 +88,7 @@ public class JobMessageEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 }

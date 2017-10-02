@@ -16,7 +16,7 @@ public class DecertifiedDeveloperResults implements Serializable {
         return decertifiedDeveloperResults;
     }
 
-    public void setDecertifiedDeveloperResults(List<DecertifiedDeveloperResult> decertifiedDeveloperResults) {
+    public void setDecertifiedDeveloperResults(final List<DecertifiedDeveloperResult> decertifiedDeveloperResults) {
         this.decertifiedDeveloperResults = decertifiedDeveloperResults;
     };
 

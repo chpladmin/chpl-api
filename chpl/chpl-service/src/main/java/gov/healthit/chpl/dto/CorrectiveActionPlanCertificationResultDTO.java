@@ -38,7 +38,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return certCriterion;
     }
 
-    public void setCertCriterion(CertificationCriterionDTO certCriterion) {
+    public void setCertCriterion(final CertificationCriterionDTO certCriterion) {
         this.certCriterion = certCriterion;
     }
 
@@ -54,7 +54,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return correctiveActionPlanId;
     }
 
-    public void setCorrectiveActionPlanId(Long correctiveActionPlanId) {
+    public void setCorrectiveActionPlanId(final Long correctiveActionPlanId) {
         this.correctiveActionPlanId = correctiveActionPlanId;
     }
 
@@ -62,7 +62,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -70,7 +70,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(String developerExplanation) {
+    public void setDeveloperExplanation(final String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -78,7 +78,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -86,7 +86,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return numSitesPassed;
     }
 
-    public void setNumSitesPassed(Integer numSitesPassed) {
+    public void setNumSitesPassed(final Integer numSitesPassed) {
         this.numSitesPassed = numSitesPassed;
     }
 
@@ -94,7 +94,7 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
         return numSitesTotal;
     }
 
-    public void setNumSitesTotal(Integer numSitesTotal) {
+    public void setNumSitesTotal(final Integer numSitesTotal) {
         this.numSitesTotal = numSitesTotal;
     }
 }

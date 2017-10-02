@@ -237,7 +237,7 @@ public class CertificationEditionEntity implements Serializable {
         return retired;
     }
 
-    public void setRetired(Boolean retired) {
+    public void setRetired(final Boolean retired) {
         this.retired = retired;
     }
 

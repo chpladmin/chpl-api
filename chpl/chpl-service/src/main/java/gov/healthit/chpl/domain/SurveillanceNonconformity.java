@@ -113,7 +113,7 @@ public class SurveillanceNonconformity implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -121,7 +121,7 @@ public class SurveillanceNonconformity implements Serializable {
         return nonconformityType;
     }
 
-    public void setNonconformityType(String nonconformityType) {
+    public void setNonconformityType(final String nonconformityType) {
         this.nonconformityType = nonconformityType;
     }
 
@@ -129,7 +129,7 @@ public class SurveillanceNonconformity implements Serializable {
         return status;
     }
 
-    public void setStatus(SurveillanceNonconformityStatus status) {
+    public void setStatus(final SurveillanceNonconformityStatus status) {
         this.status = status;
     }
 
@@ -137,7 +137,7 @@ public class SurveillanceNonconformity implements Serializable {
         return dateOfDetermination;
     }
 
-    public void setDateOfDetermination(Date dateOfDetermination) {
+    public void setDateOfDetermination(final Date dateOfDetermination) {
         this.dateOfDetermination = dateOfDetermination;
     }
 
@@ -145,7 +145,7 @@ public class SurveillanceNonconformity implements Serializable {
         return capApprovalDate;
     }
 
-    public void setCapApprovalDate(Date capApprovalDate) {
+    public void setCapApprovalDate(final Date capApprovalDate) {
         this.capApprovalDate = capApprovalDate;
     }
 
@@ -153,7 +153,7 @@ public class SurveillanceNonconformity implements Serializable {
         return capStartDate;
     }
 
-    public void setCapStartDate(Date capStartDate) {
+    public void setCapStartDate(final Date capStartDate) {
         this.capStartDate = capStartDate;
     }
 
@@ -161,7 +161,7 @@ public class SurveillanceNonconformity implements Serializable {
         return capEndDate;
     }
 
-    public void setCapEndDate(Date capEndDate) {
+    public void setCapEndDate(final Date capEndDate) {
         this.capEndDate = capEndDate;
     }
 
@@ -169,7 +169,7 @@ public class SurveillanceNonconformity implements Serializable {
         return capMustCompleteDate;
     }
 
-    public void setCapMustCompleteDate(Date capMustCompleteDate) {
+    public void setCapMustCompleteDate(final Date capMustCompleteDate) {
         this.capMustCompleteDate = capMustCompleteDate;
     }
 
@@ -177,7 +177,7 @@ public class SurveillanceNonconformity implements Serializable {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -185,7 +185,7 @@ public class SurveillanceNonconformity implements Serializable {
         return findings;
     }
 
-    public void setFindings(String findings) {
+    public void setFindings(final String findings) {
         this.findings = findings;
     }
 
@@ -193,7 +193,7 @@ public class SurveillanceNonconformity implements Serializable {
         return sitesPassed;
     }
 
-    public void setSitesPassed(Integer sitesPassed) {
+    public void setSitesPassed(final Integer sitesPassed) {
         this.sitesPassed = sitesPassed;
     }
 
@@ -201,7 +201,7 @@ public class SurveillanceNonconformity implements Serializable {
         return totalSites;
     }
 
-    public void setTotalSites(Integer totalSites) {
+    public void setTotalSites(final Integer totalSites) {
         this.totalSites = totalSites;
     }
 
@@ -209,7 +209,7 @@ public class SurveillanceNonconformity implements Serializable {
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(String developerExplanation) {
+    public void setDeveloperExplanation(final String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -217,7 +217,7 @@ public class SurveillanceNonconformity implements Serializable {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -225,7 +225,7 @@ public class SurveillanceNonconformity implements Serializable {
         return documents;
     }
 
-    public void setDocuments(List<SurveillanceNonconformityDocument> documents) {
+    public void setDocuments(final List<SurveillanceNonconformityDocument> documents) {
         this.documents = documents;
     }
 }

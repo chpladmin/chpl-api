@@ -18,7 +18,7 @@ public class NotificationRecipientResults implements Serializable {
         return results;
     }
 
-    public void setResults(List<Recipient> results) {
+    public void setResults(final List<Recipient> results) {
         this.results = results;
     }
 }

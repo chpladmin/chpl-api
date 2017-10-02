@@ -68,7 +68,7 @@ public class TestTaskParticipantMapEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -76,7 +76,7 @@ public class TestTaskParticipantMapEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -84,7 +84,7 @@ public class TestTaskParticipantMapEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -92,7 +92,7 @@ public class TestTaskParticipantMapEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -100,7 +100,7 @@ public class TestTaskParticipantMapEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -108,7 +108,7 @@ public class TestTaskParticipantMapEntity {
         return testParticipantId;
     }
 
-    public void setTestParticipantId(Long testParticipantId) {
+    public void setTestParticipantId(final Long testParticipantId) {
         this.testParticipantId = testParticipantId;
     }
 
@@ -116,7 +116,7 @@ public class TestTaskParticipantMapEntity {
         return testParticipant;
     }
 
-    public void setTestParticipant(TestParticipantEntity testParticipantEntity) {
+    public void setTestParticipant(final TestParticipantEntity testParticipantEntity) {
         this.testParticipant = testParticipantEntity;
     }
 
@@ -124,7 +124,7 @@ public class TestTaskParticipantMapEntity {
         return testTaskId;
     }
 
-    public void setTestTaskId(Long testTaskId) {
+    public void setTestTaskId(final Long testTaskId) {
         this.testTaskId = testTaskId;
     }
 
@@ -132,7 +132,7 @@ public class TestTaskParticipantMapEntity {
         return testTask;
     }
 
-    public void setTestTask(TestTaskEntity testTask) {
+    public void setTestTask(final TestTaskEntity testTask) {
         this.testTask = testTask;
     }
 }

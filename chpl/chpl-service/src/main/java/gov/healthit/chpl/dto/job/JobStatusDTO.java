@@ -24,7 +24,7 @@ public class JobStatusDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -32,7 +32,7 @@ public class JobStatusDTO implements Serializable {
         return status;
     }
 
-    public void setStatus(JobStatusType status) {
+    public void setStatus(final JobStatusType status) {
         this.status = status;
     }
 
@@ -40,7 +40,7 @@ public class JobStatusDTO implements Serializable {
         return percentComplete;
     }
 
-    public void setPercentComplete(Integer percentComplete) {
+    public void setPercentComplete(final Integer percentComplete) {
         this.percentComplete = percentComplete;
     }
 

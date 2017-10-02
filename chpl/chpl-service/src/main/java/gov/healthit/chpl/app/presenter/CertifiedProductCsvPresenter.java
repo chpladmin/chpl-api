@@ -126,7 +126,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         return applicableCriteria;
     }
 
-    public void setApplicableCriteria(List<CertificationCriterionDTO> applicableCriteria) {
+    public void setApplicableCriteria(final List<CertificationCriterionDTO> applicableCriteria) {
         this.applicableCriteria = applicableCriteria;
     }
 

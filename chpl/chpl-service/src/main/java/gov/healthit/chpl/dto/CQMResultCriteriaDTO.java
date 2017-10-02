@@ -28,7 +28,7 @@ public class CQMResultCriteriaDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class CQMResultCriteriaDTO implements Serializable {
         return cqmResultId;
     }
 
-    public void setCqmResultId(Long cqmResultId) {
+    public void setCqmResultId(final Long cqmResultId) {
         this.cqmResultId = cqmResultId;
     }
 
@@ -44,7 +44,7 @@ public class CQMResultCriteriaDTO implements Serializable {
         return criterionId;
     }
 
-    public void setCriterionId(Long criterionId) {
+    public void setCriterionId(final Long criterionId) {
         this.criterionId = criterionId;
     }
 
@@ -52,7 +52,7 @@ public class CQMResultCriteriaDTO implements Serializable {
         return criterion;
     }
 
-    public void setCriterion(CertificationCriterionDTO criterion) {
+    public void setCriterion(final CertificationCriterionDTO criterion) {
         this.criterion = criterion;
     }
 }

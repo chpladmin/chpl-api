@@ -114,7 +114,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     }
 
     @Override
-    public void setRecord(List<CSVRecord> record) {
+    public void setRecord(final List<CSVRecord> record) {
         this.record = record;
     }
 
@@ -124,7 +124,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     }
 
     @Override
-    public void setHeading(CSVRecord heading) {
+    public void setHeading(final CSVRecord heading) {
         this.heading = heading;
     }
 
@@ -132,7 +132,7 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
         return lastDataIndex;
     }
 
-    public void setLastDataIndex(int lastDataIndex) {
+    public void setLastDataIndex(final int lastDataIndex) {
         this.lastDataIndex = lastDataIndex;
     }
 }

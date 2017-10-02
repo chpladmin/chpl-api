@@ -16,7 +16,7 @@ public class SplitProductsRequest implements Serializable {
         return newProductName;
     }
 
-    public void setNewProductName(String newProductName) {
+    public void setNewProductName(final String newProductName) {
         this.newProductName = newProductName;
     }
 
@@ -24,7 +24,7 @@ public class SplitProductsRequest implements Serializable {
         return newProductCode;
     }
 
-    public void setNewProductCode(String newProductCode) {
+    public void setNewProductCode(final String newProductCode) {
         this.newProductCode = newProductCode;
     }
 
@@ -32,7 +32,7 @@ public class SplitProductsRequest implements Serializable {
         return newVersions;
     }
 
-    public void setNewVersions(List<ProductVersion> newVersions) {
+    public void setNewVersions(final List<ProductVersion> newVersions) {
         this.newVersions = newVersions;
     }
 
@@ -40,7 +40,7 @@ public class SplitProductsRequest implements Serializable {
         return oldProduct;
     }
 
-    public void setOldProduct(Product oldProduct) {
+    public void setOldProduct(final Product oldProduct) {
         this.oldProduct = oldProduct;
     }
 
@@ -48,7 +48,7 @@ public class SplitProductsRequest implements Serializable {
         return oldVersions;
     }
 
-    public void setOldVersions(List<ProductVersion> oldVersions) {
+    public void setOldVersions(final List<ProductVersion> oldVersions) {
         this.oldVersions = oldVersions;
     }
 }

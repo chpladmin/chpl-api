@@ -217,7 +217,7 @@ public class TestParticipant implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -225,7 +225,7 @@ public class TestParticipant implements Serializable {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(final String gender) {
         this.gender = gender;
     }
 
@@ -233,7 +233,7 @@ public class TestParticipant implements Serializable {
         return educationTypeId;
     }
 
-    public void setEducationTypeId(Long educationTypeId) {
+    public void setEducationTypeId(final Long educationTypeId) {
         this.educationTypeId = educationTypeId;
     }
 
@@ -241,7 +241,7 @@ public class TestParticipant implements Serializable {
         return occupation;
     }
 
-    public void setOccupation(String occupation) {
+    public void setOccupation(final String occupation) {
         this.occupation = occupation;
     }
 
@@ -249,7 +249,7 @@ public class TestParticipant implements Serializable {
         return professionalExperienceMonths;
     }
 
-    public void setProfessionalExperienceMonths(String value) {
+    public void setProfessionalExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 professionalExperienceMonths = Math.round(new Float(value));
@@ -263,7 +263,7 @@ public class TestParticipant implements Serializable {
         return computerExperienceMonths;
     }
 
-    public void setComputerExperienceMonths(String value) {
+    public void setComputerExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 computerExperienceMonths = Math.round(new Float(value));
@@ -277,7 +277,7 @@ public class TestParticipant implements Serializable {
         return productExperienceMonths;
     }
 
-    public void setProductExperienceMonths(String value) {
+    public void setProductExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 productExperienceMonths = Math.round(new Float(value));
@@ -291,7 +291,7 @@ public class TestParticipant implements Serializable {
         return assistiveTechnologyNeeds;
     }
 
-    public void setAssistiveTechnologyNeeds(String assistiveTechnologyNeeds) {
+    public void setAssistiveTechnologyNeeds(final String assistiveTechnologyNeeds) {
         this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
     }
 
@@ -299,7 +299,7 @@ public class TestParticipant implements Serializable {
         return educationTypeName;
     }
 
-    public void setEducationTypeName(String educationTypeName) {
+    public void setEducationTypeName(final String educationTypeName) {
         this.educationTypeName = educationTypeName;
     }
 
@@ -307,7 +307,7 @@ public class TestParticipant implements Serializable {
         return uniqueId;
     }
 
-    public void setUniqueId(String uniqueId) {
+    public void setUniqueId(final String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -315,7 +315,7 @@ public class TestParticipant implements Serializable {
         return ageRangeId;
     }
 
-    public void setAgeRangeId(Long ageRangeId) {
+    public void setAgeRangeId(final Long ageRangeId) {
         this.ageRangeId = ageRangeId;
     }
 
@@ -323,7 +323,7 @@ public class TestParticipant implements Serializable {
         return ageRange;
     }
 
-    public void setAgeRange(String ageRange) {
+    public void setAgeRange(final String ageRange) {
         this.ageRange = ageRange;
     }
 

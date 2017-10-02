@@ -96,7 +96,7 @@ public class Product implements Serializable {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(final Long productId) {
         this.productId = productId;
     }
 
@@ -104,7 +104,7 @@ public class Product implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -112,7 +112,7 @@ public class Product implements Serializable {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(String reportFileLocation) {
+    public void setReportFileLocation(final String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -120,7 +120,7 @@ public class Product implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(String lastModifiedDate) {
+    public void setLastModifiedDate(final String lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -128,7 +128,7 @@ public class Product implements Serializable {
         return owner;
     }
 
-    public void setOwner(Developer owner) {
+    public void setOwner(final Developer owner) {
         this.owner = owner;
     }
 
@@ -136,7 +136,7 @@ public class Product implements Serializable {
         return ownerHistory;
     }
 
-    public void setOwnerHistory(List<ProductOwner> ownerHistory) {
+    public void setOwnerHistory(final List<ProductOwner> ownerHistory) {
         this.ownerHistory = ownerHistory;
     }
 
@@ -144,7 +144,7 @@ public class Product implements Serializable {
         return contact;
     }
 
-    public void setContact(Contact contact) {
+    public void setContact(final Contact contact) {
         this.contact = contact;
     }
 

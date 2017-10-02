@@ -41,7 +41,7 @@ public class Job {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -49,7 +49,7 @@ public class Job {
         return type;
     }
 
-    public void setType(JobType type) {
+    public void setType(final JobType type) {
         this.type = type;
     }
 
@@ -57,7 +57,7 @@ public class Job {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(final User user) {
         this.user = user;
     }
 
@@ -65,7 +65,7 @@ public class Job {
         return startTime;
     }
 
-    public void setStartTime(Long startTime) {
+    public void setStartTime(final Long startTime) {
         this.startTime = startTime;
     }
 
@@ -73,7 +73,7 @@ public class Job {
         return endTime;
     }
 
-    public void setEndTime(Long endTime) {
+    public void setEndTime(final Long endTime) {
         this.endTime = endTime;
     }
 
@@ -81,7 +81,7 @@ public class Job {
         return status;
     }
 
-    public void setStatus(JobStatus status) {
+    public void setStatus(final JobStatus status) {
         this.status = status;
     }
 
@@ -89,7 +89,7 @@ public class Job {
         return messages;
     }
 
-    public void setMessages(List<String> messages) {
+    public void setMessages(final List<String> messages) {
         this.messages = messages;
     }
 }

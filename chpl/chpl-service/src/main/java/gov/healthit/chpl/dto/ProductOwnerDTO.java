@@ -33,7 +33,7 @@ public class ProductOwnerDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -41,7 +41,7 @@ public class ProductOwnerDTO implements Serializable {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(final Long productId) {
         this.productId = productId;
     }
 
@@ -49,7 +49,7 @@ public class ProductOwnerDTO implements Serializable {
         return transferDate;
     }
 
-    public void setTransferDate(Long transferDate) {
+    public void setTransferDate(final Long transferDate) {
         this.transferDate = transferDate;
     }
 
@@ -57,7 +57,7 @@ public class ProductOwnerDTO implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(DeveloperDTO developer) {
+    public void setDeveloper(final DeveloperDTO developer) {
         this.developer = developer;
     }
 }

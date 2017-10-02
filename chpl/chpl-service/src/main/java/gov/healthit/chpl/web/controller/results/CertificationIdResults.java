@@ -24,7 +24,7 @@ public class CertificationIdResults implements Serializable {
             return this.version;
         }
 
-        public void setVersion(String version) {
+        public void setVersion(final String version) {
             this.version = version;
         }
 
@@ -32,7 +32,7 @@ public class CertificationIdResults implements Serializable {
             return this.name;
         }
 
-        public void setName(String name) {
+        public void setName(final String name) {
             this.name = name;
         }
 
@@ -40,7 +40,7 @@ public class CertificationIdResults implements Serializable {
             return this.productId;
         }
 
-        public void setProductId(Long id) {
+        public void setProductId(final Long id) {
             this.productId = id;
         }
 
@@ -57,7 +57,7 @@ public class CertificationIdResults implements Serializable {
         return this.year;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 
@@ -65,7 +65,7 @@ public class CertificationIdResults implements Serializable {
         return isValid;
     }
 
-    public void setIsValid(boolean valid) {
+    public void setIsValid(final boolean valid) {
         this.isValid = valid;
     }
 
@@ -73,7 +73,7 @@ public class CertificationIdResults implements Serializable {
         return products;
     }
 
-    public void setProducts(List<Product> products) {
+    public void setProducts(final List<Product> products) {
         this.products = products;
     }
 
@@ -81,7 +81,7 @@ public class CertificationIdResults implements Serializable {
         return this.ehrCertificationId;
     }
 
-    public void setEhrCertificationId(String ehrCertificationId) {
+    public void setEhrCertificationId(final String ehrCertificationId) {
         this.ehrCertificationId = ehrCertificationId;
     }
 
@@ -89,7 +89,7 @@ public class CertificationIdResults implements Serializable {
         return this.metPercentages;
     }
 
-    public void setMetPercentages(Map<String, Integer> metPercentages) {
+    public void setMetPercentages(final Map<String, Integer> metPercentages) {
         this.metPercentages = metPercentages;
     }
 
@@ -97,7 +97,7 @@ public class CertificationIdResults implements Serializable {
         return this.metCounts;
     }
 
-    public void setMetCounts(Map<String, Integer> metCounts) {
+    public void setMetCounts(final Map<String, Integer> metCounts) {
         this.metCounts = metCounts;
     }
 }

@@ -19,7 +19,7 @@ public class PopulateSearchOptions implements Serializable {
         return productClassifications;
     }
 
-    public void setProductClassifications(Set<KeyValueModel> productClassifications) {
+    public void setProductClassifications(final Set<KeyValueModel> productClassifications) {
         this.productClassifications = productClassifications;
     }
 
@@ -27,7 +27,7 @@ public class PopulateSearchOptions implements Serializable {
         return editions;
     }
 
-    public void setEditions(Set<KeyValueModel> editions) {
+    public void setEditions(final Set<KeyValueModel> editions) {
         this.editions = editions;
     }
 
@@ -35,7 +35,7 @@ public class PopulateSearchOptions implements Serializable {
         return practiceTypeNames;
     }
 
-    public void setPracticeTypeNames(Set<KeyValueModel> practiceTypeNames) {
+    public void setPracticeTypeNames(final Set<KeyValueModel> practiceTypeNames) {
         this.practiceTypeNames = practiceTypeNames;
     }
 
@@ -43,7 +43,7 @@ public class PopulateSearchOptions implements Serializable {
         return productNames;
     }
 
-    public void setProductNames(Set<KeyValueModelStatuses> productNames) {
+    public void setProductNames(final Set<KeyValueModelStatuses> productNames) {
         this.productNames = productNames;
     }
 
@@ -51,7 +51,7 @@ public class PopulateSearchOptions implements Serializable {
         return developerNames;
     }
 
-    public void setDeveloperNames(Set<KeyValueModelStatuses> developerNames) {
+    public void setDeveloperNames(final Set<KeyValueModelStatuses> developerNames) {
         this.developerNames = developerNames;
     }
 
@@ -59,7 +59,7 @@ public class PopulateSearchOptions implements Serializable {
         return certBodyNames;
     }
 
-    public void setCertBodyNames(Set<KeyValueModel> certBodyNames) {
+    public void setCertBodyNames(final Set<KeyValueModel> certBodyNames) {
         this.certBodyNames = certBodyNames;
     }
 
@@ -67,7 +67,7 @@ public class PopulateSearchOptions implements Serializable {
         return certificationCriterionNumbers;
     }
 
-    public void setCertificationCriterionNumbers(Set<DescriptiveModel> certificationCriterionNumbers) {
+    public void setCertificationCriterionNumbers(final Set<DescriptiveModel> certificationCriterionNumbers) {
         this.certificationCriterionNumbers = certificationCriterionNumbers;
     }
 
@@ -75,7 +75,7 @@ public class PopulateSearchOptions implements Serializable {
         return cqmCriterionNumbers;
     }
 
-    public void setCqmCriterionNumbers(Set<DescriptiveModel> cqmCriterionNumbers) {
+    public void setCqmCriterionNumbers(final Set<DescriptiveModel> cqmCriterionNumbers) {
         this.cqmCriterionNumbers = cqmCriterionNumbers;
     }
 
@@ -83,7 +83,7 @@ public class PopulateSearchOptions implements Serializable {
         return certificationStatuses;
     }
 
-    public void setCertificationStatuses(Set<KeyValueModel> certificationStatuses) {
+    public void setCertificationStatuses(final Set<KeyValueModel> certificationStatuses) {
         this.certificationStatuses = certificationStatuses;
     }
 

@@ -20,7 +20,7 @@ public class SurveillanceRequirementOptions implements Serializable {
         return transparencyOptions;
     }
 
-    public void setTransparencyOptions(List<String> transparencyOptions) {
+    public void setTransparencyOptions(final List<String> transparencyOptions) {
         this.transparencyOptions = transparencyOptions;
     }
 
@@ -28,7 +28,7 @@ public class SurveillanceRequirementOptions implements Serializable {
         return criteriaOptions2014;
     }
 
-    public void setCriteriaOptions2014(List<KeyValueModel> criteriaOptions2014) {
+    public void setCriteriaOptions2014(final List<KeyValueModel> criteriaOptions2014) {
         this.criteriaOptions2014 = criteriaOptions2014;
     }
 
@@ -36,7 +36,7 @@ public class SurveillanceRequirementOptions implements Serializable {
         return criteriaOptions2015;
     }
 
-    public void setCriteriaOptions2015(List<KeyValueModel> criteriaOptions2015) {
+    public void setCriteriaOptions2015(final List<KeyValueModel> criteriaOptions2015) {
         this.criteriaOptions2015 = criteriaOptions2015;
     }
 }

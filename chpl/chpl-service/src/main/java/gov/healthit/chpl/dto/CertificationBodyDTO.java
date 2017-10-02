@@ -38,7 +38,7 @@ public class CertificationBodyDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -46,7 +46,7 @@ public class CertificationBodyDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -54,7 +54,7 @@ public class CertificationBodyDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -62,7 +62,7 @@ public class CertificationBodyDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -70,7 +70,7 @@ public class CertificationBodyDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -78,7 +78,7 @@ public class CertificationBodyDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -86,7 +86,7 @@ public class CertificationBodyDTO implements Serializable {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(final String website) {
         this.website = website;
     }
 
@@ -94,7 +94,7 @@ public class CertificationBodyDTO implements Serializable {
         return address;
     }
 
-    public void setAddress(AddressDTO address) {
+    public void setAddress(final AddressDTO address) {
         this.address = address;
     }
 
@@ -102,7 +102,7 @@ public class CertificationBodyDTO implements Serializable {
         return acbCode;
     }
 
-    public void setAcbCode(String acbCode) {
+    public void setAcbCode(final String acbCode) {
         this.acbCode = acbCode;
     }
 

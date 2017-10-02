@@ -171,7 +171,7 @@ public class CertificationIdProductMapEntity implements Serializable {
      * @param certifiedProductId
      *            the certifiedProductId value you wish to set
      */
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -190,7 +190,7 @@ public class CertificationIdProductMapEntity implements Serializable {
      * @param certificationIdId
      *            the certificationIdId value you wish to set
      */
-    public void setCertificationIdId(Long certificationIdId) {
+    public void setCertificationIdId(final Long certificationIdId) {
         this.certificationIdId = certificationIdId;
     }
 

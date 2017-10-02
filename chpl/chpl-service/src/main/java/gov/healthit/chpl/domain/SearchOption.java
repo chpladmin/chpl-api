@@ -17,7 +17,7 @@ public class SearchOption implements Serializable {
         return expandable;
     }
 
-    public void setExpandable(boolean expandable) {
+    public void setExpandable(final boolean expandable) {
         this.expandable = expandable;
     }
 
@@ -25,7 +25,7 @@ public class SearchOption implements Serializable {
         return data;
     }
 
-    public void setData(Set<? extends Object> data) {
+    public void setData(final Set<? extends Object> data) {
         this.data = data;
     }
 

@@ -38,7 +38,7 @@ public class Recipient {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -46,7 +46,7 @@ public class Recipient {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -54,7 +54,7 @@ public class Recipient {
         return subscriptions;
     }
 
-    public void setSubscriptions(List<Subscription> subscriptions) {
+    public void setSubscriptions(final List<Subscription> subscriptions) {
         this.subscriptions = subscriptions;
     }
 }

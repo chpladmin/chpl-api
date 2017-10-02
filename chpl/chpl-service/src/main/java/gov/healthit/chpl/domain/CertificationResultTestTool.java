@@ -83,7 +83,7 @@ public class CertificationResultTestTool implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -91,7 +91,7 @@ public class CertificationResultTestTool implements Serializable {
         return testToolId;
     }
 
-    public void setTestToolId(Long testToolId) {
+    public void setTestToolId(final Long testToolId) {
         this.testToolId = testToolId;
     }
 
@@ -99,7 +99,7 @@ public class CertificationResultTestTool implements Serializable {
         return testToolName;
     }
 
-    public void setTestToolName(String testToolName) {
+    public void setTestToolName(final String testToolName) {
         this.testToolName = testToolName;
     }
 
@@ -107,7 +107,7 @@ public class CertificationResultTestTool implements Serializable {
         return testToolVersion;
     }
 
-    public void setTestToolVersion(String testToolVersion) {
+    public void setTestToolVersion(final String testToolVersion) {
         this.testToolVersion = testToolVersion;
     }
 
@@ -115,7 +115,7 @@ public class CertificationResultTestTool implements Serializable {
         return retired;
     }
 
-    public void setRetired(boolean retired) {
+    public void setRetired(final boolean retired) {
         this.retired = retired;
     }
 }

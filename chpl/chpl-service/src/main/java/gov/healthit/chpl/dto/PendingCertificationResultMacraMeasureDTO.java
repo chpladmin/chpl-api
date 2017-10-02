@@ -42,7 +42,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -50,7 +50,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -58,7 +58,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
         return macraMeasureId;
     }
 
-    public void setMacraMeasureId(Long macraMeasureId) {
+    public void setMacraMeasureId(final Long macraMeasureId) {
         this.macraMeasureId = macraMeasureId;
     }
 
@@ -66,7 +66,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
         return macraMeasure;
     }
 
-    public void setMacraMeasure(MacraMeasureDTO macraMeasure) {
+    public void setMacraMeasure(final MacraMeasureDTO macraMeasure) {
         this.macraMeasure = macraMeasure;
     }
 
@@ -74,7 +74,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
         return enteredValue;
     }
 
-    public void setEnteredValue(String enteredValue) {
+    public void setEnteredValue(final String enteredValue) {
         this.enteredValue = enteredValue;
     }
 }

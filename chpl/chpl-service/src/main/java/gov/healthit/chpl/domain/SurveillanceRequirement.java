@@ -57,7 +57,7 @@ public class SurveillanceRequirement implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -65,7 +65,7 @@ public class SurveillanceRequirement implements Serializable {
         return type;
     }
 
-    public void setType(SurveillanceRequirementType type) {
+    public void setType(final SurveillanceRequirementType type) {
         this.type = type;
     }
 
@@ -73,7 +73,7 @@ public class SurveillanceRequirement implements Serializable {
         return requirement;
     }
 
-    public void setRequirement(String requirement) {
+    public void setRequirement(final String requirement) {
         this.requirement = requirement;
     }
 
@@ -81,7 +81,7 @@ public class SurveillanceRequirement implements Serializable {
         return result;
     }
 
-    public void setResult(SurveillanceResultType result) {
+    public void setResult(final SurveillanceResultType result) {
         this.result = result;
     }
 
@@ -89,7 +89,7 @@ public class SurveillanceRequirement implements Serializable {
         return nonconformities;
     }
 
-    public void setNonconformities(List<SurveillanceNonconformity> nonconformities) {
+    public void setNonconformities(final List<SurveillanceNonconformity> nonconformities) {
         this.nonconformities = nonconformities;
     }
 

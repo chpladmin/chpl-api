@@ -12,7 +12,7 @@ public class ValidationErrorJSONObject implements Serializable {
         return errorMessages;
     }
 
-    public void setErrorMessages(Collection<String> errorMessages) {
+    public void setErrorMessages(final Collection<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 
@@ -20,7 +20,7 @@ public class ValidationErrorJSONObject implements Serializable {
         return warningMessages;
     }
 
-    public void setWarningMessages(Collection<String> warningMessages) {
+    public void setWarningMessages(final Collection<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 

@@ -46,7 +46,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -54,7 +54,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(Developer developer) {
+    public void setDeveloper(final Developer developer) {
         this.developer = developer;
     }
 
@@ -62,7 +62,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return version;
     }
 
-    public void setVersion(ProductVersion version) {
+    public void setVersion(final ProductVersion version) {
         this.version = version;
     }
 
@@ -70,7 +70,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return product;
     }
 
-    public void setProduct(Product product) {
+    public void setProduct(final Product product) {
         this.product = product;
     }
 
@@ -78,7 +78,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -86,7 +86,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return certificationStatus;
     }
 
-    public void setCertificationStatus(CertificationStatus certificationStatus) {
+    public void setCertificationStatus(final CertificationStatus certificationStatus) {
         this.certificationStatus = certificationStatus;
     }
 
@@ -94,7 +94,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return parents;
     }
 
-    public void setParents(List<CertifiedProduct> parents) {
+    public void setParents(final List<CertifiedProduct> parents) {
         this.parents = parents;
     }
 
@@ -102,7 +102,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return children;
     }
 
-    public void setChildren(List<CertifiedProduct> children) {
+    public void setChildren(final List<CertifiedProduct> children) {
         this.children = children;
     }
 
@@ -110,7 +110,7 @@ public class IcsFamilyTreeNode implements Serializable {
         return certificationDate;
     }
 
-    public void setCertificationDate(Date certificationDate) {
+    public void setCertificationDate(final Date certificationDate) {
         this.certificationDate = certificationDate;
     }
 

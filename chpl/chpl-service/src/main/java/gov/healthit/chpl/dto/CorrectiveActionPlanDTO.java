@@ -44,7 +44,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -52,7 +52,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -60,7 +60,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return approvalDate;
     }
 
-    public void setApprovalDate(Date approvalDate) {
+    public void setApprovalDate(final Date approvalDate) {
         this.approvalDate = approvalDate;
     }
 
@@ -68,7 +68,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return surveillanceStartDate;
     }
 
-    public void setSurveillanceStartDate(Date surveillanceStartDate) {
+    public void setSurveillanceStartDate(final Date surveillanceStartDate) {
         this.surveillanceStartDate = surveillanceStartDate;
     }
 
@@ -76,7 +76,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return surveillanceEndDate;
     }
 
-    public void setSurveillanceEndDate(Date surveillanceEndDate) {
+    public void setSurveillanceEndDate(final Date surveillanceEndDate) {
         this.surveillanceEndDate = surveillanceEndDate;
     }
 
@@ -84,7 +84,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return surveillanceResult;
     }
 
-    public void setSurveillanceResult(Boolean surveillanceResult) {
+    public void setSurveillanceResult(final Boolean surveillanceResult) {
         this.surveillanceResult = surveillanceResult;
     }
 
@@ -92,7 +92,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return nonComplianceDeterminationDate;
     }
 
-    public void setNonComplianceDeterminationDate(Date nonComplianceDeterminationDate) {
+    public void setNonComplianceDeterminationDate(final Date nonComplianceDeterminationDate) {
         this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
     }
 
@@ -100,7 +100,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -108,7 +108,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return requiredCompletionDate;
     }
 
-    public void setRequiredCompletionDate(Date requiredCompletionDate) {
+    public void setRequiredCompletionDate(final Date requiredCompletionDate) {
         this.requiredCompletionDate = requiredCompletionDate;
     }
 
@@ -116,7 +116,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return actualCompletionDate;
     }
 
-    public void setActualCompletionDate(Date actualCompletionDate) {
+    public void setActualCompletionDate(final Date actualCompletionDate) {
         this.actualCompletionDate = actualCompletionDate;
     }
 
@@ -124,7 +124,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -132,7 +132,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(String developerExplanation) {
+    public void setDeveloperExplanation(final String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -140,7 +140,7 @@ public class CorrectiveActionPlanDTO implements Serializable {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 

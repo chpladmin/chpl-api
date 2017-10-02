@@ -1410,7 +1410,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return orig;
         }
 
-        public void setOrig(CertificationResultAdditionalSoftware orig) {
+        public void setOrig(final CertificationResultAdditionalSoftware orig) {
             this.orig = orig;
         }
 
@@ -1418,7 +1418,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return updated;
         }
 
-        public void setUpdated(CertificationResultAdditionalSoftware updated) {
+        public void setUpdated(final CertificationResultAdditionalSoftware updated) {
             this.updated = updated;
         }
     }
@@ -1439,7 +1439,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return orig;
         }
 
-        public void setOrig(UcdProcess orig) {
+        public void setOrig(final UcdProcess orig) {
             this.orig = orig;
         }
 
@@ -1447,7 +1447,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return updated;
         }
 
-        public void setUpdated(UcdProcess updated) {
+        public void setUpdated(final UcdProcess updated) {
             this.updated = updated;
         }
     }
@@ -1468,7 +1468,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return orig;
         }
 
-        public void setOrig(CertificationResultTestData orig) {
+        public void setOrig(final CertificationResultTestData orig) {
             this.orig = orig;
         }
 
@@ -1476,7 +1476,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return updated;
         }
 
-        public void setUpdated(CertificationResultTestData updated) {
+        public void setUpdated(final CertificationResultTestData updated) {
             this.updated = updated;
         }
     }
@@ -1497,7 +1497,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return orig;
         }
 
-        public void setOrig(TestTask orig) {
+        public void setOrig(final TestTask orig) {
             this.orig = orig;
         }
 
@@ -1505,7 +1505,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return updated;
         }
 
-        public void setUpdated(TestTask updated) {
+        public void setUpdated(final TestTask updated) {
             this.updated = updated;
         }
     }
@@ -1526,7 +1526,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return orig;
         }
 
-        public void setOrig(TestParticipant orig) {
+        public void setOrig(final TestParticipant orig) {
             this.orig = orig;
         }
 
@@ -1534,7 +1534,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             return updated;
         }
 
-        public void setUpdated(TestParticipant updated) {
+        public void setUpdated(final TestParticipant updated) {
             this.updated = updated;
         }
     }

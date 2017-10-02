@@ -27,7 +27,7 @@ public class CertifiedProductAccessibilityStandardDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class CertifiedProductAccessibilityStandardDTO implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -43,7 +43,7 @@ public class CertifiedProductAccessibilityStandardDTO implements Serializable {
         return accessibilityStandardId;
     }
 
-    public void setAccessibilityStandardId(Long accessibilityStandardId) {
+    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
         this.accessibilityStandardId = accessibilityStandardId;
     }
 
@@ -51,7 +51,7 @@ public class CertifiedProductAccessibilityStandardDTO implements Serializable {
         return accessibilityStandardName;
     }
 
-    public void setAccessibilityStandardName(String accessibilityStandardName) {
+    public void setAccessibilityStandardName(final String accessibilityStandardName) {
         this.accessibilityStandardName = accessibilityStandardName;
     }
 

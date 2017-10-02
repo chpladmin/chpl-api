@@ -1991,7 +1991,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             return orig;
         }
 
-        public void setOrig(CertifiedProductQmsStandard orig) {
+        public void setOrig(final CertifiedProductQmsStandard orig) {
             this.orig = orig;
         }
 
@@ -1999,7 +1999,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             return updated;
         }
 
-        public void setUpdated(CertifiedProductQmsStandard updated) {
+        public void setUpdated(final CertifiedProductQmsStandard updated) {
             this.updated = updated;
         }
 
@@ -2021,7 +2021,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             return orig;
         }
 
-        public void setOrig(CQMResultDetailsDTO orig) {
+        public void setOrig(final CQMResultDetailsDTO orig) {
             this.orig = orig;
         }
 
@@ -2029,7 +2029,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             return updated;
         }
 
-        public void setUpdated(CQMResultDetailsDTO updated) {
+        public void setUpdated(final CQMResultDetailsDTO updated) {
             this.updated = updated;
         }
     }

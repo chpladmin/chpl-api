@@ -20,7 +20,7 @@ public class DeveloperTransparency implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -28,7 +28,7 @@ public class DeveloperTransparency implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -36,7 +36,7 @@ public class DeveloperTransparency implements Serializable {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -44,7 +44,7 @@ public class DeveloperTransparency implements Serializable {
         return listingCounts;
     }
 
-    public void setListingCounts(ListingCount listingCounts) {
+    public void setListingCounts(final ListingCount listingCounts) {
         this.listingCounts = listingCounts;
     }
 
@@ -52,7 +52,7 @@ public class DeveloperTransparency implements Serializable {
         return transparencyAttestationUrls;
     }
 
-    public void setTransparencyAttestationUrls(String transparencyAttestationUrls) {
+    public void setTransparencyAttestationUrls(final String transparencyAttestationUrls) {
         this.transparencyAttestationUrls = transparencyAttestationUrls;
     }
 
@@ -60,7 +60,7 @@ public class DeveloperTransparency implements Serializable {
         return acbAttestations;
     }
 
-    public void setAcbAttestations(String acbAttestations) {
+    public void setAcbAttestations(final String acbAttestations) {
         this.acbAttestations = acbAttestations;
     }
 
@@ -81,7 +81,7 @@ public class DeveloperTransparency implements Serializable {
             return active;
         }
 
-        public void setActive(Long active) {
+        public void setActive(final Long active) {
             this.active = active;
         }
 
@@ -89,7 +89,7 @@ public class DeveloperTransparency implements Serializable {
             return retired;
         }
 
-        public void setRetired(Long retired) {
+        public void setRetired(final Long retired) {
             this.retired = retired;
         }
 
@@ -97,7 +97,7 @@ public class DeveloperTransparency implements Serializable {
             return pending;
         }
 
-        public void setPending(Long pending) {
+        public void setPending(final Long pending) {
             this.pending = pending;
         }
 
@@ -105,7 +105,7 @@ public class DeveloperTransparency implements Serializable {
             return withdrawnByDeveloper;
         }
 
-        public void setWithdrawnByDeveloper(Long withdrawnByDeveloper) {
+        public void setWithdrawnByDeveloper(final Long withdrawnByDeveloper) {
             this.withdrawnByDeveloper = withdrawnByDeveloper;
         }
 
@@ -113,7 +113,7 @@ public class DeveloperTransparency implements Serializable {
             return withdrawnByOncAcb;
         }
 
-        public void setWithdrawnByOncAcb(Long withdrawnByOncAcb) {
+        public void setWithdrawnByOncAcb(final Long withdrawnByOncAcb) {
             this.withdrawnByOncAcb = withdrawnByOncAcb;
         }
 
@@ -121,7 +121,7 @@ public class DeveloperTransparency implements Serializable {
             return suspendedByOncAcb;
         }
 
-        public void setSuspendedByOncAcb(Long suspendedByOncAcb) {
+        public void setSuspendedByOncAcb(final Long suspendedByOncAcb) {
             this.suspendedByOncAcb = suspendedByOncAcb;
         }
 
@@ -129,7 +129,7 @@ public class DeveloperTransparency implements Serializable {
             return suspendedByOnc;
         }
 
-        public void setSuspendedByOnc(Long suspendedByOnc) {
+        public void setSuspendedByOnc(final Long suspendedByOnc) {
             this.suspendedByOnc = suspendedByOnc;
         }
 
@@ -137,7 +137,7 @@ public class DeveloperTransparency implements Serializable {
             return terminatedByOnc;
         }
 
-        public void setTerminatedByOnc(Long terminatedByOnc) {
+        public void setTerminatedByOnc(final Long terminatedByOnc) {
             this.terminatedByOnc = terminatedByOnc;
         }
 
@@ -145,7 +145,7 @@ public class DeveloperTransparency implements Serializable {
             return withdrawnByDeveloperUnderSurveillance;
         }
 
-        public void setWithdrawnByDeveloperUnderSurveillance(Long withdrawnByDeveloperUnderSurveillance) {
+        public void setWithdrawnByDeveloperUnderSurveillance(final Long withdrawnByDeveloperUnderSurveillance) {
             this.withdrawnByDeveloperUnderSurveillance = withdrawnByDeveloperUnderSurveillance;
         }
     }

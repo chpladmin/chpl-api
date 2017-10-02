@@ -8,7 +8,7 @@ public class ListingUpdateRequest {
         return listing;
     }
 
-    public void setListing(CertifiedProductSearchDetails listing) {
+    public void setListing(final CertifiedProductSearchDetails listing) {
         this.listing = listing;
     }
 
@@ -16,7 +16,7 @@ public class ListingUpdateRequest {
         return banDeveloper;
     }
 
-    public void setBanDeveloper(Boolean banDeveloper) {
+    public void setBanDeveloper(final Boolean banDeveloper) {
         this.banDeveloper = banDeveloper;
     }
 }

@@ -37,7 +37,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -45,7 +45,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return certificationCriterionId;
     }
 
-    public void setCertificationCriterionId(Long certificationCriterionId) {
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
     }
 
@@ -53,7 +53,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return certificationCriterionNumber;
     }
 
-    public void setCertificationCriterionNumber(String certificationCriterionNumber) {
+    public void setCertificationCriterionNumber(final String certificationCriterionNumber) {
         this.certificationCriterionNumber = certificationCriterionNumber;
     }
 
@@ -61,7 +61,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return certificationCriterionTitle;
     }
 
-    public void setCertificationCriterionTitle(String certificationCriterionTitle) {
+    public void setCertificationCriterionTitle(final String certificationCriterionTitle) {
         this.certificationCriterionTitle = certificationCriterionTitle;
     }
 
@@ -69,7 +69,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -77,7 +77,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return acbSummary;
     }
 
-    public void setAcbSummary(String acbSummary) {
+    public void setAcbSummary(final String acbSummary) {
         this.acbSummary = acbSummary;
     }
 
@@ -85,7 +85,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return developerSummary;
     }
 
-    public void setDeveloperSummary(String developerSummary) {
+    public void setDeveloperSummary(final String developerSummary) {
         this.developerSummary = developerSummary;
     }
 
@@ -93,7 +93,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return surveillancePassRate;
     }
 
-    public void setSurveillancePassRate(Integer surveillancePassRate) {
+    public void setSurveillancePassRate(final Integer surveillancePassRate) {
         this.surveillancePassRate = surveillancePassRate;
     }
 
@@ -101,7 +101,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
         return surveillanceSitesSurveilled;
     }
 
-    public void setSurveillanceSitesSurveilled(Integer surveillanceSitesSurveilled) {
+    public void setSurveillanceSitesSurveilled(final Integer surveillanceSitesSurveilled) {
         this.surveillanceSitesSurveilled = surveillanceSitesSurveilled;
     }
 }

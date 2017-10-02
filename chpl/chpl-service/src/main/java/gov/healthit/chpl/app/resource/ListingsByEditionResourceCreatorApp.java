@@ -91,7 +91,7 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
         return edition;
     }
 
-    public void setEdition(String edition) {
+    public void setEdition(final String edition) {
         this.edition = edition;
     }
 

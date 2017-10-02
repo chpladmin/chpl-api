@@ -552,7 +552,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return cqmCriteria;
     }
 
-    public void setCqmCriteria(List<CQMCriterion> cqmCriteria) {
+    public void setCqmCriteria(final List<CQMCriterion> cqmCriteria) {
         this.cqmCriteria = cqmCriteria;
     }
 

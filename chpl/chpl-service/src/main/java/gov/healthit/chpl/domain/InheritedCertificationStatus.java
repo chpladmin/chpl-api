@@ -42,7 +42,7 @@ public class InheritedCertificationStatus implements Serializable {
         return parents;
     }
 
-    public void setParents(List<CertifiedProduct> parents) {
+    public void setParents(final List<CertifiedProduct> parents) {
         this.parents = parents;
     }
 
@@ -50,7 +50,7 @@ public class InheritedCertificationStatus implements Serializable {
         return children;
     }
 
-    public void setChildren(List<CertifiedProduct> children) {
+    public void setChildren(final List<CertifiedProduct> children) {
         this.children = children;
     }
 
@@ -58,7 +58,7 @@ public class InheritedCertificationStatus implements Serializable {
         return inherits;
     }
 
-    public void setInherits(Boolean inherits) {
+    public void setInherits(final Boolean inherits) {
         this.inherits = inherits;
     }
 }

@@ -8,7 +8,7 @@ public abstract class Statistic {
         return year;
     };
 
-    public void setYear(Integer year) {
+    public void setYear(final Integer year) {
         this.year = year;
     }
 
@@ -16,7 +16,7 @@ public abstract class Statistic {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 }

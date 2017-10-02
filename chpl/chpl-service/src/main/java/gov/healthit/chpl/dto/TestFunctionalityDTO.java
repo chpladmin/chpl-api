@@ -27,7 +27,7 @@ public class TestFunctionalityDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class TestFunctionalityDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -43,7 +43,7 @@ public class TestFunctionalityDTO implements Serializable {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -51,7 +51,7 @@ public class TestFunctionalityDTO implements Serializable {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 }

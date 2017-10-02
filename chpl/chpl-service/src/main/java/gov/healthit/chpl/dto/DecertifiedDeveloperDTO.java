@@ -29,7 +29,7 @@ public class DecertifiedDeveloperDTO implements Serializable {
         return developerStatus;
     }
 
-    public void setDeveloperStatus(String developerStatus) {
+    public void setDeveloperStatus(final String developerStatus) {
         this.developerStatus = developerStatus;
     }
 
@@ -37,7 +37,7 @@ public class DecertifiedDeveloperDTO implements Serializable {
         return numMeaningfulUse;
     }
 
-    public void setNumMeaningfulUse(Long numMeaningfulUse) {
+    public void setNumMeaningfulUse(final Long numMeaningfulUse) {
         if (this.numMeaningfulUse == null) {
             this.numMeaningfulUse = numMeaningfulUse;
         } else {
@@ -60,7 +60,7 @@ public class DecertifiedDeveloperDTO implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -68,7 +68,7 @@ public class DecertifiedDeveloperDTO implements Serializable {
         return this.acbIdList;
     }
 
-    public void setAcbList(List<Long> acbIdList) {
+    public void setAcbList(final List<Long> acbIdList) {
         this.acbIdList = acbIdList;
     }
 
@@ -76,7 +76,7 @@ public class DecertifiedDeveloperDTO implements Serializable {
         return decertificationDate;
     }
 
-    public void setDecertificationDate(Date decertificationDate) {
+    public void setDecertificationDate(final Date decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 

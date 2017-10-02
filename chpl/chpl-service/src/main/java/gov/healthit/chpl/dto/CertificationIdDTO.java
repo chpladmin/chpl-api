@@ -36,7 +36,7 @@ public class CertificationIdDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -44,7 +44,7 @@ public class CertificationIdDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -52,7 +52,7 @@ public class CertificationIdDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -60,11 +60,11 @@ public class CertificationIdDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
-    public void setCertificationId(String certId) {
+    public void setCertificationId(final String certId) {
         this.certificationId = certId;
     }
 
@@ -72,7 +72,7 @@ public class CertificationIdDTO implements Serializable {
         return this.certificationId;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 
@@ -80,7 +80,7 @@ public class CertificationIdDTO implements Serializable {
         return this.year;
     }
 
-    public void setPracticeTypeId(Long practiceTypeId) {
+    public void setPracticeTypeId(final Long practiceTypeId) {
         this.practiceTypeId = practiceTypeId;
     }
 
@@ -88,7 +88,7 @@ public class CertificationIdDTO implements Serializable {
         return this.practiceTypeId;
     }
 
-    public void setKey(String key) {
+    public void setKey(final String key) {
         this.key = key;
     }
 

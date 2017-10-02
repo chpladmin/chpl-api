@@ -51,7 +51,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -59,7 +59,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -67,7 +67,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return justification;
     }
 
-    public void setJustification(String justification) {
+    public void setJustification(final String justification) {
         this.justification = justification;
     }
 
@@ -75,7 +75,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -83,7 +83,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -91,7 +91,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -115,7 +115,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -123,7 +123,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -131,7 +131,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -139,7 +139,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -147,7 +147,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return grouping;
     }
 
-    public void setGrouping(String grouping) {
+    public void setGrouping(final String grouping) {
         this.grouping = grouping;
     }
 
@@ -155,7 +155,7 @@ public class CertificationResultAdditionalSoftwareEntity {
         return certifiedProduct;
     }
 
-    public void setCertifiedProduct(CertifiedProductDetailsEntity certifiedProduct) {
+    public void setCertifiedProduct(final CertifiedProductDetailsEntity certifiedProduct) {
         this.certifiedProduct = certifiedProduct;
     }
 }

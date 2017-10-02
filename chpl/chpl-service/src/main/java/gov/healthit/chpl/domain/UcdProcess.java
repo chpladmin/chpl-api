@@ -76,7 +76,7 @@ public class UcdProcess implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -84,7 +84,7 @@ public class UcdProcess implements Serializable {
         return name;
     }
 
-    public void setName(String ucdProcessName) {
+    public void setName(final String ucdProcessName) {
         this.name = ucdProcessName;
     }
 
@@ -92,7 +92,7 @@ public class UcdProcess implements Serializable {
         return details;
     }
 
-    public void setDetails(String ucdProcessDetails) {
+    public void setDetails(final String ucdProcessDetails) {
         this.details = ucdProcessDetails;
     }
 
@@ -100,7 +100,7 @@ public class UcdProcess implements Serializable {
         return criteria;
     }
 
-    public void setCriteria(Set<CertificationCriterion> criteria) {
+    public void setCriteria(final Set<CertificationCriterion> criteria) {
         this.criteria = criteria;
     }
 }

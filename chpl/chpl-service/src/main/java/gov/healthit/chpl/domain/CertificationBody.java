@@ -31,7 +31,7 @@ public class CertificationBody implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -39,7 +39,7 @@ public class CertificationBody implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -47,7 +47,7 @@ public class CertificationBody implements Serializable {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(final String website) {
         this.website = website;
     }
 
@@ -55,7 +55,7 @@ public class CertificationBody implements Serializable {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(final Address address) {
         this.address = address;
     }
 
@@ -63,7 +63,7 @@ public class CertificationBody implements Serializable {
         return acbCode;
     }
 
-    public void setAcbCode(String acbCode) {
+    public void setAcbCode(final String acbCode) {
         this.acbCode = acbCode;
     }
 
@@ -71,7 +71,7 @@ public class CertificationBody implements Serializable {
         return isDeleted;
     }
 
-    public void setIsDeleted(boolean deleted) {
+    public void setIsDeleted(final boolean deleted) {
         this.isDeleted = deleted;
     }
 

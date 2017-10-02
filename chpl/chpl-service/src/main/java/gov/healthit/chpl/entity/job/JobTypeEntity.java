@@ -43,7 +43,7 @@ public class JobTypeEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -51,7 +51,7 @@ public class JobTypeEntity {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -59,7 +59,7 @@ public class JobTypeEntity {
         return successMessage;
     }
 
-    public void setSuccessMessage(String successMessage) {
+    public void setSuccessMessage(final String successMessage) {
         this.successMessage = successMessage;
     }
 
@@ -67,7 +67,7 @@ public class JobTypeEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -75,7 +75,7 @@ public class JobTypeEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -83,7 +83,7 @@ public class JobTypeEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -91,7 +91,7 @@ public class JobTypeEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -99,7 +99,7 @@ public class JobTypeEntity {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 }

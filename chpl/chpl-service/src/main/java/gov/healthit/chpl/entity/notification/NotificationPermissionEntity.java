@@ -49,7 +49,7 @@ public class NotificationPermissionEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -57,7 +57,7 @@ public class NotificationPermissionEntity {
         return notificationTypeId;
     }
 
-    public void setNotificationTypeId(Long notificationTypeId) {
+    public void setNotificationTypeId(final Long notificationTypeId) {
         this.notificationTypeId = notificationTypeId;
     }
 
@@ -65,7 +65,7 @@ public class NotificationPermissionEntity {
         return permissionId;
     }
 
-    public void setPermissionId(String permissionId) {
+    public void setPermissionId(final String permissionId) {
         this.permissionId = permissionId;
     }
 
@@ -73,7 +73,7 @@ public class NotificationPermissionEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -81,7 +81,7 @@ public class NotificationPermissionEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -89,7 +89,7 @@ public class NotificationPermissionEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -97,7 +97,7 @@ public class NotificationPermissionEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -105,7 +105,7 @@ public class NotificationPermissionEntity {
         return permission;
     }
 
-    public void setPermission(UserPermissionEntity permission) {
+    public void setPermission(final UserPermissionEntity permission) {
         this.permission = permission;
     }
 }

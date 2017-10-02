@@ -114,7 +114,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -122,7 +122,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -130,7 +130,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return edition;
     }
 
-    public void setEdition(String edition) {
+    public void setEdition(final String edition) {
         this.edition = edition;
     }
 
@@ -138,7 +138,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return atl;
     }
 
-    public void setAtl(String atl) {
+    public void setAtl(final String atl) {
         this.atl = atl;
     }
 
@@ -146,7 +146,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return acb;
     }
 
-    public void setAcb(String acb) {
+    public void setAcb(final String acb) {
         this.acb = acb;
     }
 
@@ -154,7 +154,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return practiceType;
     }
 
-    public void setPracticeType(String practiceType) {
+    public void setPracticeType(final String practiceType) {
         this.practiceType = practiceType;
     }
 
@@ -162,7 +162,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(String developer) {
+    public void setDeveloper(final String developer) {
         this.developer = developer;
     }
 
@@ -170,7 +170,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return product;
     }
 
-    public void setProduct(String product) {
+    public void setProduct(final String product) {
         this.product = product;
     }
 
@@ -178,7 +178,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -186,7 +186,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return certificationDate;
     }
 
-    public void setCertificationDate(Long certificationDate) {
+    public void setCertificationDate(final Long certificationDate) {
         this.certificationDate = certificationDate;
     }
 
@@ -194,7 +194,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return certificationStatus;
     }
 
-    public void setCertificationStatus(String certificationStatus) {
+    public void setCertificationStatus(final String certificationStatus) {
         this.certificationStatus = certificationStatus;
     }
 
@@ -202,7 +202,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return surveillanceCount;
     }
 
-    public void setSurveillanceCount(Long surveillanceCount) {
+    public void setSurveillanceCount(final Long surveillanceCount) {
         this.surveillanceCount = surveillanceCount;
     }
 
@@ -210,7 +210,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return openNonconformityCount;
     }
 
-    public void setOpenNonconformityCount(Long openNonconformityCount) {
+    public void setOpenNonconformityCount(final Long openNonconformityCount) {
         this.openNonconformityCount = openNonconformityCount;
     }
 
@@ -218,7 +218,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return closedNonconformityCount;
     }
 
-    public void setClosedNonconformityCount(Long closedNonconformityCount) {
+    public void setClosedNonconformityCount(final Long closedNonconformityCount) {
         this.closedNonconformityCount = closedNonconformityCount;
     }
 
@@ -226,7 +226,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(String acbCertificationId) {
+    public void setAcbCertificationId(final String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -234,7 +234,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return decertificationDate;
     }
 
-    public void setDecertificationDate(Long decertificationDate) {
+    public void setDecertificationDate(final Long decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 
@@ -242,7 +242,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return numMeaningfulUse;
     }
 
-    public void setNumMeaningfulUse(Long numMeaningfulUse) {
+    public void setNumMeaningfulUse(final Long numMeaningfulUse) {
         this.numMeaningfulUse = numMeaningfulUse;
     }
 
@@ -250,7 +250,7 @@ public class CertifiedProductSearchResult implements Serializable {
         return transparencyAttestationUrl;
     }
 
-    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 }

@@ -18,7 +18,7 @@ public class PermittedUserResults implements Serializable {
         return users;
     }
 
-    public void setUsers(List<PermittedUser> users) {
+    public void setUsers(final List<PermittedUser> users) {
         this.users = users;
     }
 }

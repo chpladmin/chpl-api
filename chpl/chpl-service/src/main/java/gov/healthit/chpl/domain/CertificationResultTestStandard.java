@@ -74,7 +74,7 @@ public class CertificationResultTestStandard implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -82,7 +82,7 @@ public class CertificationResultTestStandard implements Serializable {
         return testStandardId;
     }
 
-    public void setTestStandardId(Long testStandardId) {
+    public void setTestStandardId(final Long testStandardId) {
         this.testStandardId = testStandardId;
     }
 
@@ -90,7 +90,7 @@ public class CertificationResultTestStandard implements Serializable {
         return testStandardDescription;
     }
 
-    public void setTestStandardDescription(String testStandardDescription) {
+    public void setTestStandardDescription(final String testStandardDescription) {
         this.testStandardDescription = testStandardDescription;
     }
 
@@ -98,7 +98,7 @@ public class CertificationResultTestStandard implements Serializable {
         return testStandardName;
     }
 
-    public void setTestStandardName(String testStandardName) {
+    public void setTestStandardName(final String testStandardName) {
         this.testStandardName = testStandardName;
     }
 

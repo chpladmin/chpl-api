@@ -18,7 +18,7 @@ public class SurveillanceResults implements Serializable {
         return pendingSurveillance;
     }
 
-    public void setPendingSurveillance(List<Surveillance> pendingSurveillance) {
+    public void setPendingSurveillance(final List<Surveillance> pendingSurveillance) {
         this.pendingSurveillance = pendingSurveillance;
     }
 

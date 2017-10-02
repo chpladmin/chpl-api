@@ -202,7 +202,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
     }
 
     @Override
-    public void setProps(Properties props) {
+    public void setProps(final Properties props) {
         super.setProps(props);
         ruleCalculator.setProps(props);
     }
@@ -211,7 +211,7 @@ public class SurveillanceOversightAllBrokenRulesCsvPresenter extends Surveillanc
         return allBrokenRulesCounts;
     }
 
-    public void setAllBrokenRulesCounts(Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts) {
+    public void setAllBrokenRulesCounts(final Map<SurveillanceOversightRule, Integer> allBrokenRulesCounts) {
         this.allBrokenRulesCounts = allBrokenRulesCounts;
     }
 

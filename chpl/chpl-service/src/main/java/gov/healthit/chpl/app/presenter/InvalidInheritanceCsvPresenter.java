@@ -108,7 +108,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
         return props;
     }
 
-    public void setProps(Properties props) {
+    public void setProps(final Properties props) {
         this.props = props;
     }
 
@@ -116,7 +116,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
         return inheritanceDao;
     }
 
-    public void setInheritanceDao(ListingGraphDAO inheritanceDao) {
+    public void setInheritanceDao(final ListingGraphDAO inheritanceDao) {
         this.inheritanceDao = inheritanceDao;
     }
 
@@ -124,7 +124,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
         return messageSource;
     }
 
-    public void setMessageSource(MessageSource messageSource) {
+    public void setMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 

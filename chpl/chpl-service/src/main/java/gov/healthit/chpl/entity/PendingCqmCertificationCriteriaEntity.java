@@ -56,7 +56,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -64,7 +64,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -72,7 +72,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -80,7 +80,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -88,7 +88,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -96,7 +96,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return pendingCqmId;
     }
 
-    public void setPendingCqmId(Long pendingCqmId) {
+    public void setPendingCqmId(final Long pendingCqmId) {
         this.pendingCqmId = pendingCqmId;
     }
 
@@ -104,7 +104,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return certificationId;
     }
 
-    public void setCertificationId(Long certificationId) {
+    public void setCertificationId(final Long certificationId) {
         this.certificationId = certificationId;
     }
 
@@ -112,7 +112,7 @@ public class PendingCqmCertificationCriteriaEntity {
         return certificationCriteria;
     }
 
-    public void setCertificationCriteria(CertificationCriterionEntity certificationCriteria) {
+    public void setCertificationCriteria(final CertificationCriterionEntity certificationCriteria) {
         this.certificationCriteria = certificationCriteria;
     }
 }

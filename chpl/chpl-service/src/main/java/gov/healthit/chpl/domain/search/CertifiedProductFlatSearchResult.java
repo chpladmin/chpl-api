@@ -41,7 +41,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         return previousDevelopers;
     }
 
-    public void setPreviousDevelopers(String previousDevelopers) {
+    public void setPreviousDevelopers(final String previousDevelopers) {
         this.previousDevelopers = previousDevelopers;
     }
 
@@ -49,7 +49,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         return criteriaMet;
     }
 
-    public void setCriteriaMet(String criteriaMet) {
+    public void setCriteriaMet(final String criteriaMet) {
         this.criteriaMet = criteriaMet;
     }
 
@@ -57,7 +57,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         return cqmsMet;
     }
 
-    public void setCqmsMet(String cqmsMet) {
+    public void setCqmsMet(final String cqmsMet) {
         this.cqmsMet = cqmsMet;
     }
 
@@ -65,7 +65,7 @@ public class CertifiedProductFlatSearchResult extends CertifiedProductSearchResu
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 }

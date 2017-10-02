@@ -82,7 +82,7 @@ public class JobEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -90,7 +90,7 @@ public class JobEntity {
         return jobTypeId;
     }
 
-    public void setJobTypeId(Long jobTypeId) {
+    public void setJobTypeId(final Long jobTypeId) {
         this.jobTypeId = jobTypeId;
     }
 
@@ -98,7 +98,7 @@ public class JobEntity {
         return jobType;
     }
 
-    public void setJobType(JobTypeEntity jobType) {
+    public void setJobType(final JobTypeEntity jobType) {
         this.jobType = jobType;
     }
 
@@ -106,7 +106,7 @@ public class JobEntity {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(final Date startTime) {
         this.startTime = startTime;
     }
 
@@ -114,7 +114,7 @@ public class JobEntity {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(final Date endTime) {
         this.endTime = endTime;
     }
 
@@ -122,7 +122,7 @@ public class JobEntity {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(final String data) {
         this.data = data;
     }
 
@@ -130,7 +130,7 @@ public class JobEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -138,7 +138,7 @@ public class JobEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -146,7 +146,7 @@ public class JobEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -154,7 +154,7 @@ public class JobEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -162,7 +162,7 @@ public class JobEntity {
         return status;
     }
 
-    public void setStatus(JobStatusEntity status) {
+    public void setStatus(final JobStatusEntity status) {
         this.status = status;
     }
 
@@ -170,7 +170,7 @@ public class JobEntity {
         return messages;
     }
 
-    public void setMessages(Set<JobMessageEntity> messages) {
+    public void setMessages(final Set<JobMessageEntity> messages) {
         this.messages = messages;
     }
 
@@ -178,7 +178,7 @@ public class JobEntity {
         return statusId;
     }
 
-    public void setStatusId(Long statusId) {
+    public void setStatusId(final Long statusId) {
         this.statusId = statusId;
     }
 
@@ -186,7 +186,7 @@ public class JobEntity {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(final Long userId) {
         this.userId = userId;
     }
 
@@ -194,7 +194,7 @@ public class JobEntity {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(final UserEntity user) {
         this.user = user;
     }
 }

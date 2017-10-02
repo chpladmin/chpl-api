@@ -54,7 +54,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -62,7 +62,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -70,7 +70,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return macraId;
     }
 
-    public void setMacraId(Long macraId) {
+    public void setMacraId(final Long macraId) {
         this.macraId = macraId;
     }
 
@@ -78,7 +78,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return macraMeasure;
     }
 
-    public void setMacraMeasure(MacraMeasureEntity macraMeasure) {
+    public void setMacraMeasure(final MacraMeasureEntity macraMeasure) {
         this.macraMeasure = macraMeasure;
     }
 
@@ -86,7 +86,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -94,7 +94,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -102,7 +102,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -110,7 +110,7 @@ public class CertificationResultG1MacraMeasureEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 }

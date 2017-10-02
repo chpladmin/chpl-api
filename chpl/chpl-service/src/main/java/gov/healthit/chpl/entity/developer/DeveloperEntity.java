@@ -154,7 +154,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
      * @param address
      *            the address value you wish to set
      */
-    public void setAddress(AddressEntity address) {
+    public void setAddress(final AddressEntity address) {
         this.address = address;
     }
 
@@ -302,7 +302,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
         return this.developerCertificationStatuses;
     }
 
-    public void setDeveloperCertificationStatuses(
+    public void setDeveloperCertificationStatuses(final 
             DeveloperCertificationStatusesEntity developerCertificationStatusesEntity) {
         this.developerCertificationStatuses = developerCertificationStatusesEntity;
     }
@@ -311,7 +311,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
         return developerCode;
     }
 
-    public void setDeveloperCode(String developerCode) {
+    public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
     }
 
@@ -319,7 +319,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
         return contact;
     }
 
-    public void setContact(ContactEntity contact) {
+    public void setContact(final ContactEntity contact) {
         this.contact = contact;
     }
 
@@ -327,7 +327,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
         return statusEvents;
     }
 
-    public void setStatusEvents(Set<DeveloperStatusEventEntity> statusEvents) {
+    public void setStatusEvents(final Set<DeveloperStatusEventEntity> statusEvents) {
         this.statusEvents = statusEvents;
     }
 
@@ -349,7 +349,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
         return contactId;
     }
 
-    public void setContactId(Long contactId) {
+    public void setContactId(final Long contactId) {
         this.contactId = contactId;
     }
 

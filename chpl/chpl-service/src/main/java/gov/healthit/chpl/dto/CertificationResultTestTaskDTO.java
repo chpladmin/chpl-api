@@ -29,7 +29,7 @@ public class CertificationResultTestTaskDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -37,7 +37,7 @@ public class CertificationResultTestTaskDTO implements Serializable {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -45,7 +45,7 @@ public class CertificationResultTestTaskDTO implements Serializable {
         return testTaskId;
     }
 
-    public void setTestTaskId(Long testTaskId) {
+    public void setTestTaskId(final Long testTaskId) {
         this.testTaskId = testTaskId;
     }
 
@@ -53,7 +53,7 @@ public class CertificationResultTestTaskDTO implements Serializable {
         return testTask;
     }
 
-    public void setTestTask(TestTaskDTO testTask) {
+    public void setTestTask(final TestTaskDTO testTask) {
         this.testTask = testTask;
     }
 }

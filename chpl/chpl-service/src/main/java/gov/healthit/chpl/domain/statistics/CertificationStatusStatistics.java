@@ -9,7 +9,7 @@ public class CertificationStatusStatistics {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(final Integer id) {
         this.id = id;
     }
 
@@ -17,7 +17,7 @@ public class CertificationStatusStatistics {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -25,7 +25,7 @@ public class CertificationStatusStatistics {
         return certifiedBodyStatistics;
     }
 
-    public void setCertifiedBodyStatistics(CertifiedBodyStatistics certifiedBodyStatistics) {
+    public void setCertifiedBodyStatistics(final CertifiedBodyStatistics certifiedBodyStatistics) {
         this.certifiedBodyStatistics = certifiedBodyStatistics;
     }
 

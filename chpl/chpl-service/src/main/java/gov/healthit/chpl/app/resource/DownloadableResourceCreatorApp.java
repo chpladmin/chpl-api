@@ -67,7 +67,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
         return certifiedProductDao;
     }
 
-    public void setCertifiedProductDao(CertifiedProductDAO certifiedProductDAO) {
+    public void setCertifiedProductDao(final CertifiedProductDAO certifiedProductDAO) {
         this.certifiedProductDao = certifiedProductDAO;
     }
 
@@ -75,7 +75,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
         return timestampFormat;
     }
 
-    public void setTimestampFormat(SimpleDateFormat timestampFormat) {
+    public void setTimestampFormat(final SimpleDateFormat timestampFormat) {
         this.timestampFormat = timestampFormat;
     }
 
@@ -83,7 +83,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
         return cpdManager;
     }
 
-    public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
+    public void setCpdManager(final CertifiedProductDetailsManager cpdManager) {
         this.cpdManager = cpdManager;
     }
 
@@ -91,7 +91,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
         return criteriaDao;
     }
 
-    public void setCriteriaDao(CertificationCriterionDAO criteriaDao) {
+    public void setCriteriaDao(final CertificationCriterionDAO criteriaDao) {
         this.criteriaDao = criteriaDao;
     }
 }

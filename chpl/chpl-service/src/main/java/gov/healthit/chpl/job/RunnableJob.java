@@ -31,7 +31,7 @@ public class RunnableJob implements Runnable {
         return job;
     }
 
-    public void setJob(JobDTO job) {
+    public void setJob(final JobDTO job) {
         this.job = job;
     }
 
@@ -39,7 +39,7 @@ public class RunnableJob implements Runnable {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(final User user) {
         this.user = user;
     }
 
@@ -47,7 +47,7 @@ public class RunnableJob implements Runnable {
         return jobDao;
     }
 
-    public void setJobDao(JobDAO jobDao) {
+    public void setJobDao(final JobDAO jobDao) {
         this.jobDao = jobDao;
     }
 

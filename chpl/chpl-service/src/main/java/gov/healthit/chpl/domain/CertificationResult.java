@@ -218,7 +218,7 @@ public class CertificationResult implements Serializable {
         this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -226,7 +226,7 @@ public class CertificationResult implements Serializable {
         return allowedMacraMeasures;
     }
 
-    public void setAllowedMacraMeasures(List<MacraMeasure> allowedMacraMeasures) {
+    public void setAllowedMacraMeasures(final List<MacraMeasure> allowedMacraMeasures) {
         this.allowedMacraMeasures = allowedMacraMeasures;
     }
 
@@ -234,7 +234,7 @@ public class CertificationResult implements Serializable {
         return testProcedures;
     }
 
-    public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
+    public void setTestProcedures(final List<CertificationResultTestProcedure> testProcedures) {
         this.testProcedures = testProcedures;
     }
 
@@ -242,7 +242,7 @@ public class CertificationResult implements Serializable {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -250,7 +250,7 @@ public class CertificationResult implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -258,7 +258,7 @@ public class CertificationResult implements Serializable {
         return success;
     }
 
-    public void setSuccess(Boolean successful) {
+    public void setSuccess(final Boolean successful) {
         this.success = successful;
     }
 
@@ -266,7 +266,7 @@ public class CertificationResult implements Serializable {
         return additionalSoftware;
     }
 
-    public void setAdditionalSoftware(List<CertificationResultAdditionalSoftware> additionalSoftware) {
+    public void setAdditionalSoftware(final List<CertificationResultAdditionalSoftware> additionalSoftware) {
         this.additionalSoftware = additionalSoftware;
     }
 
@@ -274,7 +274,7 @@ public class CertificationResult implements Serializable {
         return gap;
     }
 
-    public void setGap(Boolean gap) {
+    public void setGap(final Boolean gap) {
         this.gap = gap;
     }
 
@@ -282,7 +282,7 @@ public class CertificationResult implements Serializable {
         return sed;
     }
 
-    public void setSed(Boolean sed) {
+    public void setSed(final Boolean sed) {
         this.sed = sed;
     }
 
@@ -290,7 +290,7 @@ public class CertificationResult implements Serializable {
         return g1Success;
     }
 
-    public void setG1Success(Boolean g1Success) {
+    public void setG1Success(final Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -298,7 +298,7 @@ public class CertificationResult implements Serializable {
         return g2Success;
     }
 
-    public void setG2Success(Boolean g2Success) {
+    public void setG2Success(final Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
@@ -306,7 +306,7 @@ public class CertificationResult implements Serializable {
         return testToolsUsed;
     }
 
-    public void setTestToolsUsed(List<CertificationResultTestTool> testToolsUsed) {
+    public void setTestToolsUsed(final List<CertificationResultTestTool> testToolsUsed) {
         this.testToolsUsed = testToolsUsed;
     }
 
@@ -314,7 +314,7 @@ public class CertificationResult implements Serializable {
         return testStandards;
     }
 
-    public void setTestStandards(List<CertificationResultTestStandard> testStandards) {
+    public void setTestStandards(final List<CertificationResultTestStandard> testStandards) {
         this.testStandards = testStandards;
     }
 
@@ -322,7 +322,7 @@ public class CertificationResult implements Serializable {
         return testDataUsed;
     }
 
-    public void setTestDataUsed(List<CertificationResultTestData> testDataUsed) {
+    public void setTestDataUsed(final List<CertificationResultTestData> testDataUsed) {
         this.testDataUsed = testDataUsed;
     }
 
@@ -330,7 +330,7 @@ public class CertificationResult implements Serializable {
         return testFunctionality;
     }
 
-    public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
+    public void setTestFunctionality(final List<CertificationResultTestFunctionality> testFunctionality) {
         this.testFunctionality = testFunctionality;
     }
 
@@ -338,7 +338,7 @@ public class CertificationResult implements Serializable {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -346,7 +346,7 @@ public class CertificationResult implements Serializable {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
@@ -354,7 +354,7 @@ public class CertificationResult implements Serializable {
         return g1MacraMeasures;
     }
 
-    public void setG1MacraMeasures(List<MacraMeasure> g1MacraMeasures) {
+    public void setG1MacraMeasures(final List<MacraMeasure> g1MacraMeasures) {
         this.g1MacraMeasures = g1MacraMeasures;
     }
 
@@ -362,7 +362,7 @@ public class CertificationResult implements Serializable {
         return g2MacraMeasures;
     }
 
-    public void setG2MacraMeasures(List<MacraMeasure> g2MacraMeasures) {
+    public void setG2MacraMeasures(final List<MacraMeasure> g2MacraMeasures) {
         this.g2MacraMeasures = g2MacraMeasures;
     }
 

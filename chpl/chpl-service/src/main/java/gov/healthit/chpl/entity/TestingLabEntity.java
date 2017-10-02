@@ -206,7 +206,7 @@ public class TestingLabEntity implements Serializable {
         return testingLabCode;
     }
 
-    public void setTestingLabCode(String testingLabCode) {
+    public void setTestingLabCode(final String testingLabCode) {
         this.testingLabCode = testingLabCode;
     }
 
@@ -214,7 +214,7 @@ public class TestingLabEntity implements Serializable {
         return address;
     }
 
-    public void setAddress(AddressEntity address) {
+    public void setAddress(final AddressEntity address) {
         this.address = address;
     }
 
@@ -222,7 +222,7 @@ public class TestingLabEntity implements Serializable {
         return accredidationNumber;
     }
 
-    public void setAccredidationNumber(String accredidationNumber) {
+    public void setAccredidationNumber(final String accredidationNumber) {
         this.accredidationNumber = accredidationNumber;
     }
 
@@ -230,7 +230,7 @@ public class TestingLabEntity implements Serializable {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(final String website) {
         this.website = website;
     }
 

@@ -84,7 +84,7 @@ public class Address implements Serializable {
         return addressId;
     }
 
-    public void setAddressId(Long addressId) {
+    public void setAddressId(final Long addressId) {
         this.addressId = addressId;
     }
 
@@ -92,7 +92,7 @@ public class Address implements Serializable {
         return line1;
     }
 
-    public void setLine1(String line1) {
+    public void setLine1(final String line1) {
         this.line1 = line1;
     }
 
@@ -100,7 +100,7 @@ public class Address implements Serializable {
         return line2;
     }
 
-    public void setLine2(String line2) {
+    public void setLine2(final String line2) {
         this.line2 = line2;
     }
 
@@ -108,7 +108,7 @@ public class Address implements Serializable {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -116,7 +116,7 @@ public class Address implements Serializable {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(final String state) {
         this.state = state;
     }
 
@@ -124,7 +124,7 @@ public class Address implements Serializable {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -132,7 +132,7 @@ public class Address implements Serializable {
         return zipcode;
     }
 
-    public void setZipcode(String zipcode) {
+    public void setZipcode(final String zipcode) {
         this.zipcode = zipcode;
     }
 

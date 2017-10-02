@@ -52,7 +52,7 @@ public class ListingToListingMapEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -60,7 +60,7 @@ public class ListingToListingMapEntity {
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public void setParentId(final Long parentId) {
         this.parentId = parentId;
     }
 
@@ -68,7 +68,7 @@ public class ListingToListingMapEntity {
         return parent;
     }
 
-    public void setParent(CertifiedProductDetailsEntity parent) {
+    public void setParent(final CertifiedProductDetailsEntity parent) {
         this.parent = parent;
     }
 
@@ -76,7 +76,7 @@ public class ListingToListingMapEntity {
         return childId;
     }
 
-    public void setChildId(Long childId) {
+    public void setChildId(final Long childId) {
         this.childId = childId;
     }
 
@@ -84,7 +84,7 @@ public class ListingToListingMapEntity {
         return child;
     }
 
-    public void setChild(CertifiedProductDetailsEntity child) {
+    public void setChild(final CertifiedProductDetailsEntity child) {
         this.child = child;
     }
 
@@ -92,7 +92,7 @@ public class ListingToListingMapEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -100,7 +100,7 @@ public class ListingToListingMapEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -108,7 +108,7 @@ public class ListingToListingMapEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -116,7 +116,7 @@ public class ListingToListingMapEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 }

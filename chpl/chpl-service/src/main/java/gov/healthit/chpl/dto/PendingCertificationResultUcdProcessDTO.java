@@ -27,7 +27,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -43,7 +43,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
         return ucdProcessId;
     }
 
-    public void setUcdProcessId(Long ucdProcessId) {
+    public void setUcdProcessId(final Long ucdProcessId) {
         this.ucdProcessId = ucdProcessId;
     }
 
@@ -51,7 +51,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
         return ucdProcessDetails;
     }
 
-    public void setUcdProcessDetails(String ucdProcessDetails) {
+    public void setUcdProcessDetails(final String ucdProcessDetails) {
         this.ucdProcessDetails = ucdProcessDetails;
     }
 
@@ -59,7 +59,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
         return ucdProcessName;
     }
 
-    public void setUcdProcessName(String ucdProcessName) {
+    public void setUcdProcessName(final String ucdProcessName) {
         this.ucdProcessName = ucdProcessName;
     }
 }

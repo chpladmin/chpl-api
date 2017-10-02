@@ -41,7 +41,7 @@ public class CertificationResultTestStandardEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -49,7 +49,7 @@ public class CertificationResultTestStandardEntity {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -57,7 +57,7 @@ public class CertificationResultTestStandardEntity {
         return testStandardId;
     }
 
-    public void setTestStandardId(Long testStandardId) {
+    public void setTestStandardId(final Long testStandardId) {
         this.testStandardId = testStandardId;
     }
 
@@ -65,7 +65,7 @@ public class CertificationResultTestStandardEntity {
         return testStandard;
     }
 
-    public void setTestStandard(TestStandardEntity testStandard) {
+    public void setTestStandard(final TestStandardEntity testStandard) {
         this.testStandard = testStandard;
     }
 
@@ -89,7 +89,7 @@ public class CertificationResultTestStandardEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -97,7 +97,7 @@ public class CertificationResultTestStandardEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -105,7 +105,7 @@ public class CertificationResultTestStandardEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -113,7 +113,7 @@ public class CertificationResultTestStandardEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 }

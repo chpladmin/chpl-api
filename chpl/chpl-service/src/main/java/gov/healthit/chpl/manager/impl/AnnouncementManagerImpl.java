@@ -90,7 +90,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
         return announcementDAO.getByIdToUpdate(id, includeDeleted);
     }
 
-    public void setAnnouncementDAO(AnnouncementDAO announcementDAO) {
+    public void setAnnouncementDAO(final AnnouncementDAO announcementDAO) {
         this.announcementDAO = announcementDAO;
     }
 

@@ -22,7 +22,7 @@ public class SimpleCertificationId implements Serializable {
         return certificationId;
     }
 
-    public void setCertificationId(String certificationId) {
+    public void setCertificationId(final String certificationId) {
         this.certificationId = certificationId;
     }
 
@@ -30,7 +30,7 @@ public class SimpleCertificationId implements Serializable {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(final Date created) {
         this.created = created;
     }
 

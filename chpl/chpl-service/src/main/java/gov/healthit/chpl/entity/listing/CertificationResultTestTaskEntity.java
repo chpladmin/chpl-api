@@ -44,7 +44,7 @@ public class CertificationResultTestTaskEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -52,7 +52,7 @@ public class CertificationResultTestTaskEntity {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -76,7 +76,7 @@ public class CertificationResultTestTaskEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -84,7 +84,7 @@ public class CertificationResultTestTaskEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -92,7 +92,7 @@ public class CertificationResultTestTaskEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -100,7 +100,7 @@ public class CertificationResultTestTaskEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -108,7 +108,7 @@ public class CertificationResultTestTaskEntity {
         return testTaskId;
     }
 
-    public void setTestTaskId(Long testTaskId) {
+    public void setTestTaskId(final Long testTaskId) {
         this.testTaskId = testTaskId;
     }
 
@@ -116,7 +116,7 @@ public class CertificationResultTestTaskEntity {
         return testTask;
     }
 
-    public void setTestTask(TestTaskEntity testTaskEntity) {
+    public void setTestTask(final TestTaskEntity testTaskEntity) {
         this.testTask = testTaskEntity;
     }
 }

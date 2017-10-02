@@ -43,7 +43,7 @@ public class SearchRequest implements Serializable {
         return searchTerm;
     }
 
-    public void setSearchTerm(String searchTerm) {
+    public void setSearchTerm(final String searchTerm) {
         this.searchTerm = searchTerm;
     }
 
@@ -51,7 +51,7 @@ public class SearchRequest implements Serializable {
         return certificationStatuses;
     }
 
-    public void setCertificationStatuses(List<String> certificationStatuses) {
+    public void setCertificationStatuses(final List<String> certificationStatuses) {
         this.certificationStatuses = certificationStatuses;
     }
 
@@ -59,7 +59,7 @@ public class SearchRequest implements Serializable {
         return certificationEditions;
     }
 
-    public void setCertificationEditions(List<String> certificationEditions) {
+    public void setCertificationEditions(final List<String> certificationEditions) {
         this.certificationEditions = certificationEditions;
     }
 
@@ -67,7 +67,7 @@ public class SearchRequest implements Serializable {
         return certificationCriteria;
     }
 
-    public void setCertificationCriteria(List<String> certificationCriteria) {
+    public void setCertificationCriteria(final List<String> certificationCriteria) {
         this.certificationCriteria = certificationCriteria;
     }
 
@@ -75,7 +75,7 @@ public class SearchRequest implements Serializable {
         return cqms;
     }
 
-    public void setCqms(List<String> cqms) {
+    public void setCqms(final List<String> cqms) {
         this.cqms = cqms;
     }
 
@@ -83,7 +83,7 @@ public class SearchRequest implements Serializable {
         return certificationBodies;
     }
 
-    public void setCertificationBodies(List<String> certificationBodies) {
+    public void setCertificationBodies(final List<String> certificationBodies) {
         this.certificationBodies = certificationBodies;
     }
 
@@ -91,7 +91,7 @@ public class SearchRequest implements Serializable {
         return developer;
     }
 
-    public void setDeveloper(String developer) {
+    public void setDeveloper(final String developer) {
         this.developer = developer;
     }
 
@@ -99,7 +99,7 @@ public class SearchRequest implements Serializable {
         return product;
     }
 
-    public void setProduct(String product) {
+    public void setProduct(final String product) {
         this.product = product;
     }
 
@@ -107,7 +107,7 @@ public class SearchRequest implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -115,7 +115,7 @@ public class SearchRequest implements Serializable {
         return practiceType;
     }
 
-    public void setPracticeType(String practiceType) {
+    public void setPracticeType(final String practiceType) {
         this.practiceType = practiceType;
     }
 
@@ -123,7 +123,7 @@ public class SearchRequest implements Serializable {
         return orderBy;
     }
 
-    public void setOrderBy(String orderBy) {
+    public void setOrderBy(final String orderBy) {
         this.orderBy = orderBy;
     }
 
@@ -131,7 +131,7 @@ public class SearchRequest implements Serializable {
         return sortDescending;
     }
 
-    public void setSortDescending(Boolean sortDescending) {
+    public void setSortDescending(final Boolean sortDescending) {
         this.sortDescending = sortDescending;
     }
 
@@ -139,7 +139,7 @@ public class SearchRequest implements Serializable {
         return pageNumber;
     }
 
-    public void setPageNumber(Integer pageNumber) {
+    public void setPageNumber(final Integer pageNumber) {
         this.pageNumber = pageNumber;
     }
 
@@ -147,7 +147,7 @@ public class SearchRequest implements Serializable {
         return pageSize;
     }
 
-    public void setPageSize(Integer pageSize) {
+    public void setPageSize(final Integer pageSize) {
         this.pageSize = pageSize;
     }
 
@@ -155,7 +155,7 @@ public class SearchRequest implements Serializable {
         return certificationDateStart;
     }
 
-    public void setCertificationDateStart(String certificationDateStart) {
+    public void setCertificationDateStart(final String certificationDateStart) {
         this.certificationDateStart = certificationDateStart;
     }
 
@@ -163,7 +163,7 @@ public class SearchRequest implements Serializable {
         return certificationDateEnd;
     }
 
-    public void setCertificationDateEnd(String certificationDateEnd) {
+    public void setCertificationDateEnd(final String certificationDateEnd) {
         this.certificationDateEnd = certificationDateEnd;
     }
 
@@ -171,7 +171,7 @@ public class SearchRequest implements Serializable {
         return surveillance;
     }
 
-    public void setSurveillance(Set<SurveillanceSearchOptions> surveillance) {
+    public void setSurveillance(final Set<SurveillanceSearchOptions> surveillance) {
         this.surveillance = surveillance;
     }
 
@@ -179,7 +179,7 @@ public class SearchRequest implements Serializable {
         return hasHadSurveillance;
     }
 
-    public void setHasHadSurveillance(Boolean hasHadSurveillance) {
+    public void setHasHadSurveillance(final Boolean hasHadSurveillance) {
         this.hasHadSurveillance = hasHadSurveillance;
     }
 

@@ -43,7 +43,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -51,7 +51,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -75,7 +75,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -83,7 +83,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -91,7 +91,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -99,7 +99,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -107,7 +107,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return accessibilityStandardId;
     }
 
-    public void setAccessibilityStandardId(Long accessibilityStandardId) {
+    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
         this.accessibilityStandardId = accessibilityStandardId;
     }
 
@@ -115,7 +115,7 @@ public class CertifiedProductAccessibilityStandardEntity {
         return accessibilityStandard;
     }
 
-    public void setAccessibilityStandard(AccessibilityStandardEntity accessibilityStandard) {
+    public void setAccessibilityStandard(final AccessibilityStandardEntity accessibilityStandard) {
         this.accessibilityStandard = accessibilityStandard;
     }
 }

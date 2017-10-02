@@ -24,7 +24,7 @@ public class OversightRuleResult {
         return rule;
     }
 
-    public void setRule(SurveillanceOversightRule rule) {
+    public void setRule(final SurveillanceOversightRule rule) {
         this.rule = rule;
     }
 
@@ -32,7 +32,7 @@ public class OversightRuleResult {
         return dateBroken;
     }
 
-    public void setDateBroken(Date dateBroken) {
+    public void setDateBroken(final Date dateBroken) {
         this.dateBroken = dateBroken;
     }
 
@@ -47,7 +47,7 @@ public class OversightRuleResult {
         return numDaysBroken;
     }
 
-    public void setNumDaysBroken(long numDaysBroken) {
+    public void setNumDaysBroken(final long numDaysBroken) {
         this.numDaysBroken = numDaysBroken;
     }
 }

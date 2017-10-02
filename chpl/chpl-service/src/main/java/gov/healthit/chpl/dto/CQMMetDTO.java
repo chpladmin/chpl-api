@@ -17,7 +17,7 @@ public class CQMMetDTO implements Serializable {
         this.domain = domain;
     }
 
-    public void setCmsId(String cmsId) {
+    public void setCmsId(final String cmsId) {
         this.cmsId = cmsId;
     }
 
@@ -25,7 +25,7 @@ public class CQMMetDTO implements Serializable {
         return this.cmsId;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -33,7 +33,7 @@ public class CQMMetDTO implements Serializable {
         return this.version;
     }
 
-    public void setDomain(String domain) {
+    public void setDomain(final String domain) {
         this.domain = domain;
     }
 

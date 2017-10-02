@@ -33,7 +33,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -41,7 +41,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -49,7 +49,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -57,7 +57,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return chplId;
     }
 
-    public void setChplId(String chplId) {
+    public void setChplId(final String chplId) {
         this.chplId = chplId;
     }
 
@@ -65,7 +65,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -73,7 +73,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -81,7 +81,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return justification;
     }
 
-    public void setJustification(String justification) {
+    public void setJustification(final String justification) {
         this.justification = justification;
     }
 
@@ -89,7 +89,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
         return grouping;
     }
 
-    public void setGrouping(String grouping) {
+    public void setGrouping(final String grouping) {
         this.grouping = grouping;
     }
 }

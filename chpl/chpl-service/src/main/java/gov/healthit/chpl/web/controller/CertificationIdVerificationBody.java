@@ -17,7 +17,7 @@ public class CertificationIdVerificationBody {
         return this.ids;
     }
 
-    public void setIds(List<String> ids) {
+    public void setIds(final List<String> ids) {
         this.ids = ids;
     }
 

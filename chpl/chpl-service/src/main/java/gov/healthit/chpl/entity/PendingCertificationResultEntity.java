@@ -142,7 +142,7 @@ public class PendingCertificationResultEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -150,7 +150,7 @@ public class PendingCertificationResultEntity {
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
@@ -158,7 +158,7 @@ public class PendingCertificationResultEntity {
         return meetsCriteria;
     }
 
-    public void setMeetsCriteria(Boolean meetsCriteria) {
+    public void setMeetsCriteria(final Boolean meetsCriteria) {
         this.meetsCriteria = meetsCriteria;
     }
 
@@ -166,7 +166,7 @@ public class PendingCertificationResultEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -174,7 +174,7 @@ public class PendingCertificationResultEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -182,7 +182,7 @@ public class PendingCertificationResultEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -190,7 +190,7 @@ public class PendingCertificationResultEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -198,7 +198,7 @@ public class PendingCertificationResultEntity {
         return mappedCriterion;
     }
 
-    public void setMappedCriterion(CertificationCriterionEntity mappedCriterion) {
+    public void setMappedCriterion(final CertificationCriterionEntity mappedCriterion) {
         this.mappedCriterion = mappedCriterion;
     }
 
@@ -206,7 +206,7 @@ public class PendingCertificationResultEntity {
         return gap;
     }
 
-    public void setGap(Boolean gap) {
+    public void setGap(final Boolean gap) {
         this.gap = gap;
     }
 
@@ -214,7 +214,7 @@ public class PendingCertificationResultEntity {
         return sed;
     }
 
-    public void setSed(Boolean sed) {
+    public void setSed(final Boolean sed) {
         this.sed = sed;
     }
 
@@ -222,7 +222,7 @@ public class PendingCertificationResultEntity {
         return g1Success;
     }
 
-    public void setG1Success(Boolean g1Success) {
+    public void setG1Success(final Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -230,7 +230,7 @@ public class PendingCertificationResultEntity {
         return g2Success;
     }
 
-    public void setG2Success(Boolean g2Success) {
+    public void setG2Success(final Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
@@ -238,7 +238,7 @@ public class PendingCertificationResultEntity {
         return testStandards;
     }
 
-    public void setTestStandards(Set<PendingCertificationResultTestStandardEntity> testStandards) {
+    public void setTestStandards(final Set<PendingCertificationResultTestStandardEntity> testStandards) {
         this.testStandards = testStandards;
     }
 
@@ -246,7 +246,7 @@ public class PendingCertificationResultEntity {
         return testFunctionality;
     }
 
-    public void setTestFunctionality(Set<PendingCertificationResultTestFunctionalityEntity> testFunctionality) {
+    public void setTestFunctionality(final Set<PendingCertificationResultTestFunctionalityEntity> testFunctionality) {
         this.testFunctionality = testFunctionality;
     }
 
@@ -254,7 +254,7 @@ public class PendingCertificationResultEntity {
         return additionalSoftware;
     }
 
-    public void setAdditionalSoftware(Set<PendingCertificationResultAdditionalSoftwareEntity> additionalSoftware) {
+    public void setAdditionalSoftware(final Set<PendingCertificationResultAdditionalSoftwareEntity> additionalSoftware) {
         this.additionalSoftware = additionalSoftware;
     }
 
@@ -262,7 +262,7 @@ public class PendingCertificationResultEntity {
         return testProcedures;
     }
 
-    public void setTestProcedures(Set<PendingCertificationResultTestProcedureEntity> testProcedures) {
+    public void setTestProcedures(final Set<PendingCertificationResultTestProcedureEntity> testProcedures) {
         this.testProcedures = testProcedures;
     }
 
@@ -270,7 +270,7 @@ public class PendingCertificationResultEntity {
         return testData;
     }
 
-    public void setTestData(Set<PendingCertificationResultTestDataEntity> testData) {
+    public void setTestData(final Set<PendingCertificationResultTestDataEntity> testData) {
         this.testData = testData;
     }
 
@@ -278,7 +278,7 @@ public class PendingCertificationResultEntity {
         return testTools;
     }
 
-    public void setTestTools(Set<PendingCertificationResultTestToolEntity> testTools) {
+    public void setTestTools(final Set<PendingCertificationResultTestToolEntity> testTools) {
         this.testTools = testTools;
     }
 
@@ -286,7 +286,7 @@ public class PendingCertificationResultEntity {
         return ucdProcesses;
     }
 
-    public void setUcdProcesses(Set<PendingCertificationResultUcdProcessEntity> ucdProcesses) {
+    public void setUcdProcesses(final Set<PendingCertificationResultUcdProcessEntity> ucdProcesses) {
         this.ucdProcesses = ucdProcesses;
     }
 
@@ -294,7 +294,7 @@ public class PendingCertificationResultEntity {
         return hasAdditionalSoftware;
     }
 
-    public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
+    public void setHasAdditionalSoftware(final Boolean hasAdditionalSoftware) {
         this.hasAdditionalSoftware = hasAdditionalSoftware;
     }
 
@@ -302,7 +302,7 @@ public class PendingCertificationResultEntity {
         return testTasks;
     }
 
-    public void setTestTasks(Set<PendingCertificationResultTestTaskEntity> testTasks) {
+    public void setTestTasks(final Set<PendingCertificationResultTestTaskEntity> testTasks) {
         this.testTasks = testTasks;
     }
 
@@ -310,7 +310,7 @@ public class PendingCertificationResultEntity {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -318,7 +318,7 @@ public class PendingCertificationResultEntity {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
@@ -326,7 +326,7 @@ public class PendingCertificationResultEntity {
         return g1MacraMeasures;
     }
 
-    public void setG1MacraMeasures(Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures) {
+    public void setG1MacraMeasures(final Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures) {
         this.g1MacraMeasures = g1MacraMeasures;
     }
 
@@ -334,7 +334,7 @@ public class PendingCertificationResultEntity {
         return g2MacraMeasures;
     }
 
-    public void setG2MacraMeasures(Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures) {
+    public void setG2MacraMeasures(final Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures) {
         this.g2MacraMeasures = g2MacraMeasures;
     }
 

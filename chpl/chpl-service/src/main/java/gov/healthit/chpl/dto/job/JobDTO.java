@@ -61,7 +61,7 @@ public class JobDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -69,7 +69,7 @@ public class JobDTO implements Serializable {
         return jobType;
     }
 
-    public void setJobType(JobTypeDTO jobType) {
+    public void setJobType(final JobTypeDTO jobType) {
         this.jobType = jobType;
     }
 
@@ -77,7 +77,7 @@ public class JobDTO implements Serializable {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(final Date startTime) {
         this.startTime = startTime;
     }
 
@@ -85,7 +85,7 @@ public class JobDTO implements Serializable {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(final Date endTime) {
         this.endTime = endTime;
     }
 
@@ -93,7 +93,7 @@ public class JobDTO implements Serializable {
         return data;
     }
 
-    public void setData(String data) {
+    public void setData(final String data) {
         this.data = data;
     }
 
@@ -101,7 +101,7 @@ public class JobDTO implements Serializable {
         return status;
     }
 
-    public void setStatus(JobStatusDTO status) {
+    public void setStatus(final JobStatusDTO status) {
         this.status = status;
     }
 
@@ -109,7 +109,7 @@ public class JobDTO implements Serializable {
         return messages;
     }
 
-    public void setMessages(List<JobMessageDTO> messages) {
+    public void setMessages(final List<JobMessageDTO> messages) {
         this.messages = messages;
     }
 
@@ -117,7 +117,7 @@ public class JobDTO implements Serializable {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(final UserDTO user) {
         this.user = user;
     }
 }

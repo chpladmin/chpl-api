@@ -83,7 +83,7 @@ public class ActivityEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -91,7 +91,7 @@ public class ActivityEntity {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -99,7 +99,7 @@ public class ActivityEntity {
         return activityDate;
     }
 
-    public void setActivityDate(Date activityDate) {
+    public void setActivityDate(final Date activityDate) {
         this.activityDate = activityDate;
     }
 
@@ -107,7 +107,7 @@ public class ActivityEntity {
         return activityObjectId;
     }
 
-    public void setActivityObjectId(Long activityObjectId) {
+    public void setActivityObjectId(final Long activityObjectId) {
         this.activityObjectId = activityObjectId;
     }
 
@@ -115,7 +115,7 @@ public class ActivityEntity {
         return activityObjectConceptId;
     }
 
-    public void setActivityObjectConceptId(Long activityObjectClassId) {
+    public void setActivityObjectConceptId(final Long activityObjectClassId) {
 
         for (ActivityConcept concept : ActivityConcept.values()) {
             if (concept.getId().equals(activityObjectClassId)) {
@@ -140,7 +140,7 @@ public class ActivityEntity {
         return this.concept;
     }
 
-    public void setConcept(ActivityConcept concept) {
+    public void setConcept(final ActivityConcept concept) {
         this.activityObjectConceptId = concept.getId();
         this.concept = concept;
     }
@@ -149,7 +149,7 @@ public class ActivityEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -157,7 +157,7 @@ public class ActivityEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -165,7 +165,7 @@ public class ActivityEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -173,7 +173,7 @@ public class ActivityEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -181,7 +181,7 @@ public class ActivityEntity {
         return originalData;
     }
 
-    public void setOriginalData(String originalData) {
+    public void setOriginalData(final String originalData) {
         this.originalData = originalData;
     }
 
@@ -189,7 +189,7 @@ public class ActivityEntity {
         return newData;
     }
 
-    public void setNewData(String newData) {
+    public void setNewData(final String newData) {
         this.newData = newData;
     }
 
@@ -197,7 +197,7 @@ public class ActivityEntity {
         return user;
     }
 
-    public void setUser(UserEntity user) {
+    public void setUser(final UserEntity user) {
         this.user = user;
     }
 

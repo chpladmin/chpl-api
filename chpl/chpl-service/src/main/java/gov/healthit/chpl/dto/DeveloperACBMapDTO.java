@@ -42,7 +42,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -50,7 +50,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -58,7 +58,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return acbId;
     }
 
-    public void setAcbId(Long acbId) {
+    public void setAcbId(final Long acbId) {
         this.acbId = acbId;
     }
 
@@ -66,7 +66,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(String transparencyAttestation) {
+    public void setTransparencyAttestation(final String transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 
@@ -74,7 +74,7 @@ public class DeveloperACBMapDTO implements Serializable {
         return acbName;
     }
 
-    public void setAcbName(String acbName) {
+    public void setAcbName(final String acbName) {
         this.acbName = acbName;
     }
 }

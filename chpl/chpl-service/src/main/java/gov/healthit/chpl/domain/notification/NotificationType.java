@@ -22,7 +22,7 @@ public class NotificationType {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -30,7 +30,7 @@ public class NotificationType {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -38,7 +38,7 @@ public class NotificationType {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -46,7 +46,7 @@ public class NotificationType {
         return requiresAcb;
     }
 
-    public void setRequiresAcb(Boolean requiresAcb) {
+    public void setRequiresAcb(final Boolean requiresAcb) {
         this.requiresAcb = requiresAcb;
     }
 }

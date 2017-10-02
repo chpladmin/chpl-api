@@ -46,7 +46,7 @@ public class DeveloperACBTransparencyMapEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -54,7 +54,7 @@ public class DeveloperACBTransparencyMapEntity {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -62,7 +62,7 @@ public class DeveloperACBTransparencyMapEntity {
         return certificationBodyId;
     }
 
-    public void setCertificationBodyId(Long certificationBodyId) {
+    public void setCertificationBodyId(final Long certificationBodyId) {
         this.certificationBodyId = certificationBodyId;
     }
 
@@ -70,7 +70,7 @@ public class DeveloperACBTransparencyMapEntity {
         return acbName;
     }
 
-    public void setAcbName(String acbName) {
+    public void setAcbName(final String acbName) {
         this.acbName = acbName;
     }
 
@@ -78,7 +78,7 @@ public class DeveloperACBTransparencyMapEntity {
         return developerName;
     }
 
-    public void setDeveloperName(String developerName) {
+    public void setDeveloperName(final String developerName) {
         this.developerName = developerName;
     }
 
@@ -86,7 +86,7 @@ public class DeveloperACBTransparencyMapEntity {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(AttestationType transparencyAttestation) {
+    public void setTransparencyAttestation(final AttestationType transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 }

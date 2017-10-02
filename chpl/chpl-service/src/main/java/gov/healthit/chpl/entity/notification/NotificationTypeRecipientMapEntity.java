@@ -60,7 +60,7 @@ public class NotificationTypeRecipientMapEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -68,7 +68,7 @@ public class NotificationTypeRecipientMapEntity {
         return recipientId;
     }
 
-    public void setRecipientId(Long recipientId) {
+    public void setRecipientId(final Long recipientId) {
         this.recipientId = recipientId;
     }
 
@@ -76,7 +76,7 @@ public class NotificationTypeRecipientMapEntity {
         return recipient;
     }
 
-    public void setRecipient(NotificationRecipientEntity recipient) {
+    public void setRecipient(final NotificationRecipientEntity recipient) {
         this.recipient = recipient;
     }
 
@@ -84,7 +84,7 @@ public class NotificationTypeRecipientMapEntity {
         return notificationTypeId;
     }
 
-    public void setNotificationTypeId(Long notificationTypeId) {
+    public void setNotificationTypeId(final Long notificationTypeId) {
         this.notificationTypeId = notificationTypeId;
     }
 
@@ -92,7 +92,7 @@ public class NotificationTypeRecipientMapEntity {
         return notificationType;
     }
 
-    public void setNotificationType(NotificationTypeEntity notificationType) {
+    public void setNotificationType(final NotificationTypeEntity notificationType) {
         this.notificationType = notificationType;
     }
 
@@ -100,7 +100,7 @@ public class NotificationTypeRecipientMapEntity {
         return acbId;
     }
 
-    public void setAcbId(Long acbId) {
+    public void setAcbId(final Long acbId) {
         this.acbId = acbId;
     }
 
@@ -108,7 +108,7 @@ public class NotificationTypeRecipientMapEntity {
         return acb;
     }
 
-    public void setAcb(CertificationBodyEntity acb) {
+    public void setAcb(final CertificationBodyEntity acb) {
         this.acb = acb;
     }
 
@@ -116,7 +116,7 @@ public class NotificationTypeRecipientMapEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -124,7 +124,7 @@ public class NotificationTypeRecipientMapEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -132,7 +132,7 @@ public class NotificationTypeRecipientMapEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -140,7 +140,7 @@ public class NotificationTypeRecipientMapEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 

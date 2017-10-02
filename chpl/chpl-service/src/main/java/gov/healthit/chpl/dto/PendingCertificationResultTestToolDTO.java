@@ -27,7 +27,7 @@ public class PendingCertificationResultTestToolDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class PendingCertificationResultTestToolDTO implements Serializable {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -43,7 +43,7 @@ public class PendingCertificationResultTestToolDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -51,7 +51,7 @@ public class PendingCertificationResultTestToolDTO implements Serializable {
         return testToolId;
     }
 
-    public void setTestToolId(Long testToolId) {
+    public void setTestToolId(final Long testToolId) {
         this.testToolId = testToolId;
     }
 
@@ -59,7 +59,7 @@ public class PendingCertificationResultTestToolDTO implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 }

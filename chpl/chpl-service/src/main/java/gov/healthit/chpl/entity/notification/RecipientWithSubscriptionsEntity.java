@@ -37,7 +37,7 @@ public class RecipientWithSubscriptionsEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -45,7 +45,7 @@ public class RecipientWithSubscriptionsEntity {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -53,7 +53,7 @@ public class RecipientWithSubscriptionsEntity {
         return subscriptions;
     }
 
-    public void setSubscriptions(Set<NotificationTypeRecipientMapEntity> subscriptions) {
+    public void setSubscriptions(final Set<NotificationTypeRecipientMapEntity> subscriptions) {
         this.subscriptions = subscriptions;
     }
 
@@ -61,7 +61,7 @@ public class RecipientWithSubscriptionsEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 }

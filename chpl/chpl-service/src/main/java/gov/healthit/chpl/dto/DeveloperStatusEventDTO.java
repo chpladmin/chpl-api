@@ -28,7 +28,7 @@ public class DeveloperStatusEventDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class DeveloperStatusEventDTO implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -44,7 +44,7 @@ public class DeveloperStatusEventDTO implements Serializable {
         return statusDate;
     }
 
-    public void setStatusDate(Date statusDate) {
+    public void setStatusDate(final Date statusDate) {
         this.statusDate = statusDate;
     }
 
@@ -52,7 +52,7 @@ public class DeveloperStatusEventDTO implements Serializable {
         return status;
     }
 
-    public void setStatus(DeveloperStatusDTO status) {
+    public void setStatus(final DeveloperStatusDTO status) {
         this.status = status;
     }
 

@@ -94,7 +94,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -102,7 +102,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return parent;
     }
 
-    public void setParent(String parent) {
+    public void setParent(final String parent) {
         this.parent = parent;
     }
 
@@ -110,7 +110,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return child;
     }
 
-    public void setChild(String child) {
+    public void setChild(final String child) {
         this.child = child;
     }
 
@@ -118,7 +118,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -126,7 +126,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return edition;
     }
 
-    public void setEdition(String edition) {
+    public void setEdition(final String edition) {
         this.edition = edition;
     }
 
@@ -134,7 +134,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return atlName;
     }
 
-    public void setAtlName(String atlName) {
+    public void setAtlName(final String atlName) {
         this.atlName = atlName;
     }
 
@@ -142,7 +142,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return acbName;
     }
 
-    public void setAcbName(String acbName) {
+    public void setAcbName(final String acbName) {
         this.acbName = acbName;
     }
 
@@ -150,7 +150,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return practiceTypeName;
     }
 
-    public void setPracticeTypeName(String practiceTypeName) {
+    public void setPracticeTypeName(final String practiceTypeName) {
         this.practiceTypeName = practiceTypeName;
     }
 
@@ -158,7 +158,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(String acbCertificationId) {
+    public void setAcbCertificationId(final String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -166,7 +166,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -174,7 +174,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return product;
     }
 
-    public void setProduct(String product) {
+    public void setProduct(final String product) {
         this.product = product;
     }
 
@@ -182,7 +182,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return developer;
     }
 
-    public void setDeveloper(String developer) {
+    public void setDeveloper(final String developer) {
         this.developer = developer;
     }
 
@@ -190,7 +190,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return certificationDate;
     }
 
-    public void setCertificationDate(Date certificationDate) {
+    public void setCertificationDate(final Date certificationDate) {
         this.certificationDate = certificationDate;
     }
 
@@ -198,7 +198,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return certificationStatus;
     }
 
-    public void setCertificationStatus(String certificationStatus) {
+    public void setCertificationStatus(final String certificationStatus) {
         this.certificationStatus = certificationStatus;
     }
 
@@ -206,7 +206,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return surveillanceCount;
     }
 
-    public void setSurveillanceCount(Long surveillanceCount) {
+    public void setSurveillanceCount(final Long surveillanceCount) {
         this.surveillanceCount = surveillanceCount;
     }
 
@@ -214,7 +214,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return openNonconformityCount;
     }
 
-    public void setOpenNonconformityCount(Long openNonconformityCount) {
+    public void setOpenNonconformityCount(final Long openNonconformityCount) {
         this.openNonconformityCount = openNonconformityCount;
     }
 
@@ -222,7 +222,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return closedNonconformityCount;
     }
 
-    public void setClosedNonconformityCount(Long closedNonconformityCount) {
+    public void setClosedNonconformityCount(final Long closedNonconformityCount) {
         this.closedNonconformityCount = closedNonconformityCount;
     }
 
@@ -230,7 +230,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return certs;
     }
 
-    public void setCerts(String certs) {
+    public void setCerts(final String certs) {
         this.certs = certs;
     }
 
@@ -238,7 +238,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return cqms;
     }
 
-    public void setCqms(String cqms) {
+    public void setCqms(final String cqms) {
         this.cqms = cqms;
     }
 
@@ -246,7 +246,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return previousDevelopers;
     }
 
-    public void setPreviousDevelopers(String previousDevelopers) {
+    public void setPreviousDevelopers(final String previousDevelopers) {
         this.previousDevelopers = previousDevelopers;
     }
 
@@ -254,7 +254,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return decertificationDate;
     }
 
-    public void setDecertificationDate(Date decertificationDate) {
+    public void setDecertificationDate(final Date decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 
@@ -262,7 +262,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return meaningfulUseUserCount;
     }
 
-    public void setMeaningfulUseUserCount(Long meaningfulUseUserCount) {
+    public void setMeaningfulUseUserCount(final Long meaningfulUseUserCount) {
         this.meaningfulUseUserCount = meaningfulUseUserCount;
     }
 
@@ -270,7 +270,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return transparencyAttestationUrl;
     }
 
-    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -278,7 +278,7 @@ public class CertifiedProductBasicSearchResultEntity {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 }

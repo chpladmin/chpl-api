@@ -13,7 +13,7 @@ public class ModificationItem implements Serializable {
         return subject;
     }
 
-    public void setSubject(String subject) {
+    public void setSubject(final String subject) {
         this.subject = subject;
     }
 
@@ -21,7 +21,7 @@ public class ModificationItem implements Serializable {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(final String action) {
         this.action = action;
     }
 
@@ -29,7 +29,7 @@ public class ModificationItem implements Serializable {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(final Date date) {
         this.date = date;
     }
 

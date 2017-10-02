@@ -13,7 +13,7 @@ public class UpdateVersionsRequest implements Serializable {
         return versionIds;
     }
 
-    public void setVersionIds(List<Long> versionIds) {
+    public void setVersionIds(final List<Long> versionIds) {
         this.versionIds = versionIds;
     }
 
@@ -21,7 +21,7 @@ public class UpdateVersionsRequest implements Serializable {
         return version;
     }
 
-    public void setVersion(ProductVersion version) {
+    public void setVersion(final ProductVersion version) {
         this.version = version;
     }
 
@@ -29,7 +29,7 @@ public class UpdateVersionsRequest implements Serializable {
         return newProductId;
     }
 
-    public void setNewProductId(Long newProductId) {
+    public void setNewProductId(final Long newProductId) {
         this.newProductId = newProductId;
     }
 

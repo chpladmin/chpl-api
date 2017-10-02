@@ -58,7 +58,7 @@ public class PendingSurveillanceValidationEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -66,7 +66,7 @@ public class PendingSurveillanceValidationEntity {
         return pendingSurveillanceId;
     }
 
-    public void setPendingSurveillanceId(Long pendingSurveillanceId) {
+    public void setPendingSurveillanceId(final Long pendingSurveillanceId) {
         this.pendingSurveillanceId = pendingSurveillanceId;
     }
 
@@ -74,7 +74,7 @@ public class PendingSurveillanceValidationEntity {
         return pendingSurveillance;
     }
 
-    public void setPendingSurveillance(PendingSurveillanceEntity pendingSurveillance) {
+    public void setPendingSurveillance(final PendingSurveillanceEntity pendingSurveillance) {
         this.pendingSurveillance = pendingSurveillance;
     }
 
@@ -82,7 +82,7 @@ public class PendingSurveillanceValidationEntity {
         return messageType;
     }
 
-    public void setMessageType(ValidationMessageType messageType) {
+    public void setMessageType(final ValidationMessageType messageType) {
         this.messageType = messageType;
     }
 
@@ -90,7 +90,7 @@ public class PendingSurveillanceValidationEntity {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(final String message) {
         this.message = message;
     }
 
@@ -98,7 +98,7 @@ public class PendingSurveillanceValidationEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -106,7 +106,7 @@ public class PendingSurveillanceValidationEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -114,7 +114,7 @@ public class PendingSurveillanceValidationEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -122,7 +122,7 @@ public class PendingSurveillanceValidationEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 }

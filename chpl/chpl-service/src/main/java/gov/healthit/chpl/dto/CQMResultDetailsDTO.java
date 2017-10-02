@@ -48,7 +48,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -56,7 +56,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return success;
     }
 
-    public void setSuccess(Boolean success) {
+    public void setSuccess(final Boolean success) {
         this.success = success;
     }
 
@@ -64,7 +64,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return cqmCriterionId;
     }
 
-    public void setCqmCriterionId(Long cqmCriterionId) {
+    public void setCqmCriterionId(final Long cqmCriterionId) {
         this.cqmCriterionId = cqmCriterionId;
     }
 
@@ -72,7 +72,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -80,7 +80,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return cmsId;
     }
 
-    public void setCmsId(String cmsId) {
+    public void setCmsId(final String cmsId) {
         this.cmsId = cmsId;
     }
 
@@ -88,7 +88,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -96,7 +96,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return nqfNumber;
     }
 
-    public void setNqfNumber(String nqfNumber) {
+    public void setNqfNumber(final String nqfNumber) {
         this.nqfNumber = nqfNumber;
     }
 
@@ -104,7 +104,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return cqmCriterionTypeId;
     }
 
-    public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
+    public void setCqmCriterionTypeId(final Long cqmCriterionTypeId) {
         this.cqmCriterionTypeId = cqmCriterionTypeId;
     }
 
@@ -112,7 +112,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return cqmVersionId;
     }
 
-    public void setCqmVersionId(Long cqmVersionId) {
+    public void setCqmVersionId(final Long cqmVersionId) {
         this.cqmVersionId = cqmVersionId;
     }
 
@@ -120,7 +120,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -128,7 +128,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return domain;
     }
 
-    public void setDomain(String domain) {
+    public void setDomain(final String domain) {
         this.domain = domain;
     }
 
@@ -136,7 +136,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return criteria;
     }
 
-    public void setCriteria(List<CQMResultCriteriaDTO> criteria) {
+    public void setCriteria(final List<CQMResultCriteriaDTO> criteria) {
         this.criteria = criteria;
     }
 
@@ -144,7 +144,7 @@ public class CQMResultDetailsDTO implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 

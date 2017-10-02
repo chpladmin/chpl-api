@@ -35,7 +35,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -43,7 +43,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -51,7 +51,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -59,7 +59,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
         return testFunctionalityId;
     }
 
-    public void setTestFunctionalityId(Long testFunctionalityId) {
+    public void setTestFunctionalityId(final Long testFunctionalityId) {
         this.testFunctionalityId = testFunctionalityId;
     }
 
@@ -67,7 +67,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
         return testFunctionalityName;
     }
 
-    public void setTestFunctionalityName(String testFunctionalityName) {
+    public void setTestFunctionalityName(final String testFunctionalityName) {
         this.testFunctionalityName = testFunctionalityName;
     }
 
@@ -75,7 +75,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
         return testFunctionalityNumber;
     }
 
-    public void setTestFunctionalityNumber(String testFunctionalityNumber) {
+    public void setTestFunctionalityNumber(final String testFunctionalityNumber) {
         this.testFunctionalityNumber = testFunctionalityNumber;
     }
 
@@ -83,7 +83,7 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
         return testFunctionalityEdition;
     }
 
-    public void setTestFunctionalityEdition(String testFunctionalityEdition) {
+    public void setTestFunctionalityEdition(final String testFunctionalityEdition) {
         this.testFunctionalityEdition = testFunctionalityEdition;
     }
 

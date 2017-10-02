@@ -25,7 +25,7 @@ public class PendingCertificationResultTestProcedureDTO implements Serializable 
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -33,7 +33,7 @@ public class PendingCertificationResultTestProcedureDTO implements Serializable 
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -41,7 +41,7 @@ public class PendingCertificationResultTestProcedureDTO implements Serializable 
         return testProcedureId;
     }
 
-    public void setTestProcedureId(Long testProcedureId) {
+    public void setTestProcedureId(final Long testProcedureId) {
         this.testProcedureId = testProcedureId;
     }
 
@@ -49,7 +49,7 @@ public class PendingCertificationResultTestProcedureDTO implements Serializable 
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 }

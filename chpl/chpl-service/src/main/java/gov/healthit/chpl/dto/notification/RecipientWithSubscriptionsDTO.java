@@ -48,7 +48,7 @@ public class RecipientWithSubscriptionsDTO {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -56,7 +56,7 @@ public class RecipientWithSubscriptionsDTO {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -64,7 +64,7 @@ public class RecipientWithSubscriptionsDTO {
         return subscriptions;
     }
 
-    public void setSubscriptions(List<SubscriptionDTO> subscriptions) {
+    public void setSubscriptions(final List<SubscriptionDTO> subscriptions) {
         this.subscriptions = subscriptions;
     }
 

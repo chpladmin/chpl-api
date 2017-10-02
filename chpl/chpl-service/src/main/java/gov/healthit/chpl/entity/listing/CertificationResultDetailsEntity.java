@@ -55,7 +55,7 @@ public class CertificationResultDetailsEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -63,7 +63,7 @@ public class CertificationResultDetailsEntity {
         return certificationCriterionId;
     }
 
-    public void setCertificationCriterionId(Long certificationCriterionId) {
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
     }
 
@@ -71,7 +71,7 @@ public class CertificationResultDetailsEntity {
         return success;
     }
 
-    public void setSuccess(Boolean success) {
+    public void setSuccess(final Boolean success) {
         this.success = success;
     }
 
@@ -79,7 +79,7 @@ public class CertificationResultDetailsEntity {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -87,7 +87,7 @@ public class CertificationResultDetailsEntity {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -95,7 +95,7 @@ public class CertificationResultDetailsEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -103,7 +103,7 @@ public class CertificationResultDetailsEntity {
         return gap;
     }
 
-    public void setGap(Boolean gap) {
+    public void setGap(final Boolean gap) {
         this.gap = gap;
     }
 
@@ -111,7 +111,7 @@ public class CertificationResultDetailsEntity {
         return sed;
     }
 
-    public void setSed(Boolean sed) {
+    public void setSed(final Boolean sed) {
         this.sed = sed;
     }
 
@@ -119,7 +119,7 @@ public class CertificationResultDetailsEntity {
         return g1Success;
     }
 
-    public void setG1Success(Boolean g1Success) {
+    public void setG1Success(final Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -127,7 +127,7 @@ public class CertificationResultDetailsEntity {
         return g2Success;
     }
 
-    public void setG2Success(Boolean g2Success) {
+    public void setG2Success(final Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
@@ -135,7 +135,7 @@ public class CertificationResultDetailsEntity {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -143,7 +143,7 @@ public class CertificationResultDetailsEntity {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 }

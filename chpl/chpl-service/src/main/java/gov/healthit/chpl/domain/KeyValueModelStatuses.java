@@ -23,7 +23,7 @@ public class KeyValueModelStatuses extends KeyValueModel implements Serializable
         return this.statuses;
     }
 
-    public void setStatuses(Statuses statuses) {
+    public void setStatuses(final Statuses statuses) {
         this.statuses = statuses;
     }
 

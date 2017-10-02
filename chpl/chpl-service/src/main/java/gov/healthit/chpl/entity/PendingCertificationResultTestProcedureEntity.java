@@ -49,7 +49,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -57,7 +57,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -65,7 +65,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -73,7 +73,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -81,7 +81,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -89,7 +89,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -97,7 +97,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return testProcedureId;
     }
 
-    public void setTestProcedureId(Long testProcedureId) {
+    public void setTestProcedureId(final Long testProcedureId) {
         this.testProcedureId = testProcedureId;
     }
 
@@ -105,7 +105,7 @@ public class PendingCertificationResultTestProcedureEntity {
         return testProcedureVersion;
     }
 
-    public void setTestProcedureVersion(String testProcedureVersion) {
+    public void setTestProcedureVersion(final String testProcedureVersion) {
         this.testProcedureVersion = testProcedureVersion;
     }
 }

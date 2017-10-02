@@ -12,7 +12,7 @@ public class AuthorizeCredentials extends LoginCredentials implements Serializab
         return hash;
     }
 
-    public void setHash(String hash) {
+    public void setHash(final String hash) {
         this.hash = hash;
     }
 

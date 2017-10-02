@@ -12,7 +12,7 @@ public class CertifiedBodyStatistics extends Statistic {
         return certificationStatusName;
     }
 
-    public void setCertificationStatusName(String certificationStatusName) {
+    public void setCertificationStatusName(final String certificationStatusName) {
         this.certificationStatusName = certificationStatusName;
     }
 
@@ -20,7 +20,7 @@ public class CertifiedBodyStatistics extends Statistic {
         return totalDevelopersWithListings;
     }
 
-    public void setTotalDevelopersWithListings(Long totalDevelopersWithListings) {
+    public void setTotalDevelopersWithListings(final Long totalDevelopersWithListings) {
         this.totalDevelopersWithListings = totalDevelopersWithListings;
     }
 
@@ -28,7 +28,7 @@ public class CertifiedBodyStatistics extends Statistic {
         return totalListings;
     }
 
-    public void setTotalListings(Long totalListings) {
+    public void setTotalListings(final Long totalListings) {
         this.totalListings = totalListings;
     }
 }

@@ -78,7 +78,7 @@ public class PendingSurveillanceEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -86,7 +86,7 @@ public class PendingSurveillanceEntity {
         return certifiedProductUniqueId;
     }
 
-    public void setCertifiedProductUniqueId(String certifiedProductUniqueId) {
+    public void setCertifiedProductUniqueId(final String certifiedProductUniqueId) {
         this.certifiedProductUniqueId = certifiedProductUniqueId;
     }
 
@@ -94,7 +94,7 @@ public class PendingSurveillanceEntity {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -102,7 +102,7 @@ public class PendingSurveillanceEntity {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(final Date endDate) {
         this.endDate = endDate;
     }
 
@@ -110,7 +110,7 @@ public class PendingSurveillanceEntity {
         return surveillanceType;
     }
 
-    public void setSurveillanceType(String surveillanceType) {
+    public void setSurveillanceType(final String surveillanceType) {
         this.surveillanceType = surveillanceType;
     }
 
@@ -118,7 +118,7 @@ public class PendingSurveillanceEntity {
         return numRandomizedSites;
     }
 
-    public void setNumRandomizedSites(Integer numRandomizedSites) {
+    public void setNumRandomizedSites(final Integer numRandomizedSites) {
         this.numRandomizedSites = numRandomizedSites;
     }
 
@@ -126,7 +126,7 @@ public class PendingSurveillanceEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -134,7 +134,7 @@ public class PendingSurveillanceEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -142,7 +142,7 @@ public class PendingSurveillanceEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -150,7 +150,7 @@ public class PendingSurveillanceEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -158,7 +158,7 @@ public class PendingSurveillanceEntity {
         return surveilledRequirements;
     }
 
-    public void setSurveilledRequirements(Set<PendingSurveillanceRequirementEntity> surveilledRequirements) {
+    public void setSurveilledRequirements(final Set<PendingSurveillanceRequirementEntity> surveilledRequirements) {
         this.surveilledRequirements = surveilledRequirements;
     }
 
@@ -166,7 +166,7 @@ public class PendingSurveillanceEntity {
         return certifiedProduct;
     }
 
-    public void setCertifiedProduct(CertifiedProductEntity certifiedProduct) {
+    public void setCertifiedProduct(final CertifiedProductEntity certifiedProduct) {
         this.certifiedProduct = certifiedProduct;
     }
 
@@ -174,7 +174,7 @@ public class PendingSurveillanceEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -182,7 +182,7 @@ public class PendingSurveillanceEntity {
         return survFriendlyIdToReplace;
     }
 
-    public void setSurvFriendlyIdToReplace(String survFriendlyIdToReplace) {
+    public void setSurvFriendlyIdToReplace(final String survFriendlyIdToReplace) {
         this.survFriendlyIdToReplace = survFriendlyIdToReplace;
     }
 
@@ -190,7 +190,7 @@ public class PendingSurveillanceEntity {
         return validation;
     }
 
-    public void setValidation(Set<PendingSurveillanceValidationEntity> validation) {
+    public void setValidation(final Set<PendingSurveillanceValidationEntity> validation) {
         this.validation = validation;
     }
 }

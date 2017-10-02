@@ -30,7 +30,7 @@ public class Statuses implements Serializable {
         return this.active;
     }
 
-    public void setActive(Integer active) {
+    public void setActive(final Integer active) {
         this.active = active;
     }
 
@@ -38,7 +38,7 @@ public class Statuses implements Serializable {
         return this.retired;
     }
 
-    public void setRetired(Integer retired) {
+    public void setRetired(final Integer retired) {
         this.retired = retired;
     }
 
@@ -46,7 +46,7 @@ public class Statuses implements Serializable {
         return this.withdrawnByDeveloper;
     }
 
-    public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper) {
+    public void setWithdrawnByDeveloper(final Integer withdrawnByDeveloper) {
         this.withdrawnByDeveloper = withdrawnByDeveloper;
     }
 
@@ -54,7 +54,7 @@ public class Statuses implements Serializable {
         return this.withdrawnByAcb;
     }
 
-    public void setWithdrawnByAcb(Integer withdrawnByAcb) {
+    public void setWithdrawnByAcb(final Integer withdrawnByAcb) {
         this.withdrawnByAcb = withdrawnByAcb;
     }
 
@@ -62,7 +62,7 @@ public class Statuses implements Serializable {
         return this.suspendedByAcb;
     }
 
-    public void setSuspendedByAcb(Integer suspendedByAcb) {
+    public void setSuspendedByAcb(final Integer suspendedByAcb) {
         this.suspendedByAcb = suspendedByAcb;
     }
 
@@ -70,7 +70,7 @@ public class Statuses implements Serializable {
         return suspendedByOnc;
     }
 
-    public void setSuspendedByOnc(Integer suspendedByOnc) {
+    public void setSuspendedByOnc(final Integer suspendedByOnc) {
         this.suspendedByOnc = suspendedByOnc;
     }
 
@@ -78,7 +78,7 @@ public class Statuses implements Serializable {
         return terminatedByOnc;
     }
 
-    public void setTerminatedByOnc(Integer terminatedByOnc) {
+    public void setTerminatedByOnc(final Integer terminatedByOnc) {
         this.terminatedByOnc = terminatedByOnc;
     }
 }

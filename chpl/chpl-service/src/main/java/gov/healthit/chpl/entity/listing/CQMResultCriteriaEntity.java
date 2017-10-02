@@ -168,7 +168,7 @@ public class CQMResultCriteriaEntity implements Serializable {
         return cqmResultId;
     }
 
-    public void setCqmResultId(Long cqmResultId) {
+    public void setCqmResultId(final Long cqmResultId) {
         this.cqmResultId = cqmResultId;
     }
 
@@ -176,7 +176,7 @@ public class CQMResultCriteriaEntity implements Serializable {
         return certificationCriterionId;
     }
 
-    public void setCertificationCriterionId(Long certificationCriterionId) {
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
     }
 
@@ -184,7 +184,7 @@ public class CQMResultCriteriaEntity implements Serializable {
         return certCriteria;
     }
 
-    public void setCertCriteria(CertificationCriterionEntity certCriteria) {
+    public void setCertCriteria(final CertificationCriterionEntity certCriteria) {
         this.certCriteria = certCriteria;
     }
 

@@ -50,7 +50,7 @@ public class CertificationStatusEvent implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -58,7 +58,7 @@ public class CertificationStatusEvent implements Serializable {
         return eventDate;
     }
 
-    public void setEventDate(Long eventDate) {
+    public void setEventDate(final Long eventDate) {
         this.eventDate = eventDate;
     }
 
@@ -66,7 +66,7 @@ public class CertificationStatusEvent implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -74,7 +74,7 @@ public class CertificationStatusEvent implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Long lastModifiedDate) {
+    public void setLastModifiedDate(final Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -82,7 +82,7 @@ public class CertificationStatusEvent implements Serializable {
         return certificationStatusId;
     }
 
-    public void setCertificationStatusId(Long certificationStatusId) {
+    public void setCertificationStatusId(final Long certificationStatusId) {
         this.certificationStatusId = certificationStatusId;
     }
 
@@ -90,7 +90,7 @@ public class CertificationStatusEvent implements Serializable {
         return certificationStatusName;
     }
 
-    public void setCertificationStatusName(String certificationStatusName) {
+    public void setCertificationStatusName(final String certificationStatusName) {
         this.certificationStatusName = certificationStatusName;
     }
 }

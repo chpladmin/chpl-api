@@ -297,7 +297,7 @@ public class TestTask implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -305,7 +305,7 @@ public class TestTask implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -313,7 +313,7 @@ public class TestTask implements Serializable {
         return taskSuccessAverage;
     }
 
-    public void setTaskSuccessAverage(Float taskSuccessAverage) {
+    public void setTaskSuccessAverage(final Float taskSuccessAverage) {
         this.taskSuccessAverage = taskSuccessAverage;
     }
 
@@ -321,7 +321,7 @@ public class TestTask implements Serializable {
         return taskSuccessStddev;
     }
 
-    public void setTaskSuccessStddev(Float taskSuccessStddev) {
+    public void setTaskSuccessStddev(final Float taskSuccessStddev) {
         this.taskSuccessStddev = taskSuccessStddev;
     }
 
@@ -329,7 +329,7 @@ public class TestTask implements Serializable {
         return taskPathDeviationObserved;
     }
 
-    public void setTaskPathDeviationObserved(String value) {
+    public void setTaskPathDeviationObserved(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskPathDeviationObserved = Math.round(new Float(value));
@@ -343,7 +343,7 @@ public class TestTask implements Serializable {
         return taskPathDeviationOptimal;
     }
 
-    public void setTaskPathDeviationOptimal(String value) {
+    public void setTaskPathDeviationOptimal(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskPathDeviationOptimal = Math.round(new Float(value));
@@ -357,7 +357,7 @@ public class TestTask implements Serializable {
         return taskTimeAvg;
     }
 
-    public void setTaskTimeAvg(String value) {
+    public void setTaskTimeAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeAvg = new Long(Math.round(new Float(value)));
@@ -371,7 +371,7 @@ public class TestTask implements Serializable {
         return taskTimeStddev;
     }
 
-    public void setTaskTimeStddev(String value) {
+    public void setTaskTimeStddev(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeStddev = Math.round(new Float(value));
@@ -385,7 +385,7 @@ public class TestTask implements Serializable {
         return taskTimeDeviationObservedAvg;
     }
 
-    public void setTaskTimeDeviationObservedAvg(String value) {
+    public void setTaskTimeDeviationObservedAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeDeviationObservedAvg = Math.round(new Float(value));
@@ -399,7 +399,7 @@ public class TestTask implements Serializable {
         return taskTimeDeviationOptimalAvg;
     }
 
-    public void setTaskTimeDeviationOptimalAvg(String value) {
+    public void setTaskTimeDeviationOptimalAvg(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
                 taskTimeDeviationOptimalAvg = Math.round(new Float(value));
@@ -413,7 +413,7 @@ public class TestTask implements Serializable {
         return taskErrors;
     }
 
-    public void setTaskErrors(Float taskErrors) {
+    public void setTaskErrors(final Float taskErrors) {
         this.taskErrors = taskErrors;
     }
 
@@ -421,7 +421,7 @@ public class TestTask implements Serializable {
         return taskErrorsStddev;
     }
 
-    public void setTaskErrorsStddev(Float taskErrorsStddev) {
+    public void setTaskErrorsStddev(final Float taskErrorsStddev) {
         this.taskErrorsStddev = taskErrorsStddev;
     }
 
@@ -429,7 +429,7 @@ public class TestTask implements Serializable {
         return taskRatingScale;
     }
 
-    public void setTaskRatingScale(String taskRatingScale) {
+    public void setTaskRatingScale(final String taskRatingScale) {
         this.taskRatingScale = taskRatingScale;
     }
 
@@ -437,7 +437,7 @@ public class TestTask implements Serializable {
         return taskRating;
     }
 
-    public void setTaskRating(Float taskRating) {
+    public void setTaskRating(final Float taskRating) {
         this.taskRating = taskRating;
     }
 
@@ -445,7 +445,7 @@ public class TestTask implements Serializable {
         return testParticipants;
     }
 
-    public void setTestParticipants(Set<TestParticipant> testParticipants) {
+    public void setTestParticipants(final Set<TestParticipant> testParticipants) {
         this.testParticipants = testParticipants;
     }
 
@@ -453,7 +453,7 @@ public class TestTask implements Serializable {
         return uniqueId;
     }
 
-    public void setUniqueId(String uniqueId) {
+    public void setUniqueId(final String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -461,7 +461,7 @@ public class TestTask implements Serializable {
         return taskRatingStddev;
     }
 
-    public void setTaskRatingStddev(Float taskRatingStddev) {
+    public void setTaskRatingStddev(final Float taskRatingStddev) {
         this.taskRatingStddev = taskRatingStddev;
     }
 
@@ -469,7 +469,7 @@ public class TestTask implements Serializable {
         return criteria;
     }
 
-    public void setCriteria(Set<CertificationCriterion> criteria) {
+    public void setCriteria(final Set<CertificationCriterion> criteria) {
         this.criteria = criteria;
     }
 }

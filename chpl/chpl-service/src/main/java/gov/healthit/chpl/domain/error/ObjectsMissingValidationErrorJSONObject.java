@@ -16,7 +16,7 @@ public class ObjectsMissingValidationErrorJSONObject implements Serializable {
         return errors;
     }
 
-    public void setErrors(List<ObjectMissingValidationErrorJSONObject> errors) {
+    public void setErrors(final List<ObjectMissingValidationErrorJSONObject> errors) {
         this.errors = errors;
     }
 }

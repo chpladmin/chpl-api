@@ -21,7 +21,7 @@ public class AgeRangeDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -29,7 +29,7 @@ public class AgeRangeDTO implements Serializable {
         return age;
     }
 
-    public void setAge(String age) {
+    public void setAge(final String age) {
         this.age = age;
     }
 }

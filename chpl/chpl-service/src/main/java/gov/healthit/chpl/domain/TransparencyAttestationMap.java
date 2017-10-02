@@ -37,7 +37,7 @@ public class TransparencyAttestationMap implements Serializable {
         return acbId;
     }
 
-    public void setAcbId(Long acbId) {
+    public void setAcbId(final Long acbId) {
         this.acbId = acbId;
     }
 
@@ -45,7 +45,7 @@ public class TransparencyAttestationMap implements Serializable {
         return acbName;
     }
 
-    public void setAcbName(String acbName) {
+    public void setAcbName(final String acbName) {
         this.acbName = acbName;
     }
 
@@ -53,7 +53,7 @@ public class TransparencyAttestationMap implements Serializable {
         return attestation;
     }
 
-    public void setAttestation(String attestation) {
+    public void setAttestation(final String attestation) {
         this.attestation = attestation;
     }
 

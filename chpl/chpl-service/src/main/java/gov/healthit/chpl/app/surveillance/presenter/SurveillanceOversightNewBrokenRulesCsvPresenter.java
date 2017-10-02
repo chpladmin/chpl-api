@@ -110,7 +110,7 @@ public class SurveillanceOversightNewBrokenRulesCsvPresenter extends Surveillanc
         return newBrokenRulesCounts;
     }
 
-    public void setNewBrokenRulesCounts(Map<SurveillanceOversightRule, Integer> newBrokenRulesCounts) {
+    public void setNewBrokenRulesCounts(final Map<SurveillanceOversightRule, Integer> newBrokenRulesCounts) {
         this.newBrokenRulesCounts = newBrokenRulesCounts;
     }
 

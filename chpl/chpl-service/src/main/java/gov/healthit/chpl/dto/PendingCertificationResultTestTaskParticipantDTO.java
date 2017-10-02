@@ -27,7 +27,7 @@ public class PendingCertificationResultTestTaskParticipantDTO implements Seriali
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class PendingCertificationResultTestTaskParticipantDTO implements Seriali
         return pendingCertificationResultTestTaskId;
     }
 
-    public void setPendingCertificationResultTestTaskId(Long pendingCertificationResultTestTaskId) {
+    public void setPendingCertificationResultTestTaskId(final Long pendingCertificationResultTestTaskId) {
         this.pendingCertificationResultTestTaskId = pendingCertificationResultTestTaskId;
     }
 
@@ -43,7 +43,7 @@ public class PendingCertificationResultTestTaskParticipantDTO implements Seriali
         return testParticipant;
     }
 
-    public void setTestParticipant(PendingTestParticipantDTO testParticipant) {
+    public void setTestParticipant(final PendingTestParticipantDTO testParticipant) {
         this.testParticipant = testParticipant;
     }
 }

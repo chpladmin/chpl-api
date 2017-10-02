@@ -52,7 +52,7 @@ public class PendingCertificationResultTestToolEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -60,7 +60,7 @@ public class PendingCertificationResultTestToolEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -68,7 +68,7 @@ public class PendingCertificationResultTestToolEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -76,7 +76,7 @@ public class PendingCertificationResultTestToolEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -84,7 +84,7 @@ public class PendingCertificationResultTestToolEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -92,7 +92,7 @@ public class PendingCertificationResultTestToolEntity {
         return pendingCertificationResultId;
     }
 
-    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
@@ -100,7 +100,7 @@ public class PendingCertificationResultTestToolEntity {
         return testToolId;
     }
 
-    public void setTestToolId(Long testToolId) {
+    public void setTestToolId(final Long testToolId) {
         this.testToolId = testToolId;
     }
 
@@ -108,7 +108,7 @@ public class PendingCertificationResultTestToolEntity {
         return testToolName;
     }
 
-    public void setTestToolName(String testToolName) {
+    public void setTestToolName(final String testToolName) {
         this.testToolName = testToolName;
     }
 
@@ -116,7 +116,7 @@ public class PendingCertificationResultTestToolEntity {
         return testToolVersion;
     }
 
-    public void setTestToolVersion(String testToolVersion) {
+    public void setTestToolVersion(final String testToolVersion) {
         this.testToolVersion = testToolVersion;
     }
 }

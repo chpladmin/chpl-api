@@ -49,7 +49,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -57,7 +57,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return uniqueId;
     }
 
-    public void setUniqueId(String uniqueId) {
+    public void setUniqueId(final String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -65,7 +65,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(final String gender) {
         this.gender = gender;
     }
 
@@ -73,7 +73,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return educationTypeId;
     }
 
-    public void setEducationTypeId(Long educationTypeId) {
+    public void setEducationTypeId(final Long educationTypeId) {
         this.educationTypeId = educationTypeId;
     }
 
@@ -81,7 +81,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return occupation;
     }
 
-    public void setOccupation(String occupation) {
+    public void setOccupation(final String occupation) {
         this.occupation = occupation;
     }
 
@@ -89,7 +89,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return professionalExperienceMonths;
     }
 
-    public void setProfessionalExperienceMonths(Integer professionalExperienceMonths) {
+    public void setProfessionalExperienceMonths(final Integer professionalExperienceMonths) {
         this.professionalExperienceMonths = professionalExperienceMonths;
     }
 
@@ -97,7 +97,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return computerExperienceMonths;
     }
 
-    public void setComputerExperienceMonths(Integer computerExperienceMonths) {
+    public void setComputerExperienceMonths(final Integer computerExperienceMonths) {
         this.computerExperienceMonths = computerExperienceMonths;
     }
 
@@ -105,7 +105,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return productExperienceMonths;
     }
 
-    public void setProductExperienceMonths(Integer productExperienceMonths) {
+    public void setProductExperienceMonths(final Integer productExperienceMonths) {
         this.productExperienceMonths = productExperienceMonths;
     }
 
@@ -113,7 +113,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return assistiveTechnologyNeeds;
     }
 
-    public void setAssistiveTechnologyNeeds(String assistiveTechnologyNeeds) {
+    public void setAssistiveTechnologyNeeds(final String assistiveTechnologyNeeds) {
         this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
     }
 
@@ -121,7 +121,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return educationType;
     }
 
-    public void setEducationType(EducationTypeDTO educationType) {
+    public void setEducationType(final EducationTypeDTO educationType) {
         this.educationType = educationType;
     }
 
@@ -129,7 +129,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return ageRangeId;
     }
 
-    public void setAgeRangeId(Long ageRangeId) {
+    public void setAgeRangeId(final Long ageRangeId) {
         this.ageRangeId = ageRangeId;
     }
 
@@ -137,7 +137,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return ageRange;
     }
 
-    public void setAgeRange(AgeRangeDTO ageRange) {
+    public void setAgeRange(final AgeRangeDTO ageRange) {
         this.ageRange = ageRange;
     }
 
@@ -145,7 +145,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return userEnteredEducationType;
     }
 
-    public void setUserEnteredEducationType(String userEnteredEducationType) {
+    public void setUserEnteredEducationType(final String userEnteredEducationType) {
         this.userEnteredEducationType = userEnteredEducationType;
     }
 
@@ -153,7 +153,7 @@ public class PendingTestParticipantDTO implements Serializable {
         return userEnteredAgeRange;
     }
 
-    public void setUserEnteredAgeRange(String userEnteredAgeRange) {
+    public void setUserEnteredAgeRange(final String userEnteredAgeRange) {
         this.userEnteredAgeRange = userEnteredAgeRange;
     }
 }

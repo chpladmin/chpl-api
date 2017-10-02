@@ -65,7 +65,7 @@ public class CertifiedProductTargetedUser implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -73,7 +73,7 @@ public class CertifiedProductTargetedUser implements Serializable {
         return targetedUserId;
     }
 
-    public void setTargetedUserId(Long targetedUserId) {
+    public void setTargetedUserId(final Long targetedUserId) {
         this.targetedUserId = targetedUserId;
     }
 
@@ -81,7 +81,7 @@ public class CertifiedProductTargetedUser implements Serializable {
         return targetedUserName;
     }
 
-    public void setTargetedUserName(String targetedUserName) {
+    public void setTargetedUserName(final String targetedUserName) {
         this.targetedUserName = targetedUserName;
     }
 

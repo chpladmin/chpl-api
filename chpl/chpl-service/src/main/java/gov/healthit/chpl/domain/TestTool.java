@@ -22,7 +22,7 @@ public class TestTool extends KeyValueModel implements Serializable {
         return retired;
     }
 
-    public void setRetired(boolean retired) {
+    public void setRetired(final boolean retired) {
         this.retired = retired;
     }
 

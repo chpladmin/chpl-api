@@ -16,7 +16,7 @@ public class CorrectiveActionPlanResults implements Serializable {
         return plans;
     }
 
-    public void setPlans(List<CorrectiveActionPlanDetails> plans) {
+    public void setPlans(final List<CorrectiveActionPlanDetails> plans) {
         this.plans = plans;
     }
 }

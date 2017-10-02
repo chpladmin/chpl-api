@@ -39,7 +39,7 @@ public class ListingToListingMapDTO implements Serializable {
         return parentId;
     }
 
-    public void setParentId(Long parentId) {
+    public void setParentId(final Long parentId) {
         this.parentId = parentId;
     }
 
@@ -47,7 +47,7 @@ public class ListingToListingMapDTO implements Serializable {
         return childId;
     }
 
-    public void setChildId(Long childId) {
+    public void setChildId(final Long childId) {
         this.childId = childId;
     }
 
@@ -55,7 +55,7 @@ public class ListingToListingMapDTO implements Serializable {
         return parent;
     }
 
-    public void setParent(CertifiedProductDetailsDTO parent) {
+    public void setParent(final CertifiedProductDetailsDTO parent) {
         this.parent = parent;
     }
 
@@ -63,7 +63,7 @@ public class ListingToListingMapDTO implements Serializable {
         return child;
     }
 
-    public void setChild(CertifiedProductDetailsDTO child) {
+    public void setChild(final CertifiedProductDetailsDTO child) {
         this.child = child;
     }
 
@@ -71,7 +71,7 @@ public class ListingToListingMapDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -79,7 +79,7 @@ public class ListingToListingMapDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -87,7 +87,7 @@ public class ListingToListingMapDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -95,7 +95,7 @@ public class ListingToListingMapDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -103,7 +103,7 @@ public class ListingToListingMapDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 }

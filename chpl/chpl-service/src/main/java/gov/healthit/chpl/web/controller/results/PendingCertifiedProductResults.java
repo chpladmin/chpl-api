@@ -18,7 +18,7 @@ public class PendingCertifiedProductResults implements Serializable {
         return pendingCertifiedProducts;
     }
 
-    public void setPendingCertifiedProducts(List<PendingCertifiedProductDetails> pendingCertifiedProducts) {
+    public void setPendingCertifiedProducts(final List<PendingCertifiedProductDetails> pendingCertifiedProducts) {
         this.pendingCertifiedProducts = pendingCertifiedProducts;
     }
 

@@ -42,7 +42,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -50,7 +50,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -58,7 +58,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return justification;
     }
 
-    public void setJustification(String justification) {
+    public void setJustification(final String justification) {
         this.justification = justification;
     }
 
@@ -66,7 +66,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -74,7 +74,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -82,7 +82,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -90,7 +90,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 
@@ -98,7 +98,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -106,7 +106,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return grouping;
     }
 
-    public void setGrouping(String grouping) {
+    public void setGrouping(final String grouping) {
         this.grouping = grouping;
     }
 
@@ -114,7 +114,7 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
         return certifiedProductNumber;
     }
 
-    public void setCertifiedProductNumber(String certifiedProductNumber) {
+    public void setCertifiedProductNumber(final String certifiedProductNumber) {
         this.certifiedProductNumber = certifiedProductNumber;
     }
 }

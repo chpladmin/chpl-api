@@ -25,7 +25,7 @@ public class JobTypeDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -33,7 +33,7 @@ public class JobTypeDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -41,7 +41,7 @@ public class JobTypeDTO implements Serializable {
         return successMessage;
     }
 
-    public void setSuccessMessage(String successMessage) {
+    public void setSuccessMessage(final String successMessage) {
         this.successMessage = successMessage;
     }
 
@@ -49,7 +49,7 @@ public class JobTypeDTO implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 }

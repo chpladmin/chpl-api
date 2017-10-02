@@ -45,7 +45,7 @@ public class CertificationIdException extends Exception {
         return errorMessages;
     }
 
-    public void setErrorMessages(Set<String> errorMessages) {
+    public void setErrorMessages(final Set<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 
@@ -53,7 +53,7 @@ public class CertificationIdException extends Exception {
         return warningMessages;
     }
 
-    public void setWarningMessages(Set<String> warningMessages) {
+    public void setWarningMessages(final Set<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 

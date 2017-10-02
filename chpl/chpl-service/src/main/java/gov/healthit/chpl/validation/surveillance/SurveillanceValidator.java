@@ -634,7 +634,7 @@ public class SurveillanceValidator implements MessageSourceAware {
     }
 
     @Override
-    public void setMessageSource(MessageSource messageSource) {
+    public void setMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 }

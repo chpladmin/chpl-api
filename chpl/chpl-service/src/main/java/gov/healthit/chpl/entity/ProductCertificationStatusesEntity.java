@@ -133,7 +133,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
      * @param active
      *            - the aggregate count of active certification_statuses
      */
-    public void setActive(Integer active) {
+    public void setActive(final Integer active) {
         this.active = active;
     }
 
@@ -152,7 +152,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
      * @param retired
      *            - the aggregate count of retired certification_statuses
      */
-    public void setRetired(Integer retired) {
+    public void setRetired(final Integer retired) {
         this.retired = retired;
     }
 
@@ -172,7 +172,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
      *            - the aggregate count of withdrawnByDeveloper
      *            certification_statuses
      */
-    public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper) {
+    public void setWithdrawnByDeveloper(final Integer withdrawnByDeveloper) {
         this.withdrawnByDeveloper = withdrawnByDeveloper;
     }
 
@@ -191,7 +191,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
      * @param withdrawnByAcb
      *            - the aggregate count of withdrawnByAcb certification_statuses
      */
-    public void setWithdrawnByAcb(Integer withdrawnByAcb) {
+    public void setWithdrawnByAcb(final Integer withdrawnByAcb) {
         this.withdrawnByAcb = withdrawnByAcb;
     }
 
@@ -210,7 +210,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
      * @param suspendedByAcb
      *            - the aggregate count of suspendedByAcb certification_statuses
      */
-    public void setSuspendedByAcb(Integer suspendedByAcb) {
+    public void setSuspendedByAcb(final Integer suspendedByAcb) {
         this.suspendedByAcb = suspendedByAcb;
     }
 
@@ -237,7 +237,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
         return suspendedByOnc;
     }
 
-    public void setSuspendedByOnc(Integer suspendedByOnc) {
+    public void setSuspendedByOnc(final Integer suspendedByOnc) {
         this.suspendedByOnc = suspendedByOnc;
     }
 
@@ -245,7 +245,7 @@ public class ProductCertificationStatusesEntity implements Cloneable, Serializab
         return terminatedByOnc;
     }
 
-    public void setTerminatedByOnc(Integer terminatedByOnc) {
+    public void setTerminatedByOnc(final Integer terminatedByOnc) {
         this.terminatedByOnc = terminatedByOnc;
     }
 }

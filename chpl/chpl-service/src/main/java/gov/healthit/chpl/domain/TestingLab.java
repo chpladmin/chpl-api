@@ -33,7 +33,7 @@ public class TestingLab implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -41,7 +41,7 @@ public class TestingLab implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -49,7 +49,7 @@ public class TestingLab implements Serializable {
         return website;
     }
 
-    public void setWebsite(String website) {
+    public void setWebsite(final String website) {
         this.website = website;
     }
 
@@ -57,7 +57,7 @@ public class TestingLab implements Serializable {
         return address;
     }
 
-    public void setAddress(Address address) {
+    public void setAddress(final Address address) {
         this.address = address;
     }
 
@@ -65,7 +65,7 @@ public class TestingLab implements Serializable {
         return atlCode;
     }
 
-    public void setAtlCode(String atlCode) {
+    public void setAtlCode(final String atlCode) {
         this.atlCode = atlCode;
     }
 
@@ -73,7 +73,7 @@ public class TestingLab implements Serializable {
         return accredidationNumber;
     }
 
-    public void setAccredidationNumber(String accredidationNumber) {
+    public void setAccredidationNumber(final String accredidationNumber) {
         this.accredidationNumber = accredidationNumber;
     }
 
@@ -81,7 +81,7 @@ public class TestingLab implements Serializable {
         return isDeleted;
     }
 
-    public void setIsDeleted(boolean deleted) {
+    public void setIsDeleted(final boolean deleted) {
         this.isDeleted = deleted;
     }
 }

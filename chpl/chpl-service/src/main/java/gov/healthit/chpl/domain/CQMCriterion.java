@@ -19,7 +19,7 @@ public class CQMCriterion implements Serializable {
         return criterionId;
     }
 
-    public void setCriterionId(Long criterionId) {
+    public void setCriterionId(final Long criterionId) {
         this.criterionId = criterionId;
     }
 
@@ -27,7 +27,7 @@ public class CQMCriterion implements Serializable {
         return cmsId;
     }
 
-    public void setCmsId(String cmsId) {
+    public void setCmsId(final String cmsId) {
         this.cmsId = cmsId;
     }
 
@@ -35,7 +35,7 @@ public class CQMCriterion implements Serializable {
         return cqmCriterionTypeId;
     }
 
-    public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
+    public void setCqmCriterionTypeId(final Long cqmCriterionTypeId) {
         this.cqmCriterionTypeId = cqmCriterionTypeId;
     }
 
@@ -43,7 +43,7 @@ public class CQMCriterion implements Serializable {
         return cqmDomain;
     }
 
-    public void setCqmDomain(String cqmDomain) {
+    public void setCqmDomain(final String cqmDomain) {
         this.cqmDomain = cqmDomain;
     }
 
@@ -51,7 +51,7 @@ public class CQMCriterion implements Serializable {
         return cqmVersionId;
     }
 
-    public void setCqmVersionId(Long cqmVersionId) {
+    public void setCqmVersionId(final Long cqmVersionId) {
         this.cqmVersionId = cqmVersionId;
     }
 
@@ -59,7 +59,7 @@ public class CQMCriterion implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -67,7 +67,7 @@ public class CQMCriterion implements Serializable {
         return nqfNumber;
     }
 
-    public void setNqfNumber(String nqfNumber) {
+    public void setNqfNumber(final String nqfNumber) {
         this.nqfNumber = nqfNumber;
     }
 
@@ -75,7 +75,7 @@ public class CQMCriterion implements Serializable {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -83,7 +83,7 @@ public class CQMCriterion implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -91,7 +91,7 @@ public class CQMCriterion implements Serializable {
         return cqmVersion;
     }
 
-    public void setCqmVersion(String cqmVersion) {
+    public void setCqmVersion(final String cqmVersion) {
         this.cqmVersion = cqmVersion;
     }
 

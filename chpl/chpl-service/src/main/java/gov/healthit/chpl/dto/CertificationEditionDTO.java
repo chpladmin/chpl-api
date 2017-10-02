@@ -44,7 +44,7 @@ public class CertificationEditionDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -52,7 +52,7 @@ public class CertificationEditionDTO implements Serializable {
         return certificationCriterions;
     }
 
-    public void setCertificationCriterions(Set<CertificationCriterionDTO> certificationCriterions) {
+    public void setCertificationCriterions(final Set<CertificationCriterionDTO> certificationCriterions) {
         this.certificationCriterions = certificationCriterions;
     }
 
@@ -68,7 +68,7 @@ public class CertificationEditionDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -76,7 +76,7 @@ public class CertificationEditionDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -84,7 +84,7 @@ public class CertificationEditionDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -92,7 +92,7 @@ public class CertificationEditionDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -100,7 +100,7 @@ public class CertificationEditionDTO implements Serializable {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 
@@ -108,7 +108,7 @@ public class CertificationEditionDTO implements Serializable {
         return retired;
     }
 
-    public void setRetired(Boolean retired) {
+    public void setRetired(final Boolean retired) {
         this.retired = retired;
     }
 

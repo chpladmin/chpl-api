@@ -43,7 +43,7 @@ public class NotificationTypeRecipientMapDTO {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -51,7 +51,7 @@ public class NotificationTypeRecipientMapDTO {
         return recipient;
     }
 
-    public void setRecipient(RecipientDTO recipient) {
+    public void setRecipient(final RecipientDTO recipient) {
         this.recipient = recipient;
     }
 
@@ -59,7 +59,7 @@ public class NotificationTypeRecipientMapDTO {
         return subscription;
     }
 
-    public void setSubscription(SubscriptionDTO subscription) {
+    public void setSubscription(final SubscriptionDTO subscription) {
         this.subscription = subscription;
     }
 

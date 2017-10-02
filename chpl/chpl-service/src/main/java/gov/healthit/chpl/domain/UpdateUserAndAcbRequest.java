@@ -12,7 +12,7 @@ public class UpdateUserAndAcbRequest implements Serializable {
         return acbId;
     }
 
-    public void setAcbId(Long acbId) {
+    public void setAcbId(final Long acbId) {
         this.acbId = acbId;
     }
 
@@ -20,7 +20,7 @@ public class UpdateUserAndAcbRequest implements Serializable {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(final Long userId) {
         this.userId = userId;
     }
 
@@ -28,7 +28,7 @@ public class UpdateUserAndAcbRequest implements Serializable {
         return authority;
     }
 
-    public void setAuthority(ChplPermission authority) {
+    public void setAuthority(final ChplPermission authority) {
         this.authority = authority;
     }
 

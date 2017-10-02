@@ -78,7 +78,7 @@ public class SurveillanceRequirementEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -86,7 +86,7 @@ public class SurveillanceRequirementEntity {
         return surveilledRequirement;
     }
 
-    public void setSurveilledRequirement(String surveilledRequirement) {
+    public void setSurveilledRequirement(final String surveilledRequirement) {
         this.surveilledRequirement = surveilledRequirement;
     }
 
@@ -94,7 +94,7 @@ public class SurveillanceRequirementEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -102,7 +102,7 @@ public class SurveillanceRequirementEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -110,7 +110,7 @@ public class SurveillanceRequirementEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -118,7 +118,7 @@ public class SurveillanceRequirementEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -126,7 +126,7 @@ public class SurveillanceRequirementEntity {
         return surveillanceId;
     }
 
-    public void setSurveillanceId(Long surveillanceId) {
+    public void setSurveillanceId(final Long surveillanceId) {
         this.surveillanceId = surveillanceId;
     }
 
@@ -134,7 +134,7 @@ public class SurveillanceRequirementEntity {
         return surveillanceRequirementTypeId;
     }
 
-    public void setSurveillanceRequirementTypeId(Long surveillanceRequirementTypeId) {
+    public void setSurveillanceRequirementTypeId(final Long surveillanceRequirementTypeId) {
         this.surveillanceRequirementTypeId = surveillanceRequirementTypeId;
     }
 
@@ -142,7 +142,7 @@ public class SurveillanceRequirementEntity {
         return surveillanceRequirementType;
     }
 
-    public void setSurveillanceRequirementType(SurveillanceRequirementTypeEntity surveillanceRequirementType) {
+    public void setSurveillanceRequirementType(final SurveillanceRequirementTypeEntity surveillanceRequirementType) {
         this.surveillanceRequirementType = surveillanceRequirementType;
     }
 
@@ -150,7 +150,7 @@ public class SurveillanceRequirementEntity {
         return certificationCriterionId;
     }
 
-    public void setCertificationCriterionId(Long certificationCriterionId) {
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
     }
 
@@ -158,7 +158,7 @@ public class SurveillanceRequirementEntity {
         return certificationCriterionEntity;
     }
 
-    public void setCertificationCriterionEntity(CertificationCriterionEntity certificationCriterionEntity) {
+    public void setCertificationCriterionEntity(final CertificationCriterionEntity certificationCriterionEntity) {
         this.certificationCriterionEntity = certificationCriterionEntity;
     }
 
@@ -166,7 +166,7 @@ public class SurveillanceRequirementEntity {
         return surveillanceResultTypeId;
     }
 
-    public void setSurveillanceResultTypeId(Long surveillanceResultTypeId) {
+    public void setSurveillanceResultTypeId(final Long surveillanceResultTypeId) {
         this.surveillanceResultTypeId = surveillanceResultTypeId;
     }
 
@@ -174,7 +174,7 @@ public class SurveillanceRequirementEntity {
         return surveillanceResultTypeEntity;
     }
 
-    public void setSurveillanceResultTypeEntity(SurveillanceResultTypeEntity surveillanceResultTypeEntity) {
+    public void setSurveillanceResultTypeEntity(final SurveillanceResultTypeEntity surveillanceResultTypeEntity) {
         this.surveillanceResultTypeEntity = surveillanceResultTypeEntity;
     }
 
@@ -182,7 +182,7 @@ public class SurveillanceRequirementEntity {
         return nonconformities;
     }
 
-    public void setNonconformities(Set<SurveillanceNonconformityEntity> nonconformities) {
+    public void setNonconformities(final Set<SurveillanceNonconformityEntity> nonconformities) {
         this.nonconformities = nonconformities;
     }
 }

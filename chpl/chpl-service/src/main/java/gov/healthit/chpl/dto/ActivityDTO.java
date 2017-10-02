@@ -48,7 +48,7 @@ public class ActivityDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -56,7 +56,7 @@ public class ActivityDTO implements Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -64,7 +64,7 @@ public class ActivityDTO implements Serializable {
         return activityDate;
     }
 
-    public void setActivityDate(Date activityDate) {
+    public void setActivityDate(final Date activityDate) {
         this.activityDate = activityDate;
     }
 
@@ -72,7 +72,7 @@ public class ActivityDTO implements Serializable {
         return activityObjectId;
     }
 
-    public void setActivityObjectId(Long activityObjectId) {
+    public void setActivityObjectId(final Long activityObjectId) {
         this.activityObjectId = activityObjectId;
     }
 
@@ -80,7 +80,7 @@ public class ActivityDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -88,7 +88,7 @@ public class ActivityDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -96,7 +96,7 @@ public class ActivityDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -104,7 +104,7 @@ public class ActivityDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -112,7 +112,7 @@ public class ActivityDTO implements Serializable {
         return concept;
     }
 
-    public void setConcept(ActivityConcept concept) {
+    public void setConcept(final ActivityConcept concept) {
         this.concept = concept;
     }
 
@@ -120,7 +120,7 @@ public class ActivityDTO implements Serializable {
         return originalData;
     }
 
-    public void setOriginalData(String originalData) {
+    public void setOriginalData(final String originalData) {
         this.originalData = originalData;
     }
 
@@ -128,7 +128,7 @@ public class ActivityDTO implements Serializable {
         return newData;
     }
 
-    public void setNewData(String newData) {
+    public void setNewData(final String newData) {
         this.newData = newData;
     }
 
@@ -136,7 +136,7 @@ public class ActivityDTO implements Serializable {
         return user;
     }
 
-    public void setUser(UserDTO user) {
+    public void setUser(final UserDTO user) {
         this.user = user;
     }
 }

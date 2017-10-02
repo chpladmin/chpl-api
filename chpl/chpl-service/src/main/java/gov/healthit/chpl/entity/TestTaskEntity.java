@@ -101,7 +101,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -109,7 +109,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -117,7 +117,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskSuccessAverage;
     }
 
-    public void setTaskSuccessAverage(Float taskSuccessAverage) {
+    public void setTaskSuccessAverage(final Float taskSuccessAverage) {
         this.taskSuccessAverage = taskSuccessAverage;
     }
 
@@ -125,7 +125,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskSuccessStddev;
     }
 
-    public void setTaskSuccessStddev(Float taskSuccessStddev) {
+    public void setTaskSuccessStddev(final Float taskSuccessStddev) {
         this.taskSuccessStddev = taskSuccessStddev;
     }
 
@@ -133,7 +133,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskPathDeviationObserved;
     }
 
-    public void setTaskPathDeviationObserved(Integer taskPathDeviationObserved) {
+    public void setTaskPathDeviationObserved(final Integer taskPathDeviationObserved) {
         this.taskPathDeviationObserved = taskPathDeviationObserved;
     }
 
@@ -141,7 +141,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskPathDeviationOptimal;
     }
 
-    public void setTaskPathDeviationOptimal(Integer taskPathDeviationOptimal) {
+    public void setTaskPathDeviationOptimal(final Integer taskPathDeviationOptimal) {
         this.taskPathDeviationOptimal = taskPathDeviationOptimal;
     }
 
@@ -149,7 +149,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskTimeAvg;
     }
 
-    public void setTaskTimeAvg(Long taskTimeAvg) {
+    public void setTaskTimeAvg(final Long taskTimeAvg) {
         this.taskTimeAvg = taskTimeAvg;
     }
 
@@ -157,7 +157,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskTimeStddev;
     }
 
-    public void setTaskTimeStddev(Integer taskTimeStddev) {
+    public void setTaskTimeStddev(final Integer taskTimeStddev) {
         this.taskTimeStddev = taskTimeStddev;
     }
 
@@ -165,7 +165,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskTimeDeviationObservedAvg;
     }
 
-    public void setTaskTimeDeviationObservedAvg(Integer taskTimeDeviationObservedAvg) {
+    public void setTaskTimeDeviationObservedAvg(final Integer taskTimeDeviationObservedAvg) {
         this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
     }
 
@@ -173,7 +173,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskTimeDeviationOptimalAvg;
     }
 
-    public void setTaskTimeDeviationOptimalAvg(Integer taskTimeDeviationOptimalAvg) {
+    public void setTaskTimeDeviationOptimalAvg(final Integer taskTimeDeviationOptimalAvg) {
         this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
     }
 
@@ -181,7 +181,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskErrors;
     }
 
-    public void setTaskErrors(Float taskErrors) {
+    public void setTaskErrors(final Float taskErrors) {
         this.taskErrors = taskErrors;
     }
 
@@ -189,7 +189,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskErrorsStddev;
     }
 
-    public void setTaskErrorsStddev(Float taskErrorsStddev) {
+    public void setTaskErrorsStddev(final Float taskErrorsStddev) {
         this.taskErrorsStddev = taskErrorsStddev;
     }
 
@@ -197,7 +197,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskRatingScale;
     }
 
-    public void setTaskRatingScale(String taskRatingScale) {
+    public void setTaskRatingScale(final String taskRatingScale) {
         this.taskRatingScale = taskRatingScale;
     }
 
@@ -205,7 +205,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskRating;
     }
 
-    public void setTaskRating(Float taskRating) {
+    public void setTaskRating(final Float taskRating) {
         this.taskRating = taskRating;
     }
 
@@ -213,7 +213,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -221,7 +221,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -229,7 +229,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -237,7 +237,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -245,7 +245,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return taskRatingStddev;
     }
 
-    public void setTaskRatingStddev(Float taskRatingStddev) {
+    public void setTaskRatingStddev(final Float taskRatingStddev) {
         this.taskRatingStddev = taskRatingStddev;
     }
 
@@ -253,7 +253,7 @@ public class TestTaskEntity implements Cloneable, Serializable {
         return testParticipants;
     }
 
-    public void setTestParticipants(Set<TestTaskParticipantMapEntity> testParticipants) {
+    public void setTestParticipants(final Set<TestTaskParticipantMapEntity> testParticipants) {
         this.testParticipants = testParticipants;
     }
 }

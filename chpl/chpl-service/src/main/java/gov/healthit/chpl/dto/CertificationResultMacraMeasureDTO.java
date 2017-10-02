@@ -40,7 +40,7 @@ public class CertificationResultMacraMeasureDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -48,7 +48,7 @@ public class CertificationResultMacraMeasureDTO implements Serializable {
         return certificationResultId;
     }
 
-    public void setCertificationResultId(Long certificationResultId) {
+    public void setCertificationResultId(final Long certificationResultId) {
         this.certificationResultId = certificationResultId;
     }
 
@@ -56,7 +56,7 @@ public class CertificationResultMacraMeasureDTO implements Serializable {
         return measure;
     }
 
-    public void setMeasure(MacraMeasureDTO measure) {
+    public void setMeasure(final MacraMeasureDTO measure) {
         this.measure = measure;
     }
 }

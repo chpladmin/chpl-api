@@ -403,11 +403,11 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         return mutableAclService;
     }
 
-    public void setCertificationBodyDAO(CertificationBodyDAO acbDAO) {
+    public void setCertificationBodyDAO(final CertificationBodyDAO acbDAO) {
         this.certificationBodyDAO = acbDAO;
     }
 
-    public void setMutableAclService(MutableAclService mutableAclService) {
+    public void setMutableAclService(final MutableAclService mutableAclService) {
         this.mutableAclService = mutableAclService;
     }
 

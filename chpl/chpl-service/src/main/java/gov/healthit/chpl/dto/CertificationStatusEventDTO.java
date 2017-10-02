@@ -41,7 +41,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -49,7 +49,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -57,7 +57,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -65,7 +65,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return eventDate;
     }
 
-    public void setEventDate(Date eventDate) {
+    public void setEventDate(final Date eventDate) {
         this.eventDate = eventDate;
     }
 
@@ -73,7 +73,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -81,7 +81,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -89,7 +89,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -97,7 +97,7 @@ public class CertificationStatusEventDTO implements Serializable {
         return status;
     }
 
-    public void setStatus(CertificationStatusDTO status) {
+    public void setStatus(final CertificationStatusDTO status) {
         this.status = status;
     }
 

@@ -76,7 +76,7 @@ public class PendingSurveillanceNonconformityEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -84,7 +84,7 @@ public class PendingSurveillanceNonconformityEntity {
         return pendingSurveillanceRequirementId;
     }
 
-    public void setPendingSurveillanceRequirementId(Long pendingSurveillanceRequirementId) {
+    public void setPendingSurveillanceRequirementId(final Long pendingSurveillanceRequirementId) {
         this.pendingSurveillanceRequirementId = pendingSurveillanceRequirementId;
     }
 
@@ -92,7 +92,7 @@ public class PendingSurveillanceNonconformityEntity {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -100,7 +100,7 @@ public class PendingSurveillanceNonconformityEntity {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -108,7 +108,7 @@ public class PendingSurveillanceNonconformityEntity {
         return dateOfDetermination;
     }
 
-    public void setDateOfDetermination(Date dateOfDetermination) {
+    public void setDateOfDetermination(final Date dateOfDetermination) {
         this.dateOfDetermination = dateOfDetermination;
     }
 
@@ -116,7 +116,7 @@ public class PendingSurveillanceNonconformityEntity {
         return capApproval;
     }
 
-    public void setCapApproval(Date capApproval) {
+    public void setCapApproval(final Date capApproval) {
         this.capApproval = capApproval;
     }
 
@@ -124,7 +124,7 @@ public class PendingSurveillanceNonconformityEntity {
         return capStart;
     }
 
-    public void setCapStart(Date capStart) {
+    public void setCapStart(final Date capStart) {
         this.capStart = capStart;
     }
 
@@ -132,7 +132,7 @@ public class PendingSurveillanceNonconformityEntity {
         return capMustCompleteDate;
     }
 
-    public void setCapMustCompleteDate(Date capMustCompleteDate) {
+    public void setCapMustCompleteDate(final Date capMustCompleteDate) {
         this.capMustCompleteDate = capMustCompleteDate;
     }
 
@@ -140,7 +140,7 @@ public class PendingSurveillanceNonconformityEntity {
         return capEndDate;
     }
 
-    public void setCapEndDate(Date capEndDate) {
+    public void setCapEndDate(final Date capEndDate) {
         this.capEndDate = capEndDate;
     }
 
@@ -148,7 +148,7 @@ public class PendingSurveillanceNonconformityEntity {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -156,7 +156,7 @@ public class PendingSurveillanceNonconformityEntity {
         return findings;
     }
 
-    public void setFindings(String findings) {
+    public void setFindings(final String findings) {
         this.findings = findings;
     }
 
@@ -164,7 +164,7 @@ public class PendingSurveillanceNonconformityEntity {
         return sitesPassed;
     }
 
-    public void setSitesPassed(Integer sitesPassed) {
+    public void setSitesPassed(final Integer sitesPassed) {
         this.sitesPassed = sitesPassed;
     }
 
@@ -172,7 +172,7 @@ public class PendingSurveillanceNonconformityEntity {
         return totalSites;
     }
 
-    public void setTotalSites(Integer totalSites) {
+    public void setTotalSites(final Integer totalSites) {
         this.totalSites = totalSites;
     }
 
@@ -180,7 +180,7 @@ public class PendingSurveillanceNonconformityEntity {
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(String developerExplanation) {
+    public void setDeveloperExplanation(final String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -188,7 +188,7 @@ public class PendingSurveillanceNonconformityEntity {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -196,7 +196,7 @@ public class PendingSurveillanceNonconformityEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -204,7 +204,7 @@ public class PendingSurveillanceNonconformityEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -212,7 +212,7 @@ public class PendingSurveillanceNonconformityEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -220,7 +220,7 @@ public class PendingSurveillanceNonconformityEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 }

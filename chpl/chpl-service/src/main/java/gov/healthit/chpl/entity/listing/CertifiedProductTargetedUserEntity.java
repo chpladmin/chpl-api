@@ -42,7 +42,7 @@ public class CertifiedProductTargetedUserEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -50,7 +50,7 @@ public class CertifiedProductTargetedUserEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -74,7 +74,7 @@ public class CertifiedProductTargetedUserEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -82,7 +82,7 @@ public class CertifiedProductTargetedUserEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -90,7 +90,7 @@ public class CertifiedProductTargetedUserEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -98,7 +98,7 @@ public class CertifiedProductTargetedUserEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -106,7 +106,7 @@ public class CertifiedProductTargetedUserEntity {
         return targetedUserId;
     }
 
-    public void setTargetedUserId(Long targetedUserId) {
+    public void setTargetedUserId(final Long targetedUserId) {
         this.targetedUserId = targetedUserId;
     }
 
@@ -114,7 +114,7 @@ public class CertifiedProductTargetedUserEntity {
         return targetedUser;
     }
 
-    public void setTargetedUser(TargetedUserEntity targetedUser) {
+    public void setTargetedUser(final TargetedUserEntity targetedUser) {
         this.targetedUser = targetedUser;
     }
 }

@@ -13,7 +13,7 @@ public class DeveloperResults implements Serializable {
         return developers;
     }
 
-    public void setDevelopers(List<Developer> developers) {
+    public void setDevelopers(final List<Developer> developers) {
         this.developers = developers;
     }
 }

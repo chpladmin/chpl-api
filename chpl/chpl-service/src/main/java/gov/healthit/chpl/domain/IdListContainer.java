@@ -14,7 +14,7 @@ public class IdListContainer {
         return ids;
     }
 
-    public void setIds(List<Long> ids) {
+    public void setIds(final List<Long> ids) {
         this.ids = ids;
     }
 }

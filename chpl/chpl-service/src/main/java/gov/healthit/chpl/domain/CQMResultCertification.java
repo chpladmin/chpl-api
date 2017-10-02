@@ -52,7 +52,7 @@ public class CQMResultCertification implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -60,7 +60,7 @@ public class CQMResultCertification implements Serializable {
         return certificationId;
     }
 
-    public void setCertificationId(Long criteriaId) {
+    public void setCertificationId(final Long criteriaId) {
         this.certificationId = criteriaId;
     }
 
@@ -68,7 +68,7 @@ public class CQMResultCertification implements Serializable {
         return certificationNumber;
     }
 
-    public void setCertificationNumber(String criteriaNumber) {
+    public void setCertificationNumber(final String criteriaNumber) {
         this.certificationNumber = criteriaNumber;
     }
 }

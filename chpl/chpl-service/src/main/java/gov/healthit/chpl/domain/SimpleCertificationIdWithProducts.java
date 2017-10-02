@@ -20,7 +20,7 @@ public class SimpleCertificationIdWithProducts extends SimpleCertificationId imp
         return products;
     }
 
-    public void setProducts(String products) {
+    public void setProducts(final String products) {
         this.products = products;
     }
 }

@@ -20,7 +20,7 @@ public class ApiKeyActivity implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -28,7 +28,7 @@ public class ApiKeyActivity implements Serializable {
         return apiKeyId;
     }
 
-    public void setApiKeyId(Long apiKeyId) {
+    public void setApiKeyId(final Long apiKeyId) {
         this.apiKeyId = apiKeyId;
     }
 
@@ -36,7 +36,7 @@ public class ApiKeyActivity implements Serializable {
         return apiCallPath;
     }
 
-    public void setApiCallPath(String apiCallPath) {
+    public void setApiCallPath(final String apiCallPath) {
         this.apiCallPath = apiCallPath;
     }
 
@@ -44,7 +44,7 @@ public class ApiKeyActivity implements Serializable {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -52,7 +52,7 @@ public class ApiKeyActivity implements Serializable {
         return apiKey;
     }
 
-    public void setApiKey(String apiKey) {
+    public void setApiKey(final String apiKey) {
         this.apiKey = apiKey;
     }
 
@@ -60,7 +60,7 @@ public class ApiKeyActivity implements Serializable {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -68,7 +68,7 @@ public class ApiKeyActivity implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 

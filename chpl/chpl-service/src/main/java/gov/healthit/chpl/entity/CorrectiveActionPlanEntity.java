@@ -83,7 +83,7 @@ public class CorrectiveActionPlanEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -91,7 +91,7 @@ public class CorrectiveActionPlanEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -99,7 +99,7 @@ public class CorrectiveActionPlanEntity {
         return approvalDate;
     }
 
-    public void setApprovalDate(Date approvalDate) {
+    public void setApprovalDate(final Date approvalDate) {
         this.approvalDate = approvalDate;
     }
 
@@ -107,7 +107,7 @@ public class CorrectiveActionPlanEntity {
         return actualCompletionDate;
     }
 
-    public void setActualCompletionDate(Date actualCompletionDate) {
+    public void setActualCompletionDate(final Date actualCompletionDate) {
         this.actualCompletionDate = actualCompletionDate;
     }
 
@@ -115,7 +115,7 @@ public class CorrectiveActionPlanEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -123,7 +123,7 @@ public class CorrectiveActionPlanEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -131,7 +131,7 @@ public class CorrectiveActionPlanEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -139,7 +139,7 @@ public class CorrectiveActionPlanEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -147,7 +147,7 @@ public class CorrectiveActionPlanEntity {
         return surveillanceStartDate;
     }
 
-    public void setSurveillanceStartDate(Date surveillanceStartDate) {
+    public void setSurveillanceStartDate(final Date surveillanceStartDate) {
         this.surveillanceStartDate = surveillanceStartDate;
     }
 
@@ -155,7 +155,7 @@ public class CorrectiveActionPlanEntity {
         return surveillanceEndDate;
     }
 
-    public void setSurveillanceEndDate(Date surveillanceEndDate) {
+    public void setSurveillanceEndDate(final Date surveillanceEndDate) {
         this.surveillanceEndDate = surveillanceEndDate;
     }
 
@@ -163,7 +163,7 @@ public class CorrectiveActionPlanEntity {
         return surveillanceResult;
     }
 
-    public void setSurveillanceResult(Boolean surveillanceResult) {
+    public void setSurveillanceResult(final Boolean surveillanceResult) {
         this.surveillanceResult = surveillanceResult;
     }
 
@@ -171,7 +171,7 @@ public class CorrectiveActionPlanEntity {
         return nonComplianceDeterminationDate;
     }
 
-    public void setNonComplianceDeterminationDate(Date nonComplianceDeterminationDate) {
+    public void setNonComplianceDeterminationDate(final Date nonComplianceDeterminationDate) {
         this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
     }
 
@@ -179,7 +179,7 @@ public class CorrectiveActionPlanEntity {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -187,7 +187,7 @@ public class CorrectiveActionPlanEntity {
         return requiredCompletionDate;
     }
 
-    public void setRequiredCompletionDate(Date requiredCompletionDate) {
+    public void setRequiredCompletionDate(final Date requiredCompletionDate) {
         this.requiredCompletionDate = requiredCompletionDate;
     }
 
@@ -195,7 +195,7 @@ public class CorrectiveActionPlanEntity {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(final String summary) {
         this.summary = summary;
     }
 
@@ -203,7 +203,7 @@ public class CorrectiveActionPlanEntity {
         return developerExplanation;
     }
 
-    public void setDeveloperExplanation(String developerExplanation) {
+    public void setDeveloperExplanation(final String developerExplanation) {
         this.developerExplanation = developerExplanation;
     }
 
@@ -211,7 +211,7 @@ public class CorrectiveActionPlanEntity {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 }

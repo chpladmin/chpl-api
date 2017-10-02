@@ -28,7 +28,7 @@ public class PendingCertifiedProductTargetedUserDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -36,7 +36,7 @@ public class PendingCertifiedProductTargetedUserDTO implements Serializable {
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
@@ -44,7 +44,7 @@ public class PendingCertifiedProductTargetedUserDTO implements Serializable {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -52,7 +52,7 @@ public class PendingCertifiedProductTargetedUserDTO implements Serializable {
         return targetedUserId;
     }
 
-    public void setTargetedUserId(Long targetedUserId) {
+    public void setTargetedUserId(final Long targetedUserId) {
         this.targetedUserId = targetedUserId;
     }
 }

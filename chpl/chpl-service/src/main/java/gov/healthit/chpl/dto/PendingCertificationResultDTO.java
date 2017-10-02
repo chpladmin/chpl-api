@@ -137,7 +137,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -145,7 +145,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return certificationCriterionId;
     }
 
-    public void setCertificationCriterionId(Long certificationCriterionId) {
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
     }
 
@@ -153,7 +153,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
@@ -161,7 +161,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return meetsCriteria;
     }
 
-    public void setMeetsCriteria(Boolean meetsCriteria) {
+    public void setMeetsCriteria(final Boolean meetsCriteria) {
         this.meetsCriteria = meetsCriteria;
     }
 
@@ -169,7 +169,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -177,7 +177,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -185,7 +185,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return gap;
     }
 
-    public void setGap(Boolean gap) {
+    public void setGap(final Boolean gap) {
         this.gap = gap;
     }
 
@@ -193,7 +193,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return sed;
     }
 
-    public void setSed(Boolean sed) {
+    public void setSed(final Boolean sed) {
         this.sed = sed;
     }
 
@@ -201,7 +201,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return g1Success;
     }
 
-    public void setG1Success(Boolean g1Success) {
+    public void setG1Success(final Boolean g1Success) {
         this.g1Success = g1Success;
     }
 
@@ -209,7 +209,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return g2Success;
     }
 
-    public void setG2Success(Boolean g2Success) {
+    public void setG2Success(final Boolean g2Success) {
         this.g2Success = g2Success;
     }
 
@@ -217,7 +217,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return additionalSoftware;
     }
 
-    public void setAdditionalSoftware(List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware) {
+    public void setAdditionalSoftware(final List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware) {
         this.additionalSoftware = additionalSoftware;
     }
 
@@ -225,7 +225,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return testData;
     }
 
-    public void setTestData(List<PendingCertificationResultTestDataDTO> testData) {
+    public void setTestData(final List<PendingCertificationResultTestDataDTO> testData) {
         this.testData = testData;
     }
 
@@ -233,7 +233,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return testFunctionality;
     }
 
-    public void setTestFunctionality(List<PendingCertificationResultTestFunctionalityDTO> testFunctionality) {
+    public void setTestFunctionality(final List<PendingCertificationResultTestFunctionalityDTO> testFunctionality) {
         this.testFunctionality = testFunctionality;
     }
 
@@ -241,7 +241,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return testProcedures;
     }
 
-    public void setTestProcedures(List<PendingCertificationResultTestProcedureDTO> testProcedures) {
+    public void setTestProcedures(final List<PendingCertificationResultTestProcedureDTO> testProcedures) {
         this.testProcedures = testProcedures;
     }
 
@@ -249,7 +249,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return testStandards;
     }
 
-    public void setTestStandards(List<PendingCertificationResultTestStandardDTO> testStandards) {
+    public void setTestStandards(final List<PendingCertificationResultTestStandardDTO> testStandards) {
         this.testStandards = testStandards;
     }
 
@@ -257,7 +257,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return testTools;
     }
 
-    public void setTestTools(List<PendingCertificationResultTestToolDTO> testTools) {
+    public void setTestTools(final List<PendingCertificationResultTestToolDTO> testTools) {
         this.testTools = testTools;
     }
 
@@ -265,7 +265,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return ucdProcesses;
     }
 
-    public void setUcdProcesses(List<PendingCertificationResultUcdProcessDTO> ucdProcesses) {
+    public void setUcdProcesses(final List<PendingCertificationResultUcdProcessDTO> ucdProcesses) {
         this.ucdProcesses = ucdProcesses;
     }
 
@@ -273,7 +273,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return testTasks;
     }
 
-    public void setTestTasks(List<PendingCertificationResultTestTaskDTO> testTasks) {
+    public void setTestTasks(final List<PendingCertificationResultTestTaskDTO> testTasks) {
         this.testTasks = testTasks;
     }
 
@@ -281,7 +281,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(String apiDocumentation) {
+    public void setApiDocumentation(final String apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 
@@ -289,7 +289,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return privacySecurityFramework;
     }
 
-    public void setPrivacySecurityFramework(String privacySecurityFramework) {
+    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
@@ -297,7 +297,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return g1MacraMeasures;
     }
 
-    public void setG1MacraMeasures(List<PendingCertificationResultMacraMeasureDTO> g1Measures) {
+    public void setG1MacraMeasures(final List<PendingCertificationResultMacraMeasureDTO> g1Measures) {
         this.g1MacraMeasures = g1Measures;
     }
 
@@ -305,7 +305,7 @@ public class PendingCertificationResultDTO implements Serializable {
         return g2MacraMeasures;
     }
 
-    public void setG2MacraMeasures(List<PendingCertificationResultMacraMeasureDTO> g2Measures) {
+    public void setG2MacraMeasures(final List<PendingCertificationResultMacraMeasureDTO> g2Measures) {
         this.g2MacraMeasures = g2Measures;
     }
 

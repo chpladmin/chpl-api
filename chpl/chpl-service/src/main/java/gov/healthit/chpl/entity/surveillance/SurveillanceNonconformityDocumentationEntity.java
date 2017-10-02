@@ -56,7 +56,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -64,7 +64,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -72,7 +72,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -80,7 +80,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -88,7 +88,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -96,7 +96,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
@@ -104,7 +104,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return fileType;
     }
 
-    public void setFileType(String fileType) {
+    public void setFileType(final String fileType) {
         this.fileType = fileType;
     }
 
@@ -112,7 +112,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return fileData;
     }
 
-    public void setFileData(byte[] fileData) {
+    public void setFileData(final byte[] fileData) {
         this.fileData = fileData;
     }
 
@@ -120,7 +120,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return nonconformityId;
     }
 
-    public void setNonconformityId(Long nonconformityId) {
+    public void setNonconformityId(final Long nonconformityId) {
         this.nonconformityId = nonconformityId;
     }
 
@@ -128,7 +128,7 @@ public class SurveillanceNonconformityDocumentationEntity {
         return nonconformityEntity;
     }
 
-    public void setNonconformityEntity(SurveillanceNonconformityEntity nonconformityEntity) {
+    public void setNonconformityEntity(final SurveillanceNonconformityEntity nonconformityEntity) {
         this.nonconformityEntity = nonconformityEntity;
     }
 }

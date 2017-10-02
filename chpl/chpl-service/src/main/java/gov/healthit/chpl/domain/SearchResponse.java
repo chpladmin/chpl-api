@@ -35,7 +35,7 @@ public class SearchResponse implements Serializable {
         return recordCount;
     }
 
-    public void setRecordCount(Integer recordCount) {
+    public void setRecordCount(final Integer recordCount) {
         this.recordCount = recordCount;
     }
 
@@ -43,7 +43,7 @@ public class SearchResponse implements Serializable {
         return results;
     }
 
-    public void setResults(List<CertifiedProductSearchResult> results) {
+    public void setResults(final List<CertifiedProductSearchResult> results) {
         this.results = results;
     }
 
@@ -51,7 +51,7 @@ public class SearchResponse implements Serializable {
         return pageSize;
     }
 
-    public void setPageSize(Integer pageSize) {
+    public void setPageSize(final Integer pageSize) {
         this.pageSize = pageSize;
     }
 
@@ -59,7 +59,7 @@ public class SearchResponse implements Serializable {
         return pageNumber;
     }
 
-    public void setPageNumber(Integer pageNumber) {
+    public void setPageNumber(final Integer pageNumber) {
         this.pageNumber = pageNumber;
     }
 

@@ -53,7 +53,7 @@ public class DeveloperStatusEvent implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -61,7 +61,7 @@ public class DeveloperStatusEvent implements Serializable {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -69,7 +69,7 @@ public class DeveloperStatusEvent implements Serializable {
         return status;
     }
 
-    public void setStatus(DeveloperStatus status) {
+    public void setStatus(final DeveloperStatus status) {
         this.status = status;
     }
 
@@ -77,7 +77,7 @@ public class DeveloperStatusEvent implements Serializable {
         return statusDate;
     }
 
-    public void setStatusDate(Date statusDate) {
+    public void setStatusDate(final Date statusDate) {
         this.statusDate = statusDate;
     }
 }

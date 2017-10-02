@@ -387,7 +387,7 @@ public class InvitationManagerImpl implements InvitationManager {
             }
 
             @Override
-            public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
+            public void setAuthenticated(final boolean arg0) throws IllegalArgumentException {
             }
 
             @Override

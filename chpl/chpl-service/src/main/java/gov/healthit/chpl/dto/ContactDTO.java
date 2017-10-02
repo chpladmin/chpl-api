@@ -34,7 +34,7 @@ public class ContactDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -42,7 +42,7 @@ public class ContactDTO implements Serializable {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
 
@@ -50,7 +50,7 @@ public class ContactDTO implements Serializable {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(final String lastName) {
         this.lastName = lastName;
     }
 
@@ -58,7 +58,7 @@ public class ContactDTO implements Serializable {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -66,7 +66,7 @@ public class ContactDTO implements Serializable {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(final String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -74,7 +74,7 @@ public class ContactDTO implements Serializable {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -82,7 +82,7 @@ public class ContactDTO implements Serializable {
         return signatureDate;
     }
 
-    public void setSignatureDate(Date signatureDate) {
+    public void setSignatureDate(final Date signatureDate) {
         this.signatureDate = signatureDate;
     }
 }

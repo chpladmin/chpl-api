@@ -60,7 +60,7 @@ public class CapClosedComplianceChecker implements RuleComplianceChecker {
         return numDaysAllowed;
     }
 
-    public void setNumDaysAllowed(int numDaysAllowed) {
+    public void setNumDaysAllowed(final int numDaysAllowed) {
         this.numDaysAllowed = numDaysAllowed;
     }
 }

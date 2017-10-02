@@ -27,7 +27,7 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -35,7 +35,7 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
         return cqmId;
     }
 
-    public void setCqmId(Long cqmId) {
+    public void setCqmId(final Long cqmId) {
         this.cqmId = cqmId;
     }
 
@@ -43,7 +43,7 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
         return certificationId;
     }
 
-    public void setCertificationId(Long certificationId) {
+    public void setCertificationId(final Long certificationId) {
         this.certificationId = certificationId;
     }
 
@@ -51,7 +51,7 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
         return certificationCriteriaNumber;
     }
 
-    public void setCertificationCriteriaNumber(String certificationCriteriaNumber) {
+    public void setCertificationCriteriaNumber(final String certificationCriteriaNumber) {
         this.certificationCriteriaNumber = certificationCriteriaNumber;
     }
 

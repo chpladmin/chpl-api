@@ -81,7 +81,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -89,7 +89,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -97,7 +97,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return approvalDate;
     }
 
-    public void setApprovalDate(Date approvalDate) {
+    public void setApprovalDate(final Date approvalDate) {
         this.approvalDate = approvalDate;
     }
 
@@ -105,7 +105,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return actualCompletionDate;
     }
 
-    public void setActualCompletionDate(Date actualCompletionDate) {
+    public void setActualCompletionDate(final Date actualCompletionDate) {
         this.actualCompletionDate = actualCompletionDate;
     }
 
@@ -113,11 +113,11 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return certifications;
     }
 
-    public void setCertifications(List<CorrectiveActionPlanCertificationResult> certifications) {
+    public void setCertifications(final List<CorrectiveActionPlanCertificationResult> certifications) {
         this.certifications = certifications;
     }
 
-    public void setCertificationDtos(List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
+    public void setCertificationDtos(final List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
         if (certDtos != null && certDtos.size() > 0) {
             for (CorrectiveActionPlanCertificationResultDTO certDto : certDtos) {
                 CorrectiveActionPlanCertificationResult currCert = new CorrectiveActionPlanCertificationResult(certDto);
@@ -130,11 +130,11 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return documentation;
     }
 
-    public void setDocumentation(List<CorrectiveActionPlanDocumentation> documentation) {
+    public void setDocumentation(final List<CorrectiveActionPlanDocumentation> documentation) {
         this.documentation = documentation;
     }
 
-    public void setDocumentationDtos(List<CorrectiveActionPlanDocumentationDTO> docDtos) {
+    public void setDocumentationDtos(final List<CorrectiveActionPlanDocumentationDTO> docDtos) {
         if (docDtos != null && docDtos.size() > 0) {
             for (CorrectiveActionPlanDocumentationDTO docDto : docDtos) {
                 CorrectiveActionPlanDocumentation currDoc = new CorrectiveActionPlanDocumentation(docDto);
@@ -147,7 +147,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return surveillanceStartDate;
     }
 
-    public void setSurveillanceStartDate(Date surveillanceStartDate) {
+    public void setSurveillanceStartDate(final Date surveillanceStartDate) {
         this.surveillanceStartDate = surveillanceStartDate;
     }
 
@@ -155,7 +155,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return surveillanceEndDate;
     }
 
-    public void setSurveillanceEndDate(Date surveillanceEndDate) {
+    public void setSurveillanceEndDate(final Date surveillanceEndDate) {
         this.surveillanceEndDate = surveillanceEndDate;
     }
 
@@ -163,7 +163,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return randomizedSurveillance;
     }
 
-    public void setRandomizedSurveillance(Boolean randomizedSurveillance) {
+    public void setRandomizedSurveillance(final Boolean randomizedSurveillance) {
         this.randomizedSurveillance = randomizedSurveillance;
     }
 
@@ -171,7 +171,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return effectiveDate;
     }
 
-    public void setEffectiveDate(Date effectiveDate) {
+    public void setEffectiveDate(final Date effectiveDate) {
         this.effectiveDate = effectiveDate;
     }
 
@@ -179,7 +179,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return estimatedCompletionDate;
     }
 
-    public void setEstimatedCompletionDate(Date estimatedCompletionDate) {
+    public void setEstimatedCompletionDate(final Date estimatedCompletionDate) {
         this.estimatedCompletionDate = estimatedCompletionDate;
     }
 
@@ -187,7 +187,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return noncomplianceDate;
     }
 
-    public void setNoncomplianceDate(Date noncomplianceDate) {
+    public void setNoncomplianceDate(final Date noncomplianceDate) {
         this.noncomplianceDate = noncomplianceDate;
     }
 
@@ -195,7 +195,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return acbSummary;
     }
 
-    public void setAcbSummary(String acbSummary) {
+    public void setAcbSummary(final String acbSummary) {
         this.acbSummary = acbSummary;
     }
 
@@ -203,7 +203,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return developerSummary;
     }
 
-    public void setDeveloperSummary(String developerSummary) {
+    public void setDeveloperSummary(final String developerSummary) {
         this.developerSummary = developerSummary;
     }
 
@@ -211,7 +211,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return resolution;
     }
 
-    public void setResolution(String resolution) {
+    public void setResolution(final String resolution) {
         this.resolution = resolution;
     }
 
@@ -219,7 +219,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
         return acbName;
     }
 
-    public void setAcbName(String acbName) {
+    public void setAcbName(final String acbName) {
         this.acbName = acbName;
     }
 }

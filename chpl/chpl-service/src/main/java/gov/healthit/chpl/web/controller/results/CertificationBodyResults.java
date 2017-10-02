@@ -18,7 +18,7 @@ public class CertificationBodyResults implements Serializable {
         return acbs;
     }
 
-    public void setAcbs(List<CertificationBody> acbs) {
+    public void setAcbs(final List<CertificationBody> acbs) {
         this.acbs = acbs;
     }
 

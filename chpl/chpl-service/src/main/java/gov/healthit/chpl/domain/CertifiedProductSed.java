@@ -47,7 +47,7 @@ public class CertifiedProductSed implements Serializable {
         return ucdProcesses;
     }
 
-    public void setUcdProcesses(List<UcdProcess> ucdProcesses) {
+    public void setUcdProcesses(final List<UcdProcess> ucdProcesses) {
         this.ucdProcesses = ucdProcesses;
     }
 
@@ -55,7 +55,7 @@ public class CertifiedProductSed implements Serializable {
         return testTasks;
     }
 
-    public void setTestTasks(List<TestTask> testTasks) {
+    public void setTestTasks(final List<TestTask> testTasks) {
         this.testTasks = testTasks;
     }
 }

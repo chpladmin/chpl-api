@@ -14,7 +14,7 @@ public class UserActivity implements Serializable {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(final User user) {
         this.user = user;
     }
 
@@ -22,7 +22,7 @@ public class UserActivity implements Serializable {
         return events;
     }
 
-    public void setEvents(List<ActivityEvent> events) {
+    public void setEvents(final List<ActivityEvent> events) {
         this.events = events;
     }
 }

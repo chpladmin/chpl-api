@@ -18,7 +18,7 @@ public class JobStatus {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -26,7 +26,7 @@ public class JobStatus {
         return percentComplete;
     }
 
-    public void setPercentComplete(Integer percentComplete) {
+    public void setPercentComplete(final Integer percentComplete) {
         this.percentComplete = percentComplete;
     }
 }

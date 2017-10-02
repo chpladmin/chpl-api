@@ -80,7 +80,7 @@ public class SurveillanceEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -88,7 +88,7 @@ public class SurveillanceEntity {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -96,7 +96,7 @@ public class SurveillanceEntity {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(final Date endDate) {
         this.endDate = endDate;
     }
 
@@ -104,7 +104,7 @@ public class SurveillanceEntity {
         return numRandomizedSites;
     }
 
-    public void setNumRandomizedSites(Integer numRandomizedSites) {
+    public void setNumRandomizedSites(final Integer numRandomizedSites) {
         this.numRandomizedSites = numRandomizedSites;
     }
 
@@ -112,7 +112,7 @@ public class SurveillanceEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -120,7 +120,7 @@ public class SurveillanceEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -128,7 +128,7 @@ public class SurveillanceEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -136,7 +136,7 @@ public class SurveillanceEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -144,7 +144,7 @@ public class SurveillanceEntity {
         return certifiedProduct;
     }
 
-    public void setCertifiedProduct(CertifiedProductEntity certifiedProduct) {
+    public void setCertifiedProduct(final CertifiedProductEntity certifiedProduct) {
         this.certifiedProduct = certifiedProduct;
     }
 
@@ -152,7 +152,7 @@ public class SurveillanceEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -160,7 +160,7 @@ public class SurveillanceEntity {
         return surveillanceTypeId;
     }
 
-    public void setSurveillanceTypeId(Long surveillanceTypeId) {
+    public void setSurveillanceTypeId(final Long surveillanceTypeId) {
         this.surveillanceTypeId = surveillanceTypeId;
     }
 
@@ -168,7 +168,7 @@ public class SurveillanceEntity {
         return surveillanceType;
     }
 
-    public void setSurveillanceType(SurveillanceTypeEntity surveillanceType) {
+    public void setSurveillanceType(final SurveillanceTypeEntity surveillanceType) {
         this.surveillanceType = surveillanceType;
     }
 
@@ -176,7 +176,7 @@ public class SurveillanceEntity {
         return surveilledRequirements;
     }
 
-    public void setSurveilledRequirements(Set<SurveillanceRequirementEntity> surveilledRequirements) {
+    public void setSurveilledRequirements(final Set<SurveillanceRequirementEntity> surveilledRequirements) {
         this.surveilledRequirements = surveilledRequirements;
     }
 
@@ -184,7 +184,7 @@ public class SurveillanceEntity {
         return friendlyId;
     }
 
-    public void setFriendlyId(String friendlyId) {
+    public void setFriendlyId(final String friendlyId) {
         this.friendlyId = friendlyId;
     }
 
@@ -192,7 +192,7 @@ public class SurveillanceEntity {
         return userPermissionId;
     }
 
-    public void setUserPermissionId(Long userPermissionId) {
+    public void setUserPermissionId(final Long userPermissionId) {
         this.userPermissionId = userPermissionId;
     }
 }

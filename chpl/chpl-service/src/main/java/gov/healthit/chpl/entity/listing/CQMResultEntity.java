@@ -95,7 +95,7 @@ public class CQMResultEntity implements Serializable {
      * @param cqmCriterion
      *            the cqmCriterion value you wish to set
      */
-    public void setCqmCriterionId(Long cqmCriterionId) {
+    public void setCqmCriterionId(final Long cqmCriterionId) {
         this.cqmCriterionId = cqmCriterionId;
     }
 
@@ -223,7 +223,7 @@ public class CQMResultEntity implements Serializable {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 

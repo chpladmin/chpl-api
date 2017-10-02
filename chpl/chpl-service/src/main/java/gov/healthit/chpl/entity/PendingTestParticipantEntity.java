@@ -84,7 +84,7 @@ public class PendingTestParticipantEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -92,7 +92,7 @@ public class PendingTestParticipantEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -100,7 +100,7 @@ public class PendingTestParticipantEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 
@@ -108,7 +108,7 @@ public class PendingTestParticipantEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -116,7 +116,7 @@ public class PendingTestParticipantEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -124,7 +124,7 @@ public class PendingTestParticipantEntity {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(final String gender) {
         this.gender = gender;
     }
 
@@ -132,7 +132,7 @@ public class PendingTestParticipantEntity {
         return educationTypeId;
     }
 
-    public void setEducationTypeId(Long educationTypeId) {
+    public void setEducationTypeId(final Long educationTypeId) {
         this.educationTypeId = educationTypeId;
     }
 
@@ -140,7 +140,7 @@ public class PendingTestParticipantEntity {
         return occupation;
     }
 
-    public void setOccupation(String occupation) {
+    public void setOccupation(final String occupation) {
         this.occupation = occupation;
     }
 
@@ -148,7 +148,7 @@ public class PendingTestParticipantEntity {
         return professionalExperienceMonths;
     }
 
-    public void setProfessionalExperienceMonths(Integer professionalExperienceMonths) {
+    public void setProfessionalExperienceMonths(final Integer professionalExperienceMonths) {
         this.professionalExperienceMonths = professionalExperienceMonths;
     }
 
@@ -156,7 +156,7 @@ public class PendingTestParticipantEntity {
         return computerExperienceMonths;
     }
 
-    public void setComputerExperienceMonths(Integer computerExperienceMonths) {
+    public void setComputerExperienceMonths(final Integer computerExperienceMonths) {
         this.computerExperienceMonths = computerExperienceMonths;
     }
 
@@ -164,7 +164,7 @@ public class PendingTestParticipantEntity {
         return productExperienceMonths;
     }
 
-    public void setProductExperienceMonths(Integer productExperienceMonths) {
+    public void setProductExperienceMonths(final Integer productExperienceMonths) {
         this.productExperienceMonths = productExperienceMonths;
     }
 
@@ -172,7 +172,7 @@ public class PendingTestParticipantEntity {
         return assistiveTechnologyNeeds;
     }
 
-    public void setAssistiveTechnologyNeeds(String assistiveTechnologyNeeds) {
+    public void setAssistiveTechnologyNeeds(final String assistiveTechnologyNeeds) {
         this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
     }
 
@@ -180,7 +180,7 @@ public class PendingTestParticipantEntity {
         return uniqueId;
     }
 
-    public void setUniqueId(String uniqueId) {
+    public void setUniqueId(final String uniqueId) {
         this.uniqueId = uniqueId;
     }
 
@@ -188,7 +188,7 @@ public class PendingTestParticipantEntity {
         return education;
     }
 
-    public void setEducation(EducationTypeEntity education) {
+    public void setEducation(final EducationTypeEntity education) {
         this.education = education;
     }
 
@@ -196,7 +196,7 @@ public class PendingTestParticipantEntity {
         return ageRangeId;
     }
 
-    public void setAgeRangeId(Long ageRangeId) {
+    public void setAgeRangeId(final Long ageRangeId) {
         this.ageRangeId = ageRangeId;
     }
 
@@ -204,7 +204,7 @@ public class PendingTestParticipantEntity {
         return ageRange;
     }
 
-    public void setAgeRange(AgeRangeEntity ageRange) {
+    public void setAgeRange(final AgeRangeEntity ageRange) {
         this.ageRange = ageRange;
     }
 
@@ -212,7 +212,7 @@ public class PendingTestParticipantEntity {
         return userEnteredEducation;
     }
 
-    public void setUserEnteredEducation(String userEnteredEducation) {
+    public void setUserEnteredEducation(final String userEnteredEducation) {
         this.userEnteredEducation = userEnteredEducation;
     }
 
@@ -220,7 +220,7 @@ public class PendingTestParticipantEntity {
         return userEnteredAge;
     }
 
-    public void setUserEnteredAge(String userEnteredAge) {
+    public void setUserEnteredAge(final String userEnteredAge) {
         this.userEnteredAge = userEnteredAge;
     }
 }

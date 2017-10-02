@@ -40,7 +40,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
         return criteriaMet;
     }
 
-    public void setCriteriaMet(List<String> criteriaMet) {
+    public void setCriteriaMet(final List<String> criteriaMet) {
         this.criteriaMet = criteriaMet;
     }
 
@@ -48,7 +48,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
         return cqmsMet;
     }
 
-    public void setCqmsMet(List<String> cqmsMet) {
+    public void setCqmsMet(final List<String> cqmsMet) {
         this.cqmsMet = cqmsMet;
     }
 
@@ -56,7 +56,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
         return previousDevelopers;
     }
 
-    public void setPreviousDevelopers(List<String> previousDevelopers) {
+    public void setPreviousDevelopers(final List<String> previousDevelopers) {
         this.previousDevelopers = previousDevelopers;
     }
 
@@ -64,7 +64,7 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
         return apiDocumentation;
     }
 
-    public void setApiDocumentation(Map<String, String> apiDocumentation) {
+    public void setApiDocumentation(final Map<String, String> apiDocumentation) {
         this.apiDocumentation = apiDocumentation;
     }
 }

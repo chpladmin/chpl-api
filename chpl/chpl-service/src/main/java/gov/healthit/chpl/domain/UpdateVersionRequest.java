@@ -11,7 +11,7 @@ public class UpdateVersionRequest implements Serializable {
         return versionId;
     }
 
-    public void setVersionId(Long versionId) {
+    public void setVersionId(final Long versionId) {
         this.versionId = versionId;
     }
 
@@ -19,7 +19,7 @@ public class UpdateVersionRequest implements Serializable {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(final String version) {
         this.version = version;
     }
 

@@ -92,7 +92,7 @@ public class Surveillance implements Serializable {
         return errorMessages;
     }
 
-    public void setErrorMessages(Set<String> errors) {
+    public void setErrorMessages(final Set<String> errors) {
         this.errorMessages = errors;
     }
 
@@ -100,7 +100,7 @@ public class Surveillance implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -108,7 +108,7 @@ public class Surveillance implements Serializable {
         return certifiedProduct;
     }
 
-    public void setCertifiedProduct(CertifiedProduct certifiedProduct) {
+    public void setCertifiedProduct(final CertifiedProduct certifiedProduct) {
         this.certifiedProduct = certifiedProduct;
     }
 
@@ -116,7 +116,7 @@ public class Surveillance implements Serializable {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -124,7 +124,7 @@ public class Surveillance implements Serializable {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(final Date endDate) {
         this.endDate = endDate;
     }
 
@@ -132,7 +132,7 @@ public class Surveillance implements Serializable {
         return type;
     }
 
-    public void setType(SurveillanceType type) {
+    public void setType(final SurveillanceType type) {
         this.type = type;
     }
 
@@ -140,7 +140,7 @@ public class Surveillance implements Serializable {
         return randomizedSitesUsed;
     }
 
-    public void setRandomizedSitesUsed(Integer randomizedSitesUsed) {
+    public void setRandomizedSitesUsed(final Integer randomizedSitesUsed) {
         this.randomizedSitesUsed = randomizedSitesUsed;
     }
 
@@ -148,7 +148,7 @@ public class Surveillance implements Serializable {
         return requirements;
     }
 
-    public void setRequirements(Set<SurveillanceRequirement> requirements) {
+    public void setRequirements(final Set<SurveillanceRequirement> requirements) {
         this.requirements = requirements;
     }
 
@@ -156,7 +156,7 @@ public class Surveillance implements Serializable {
         return surveillanceIdToReplace;
     }
 
-    public void setSurveillanceIdToReplace(String surveillanceIdToReplace) {
+    public void setSurveillanceIdToReplace(final String surveillanceIdToReplace) {
         this.surveillanceIdToReplace = surveillanceIdToReplace;
     }
 
@@ -164,7 +164,7 @@ public class Surveillance implements Serializable {
         return friendlyId;
     }
 
-    public void setFriendlyId(String friendlyId) {
+    public void setFriendlyId(final String friendlyId) {
         this.friendlyId = friendlyId;
     }
 
@@ -172,7 +172,7 @@ public class Surveillance implements Serializable {
         return authority;
     }
 
-    public void setAuthority(String authority) {
+    public void setAuthority(final String authority) {
         this.authority = authority;
     }
 

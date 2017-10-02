@@ -8,37 +8,37 @@ public interface ProductOwnerEntity {
 
     public Long getId();
 
-    public void setId(Long id);
+    public void setId(final Long id);
 
     public Long getDeveloperId();
 
-    public void setDeveloperId(Long developerId);
+    public void setDeveloperId(final Long developerId);
 
     public Long getProductId();
 
-    public void setProductId(Long productId);
+    public void setProductId(final Long productId);
 
     public Date getTransferDate();
 
-    public void setTransferDate(Date transferDate);
+    public void setTransferDate(final Date transferDate);
 
     public Date getCreationDate();
 
-    public void setCreationDate(Date creationDate);
+    public void setCreationDate(final Date creationDate);
 
     public Boolean getDeleted();
 
-    public void setDeleted(Boolean deleted);
+    public void setDeleted(final Boolean deleted);
 
     public Date getLastModifiedDate();
 
-    public void setLastModifiedDate(Date lastModifiedDate);
+    public void setLastModifiedDate(final Date lastModifiedDate);
 
     public Long getLastModifiedUser();
 
-    public void setLastModifiedUser(Long lastModifiedUser);
+    public void setLastModifiedUser(final Long lastModifiedUser);
 
     public DeveloperEntity getDeveloper();
 
-    public void setDeveloper(DeveloperEntity developer);
+    public void setDeveloper(final DeveloperEntity developer);
 }

@@ -50,7 +50,7 @@ public class CertifiedProductQmsStandardEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -58,7 +58,7 @@ public class CertifiedProductQmsStandardEntity {
         return certifiedProductId;
     }
 
-    public void setCertifiedProductId(Long certifiedProductId) {
+    public void setCertifiedProductId(final Long certifiedProductId) {
         this.certifiedProductId = certifiedProductId;
     }
 
@@ -66,7 +66,7 @@ public class CertifiedProductQmsStandardEntity {
         return qmsStandardId;
     }
 
-    public void setQmsStandardId(Long qmsStandardId) {
+    public void setQmsStandardId(final Long qmsStandardId) {
         this.qmsStandardId = qmsStandardId;
     }
 
@@ -74,7 +74,7 @@ public class CertifiedProductQmsStandardEntity {
         return qmsStandard;
     }
 
-    public void setQmsStandard(QmsStandardEntity qmsStandard) {
+    public void setQmsStandard(final QmsStandardEntity qmsStandard) {
         this.qmsStandard = qmsStandard;
     }
 
@@ -82,7 +82,7 @@ public class CertifiedProductQmsStandardEntity {
         return modification;
     }
 
-    public void setModification(String modification) {
+    public void setModification(final String modification) {
         this.modification = modification;
     }
 
@@ -90,7 +90,7 @@ public class CertifiedProductQmsStandardEntity {
         return applicableCriteria;
     }
 
-    public void setApplicableCriteria(String applicableCriteria) {
+    public void setApplicableCriteria(final String applicableCriteria) {
         this.applicableCriteria = applicableCriteria;
     }
 
@@ -114,7 +114,7 @@ public class CertifiedProductQmsStandardEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -122,7 +122,7 @@ public class CertifiedProductQmsStandardEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 
@@ -130,7 +130,7 @@ public class CertifiedProductQmsStandardEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -138,7 +138,7 @@ public class CertifiedProductQmsStandardEntity {
         return lastModifiedUser;
     }
 
-    public void setLastModifiedUser(Long lastModifiedUser) {
+    public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
 }

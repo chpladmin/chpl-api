@@ -260,7 +260,7 @@ public class CertifiedProductDetailsEntity {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -268,7 +268,7 @@ public class CertifiedProductDetailsEntity {
         return testingLabId;
     }
 
-    public void setTestingLabId(Long testingLabId) {
+    public void setTestingLabId(final Long testingLabId) {
         this.testingLabId = testingLabId;
     }
 
@@ -276,7 +276,7 @@ public class CertifiedProductDetailsEntity {
         return chplProductNumber;
     }
 
-    public void setChplProductNumber(String chplProductNumber) {
+    public void setChplProductNumber(final String chplProductNumber) {
         this.chplProductNumber = chplProductNumber;
     }
 
@@ -284,7 +284,7 @@ public class CertifiedProductDetailsEntity {
         return reportFileLocation;
     }
 
-    public void setReportFileLocation(String reportFileLocation) {
+    public void setReportFileLocation(final String reportFileLocation) {
         this.reportFileLocation = reportFileLocation;
     }
 
@@ -292,7 +292,7 @@ public class CertifiedProductDetailsEntity {
         return acbCertificationId;
     }
 
-    public void setAcbCertificationId(String acbCertificationId) {
+    public void setAcbCertificationId(final String acbCertificationId) {
         this.acbCertificationId = acbCertificationId;
     }
 
@@ -300,7 +300,7 @@ public class CertifiedProductDetailsEntity {
         return practiceTypeId;
     }
 
-    public void setPracticeTypeId(Long practiceTypeId) {
+    public void setPracticeTypeId(final Long practiceTypeId) {
         this.practiceTypeId = practiceTypeId;
     }
 
@@ -308,7 +308,7 @@ public class CertifiedProductDetailsEntity {
         return productClassificationTypeId;
     }
 
-    public void setProductClassificationTypeId(Long productClassificationTypeId) {
+    public void setProductClassificationTypeId(final Long productClassificationTypeId) {
         this.productClassificationTypeId = productClassificationTypeId;
     }
 
@@ -316,7 +316,7 @@ public class CertifiedProductDetailsEntity {
         return otherAcb;
     }
 
-    public void setOtherAcb(String otherAcb) {
+    public void setOtherAcb(final String otherAcb) {
         this.otherAcb = otherAcb;
     }
 
@@ -324,7 +324,7 @@ public class CertifiedProductDetailsEntity {
         return certificationStatusId;
     }
 
-    public void setCertificationStatusId(Long certificationStatusId) {
+    public void setCertificationStatusId(final Long certificationStatusId) {
         this.certificationStatusId = certificationStatusId;
     }
 
@@ -332,7 +332,7 @@ public class CertifiedProductDetailsEntity {
         return certificationEditionId;
     }
 
-    public void setCertificationEditionId(Long certificationEditionId) {
+    public void setCertificationEditionId(final Long certificationEditionId) {
         this.certificationEditionId = certificationEditionId;
     }
 
@@ -340,7 +340,7 @@ public class CertifiedProductDetailsEntity {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(final String year) {
         this.year = year;
     }
 
@@ -348,7 +348,7 @@ public class CertifiedProductDetailsEntity {
         return certificationBodyId;
     }
 
-    public void setCertificationBodyId(Long certificationBodyId) {
+    public void setCertificationBodyId(final Long certificationBodyId) {
         this.certificationBodyId = certificationBodyId;
     }
 
@@ -356,7 +356,7 @@ public class CertifiedProductDetailsEntity {
         return certificationBodyName;
     }
 
-    public void setCertificationBodyName(String certificationBodyName) {
+    public void setCertificationBodyName(final String certificationBodyName) {
         this.certificationBodyName = certificationBodyName;
     }
 
@@ -364,7 +364,7 @@ public class CertifiedProductDetailsEntity {
         return this.acbIsDeleted;
     }
 
-    public void setAcbIsDeleted(Boolean acbIsDeleted) {
+    public void setAcbIsDeleted(final Boolean acbIsDeleted) {
         this.acbIsDeleted = acbIsDeleted;
     }
 
@@ -372,7 +372,7 @@ public class CertifiedProductDetailsEntity {
         return productClassificationName;
     }
 
-    public void setProductClassificationName(String productClassificationName) {
+    public void setProductClassificationName(final String productClassificationName) {
         this.productClassificationName = productClassificationName;
     }
 
@@ -380,7 +380,7 @@ public class CertifiedProductDetailsEntity {
         return practiceTypeName;
     }
 
-    public void setPracticeTypeName(String practiceTypeName) {
+    public void setPracticeTypeName(final String practiceTypeName) {
         this.practiceTypeName = practiceTypeName;
     }
 
@@ -388,7 +388,7 @@ public class CertifiedProductDetailsEntity {
         return productVersionId;
     }
 
-    public void setProductVersionId(Long productVersionId) {
+    public void setProductVersionId(final Long productVersionId) {
         this.productVersionId = productVersionId;
     }
 
@@ -396,7 +396,7 @@ public class CertifiedProductDetailsEntity {
         return productVersion;
     }
 
-    public void setProductVersion(String productVersion) {
+    public void setProductVersion(final String productVersion) {
         this.productVersion = productVersion;
     }
 
@@ -404,7 +404,7 @@ public class CertifiedProductDetailsEntity {
         return productId;
     }
 
-    public void setProductId(Long productId) {
+    public void setProductId(final Long productId) {
         this.productId = productId;
     }
 
@@ -412,7 +412,7 @@ public class CertifiedProductDetailsEntity {
         return productName;
     }
 
-    public void setProductName(String productName) {
+    public void setProductName(final String productName) {
         this.productName = productName;
     }
 
@@ -420,7 +420,7 @@ public class CertifiedProductDetailsEntity {
         return developerId;
     }
 
-    public void setDeveloperId(Long developerId) {
+    public void setDeveloperId(final Long developerId) {
         this.developerId = developerId;
     }
 
@@ -428,7 +428,7 @@ public class CertifiedProductDetailsEntity {
         return developerName;
     }
 
-    public void setDeveloperName(String developerName) {
+    public void setDeveloperName(final String developerName) {
         this.developerName = developerName;
     }
 
@@ -436,7 +436,7 @@ public class CertifiedProductDetailsEntity {
         return certificationDate;
     }
 
-    public void setCertificationDate(Date certificationDate) {
+    public void setCertificationDate(final Date certificationDate) {
         this.certificationDate = certificationDate;
     }
 
@@ -444,7 +444,7 @@ public class CertifiedProductDetailsEntity {
         return countCertifications;
     }
 
-    public void setCountCertifications(Integer countCertifications) {
+    public void setCountCertifications(final Integer countCertifications) {
         this.countCertifications = countCertifications;
     }
 
@@ -452,7 +452,7 @@ public class CertifiedProductDetailsEntity {
         return countCqms;
     }
 
-    public void setCountCqms(Integer countCqms) {
+    public void setCountCqms(final Integer countCqms) {
         this.countCqms = countCqms;
     }
 
@@ -460,7 +460,7 @@ public class CertifiedProductDetailsEntity {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
 
@@ -468,7 +468,7 @@ public class CertifiedProductDetailsEntity {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
+    public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
 
@@ -476,7 +476,7 @@ public class CertifiedProductDetailsEntity {
         return certificationStatusName;
     }
 
-    public void setCertificationStatusName(String certificationStatusName) {
+    public void setCertificationStatusName(final String certificationStatusName) {
         this.certificationStatusName = certificationStatusName;
     }
 
@@ -484,7 +484,7 @@ public class CertifiedProductDetailsEntity {
     // return certResults;
     // }
     //
-    // public void setCertResults(Set<CertificationResultDetailsEntity>
+    // public void setCertResults(final Set<CertificationResultDetailsEntity>
     // certResults) {
     // this.certResults = certResults;
     // }
@@ -493,7 +493,7 @@ public class CertifiedProductDetailsEntity {
     // return cqmResults;
     // }
     //
-    // public void setCqmResults(Set<CQMResultDetailsEntity> cqmResults) {
+    // public void setCqmResults(final Set<CQMResultDetailsEntity> cqmResults) {
     // this.cqmResults = cqmResults;
     // }
     //
@@ -501,7 +501,7 @@ public class CertifiedProductDetailsEntity {
     // return additionalSoftware;
     // }
     //
-    // public void setAdditionalSoftware(Set<AdditionalSoftwareEntity>
+    // public void setAdditionalSoftware(final Set<AdditionalSoftwareEntity>
     // additionalSoftware) {
     // this.additionalSoftware = additionalSoftware;
     // }
@@ -510,7 +510,7 @@ public class CertifiedProductDetailsEntity {
         return productCode;
     }
 
-    public void setProductCode(String productCode) {
+    public void setProductCode(final String productCode) {
         this.productCode = productCode;
     }
 
@@ -518,7 +518,7 @@ public class CertifiedProductDetailsEntity {
         return versionCode;
     }
 
-    public void setVersionCode(String versionCode) {
+    public void setVersionCode(final String versionCode) {
         this.versionCode = versionCode;
     }
 
@@ -526,7 +526,7 @@ public class CertifiedProductDetailsEntity {
         return additionalSoftwareCode;
     }
 
-    public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
+    public void setAdditionalSoftwareCode(final String additionalSoftwareCode) {
         this.additionalSoftwareCode = additionalSoftwareCode;
     }
 
@@ -534,7 +534,7 @@ public class CertifiedProductDetailsEntity {
         return certifiedDateCode;
     }
 
-    public void setCertifiedDateCode(String certifiedDateCode) {
+    public void setCertifiedDateCode(final String certifiedDateCode) {
         this.certifiedDateCode = certifiedDateCode;
     }
 
@@ -542,7 +542,7 @@ public class CertifiedProductDetailsEntity {
         return certificationBodyCode;
     }
 
-    public void setCertificationBodyCode(String certificationBodyCode) {
+    public void setCertificationBodyCode(final String certificationBodyCode) {
         this.certificationBodyCode = certificationBodyCode;
     }
 
@@ -550,7 +550,7 @@ public class CertifiedProductDetailsEntity {
         return developerCode;
     }
 
-    public void setDeveloperCode(String developerCode) {
+    public void setDeveloperCode(final String developerCode) {
         this.developerCode = developerCode;
     }
 
@@ -558,7 +558,7 @@ public class CertifiedProductDetailsEntity {
         return icsCode;
     }
 
-    public void setIcsCode(String icsCode) {
+    public void setIcsCode(final String icsCode) {
         this.icsCode = icsCode;
     }
 
@@ -566,7 +566,7 @@ public class CertifiedProductDetailsEntity {
         return transparencyAttestation;
     }
 
-    public void setTransparencyAttestation(AttestationType transparencyAttestation) {
+    public void setTransparencyAttestation(final AttestationType transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
     }
 
@@ -574,7 +574,7 @@ public class CertifiedProductDetailsEntity {
         return testingLabCode;
     }
 
-    public void setTestingLabCode(String testingLabCode) {
+    public void setTestingLabCode(final String testingLabCode) {
         this.testingLabCode = testingLabCode;
     }
 
@@ -582,7 +582,7 @@ public class CertifiedProductDetailsEntity {
         return testingLabName;
     }
 
-    public void setTestingLabName(String testingLabName) {
+    public void setTestingLabName(final String testingLabName) {
         this.testingLabName = testingLabName;
     }
 
@@ -590,7 +590,7 @@ public class CertifiedProductDetailsEntity {
         return ics;
     }
 
-    public void setIcs(Boolean ics) {
+    public void setIcs(final Boolean ics) {
         this.ics = ics;
     }
 
@@ -598,7 +598,7 @@ public class CertifiedProductDetailsEntity {
         return sedTesting;
     }
 
-    public void setSedTesting(Boolean sedTesting) {
+    public void setSedTesting(final Boolean sedTesting) {
         this.sedTesting = sedTesting;
     }
 
@@ -606,7 +606,7 @@ public class CertifiedProductDetailsEntity {
         return qmsTesting;
     }
 
-    public void setQmsTesting(Boolean qmsTesting) {
+    public void setQmsTesting(final Boolean qmsTesting) {
         this.qmsTesting = qmsTesting;
     }
 
@@ -614,7 +614,7 @@ public class CertifiedProductDetailsEntity {
         return developerWebsite;
     }
 
-    public void setDeveloperWebsite(String developerWebsite) {
+    public void setDeveloperWebsite(final String developerWebsite) {
         this.developerWebsite = developerWebsite;
     }
 
@@ -622,7 +622,7 @@ public class CertifiedProductDetailsEntity {
         return sedReportFileLocation;
     }
 
-    public void setSedReportFileLocation(String sedReportFileLocation) {
+    public void setSedReportFileLocation(final String sedReportFileLocation) {
         this.sedReportFileLocation = sedReportFileLocation;
     }
 
@@ -630,7 +630,7 @@ public class CertifiedProductDetailsEntity {
         return productAdditionalSoftware;
     }
 
-    public void setProductAdditionalSoftware(String productAdditionalSoftware) {
+    public void setProductAdditionalSoftware(final String productAdditionalSoftware) {
         this.productAdditionalSoftware = productAdditionalSoftware;
     }
 
@@ -638,7 +638,7 @@ public class CertifiedProductDetailsEntity {
         return meaningfulUseUsers;
     }
 
-    public void setMeaningfulUseUsers(Long meaningfulUseUsers) {
+    public void setMeaningfulUseUsers(final Long meaningfulUseUsers) {
         this.meaningfulUseUsers = meaningfulUseUsers;
     }
 
@@ -646,7 +646,7 @@ public class CertifiedProductDetailsEntity {
         return transparencyAttestationUrl;
     }
 
-    public void setTransparencyAttestationUrl(String transparencyAttestationUrl) {
+    public void setTransparencyAttestationUrl(final String transparencyAttestationUrl) {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
@@ -654,7 +654,7 @@ public class CertifiedProductDetailsEntity {
         return accessibilityCertified;
     }
 
-    public void setAccessibilityCertified(Boolean accessibilityCertified) {
+    public void setAccessibilityCertified(final Boolean accessibilityCertified) {
         this.accessibilityCertified = accessibilityCertified;
     }
 
@@ -662,7 +662,7 @@ public class CertifiedProductDetailsEntity {
         return sedIntendedUserDescription;
     }
 
-    public void setSedIntendedUserDescription(String sedIntendedUserDescription) {
+    public void setSedIntendedUserDescription(final String sedIntendedUserDescription) {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
@@ -670,7 +670,7 @@ public class CertifiedProductDetailsEntity {
         return sedTestingEnd;
     }
 
-    public void setSedTestingEnd(Date sedTestingEnd) {
+    public void setSedTestingEnd(final Date sedTestingEnd) {
         this.sedTestingEnd = sedTestingEnd;
     }
 
@@ -678,7 +678,7 @@ public class CertifiedProductDetailsEntity {
         return addressId;
     }
 
-    public void setAddressId(Long addressId) {
+    public void setAddressId(final Long addressId) {
         this.addressId = addressId;
     }
 
@@ -686,7 +686,7 @@ public class CertifiedProductDetailsEntity {
         return streetLine1;
     }
 
-    public void setStreetLine1(String streetLine1) {
+    public void setStreetLine1(final String streetLine1) {
         this.streetLine1 = streetLine1;
     }
 
@@ -694,7 +694,7 @@ public class CertifiedProductDetailsEntity {
         return streetLine2;
     }
 
-    public void setStreetLine2(String streetLine2) {
+    public void setStreetLine2(final String streetLine2) {
         this.streetLine2 = streetLine2;
     }
 
@@ -702,7 +702,7 @@ public class CertifiedProductDetailsEntity {
         return city;
     }
 
-    public void setCity(String city) {
+    public void setCity(final String city) {
         this.city = city;
     }
 
@@ -710,7 +710,7 @@ public class CertifiedProductDetailsEntity {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(final String state) {
         this.state = state;
     }
 
@@ -718,7 +718,7 @@ public class CertifiedProductDetailsEntity {
         return zipcode;
     }
 
-    public void setZipcode(String zipcode) {
+    public void setZipcode(final String zipcode) {
         this.zipcode = zipcode;
     }
 
@@ -726,7 +726,7 @@ public class CertifiedProductDetailsEntity {
         return country;
     }
 
-    public void setCountry(String country) {
+    public void setCountry(final String country) {
         this.country = country;
     }
 
@@ -734,7 +734,7 @@ public class CertifiedProductDetailsEntity {
         return contactId;
     }
 
-    public void setContactId(Long contactId) {
+    public void setContactId(final Long contactId) {
         this.contactId = contactId;
     }
 
@@ -742,7 +742,7 @@ public class CertifiedProductDetailsEntity {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
+    public void setFirstName(final String firstName) {
         this.firstName = firstName;
     }
 
@@ -750,7 +750,7 @@ public class CertifiedProductDetailsEntity {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
+    public void setLastName(final String lastName) {
         this.lastName = lastName;
     }
 
@@ -758,7 +758,7 @@ public class CertifiedProductDetailsEntity {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(final String email) {
         this.email = email;
     }
 
@@ -766,7 +766,7 @@ public class CertifiedProductDetailsEntity {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(final String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
@@ -774,7 +774,7 @@ public class CertifiedProductDetailsEntity {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(final String title) {
         this.title = title;
     }
 
@@ -782,7 +782,7 @@ public class CertifiedProductDetailsEntity {
         return developerStatusId;
     }
 
-    public void setDeveloperStatusId(Long developerStatusId) {
+    public void setDeveloperStatusId(final Long developerStatusId) {
         this.developerStatusId = developerStatusId;
     }
 
@@ -790,7 +790,7 @@ public class CertifiedProductDetailsEntity {
         return developerStatusName;
     }
 
-    public void setDeveloperStatusName(String developerStatusName) {
+    public void setDeveloperStatusName(final String developerStatusName) {
         this.developerStatusName = developerStatusName;
     }
 
@@ -798,7 +798,7 @@ public class CertifiedProductDetailsEntity {
         return product;
     }
 
-    public void setProduct(ProductEntity product) {
+    public void setProduct(final ProductEntity product) {
         this.product = product;
     }
 
@@ -806,7 +806,7 @@ public class CertifiedProductDetailsEntity {
         return countSurveillance;
     }
 
-    public void setCountSurveillance(Integer countSurveillance) {
+    public void setCountSurveillance(final Integer countSurveillance) {
         this.countSurveillance = countSurveillance;
     }
 
@@ -814,7 +814,7 @@ public class CertifiedProductDetailsEntity {
         return countOpenSurveillance;
     }
 
-    public void setCountOpenSurveillance(Integer countOpenSurveillance) {
+    public void setCountOpenSurveillance(final Integer countOpenSurveillance) {
         this.countOpenSurveillance = countOpenSurveillance;
     }
 
@@ -822,7 +822,7 @@ public class CertifiedProductDetailsEntity {
         return countClosedSurveillance;
     }
 
-    public void setCountClosedSurveillance(Integer countClosedSurveillance) {
+    public void setCountClosedSurveillance(final Integer countClosedSurveillance) {
         this.countClosedSurveillance = countClosedSurveillance;
     }
 
@@ -830,7 +830,7 @@ public class CertifiedProductDetailsEntity {
         return countOpenNonconformities;
     }
 
-    public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+    public void setCountOpenNonconformities(final Integer countOpenNonconformities) {
         this.countOpenNonconformities = countOpenNonconformities;
     }
 
@@ -838,7 +838,7 @@ public class CertifiedProductDetailsEntity {
         return countClosedNonconformities;
     }
 
-    public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+    public void setCountClosedNonconformities(final Integer countClosedNonconformities) {
         this.countClosedNonconformities = countClosedNonconformities;
     }
 
@@ -846,7 +846,7 @@ public class CertifiedProductDetailsEntity {
         return certificationStatusDate;
     }
 
-    public void setCertificationStatusDate(Date certificationStatusDate) {
+    public void setCertificationStatusDate(final Date certificationStatusDate) {
         this.certificationStatusDate = certificationStatusDate;
     }
 
@@ -854,7 +854,7 @@ public class CertifiedProductDetailsEntity {
         return decertificationDate;
     }
 
-    public void setDecertificationDate(Date decertificationDate) {
+    public void setDecertificationDate(final Date decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 
@@ -862,7 +862,7 @@ public class CertifiedProductDetailsEntity {
         return developerStatusDate;
     }
 
-    public void setDeveloperStatusDate(Date developerStatusDate) {
+    public void setDeveloperStatusDate(final Date developerStatusDate) {
         this.developerStatusDate = developerStatusDate;
     }
 
@@ -870,7 +870,7 @@ public class CertifiedProductDetailsEntity {
         return deleted;
     }
 
-    public void setDeleted(Boolean deleted) {
+    public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
 

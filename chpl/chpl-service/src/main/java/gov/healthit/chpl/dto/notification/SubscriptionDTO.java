@@ -13,7 +13,7 @@ public class SubscriptionDTO {
         return acb;
     }
 
-    public void setAcb(CertificationBodyDTO acb) {
+    public void setAcb(final CertificationBodyDTO acb) {
         this.acb = acb;
     }
 
@@ -21,7 +21,7 @@ public class SubscriptionDTO {
         return notificationType;
     }
 
-    public void setNotificationType(NotificationTypeDTO notificationType) {
+    public void setNotificationType(final NotificationTypeDTO notificationType) {
         this.notificationType = notificationType;
     }
 

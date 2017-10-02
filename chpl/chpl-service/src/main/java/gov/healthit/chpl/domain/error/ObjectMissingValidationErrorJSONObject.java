@@ -16,7 +16,7 @@ public class ObjectMissingValidationErrorJSONObject implements Serializable {
         return errorMessages;
     }
 
-    public void setErrorMessages(Collection<String> errorMessages) {
+    public void setErrorMessages(final Collection<String> errorMessages) {
         this.errorMessages = errorMessages;
     }
 
@@ -24,7 +24,7 @@ public class ObjectMissingValidationErrorJSONObject implements Serializable {
         return warningMessages;
     }
 
-    public void setWarningMessages(Collection<String> warningMessages) {
+    public void setWarningMessages(final Collection<String> warningMessages) {
         this.warningMessages = warningMessages;
     }
 
@@ -32,7 +32,7 @@ public class ObjectMissingValidationErrorJSONObject implements Serializable {
         return contact;
     }
 
-    public void setContact(Contact contact) {
+    public void setContact(final Contact contact) {
         this.contact = contact;
     }
 
@@ -40,7 +40,7 @@ public class ObjectMissingValidationErrorJSONObject implements Serializable {
         return objectId;
     }
 
-    public void setObjectId(String objectId) {
+    public void setObjectId(final String objectId) {
         this.objectId = objectId;
     }
 }

@@ -27,7 +27,7 @@ public class ObjectMissingValidationException extends ValidationException {
         return contact;
     }
 
-    public void setContact(Contact contact) {
+    public void setContact(final Contact contact) {
         this.contact = contact;
     }
 
@@ -35,7 +35,7 @@ public class ObjectMissingValidationException extends ValidationException {
         return objectId;
     }
 
-    public void setObjectId(String objectId) {
+    public void setObjectId(final String objectId) {
         this.objectId = objectId;
     }
 
@@ -43,7 +43,7 @@ public class ObjectMissingValidationException extends ValidationException {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(final Date startDate) {
         this.startDate = startDate;
     }
 
@@ -51,7 +51,7 @@ public class ObjectMissingValidationException extends ValidationException {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(final Date endDate) {
         this.endDate = endDate;
     }
 }

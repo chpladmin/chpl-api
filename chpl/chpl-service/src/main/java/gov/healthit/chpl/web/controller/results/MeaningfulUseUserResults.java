@@ -24,7 +24,7 @@ public class MeaningfulUseUserResults implements Serializable {
         return meaningfulUseUsers;
     }
 
-    public void setMeaningfulUseUsers(List<MeaningfulUseUser> meaningfulUseUsers) {
+    public void setMeaningfulUseUsers(final List<MeaningfulUseUser> meaningfulUseUsers) {
         this.meaningfulUseUsers = meaningfulUseUsers;
     }
 
@@ -32,7 +32,7 @@ public class MeaningfulUseUserResults implements Serializable {
         return errors;
     }
 
-    public void setErrors(List<MeaningfulUseUser> errors) {
+    public void setErrors(final List<MeaningfulUseUser> errors) {
         this.errors = errors;
     }
 }
