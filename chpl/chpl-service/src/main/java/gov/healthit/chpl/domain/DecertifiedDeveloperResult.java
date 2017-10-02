@@ -12,19 +12,19 @@ public class DecertifiedDeveloperResult implements Serializable {
 	private List<CertificationBody> certifyingBody;
 	private Date decertificationDate;
 	private Long estimatedUsers;
-	
+
 	public DecertifiedDeveloperResult(){}
-	
+
 	public DecertifiedDeveloperResult(Developer developer, List<CertificationBody> certifyingBody, Date decertificationDate, Long estimatedUsers){
 		this.developer = developer;
-		this.certifyingBody = certifyingBody; 
+		this.certifyingBody = certifyingBody;
 		this.decertificationDate = decertificationDate;
 		this.estimatedUsers = estimatedUsers;
 	}
-	
+
 	public DecertifiedDeveloperResult(DeveloperDTO developerDTO, List<CertificationBody> certifyingBody, Date decertificationDate, Long estimatedUsers){
 		this.developer = new Developer(developerDTO);
-		this.certifyingBody = certifyingBody; 
+		this.certifyingBody = certifyingBody;
 		this.decertificationDate = decertificationDate;
 		this.estimatedUsers = estimatedUsers;
 	}

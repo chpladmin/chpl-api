@@ -19,38 +19,38 @@ import gov.healthit.chpl.entity.MacraMeasureEntity;
 @Entity
 @Table(name = "certification_result_g1_macra")
 public class CertificationResultG1MacraMeasureEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false  )
 	private Long id;
 
-	@Column(name = "certification_result_id", nullable = false )	
+	@Column(name = "certification_result_id", nullable = false )
 	private Long certificationResultId;
 
 	@Column(name = "macra_id")
 	private Long macraId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "macra_id", insertable = false, updatable = false)
 	private MacraMeasureEntity macraMeasure;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false, insertable = false, updatable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false, insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}

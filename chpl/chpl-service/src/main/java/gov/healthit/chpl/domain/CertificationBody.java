@@ -12,9 +12,9 @@ public class CertificationBody implements Serializable {
 	private String website;
 	private Address address;
 	private boolean isDeleted;
-	
+
 	public CertificationBody() {}
-	
+
 	public CertificationBody(CertificationBodyDTO dto) {
 		this.id = dto.getId();
 		this.acbCode = dto.getAcbCode();
@@ -25,7 +25,7 @@ public class CertificationBody implements Serializable {
 		}
 		this.isDeleted = dto.getDeleted();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -58,13 +58,13 @@ public class CertificationBody implements Serializable {
 	public void setAcbCode(String acbCode) {
 		this.acbCode = acbCode;
 	}
-	
+
 	public boolean getIsDeleted(){
 		return isDeleted;
 	}
-	
+
 	public void setIsDeleted(boolean deleted){
 		this.isDeleted = deleted;
 	}
-	
+
 }

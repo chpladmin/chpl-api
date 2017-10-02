@@ -10,9 +10,9 @@ public class PendingCqmCertificationCriterionDTO implements Serializable {
 	private Long cqmId;
 	private Long certificationId;
 	private String certificationCriteriaNumber;
-	
-	public PendingCqmCertificationCriterionDTO() {} 
-	
+
+	public PendingCqmCertificationCriterionDTO() {}
+
 	public PendingCqmCertificationCriterionDTO(PendingCqmCertificationCriteriaEntity entity) {
 		this.id = entity.getId();
 		this.cqmId = entity.getPendingCqmId();

@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 
-/** 
+/**
  * Object mapping for hibernate-handled table: product_version.
  * Table to store individual versions of a specific product
  *
@@ -34,35 +34,35 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name="deleted", nullable = false  )
 	private Boolean deleted;
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "product_version_id", nullable = false  )
 	private Long id;
-    
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column(name = "product_id", nullable = false )
 	private Long productId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private ProductEntity product;
-	
-	
+
+
 	@Basic( optional = true )
 	@Column(name = "version")
 	private String version;
@@ -81,7 +81,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	}
 
 
- 
+
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/
@@ -89,7 +89,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	public Class<?> getClassType() {
 		return ProductVersionEntity.class;
 	}
-	
+
 
 	 /**
 	 * Return the value associated with the column: creationDate.
@@ -97,12 +97,12 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public Date getCreationDate() {
 		return this.creationDate;
-		
-	}
-	
 
-  
-	 /**  
+	}
+
+
+
+	 /**
 	 * Set the value related to the column: creationDate.
 	 * @param creationDate the creationDate value you wish to set
 	 */
@@ -116,11 +116,11 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public Boolean isDeleted() {
 		return this.deleted;
-		
+
 	}
-	
-  
-	 /**  
+
+
+	 /**
 	 * Set the value related to the column: deleted.
 	 * @param deleted the deleted value you wish to set
 	 */
@@ -134,12 +134,12 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public Long getId() {
 		return this.id;
-		
-	}
-	
 
-  
-	 /**  
+	}
+
+
+
+	 /**
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
 	 */
@@ -153,12 +153,12 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public Date getLastModifiedDate() {
 		return this.lastModifiedDate;
-		
-	}
-	
 
-  
-	 /**  
+	}
+
+
+
+	 /**
 	 * Set the value related to the column: lastModifiedDate.
 	 * @param lastModifiedDate the lastModifiedDate value you wish to set
 	 */
@@ -172,12 +172,12 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public Long getLastModifiedUser() {
 		return this.lastModifiedUser;
-		
-	}
-	
 
-  
-	 /**  
+	}
+
+
+
+	 /**
 	 * Set the value related to the column: lastModifiedUser.
 	 * @param lastModifiedUser the lastModifiedUser value you wish to set
 	 */
@@ -191,10 +191,10 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public Long getProductId() {
 		return this.productId;
-		
+
 	}
-  
-	 /**  
+
+	 /**
 	 * Set the value related to the column: product.
 	 * @param product the product value you wish to set
 	 */
@@ -208,16 +208,16 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public String getVersion() {
 		return this.version;
-		
+
 	}
-  
-	 /**  
+
+	 /**
 	 * Set the value related to the column: version.
 	 * @param version the version value you wish to set
 	 */
 	public void setVersion(final String version) {
 		this.version = version;
-	}	
+	}
 
 
 	/** Provides toString implementation.
@@ -227,14 +227,14 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		
+
 		sb.append("creationDate: " + this.getCreationDate() + ", ");
 		sb.append("deleted: " + this.isDeleted() + ", ");
 		sb.append("id: " + this.getId() + ", ");
 		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
 		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
 		sb.append("version: " + this.getVersion());
-		return sb.toString();		
+		return sb.toString();
 	}
 
 	public ProductEntity getProduct() {
@@ -243,5 +243,5 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 
 	public void setProduct(ProductEntity product) {
 		this.product = product;
-	}	
+	}
 }

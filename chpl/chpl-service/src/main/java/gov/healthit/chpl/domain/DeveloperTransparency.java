@@ -4,18 +4,18 @@ import java.io.Serializable;
 
 public class DeveloperTransparency implements Serializable {
 	private static final long serialVersionUID = -5492650176812222242L;
-	
+
 	private Long id;
 	private String name;
 	private String status;
 	private ListingCount listingCounts;
 	private String transparencyAttestationUrls;
 	private String acbAttestations;
-	
+
 	public DeveloperTransparency() {
 		listingCounts = new ListingCount();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -52,10 +52,10 @@ public class DeveloperTransparency implements Serializable {
 	public void setAcbAttestations(String acbAttestations) {
 		this.acbAttestations = acbAttestations;
 	}
-	
+
 	public class ListingCount implements Serializable {
 		private static final long serialVersionUID = 5805200079893165212L;
-		
+
 		private Long active;
 	    private Long retired;
 	    private Long pending;
@@ -65,7 +65,7 @@ public class DeveloperTransparency implements Serializable {
 	    private Long suspendedByOnc;
 	    private Long terminatedByOnc;
 	    private Long withdrawnByDeveloperUnderSurveillance;
-	    
+
 		public Long getActive() {
 			return active;
 		}

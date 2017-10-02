@@ -14,9 +14,9 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
 	private String version;
 	private String justification;
 	private String grouping;
-	
+
 	public PendingCertificationResultAdditionalSoftwareDTO() {}
-	
+
 	public PendingCertificationResultAdditionalSoftwareDTO(PendingCertificationResultAdditionalSoftwareEntity entity) {
 		this.setId(entity.getId());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
@@ -27,7 +27,7 @@ public class PendingCertificationResultAdditionalSoftwareDTO implements Serializ
 		this.setJustification(entity.getJustification());
 		this.setGrouping(entity.getGrouping());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -26,10 +26,10 @@ import gov.healthit.chpl.manager.NotificationManager;
 @Service
 public class NotificationManagerImpl implements NotificationManager {
 	private static final Logger logger = LogManager.getLogger(NotificationManagerImpl.class);
-	
+
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired NotificationDAO notificationDao;
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
 	public RecipientDTO createRecipient(RecipientDTO toCreate) throws EntityCreationException {
@@ -46,14 +46,14 @@ public class NotificationManagerImpl implements NotificationManager {
 			} else {
 				result = notificationDao.createRecipientEmailAddress(email);
 			}
-		} 
+		}
 		return result;
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
 	@Transactional
-	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping) 
+	public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping)
 		throws EntityRetrievalException {
 		if(! notificationDao.hasNotificationType(mapping.getSubscription().getNotificationType(), Util.getCurrentUser().getPermissions())) {
 			throw new AccessDeniedException("User " + Util.getUsername() + " does not have permission to create notification with type " + mapping.getSubscription().getNotificationType().getName());
@@ -66,27 +66,27 @@ public class NotificationManagerImpl implements NotificationManager {
 			String email = recipient.getEmailAddress().trim();
 			logger.debug("Looking for existing recipient with email address " + email);
 			recipient = notificationDao.findRecipientByEmail(email);
-		} 
-				
+		}
+
 		NotificationTypeRecipientMapDTO result = notificationDao.createNotificationMapping(recipient, mapping.getSubscription().getNotificationType(), mapping.getSubscription().getAcb());
 		return result;
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
-	public RecipientDTO updateRecipient(Long recipientId, String newEmailAddress) 
+	public RecipientDTO updateRecipient(Long recipientId, String newEmailAddress)
 	throws EntityRetrievalException {
 		RecipientDTO recipToUpdate = notificationDao.getRecipientById(recipientId);
 		recipToUpdate.setEmailAddress(newEmailAddress);
 		return updateRecipient(recipToUpdate);
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
 	public RecipientDTO updateRecipient(RecipientDTO toUpdate) {
 		return notificationDao.updateRecipient(toUpdate);
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
 	public boolean recipientEmailExists(String email) {
@@ -96,7 +96,7 @@ public class NotificationManagerImpl implements NotificationManager {
 		} catch(EntityRetrievalException ignore) {}
 		return (recip == null ? false : true);
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
 	public List<RecipientWithSubscriptionsDTO> getAll() {
@@ -107,10 +107,10 @@ public class NotificationManagerImpl implements NotificationManager {
 		List<RecipientWithSubscriptionsDTO> result = notificationDao.getAllNotificationMappings(Util.getCurrentUser().getPermissions(), acbs);
 		return result;
 	}
-	
+
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	@Transactional
-	public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId) 
+	public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId)
 		throws EntityRetrievalException {
 		List<CertificationBodyDTO> acbs = null;
 		if(!Util.isUserRoleAdmin()) {
@@ -118,7 +118,7 @@ public class NotificationManagerImpl implements NotificationManager {
 		}
 		return notificationDao.getAllNotificationMappingsForRecipient(recipientId, Util.getCurrentUser().getPermissions(), acbs);
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
 	@Transactional
@@ -126,10 +126,10 @@ public class NotificationManagerImpl implements NotificationManager {
 		if(! notificationDao.hasNotificationType(mapping.getSubscription().getNotificationType(), Util.getCurrentUser().getPermissions())) {
 			throw new AccessDeniedException("User " + Util.getUsername() + " does not have permission to create notification with type " + mapping.getSubscription().getNotificationType().getName());
 		}
-		
-		notificationDao.deleteNotificationMapping(mapping.getRecipient(), mapping.getSubscription().getNotificationType(), mapping.getSubscription().getAcb());		
+
+		notificationDao.deleteNotificationMapping(mapping.getRecipient(), mapping.getSubscription().getNotificationType(), mapping.getSubscription().getAcb());
 	}
-	
+
 	/**
 	 * Deletes the recipient as far as the current user would be aware of.
 	 * If the recipient has subscriptions that the current user does not have access to,

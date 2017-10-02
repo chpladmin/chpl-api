@@ -20,38 +20,38 @@ import org.hibernate.annotations.Where;
 @Immutable
 @Table(name = "notification_type")
 public class NotificationTypeEntity {
-	
-	@Id 
+
+	@Id
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "description")
 	private String description;
-	
+
 	@Column(name = "requires_acb")
 	private Boolean requiresAcb;
-	
+
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "notificationTypeId"  )
 	@Basic( optional = false )
 	@Column( name = "notification_type_id", nullable = false  )
 	@Where(clause="deleted <> 'true'")
 	private Set<NotificationPermissionEntity> permissions = new HashSet<NotificationPermissionEntity>();
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

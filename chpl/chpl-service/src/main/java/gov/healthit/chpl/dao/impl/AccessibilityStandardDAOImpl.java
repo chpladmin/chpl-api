@@ -30,12 +30,12 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 	@Override
 	public AccessibilityStandardDTO create(AccessibilityStandardDTO dto)
 			throws EntityCreationException {
-		
+
 		AccessibilityStandardEntity entity = null;
 		if (dto.getId() != null){
 			entity = this.getEntityById(dto.getId());
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
@@ -53,29 +53,29 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 				throw new EntityCreationException(msg);
 			}
 			return new AccessibilityStandardDTO(entity);
-		}		
+		}
 	}
 
 	@Override
 	public AccessibilityStandardDTO update(AccessibilityStandardDTO dto)
 			throws EntityRetrievalException {
 		AccessibilityStandardEntity entity = this.getEntityById(dto.getId());
-		
+
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
-		
+
 		entity.setName(dto.getName());
-		
+
 		update(entity);
 		return new AccessibilityStandardDTO(entity);
 	}
 
 	@Override
 	public void delete(Long id) throws EntityRetrievalException {
-		
+
 		AccessibilityStandardEntity toDelete = getEntityById(id);
-		
+
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -86,42 +86,42 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 
 	@Override
 	public AccessibilityStandardDTO getById(Long id) {
-		
+
 		AccessibilityStandardDTO dto = null;
 		AccessibilityStandardEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new AccessibilityStandardDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public AccessibilityStandardDTO getByName(String name) {
-		
+
 		AccessibilityStandardDTO dto = null;
 		List<AccessibilityStandardEntity> entities = getEntitiesByName(name);
-		
+
 		if (entities != null && entities.size() > 0){
 			dto = new AccessibilityStandardDTO(entities.get(0));
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<AccessibilityStandardDTO> findAll() {
-		
+
 		List<AccessibilityStandardEntity> entities = getAllEntities();
 		List<AccessibilityStandardDTO> dtos = new ArrayList<AccessibilityStandardDTO>();
-		
+
 		for (AccessibilityStandardEntity entity : entities) {
 			AccessibilityStandardDTO dto = new AccessibilityStandardDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
-	
+
 	@Override
 	public AccessibilityStandardDTO findOrCreate(Long id, String name) throws EntityCreationException {
 		AccessibilityStandardDTO result = null;
@@ -129,8 +129,8 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 			result = getById(id);
 		} else if(!StringUtils.isEmpty(name)) {
 			result = getByName(name);
-		} 
-		
+		}
+
 		if(result == null){
 			AccessibilityStandardDTO toCreate = new AccessibilityStandardDTO();
 			toCreate.setName(name.trim());
@@ -140,46 +140,46 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 	}
 
 	private void create(AccessibilityStandardEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
-		
+
 	}
-	
+
 	private void update(AccessibilityStandardEntity entity) {
-		
-		entityManager.merge(entity);	
+
+		entityManager.merge(entity);
 		entityManager.flush();
 	}
-	
+
 	private List<AccessibilityStandardEntity> getAllEntities() {
 		return entityManager.createQuery( "from AccessibilityStandardEntity where (NOT deleted = true) ", AccessibilityStandardEntity.class).getResultList();
 	}
-	
+
 	private AccessibilityStandardEntity getEntityById(Long id) {
-		
+
 		AccessibilityStandardEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from AccessibilityStandardEntity where (NOT deleted = true) AND (id = :entityid) ", AccessibilityStandardEntity.class );
 		query.setParameter("entityid", id);
 		List<AccessibilityStandardEntity> result = query.getResultList();
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
-	
+
+
 	private List<AccessibilityStandardEntity> getEntitiesByName(String name) {
-		
+
 		Query query = entityManager.createQuery( "from AccessibilityStandardEntity where (NOT deleted = true) AND (name = :name) ", AccessibilityStandardEntity.class );
 		query.setParameter("name", name);
 		List<AccessibilityStandardEntity> result = query.getResultList();
-		
+
 		return result;
 	}
-	
-	
+
+
 }

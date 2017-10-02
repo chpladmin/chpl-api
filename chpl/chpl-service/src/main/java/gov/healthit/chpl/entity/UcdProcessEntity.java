@@ -14,13 +14,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ucd_process")
 public class UcdProcessEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "ucd_process_id")
 	private Long id;
-	
+
 	@Column(name = "name")
 	private String name;
 
@@ -31,7 +31,7 @@ public class UcdProcessEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -39,23 +39,23 @@ public class UcdProcessEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

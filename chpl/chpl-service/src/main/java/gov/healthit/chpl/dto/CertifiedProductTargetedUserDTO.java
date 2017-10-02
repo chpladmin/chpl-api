@@ -10,9 +10,9 @@ public class CertifiedProductTargetedUserDTO implements Serializable {
 	private Long certifiedProductId;
 	private Long targetedUserId;
 	private String targetedUserName;
-	
+
 	public CertifiedProductTargetedUserDTO(){}
-	
+
 	public CertifiedProductTargetedUserDTO(CertifiedProductTargetedUserEntity entity){
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
@@ -22,7 +22,7 @@ public class CertifiedProductTargetedUserDTO implements Serializable {
 		}
 	}
 
-	
+
 	public Long getId() {
 		return id;
 	}

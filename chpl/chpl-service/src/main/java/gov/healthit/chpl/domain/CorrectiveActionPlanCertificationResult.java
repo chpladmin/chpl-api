@@ -15,7 +15,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
 	private String resolution;
 	private Integer surveillancePassRate;
 	private Integer surveillanceSitesSurveilled;
-	
+
 	public CorrectiveActionPlanCertificationResult() {}
 	public CorrectiveActionPlanCertificationResult(CorrectiveActionPlanCertificationResultDTO dto) {
 		this.id = dto.getId();
@@ -30,7 +30,7 @@ public class CorrectiveActionPlanCertificationResult implements Serializable {
 		this.surveillancePassRate = dto.getNumSitesPassed();
 		this.surveillanceSitesSurveilled = dto.getNumSitesTotal();
 	}
-		
+
 	public Long getId() {
 		return id;
 	}

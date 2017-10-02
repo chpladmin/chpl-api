@@ -5,13 +5,13 @@ import java.util.List;
 
 public class SplitProductsRequest implements Serializable {
 	private static final long serialVersionUID = -5814308900559692235L;
-	
+
 	private String newProductName;
 	private String newProductCode;
-	private List<ProductVersion> newVersions; 
+	private List<ProductVersion> newVersions;
 	private Product oldProduct;
 	private List<ProductVersion> oldVersions;
-	
+
 	public String getNewProductName() {
 		return newProductName;
 	}

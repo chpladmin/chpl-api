@@ -20,10 +20,10 @@ public class CorrectiveActionPlanDTO implements Serializable {
 	private String summary;
 	private String developerExplanation;
 	private String resolution;
-	
+
 	public CorrectiveActionPlanDTO() {
 	}
-	
+
 	public CorrectiveActionPlanDTO(CorrectiveActionPlanEntity entity) {
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();

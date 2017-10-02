@@ -22,25 +22,25 @@ public abstract class QuestionableActivityHandlerImpl implements QuestionableAct
 
 	@Autowired protected NotificationDAO notificationDao;
 	@Autowired protected SendMailUtil sendMailService;
-	
+
 	public abstract boolean isQuestionableActivity(Object src, Object dest);
 	public abstract String getQuestionableActivityHtmlMessage(Object src, Object dest);
 
 	public String getQuestionableActivitySubject(Object src, Object dest) {
 		return "CHPL Questionable Activity";
 	}
-	
+
 	public void handleActivity(Object src, Object dest) {
 		if(isQuestionableActivity(src, dest)) {
-			sendQuestionableActivityEmail(getQuestionableActivitySubject(src, dest), 
+			sendQuestionableActivityEmail(getQuestionableActivitySubject(src, dest),
 					getQuestionableActivityHtmlMessage(src, dest));
 		}
 	}
-	
+
 	private void sendQuestionableActivityEmail(String subject, String htmlMessage) {
 		Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 		permissions.add(new GrantedPermission("ROLE_ADMIN"));
-		List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = 
+		List<RecipientWithSubscriptionsDTO> questionableActivityRecipients =
 				notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
 		if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
 			String[] emailAddrs = new String[questionableActivityRecipients.size()];
@@ -48,7 +48,7 @@ public abstract class QuestionableActivityHandlerImpl implements QuestionableAct
 				RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
 				emailAddrs[i] = recip.getEmail();
 			}
-			
+
 			try {
 				sendMailService.sendEmail(null, emailAddrs, subject, htmlMessage);
 			} catch(MessagingException me) {

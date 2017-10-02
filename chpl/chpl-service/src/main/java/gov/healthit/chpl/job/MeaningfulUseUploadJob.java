@@ -26,10 +26,10 @@ import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
 @Component
-@Scope("prototype") //tells spring to make a new instance of this class every time it is needed 
+@Scope("prototype") //tells spring to make a new instance of this class every time it is needed
 public class MeaningfulUseUploadJob extends RunnableJob {
 	private static final Logger logger = LogManager.getLogger(MeaningfulUseUploadJob.class);
-	
+
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired CertifiedProductDAO cpDao;
 
@@ -40,24 +40,24 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 		logger.debug("Created new MUUJob");
 		this.job = job;
 	}
-	
+
 	public void run() {
 		super.run();
-		
+
 		double jobPercentComplete = 0;
 		Set<MeaningfulUseUser> muusToUpdate = new LinkedHashSet<MeaningfulUseUser>();
 		Set<String> uniqueMuusFromFile = new LinkedHashSet<String>();
-		
+
 		BufferedReader reader = null;
 		CSVParser parser = null;
 		try {
 			reader = new BufferedReader(new StringReader(job.getData()));
 			parser = new CSVParser(reader, CSVFormat.EXCEL);
-			
+
 			List<CSVRecord> records = parser.getRecords();
 			if(records.size() <= 1) {
 				String msg = "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.";
-				logger.error(msg);	
+				logger.error(msg);
 				addJobMessage(msg);
 				updateStatus(100, JobStatusType.Error);
 				try { parser.close(); } catch(Exception ignore) {}
@@ -67,7 +67,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 				for(int i = 1; i <= records.size(); i++){
 					CSVRecord currRecord = records.get(i-1);
 					MeaningfulUseUser muu = new MeaningfulUseUser();
-					
+
 					// add header if something similar to "chpl_product_number" and "num_meaningful_use" exists
 					if(heading == null && i == 1 && !StringUtils.isEmpty(currRecord.get(0).trim()) && currRecord.get(0).trim().contains("product")
 							&& !StringUtils.isEmpty(currRecord.get(1).trim()) && currRecord.get(1).trim().contains("meaning")) {
@@ -107,7 +107,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 									dupLineNumber = entry.getCsvLineNumber();
 								}
 							}
-							
+
 							String error = "Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
 									+ "Duplicate \"chpl_product_number\" at line " + dupLineNumber;
 							muu.setError(error);
@@ -116,7 +116,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 					}
 				}
 			}
-			
+
 			//finished parsing the file which is pretty quick, say that's 10% of the job done
 			jobPercentComplete = 10;
 			updateStatus(jobPercentComplete, JobStatusType.In_Progress);
@@ -128,8 +128,8 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 			try { parser.close(); } catch(Exception ignore) {}
 			try { reader.close(); } catch(Exception ignore) {}
 		}
-		
-		//now load everything that was parsed	
+
+		//now load everything that was parsed
 		for(MeaningfulUseUser muu : muusToUpdate){
 			if(StringUtils.isEmpty(muu.getError())) {
 				try{
@@ -151,12 +151,12 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 						else if(cpDao.getByChplUniqueId(muu.getProductNumber()) != null) {
 							dto.setChplProductNumber(muu.getProductNumber());
 							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
-						} 
+						}
 						// If neither exist, add error
 						else {
 							throw new EntityRetrievalException();
 						}
-						
+
 						try{
 							cpDao.updateMeaningfulUseUsers(dto);
 						} catch (EntityRetrievalException e){
@@ -168,24 +168,24 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 					String msg = "Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
 							+ "The provided \"chpl_product_number\" does not exist.";
 					addJobMessage(msg);
-				} catch (Exception ex){	
+				} catch (Exception ex){
 					String msg = "Line " + muu.getCsvLineNumber() + ": An unexpected error occurred. " + ex.getMessage();
 					logger.error(msg, ex);
 					addJobMessage(msg);
-					
+
 				}
 			} else {
 				addJobMessage(muu.getError());
 			}
-			
+
 			//update the status
 			jobPercentComplete += 90.0/(double)muusToUpdate.size();
 			updateStatus(jobPercentComplete, JobStatusType.In_Progress);
 		}
-		
+
 		this.complete();
 	}
-	
+
 	public CertifiedProductManager getCpManager() {
 		return cpManager;
 	}

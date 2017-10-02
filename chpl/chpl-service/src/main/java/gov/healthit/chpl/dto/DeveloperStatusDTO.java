@@ -8,7 +8,7 @@ public class DeveloperStatusDTO implements Serializable {
 	private static final long serialVersionUID = 6227999632663396485L;
 	private Long id;
 	private String statusName;
-	
+
 	public DeveloperStatusDTO(){
 	}
 
@@ -16,7 +16,7 @@ public class DeveloperStatusDTO implements Serializable {
 		this.id = entity.getId();
 		this.statusName = entity.getName().toString();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

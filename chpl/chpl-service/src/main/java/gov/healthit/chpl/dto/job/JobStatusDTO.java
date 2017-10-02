@@ -10,10 +10,10 @@ public class JobStatusDTO implements Serializable {
 	private Long id;
 	private JobStatusType status;
 	private Integer percentComplete;
-	
+
 	public JobStatusDTO(){}
-	
-	public JobStatusDTO(JobStatusEntity entity){		
+
+	public JobStatusDTO(JobStatusEntity entity){
 		this.id = entity.getId();
 		this.status = entity.getStatus();
 		this.percentComplete = entity.getPercentComplete();

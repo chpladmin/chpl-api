@@ -19,9 +19,9 @@ public class ActivityEvent implements Serializable {
 	private Long activityObjectId;
 	private ActivityConcept concept;
 	private User responsibleUser;
-	
+
 	public ActivityEvent(){}
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -21,11 +21,11 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 @Component("surveillanceResourceCreatorApp")
 public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorApp {
 	private static final Logger logger = LogManager.getLogger(SurveillanceResourceCreatorApp.class);
-	
+
 	public SurveillanceResourceCreatorApp() {
 		super();
 	}
-	
+
 	protected List<CertifiedProductDetailsDTO> getRelevantListings() {
 		logger.info("Finding all listings with surveillance");
 		Date start = new Date();
@@ -34,10 +34,10 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
 		logger.info("Found " + listingsForEdition.size() + " listings with surveillance in " + (end.getTime() - start.getTime())/1000 + " seconds");
 		return listingsForEdition;
 	}
-	
+
 	protected void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results) throws IOException {
 		 //write out a csv file containing all surveillance
-        String allSurvCsvFilename = downloadFolder.getAbsolutePath() + File.separator + 
+        String allSurvCsvFilename = downloadFolder.getAbsolutePath() + File.separator +
         		"surveillance-all.csv";
         File allSurvCsvFile = new File(allSurvCsvFilename);
         if(!allSurvCsvFile.exists()) {
@@ -47,15 +47,15 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         }
         SurveillanceCsvPresenter survCsvPresenter = new SurveillanceCsvPresenter();
         survCsvPresenter.setProps(getProperties());
-        
+
         logger.info("Writing all surveillance CSV file");
         Date start = new Date();
         survCsvPresenter.presentAsFile(allSurvCsvFile, results);
         Date end = new Date();
         logger.info("Wrote all surveillance CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
-        
-        //write out a csv file containing surveillance with nonconformities       
-        String nonconformityCsvFilename = downloadFolder.getAbsolutePath() + File.separator + 
+
+        //write out a csv file containing surveillance with nonconformities
+        String nonconformityCsvFilename = downloadFolder.getAbsolutePath() + File.separator +
         		"surveillance-with-nonconformities.csv";
         File nonconformityCsvFile = new File(nonconformityCsvFilename);
         if(!nonconformityCsvFile.exists()) {
@@ -63,7 +63,7 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         } else {
         	nonconformityCsvFile.delete();
         }
-        
+
         NonconformityCsvPresenter ncCsvPresenter = new NonconformityCsvPresenter();
         ncCsvPresenter.setProps(getProperties());
         logger.info("Writing nonconformity CSV file");
@@ -71,9 +71,9 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         ncCsvPresenter.presentAsFile(nonconformityCsvFile, results);
         end = new Date();
         logger.info("Wrote nonconformity CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
-        
-        //write out a csv file containing surveillance basic report     
-        String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator + 
+
+        //write out a csv file containing surveillance basic report
+        String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator +
         		"surveillance-basic-report.csv";
         File basicReportCsvFile = new File(basicReportCsvName);
         if(!basicReportCsvFile.exists()) {
@@ -81,7 +81,7 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         } else {
         	basicReportCsvFile.delete();
         }
-        
+
         SurveillanceReportCsvPresenter basicReportCsvPresenter = new SurveillanceReportCsvPresenter();
         basicReportCsvPresenter.setProps(getProperties());
         logger.info("Writing basic surveillance report file");
@@ -90,8 +90,8 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         end = new Date();
         logger.info("Wrote basic surveillance report file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 	}
-	
-	public static void main(String[] args) throws Exception {		
+
+	public static void main(String[] args) throws Exception {
 		SurveillanceResourceCreatorApp app = new SurveillanceResourceCreatorApp();
 		app.setLocalContext();
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);

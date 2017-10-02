@@ -11,11 +11,11 @@ public class CertificationIdVerifyResults implements Serializable {
 
 	public CertificationIdVerifyResults() {
 	}
-	
+
 	public CertificationIdVerifyResults(Map<String, Boolean> map) {
 		this.importMap(map);
 	}
-	
+
 	public List<VerifyResult> getResults() {
 		return this.results;
 	}
@@ -26,28 +26,28 @@ public class CertificationIdVerifyResults implements Serializable {
 			this.results.add(item);
 		}
 	}
-	
+
 	static public class VerifyResult {
 		private String id;
 		private boolean valid;
-	
+
 		public VerifyResult(String id, Boolean valid) {
 			this.id = id;
 			this.valid = valid;
 		}
-		
+
 		public String getId() {
 			return this.id;
 		}
-		
+
 		public void setId(String id) {
 			this.id = id;
 		}
-		
+
 		public boolean getValid() {
 			return this.valid;
 		}
-		
+
 		public void setValid(boolean valid) {
 			this.valid = valid;
 		}

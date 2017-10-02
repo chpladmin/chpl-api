@@ -19,12 +19,12 @@ import org.hibernate.annotations.Type;
 public class DeveloperStatusEntity implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1730728043307135377L;
 
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "vendor_status_id", nullable = false  )
 	private Long id;
-	
+
 	@Column(name = "name")
 	@Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")} )
 	private DeveloperStatusType name;
@@ -32,16 +32,16 @@ public class DeveloperStatusEntity implements Cloneable, Serializable {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@NotNull
 	@Column( nullable = false  )
 	private Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@NotNull
 	@Column( name = "last_modified_user", nullable = false  )

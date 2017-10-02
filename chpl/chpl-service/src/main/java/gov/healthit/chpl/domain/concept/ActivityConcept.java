@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain.concept;
 import java.io.Serializable;
 
 public enum ActivityConcept implements Serializable {
-	
+
 	ACTIVITY_CONCEPT_CERTIFIED_PRODUCT(1L, "CERTIFIED_PRODUCT"),
 	ACTIVITY_CONCEPT_PRODUCT(2L, "PRODUCT"),
 	ACTIVITY_CONCEPT_DEVELOPER(3L, "DEVELOPER"),
@@ -18,10 +18,10 @@ public enum ActivityConcept implements Serializable {
 	ACTIVITY_CONCEPT_ANNOUNCEMENT(12L, "ANNOUNCEMENT"),
 	ACTIVITY_CONCEPT_CERTIFICATIONID(13L, "CERTIFICATION_ID"),
 	ACTIVITY_CONCEPT_PENDING_SURVEILLANCE(14L, "PENDING_SURVEILLANCE");
-	
+
 	private final Long id;
 	private final String name;
-	
+
 	private ActivityConcept(Long id, String name){
 		this.id = id;
 		this.name = name;
@@ -34,5 +34,5 @@ public enum ActivityConcept implements Serializable {
 	public String getName() {
 		return name;
 	}
-	
+
 }

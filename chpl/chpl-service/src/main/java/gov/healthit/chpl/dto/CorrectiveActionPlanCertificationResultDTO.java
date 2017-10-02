@@ -14,11 +14,11 @@ public class CorrectiveActionPlanCertificationResultDTO implements Serializable 
 	private String resolution;
 	private Integer numSitesPassed;
 	private Integer numSitesTotal;
-	
+
 	public CorrectiveActionPlanCertificationResultDTO() {
-		
+
 	}
-	
+
 	public CorrectiveActionPlanCertificationResultDTO(CorrectiveActionPlanCertificationEntity entity) {
 		this.id = entity.getId();
 		if(entity.getCorrectiveActionPlan() != null) {

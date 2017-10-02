@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain;
 public class ListingUpdateRequest {
 	private CertifiedProductSearchDetails listing;
 	private Boolean banDeveloper;
-	
+
 	public CertifiedProductSearchDetails getListing() {
 		return listing;
 	}

@@ -5,9 +5,9 @@ import gov.healthit.chpl.entity.notification.NotificationRecipientEntity;
 public class RecipientDTO {
 	private Long id;
 	private String emailAddress;
-	
+
 	public RecipientDTO() {}
-	
+
 	public RecipientDTO(NotificationRecipientEntity entity) {
 		this.id = entity.getId();
 		this.emailAddress = entity.getEmail();

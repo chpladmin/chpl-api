@@ -9,7 +9,7 @@ public class BasicSearchResponse implements Serializable {
 	private static final long serialVersionUID = 2569559170265522799L;
 
 	private List<CertifiedProductFlatSearchResult> results;
-	
+
 	public BasicSearchResponse() {}
 
 	@JsonView({SearchViews.Default.class})

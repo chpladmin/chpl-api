@@ -14,23 +14,23 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "certification_result_test_data")
 public class CertificationResultTestDataEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certification_result_test_data_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long certificationResultId;
-	
+
 	@Column(name = "version")
 	private String testDataVersion;
-	
+
 	@Column(name = "alteration")
 	private String alterationDescription;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -47,7 +47,7 @@ public class CertificationResultTestDataEntity {
 		this.certificationResultId = certificationResultId;
 	}
 
-	
+
 	public String getTestDataVersion() {
 		return testDataVersion;
 	}
@@ -68,19 +68,19 @@ public class CertificationResultTestDataEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

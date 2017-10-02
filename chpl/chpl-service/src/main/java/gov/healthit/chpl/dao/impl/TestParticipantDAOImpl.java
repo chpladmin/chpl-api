@@ -25,15 +25,15 @@ import gov.healthit.chpl.entity.TestParticipantEntity;
 public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipantDAO {
 	private static final Logger logger = LogManager.getLogger(TestParticipantDAOImpl.class);
 	@Autowired MessageSource messageSource;
-	
+
 	@Override
 	public TestParticipantDTO create(TestParticipantDTO dto) throws EntityCreationException {
-		
+
 		TestParticipantEntity entity = null;
 		if (dto.getId() != null){
 			entity = this.getEntityById(dto.getId());
 		}
-		
+
 		if (entity == null) {
 			entity = new TestParticipantEntity();
 			entity.setCreationDate(new Date());
@@ -48,16 +48,16 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			entity.setOccupation(dto.getOccupation());
 			entity.setProductExperienceMonths(dto.getProductExperienceMonths());
 			entity.setProfessionalExperienceMonths(dto.getProfessionalExperienceMonths());
-			
+
 			try {
 				create(entity);
 			} catch(Exception ex) {
-				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestParticipant"), LocaleContextHolder.getLocale()), 
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestParticipant"), LocaleContextHolder.getLocale()),
 						dto.getGender() + ": " + dto.getOccupation());
 				logger.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
-		}		
+		}
 		return new TestParticipantDTO(entity);
 	}
 
@@ -65,11 +65,11 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 	public TestParticipantDTO update(TestParticipantDTO dto)
 			throws EntityRetrievalException {
 		TestParticipantEntity entity = this.getEntityById(dto.getId());
-		
+
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
-		
+
 		entity.setAgeRangeId(dto.getAgeRangeId());
 		entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
 		entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
@@ -80,16 +80,16 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 		entity.setProfessionalExperienceMonths(dto.getProfessionalExperienceMonths());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		entity.setLastModifiedDate(new Date());
-		
+
 		entity = update(entity);
 		return new TestParticipantDTO(entity);
 	}
 
 	@Override
 	public void delete(Long id) throws EntityRetrievalException {
-		
+
 		TestParticipantEntity toDelete = getEntityById(id);
-		
+
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -100,67 +100,67 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 
 	@Override
 	public TestParticipantDTO getById(Long id) {
-		
+
 		TestParticipantDTO dto = null;
 		TestParticipantEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new TestParticipantDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<TestParticipantDTO> findAll() {
-		
+
 		List<TestParticipantEntity> entities = getAllEntities();
 		List<TestParticipantDTO> dtos = new ArrayList<TestParticipantDTO>();
-		
+
 		for (TestParticipantEntity entity : entities) {
 			TestParticipantDTO dto = new TestParticipantDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
 
 	private void create(TestParticipantEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
-		
+
 	}
-	
+
 	private TestParticipantEntity update(TestParticipantEntity entity) {
-		
-		TestParticipantEntity result = entityManager.merge(entity);	
+
+		TestParticipantEntity result = entityManager.merge(entity);
 		entityManager.flush();
 		return result;
 	}
-	
+
 	private List<TestParticipantEntity> getAllEntities() {
 		return entityManager.createQuery( "SELECT tpe from TestParticipantEntity tpe "
 				+ "LEFT OUTER JOIN FETCH tpe.ageRange "
 				+ "LEFT OUTER JOIN FETCH tpe.education "
 				+ "where (NOT tpe.deleted = true) ", TestParticipantEntity.class).getResultList();
 	}
-	
+
 	private TestParticipantEntity getEntityById(Long id) {
-		
+
 		TestParticipantEntity entity = null;
-		
+
 		Query query =  entityManager.createQuery( "SELECT tpe from TestParticipantEntity tpe "
 				+ "LEFT OUTER JOIN FETCH tpe.ageRange "
 				+ "LEFT OUTER JOIN FETCH tpe.education "
-				+ "where (NOT tpe.deleted = true) AND (tpe.id = :entityid)", 
+				+ "where (NOT tpe.deleted = true) AND (tpe.id = :entityid)",
 			TestParticipantEntity.class);
 		query.setParameter("entityid", id);
 		List<TestParticipantEntity> result = query.getResultList();
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
 }

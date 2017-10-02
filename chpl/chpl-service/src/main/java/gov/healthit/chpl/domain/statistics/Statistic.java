@@ -3,7 +3,7 @@ package gov.healthit.chpl.domain.statistics;
 public abstract class Statistic {
 	protected Integer year;
 	protected String name;
-	
+
 	public Integer getYear(){
 		return year;
 		};

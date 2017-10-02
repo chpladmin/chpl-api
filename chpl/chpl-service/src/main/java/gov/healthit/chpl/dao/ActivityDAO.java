@@ -9,7 +9,7 @@ import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 public interface ActivityDAO {
-	
+
 	public ActivityDTO create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException;
 	public ActivityDTO update(ActivityDTO dto) throws EntityRetrievalException;
 	public void delete(Long id) throws EntityRetrievalException;

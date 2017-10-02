@@ -17,7 +17,7 @@ import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
 
 @Repository("correctiveActionPlanDAO")
 public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements CorrectiveActionPlanDAO {
-	
+
 	@Override
 	public CorrectiveActionPlanDTO create(CorrectiveActionPlanDTO toCreate) throws EntityCreationException,
 		EntityRetrievalException {
@@ -29,7 +29,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		} catch(EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
-		
+
 		if(entity != null) {
 			throw new EntityCreationException("An entity with this id already exists.");
 		} else {
@@ -46,7 +46,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 			entity.setDeveloperExplanation(toCreate.getDeveloperExplanation());
 			entity.setResolution(toCreate.getResolution());
 			entity.setSummary(toCreate.getSummary());
-			
+
 			entity.setCreationDate(new Date());
 			entity.setDeleted(false);
 			entity.setLastModifiedDate(new Date());
@@ -62,11 +62,11 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + toUpdate.getId() + " does not exist.");
 		}
-		
+
 		if(toUpdate.getCertifiedProductId() != null) {
 			entity.setCertifiedProductId(toUpdate.getCertifiedProductId());
 		}
-		
+
 		entity.setRequiredCompletionDate(toUpdate.getRequiredCompletionDate());
 		entity.setActualCompletionDate(toUpdate.getActualCompletionDate());
 		entity.setApprovalDate(toUpdate.getApprovalDate());
@@ -79,14 +79,14 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		entity.setDeveloperExplanation(toUpdate.getDeveloperExplanation());
 		entity.setResolution(toUpdate.getResolution());
 		entity.setSummary(toUpdate.getSummary());
-		
+
 		entity.setLastModifiedDate(new Date());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		
+
 		update(entity);
 		return new CorrectiveActionPlanDTO(entity);
 	}
-	
+
 	@Override
 	public CorrectiveActionPlanDTO getById(Long id) throws EntityRetrievalException {
 		CorrectiveActionPlanDTO dto = null;
@@ -102,7 +102,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 	public List<CorrectiveActionPlanDTO> getAllForCertifiedProduct(Long certifiedProductId) {
 		List<CorrectiveActionPlanEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CorrectiveActionPlanDTO> dtos = new ArrayList<CorrectiveActionPlanDTO>();
-		
+
 		for(CorrectiveActionPlanEntity entity : entities) {
 			CorrectiveActionPlanDTO dto = new CorrectiveActionPlanDTO(entity);
 			dtos.add(dto);
@@ -118,46 +118,46 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		update(entity);
 	}
-	
+
 	private void create(CorrectiveActionPlanEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
-		
+
 	}
-	
+
 	private void update(CorrectiveActionPlanEntity entity) {
-		
-		entityManager.merge(entity);	
+
+		entityManager.merge(entity);
 		entityManager.flush();
 	}
-	
+
 	public CorrectiveActionPlanEntity getEntityById(Long id) throws EntityRetrievalException {
-		
+
 		CorrectiveActionPlanEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from CorrectiveActionPlanEntity where (NOT deleted = true) AND (corrective_action_plan_id = :entityid) ", CorrectiveActionPlanEntity.class );
 		query.setParameter("entityid", id);
 		List<CorrectiveActionPlanEntity> result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate corrective action plan id in database.");
 		}
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
-	
+
+
 	private List<CorrectiveActionPlanEntity> getEntitiesByCertifiedProductId(Long id) {
-		
+
 		Query query = entityManager.createQuery( "from CorrectiveActionPlanEntity where (NOT deleted = true) AND (certified_product_id = :certified_product_id) ", CorrectiveActionPlanEntity.class );
 		query.setParameter("certified_product_id", id);
 		List<CorrectiveActionPlanEntity> result = query.getResultList();
-		
+
 		return result;
-	}	
+	}
 }

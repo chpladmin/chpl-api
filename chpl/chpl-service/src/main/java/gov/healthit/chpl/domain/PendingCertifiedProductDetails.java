@@ -33,9 +33,9 @@ import gov.healthit.chpl.dto.PendingTestTaskDTO;
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
 	private static final long serialVersionUID = -461584179489619328L;
 	private String recordStatus;
-	
+
 	public PendingCertifiedProductDetails() {}
-	
+
 	public PendingCertifiedProductDetails(PendingCertifiedProductDTO dto) {
 		this.setId(dto.getId());
 		this.setErrorMessages(dto.getErrorMessages());
@@ -51,7 +51,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		ics.setInherits(dto.getIcs());
 		this.setIcs(ics);
 		this.setAccessibilityCertified(dto.getAccessibilityCertified());
-		
+
 		Map<String, Object> classificationTypeMap = new HashMap<String, Object>();
 		if(dto.getProductClassificationId() == null) {
 			classificationTypeMap.put("id", null);
@@ -60,10 +60,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		classificationTypeMap.put("name", dto.getProductClassificationName());
 		this.setClassificationType(classificationTypeMap);
-		
+
 		this.setOtherAcb(null);
 		this.setCertificationStatus(null);
-		
+
 		Developer developer = new Developer();
 		developer.setDeveloperId(dto.getDeveloperId());
 		developer.setName(dto.getDeveloperName());
@@ -92,14 +92,14 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			address.setZipcode(dto.getDeveloperZipCode());
 			developer.setAddress(address);
 		}
-		
+
 		this.setDeveloper(developer);
-		
+
 		Product product = new Product();
 		product.setProductId(dto.getProductId());
 		product.setName(dto.getProductName());
 		this.setProduct(product);
-		
+
 		ProductVersion version = new ProductVersion();
 		version.setVersionId(dto.getProductVersionId());
 		version.setVersion(dto.getProductVersion());
@@ -113,7 +113,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		certificationEditionMap.put("name", dto.getCertificationEdition());
 		this.setCertificationEdition(certificationEditionMap);
-		
+
 		Map<String, Object> practiceTypeMap = new HashMap<String, Object>();
 		if(dto.getPracticeTypeId() == null) {
 			practiceTypeMap.put("id", null);
@@ -122,7 +122,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		practiceTypeMap.put("name", dto.getPracticeType());
 		this.setPracticeType(practiceTypeMap);
-		
+
 		Map<String, Object> certifyingBodyMap = new HashMap<String, Object>();
 		if(dto.getCertificationBodyId() == null) {
 			certifyingBodyMap.put("id", null);
@@ -131,7 +131,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		certifyingBodyMap.put("name", dto.getCertificationBodyName());
 		this.setCertifyingBody(certifyingBodyMap);
-		
+
 		Map<String, Object> testingLabMap = new HashMap<String, Object>();
 		if(dto.getTestingLabId() == null) {
 			testingLabMap.put("id", null);
@@ -140,11 +140,11 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 		}
 		testingLabMap.put("name", dto.getTestingLabName());
 		this.setTestingLab(testingLabMap);
-		
+
 		if(dto.getCertificationDate() != null) {
 			this.setCertificationDate(dto.getCertificationDate().getTime());
 		}
-		
+
 		if(dto.getCertificationCriterion() == null) {
 			this.setCountCerts(0);
 		} else {
@@ -156,7 +156,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			}
 			this.setCountCerts(certCount);
 		}
-		
+
 		if(dto.getCqmCriterion() == null) {
 			this.setCountCqms(0);
 		} else {
@@ -170,10 +170,10 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			}
 			this.setCountCqms(cqmCount);
 		}
-		
+
 		this.setTransparencyAttestation(dto.getTransparencyAttestation());
 		this.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
-		
+
 		List<PendingCertifiedProductQmsStandardDTO> qmsDtos = dto.getQmsStandards();
 		if(qmsDtos != null && qmsDtos.size() > 0) {
 			for(PendingCertifiedProductQmsStandardDTO qmsDto : qmsDtos) {
@@ -185,7 +185,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				this.getQmsStandards().add(qms);
 			}
 		}
-		
+
 		List<PendingCertifiedProductTargetedUserDTO> tuDtos = dto.getTargetedUsers();
 		if(tuDtos != null && tuDtos.size() > 0) {
 			for(PendingCertifiedProductTargetedUserDTO tuDto : tuDtos) {
@@ -195,7 +195,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				this.getTargetedUsers().add(tu);
 			}
 		}
-		
+
 		List<PendingCertifiedProductAccessibilityStandardDTO> asDtos = dto.getAccessibilityStandards();
 		if(asDtos != null && asDtos.size() > 0) {
 			for(PendingCertifiedProductAccessibilityStandardDTO asDto : asDtos) {
@@ -205,13 +205,13 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				this.getAccessibilityStandards().add(as);
 			}
 		}
-		
+
 		List<CertificationResult> certList = new ArrayList<CertificationResult>();
 		for(PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
 			CertificationCriterion criteria = new CertificationCriterion();
 			criteria.setNumber(certCriterion.getNumber());
 			criteria.setTitle(certCriterion.getTitle());
-			
+
 			CertificationResult cert = new CertificationResult();
 			cert.setNumber(certCriterion.getNumber());
 			cert.setTitle(certCriterion.getTitle());
@@ -222,7 +222,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			cert.setG2Success(certCriterion.getG2Success());
 			cert.setApiDocumentation(certCriterion.getApiDocumentation());
 			cert.setPrivacySecurityFramework(certCriterion.getPrivacySecurityFramework());
-			
+
 			if(certCriterion.getAdditionalSoftware() != null) {
 				for(PendingCertificationResultAdditionalSoftwareDTO as : certCriterion.getAdditionalSoftware()) {
 					CertificationResultAdditionalSoftware software = new CertificationResultAdditionalSoftware();
@@ -237,7 +237,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setAdditionalSoftware(null);
 			}
-			
+
 			if(certCriterion.getTestData() != null) {
 				for(PendingCertificationResultTestDataDTO td: certCriterion.getTestData()) {
 					CertificationResultTestData testData = new CertificationResultTestData();
@@ -248,7 +248,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setTestDataUsed(null);
 			}
-			
+
 			if(certCriterion.getTestTools() != null) {
 				for(PendingCertificationResultTestToolDTO tt : certCriterion.getTestTools()) {
 					CertificationResultTestTool testTool = new CertificationResultTestTool();
@@ -260,7 +260,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setTestToolsUsed(null);
 			}
-			
+
 			if(certCriterion.getTestFunctionality() != null) {
 				for(PendingCertificationResultTestFunctionalityDTO tf : certCriterion.getTestFunctionality()) {
 					CertificationResultTestFunctionality testFunc = new CertificationResultTestFunctionality();
@@ -271,7 +271,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setTestFunctionality(null);
 			}
-			
+
 			if(certCriterion.getTestProcedures() != null) {
 				for(PendingCertificationResultTestProcedureDTO tp : certCriterion.getTestProcedures()) {
 					CertificationResultTestProcedure testProc = new CertificationResultTestProcedure();
@@ -282,7 +282,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setTestProcedures(null);
 			}
-			
+
 			if(certCriterion.getTestStandards() != null) {
 				for(PendingCertificationResultTestStandardDTO ts : certCriterion.getTestStandards()) {
 					CertificationResultTestStandard testStd = new CertificationResultTestStandard();
@@ -293,7 +293,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setTestStandards(null);
 			}
-			
+
 			if(certCriterion.getG1MacraMeasures() != null) {
 				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG1MacraMeasures()) {
 					if(mm.getMacraMeasure() != null) {
@@ -308,7 +308,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setG1MacraMeasures(null);
 			}
-			
+
 			if(certCriterion.getG2MacraMeasures() != null) {
 				for(PendingCertificationResultMacraMeasureDTO mm : certCriterion.getG2MacraMeasures()) {
 					if(mm.getMacraMeasure() != null) {
@@ -323,9 +323,9 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 			} else {
 				cert.setG2MacraMeasures(null);
 			}
-			
+
 			//set all sed data: ucd processes and test tasks
-			
+
 			if(certCriterion.getUcdProcesses() != null && certCriterion.getUcdProcesses().size() > 0) {
 				for(PendingCertificationResultUcdProcessDTO ucdDto : certCriterion.getUcdProcesses()) {
 					boolean alreadyExists = false;
@@ -346,7 +346,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 				}
 				cert.setSed(Boolean.TRUE);
 			}
-			
+
 			if(certCriterion.getTestTasks() != null && certCriterion.getTestTasks().size() > 0) {
 				cert.setSed(Boolean.TRUE);
 				for(PendingCertificationResultTestTaskDTO ttDto : certCriterion.getTestTasks()) {
@@ -369,7 +369,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 						newTask.setTaskTimeDeviationObservedAvg(tt.getTaskTimeDeviationObservedAvg() == null ? "" : tt.getTaskTimeDeviationObservedAvg()+"");
 						newTask.setTaskTimeDeviationOptimalAvg(tt.getTaskTimeDeviationOptimalAvg() == null ? "" : tt.getTaskTimeDeviationOptimalAvg()+"");
 						newTask.setTaskTimeStddev(tt.getTaskTimeStddev() == null ? "" : tt.getTaskTimeStddev()+"");
-						
+
 						if(ttDto.getTaskParticipants() != null) {
 							for(PendingCertificationResultTestTaskParticipantDTO ptDto : ttDto.getTaskParticipants()) {
 								if(ptDto.getTestParticipant() != null) {
@@ -394,7 +394,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 								}
 							}
 						}
-						
+
 						for(TestTask currTask : this.getSed().getTestTasks()) {
 							if(newTask.matches(currTask)) {
 								alreadyExists = true;
@@ -407,12 +407,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 						}
 					}
 				}
-			} 
-			
+			}
+
 			certList.add(cert);
 		}
 		this.setCertificationResults(certList);
-		
+
 		//set cqm results
 		List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 		for(PendingCqmCriterionDTO pendingCqm : dto.getCqmCriterion()) {
@@ -425,7 +425,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 					}
 				}
 			}
-			
+
 			if(!existingCms) {
 				CQMResultDetails cqm = new CQMResultDetails();
 				cqm.setCmsId(pendingCqm.getCmsId());
@@ -450,7 +450,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 						cqm.getCriteria().add(c);
 					}
 				}
-				
+
 				cqmResults.add(cqm);
 			}
 		}

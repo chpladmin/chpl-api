@@ -18,9 +18,9 @@ public class AddressDTO implements Serializable {
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	
+
 	public AddressDTO(){}
-	
+
 	public AddressDTO(AddressEntity entity)
 	{
 		if(entity != null) {
@@ -37,7 +37,7 @@ public class AddressDTO implements Serializable {
 			this.lastModifiedUser = entity.getLastModifiedUser();
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

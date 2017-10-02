@@ -8,15 +8,15 @@ public class EducationTypeDTO implements Serializable {
 	private static final long serialVersionUID = -5167706321750440799L;
 	private Long id;
 	private String name;
-	
+
 	public EducationTypeDTO(){}
-	
+
 	public EducationTypeDTO(EducationTypeEntity entity)
 	{
 		this.id = entity.getId();
 		this.name = entity.getName();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -31,5 +31,5 @@ public class EducationTypeDTO implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }

@@ -16,40 +16,40 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "macra_criteria_map")
 public class MacraMeasureEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "criteria_id")
 	private Long certificationCriterionId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "criteria_id", insertable = false, updatable = false)
 	private CertificationCriterionEntity certificationCriterion;
 
 	@Column(name = "value")
 	private String value;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "description")
 	private String description;
-		
+
 	@Column( name = "creation_date", nullable = false, updatable = false, insertable = false  )
 	protected Date creationDate;
-	
+
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Column( name = "last_modified_date", nullable = false, updatable = false, insertable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -65,7 +65,7 @@ public class MacraMeasureEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

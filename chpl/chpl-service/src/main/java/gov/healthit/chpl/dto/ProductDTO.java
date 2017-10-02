@@ -28,13 +28,13 @@ public class ProductDTO implements Serializable {
 	private String developerCode;
 	private Statuses statuses;
 	private List<ProductOwnerDTO> ownerHistory;
-	
+
 	public ProductDTO(){
 		this.ownerHistory = new ArrayList<ProductOwnerDTO>();
 	}
 	public ProductDTO(ProductEntity entity){
 		this();
-		
+
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
@@ -62,18 +62,18 @@ public class ProductDTO implements Serializable {
 				this.productVersions.add(versionDto);
 			}
 		}
-		
+
 		if(entity.getProductCertificationStatusesEntity() != null){
-			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(), 
-					entity.getProductCertificationStatusesEntity().getRetired(), 
-					entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(), 
-					entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(), 
+			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(),
+					entity.getProductCertificationStatusesEntity().getRetired(),
+					entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(),
+					entity.getProductCertificationStatusesEntity().getWithdrawnByAcb(),
 					entity.getProductCertificationStatusesEntity().getSuspendedByAcb(),
 					entity.getProductCertificationStatusesEntity().getSuspendedByOnc(),
 					entity.getProductCertificationStatusesEntity().getTerminatedByOnc());
 		}
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -158,5 +158,5 @@ public class ProductDTO implements Serializable {
 	public void setContact(ContactDTO contact) {
 		this.contact = contact;
 	}
-	
+
 }

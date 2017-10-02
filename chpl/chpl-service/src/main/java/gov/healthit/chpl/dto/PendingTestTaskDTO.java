@@ -22,10 +22,10 @@ public class PendingTestTaskDTO implements Serializable {
 	private String taskRatingScale;
 	private Float taskRating;
 	private Float taskRatingStddev;
-	
+
 	public PendingTestTaskDTO() {
 	}
-	
+
 	public PendingTestTaskDTO(PendingTestTaskEntity entity) {
 		this();
 		this.setId(entity.getId());
@@ -45,7 +45,7 @@ public class PendingTestTaskDTO implements Serializable {
 		this.taskRating = entity.getTaskRating();
 		this.taskRatingStddev = entity.getTaskRatingStddev();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

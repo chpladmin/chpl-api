@@ -12,9 +12,9 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
 	private Long macraMeasureId;
 	private MacraMeasureDTO macraMeasure;
 	private String enteredValue;
-	
+
 	public PendingCertificationResultMacraMeasureDTO() {}
-	
+
 	public PendingCertificationResultMacraMeasureDTO(PendingCertificationResultG1MacraMeasureEntity entity) {
 		this.setId(entity.getId());
 		this.setEnteredValue(entity.getEnteredValue());
@@ -25,7 +25,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
 		}
 		this.enteredValue = entity.getEnteredValue();
 	}
-	
+
 	public PendingCertificationResultMacraMeasureDTO(PendingCertificationResultG2MacraMeasureEntity entity) {
 		this.setId(entity.getId());
 		this.setEnteredValue(entity.getEnteredValue());
@@ -36,7 +36,7 @@ public class PendingCertificationResultMacraMeasureDTO implements Serializable {
 		}
 		this.enteredValue = entity.getEnteredValue();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

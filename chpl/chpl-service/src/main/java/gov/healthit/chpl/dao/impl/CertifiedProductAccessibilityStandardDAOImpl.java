@@ -16,12 +16,12 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity;
 
 @Repository(value="certifiedProductAccessibilityStandardDao")
-public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl 
+public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 	implements CertifiedProductAccessibilityStandardDAO {
 
 	@Override
 	public CertifiedProductAccessibilityStandardDTO createCertifiedProductAccessibilityStandard(CertifiedProductAccessibilityStandardDTO toCreate) throws EntityCreationException {
-		
+
 		CertifiedProductAccessibilityStandardEntity toCreateEntity = new CertifiedProductAccessibilityStandardEntity();
 		toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
 		toCreateEntity.setAccessibilityStandardId(toCreate.getAccessibilityStandardId());
@@ -34,10 +34,10 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 
 		return new CertifiedProductAccessibilityStandardDTO(toCreateEntity);
 	}
-	
+
 	@Override
 	public CertifiedProductAccessibilityStandardDTO deleteCertifiedProductAccessibilityStandards(Long id) throws EntityRetrievalException {
-		
+
 		CertifiedProductAccessibilityStandardEntity curr = getEntityById(id);
 		if(curr == null) {
 			throw new EntityRetrievalException("Could not find mapping with id " + id);
@@ -50,19 +50,19 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 
 		return new CertifiedProductAccessibilityStandardDTO(curr);
 	}
-	
+
 	@Override
 	public List<CertifiedProductAccessibilityStandardDTO> getAccessibilityStandardsByCertifiedProductId(Long certifiedProductId)
 			throws EntityRetrievalException {
 		List<CertifiedProductAccessibilityStandardEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CertifiedProductAccessibilityStandardDTO> dtos = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
-		
+
 		for (CertifiedProductAccessibilityStandardEntity entity : entities){
 			dtos.add(new CertifiedProductAccessibilityStandardDTO(entity));
 		}
 		return dtos;
 	}
-	
+
 	@Override
 	public CertifiedProductAccessibilityStandardDTO lookupMapping(Long certifiedProductId, Long accStdId)
 			throws EntityRetrievalException {
@@ -74,49 +74,49 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 		}
 		return result;
 	}
-	
+
 	private CertifiedProductAccessibilityStandardEntity getEntityById(Long id) throws EntityRetrievalException {
 		CertifiedProductAccessibilityStandardEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT accStd from CertifiedProductAccessibilityStandardEntity accStd "
 				+ "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
-				+ "where (NOT accStd.deleted = true) AND (accStd.id = :entityid) ", 
+				+ "where (NOT accStd.deleted = true) AND (accStd.id = :entityid) ",
 				CertifiedProductAccessibilityStandardEntity.class );
 
 		query.setParameter("entityid", id);
 		List<CertifiedProductAccessibilityStandardEntity> result = query.getResultList();
 		if(result.size() >= 1) {
 			entity = result.get(0);
-		} 
+		}
 		return entity;
 	}
-	
+
 	private List<CertifiedProductAccessibilityStandardEntity> getEntitiesByCertifiedProductId(Long productId) throws EntityRetrievalException {
 		Query query = entityManager.createQuery( "SELECT accStd from "
 				+ "CertifiedProductAccessibilityStandardEntity accStd "
 				+ "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
 				+ "where (NOT accStd.deleted = true) AND "
-				+ "(certified_product_id = :entityid) ", 
+				+ "(certified_product_id = :entityid) ",
 				CertifiedProductAccessibilityStandardEntity.class );
 
 		query.setParameter("entityid", productId);
 		List<CertifiedProductAccessibilityStandardEntity> result = query.getResultList();
-		
+
 		return result;
 	}
-	
+
 	private List<CertifiedProductAccessibilityStandardEntity> findSpecificMapping(Long productId, Long accStdId) throws EntityRetrievalException {
 		Query query = entityManager.createQuery( "SELECT accStd from "
 				+ "CertifiedProductAccessibilityStandardEntity accStd "
 				+ "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
 				+ "where (NOT accStd.deleted = true) "
 				+ "AND (certified_product_id = :productId) "
-				+ "AND (accStd.accessibilityStandardId = :accStdId)", 
+				+ "AND (accStd.accessibilityStandardId = :accStdId)",
 				CertifiedProductAccessibilityStandardEntity.class );
 
 		query.setParameter("productId", productId);
 		query.setParameter("accStdId", accStdId);
 		List<CertifiedProductAccessibilityStandardEntity> result = query.getResultList();
-		
+
 		return result;
 	}
 }

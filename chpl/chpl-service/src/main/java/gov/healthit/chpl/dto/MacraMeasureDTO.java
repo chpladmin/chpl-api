@@ -17,12 +17,12 @@ public class MacraMeasureDTO implements Serializable {
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	
+
 	public MacraMeasureDTO(){
 	}
 	public MacraMeasureDTO(MacraMeasureEntity entity){
 		this();
-		
+
 		this.id = entity.getId();
 		this.criteriaId = entity.getCertificationCriterionId();
 		if(entity.getCertificationCriterion() != null) {
@@ -31,13 +31,13 @@ public class MacraMeasureDTO implements Serializable {
 		this.value = entity.getValue();
 		this.name = entity.getName();
 		this.description = entity.getDescription();
-		
+
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

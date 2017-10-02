@@ -49,30 +49,30 @@ public class MeaningfulUseController {
 	@Autowired MeaningfulUseManager muManager;
 	@Autowired JobManager jobManager;
 	@Autowired UserManager userManager;
-	
-	@ApiOperation(value="Upload a file to update the number of meaningful use users for each CHPL Product Number", 
+
+	@ApiOperation(value="Upload a file to update the number of meaningful use users for each CHPL Product Number",
 			notes="Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
 					+ " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
 	@RequestMapping(value="/upload", method = RequestMethod.POST,
-			produces="application/json; charset = utf-8") 
-	public synchronized ResponseEntity<Job> uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file) 
-			throws EntityRetrievalException, EntityCreationException, 
+			produces="application/json; charset = utf-8")
+	public synchronized ResponseEntity<Job> uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file)
+			throws EntityRetrievalException, EntityCreationException,
 			ValidationException, MaxUploadSizeExceededException {
-		
+
 		if(Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
 			return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
 		}
-		
+
 		if (file.isEmpty()) {
 			throw new ValidationException("You cannot upload an empty file!");
 		}
-		
+
 		//for now we'll only accept CSV
 		if(!file.getContentType().equalsIgnoreCase("text/csv") &&
 				!file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
 			throw new ValidationException("File must be a CSV document.");
 		}
-		
+
 		//figure out the user
 		UserDTO currentUser = null;
 		try {
@@ -85,7 +85,7 @@ public class MeaningfulUseController {
 			logger.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
 			return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
 		}
-		
+
 		JobTypeDTO jobType = null;
 		List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
 		for(JobTypeDTO jt : jobTypes) {
@@ -93,7 +93,7 @@ public class MeaningfulUseController {
 				jobType = jt;
 			}
 		}
-		
+
 		//read the file into a string
 		StringBuffer data = new StringBuffer();
 		BufferedReader reader = null;
@@ -105,20 +105,20 @@ public class MeaningfulUseController {
 					data.append(System.getProperty("line.separator"));
 				}
 				data.append(line);
-			}		
+			}
 		} catch(IOException ex) {
 			String msg = "Could not read file: " + ex.getMessage();
 			logger.error(msg);
 			throw new ValidationException(msg);
 		}
-		
+
 		JobDTO toCreate = new JobDTO();
 		toCreate.setData(data.toString());
 		toCreate.setUser(currentUser);
 		toCreate.setJobType(jobType);
 		JobDTO insertedJob = jobManager.createJob(toCreate);
 		JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
-		
+
 		try {
 			boolean isStarted = jobManager.start(createdJob);
 			if(!isStarted) {
@@ -130,30 +130,30 @@ public class MeaningfulUseController {
 			logger.error("Could not mark job " + createdJob.getId() + " as started.");
 			return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
+
 		//query the now running job
 		return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.OK);
 	}
-	
-	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is accurate as of.", 
+
+	@ApiOperation(value="Get a single date value to indicate when the last meaningful use user file data is accurate as of.",
 			notes="This is a single system-wide value.")
 	@RequestMapping(value="/accurate_as_of", method = RequestMethod.GET,
-			produces="application/json; charset = utf-8") 
+			produces="application/json; charset = utf-8")
 	public @ResponseBody AccurateAsOfDate getAccurateAsOfDate() throws EntityRetrievalException {
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
 		if(dto == null){
 			throw new EntityRetrievalException("Could not retrieve entity for MeaningfulUseAccurateAsOf");
 		}
-		
+
 		AccurateAsOfDate ar = new AccurateAsOfDate(dto.getAccurateAsOfDate().getTime());
 		return ar;
 	}
-	
-	@ApiOperation(value="Update the Meaningful Use Accurate As Of date.", 
+
+	@ApiOperation(value="Update the Meaningful Use Accurate As Of date.",
 			notes="Accurate as of date value can be edited by a user with ROLE_ADMIN and ROLE_CMS_STAFF.")
 	@RequestMapping(value="/accurate_as_of", method = RequestMethod.POST,
-			produces="application/json; charset = utf-8") 
-	public @ResponseBody AccurateAsOfDate updateMeaningfulUseAccurateAsOf(@RequestBody(required = true) AccurateAsOfDate accurateAsOfDate) {		
+			produces="application/json; charset = utf-8")
+	public @ResponseBody AccurateAsOfDate updateMeaningfulUseAccurateAsOf(@RequestBody(required = true) AccurateAsOfDate accurateAsOfDate) {
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
 		dto.setAccurateAsOfDate(new Date(accurateAsOfDate.getAccurateAsOfDate()));
 		dto = muManager.updateMeaningfulUseAccurateAsOf(dto);

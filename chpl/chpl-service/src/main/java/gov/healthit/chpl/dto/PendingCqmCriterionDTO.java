@@ -13,7 +13,7 @@ public class PendingCqmCriterionDTO implements Serializable {
 	private Long cqmCriterionId;
 	private Long pendingCertifiedProductId;
 	private boolean meetsCriteria;
-	
+
 	private String cqmNumber;
 	private String title;
 	private String cmsId;
@@ -21,20 +21,20 @@ public class PendingCqmCriterionDTO implements Serializable {
 	private String version; //only valid for CMS
 	private Long typeId;
 	private String domain;
-	
+
 	private List<PendingCqmCertificationCriterionDTO> certifications;
-	
+
 	public PendingCqmCriterionDTO() {
 		certifications = new ArrayList<PendingCqmCertificationCriterionDTO>();
-	} 
-	
+	}
+
 	public PendingCqmCriterionDTO(PendingCqmCriterionEntity entity) {
 		this();
 		this.setId(entity.getId());
 		this.setCqmCriterionId(entity.getMappedCriterion().getId());
 		this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
 		this.setMeetsCriteria(entity.getMeetsCriteria().booleanValue());
-		
+
 		this.setCqmNumber(entity.getMappedCriterion().getNumber());
 		this.setTitle(entity.getMappedCriterion().getTitle());
 		this.setCmsId(entity.getMappedCriterion().getCmsId());
@@ -42,7 +42,7 @@ public class PendingCqmCriterionDTO implements Serializable {
 		this.setVersion(entity.getMappedCriterion().getCqmVersion());
 		this.setTypeId(entity.getMappedCriterion().getCqmCriterionTypeId());
 		this.setDomain(entity.getMappedCriterion().getCqmDomain());
-		
+
 		if(entity.getCertifications() != null && entity.getCertifications().size() > 0) {
 			for(PendingCqmCertificationCriteriaEntity certEntity : entity.getCertifications()) {
 				PendingCqmCertificationCriterionDTO cert = new PendingCqmCertificationCriterionDTO(certEntity);

@@ -23,237 +23,237 @@ public class CertifiedProductDetailsEntity {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
-	
-    @Id 
+
+    @Id
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long id;
-    
+
     @Column(name = "testing_lab_code")
     private String testingLabCode;
-    
+
     @Column(name = "product_code")
     private String productCode;
-    
+
     @Column(name = "version_code")
     private String versionCode;
-    
+
     @Column(name = "ics_code")
     private String icsCode;
-    
+
     @Column(name = "additional_software_code")
     private String additionalSoftwareCode;
-    
+
     @Column(name = "certified_date_code")
     private String certifiedDateCode;
-    
+
     @Column(name = "testing_lab_id")
     private Long testingLabId;
-    
+
     @Column(name = "testing_lab_name")
     private String testingLabName;
-    
+
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
-    
+
     @Column(name = "report_file_location")
     private String reportFileLocation;
-    
+
     @Column(name = "sed_report_file_location")
     private String sedReportFileLocation;
-    
-	@Basic(optional = true) 
+
+	@Basic(optional = true)
     @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
-	
+
 	@Basic(optional = true)
 	@Column(name ="meaningful_use_users")
 	private Long meaningfulUseUsers;
 
-	@Basic(optional = true) 
+	@Basic(optional = true)
     @Column(name = "sed_testing_end")
     private Date sedTestingEnd;
-	
+
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
-    
+
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
-    
+
     @Column(name = "practice_type_name")
     private String practiceTypeName;
-    
+
     @Column(name = "product_classification_type_id")
     private Long productClassificationTypeId;
-    
+
     @Column(name = "other_acb")
     private String otherAcb;
-    
+
     @Column(name = "certification_status_id")
     private Long certificationStatusId;
-    
+
     @Column(name = "certification_status_name")
     private String certificationStatusName;
-    
+
     @Column(name = "last_certification_status_change")
     private Date certificationStatusDate;
-    
+
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
-    
+
     @Column(name = "year")
     private String year;
-    
+
     @Column(name = "certification_body_id")
     private Long certificationBodyId;
-    
+
     @Column(name = "certification_body_name")
     private String certificationBodyName;
-    
+
     @Column(name = "certification_body_code")
     private String certificationBodyCode;
-    
+
     @Column(name = "acb_is_deleted")
     private Boolean acbIsDeleted;
-    
+
     @Column(name = "product_classification_name")
     private String productClassificationName;
-    
+
     @Column(name = "product_version_id")
     private Long productVersionId;
-    
+
     @Column(name = "product_version")
     private String productVersion;
-    
+
     @Column(name = "product_id")
     private Long productId;
-    
+
     @Column(name = "product_name")
     private String productName;
-    
+
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private ProductEntity product;
- 
+
     @Column(name = "vendor_id")
     private Long developerId;
-    
+
     @Column(name = "vendor_name")
     private String developerName;
-    
+
     @Column(name = "vendor_code")
     private String developerCode;
 
     @Column(name = "vendor_website")
     private String developerWebsite;
-    
+
     @Column(name = "vendor_status_id")
     private Long developerStatusId;
-    
+
     @Column(name = "vendor_status_name")
     private String developerStatusName;
-    
+
     @Column(name = "last_vendor_status_change")
     private Date developerStatusDate;
-    
+
     @Column(name = "address_id")
     private Long addressId;
-    
+
     @Column(name = "street_line_1")
     private String streetLine1;
-    
+
     @Column(name = "street_line_2")
     private String streetLine2;
-    
+
     @Column(name = "city")
     private String city;
-    
+
     @Column(name = "state")
     private String state;
-    
+
     @Column(name = "zipcode")
     private String zipcode;
-    
+
     @Column(name = "country")
     private String country;
-    
+
     @Column(name = "contact_id")
     private Long contactId;
-    
+
     @Column(name = "first_name")
     private String firstName;
-    
+
     @Column(name = "last_name")
     private String lastName;
-    
+
     @Column(name = "email")
     private String email;
-    
+
     @Column(name = "phone_number")
     private String phoneNumber;
-    
+
     @Column(name = "title")
     private String title;
-    
+
     @Column(name = "creation_date")
     private Date creationDate;
-    
+
     @Column(name = "certification_date")
     private Date certificationDate;
-    
+
     @Column(name = "decertification_date")
     private Date decertificationDate;
-    
+
     @Column(name = "count_certifications")
     private Integer countCertifications;
-    
+
     @Column(name = "count_cqms")
     private Integer countCqms;
-    
+
     @Column(name = "count_surveillance_activities")
     private Integer countSurveillance;
-    
+
     @Column(name = "count_open_surveillance_activities")
     private Integer countOpenSurveillance;
-    
+
     @Column(name = "count_closed_surveillance_activities")
     private Integer countClosedSurveillance;
-    
+
     @Column(name = "count_open_nonconformities")
     private Integer countOpenNonconformities;
-    
+
     @Column(name = "count_closed_nonconformities")
     private Integer countClosedNonconformities;
-    		
+
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
-    
+
     @Column(name = "deleted")
     private Boolean deleted;
 
 	@Column(name = "ics")
 	private Boolean ics;
-	
+
 	@Column(name = "sed")
 	private Boolean sedTesting;
-	
+
 	@Column(name = "qms")
 	private Boolean qmsTesting;
-	
+
 	@Column(name = "accessibility_certified")
 	private Boolean accessibilityCertified;
-	
+
 	@Column(name = "product_additional_software")
 	private String productAdditionalSoftware;
-	
+
 	@Column(name = "transparency_attestation")
 	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
 	private AttestationType transparencyAttestation;
-	
+
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -357,11 +357,11 @@ public class CertifiedProductDetailsEntity {
 	public void setCertificationBodyName(String certificationBodyName) {
 		this.certificationBodyName = certificationBodyName;
 	}
-	
+
 	public Boolean getAcbIsDeleted() {
 		return this.acbIsDeleted;
 	}
-	
+
 	public void setAcbIsDeleted(Boolean acbIsDeleted) {
 		this.acbIsDeleted = acbIsDeleted;
 	}
@@ -373,7 +373,7 @@ public class CertifiedProductDetailsEntity {
 	public void setProductClassificationName(String productClassificationName) {
 		this.productClassificationName = productClassificationName;
 	}
-	
+
 	public String getPracticeTypeName() {
 		return practiceTypeName;
 	}
@@ -429,7 +429,7 @@ public class CertifiedProductDetailsEntity {
 	public void setDeveloperName(String developerName) {
 		this.developerName = developerName;
 	}
-    
+
 	public Date getCertificationDate() {
 		return certificationDate;
 	}
@@ -457,7 +457,7 @@ public class CertifiedProductDetailsEntity {
 	public Date getCreationDate(){
 		return creationDate;
 	}
-	
+
 	public void setCreationDate(Date creationDate){
 		this.creationDate = creationDate;
 	}
@@ -557,7 +557,7 @@ public class CertifiedProductDetailsEntity {
 	public void setIcsCode(String icsCode) {
 		this.icsCode = icsCode;
 	}
-	
+
 	public AttestationType getTransparencyAttestation() {
 		return transparencyAttestation;
 	}
@@ -629,11 +629,11 @@ public class CertifiedProductDetailsEntity {
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
 	}
-	
+
 	public Long getMeaningfulUseUsers(){
 		return meaningfulUseUsers;
 	}
-	
+
 	public void setMeaningfulUseUsers(Long meaningfulUseUsers){
 		this.meaningfulUseUsers = meaningfulUseUsers;
 	}

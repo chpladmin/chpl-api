@@ -8,15 +8,15 @@ public class AgeRangeDTO implements Serializable {
 	private static final long serialVersionUID = -8992186632969057189L;
 	private Long id;
 	private String age;
-	
+
 	public AgeRangeDTO(){}
-	
+
 	public AgeRangeDTO(AgeRangeEntity entity)
 	{
 		this.id = entity.getId();
 		this.age = entity.getAge();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -16,41 +16,41 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_certification_result_g2_macra")
 public class PendingCertificationResultG2MacraMeasureEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "id", nullable = false  )
 	private Long id;
 
-	@Column(name = "pending_certification_result_id", nullable = false )	
+	@Column(name = "pending_certification_result_id", nullable = false )
 	private Long pendingCertificationResultId;
 
 	@Column(name = "macra_id")
 	private Long macraId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "macra_id", insertable = false, updatable = false)
 	private MacraMeasureEntity macraMeasure;
-	
+
 	@Column(name = "macra_value")
 	private String enteredValue;;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false, insertable = false, updatable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false, insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -59,7 +59,7 @@ public class PendingCertificationResultG2MacraMeasureEntity {
 		this.id = id;
 	}
 
-	
+
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}

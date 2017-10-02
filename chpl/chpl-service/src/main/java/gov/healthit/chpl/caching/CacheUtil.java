@@ -9,7 +9,7 @@ import net.sf.ehcache.CacheManager;
 @Component
 public class CacheUtil {
 	  public static CacheManager myCacheManager;
-	 
+
 	  public CacheManager getMyCacheManager() {
 	    if(myCacheManager == null) {
 	    for (CacheManager cacheManager : CacheManager.ALL_CACHE_MANAGERS) {

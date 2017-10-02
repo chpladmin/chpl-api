@@ -62,24 +62,24 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
 	@Autowired protected EducationTypeDAO educationDao;
 	@Autowired protected AgeRangeDAO ageDao;
 	@Autowired protected MacraMeasureDAO macraDao;
-	
+
 	@Autowired private PendingCertifiedProductDAO pendingCpDao;
-	
+
 	private static final String CERTIFICATION_DATE_FORMAT = "yyyyMMdd";
 	protected SimpleDateFormat dateFormatter;
-	
+
 	private List<CSVRecord> record;
 	private CSVRecord heading;
 	private int lastDataIndex;
-	
+
 	public CertifiedProductUploadHandlerImpl() {
 		dateFormatter = new SimpleDateFormat(CERTIFICATION_DATE_FORMAT);
 	}
-	
+
 	public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
 	public abstract List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms);
 	public abstract Long getDefaultStatusId();
-	
+
 	@Override
 	public List<CSVRecord> getRecord() {
 		return record;

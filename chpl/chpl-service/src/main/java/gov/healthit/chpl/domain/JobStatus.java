@@ -5,7 +5,7 @@ import gov.healthit.chpl.dto.job.JobStatusDTO;
 public class JobStatus {
 	private String status;
 	private Integer percentComplete;
-	
+
 	public JobStatus() {}
 	public JobStatus(JobStatusDTO dto) {
 		this.status = dto.getStatus() != null ? dto.getStatus().toString() : null;

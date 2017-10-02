@@ -20,33 +20,33 @@ import gov.healthit.chpl.entity.TestToolEntity;
 @Entity
 @Table(name = "certification_result_test_tool")
 public class CertificationResultTestToolEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
 	@Column(name = "certification_result_test_tool_id")
 	private Long id;
-	
+
 	@Basic(optional = true)
 	@Column(name = "certification_result_id", nullable = false)
 	private Long certificationResultId;
-	
+
 	@Column(name = "test_tool_id")
 	private Long testToolId;
-	
+
 	@Column(name = "version")
 	private String version;
-	
+
 	@Basic(optional = true)
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_tool_id", unique = true, nullable = true, insertable = false, updatable= false)
 	private TestToolEntity testTool;
-	
+
 	@Basic(optional = true)
 	@ManyToOne(targetEntity = CertificationResultEntity.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_result_id", nullable = false, insertable = false, updatable = false)
 	private CertificationResultEntity certificationResult;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -78,23 +78,23 @@ public class CertificationResultTestToolEntity {
 	public void setTestTool(TestToolEntity testTool) {
 		this.testTool = testTool;
 	}
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

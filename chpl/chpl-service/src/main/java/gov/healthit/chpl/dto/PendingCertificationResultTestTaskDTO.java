@@ -14,11 +14,11 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
 	private Long pendingTestTaskId;
 	private PendingTestTaskDTO pendingTestTask;
 	private Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants;
-	
+
 	public PendingCertificationResultTestTaskDTO() {
 		taskParticipants = new HashSet<PendingCertificationResultTestTaskParticipantDTO>();
 	}
-	
+
 	public PendingCertificationResultTestTaskDTO(PendingCertificationResultTestTaskEntity entity) {
 		this();
 		this.setId(entity.getId());
@@ -34,7 +34,7 @@ public class PendingCertificationResultTestTaskDTO implements Serializable {
 			}
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

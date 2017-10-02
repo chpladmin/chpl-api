@@ -5,7 +5,7 @@ import java.util.List;
 
 public class IdListContainer {
 	private List<Long> ids;
-	
+
 	public IdListContainer() {
 		ids = new ArrayList<Long>();
 	}

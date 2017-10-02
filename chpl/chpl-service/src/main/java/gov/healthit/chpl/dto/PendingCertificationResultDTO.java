@@ -30,7 +30,7 @@ public class PendingCertificationResultDTO implements Serializable {
 	private Boolean g2Success;
 	private String apiDocumentation;
 	private String privacySecurityFramework;
-	
+
 	private List<PendingCertificationResultUcdProcessDTO> ucdProcesses;
 	private List<PendingCertificationResultAdditionalSoftwareDTO> additionalSoftware;
 	private List<PendingCertificationResultTestDataDTO> testData;
@@ -41,7 +41,7 @@ public class PendingCertificationResultDTO implements Serializable {
 	private List<PendingCertificationResultMacraMeasureDTO> g1MacraMeasures;
 	private List<PendingCertificationResultMacraMeasureDTO> g2MacraMeasures;
 	private List<PendingCertificationResultTestTaskDTO> testTasks;
-	
+
 	public PendingCertificationResultDTO() {
 		ucdProcesses = new ArrayList<PendingCertificationResultUcdProcessDTO>();
 		additionalSoftware = new ArrayList<PendingCertificationResultAdditionalSoftwareDTO>();
@@ -54,17 +54,17 @@ public class PendingCertificationResultDTO implements Serializable {
 		g2MacraMeasures = new ArrayList<PendingCertificationResultMacraMeasureDTO>();
 		testTasks = new ArrayList<PendingCertificationResultTestTaskDTO>();
 	}
-	
+
 	public PendingCertificationResultDTO(PendingCertificationResultEntity entity) {
 		this();
 		this.setId(entity.getId());
-				
+
 		if(entity.getMappedCriterion() != null) {
 			this.setCertificationCriterionId(entity.getMappedCriterion().getId());
 			this.setNumber(entity.getMappedCriterion().getNumber());
 			this.setTitle(entity.getMappedCriterion().getTitle());
 		}
-		
+
 		this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
 		this.setMeetsCriteria(entity.getMeetsCriteria());
 		this.setGap(entity.getGap());
@@ -73,14 +73,14 @@ public class PendingCertificationResultDTO implements Serializable {
 		this.setG2Success(entity.getG2Success());
 		this.apiDocumentation = entity.getApiDocumentation();
 		this.privacySecurityFramework = entity.getPrivacySecurityFramework();
-		
+
 		if(entity.getUcdProcesses() != null && entity.getUcdProcesses().size() > 0) {
 			for(PendingCertificationResultUcdProcessEntity e : entity.getUcdProcesses()) {
 				this.getUcdProcesses().add(new PendingCertificationResultUcdProcessDTO(e));
 			}
 			this.setSed(Boolean.TRUE);
 		}
-		
+
 		if(entity.getTestStandards() != null) {
 			for(PendingCertificationResultTestStandardEntity e : entity.getTestStandards()) {
 				this.getTestStandards().add(new PendingCertificationResultTestStandardDTO(e));
@@ -111,19 +111,19 @@ public class PendingCertificationResultDTO implements Serializable {
 				this.getTestTools().add(new PendingCertificationResultTestToolDTO(e));
 			}
 		}
-		
+
 		if(entity.getG1MacraMeasures() != null) {
 			for(PendingCertificationResultG1MacraMeasureEntity e : entity.getG1MacraMeasures()) {
 				this.getG1MacraMeasures().add(new PendingCertificationResultMacraMeasureDTO(e));
 			}
 		}
-		
+
 		if(entity.getG2MacraMeasures() != null) {
 			for(PendingCertificationResultG2MacraMeasureEntity e : entity.getG2MacraMeasures()) {
 				this.getG2MacraMeasures().add(new PendingCertificationResultMacraMeasureDTO(e));
 			}
 		}
-		
+
 		if(entity.getTestTasks() != null && entity.getTestTasks().size() > 0) {
 			for(PendingCertificationResultTestTaskEntity e : entity.getTestTasks()) {
 				PendingCertificationResultTestTaskDTO taskDto = new PendingCertificationResultTestTaskDTO(e);
@@ -132,7 +132,7 @@ public class PendingCertificationResultDTO implements Serializable {
 			this.setSed(Boolean.TRUE);
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -301,6 +301,6 @@ public class PendingCertificationResultDTO implements Serializable {
 	public void setG2MacraMeasures(List<PendingCertificationResultMacraMeasureDTO> g2Measures) {
 		this.g2MacraMeasures = g2Measures;
 	}
-	
-	
+
+
 }

@@ -72,7 +72,7 @@ public class CertificationResultManagerImpl implements
 	private static final Logger logger = LogManager.getLogger(CertificationResultManagerImpl.class);
 	private static final String G1_MEASURE = "G1";
 	private static final String G2_MEASURE = "G2";
-	
+
 	@Autowired private CertifiedProductSearchDAO cpDao;
 	@Autowired private CertificationCriterionDAO criteriaDao;
 	@Autowired private CertificationResultDAO certResultDAO;
@@ -86,15 +86,15 @@ public class CertificationResultManagerImpl implements
 	@Autowired private TestTaskDAO testTaskDAO;
 	@Autowired private UcdProcessDAO ucdDao;
 	@Autowired private MacraMeasureDAO mmDao;
-	
+
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class})
-	public int update(Long acbId, CertifiedProductSearchDetails existingListing, 
-			CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated) 
+	public int update(Long acbId, CertifiedProductSearchDetails existingListing,
+			CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
 		throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		//does the cert result need updated?
@@ -119,7 +119,7 @@ public class CertificationResultManagerImpl implements
 				toUpdate.setCertificationCriterionId(criteria.getId());
 			}
 			toUpdate.setSuccessful(updated.isSuccess());
-			
+
 			if(toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
 				toUpdate.setApiDocumentation(updated.getApiDocumentation());
 				toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
@@ -135,7 +135,7 @@ public class CertificationResultManagerImpl implements
 				toUpdate.setGap(null);
 				toUpdate.setSed(null);
 			}
-			
+
 			certResultDAO.update(toUpdate);
 			numChanges++;
 		}
@@ -150,8 +150,8 @@ public class CertificationResultManagerImpl implements
 			numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
 			numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
 			numChanges += updateTestFunctionality(updatedListing, updated, orig.getTestFunctionality(), null);
-			
-			if(existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null && 
+
+			if(existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null &&
 					existingListing.getSed().getUcdProcesses().size() > 0) {
 				List<UcdProcess> origUcdsForCriteria = new ArrayList<UcdProcess>();
 				for(UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
@@ -167,8 +167,8 @@ public class CertificationResultManagerImpl implements
 				}
 				numChanges += updateUcdProcesses(updated, origUcdsForCriteria, null);
 			}
-			
-			if(existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null && 
+
+			if(existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null &&
 					existingListing.getSed().getTestTasks().size() > 0) {
 				List<TestTask> origTestTasksForCriteria = new ArrayList<TestTask>();
 				for(TestTask existingTestTask : existingListing.getSed().getTestTasks()) {
@@ -186,28 +186,28 @@ public class CertificationResultManagerImpl implements
 			}
 		} else {
 			//create/update all related items
-			numChanges += updateAdditionalSoftware(updated, 
+			numChanges += updateAdditionalSoftware(updated,
 					orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
-			numChanges += updateMacraMeasures(updated, 
+			numChanges += updateMacraMeasures(updated,
 					orig.getG1MacraMeasures(), updated.getG1MacraMeasures(),
 					G1_MEASURE);
-			numChanges += updateMacraMeasures(updated, 
+			numChanges += updateMacraMeasures(updated,
 					orig.getG2MacraMeasures(), updated.getG2MacraMeasures(),
 					G2_MEASURE);
-			numChanges += updateTestStandards(updatedListing, updated, 
+			numChanges += updateTestStandards(updatedListing, updated,
 					orig.getTestStandards(), updated.getTestStandards());
-			numChanges += updateTestTools(updated, 
+			numChanges += updateTestTools(updated,
 					orig.getTestToolsUsed(), updated.getTestToolsUsed());
-			numChanges += updateTestData( updated, 
+			numChanges += updateTestData( updated,
 					orig.getTestDataUsed(), updated.getTestDataUsed());
-			numChanges += updateTestProcedures( updated, 
+			numChanges += updateTestProcedures( updated,
 					orig.getTestProcedures(), updated.getTestProcedures());
 			numChanges += updateTestFunctionality(updatedListing, updated,
 					orig.getTestFunctionality(), updated.getTestFunctionality());
-			
+
 			List<UcdProcess> origUcdsForCriteria = new ArrayList<UcdProcess>();
 			List<UcdProcess> updatedUcdsForCriteria = new ArrayList<UcdProcess>();
-			if(existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null && 
+			if(existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null &&
 					existingListing.getSed().getUcdProcesses().size() > 0) {
 				for(UcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
 					boolean ucdMeetsCriteria = false;
@@ -221,7 +221,7 @@ public class CertificationResultManagerImpl implements
 					}
 				}
 			}
-			if(updatedListing.getSed() != null && updatedListing.getSed().getUcdProcesses() != null && 
+			if(updatedListing.getSed() != null && updatedListing.getSed().getUcdProcesses() != null &&
 					updatedListing.getSed().getUcdProcesses().size() > 0) {
 				for(UcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
 					boolean ucdMeetsCriteria = false;
@@ -236,10 +236,10 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 			numChanges += updateUcdProcesses(updated, origUcdsForCriteria, updatedUcdsForCriteria);
-			
+
 			List<TestTask> origTestTasksForCriteria = new ArrayList<TestTask>();
 			List<TestTask> updatedTestTasksForCriteria = new ArrayList<TestTask>();
-			if(existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null && 
+			if(existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null &&
 					existingListing.getSed().getTestTasks().size() > 0) {
 				for(TestTask existingTask : existingListing.getSed().getTestTasks()) {
 					boolean taskMeetsCriteria = false;
@@ -253,11 +253,11 @@ public class CertificationResultManagerImpl implements
 					}
 				}
 			}
-			if(updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null && 
+			if(updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null &&
 					updatedListing.getSed().getTestTasks().size() > 0) {
 				//Go through all the updated test tasks and participants.
-				//Any with a negative ID are new and need to be added and the 
-				//negative ID could be repeated so a task/participant with a negative id 
+				//Any with a negative ID are new and need to be added and the
+				//negative ID could be repeated so a task/participant with a negative id
 				//needs to be added once and then that ID needs to be replaced with
 				//the created item's ID anywhere else that it is found
 				for(TestTask task : updatedListing.getSed().getTestTasks()) {
@@ -270,7 +270,7 @@ public class CertificationResultManagerImpl implements
 							}
 						}
 					}
-					
+
 					for(TestParticipant participant : task.getTestParticipants()) {
 						if(participant.getId() < 0) {
 							long prevId = participant.getId();
@@ -285,7 +285,7 @@ public class CertificationResultManagerImpl implements
 						}
 					}
 				}
-				
+
 				//now find appropriate test tasks for this certification result
 				for(TestTask updatedTask : updatedListing.getSed().getTestTasks()) {
 					boolean taskMeetsCriteria = false;
@@ -301,19 +301,19 @@ public class CertificationResultManagerImpl implements
 			}
 			numChanges += updateTestTasks(updated, origTestTasksForCriteria, updatedTestTasksForCriteria);
 		}
-		
+
 		return numChanges;
 	}
-	
+
 	private int updateAdditionalSoftware(CertificationResult certResult,
 			List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
-			List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware) 
+			List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
 	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		List<CertificationResultAdditionalSoftware> additionalSoftwareToAdd = new ArrayList<CertificationResultAdditionalSoftware>();
 		List<CertificationResultAdditionalSoftwarePair> additionalSoftwareToUpdate = new ArrayList<CertificationResultAdditionalSoftwarePair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which additional software to add
 		if(updatedAdditionalSoftware != null && updatedAdditionalSoftware.size() > 0) {
 			//fill in potentially missing cp id
@@ -323,7 +323,7 @@ public class CertificationResultManagerImpl implements
 					updatedItem.setCertifiedProductId(cpId);
 				}
 			}
-			
+
 			if(existingAdditionalSoftware == null || existingAdditionalSoftware.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) {
@@ -331,22 +331,22 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingAdditionalSoftware.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) { 
+				for(CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) {
 					boolean inExistingListing = false;
 					for(CertificationResultAdditionalSoftware existingItem : existingAdditionalSoftware) {
 						if(updatedItem.matches(existingItem)) {
 							inExistingListing = true;
 							additionalSoftwareToUpdate.add(new CertificationResultAdditionalSoftwarePair(existingItem, updatedItem));
-						}						
+						}
 					}
-					
+
 					if(!inExistingListing) {
 						additionalSoftwareToAdd.add(updatedItem);
 					}
 				}
 			}
 		}
-				
+
 		//figure out which additional software to remove
 		if(existingAdditionalSoftware != null && existingAdditionalSoftware.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -366,13 +366,13 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = additionalSoftwareToAdd.size() + idsToRemove.size();
 		for(CertificationResultAdditionalSoftware toAdd : additionalSoftwareToAdd) {
 			CertificationResultAdditionalSoftwareDTO toAddDto = convert(certResult.getId(), toAdd);
 			certResultDAO.addAdditionalSoftwareMapping(toAddDto);
 		}
-		
+
 		for(CertificationResultAdditionalSoftwarePair toUpdate : additionalSoftwareToUpdate) {
 			boolean hasChanged = false;
 			if(!ObjectUtils.equals(toUpdate.getOrig().getJustification(), toUpdate.getUpdated().getJustification()) ||
@@ -389,33 +389,33 @@ public class CertificationResultManagerImpl implements
 				numChanges++;
 			}
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteAdditionalSoftwareMapping(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
+
 	private int updateMacraMeasures(CertificationResult certResult,
 			List<MacraMeasure> existingMeasures,
 			List<MacraMeasure> updatedMeasures,
-			String g1OrG2) 
+			String g1OrG2)
 	throws EntityCreationException {
 		int numChanges = 0;
 		List<CertificationResultMacraMeasureDTO> measureToAdd = new ArrayList<CertificationResultMacraMeasureDTO>();
 		List<Long> macraIdsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which macra measures to add
 		if(updatedMeasures != null && updatedMeasures.size() > 0) {
 			//fill in potentially missing macra measure id info
 			for(MacraMeasure updatedItem : updatedMeasures) {
-				if(updatedItem != null && updatedItem.getId() == null && 
+				if(updatedItem != null && updatedItem.getId() == null &&
 					!StringUtils.isEmpty(updatedItem.getName())) {
 					MacraMeasureDTO foundMeasure = mmDao.getByCriteriaNumberAndValue(certResult.getNumber(), updatedItem.getName());
 					updatedItem.setId(foundMeasure.getId());
 				}
 			}
-			
+
 			if(existingMeasures == null || existingMeasures.size() == 0) {
 				//existing listing has none, add all from the update
 				for(MacraMeasure updatedItem : updatedMeasures) {
@@ -428,12 +428,12 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingMeasures.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(MacraMeasure updatedItem : updatedMeasures) { 
+				for(MacraMeasure updatedItem : updatedMeasures) {
 					boolean inExistingListing = false;
 					for(MacraMeasure existingItem : existingMeasures) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
-					
+
 					if(!inExistingListing) {
 						CertificationResultMacraMeasureDTO toAdd = new CertificationResultMacraMeasureDTO();
 						toAdd.setCertificationResultId(certResult.getId());
@@ -445,7 +445,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-				
+
 		//figure out which macra measures to remove
 		if(existingMeasures != null && existingMeasures.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -465,7 +465,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = measureToAdd.size() + macraIdsToRemove.size();
 		for(CertificationResultMacraMeasureDTO toAdd : measureToAdd) {
 			if(g1OrG2.equalsIgnoreCase(G1_MEASURE)) {
@@ -474,26 +474,26 @@ public class CertificationResultManagerImpl implements
 				certResultDAO.addG2MacraMeasureMapping(toAdd);
 			}
 		}
-		
+
 		for(Long idToRemove : macraIdsToRemove) {
 			if(g1OrG2.equalsIgnoreCase(G1_MEASURE)) {
 				certResultDAO.deleteG1MacraMeasureMapping(certResult.getId(), idToRemove);
 			} else if(g1OrG2.equalsIgnoreCase(G2_MEASURE)) {
 				certResultDAO.deleteG2MacraMeasureMapping(certResult.getId(), idToRemove);
 			}
-		}	
+		}
 		return numChanges;
 	}
-	
+
 	private int updateUcdProcesses(CertificationResult certResult,
 			List<UcdProcess> existingUcdProcesses,
-			List<UcdProcess> updatedUcdProcesses) 
+			List<UcdProcess> updatedUcdProcesses)
 	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		List<UcdProcess> ucdToAdd = new ArrayList<UcdProcess>();
 		List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which ucd processes to add
 		if(updatedUcdProcesses != null && updatedUcdProcesses.size() > 0) {
 			//fill in potentially missing ucd process id
@@ -510,7 +510,7 @@ public class CertificationResultManagerImpl implements
 					}
 				}
 			}
-			
+
 			if(existingUcdProcesses == null || existingUcdProcesses.size() == 0) {
 				//existing listing has none, add all from the update
 				for(UcdProcess updatedItem : updatedUcdProcesses) {
@@ -518,7 +518,7 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingUcdProcesses.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(UcdProcess updatedItem : updatedUcdProcesses) { 
+				for(UcdProcess updatedItem : updatedUcdProcesses) {
 					boolean inExistingListing = false;
 					for(UcdProcess existingItem : existingUcdProcesses) {
 						if(updatedItem.matches(existingItem)) {
@@ -526,14 +526,14 @@ public class CertificationResultManagerImpl implements
 							ucdToUpdate.add(new CertificationResultUcdProcessPair(existingItem, updatedItem));
 						}
 					}
-					
+
 					if(!inExistingListing) {
 						ucdToAdd.add(updatedItem);
 					}
 				}
 			}
 		}
-				
+
 		//figure out which ucd processes to remove
 		if(existingUcdProcesses != null && existingUcdProcesses.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -553,7 +553,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = ucdToAdd.size() + idsToRemove.size();
 		for(UcdProcess toAdd : ucdToAdd) {
 			CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
@@ -562,10 +562,10 @@ public class CertificationResultManagerImpl implements
 			toAddDto.setUcdProcessDetails(toAdd.getDetails());
 			certResultDAO.addUcdProcessMapping(toAddDto);
 		}
-		
+
 		for(CertificationResultUcdProcessPair toUpdate : ucdToUpdate) {
 			boolean hasChanged = false;
-			if(!ObjectUtils.equals(toUpdate.getOrig().getDetails(), 
+			if(!ObjectUtils.equals(toUpdate.getOrig().getDetails(),
 					toUpdate.getUpdated().getDetails())) {
 				hasChanged = true;
 			}
@@ -578,23 +578,23 @@ public class CertificationResultManagerImpl implements
 				certResultDAO.updateUcdProcessMapping(toUpdateDto);
 			}
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteUcdProcessMapping(certResult.getId(), idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
-	private int updateTestStandards(CertifiedProductSearchDetails listing, 
+
+	private int updateTestStandards(CertifiedProductSearchDetails listing,
 			CertificationResult certResult,
 			List<CertificationResultTestStandard> existingTestStandards,
-			List<CertificationResultTestStandard> updatedTestStandards) 
+			List<CertificationResultTestStandard> updatedTestStandards)
 	throws EntityCreationException {
 		int numChanges = 0;
 		String editionIdString = listing.getCertificationEdition().get("id").toString();
 		List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which test standards to add
 		if(updatedTestStandards != null && updatedTestStandards.size() > 0) {
 			//fill in potentially missing test standard id
@@ -613,7 +613,7 @@ public class CertificationResultManagerImpl implements
 					}
 				}
 			}
-			
+
 			if(existingTestStandards == null || existingTestStandards.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultTestStandard updatedItem : updatedTestStandards) {
@@ -624,12 +624,12 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingTestStandards.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertificationResultTestStandard updatedItem : updatedTestStandards) { 
+				for(CertificationResultTestStandard updatedItem : updatedTestStandards) {
 					boolean inExistingListing = false;
 					for(CertificationResultTestStandard existingItem : existingTestStandards) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
-					
+
 					if(!inExistingListing) {
 						CertificationResultTestStandardDTO toAdd = new CertificationResultTestStandardDTO();
 						toAdd.setCertificationResultId(certResult.getId());
@@ -639,7 +639,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-				
+
 		//figure out which ucd processes to remove
 		if(existingTestStandards != null && existingTestStandards.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -659,26 +659,26 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = testStandardsToAdd.size() + idsToRemove.size();
 		for(CertificationResultTestStandardDTO toAdd : testStandardsToAdd) {
 			certResultDAO.addTestStandardMapping(toAdd);
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteTestStandardMapping(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
+
 	private int updateTestTools(CertificationResult certResult,
 			List<CertificationResultTestTool> existingTestTools,
-			List<CertificationResultTestTool> updatedTestTools) 
+			List<CertificationResultTestTool> updatedTestTools)
 	throws EntityCreationException {
 		int numChanges = 0;
 		List<CertificationResultTestToolDTO> testToolsToAdd = new ArrayList<CertificationResultTestToolDTO>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which test tools to add
 		if(updatedTestTools != null && updatedTestTools.size() > 0) {
 			//fill in potentially missing test standard id
@@ -686,15 +686,15 @@ public class CertificationResultManagerImpl implements
 				if(updatedItem.getTestToolId() == null && !StringUtils.isEmpty(updatedItem.getTestToolName())) {
 					TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
 					if(foundTool == null) {
-						logger.error("Could not find test tool " + updatedItem.getTestToolName() + 
-								"; will not be adding this as a test tool to certification result id " + 
+						logger.error("Could not find test tool " + updatedItem.getTestToolName() +
+								"; will not be adding this as a test tool to certification result id " +
 								certResult.getId() + ", criteria " + certResult.getNumber());
 					} else {
 						updatedItem.setTestToolId(foundTool.getId());
 					}
 				}
 			}
-			
+
 			if(existingTestTools == null || existingTestTools.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultTestTool updatedItem : updatedTestTools) {
@@ -707,12 +707,12 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingTestTools.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertificationResultTestTool updatedItem : updatedTestTools) { 
+				for(CertificationResultTestTool updatedItem : updatedTestTools) {
 					boolean inExistingListing = false;
 					for(CertificationResultTestTool existingItem : existingTestTools) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
-					
+
 					if(!inExistingListing) {
 						if(updatedItem.getTestToolId() != null) {
 							CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
@@ -724,7 +724,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-				
+
 		//figure out which test tools to remove
 		if(existingTestTools != null && existingTestTools.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -744,27 +744,27 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = testToolsToAdd.size() + idsToRemove.size();
 		for(CertificationResultTestToolDTO toAdd : testToolsToAdd) {
 			certResultDAO.addTestToolMapping(toAdd);
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteTestToolMapping(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
+
 	private int updateTestData(CertificationResult certResult,
 			List<CertificationResultTestData> existingTestData,
-			List<CertificationResultTestData> updatedTestData) 
+			List<CertificationResultTestData> updatedTestData)
 	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		List<CertificationResultTestData> testDataToAdd = new ArrayList<CertificationResultTestData>();
-		List<CertificationResultTestDataPair> testDataToUpdate = new ArrayList<CertificationResultTestDataPair>(); 
+		List<CertificationResultTestDataPair> testDataToUpdate = new ArrayList<CertificationResultTestDataPair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which test data to add
 		if(updatedTestData != null && updatedTestData.size() > 0) {
 			if(existingTestData == null || existingTestData.size() == 0) {
@@ -774,7 +774,7 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingTestData.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertificationResultTestData updatedItem : updatedTestData) { 
+				for(CertificationResultTestData updatedItem : updatedTestData) {
 					boolean inExistingListing = false;
 					for(CertificationResultTestData existingItem : existingTestData) {
 						if(updatedItem.matches(existingItem)) {
@@ -782,14 +782,14 @@ public class CertificationResultManagerImpl implements
 							testDataToUpdate.add(new CertificationResultTestDataPair(existingItem, updatedItem));
 						}
 					}
-					
+
 					if(!inExistingListing) {
 						testDataToAdd.add(updatedItem);
 					}
 				}
 			}
 		}
-				
+
 		//figure out which test data to remove
 		if(existingTestData != null && existingTestData.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -809,7 +809,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = testDataToAdd.size() + idsToRemove.size();
 		for(CertificationResultTestData toAdd : testDataToAdd) {
 			CertificationResultTestDataDTO toAddDto = new CertificationResultTestDataDTO();
@@ -818,14 +818,14 @@ public class CertificationResultManagerImpl implements
 			toAddDto.setVersion(toAdd.getVersion());
 			certResultDAO.addTestDataMapping(toAddDto);
 		}
-		
+
 		for(CertificationResultTestDataPair toUpdate : testDataToUpdate) {
 			boolean hasChanged = false;
 			if(!ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration()) ||
 				!ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
 				hasChanged = true;
 			}
-			
+
 			if(hasChanged) {
 				CertificationResultTestDataDTO toUpdateDto = new CertificationResultTestDataDTO();
 				toUpdateDto.setId(toUpdate.getOrig().getId());
@@ -836,21 +836,21 @@ public class CertificationResultManagerImpl implements
 				numChanges++;
 			}
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteTestDataMapping(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
+
 	private int updateTestProcedures(CertificationResult certResult,
 			List<CertificationResultTestProcedure> existingTestProcedures,
-			List<CertificationResultTestProcedure> updatedTestProcedures) 
+			List<CertificationResultTestProcedure> updatedTestProcedures)
 	throws EntityCreationException {
 		int numChanges = 0;
 		List<CertificationResultTestProcedureDTO> testProceduresToAdd = new ArrayList<CertificationResultTestProcedureDTO>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which test procedures to add
 		if(updatedTestProcedures != null && updatedTestProcedures.size() > 0) {
 			//fill in potentially missing test procedure id
@@ -867,7 +867,7 @@ public class CertificationResultManagerImpl implements
 					}
 				}
 			}
-			
+
 			if(existingTestProcedures == null || existingTestProcedures.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
@@ -878,12 +878,12 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingTestProcedures.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertificationResultTestProcedure updatedItem : updatedTestProcedures) { 
+				for(CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
 					boolean inExistingListing = false;
 					for(CertificationResultTestProcedure existingItem : existingTestProcedures) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
-					
+
 					if(!inExistingListing) {
 						CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
 						toAdd.setCertificationResultId(certResult.getId());
@@ -893,7 +893,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-				
+
 		//figure out which test data to remove
 		if(existingTestProcedures != null && existingTestProcedures.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -913,28 +913,28 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = testProceduresToAdd.size() + idsToRemove.size();
 		for(CertificationResultTestProcedureDTO toAdd : testProceduresToAdd) {
 			certResultDAO.addTestProcedureMapping(toAdd);
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteTestProcedureMapping(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
-	private int updateTestFunctionality(CertifiedProductSearchDetails listing, 
+
+	private int updateTestFunctionality(CertifiedProductSearchDetails listing,
 			CertificationResult certResult,
 			List<CertificationResultTestFunctionality> existingTestFunctionality,
-			List<CertificationResultTestFunctionality> updatedTestFunctionality) 
+			List<CertificationResultTestFunctionality> updatedTestFunctionality)
 	throws EntityCreationException {
 		int numChanges = 0;
 		String editionIdString = listing.getCertificationEdition().get("id").toString();
 		List<CertificationResultTestFunctionalityDTO> testFuncToAdd = new ArrayList<CertificationResultTestFunctionalityDTO>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which test funcs to add
 		if(updatedTestFunctionality != null && updatedTestFunctionality.size() > 0) {
 			//fill in potentially missing test func id
@@ -943,15 +943,15 @@ public class CertificationResultManagerImpl implements
 					TestFunctionalityDTO foundFunc = testFunctionalityDAO.getByNumberAndEdition(updatedItem.getName(), new Long(editionIdString));
 					if(foundFunc == null) {
 						logger.error("Could not find test functionality " + updatedItem.getName() +
-								" for certifiation edition id " + editionIdString + 
-								"; will not be adding this as a test functionality to listing id " + listing.getId() + 
+								" for certifiation edition id " + editionIdString +
+								"; will not be adding this as a test functionality to listing id " + listing.getId() +
 								", criteria " + certResult.getNumber());
 					} else {
 						updatedItem.setTestFunctionalityId(foundFunc.getId());
 					}
 				}
 			}
-			
+
 			if(existingTestFunctionality == null || existingTestFunctionality.size() == 0) {
 				//existing listing has none, add all from the update
 				for(CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
@@ -964,12 +964,12 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingTestFunctionality.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) { 
+				for(CertificationResultTestFunctionality updatedItem : updatedTestFunctionality) {
 					boolean inExistingListing = false;
 					for(CertificationResultTestFunctionality existingItem : existingTestFunctionality) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
-					
+
 					if(!inExistingListing) {
 						if(updatedItem.getTestFunctionalityId() != null) {
 							CertificationResultTestFunctionalityDTO toAdd = new CertificationResultTestFunctionalityDTO();
@@ -981,7 +981,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-				
+
 		//figure out which test func to remove
 		if(existingTestFunctionality != null && existingTestFunctionality.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -1001,27 +1001,27 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = testFuncToAdd.size() + idsToRemove.size();
 		for(CertificationResultTestFunctionalityDTO toAdd : testFuncToAdd) {
 			certResultDAO.addTestFunctionalityMapping(toAdd);
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteTestFunctionalityMapping(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
 
 	private int updateTestTasks(CertificationResult certResult,
 			List<TestTask> existingTestTasks,
-			List<TestTask> updatedTestTasks) 
+			List<TestTask> updatedTestTasks)
 	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		Set<TestTask> testTasksToAdd = new HashSet<TestTask>();
 		Set<TestTaskPair> testTasksToUpdate = new HashSet<TestTaskPair>();
 		Set<TestTask> testTasksToRemove = new HashSet<TestTask>();
-		
+
 		//figure out which test tasks to add
 		if(updatedTestTasks != null && updatedTestTasks.size() > 0) {
 			if(existingTestTasks == null || existingTestTasks.size() == 0) {
@@ -1031,7 +1031,7 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingTestTasks.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(TestTask updatedItem : updatedTestTasks) { 
+				for(TestTask updatedItem : updatedTestTasks) {
 					boolean inExistingListing = false;
 					for(TestTask existingItem : existingTestTasks) {
 						if(!inExistingListing && updatedItem.matches(existingItem)) {
@@ -1039,14 +1039,14 @@ public class CertificationResultManagerImpl implements
 							testTasksToUpdate.add(new TestTaskPair(existingItem, updatedItem));
 						}
 					}
-					
+
 					if(!inExistingListing) {
 						testTasksToAdd.add(updatedItem);
-					} 
+					}
 				}
 			}
 		}
-				
+
 		//figure out which test tasks to remove
 		if(existingTestTasks != null && existingTestTasks.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -1068,29 +1068,29 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		for(TestTask toAdd : testTasksToAdd) {
 			numChanges += createTestTask(certResult, toAdd);
 		}
-		
+
 		for(TestTask toRemove : testTasksToRemove) {
 			numChanges += deleteTestTask(certResult, toRemove);
-		}	
-		
+		}
+
 		for(TestTaskPair toUpdate : testTasksToUpdate) {
 			numChanges += updateTestTask(certResult, toUpdate.getOrig(), toUpdate.getUpdated());
 		}
-		
+
 		return numChanges;
 	}
-	
-	private int createTestTask(CertificationResult certResult, TestTask task) 
+
+	private int createTestTask(CertificationResult certResult, TestTask task)
 			throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 1;
 		TestTaskDTO taskToCreate = convert(task);
 		TestTaskDTO createdTask = testTaskDAO.create(taskToCreate);
 		taskToCreate.setId(createdTask.getId());
-		
+
 		CertificationResultTestTaskDTO certResultTask = new CertificationResultTestTaskDTO();
 		certResultTask.setCertificationResultId(certResult.getId());
 		certResultTask.setTestTaskId(taskToCreate.getId());
@@ -1099,21 +1099,21 @@ public class CertificationResultManagerImpl implements
 
 		return numChanges;
 	}
-	
-	
-	private int deleteTestTask(CertificationResult certResult, TestTask task) 
+
+
+	private int deleteTestTask(CertificationResult certResult, TestTask task)
 			throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		certResultDAO.deleteTestTaskMapping(certResult.getId(), task.getId());
 		numChanges++;
 		return numChanges;
 	}
-	
-	private int updateTestTask(CertificationResult certResult, TestTask existingTask, 
+
+	private int updateTestTask(CertificationResult certResult, TestTask existingTask,
 			TestTask updatedTask) throws EntityRetrievalException, EntityCreationException {
 		int numChanges = 0;
 		boolean isDifferent = false;
-		if(!StringUtils.equals(existingTask.getDescription(), updatedTask.getDescription()) || 
+		if(!StringUtils.equals(existingTask.getDescription(), updatedTask.getDescription()) ||
 			!StringUtils.equals(existingTask.getTaskRatingScale(), updatedTask.getTaskRatingScale()) ||
 			!ObjectUtils.equals(existingTask.getTaskErrors(), updatedTask.getTaskErrors()) ||
 			!ObjectUtils.equals(existingTask.getTaskErrorsStddev(), updatedTask.getTaskErrorsStddev()) ||
@@ -1130,28 +1130,28 @@ public class CertificationResultManagerImpl implements
 			!ObjectUtils.equals(existingTask.getTaskTimeStddev(), updatedTask.getTaskTimeStddev())) {
 			isDifferent = true;
 		}
-		
+
 		if(isDifferent) {
 			TestTaskDTO taskToUpdate = convert(updatedTask);
 			taskToUpdate.setId(existingTask.getId());
 			testTaskDAO.update(taskToUpdate);
 			numChanges++;
 		}
-		
-		numChanges += updateTaskParticipants(existingTask, 
+
+		numChanges += updateTaskParticipants(existingTask,
 				existingTask.getTestParticipants(), updatedTask.getTestParticipants());
 		return numChanges;
 	}
-	
+
 	private int updateTaskParticipants(TestTask testTask,
 			Collection<TestParticipant> existingParticipants,
-			Collection<TestParticipant> updatedParticipants) 
+			Collection<TestParticipant> updatedParticipants)
 	throws EntityCreationException, EntityRetrievalException {
 		int numChanges = 0;
 		Set<TestParticipantDTO> participantsToAdd = new HashSet<TestParticipantDTO>();
 		Set<TestParticipantPair> participantsToUpdate = new HashSet<TestParticipantPair>();
 		Set<Long> idsToRemove = new HashSet<Long>();
-		
+
 		//figure out which participants to add
 		if(updatedParticipants != null && updatedParticipants.size() > 0) {
 			//fill in potentially missing participant id
@@ -1162,7 +1162,7 @@ public class CertificationResultManagerImpl implements
 					updatedItem.setId(addedParticipant.getId());
 				}
 			}
-			
+
 			if(existingParticipants == null || existingParticipants.size() == 0) {
 				//existing listing has none, add all from the update
 				for(TestParticipant updatedItem : updatedParticipants) {
@@ -1174,7 +1174,7 @@ public class CertificationResultManagerImpl implements
 				}
 			} else if(existingParticipants.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(TestParticipant updatedItem : updatedParticipants) { 
+				for(TestParticipant updatedItem : updatedParticipants) {
 					boolean inExistingListing = false;
 					for(TestParticipant existingItem : existingParticipants) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
@@ -1182,7 +1182,7 @@ public class CertificationResultManagerImpl implements
 							participantsToUpdate.add(new TestParticipantPair(existingItem, updatedItem));
 						}
 					}
-					
+
 					if(!inExistingListing) {
 						if(updatedItem.getId() != null) {
 							TestParticipantDTO toAdd = new TestParticipantDTO();
@@ -1193,7 +1193,7 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-				
+
 		//figure out which participants to remove
 		if(existingParticipants != null && existingParticipants.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -1213,18 +1213,18 @@ public class CertificationResultManagerImpl implements
 				}
 			}
 		}
-		
+
 		numChanges = participantsToAdd.size() + idsToRemove.size();
-		
+
 		for(TestParticipantDTO participantToAdd : participantsToAdd) {
 			certResultDAO.addTestParticipantMapping(convert(testTask), participantToAdd);
 		}
-		
+
 		for(TestParticipantPair toUpdate : participantsToUpdate) {
 			boolean isDifferent = false;
 			TestParticipant existingPart = toUpdate.getOrig();
 			TestParticipant updatedPart = toUpdate.getUpdated();
-			if(!StringUtils.equals(existingPart.getAgeRange(), updatedPart.getAgeRange()) || 
+			if(!StringUtils.equals(existingPart.getAgeRange(), updatedPart.getAgeRange()) ||
 				!StringUtils.equals(existingPart.getAssistiveTechnologyNeeds(), updatedPart.getAssistiveTechnologyNeeds()) ||
 				!ObjectUtils.equals(existingPart.getComputerExperienceMonths(), updatedPart.getComputerExperienceMonths()) ||
 				!StringUtils.equals(existingPart.getEducationTypeName(), updatedPart.getEducationTypeName()) ||
@@ -1234,17 +1234,17 @@ public class CertificationResultManagerImpl implements
 				!ObjectUtils.equals(existingPart.getProfessionalExperienceMonths(), updatedPart.getProfessionalExperienceMonths())) {
 				isDifferent = true;
 			}
-			
+
 			if(isDifferent) {
 				TestParticipantDTO toUpdateDto = convert(toUpdate.getUpdated());
 				testParticipantDAO.update(toUpdateDto);
 				numChanges++;
 			}
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			certResultDAO.deleteTestParticipantMapping(testTask.getId(), idToRemove);
-		}	
+		}
 		return numChanges;
 	}
 
@@ -1260,7 +1260,7 @@ public class CertificationResultManagerImpl implements
 		result.setVersion(orig.getVersion());
 		return result;
 	}
-	
+
 	private TestTaskDTO convert(TestTask task) {
 		TestTaskDTO result = new TestTaskDTO();
 		result.setId(task.getId());
@@ -1285,7 +1285,7 @@ public class CertificationResultManagerImpl implements
 		}
 		return result;
 	}
-	
+
 	private TestParticipantDTO convert(TestParticipant domain) {
 		TestParticipantDTO result = new TestParticipantDTO();
 		result.setId(domain.getId());
@@ -1305,7 +1305,7 @@ public class CertificationResultManagerImpl implements
 		} else if(domain.getAgeRangeId() != null) {
 			result.setAgeRangeId(domain.getAgeRangeId());
 		}
-		
+
 		if(domain.getEducationTypeId() == null && !StringUtils.isEmpty(domain.getEducationTypeName())) {
 			EducationTypeDTO educ = educDao.getByName(domain.getEducationTypeName());
 			if(educ != null) {
@@ -1315,15 +1315,15 @@ public class CertificationResultManagerImpl implements
 			}
 		} else if(domain.getEducationTypeId() != null) {
 			result.setEducationTypeId(domain.getEducationTypeId());
-		}	
+		}
 		return result;
 	}
-	
+
 	@Override
 	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(Long certificationResultId){
 		return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getUcdProcessesForCertificationResult(certificationResultId);
@@ -1332,46 +1332,46 @@ public class CertificationResultManagerImpl implements
 	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId){
 		return certResultDAO.getTestStandardsForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId){
 		return certResultDAO.getTestToolsForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId){
 		return certResultDAO.getTestDataForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestProceduresForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestFunctionalityForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getG1MacraMeasuresForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getG2MacraMeasuresForCertificationResult(certificationResultId);
 	}
-	
+
 	@Override
 	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
 	}
-	
+
 	private class CertificationResultAdditionalSoftwarePair {
 		private CertificationResultAdditionalSoftware orig;
 		private CertificationResultAdditionalSoftware updated;
-		
+
 		public CertificationResultAdditionalSoftwarePair() {}
 		public CertificationResultAdditionalSoftwarePair(CertificationResultAdditionalSoftware orig, CertificationResultAdditionalSoftware updated) {
 			this.orig = orig;
@@ -1390,11 +1390,11 @@ public class CertificationResultManagerImpl implements
 			this.updated = updated;
 		}
 	}
-	
+
 	private class CertificationResultUcdProcessPair {
 		private UcdProcess orig;
 		private UcdProcess updated;
-		
+
 		public CertificationResultUcdProcessPair() {}
 		public CertificationResultUcdProcessPair(UcdProcess orig, UcdProcess updated) {
 			this.orig = orig;
@@ -1413,11 +1413,11 @@ public class CertificationResultManagerImpl implements
 			this.updated = updated;
 		}
 	}
-	
+
 	private class CertificationResultTestDataPair {
 		private CertificationResultTestData orig;
 		private CertificationResultTestData updated;
-		
+
 		public CertificationResultTestDataPair() {}
 		public CertificationResultTestDataPair(CertificationResultTestData orig, CertificationResultTestData updated) {
 			this.orig = orig;
@@ -1436,11 +1436,11 @@ public class CertificationResultManagerImpl implements
 			this.updated = updated;
 		}
 	}
-	
+
 	private class TestTaskPair {
 		private TestTask orig;
 		private TestTask updated;
-		
+
 		public TestTaskPair() {}
 		public TestTaskPair(TestTask orig, TestTask updated) {
 			this.orig = orig;
@@ -1459,11 +1459,11 @@ public class CertificationResultManagerImpl implements
 			this.updated = updated;
 		}
 	}
-	
+
 	private class TestParticipantPair {
 		private TestParticipant orig;
 		private TestParticipant updated;
-		
+
 		public TestParticipantPair() {}
 		public TestParticipantPair(TestParticipant orig, TestParticipant updated) {
 			this.orig = orig;

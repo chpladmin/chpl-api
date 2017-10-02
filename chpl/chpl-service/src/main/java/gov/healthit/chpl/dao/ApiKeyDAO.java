@@ -15,5 +15,5 @@ public interface ApiKeyDAO {
 	public List<ApiKeyDTO> findAllRevoked();
 	public ApiKeyDTO getRevokedKeyById(Long id) throws EntityRetrievalException;
 	public ApiKeyDTO getRevokedKeyByKey(String apiKey);
-	
+
 }

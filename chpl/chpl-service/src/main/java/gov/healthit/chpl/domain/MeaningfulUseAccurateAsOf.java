@@ -6,16 +6,16 @@ import gov.healthit.chpl.dto.MeaningfulUseAccurateAsOfDTO;
 
 public class MeaningfulUseAccurateAsOf implements Serializable {
 	private static final long serialVersionUID = -4803763243075068608L;
-	
+
 	private Long id;
 	private Long accurateAsOfDate;
 	private Boolean deleted;
 	private Long lastModifiedUser;
 	private Long creationDate;
 	private Long lastModifiedDate;
-	
+
 	public MeaningfulUseAccurateAsOf(){};
-	
+
 	public MeaningfulUseAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuDTO){
 		this.id = muuDTO.getId();
 		this.accurateAsOfDate = muuDTO.getAccurateAsOfDate().getTime();
@@ -24,7 +24,7 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
 		this.creationDate = muuDTO.getCreationDate().getTime();
 		this.lastModifiedDate = muuDTO.getLastModifiedDate().getTime();
 	};
-	
+
 	public Long getId() {
 		return id;
 	}

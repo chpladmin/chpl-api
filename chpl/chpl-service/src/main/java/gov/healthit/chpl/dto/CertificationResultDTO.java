@@ -23,7 +23,7 @@ public class CertificationResultDTO implements Serializable {
 	private String privacySecurityFramework;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	
+
 	private List<CertificationResultUcdProcessDTO> ucdProcesses;
 	private List<CertificationResultTestFunctionalityDTO> testFunctionality;
 	private List<CertificationResultTestProcedureDTO> testProcedures;
@@ -34,7 +34,7 @@ public class CertificationResultDTO implements Serializable {
 	private List<CertificationResultTestTaskDTO> testTasks;
 	private List<CertificationResultMacraMeasureDTO> g1Measures;
 	private List<CertificationResultMacraMeasureDTO> g2Measures;
-	
+
 	public CertificationResultDTO(){
 		ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
 		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
@@ -47,7 +47,7 @@ public class CertificationResultDTO implements Serializable {
 		g1Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
 		g2Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
 	}
-	
+
 	public CertificationResultDTO(CertificationResultEntity entity){
 		this();
 		this.id = entity.getId();
@@ -65,7 +65,7 @@ public class CertificationResultDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 	}
-	
+
 	public CertificationResultDTO(CertificationResult domain){
 		this();
 		this.gap = domain.isGap();
@@ -76,7 +76,7 @@ public class CertificationResultDTO implements Serializable {
 		this.privacySecurityFramework = domain.getPrivacySecurityFramework();
 		this.successful = domain.isSuccess();
 	}
-	
+
 	public Long getCertificationCriterionId() {
 		return certificationCriterionId;
 	}
@@ -231,7 +231,7 @@ public class CertificationResultDTO implements Serializable {
 	public void setPrivacySecurityFramework(String privacySecurityFramework) {
 		this.privacySecurityFramework = privacySecurityFramework;
 	}
-	
+
 	public List<CertificationResultMacraMeasureDTO> getG1Measures() {
 		return g1Measures;
 	}

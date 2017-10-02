@@ -24,57 +24,57 @@ import gov.healthit.chpl.entity.CertificationCriterionEntity;
 @Entity
 @Table(name = "surveillance_requirement")
 public class SurveillanceRequirementEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "surveillance_id")
 	private Long surveillanceId;
-	
+
 	@Column(name = "type_id")
 	private Long surveillanceRequirementTypeId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "type_id", insertable = false, updatable = false)
 	private SurveillanceRequirementTypeEntity surveillanceRequirementType;
-	
+
 	@Column(name = "certification_criterion_id")
 	private Long certificationCriterionId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
 	private CertificationCriterionEntity certificationCriterionEntity;
-	
+
 	@Column(name = "requirement")
 	private String surveilledRequirement;
-	
+
 	@Column(name = "result_id")
 	private Long surveillanceResultTypeId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "result_id", insertable = false, updatable = false)
 	private SurveillanceResultTypeEntity surveillanceResultTypeEntity;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "surveillanceRequirementId"  )
 	@Basic( optional = false )
 	@Column( name = "surveillance_requirement_id", nullable = false  )
 	@Where(clause="deleted <> 'true'")
 	private Set<SurveillanceNonconformityEntity> nonconformities = new HashSet<SurveillanceNonconformityEntity>();
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -82,7 +82,7 @@ public class SurveillanceRequirementEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getSurveilledRequirement() {
 		return surveilledRequirement;
 	}

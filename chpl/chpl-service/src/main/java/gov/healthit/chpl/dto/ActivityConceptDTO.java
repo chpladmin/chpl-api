@@ -13,9 +13,9 @@ public class ActivityConceptDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private Boolean deleted;
-	
+
 	public ActivityConceptDTO(){}
-	
+
 	public ActivityConceptDTO(ActivityConceptEntity entity){
 		this.id = entity.getId();
 		this.className = entity.getClassName();
@@ -24,7 +24,7 @@ public class ActivityConceptDTO implements Serializable {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.deleted = entity.getDeleted();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

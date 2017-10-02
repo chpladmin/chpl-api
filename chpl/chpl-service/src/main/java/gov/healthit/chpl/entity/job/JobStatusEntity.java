@@ -15,31 +15,31 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "job_status")
 public class JobStatusEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "name")
 	@Type(type = "gov.healthit.chpl.entity.job.PostgresJobStatusType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.job.JobStatusType")} )
 	private JobStatusType status;
 
 	@Column(name = "percent_complete")
 	private Integer percentComplete;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

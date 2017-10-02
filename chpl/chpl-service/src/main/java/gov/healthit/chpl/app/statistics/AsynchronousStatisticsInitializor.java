@@ -22,7 +22,7 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 public class AsynchronousStatisticsInitializor {
 	private static final Logger logger = LogManager.getLogger(AsynchronousStatisticsInitializor.class);
 	@Autowired private AsynchronousStatistics asyncStats;
-	
+
 	@Transactional
 	@Async
 	public Future<Statistics> getStatistics(DateRange dateRange, Boolean includeActiveStatistics) throws InterruptedException, ExecutionException{
@@ -40,7 +40,7 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalCPs2015Listings = null;
 		Future<Long> totalCPsSuspended2014Listings = null;
 		Future<Long> totalCPsSuspended2015Listings = null;
-		
+
 		if(includeActiveStatistics){
 			totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
 			totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
@@ -54,22 +54,22 @@ public class AsynchronousStatisticsInitializor {
 			totalCPsSuspended2014Listings = asyncStats.getTotalCPsSuspended2014Listings(dateRange);
 			totalCPsSuspended2015Listings = asyncStats.getTotalCPsSuspended2015Listings(dateRange);
  		}
-		
+
 		// developers
 		Future<Long> totalDevelopers = asyncStats.getTotalDevelopers(dateRange);
 		Future<Long> totalDevelopersWith2014Listings = asyncStats.getTotalDevelopersWith2014Listings(dateRange);
-		
+
 		Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsEachYear = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
 		Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
 		Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
-		
+
 		// listings
 		Future<Long> totalCertifiedProducts = asyncStats.getTotalCertifiedProducts(dateRange);
-		
+
 		Future<Long> totalCPsActive2014Listings = asyncStats.getTotalCPsActive2014Listings(dateRange);
-		
+
 		Future<Long> totalCPsActive2015Listings = asyncStats.getTotalCPsActive2015Listings(dateRange);
-		
+
 		Future<Long> totalCPsActiveListings = asyncStats.getTotalCPsActiveListings(dateRange);
 		Future<Long> totalListings = asyncStats.getTotalListings(dateRange);
 		Future<Long> total2014Listings = asyncStats.getTotal2014Listings(dateRange);
@@ -82,7 +82,7 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalNonConformities = asyncStats.getTotalNonConformities(dateRange);
 		Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
 		Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
-		
+
 		if(includeActiveStatistics){
 			stats.setTotalActive2014Listings(totalActive2014Listings.get());
 			stats.setTotalActive2015Listings(totalActive2015Listings.get());
@@ -96,15 +96,15 @@ public class AsynchronousStatisticsInitializor {
 			stats.setTotalCPsSuspended2014Listings(totalCPsSuspended2014Listings.get());
 			stats.setTotalCPsSuspended2015Listings(totalCPsSuspended2015Listings.get());
  		}
-		
+
 		// developers
 		stats.setTotalDevelopers(totalDevelopers.get());
 		stats.setTotalDevelopersWith2014Listings(totalDevelopersWith2014Listings.get());
-		
+
 		stats.setTotalDevelopersByCertifiedBodyWithListingsEachYear(totalDevelopersByCertifiedBodyWithListingsEachYear.get());
 		stats.setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear.get());
 		stats.setTotalDevelopersWith2015Listings(totalDeveloperswith2015Listings.get());
-		
+
 		// listings
 		stats.setTotalCertifiedProducts(totalCertifiedProducts.get());
 		stats.setTotalCPsActiveListings(totalCPsActiveListings.get());
@@ -121,8 +121,8 @@ public class AsynchronousStatisticsInitializor {
 		stats.setTotalNonConformities(totalNonConformities.get());
 		stats.setTotalOpenNonconformities(totalOpenNonConformities.get());
 		stats.setTotalClosedNonconformities(totalClosedNonConformities.get());
-		
+
 		return new AsyncResult<>(stats);
 	}
-	
+
 }

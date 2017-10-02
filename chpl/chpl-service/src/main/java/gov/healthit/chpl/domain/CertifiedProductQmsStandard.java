@@ -19,36 +19,36 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductQmsStandard implements Serializable {
 	private static final long serialVersionUID = -2085183878828053974L;
-	
+
 	/**
 	 * QMS Standard to listing mapping internal ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
 	 * QMS Standard internal ID
 	 */
 	@XmlElement(required = true)
 	private Long qmsStandardId;
-	
+
 	/**
 	 * QMS Standard name
 	 */
 	@XmlElement(required = false, nillable = true)
 	private String qmsStandardName;
-	
+
 	/**
-	 * This variable indicates if a QMS standard or mapping was modified, 
-	 * documentation on the changes made. This variable is applicable for 2014 and 2015 
-	 * Edition, and a string variable that does not take any restrictions on formatting or values. 
+	 * This variable indicates if a QMS standard or mapping was modified,
+	 * documentation on the changes made. This variable is applicable for 2014 and 2015
+	 * Edition, and a string variable that does not take any restrictions on formatting or values.
 	 */
 	@XmlElement(required = false, nillable = true)
 	private String qmsModification;
-	
+
 	/**
-	 * QMS Applicable criteria. This variable is applicable for 2015 Edition, 
-	 * and a string variable that does not take any restrictions on formatting or values. 
+	 * QMS Applicable criteria. This variable is applicable for 2015 Edition,
+	 * and a string variable that does not take any restrictions on formatting or values.
 	 */
 	@XmlElement(required = false, nillable = true)
 	private String applicableCriteria;
@@ -56,7 +56,7 @@ public class CertifiedProductQmsStandard implements Serializable {
 	public CertifiedProductQmsStandard() {
 		super();
 	}
-	
+
 	public CertifiedProductQmsStandard(CertifiedProductQmsStandardDTO dto) {
 		this.id = dto.getId();
 		this.qmsStandardId = dto.getQmsStandardId();
@@ -64,20 +64,20 @@ public class CertifiedProductQmsStandard implements Serializable {
 		this.qmsModification = dto.getQmsModification();
 		this.applicableCriteria = dto.getApplicableCriteria();
 	}
-	
+
 	public boolean matches(CertifiedProductQmsStandard other) {
 		boolean result = false;
-		if(this.getQmsStandardId() != null && other.getQmsStandardId() != null && 
+		if(this.getQmsStandardId() != null && other.getQmsStandardId() != null &&
 			this.getQmsStandardId().longValue() == other.getQmsStandardId().longValue()) {
 		result = true;
-		} else if(!StringUtils.isEmpty(this.getQmsStandardName()) && 
+		} else if(!StringUtils.isEmpty(this.getQmsStandardName()) &&
 				!StringUtils.isEmpty(other.getQmsStandardName()) &&
 				this.getQmsStandardName().equals(other.getQmsStandardName())) {
 			result = true;
 		}
 		return result;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

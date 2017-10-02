@@ -8,7 +8,7 @@ import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 public class DecertifiedDeveloperResults implements Serializable {
 	private static final long serialVersionUID = 899826444547274174L;
 	private List<DecertifiedDeveloperResult> decertifiedDeveloperResults;
-	
+
 	public DecertifiedDeveloperResults(){}
 
 	public List<DecertifiedDeveloperResult> getDecertifiedDeveloperResults() {
@@ -18,5 +18,5 @@ public class DecertifiedDeveloperResults implements Serializable {
 	public void setDecertifiedDeveloperResults(List<DecertifiedDeveloperResult> decertifiedDeveloperResults) {
 		this.decertifiedDeveloperResults = decertifiedDeveloperResults;
 	};
-	
+
 }

@@ -13,7 +13,7 @@ public class CertificationBodyResults implements Serializable {
 	public CertificationBodyResults() {
 		acbs = new ArrayList<CertificationBody>();
 	}
-	
+
 	public List<CertificationBody> getAcbs() {
 		return acbs;
 	}
@@ -22,5 +22,5 @@ public class CertificationBodyResults implements Serializable {
 		this.acbs = acbs;
 	}
 
-	
+
 }

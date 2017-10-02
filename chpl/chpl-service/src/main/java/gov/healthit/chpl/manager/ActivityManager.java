@@ -30,5 +30,5 @@ public interface ActivityManager {
 	public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate) throws JsonParseException, IOException, UserRetrievalException;
 	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException;
 	public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate) throws JsonParseException, IOException;
-	
+
 }

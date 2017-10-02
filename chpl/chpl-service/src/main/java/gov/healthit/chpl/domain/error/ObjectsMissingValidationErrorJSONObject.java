@@ -7,7 +7,7 @@ import java.util.List;
 public class ObjectsMissingValidationErrorJSONObject implements Serializable {
 	private static final long serialVersionUID = -2186343673031903254L;
 	private List<ObjectMissingValidationErrorJSONObject> errors;
-	
+
 	public ObjectsMissingValidationErrorJSONObject() {
 		errors = new ArrayList<ObjectMissingValidationErrorJSONObject>();
 	}

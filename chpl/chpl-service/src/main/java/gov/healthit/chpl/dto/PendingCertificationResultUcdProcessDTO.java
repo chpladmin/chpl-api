@@ -11,9 +11,9 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
 	private Long ucdProcessId;
 	private String ucdProcessName;
 	private String ucdProcessDetails;
-	
+
 	public PendingCertificationResultUcdProcessDTO() {}
-	
+
 	public PendingCertificationResultUcdProcessDTO(PendingCertificationResultUcdProcessEntity entity) {
 		this.setId(entity.getId());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
@@ -21,7 +21,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
 		this.setUcdProcessId(entity.getUcdProcessId());
 		this.setUcdProcessDetails(entity.getUcdProcessDetails());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -10,11 +10,11 @@ public class PermittedUser implements Serializable {
 	private User user;
 	private List<String> roles;
 	private List<String> permissions;
-	
+
 	public PermittedUser() {
-		
+
 	}
-	
+
 	public User getUser() {
 		return user;
 	}
@@ -33,5 +33,5 @@ public class PermittedUser implements Serializable {
 	public void setPermissions(List<String> permissions) {
 		this.permissions = permissions;
 	}
-	
+
 }

@@ -45,7 +45,7 @@ import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFa
 @Service
 public class ProductManagerImpl extends QuestionableActivityHandlerImpl implements ProductManager {
 	private static final Logger logger = LogManager.getLogger(ProductManagerImpl.class);
-	
+
 	@Autowired private Environment env;
 	@Autowired private MessageSource messageSource;
 	@Autowired ProductDAO productDao;
@@ -58,7 +58,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 
 	@Autowired
 	ActivityManager activityManager;
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public ProductDTO getById(Long id) throws EntityRetrievalException {
@@ -66,11 +66,11 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 	}
 
 	@Override
-	@Transactional(readOnly = true) 
+	@Transactional(readOnly = true)
 	public List<ProductDTO> getAll() {
 		return productDao.findAll();
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProductDTO> getByDeveloper(Long developerId) {
@@ -82,7 +82,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
 		return productDao.getByDevelopers(developerIds);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
@@ -92,7 +92,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 		if(dto.getDeveloperId() == null) {
 			throw new EntityCreationException("Cannot create a product without a developer ID.");
 		}
-			
+
 		DeveloperDTO dev = devDao.getById(dto.getDeveloperId());
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + dto.getDeveloperId());
@@ -107,7 +107,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
-			
+
 		ProductDTO result = productDao.create(dto);
 		String activityMsg = "Product "+dto.getName()+" was created.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, null, result);
@@ -119,14 +119,14 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
+
 		ProductDTO beforeDTO = productDao.getById(dto.getId());
-		
+
 		//check that the developer of this product is Active
 		if(beforeDTO.getDeveloperId() == null) {
 			throw new EntityCreationException("Cannot update a product without a developer ID.");
 		}
-			
+
 		DeveloperDTO dev = devDao.getById(beforeDTO.getDeveloperId());
 		if(dev == null) {
 			throw new EntityRetrievalException("Cannot find developer with id " + beforeDTO.getDeveloperId());
@@ -141,32 +141,32 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
-		
+
 		ProductDTO result = productDao.update(dto);
 		//the developer name is not updated at this point until after transaction commit so we have to set it
 		DeveloperDTO devDto = devDao.getById(result.getDeveloperId());
 		result.setDeveloperName(devDto.getName());
-		
+
 		String activityMsg = "Product "+dto.getName()+" was updated.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO, result);
 		if(lookForSuspiciousActivity) {
 			handleActivity(beforeDTO, result);
 		}
 		return result;
-		
+
 	}
-	
+
 	@Override
 	@Transactional(readOnly = false)
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
+
 		List<ProductDTO> beforeProducts = new ArrayList<ProductDTO>();
 		for(Long productId : productIdsToMerge) {
 			beforeProducts.add(productDao.getById(productId));
 		}
-		
+
 		for(ProductDTO beforeProduct : beforeProducts) {
 			Long devId = beforeProduct.getDeveloperId();
 			DeveloperDTO dev = devDao.getById(devId);
@@ -181,7 +181,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 				throw new EntityCreationException(msg);
 			}
 		}
-		
+
 		ProductDTO createdProduct = productDao.create(toCreate);
 
 		//search for any versions assigned to the list of products passed in
@@ -191,7 +191,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 			version.setProductId(createdProduct.getId());
 			versionDao.update(version);
 		}
-		
+
 		// - mark the passed in products as deleted
 		for(Long productId : productIdsToMerge) {
 			productDao.delete(productId);
@@ -199,25 +199,25 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 
 		String activityMsg = "Merged "+ productIdsToMerge.size() + " products into new product '" + createdProduct.getName() + "'.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, createdProduct.getId(), activityMsg, beforeProducts , createdProduct);
-		
+
 		return createdProduct;
 	}
-	
+
 	@Override
-	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, 
-			JsonProcessingException.class, AccessDeniedException.class})	
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class,
+			JsonProcessingException.class, AccessDeniedException.class})
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN', 'ROLE_ACB_STAFF')")
 	@CacheEvict(value = {CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode, List<ProductVersionDTO> newProductVersions)
 		throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		// what ACB does the user have??
 		List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(true);
-		
-		//create the new product and log activity 
+
+		//create the new product and log activity
 		//this method checks that the related developer is Active and will throw an exception if they aren't
 		newProduct = create(newProduct);
 
-		
+
 		//re-assign versions to the new product and log activity for each
 		List<Long> affectedVersionIds = new ArrayList<Long>();
 		for(ProductVersionDTO affectedVersion : newProductVersions) {
@@ -230,7 +230,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, afterVersion.getId(), "Product Version "+afterVersion.getVersion()+" product owner updated to "+afterVersion.getProductName(), beforeVersion, afterVersion);
 			affectedVersionIds.add(affectedVersion.getId());
 		}
-		
+
 		//update product code on all associated certified products and log activity for each
 		List<CertifiedProductDTO> affectedCps = cpDao.getByVersionIds(affectedVersionIds);
 		for(CertifiedProductDTO affectedCp : affectedCps) {
@@ -246,13 +246,13 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 			if(!hasAccessToAcb) {
 				throw new AccessDeniedException("Access is denied to update certified product " + beforeProduct.getChplProductNumber() + " because it is owned by " + beforeProduct.getCertifyingBody().get("name") + ".");
 			}
-			
+
 			//make sure the updated CHPL product number is valid
 			String chplNumber = beforeProduct.getChplProductNumber();
 			String[] splitChplNumber = chplNumber.split("\\.");
 			if(splitChplNumber.length > 1) {
-				String potentialChplNumber = splitChplNumber[0] + "." + splitChplNumber[1] + "." + splitChplNumber[2] + 
-						"." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] + 
+				String potentialChplNumber = splitChplNumber[0] + "." + splitChplNumber[1] + "." + splitChplNumber[2] +
+						"." + splitChplNumber[3] + "." + newProductCode + "." + splitChplNumber[5] +
 						"." + splitChplNumber[6] + "." + splitChplNumber[7] + "." + splitChplNumber[8];
 				CertifiedProductValidator validator = cpValidatorFactory.getValidator(beforeProduct);
 				if(validator != null && !validator.validateUniqueId(potentialChplNumber)) {
@@ -261,36 +261,36 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 				if(validator != null && !validator.validateProductCodeCharacters(potentialChplNumber)) {
 					throw new EntityCreationException(
 							String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()),
 							CertifiedProductDTO.PRODUCT_CODE_LENGTH));
 				}
-				
-				affectedCp.setProductCode(newProductCode);	
+
+				affectedCp.setProductCode(newProductCode);
 			}
-			
+
 			//do the update and add activity
 			cpDao.update(affectedCp);
-			CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());			
+			CertifiedProductSearchDetails afterProduct = cpdManager.getCertifiedProductDetails(affectedCp.getId());
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeProduct.getId(), "Updated certified product " + afterProduct.getChplProductNumber() + ".", beforeProduct, afterProduct);
-		}	
-		
+		}
+
 		handleActivity(oldProduct, newProduct);
 		return getById(newProduct.getId());
 	}
-	
+
 	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
 		String message = "";
 		if(!(src instanceof ProductDTO)) {
 			logger.error("Cannot use object of type " + src.getClass());
 		} else {
 			ProductDTO original = (ProductDTO) src;
-			message = "<p>Activity was detected on product " + original.getName() + ".</p>" 
-					+ "<p>To view the details of this activity go to: " + 
+			message = "<p>Activity was detected on product " + original.getName() + ".</p>"
+					+ "<p>To view the details of this activity go to: " +
 					env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
-		} 
+		}
 		return message;
 	}
-	
+
 	public boolean isQuestionableActivity(Object src, Object dest) {
 		boolean isQuestionable = false;
 
@@ -299,14 +299,14 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 		} else {
 			ProductDTO original = (ProductDTO) src;
 			ProductDTO changed = (ProductDTO) dest;
-			
+
 			//check name change
 			if( (original.getName() != null && changed.getName() == null) ||
 				(original.getName() == null && changed.getName() != null) ||
 				!original.getName().equals(changed.getName()) ) {
 				isQuestionable = true;
 			}
-			
+
 			//if there was a different amount of owner history
 			if( (original.getOwnerHistory() != null && changed.getOwnerHistory() == null) ||
 				(original.getOwnerHistory() == null && changed.getOwnerHistory() != null) ||

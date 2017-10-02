@@ -13,7 +13,7 @@ public class CertificationIdAndCertifiedProductDTO implements Serializable {
 	private String certificationId;
 	private Date creationDate;
     private String chplProductNumber;
-	
+
 	public CertificationIdAndCertifiedProductDTO(CertificationIdAndCertifiedProductEntity entity) {
 		this.ehrCertificationId = entity.getEhrCertificationId();
 		this.certificationId = entity.getCertificationId();
@@ -29,9 +29,9 @@ public class CertificationIdAndCertifiedProductDTO implements Serializable {
 					yearCode = entity.getCertificationYear();
 				}
 			}
-			this.chplProductNumber = yearCode + "." + entity.getAtlCode() + "." + entity.getAcbCode() + "." + 
-					entity.getDeveloperCode() + "." + entity.getProductCode() + "." + entity.getVersionCode() + 
-					"." + entity.getIcsCode() + "." + entity.getAdditionalSoftwareCode() + 
+			this.chplProductNumber = yearCode + "." + entity.getAtlCode() + "." + entity.getAcbCode() + "." +
+					entity.getDeveloperCode() + "." + entity.getProductCode() + "." + entity.getVersionCode() +
+					"." + entity.getIcsCode() + "." + entity.getAdditionalSoftwareCode() +
 					"." + entity.getCertifiedDateCode();
 		}
 	}

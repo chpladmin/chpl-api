@@ -20,19 +20,19 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductAccessibilityStandard implements Serializable {
 	private static final long serialVersionUID = -676179466407109456L;
-	
+
 	/**
 	 * Accessibility standard to listing mapping internal ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
 	 * Accessibility standard internal ID
 	 */
 	@XmlElement(required = true)
 	private Long accessibilityStandardId;
-	
+
 	/**
 	 * Accessibility standard name
 	 */
@@ -42,26 +42,26 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
 	public CertifiedProductAccessibilityStandard() {
 		super();
 	}
-	
+
 	public CertifiedProductAccessibilityStandard(CertifiedProductAccessibilityStandardDTO dto) {
 		this.id = dto.getId();
 		this.accessibilityStandardId = dto.getAccessibilityStandardId();
 		this.accessibilityStandardName = dto.getAccessibilityStandardName();
 	}
-	
+
 	public boolean matches(CertifiedProductAccessibilityStandard other) {
 		boolean result = false;
-		if(this.getAccessibilityStandardId() != null && other.getAccessibilityStandardId() != null && 
+		if(this.getAccessibilityStandardId() != null && other.getAccessibilityStandardId() != null &&
 				this.getAccessibilityStandardId().longValue() == other.getAccessibilityStandardId().longValue()) {
 			result = true;
-		} else if(!StringUtils.isEmpty(this.getAccessibilityStandardName()) && 
+		} else if(!StringUtils.isEmpty(this.getAccessibilityStandardName()) &&
 				!StringUtils.isEmpty(other.getAccessibilityStandardName()) &&
 				this.getAccessibilityStandardName().equals(other.getAccessibilityStandardName())) {
 			result = true;
 		}
 		return result;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

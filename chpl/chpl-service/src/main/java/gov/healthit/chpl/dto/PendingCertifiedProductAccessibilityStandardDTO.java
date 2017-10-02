@@ -10,19 +10,19 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
 	private Long pendingCertifiedProductId;
 	private Long accessibilityStandardId;
 	private String name;
-	
+
 	public PendingCertifiedProductAccessibilityStandardDTO() {}
-	
+
 	public PendingCertifiedProductAccessibilityStandardDTO(PendingCertifiedProductAccessibilityStandardEntity entity) {
 		this.setId(entity.getId());
-				
+
 		if(entity.getMappedProduct() != null) {
 			this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
 		}
 		this.setAccessibilityStandardId(entity.getAccessibilityStandardId());
 		this.setName(entity.getName());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

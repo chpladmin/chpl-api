@@ -19,33 +19,33 @@ public class CertificationStatusEntity {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "certification_status_id", nullable = false  )
 	private Long id;
-    
-    @Basic( optional = false) 
+
+    @Basic( optional = false)
     @Column (name = "certification_status", nullable = false)
     private String status;
-    
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false)
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -59,7 +59,7 @@ public class CertificationStatusEntity {
 	public CertificationStatusEntity(Long id) {
 		this.id = id;
 	}
-	
+
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/

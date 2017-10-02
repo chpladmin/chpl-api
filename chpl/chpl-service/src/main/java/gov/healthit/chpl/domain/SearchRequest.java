@@ -10,9 +10,9 @@ public class SearchRequest implements Serializable {
 	private static final long serialVersionUID = 1179207628639701580L;
 
 	public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
-	
+
 	String searchTerm = null;
-	
+
 	//search for any of these
 	List<String> certificationStatuses = new ArrayList<String>();
 	//search for any of these
@@ -25,7 +25,7 @@ public class SearchRequest implements Serializable {
 	List<String> certificationBodies = new ArrayList<String>();
 	//AND these
 	Set<SurveillanceSearchOptions> surveillance = new HashSet<SurveillanceSearchOptions>();
-	
+
 	Boolean hasHadSurveillance;
 	String developer = null;
 	String product = null;
@@ -33,7 +33,7 @@ public class SearchRequest implements Serializable {
 	String practiceType = null;
 	String certificationDateStart = null;
 	String certificationDateEnd = null;
-	
+
 	String orderBy = "product";
 	Boolean sortDescending = false;
 	Integer pageNumber = 0;
@@ -147,7 +147,7 @@ public class SearchRequest implements Serializable {
 	public void setHasHadSurveillance(Boolean hasHadSurveillance) {
 		this.hasHadSurveillance = hasHadSurveillance;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -191,7 +191,7 @@ public class SearchRequest implements Serializable {
 				+ ((practiceType == null) ? 0 : practiceType.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

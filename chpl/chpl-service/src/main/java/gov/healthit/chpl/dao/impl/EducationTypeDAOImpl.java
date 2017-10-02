@@ -18,49 +18,49 @@ public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDA
 	@Override
 	public EducationTypeDTO getById(Long id)
 			throws EntityRetrievalException {
-		
+
 		EducationTypeDTO dto = null;
 		EducationTypeEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new EducationTypeDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public EducationTypeDTO getByName(String name) {
-		
+
 		EducationTypeEntity entity = getEntityByName(name);
 		if(entity == null) {
 			return null;
 		}
 		EducationTypeDTO dto = new EducationTypeDTO(entity);
 		return dto;
-		
+
 	}
-	
+
 	@Override
 	public List<EducationTypeDTO> getAll() {
-		
+
 		List<EducationTypeEntity> entities = getAllEntities();
 		List<EducationTypeDTO> dtos = new ArrayList<>();
-		
+
 		for (EducationTypeEntity entity : entities) {
 			EducationTypeDTO dto = new EducationTypeDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
 
 	private List<EducationTypeEntity> getAllEntities() {
-		
+
 		List<EducationTypeEntity> result = entityManager.createQuery( "from EducationTypeEntity where (NOT deleted = true) ", EducationTypeEntity.class).getResultList();
 		return result;
-		
+
 	}
-	
+
 	private EducationTypeEntity getEntityByName(String name) {
 		EducationTypeEntity entity = null;
 
@@ -70,26 +70,26 @@ public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDA
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
+
 	private EducationTypeEntity getEntityById(Long id) throws EntityRetrievalException {
-		
+
 		EducationTypeEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from EducationTypeEntity where (NOT deleted = true) AND (id = :entityid) ", EducationTypeEntity.class );
 		query.setParameter("entityid", id);
 		List<EducationTypeEntity> result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate education type id in database.");
 		}
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
 }

@@ -21,23 +21,23 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UcdProcess implements Serializable {
 	private static final long serialVersionUID = 7248865611086710891L;
-	
+
 	/**
 	 * UCD process to certification result internal mapping ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
 	 * The user-centered design (UCD) process applied for the corresponding certification criteria
 	 */
 	@XmlElement(required = true)
 	private String name;
-	
+
 	/**
-	 * A description of the UCD process used. This variable is applicable 
-	 * for 2014 and 2015 Edition, and a string variable that does not take any restrictions 
-	 * on formatting or values. 
+	 * A description of the UCD process used. This variable is applicable
+	 * for 2014 and 2015 Edition, and a string variable that does not take any restrictions
+	 * on formatting or values.
 	 */
 	@XmlElement(required = false, nillable = true)
 	private String details;
@@ -47,28 +47,28 @@ public class UcdProcess implements Serializable {
 	 */
 	@XmlElement(required = false, nillable = true)
 	private Set<CertificationCriterion> criteria;
-	
+
 	public UcdProcess() {
 		super();
 		this.criteria = new HashSet<CertificationCriterion>();
 	}
-	
+
 	public UcdProcess(CertificationResultUcdProcessDTO dto) {
 		this();
 		this.id = dto.getUcdProcessId();
 		this.name = dto.getUcdProcessName();
 		this.details = dto.getUcdProcessDetails();
 	}
-	
+
 	public boolean matches(UcdProcess anotherUcd) {
 		boolean result = false;
-		if(this.getId() != null && anotherUcd.getId() != null && 
+		if(this.getId() != null && anotherUcd.getId() != null &&
 				this.getId().longValue() == anotherUcd.getId().longValue()) {
 			result = true;
-		} 
+		}
 		return result;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

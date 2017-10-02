@@ -146,9 +146,9 @@ import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 @Service("certifiedProductManager")
 public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl implements CertifiedProductManager {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
-	
+
 	@Autowired private Environment env;
-	
+
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired CertifiedProductSearchDAO searchDao;
 	@Autowired CertificationResultDAO certDao;
@@ -180,41 +180,41 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	@Autowired CertificationStatusDAO certStatusDao;
 	@Autowired ListingGraphDAO listingGraphDao;
 	@Autowired CertificationResultDAO certResultDao;
-	
+
 	@Autowired
 	public ActivityManager activityManager;
-	
+
 	@Autowired
 	public CertifiedProductDetailsManager detailsManager;
-		
-	@Autowired 
+
+	@Autowired
 	public CertificationBodyManager acbManager;
-	
+
 	public CertifiedProductManagerImpl() {
 	}
-	
-	
+
+
 	@Override
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException {
 		CertifiedProductDTO result = cpDao.getById(id);
 		return result;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
 		CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
 		return result;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public boolean chplIdExists(String id) throws EntityRetrievalException {
 		if(StringUtils.isEmpty(id)) {
 			return false;
-		} 
-		
+		}
+
 		boolean exists = false;
 		if(id.startsWith("CHP")) {
 			CertifiedProductDTO existing = cpDao.getByChplNumber(id);
@@ -233,25 +233,25 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 		return exists;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException {
 		return cpDao.getDetailsByIds(ids);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException {
 		return cpDao.getDetailsById(ids);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getAll() {
 		return cpDao.findAll();
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<CertifiedProductDetailsDTO> getAllWithEditPermission() {
@@ -265,26 +265,26 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 		return cpDao.getDetailsByAcbIds(acbIdList);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId) 
+	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId)
 	throws EntityRetrievalException {
 		versionManager.getById(versionId); //throws 404 if bad id
 		return cpDao.getDetailsByVersionId(versionId);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> getByProduct(Long productId) 
+	public List<CertifiedProductDetailsDTO> getByProduct(Long productId)
 	throws EntityRetrievalException {
 		productManager.getById(productId); //throws 404 if bad id
 		return cpDao.getDetailsByProductId(productId);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId) 
+	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId)
 	throws EntityRetrievalException {
 		versionManager.getById(versionId); //throws 404 if bad id
 		List<CertificationBodyDTO> userAcbs = acbManager.getAllForUser(false);
@@ -297,19 +297,19 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 		return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
 	}
-	
+
 	@Override
 	@Transactional
 	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
 		getById(certifiedProductId); //sends back 404 if bad id
-		
+
 		List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
 		Map<Long,Boolean> queue = new HashMap<Long,Boolean>();
 		List<Long> toAdd = new ArrayList<Long>();
-		
+
 		// add first element to processing queue
 		queue.put(certifiedProductId, false);
-		
+
 		// while queue contains elements that need processing
 		while(queue.containsValue(false)){
 			for(Entry<Long,Boolean> cp: queue.entrySet()){
@@ -337,7 +337,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			}
 			toAdd.clear();
 		}
-		
+
 		return familyTree;
 	}
 
@@ -346,11 +346,11 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
 	@Transactional(readOnly = false)
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
-			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, 
+			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES,
 			CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
-	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
+	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
+
 		CertifiedProductDTO toCreate = new CertifiedProductDTO();
 		toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
 		toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
@@ -365,7 +365,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		toCreate.setDeleted(false);
 		toCreate.setLastModifiedDate(new Date());
 		toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
-		
+
 		if(pendingCp.getCertificationBodyId() == null) {
 			throw new EntityCreationException("ACB ID must be specified.");
 		}
@@ -375,12 +375,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			throw new EntityCreationException("ATL ID must be specified.");
 		}
 		toCreate.setTestingLabId(pendingCp.getTestingLabId());
-		
+
 		if(pendingCp.getCertificationEditionId() == null) {
 			throw new EntityCreationException("The ID of an existing certification edition (year) must be provided. A new certification edition cannot be created via this process.");
 		}
 		toCreate.setCertificationEditionId(pendingCp.getCertificationEditionId());
-		
+
 		String status = pendingCp.getRecordStatus();
 		if(StringUtils.isEmpty(status)) {
 			throw new EntityCreationException("Cannot determine certification status. Is this a new record? An update? A removal?");
@@ -415,7 +415,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			developer = developerManager.create(newDeveloper);
 			pendingCp.setDeveloperId(developer.getId());
 		}
-		
+
 		if(pendingCp.getProductId() == null) {
 			ProductDTO newProduct = new ProductDTO();
 			if(pendingCp.getProductName() == null) {
@@ -426,8 +426,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			newProduct.setReportFileLocation(pendingCp.getReportFileLocation());
 			newProduct = productManager.create(newProduct);
 			pendingCp.setProductId(newProduct.getId());
-		} 
-		
+		}
+
 		if(pendingCp.getProductVersionId() == null) {
 			ProductVersionDTO newVersion = new ProductVersionDTO();
 			if(pendingCp.getProductVersion() == null) {
@@ -437,9 +437,9 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			newVersion.setProductId(pendingCp.getProductId());
 			newVersion = versionManager.create(newVersion);
 			pendingCp.setProductVersionId(newVersion.getId());
-		} 
+		}
 		toCreate.setProductVersionId(pendingCp.getProductVersionId());
-		
+
 		String uniqueId = pendingCp.getUniqueId();
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		toCreate.setProductCode(uniqueIdParts[4]);
@@ -447,9 +447,9 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		toCreate.setIcsCode(uniqueIdParts[6]);
 		toCreate.setAdditionalSoftwareCode(uniqueIdParts[7]);
 		toCreate.setCertifiedDateCode(uniqueIdParts[8]);
-		
+
 		CertifiedProductDTO newCertifiedProduct = cpDao.create(toCreate);
-		
+
 		//ics
 		if(pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
 			for(CertifiedProductDTO parentCpDto : pendingCp.getIcsParents()) {
@@ -473,7 +473,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
+
 		//qms
 		if(pendingCp.getQmsStandards() != null && pendingCp.getQmsStandards().size() > 0) {
 			for(PendingCertifiedProductQmsStandardDTO qms : pendingCp.getQmsStandards()) {
@@ -492,7 +492,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				cpQmsDao.createCertifiedProductQms(qmsDto);
 			}
 		}
-		
+
 		//targeted users
 		if(pendingCp.getTargetedUsers() != null && pendingCp.getTargetedUsers().size() > 0) {
 			for(PendingCertifiedProductTargetedUserDTO tu : pendingCp.getTargetedUsers()) {
@@ -509,7 +509,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
 			}
 		}
-		
+
 		//accessibility standards
 		if(pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
 			for(PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
@@ -535,7 +535,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 						asDto.setAccessibilityStandardName(match.getName());
 					}
 				}
-				
+
 				if(asDto.getAccessibilityStandardId() != null) {
 					cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
 				} else {
@@ -543,14 +543,14 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-				
+
 		//certs
 		if(pendingCp.getCertificationCriterion() != null && pendingCp.getCertificationCriterion().size() > 0) {
-			
+
 			//participants and tasks are re-used across multiple certifications within the same product
 			List<TestParticipantDTO> testParticipantsAdded = new ArrayList<TestParticipantDTO>();
 			List<TestTaskDTO> testTasksAdded = new ArrayList<TestTaskDTO>();
-			
+
 			for(PendingCertificationResultDTO certResult : pendingCp.getCertificationCriterion()) {
 				CertificationCriterionDTO criterion = certCriterionDao.getByName(certResult.getNumber());
 				if(criterion == null) {
@@ -589,7 +589,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							certDao.addAdditionalSoftwareMapping(as);
 						}
 					}
-					
+
 					if(certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
 						for(PendingCertificationResultUcdProcessDTO ucd : certResult.getUcdProcesses()) {
 							CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
@@ -606,7 +606,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							certDao.addUcdProcessMapping(ucdDto);
 						}
 					}
-					
+
 					if(certResult.getTestData() != null && certResult.getTestData().size() > 0) {
 						for(PendingCertificationResultTestDataDTO testData : certResult.getTestData()) {
 							CertificationResultTestDataDTO testDto = new CertificationResultTestDataDTO();
@@ -616,7 +616,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							certDao.addTestDataMapping(testDto);
 						}
 					}
-					
+
 					if(certResult.getTestFunctionality() != null && certResult.getTestFunctionality().size() > 0) {
 						for(PendingCertificationResultTestFunctionalityDTO func : certResult.getTestFunctionality()) {
 							if(func.getTestFunctionalityId() != null) {
@@ -639,7 +639,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							}
 						}
 					}
-					
+
 					if(certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
 						for(PendingCertificationResultTestProcedureDTO proc : certResult.getTestProcedures()) {
 							CertificationResultTestProcedureDTO procDto = new CertificationResultTestProcedureDTO();
@@ -656,7 +656,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							certDao.addTestProcedureMapping(procDto);
 						}
 					}
-					
+
 					if(certResult.getTestStandards() != null && certResult.getTestStandards().size() > 0) {
 						for(PendingCertificationResultTestStandardDTO std : certResult.getTestStandards()) {
 							CertificationResultTestStandardDTO stdDto = new CertificationResultTestStandardDTO();
@@ -686,7 +686,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							}
 						}
 					}
-					
+
 					if(certResult.getTestTools() != null && certResult.getTestTools().size() > 0) {
 						for(PendingCertificationResultTestToolDTO tool : certResult.getTestTools()) {
 							if(tool.getTestToolId() != null) {
@@ -711,7 +711,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							}
 						}
 					}
-					
+
 					if(certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
 						for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG1MacraMeasures()) {
 							//the validator set the macraMeasure value so it's definitely filled in
@@ -725,7 +725,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							}
 						}
 					}
-					
+
 					if(certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
 						for(PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult.getG2MacraMeasures()) {
 							//the validator set the macraMeasure value so it's definitely filled in
@@ -739,14 +739,14 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							}
 						}
 					}
-					
+
 					if(certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
 						//Map<Long, Long> pendingTaskToConfirmedTaskMap = new HashMap<Long, Long>();
 						for(PendingCertificationResultTestTaskDTO certTask : certResult.getTestTasks()) {
 							//have we already added this one?
 							TestTaskDTO existingTt = null;
 							for(TestTaskDTO tt : testTasksAdded) {
-								if(certTask.getPendingTestTask() != null && 
+								if(certTask.getPendingTestTask() != null &&
 									certTask.getPendingTestTask().getUniqueId().equals(tt.getPendingUniqueId())) {
 									existingTt = tt;
 								}
@@ -771,7 +771,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 									tt.setTaskTimeDeviationObservedAvg(pendingTask.getTaskTimeDeviationObservedAvg());
 									tt.setTaskTimeDeviationOptimalAvg(pendingTask.getTaskTimeDeviationOptimalAvg());
 									tt.setTaskTimeStddev(pendingTask.getTaskTimeStddev());
-									
+
 									//add test task
 									existingTt = testTaskDao.create(tt);
 									//pendingTaskToConfirmedTaskMap.put(pendingTask.getId(), existingTt.getId());
@@ -784,7 +784,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							taskDto.setTestTaskId(existingTt.getId());
 							taskDto.setCertificationResultId(createdCert.getId());
 							taskDto.setTestTask(existingTt);
-							
+
 							if(certTask.getTaskParticipants() != null) {
 								for(PendingCertificationResultTestTaskParticipantDTO certTaskPart : certTask.getTaskParticipants()) {
 									PendingTestParticipantDTO certPart = certTaskPart.getTestParticipant();
@@ -805,7 +805,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 											tp.setOccupation(certPart.getOccupation());
 											tp.setProductExperienceMonths(certPart.getProductExperienceMonths());
 											tp.setProfessionalExperienceMonths(certPart.getProfessionalExperienceMonths());
-											
+
 											//add participant
 											existingPart = testParticipantDao.create(tp);
 											existingPart.setPendingUniqueId(certPart.getUniqueId());
@@ -815,16 +815,16 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 									}
 								}
 							}
-							
+
 							certDao.addTestTaskMapping(taskDto);
 						}
 					}
 				}
 			}
 		}
-		
+
 		//cqms
-		//we only insert successful ones, but all of the ones in the pendingDTO 
+		//we only insert successful ones, but all of the ones in the pendingDTO
 		//are successful
 		if(pendingCp.getCqmCriterion() != null && pendingCp.getCqmCriterion().size() > 0) {
 			for(PendingCqmCriterionDTO pendingCqm : pendingCp.getCqmCriterion()) {
@@ -832,12 +832,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 					CQMCriterionDTO criterion = null;
 					if(pendingCqm.getCmsId().startsWith("CMS")) {
 						criterion = cqmCriterionDao.getCMSByNumberAndVersion(pendingCqm.getCmsId(), pendingCqm.getVersion());
-						
+
 						if(criterion == null) {
-							throw new EntityCreationException("Could not find a CQM with number " + pendingCqm.getCmsId() + 
+							throw new EntityCreationException("Could not find a CQM with number " + pendingCqm.getCmsId() +
 									" and version " + pendingCqm.getVersion() + ".");
 						}
-						
+
 						CQMResultDTO cqmResultToCreate = new CQMResultDTO();
 						cqmResultToCreate.setCqmCriterionId(criterion.getId());
 						cqmResultToCreate.setCertifiedProductId(newCertifiedProduct.getId());
@@ -866,8 +866,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
-		
+
+
 		//if all this was successful, insert a certification status event for the certification date
 		CertificationStatusDTO activeCertStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
 		CertificationStatusEventDTO certEvent = new CertificationStatusEventDTO();
@@ -878,35 +878,35 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		certEvent.setStatus(activeCertStatus);
 		certEvent.setCertifiedProductId(newCertifiedProduct.getId());
 		statusEventDao.create(certEvent);
-		
+
 		CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(), "Created "+newCertifiedProduct.getChplProductNumberForActivity(), null, details);
-		
+
 		return newCertifiedProduct;
 	}
-	
+
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	@Transactional(readOnly = false) 
+	@Transactional(readOnly = false)
 	@ClearAllCaches
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		CertifiedProductDTO toUpdate = cpDao.getById(certifiedProductId);
 		toUpdate.setCertificationBodyId(acbId);
 		return cpDao.update(toUpdate);
 	}
-	
+
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
 	@Transactional(readOnly = false)
-	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing) 
+	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
 			throws EntityNotFoundException {
 		//make sure the ui didn't send any error or warning messages back
 		listing.setErrorMessages(new HashSet<String>());
 		listing.setWarningMessages(new HashSet<String>());
-				
+
 		//make sure IDs are filled in for all parents for the updated listing
 		if(listing.getIcs() != null && listing.getIcs().getParents() != null &&
 				listing.getIcs().getParents().size() > 0) {
@@ -920,8 +920,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 					throw new EntityNotFoundException("Every ICS parent must have either a CHPL ID or a CHPL Product Number.");
 				}
 			}
-		}	
-		
+		}
+
 		//make sure IDs are filled in for all children for the updated listing
 		if(listing.getIcs() != null && listing.getIcs().getChildren() != null &&
 				listing.getIcs().getChildren().size() > 0) {
@@ -937,21 +937,21 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			}
 		}
 	}
-	
+
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
-	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, 
+	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class,
 			JsonProcessingException.class, AccessDeniedException.class, InvalidArgumentsException.class})
-	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, 
-			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.SEARCH, 
+	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.SEARCH,
 			CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
-	public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
-			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException, 
+	public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing)
+			throws AccessDeniedException, EntityRetrievalException, JsonProcessingException,
 			EntityCreationException, InvalidArgumentsException {
-		
+
 		CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
 		Long listingId = updatedListing.getId();
 		Long certificationStatusId = new Long(updatedListing.getCertificationStatus().get("id").toString());
@@ -975,11 +975,11 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 					newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
 				} else if(updatedCertificationStatus.getStatus().equals(CertificationStatusType.TerminatedByOnc.toString())) {
 					newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
-				} 
+				}
 			} else if (!Util.isUserRoleAdmin()) {
 				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + listingId);
-				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");	
-			} 
+				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");
+			}
 			break;
 		case WithdrawnByDeveloperUnderReview:
 			//conditionally change the status of the developer if the new listing status
@@ -992,8 +992,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			} else if(!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
 				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN and cannot change the status of developer for certified product with id " + listingId);
-				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");	
-			} 
+				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");
+			}
 			break;
 		default:
 			logger.info("New listing status is " + updatedCertificationStatus.getStatus() + " which does not trigger a developer ban.");
@@ -1007,9 +1007,9 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
 			developerManager.update(cpDeveloper);
 		}
-		
+
 		CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
-		CertifiedProductDTO result = cpDao.update(dtoToUpdate);			
+		CertifiedProductDTO result = cpDao.update(dtoToUpdate);
 		if(updatedListing != null){
 			updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
 			updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
@@ -1023,52 +1023,52 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
 		}
 		return result;
-	}	
+	}
 
 	/**
 	 * Intelligently determine what updates need to be made to ICS parents.
 	 * @param existingIcs
 	 * @param updatedIcs
 	 */
-	private void updateIcsParents(Long listingId, InheritedCertificationStatus existingIcs, 
+	private void updateIcsParents(Long listingId, InheritedCertificationStatus existingIcs,
 			InheritedCertificationStatus updatedIcs) throws EntityCreationException {
 		//update ics parents as necessary
 		List<Long> parentIdsToAdd = new ArrayList<Long>();
 		List<Long> parentIdsToRemove = new ArrayList<Long>();
-		
+
 		if(updatedIcs != null && updatedIcs.getParents() != null &&
 				updatedIcs.getParents().size() > 0) {
-			if(existingIcs == null || existingIcs.getParents() == null || 
+			if(existingIcs == null || existingIcs.getParents() == null ||
 					existingIcs.getParents().size() == 0) {
 				//existing listing has no ics parents, add all from the update
 				if(updatedIcs.getParents() != null && updatedIcs.getParents().size() > 0) {
 					for(CertifiedProduct parent : updatedIcs.getParents()) {
 						if(parent.getId() != null) {
 							parentIdsToAdd.add(parent.getId());
-						} 
+						}
 					}
 				}
 			} else if(existingIcs.getParents().size() > 0) {
 				//existing listing has parents, compare to the update to see if any are different
-				for(CertifiedProduct parent : updatedIcs.getParents()) { 
+				for(CertifiedProduct parent : updatedIcs.getParents()) {
 					boolean inExistingListing = false;
 					for(CertifiedProduct existingParent : existingIcs.getParents()) {
 						if(parent.getId().longValue() == existingParent.getId().longValue()) {
 							inExistingListing = true;
 						}
 					}
-					
+
 					if(!inExistingListing) {
 						parentIdsToAdd.add(parent.getId());
 					}
 				}
 			}
 		}
-		
-		if(existingIcs != null && existingIcs.getParents() != null && 
+
+		if(existingIcs != null && existingIcs.getParents() != null &&
 				existingIcs.getParents().size() > 0) {
 			//if the updated listing has no parents, remove them all from existing
-			if(updatedIcs == null || updatedIcs.getParents() == null || 
+			if(updatedIcs == null || updatedIcs.getParents() == null ||
 					updatedIcs.getParents().size() == 0) {
 				for(CertifiedProduct existingParent : existingIcs.getParents()) {
 					parentIdsToRemove.add(existingParent.getId());
@@ -1094,7 +1094,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			toAdd.setChildId(listingId);
 			listingGraphDao.createListingMap(toAdd);
 		}
-		
+
 		for(Long parentIdToRemove : parentIdsToRemove) {
 			ListingToListingMapDTO toDelete = new ListingToListingMapDTO();
 			toDelete.setParentId(parentIdToRemove);
@@ -1102,51 +1102,51 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			listingGraphDao.deleteListingMap(toDelete);
 		}
 	}
-	
+
 	/**
 	 * Intelligently update the ICS children relationships
 	 * @param existingIcs
 	 * @param updatedIcs
 	 */
-	private void updateIcsChildren(Long listingId, InheritedCertificationStatus existingIcs, 
+	private void updateIcsChildren(Long listingId, InheritedCertificationStatus existingIcs,
 			InheritedCertificationStatus updatedIcs) throws EntityCreationException {
 		//update ics children as necessary
 		List<Long> childIdsToAdd = new ArrayList<Long>();
 		List<Long> childIdsToRemove = new ArrayList<Long>();
-		
+
 		if(updatedIcs != null && updatedIcs.getChildren() != null &&
 				updatedIcs.getChildren().size() > 0) {
-			if(existingIcs == null || existingIcs.getChildren() == null || 
+			if(existingIcs == null || existingIcs.getChildren() == null ||
 					existingIcs.getChildren().size() == 0) {
 				//existing listing has no ics parents, add all from the update
 				if(updatedIcs.getChildren() != null && updatedIcs.getChildren().size() > 0) {
 					for(CertifiedProduct child : updatedIcs.getChildren()) {
 						if(child.getId() != null) {
 							childIdsToAdd.add(child.getId());
-						} 
+						}
 					}
 				}
 			} else if(existingIcs.getChildren().size() > 0) {
 				//existing listing has children, compare to the update to see if any are different
-				for(CertifiedProduct child : updatedIcs.getChildren()) { 
+				for(CertifiedProduct child : updatedIcs.getChildren()) {
 					boolean inExistingListing = false;
 					for(CertifiedProduct existingChild : existingIcs.getChildren()) {
 						if(child.getId().longValue() == existingChild.getId().longValue()) {
 							inExistingListing = true;
 						}
 					}
-					
+
 					if(!inExistingListing) {
 						childIdsToAdd.add(child.getId());
 					}
 				}
 			}
 		}
-		
-		if(existingIcs != null && existingIcs.getChildren() != null && 
+
+		if(existingIcs != null && existingIcs.getChildren() != null &&
 				existingIcs.getChildren().size() > 0) {
 			//if the updated listing has no children, remove them all from existing
-			if(updatedIcs == null || updatedIcs.getChildren() == null || 
+			if(updatedIcs == null || updatedIcs.getChildren() == null ||
 					updatedIcs.getChildren().size() == 0) {
 				for(CertifiedProduct existingChild : existingIcs.getChildren()) {
 					childIdsToRemove.add(existingChild.getId());
@@ -1165,7 +1165,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
+
 		//update listings in dao
 		for(Long childIdToAdd : childIdsToAdd) {
 			ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
@@ -1173,7 +1173,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			toAdd.setParentId(listingId);
 			listingGraphDao.createListingMap(toAdd);
 		}
-		
+
 		for(Long childIdToRemove : childIdsToRemove) {
 			ListingToListingMapDTO toDelete = new ListingToListingMapDTO();
 			toDelete.setChildId(childIdToRemove);
@@ -1181,17 +1181,17 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			listingGraphDao.deleteListingMap(toDelete);
 		}
 	}
-	
-	private int updateQmsStandards(Long listingId, 
-			List<CertifiedProductQmsStandard> existingQmsStandards, 
+
+	private int updateQmsStandards(Long listingId,
+			List<CertifiedProductQmsStandard> existingQmsStandards,
 			List<CertifiedProductQmsStandard> updatedQmsStandards)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
+
 		int numChanges = 0;
 		List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
 		List<QmsStandardPair> qmsToUpdate = new ArrayList<QmsStandardPair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which QMS to add
 		if(updatedQmsStandards != null && updatedQmsStandards.size() > 0) {
 			if(existingQmsStandards == null || existingQmsStandards.size() == 0) {
@@ -1201,7 +1201,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			} else if(existingQmsStandards.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertifiedProductQmsStandard updatedItem : updatedQmsStandards) { 
+				for(CertifiedProductQmsStandard updatedItem : updatedQmsStandards) {
 					boolean inExistingListing = false;
 					for(CertifiedProductQmsStandard existingItem : existingQmsStandards) {
 						if(updatedItem.matches(existingItem)) {
@@ -1209,14 +1209,14 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							qmsToUpdate.add(new QmsStandardPair(existingItem, updatedItem));
 						}
 					}
-					
+
 					if(!inExistingListing) {
 						qmsToAdd.add(updatedItem);
 					}
 				}
 			}
 		}
-				
+
 		//figure out which QMS to remove
 		if(existingQmsStandards != null && existingQmsStandards.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -1236,7 +1236,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
+
 		numChanges = qmsToAdd.size() + idsToRemove.size();
 		for(CertifiedProductQmsStandard toAdd : qmsToAdd) {
 			QmsStandardDTO qmsItem = qmsDao.findOrCreate(toAdd.getQmsStandardId(), toAdd.getQmsStandardName());
@@ -1248,14 +1248,14 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			qmsDto.setQmsStandardName(qmsItem.getName());
 			cpQmsDao.createCertifiedProductQms(qmsDto);
 		}
-		
+
 		for(QmsStandardPair toUpdate : qmsToUpdate) {
 			boolean hasChanged = false;
 			if(!ObjectUtils.equals(toUpdate.getOrig().getApplicableCriteria(), toUpdate.getUpdated().getApplicableCriteria()) ||
 				!ObjectUtils.equals(toUpdate.getOrig().getQmsModification(), toUpdate.getUpdated().getQmsModification())) {
 				hasChanged = true;
 			}
-			
+
 			if(hasChanged) {
 				CertifiedProductQmsStandard stdToUpdate = toUpdate.getUpdated();
 				QmsStandardDTO qmsItem = qmsDao.findOrCreate(stdToUpdate.getQmsStandardId(), stdToUpdate.getQmsStandardName());
@@ -1270,22 +1270,22 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				numChanges++;
 			}
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			cpQmsDao.deleteCertifiedProductQms(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
-	private int updateTargetedUsers(Long listingId, 
-			List<CertifiedProductTargetedUser> existingTargetedUsers, 
+
+	private int updateTargetedUsers(Long listingId,
+			List<CertifiedProductTargetedUser> existingTargetedUsers,
 			List<CertifiedProductTargetedUser> updatedTargetedUsers)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
+
 		int numChanges = 0;
 		List<CertifiedProductTargetedUser> tusToAdd = new ArrayList<CertifiedProductTargetedUser>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which targeted user to add
 		if(updatedTargetedUsers != null && updatedTargetedUsers.size() > 0) {
 			if(existingTargetedUsers == null || existingTargetedUsers.size() == 0) {
@@ -1295,19 +1295,19 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			} else if(existingTargetedUsers.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertifiedProductTargetedUser updatedItem : updatedTargetedUsers) { 
+				for(CertifiedProductTargetedUser updatedItem : updatedTargetedUsers) {
 					boolean inExistingListing = false;
 					for(CertifiedProductTargetedUser existingItem : existingTargetedUsers) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
-					
+
 					if(!inExistingListing) {
 						tusToAdd.add(updatedItem);
 					}
 				}
 			}
 		}
-				
+
 		//figure out which targeted users to remove
 		if(existingTargetedUsers != null && existingTargetedUsers.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -1327,7 +1327,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
+
 		numChanges = tusToAdd.size() + idsToRemove.size();
 		for(CertifiedProductTargetedUser toAdd : tusToAdd) {
 			TargetedUserDTO item = targetedUserDao.findOrCreate(toAdd.getTargetedUserId(), toAdd.getTargetedUserName());
@@ -1337,22 +1337,22 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			tuDto.setCertifiedProductId(listingId);
 			cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			cpTargetedUserDao.deleteCertifiedProductTargetedUser(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
 
-	private int updateAccessibilityStandards(Long listingId, 
-			List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards, 
+	private int updateAccessibilityStandards(Long listingId,
+			List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
 			List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
+
 		int numChanges = 0;
 		List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which accessibility standards to add
 		if(updatedAccessibilityStandards != null && updatedAccessibilityStandards.size() > 0) {
 			if(existingAccessibilityStandards == null || existingAccessibilityStandards.size() == 0) {
@@ -1362,19 +1362,19 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			} else if(existingAccessibilityStandards.size() > 0) {
 				//existing listing has some, compare to the update to see if any are different
-				for(CertifiedProductAccessibilityStandard updatedItem : updatedAccessibilityStandards) { 
+				for(CertifiedProductAccessibilityStandard updatedItem : updatedAccessibilityStandards) {
 					boolean inExistingListing = false;
 					for(CertifiedProductAccessibilityStandard existingItem : existingAccessibilityStandards) {
 						inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
 					}
-					
+
 					if(!inExistingListing) {
 						accStdsToAdd.add(updatedItem);
 					}
 				}
 			}
 		}
-				
+
 		//figure out which targeted users to remove
 		if(existingAccessibilityStandards != null && existingAccessibilityStandards.size() > 0) {
 			//if the updated listing has none, remove them all from existing
@@ -1394,7 +1394,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
+
 		numChanges = accStdsToAdd.size() + idsToRemove.size();
 		for(CertifiedProductAccessibilityStandard toAdd : accStdsToAdd) {
 			AccessibilityStandardDTO item = asDao.findOrCreate(toAdd.getAccessibilityStandardId(), toAdd.getAccessibilityStandardName());
@@ -1404,16 +1404,16 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			toAddStd.setCertifiedProductId(listingId);
 			cpAccStdDao.createCertifiedProductAccessibilityStandard(toAddStd);
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			cpAccStdDao.deleteCertifiedProductAccessibilityStandards(idToRemove);
-		}	
+		}
 		return numChanges;
 	}
-	
+
 	private void updateCertificationDate(Long listingId, Date existingCertDate, Date newCertDate)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		if(existingCertDate != null && newCertDate != null && 
+		if(existingCertDate != null && newCertDate != null &&
 				existingCertDate.getTime() != newCertDate.getTime()) {
 			CertificationStatusEventDTO certificationEvent = statusEventDao.findInitialCertificationEventForCertifiedProduct(listingId);
 			if(certificationEvent != null) {
@@ -1422,10 +1422,10 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			}
 		}
 	}
-	
+
 	private void updateCertificationStatusEvents(Long listingId, Long existingCertificationStatusId, Long updatedCertificationStatusId)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		if(existingCertificationStatusId != null && updatedCertificationStatusId != null && 
+		if(existingCertificationStatusId != null && updatedCertificationStatusId != null &&
 			existingCertificationStatusId.longValue() != updatedCertificationStatusId.longValue()) {
 			CertificationStatusEventDTO certificationEvent = new CertificationStatusEventDTO();
 			certificationEvent.setCertifiedProductId(listingId);
@@ -1438,36 +1438,36 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			statusEventDao.create(certificationEvent);
 		}
 	}
-	
-	private int updateCertifications(Long acbId, 
+
+	private int updateCertifications(Long acbId,
 			CertifiedProductSearchDetails existingListing,
-			CertifiedProductSearchDetails updatedListing, 
-			List<CertificationResult> existingCertifications, 
+			CertifiedProductSearchDetails updatedListing,
+			List<CertificationResult> existingCertifications,
 			List<CertificationResult> updatedCertifications)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
+
 		int numChanges = 0;
 
 		// replace the value of the result. we shouldn't have to add or delete any cert results
 		// because for certification criteria, all results are always there whether they were
 		// successful or not
-		
+
 		for(CertificationResult updatedItem : updatedCertifications) {
 			for(CertificationResult existingItem : existingCertifications) {
-				if(!StringUtils.isEmpty(updatedItem.getNumber()) && 
+				if(!StringUtils.isEmpty(updatedItem.getNumber()) &&
 					!StringUtils.isEmpty(existingItem.getNumber()) &&
 					updatedItem.getNumber().equals(existingItem.getNumber())) {
-					numChanges += certResultManager.update(acbId, 
+					numChanges += certResultManager.update(acbId,
 							existingListing, updatedListing, existingItem, updatedItem);
 				}
 			}
 		}
-		
+
 		return numChanges;
 	}
-	
-	private int updateCqms(CertifiedProductDTO listing, 
-			List<CQMResultDetails> existingCqmDetails, 
+
+	private int updateCqms(CertifiedProductDTO listing,
+			List<CQMResultDetails> existingCqmDetails,
 			List<CQMResultDetails> updatedCqmDetails)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		//convert to CQMResultDetailsDTO since CMS CQMs can have multiple entries
@@ -1482,65 +1482,65 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			List<CQMResultDetailsDTO> toAdd = convert(updatedItem);
 			updatedCqms.addAll(toAdd);
 		}
-		
+
 		int numChanges = 0;
 		List<CQMResultDetailsDTO> cqmsToAdd = new ArrayList<CQMResultDetailsDTO>();
 		List<CQMResultDetailsPair> cqmsToUpdate = new ArrayList<CQMResultDetailsPair>();
 		List<Long> idsToRemove = new ArrayList<Long>();
-		
+
 		//figure out which cqms to add
 		if(updatedCqms != null && updatedCqms.size() > 0) {
 			//existing listing has some, compare to the update to see if any are different
-			for(CQMResultDetailsDTO updatedItem : updatedCqms) { 
+			for(CQMResultDetailsDTO updatedItem : updatedCqms) {
 				boolean inExistingListing = false;
 				for(CQMResultDetailsDTO existingItem : existingCqms) {
-					if(!inExistingListing && 
-						StringUtils.isEmpty(updatedItem.getCmsId()) && 
+					if(!inExistingListing &&
+						StringUtils.isEmpty(updatedItem.getCmsId()) &&
 						StringUtils.isEmpty(existingItem.getCmsId()) &&
-						!StringUtils.isEmpty(updatedItem.getNqfNumber()) && 
-						!StringUtils.isEmpty(existingItem.getNqfNumber()) && 
-						!updatedItem.getNqfNumber().equals("N/A") && 
-						!existingItem.getNqfNumber().equals("N/A") && 
+						!StringUtils.isEmpty(updatedItem.getNqfNumber()) &&
+						!StringUtils.isEmpty(existingItem.getNqfNumber()) &&
+						!updatedItem.getNqfNumber().equals("N/A") &&
+						!existingItem.getNqfNumber().equals("N/A") &&
 						updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {
 						//NQF is the same if the NQF numbers are equal
 						inExistingListing = true;
 						cqmsToUpdate.add(new CQMResultDetailsPair(existingItem, updatedItem));
-					} else if(!inExistingListing && 
-						updatedItem.getCmsId() != null && existingItem.getCmsId() != null && 
-						updatedItem.getCmsId().equals(existingItem.getCmsId()) && 
-						updatedItem.getVersion() != null && existingItem.getVersion() != null && 
+					} else if(!inExistingListing &&
+						updatedItem.getCmsId() != null && existingItem.getCmsId() != null &&
+						updatedItem.getCmsId().equals(existingItem.getCmsId()) &&
+						updatedItem.getVersion() != null && existingItem.getVersion() != null &&
 						updatedItem.getVersion().equals(existingItem.getVersion())) {
 						//CMS is the same if the CMS ID and version is equal
 						inExistingListing = true;
 						cqmsToUpdate.add(new CQMResultDetailsPair(existingItem, updatedItem));
 					}
 				}
-				
+
 				if(!inExistingListing) {
 					cqmsToAdd.add(updatedItem);
 				}
 			}
 		}
-				
+
 		//figure out which cqms to remove
 		if(existingCqms != null && existingCqms.size() > 0) {
 			for(CQMResultDetailsDTO existingItem : existingCqms) {
 				boolean inUpdatedListing = false;
 				for(CQMResultDetailsDTO updatedItem : updatedCqms) {
-					if(!inUpdatedListing && 
-						StringUtils.isEmpty(updatedItem.getCmsId()) && 
+					if(!inUpdatedListing &&
+						StringUtils.isEmpty(updatedItem.getCmsId()) &&
 						StringUtils.isEmpty(existingItem.getCmsId()) &&
-						!StringUtils.isEmpty(updatedItem.getNqfNumber()) && 
-						!StringUtils.isEmpty(existingItem.getNqfNumber()) && 
-						!updatedItem.getNqfNumber().equals("N/A") && 
-						!existingItem.getNqfNumber().equals("N/A") && 
+						!StringUtils.isEmpty(updatedItem.getNqfNumber()) &&
+						!StringUtils.isEmpty(existingItem.getNqfNumber()) &&
+						!updatedItem.getNqfNumber().equals("N/A") &&
+						!existingItem.getNqfNumber().equals("N/A") &&
 						updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {
 						//NQF is the same if the NQF numbers are equal
 						inUpdatedListing = true;
-					} else if(!inUpdatedListing && 
-						updatedItem.getCmsId() != null && existingItem.getCmsId() != null && 
-						updatedItem.getCmsId().equals(existingItem.getCmsId()) && 
-						updatedItem.getVersion() != null && existingItem.getVersion() != null && 
+					} else if(!inUpdatedListing &&
+						updatedItem.getCmsId() != null && existingItem.getCmsId() != null &&
+						updatedItem.getCmsId().equals(existingItem.getCmsId()) &&
+						updatedItem.getVersion() != null && existingItem.getVersion() != null &&
 						updatedItem.getVersion().equals(existingItem.getVersion())) {
 						//CMS is the same if the CMS ID and version is equal
 						inUpdatedListing = true;
@@ -1551,9 +1551,9 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
+
 		numChanges = cqmsToAdd.size() + idsToRemove.size();
-		
+
 		for(CQMResultDetailsDTO toAdd : cqmsToAdd) {
 			CQMCriterionDTO criterion = null;
 			if(StringUtils.isEmpty(toAdd.getCmsId())) {
@@ -1564,7 +1564,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			if(criterion == null) {
 				throw new EntityRetrievalException("Could not find CQM with number " + toAdd.getCmsId() + " and version " + toAdd.getVersion());
 			}
-			
+
 			CQMResultDTO newCQMResult = new CQMResultDTO();
 			newCQMResult.setCertifiedProductId(listing.getId());
 			newCQMResult.setCqmCriterionId(criterion.getId());
@@ -1581,20 +1581,20 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				}
 			}
 		}
-		
+
 		for(CQMResultDetailsPair toUpdate : cqmsToUpdate) {
 			numChanges += updateCqm(listing, toUpdate.getOrig(), toUpdate.getUpdated());
 		}
-		
+
 		for(Long idToRemove : idsToRemove) {
 			cqmResultDAO.deleteMappingsForCqmResult(idToRemove);
 			cqmResultDAO.delete(idToRemove);
 		}
-		
+
 		return numChanges;
 	}
-	
-	private int updateCqm(CertifiedProductDTO listing, CQMResultDetailsDTO existingCqm, 
+
+	private int updateCqm(CertifiedProductDTO listing, CQMResultDetailsDTO existingCqm,
 			CQMResultDetailsDTO updatedCqm) throws EntityRetrievalException {
 		int numChanges = 0;
 		//look for changes in the cqms and update if necessary
@@ -1606,12 +1606,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			toUpdate.setSuccess(updatedCqm.getSuccess());
 			cqmResultDAO.update(toUpdate);
 		}
-		
-		
+
+
 		//need to compare existing with updated cqm criteria in case there are differences
 		List<CQMResultCriteriaDTO> criteriaToAdd = new ArrayList<CQMResultCriteriaDTO>();
 		List<CQMResultCriteriaDTO> criteriaToRemove = new ArrayList<CQMResultCriteriaDTO>();
-		
+
 		for(CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
 			boolean exists = false;
 			for(CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
@@ -1623,7 +1623,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				criteriaToRemove.add(existingItem);
 			}
 		}
-		
+
 		for(CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
 			boolean exists = false;
 			for(CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
@@ -1635,7 +1635,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				criteriaToAdd.add(updatedItem);
 			}
 		}
-		
+
 		numChanges = criteriaToAdd.size() + criteriaToRemove.size();
 		for(CQMResultCriteriaDTO currToAdd : criteriaToAdd) {
 			currToAdd.setCqmResultId(existingCqm.getId());
@@ -1648,12 +1648,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 		return numChanges;
 	}
-	
+
 	private Long findCqmCriterionId(CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
 		if(cqm.getCriterionId() != null) {
 			return cqm.getCriterionId();
 		}
-		if(cqm.getCriterion() != null && 
+		if(cqm.getCriterion() != null &&
 				!StringUtils.isEmpty(cqm.getCriterion().getNumber())) {
 			CertificationCriterionDTO cert = certCriterionDao.getByName(cqm.getCriterion().getNumber());
 			if(cert != null) {
@@ -1667,10 +1667,10 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			throw new EntityRetrievalException("A criteria id or number must be provided.");
 		}
 	}
-	
+
 	private List<CQMResultDetailsDTO> convert(CQMResultDetails cqm) {
 		List<CQMResultDetailsDTO> result = new ArrayList<CQMResultDetailsDTO>();
-		
+
 		if(!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null && cqm.getSuccessVersions().size() > 0) {
 			for(String version : cqm.getSuccessVersions()) {
 				CQMResultDetailsDTO dto = new CQMResultDetailsDTO();
@@ -1710,7 +1710,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 		return result;
 	}
-	
+
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	@Transactional(readOnly = false)
@@ -1720,7 +1720,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
 		List<MeaningfulUseUser> errors = new ArrayList<MeaningfulUseUser>();
 		List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
-		
+
 		for(MeaningfulUseUser muu : meaningfulUseUserSet){
 			if(StringUtils.isEmpty(muu.getError())){
 				try{
@@ -1747,7 +1747,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 						else{
 							throw new EntityRetrievalException();
 						}
-						
+
 						try{
 							CertifiedProductDTO returnDto = cpDao.updateMeaningfulUseUsers(dto);
 							muu.setCertifiedProductId(returnDto.getId());
@@ -1758,7 +1758,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							errors.add(muu);
 						}
 					}
-				} catch (Exception e){	
+				} catch (Exception e){
 					muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
 							+ "The provided \"chpl_product_number\" does not exist.");
 					errors.add(muu);
@@ -1768,12 +1768,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				errors.add(muu);
 			}
 		}
-		
+
 		meaningfulUseUserResults.setMeaningfulUseUsers(results);
 		meaningfulUseUserResults.setErrors(errors);
 		return meaningfulUseUserResults;
 	}
-	
+
 	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
 		String message = "";
 		if(!(src instanceof CertifiedProductSearchDetails)) {
@@ -1781,7 +1781,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		} else {
 			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
 			String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-			message = "<p>Activity was detected on certified product " + original.getChplProductNumber(); 
+			message = "<p>Activity was detected on certified product " + original.getChplProductNumber();
 			if(activityThresholdDaysStr.equals("0")) {
 				message += ".";
 			} else {
@@ -1789,11 +1789,11 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			}
 			message += "</p>"
 					+ "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin") + "/#/admin/reports/" + original.getId() + " </p>";
-			
-		} 
+
+		}
 		return message;
 	}
-	
+
 	public boolean isQuestionableActivity(Object src, Object dest) {
 		boolean isQuestionable = false;
 		String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
@@ -1803,7 +1803,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		} else {
 			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
 			CertifiedProductSearchDetails changed = (CertifiedProductSearchDetails) dest;
-			
+
 			if(original.getCertificationEdition().get("name").equals("2011")) {
 				isQuestionable = true;
 			} else {
@@ -1811,14 +1811,14 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
 				if(original.getCertificationDate() != null && changed.getCertificationDate() != null &&
 				   (changed.getLastModifiedDate().longValue() - original.getCertificationDate().longValue() > activityThresholdMillis)) {
-					//if they changed something outside of the suspicious activity window, 
+					//if they changed something outside of the suspicious activity window,
 					//check if the change was something that should trigger an email
-					
+
 					if(!original.getCertificationStatus().get("id").equals(changed.getCertificationStatus().get("id"))) {
 						isQuestionable = true;
 					}
-					
-					if( (original.getCqmResults() == null && changed.getCqmResults() != null) || 
+
+					if( (original.getCqmResults() == null && changed.getCqmResults() != null) ||
 						(original.getCqmResults() != null && changed.getCqmResults() == null) ||
 						(original.getCqmResults().size() != changed.getCqmResults().size())) {
 						isQuestionable = true;
@@ -1874,11 +1874,11 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		}
 		return isQuestionable;
 	}
-	
+
 	private class QmsStandardPair {
 		CertifiedProductQmsStandard orig;
 		CertifiedProductQmsStandard updated;
-		
+
 		public QmsStandardPair() {}
 		public QmsStandardPair(CertifiedProductQmsStandard orig, CertifiedProductQmsStandard updated) {
 			this.orig = orig;
@@ -1896,13 +1896,13 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		public void setUpdated(CertifiedProductQmsStandard updated) {
 			this.updated = updated;
 		}
-		
+
 	}
-	
+
 	private class CQMResultDetailsPair {
 		CQMResultDetailsDTO orig;
 		CQMResultDetailsDTO updated;
-		
+
 		public CQMResultDetailsPair() {}
 		public CQMResultDetailsPair(CQMResultDetailsDTO orig, CQMResultDetailsDTO updated) {
 			this.orig = orig;

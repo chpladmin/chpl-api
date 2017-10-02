@@ -21,27 +21,27 @@ import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
 @Entity
 @Table(name = "test_tool")
 public class TestToolEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
 	@JoinColumn(name = "test_tool_id")
 	@Column(name = "test_tool_id")
 	private Long id;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "description")
 	private String description;
 
 	@Column(name = "retired")
 	private Boolean retired;
-	
+
 	@Basic(optional = true)
 	@OneToMany(targetEntity = CertificationResultTestToolEntity.class, fetch = FetchType.LAZY)
 	private List<CertificationResultTestTool> certificationResultTestTool;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -65,23 +65,23 @@ public class TestToolEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

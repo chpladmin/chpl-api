@@ -13,33 +13,33 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "job_type")
 public class JobTypeEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "description")
 	private String description;
-	
+
 	@Column(name = "success_message")
 	private String successMessage;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -55,7 +55,7 @@ public class JobTypeEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getSuccessMessage() {
 		return successMessage;
 	}

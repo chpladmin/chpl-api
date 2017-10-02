@@ -32,7 +32,7 @@ import gov.healthit.chpl.entity.job.JobTypeEntity;
 public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	private static final Logger logger = LogManager.getLogger(JobDAOImpl.class);
 	@Autowired MessageSource messageSource;
-	
+
 	@Override
 	@Transactional
 	public JobDTO create(JobDTO dto) throws EntityCreationException {
@@ -40,25 +40,25 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		if (dto.getId() != null){
 			entity = this.getEntityById(dto.getId());
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException(
-					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.exists"), LocaleContextHolder.getLocale()), 
-					dto.getId()+""));			
+					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.exists"), LocaleContextHolder.getLocale()),
+					dto.getId()+""));
 		} else {
 			entity = new JobEntity();
 			if(dto.getUser() != null && dto.getUser().getId() != null) {
 				entity.setUserId(dto.getUser().getId());
 			} else {
 				throw new EntityCreationException(
-						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.missingRequiredData"), LocaleContextHolder.getLocale()), 
-						"A user ID "));			
+						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.missingRequiredData"), LocaleContextHolder.getLocale()),
+						"A user ID "));
 			}
 			if(dto.getJobType() != null && dto.getJobType().getId() != null) {
 				entity.setJobTypeId(dto.getJobType().getId());
 			} else {
 				throw new EntityCreationException(
-						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.missingRequiredData"), LocaleContextHolder.getLocale()), 
+						String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.missingRequiredData"), LocaleContextHolder.getLocale()),
 						"A type ID "));
 			}
 			entity.setData(dto.getData());
@@ -68,7 +68,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 			entity.setDeleted(false);
 			entity.setLastModifiedDate(new Date());
 			entity.setLastModifiedUser(dto.getUser().getId());
-			
+
 			try {
 				entityManager.persist(entity);
 				entityManager.flush();
@@ -78,7 +78,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				throw new EntityCreationException(msg);
 			}
 			return new JobDTO(entity);
-		}		
+		}
 	}
 
 	@Override
@@ -95,14 +95,14 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 			}
 			entityManager.flush();
 		}
-		
+
 		JobStatusDTO status = updateStatus(dto, 0, JobStatusType.In_Progress);
 		dto.setStartTime(new Date());
 		dto.setEndTime(null);
 		dto.setStatus(status);
-		update(dto);		
+		update(dto);
 	}
-	
+
 	@Override
 	@Transactional
 	public JobStatusDTO updateStatus(JobDTO dto, Integer percentComplete, JobStatusType status) throws EntityRetrievalException {
@@ -111,7 +111,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 			entity.setEndTime(new Date());
 			entityManager.merge(entity);
 		}
-		
+
 		JobStatusEntity updatedStatus = null;
 		if(entity.getStatus() != null) {
 			updatedStatus = entity.getStatus();
@@ -135,7 +135,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		entityManager.flush();
 		return new JobStatusDTO(updatedStatus);
 	}
-	
+
 	@Override
 	@Transactional
 	public void addJobMessage(JobDTO job, String message) {
@@ -149,15 +149,15 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
-	
+
 	@Override
 	@Transactional
 	public JobDTO update(JobDTO dto) throws EntityRetrievalException {
 		JobEntity entity = this.getEntityById(dto.getId());
 		if(entity == null) {
 			throw new EntityRetrievalException(
-					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.doesNotExist"), LocaleContextHolder.getLocale()), 
-					dto.getId()+""));		
+					String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.doesNotExist"), LocaleContextHolder.getLocale()),
+					dto.getId()+""));
 		}
 		if(dto.getUser() != null && dto.getUser().getId() != null) {
 			entity.setUserId(dto.getUser().getId());
@@ -173,7 +173,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		entity.setEndTime(dto.getEndTime());
 		entity.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : entity.getUserId());
 		entity.setLastModifiedDate(new Date());
-		entityManager.merge(entity);		
+		entityManager.merge(entity);
 		entityManager.flush();
 		return new JobDTO(entity);
 	}
@@ -182,13 +182,13 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
 		JobEntity toDelete = getEntityById(id);
-		
+
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
 			toDelete.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
 			entityManager.merge(toDelete);
-			
+
 			if(toDelete.getStatus() != null) {
 				JobStatusEntity status = toDelete.getStatus();
 				status.setDeleted(true);
@@ -196,7 +196,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				status.setLastModifiedUser(Util.getCurrentUser() != null ? Util.getCurrentUser().getId() : toDelete.getUserId());
 				entityManager.merge(status);
 			}
-			
+
 			if(toDelete.getMessages() != null && toDelete.getMessages().size() > 0) {
 				for(JobMessageEntity message : toDelete.getMessages()) {
 					message.setDeleted(true);
@@ -205,7 +205,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 					entityManager.merge(message);
 				}
 			}
-			
+
 			entityManager.flush();
 		}
 	}
@@ -213,7 +213,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	@Override
 	@Transactional
 	public JobDTO getById(Long id) {
-		
+
 		JobDTO dto = null;
 		JobEntity entity = getEntityById(id);
 		if (entity != null){
@@ -221,12 +221,12 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		}
 		return dto;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<JobDTO> getByUser(Long userId) {
 		entityManager.clear();
-		
+
 		Query query = entityManager.createQuery( "SELECT DISTINCT job "
 				+ "FROM JobEntity job "
 				+ "JOIN FETCH job.user user "
@@ -238,28 +238,28 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				+ "AND (job.userId = :userId) ", JobEntity.class );
 		query.setParameter("userId", userId);
 		List<JobEntity> entities = query.getResultList();
-		
+
 		List<JobDTO> dtos = new ArrayList<JobDTO>();
-		for (JobEntity entity : entities) {
-			JobDTO dto = new JobDTO(entity);
-			dtos.add(dto);
-		}
-		return dtos;		
-	}
-	
-	@Override
-	@Transactional
-	public List<JobDTO> findAll() {
-		List<JobEntity> entities = getAllEntities();
-		List<JobDTO> dtos = new ArrayList<JobDTO>();
-		
 		for (JobEntity entity : entities) {
 			JobDTO dto = new JobDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
 	}
-	
+
+	@Override
+	@Transactional
+	public List<JobDTO> findAll() {
+		List<JobEntity> entities = getAllEntities();
+		List<JobDTO> dtos = new ArrayList<JobDTO>();
+
+		for (JobEntity entity : entities) {
+			JobDTO dto = new JobDTO(entity);
+			dtos.add(dto);
+		}
+		return dtos;
+	}
+
 	@Override
 	@Transactional
 	public List<JobDTO> findAllRunningAndCompletedBetweenDates(Date startDate, Date endDate, Long userId) {
@@ -281,7 +281,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		if(userId != null && userId > 0) {
 			queryStr += " AND user.id = :userId";
 		}
-		
+
 		Query query = entityManager.createQuery(queryStr, JobEntity.class);
 		query.setParameter("startDate", startDate);
 		query.setParameter("endDate", endDate);
@@ -296,7 +296,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		}
 		return dtos;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<JobDTO> findAllRunning() {
@@ -318,14 +318,14 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		}
 		return dtos;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<JobTypeDTO> findAllTypes() {
 		List<JobTypeEntity> entities = entityManager.createQuery( "SELECT type "
 				+ "FROM JobTypeEntity type "
 				+ "WHERE (type.deleted <> true) ", JobTypeEntity.class).getResultList();
-		
+
 		List<JobTypeDTO> dtos = new ArrayList<JobTypeDTO>();
 		for (JobTypeEntity entity : entities) {
 			JobTypeDTO dto = new JobTypeDTO(entity);
@@ -333,7 +333,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		}
 		return dtos;
 	}
-	
+
 	private List<JobEntity> getAllEntities() {
 		entityManager.clear();
 		return entityManager.createQuery( "SELECT DISTINCT job "
@@ -345,11 +345,11 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				+ "LEFT OUTER JOIN FETCH job.messages messages "
 				+ "WHERE (job.deleted <> true) ", JobEntity.class).getResultList();
 	}
-	
+
 	private JobEntity getEntityById(Long id) {
 		entityManager.clear();
 		JobEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "SELECT DISTINCT job "
 				+ "FROM JobEntity job "
 				+ "LEFT OUTER JOIN FETCH job.user user "
@@ -364,7 +364,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
 }

@@ -13,37 +13,37 @@ import javax.persistence.Table;
 @Entity
 @Table(name="api_key")
 public class ApiKeyEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "api_key_id", nullable = false )
 	private Long id;
-	
+
 	@Basic(optional = false)
 	@Column(name = "api_key")
 	private String apiKey;
-	
+
 	@Basic(optional = false)
 	@Column(name = "email")
 	private String email;
-	
+
 	@Basic(optional = false)
 	@Column(name = "name_organization")
 	private String nameOrganization;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false )
 	private Boolean deleted;
@@ -111,5 +111,5 @@ public class ApiKeyEntity {
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
-	
+
 }

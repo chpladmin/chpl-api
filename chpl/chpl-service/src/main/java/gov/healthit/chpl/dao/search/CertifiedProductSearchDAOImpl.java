@@ -24,13 +24,13 @@ import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
 	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
-	
+
 	@Override
 	public Long getListingIdByUniqueChplNumber(String chplProductNumber) {
 		Long id = null;
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
-				+ "WHERE chplProductNumber = :chplProductNumber", 
+				+ "WHERE chplProductNumber = :chplProductNumber",
 				CertifiedProductBasicSearchResultEntity.class);
 		query.setParameter("chplProductNumber", chplProductNumber);
 		List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
@@ -40,13 +40,13 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		}
 		return id;
 	}
-	
+
 	@Override
 	public IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId) {
 		Long id = null;
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
-				+ "WHERE certified_product_id = :certifiedProductId", 
+				+ "WHERE certified_product_id = :certifiedProductId",
 				CertifiedProductBasicSearchResultEntity.class);
 		query.setParameter("certifiedProductId", certifiedProductId);
 		List<CertifiedProductBasicSearchResultEntity> searchResult = query.getResultList();
@@ -63,23 +63,23 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
 				, CertifiedProductBasicSearchResultEntity.class);
-		
+
 		Date startDate = new Date();
 		List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
 		Date endDate = new Date();
 		logger.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
 		return convert(results);
 	}
-	
+
 	@Override
-	public CertifiedProduct getByChplProductNumber(String chplProductNumber) 
+	public CertifiedProduct getByChplProductNumber(String chplProductNumber)
 		throws EntityNotFoundException {
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
 				+ "WHERE cps.chplProductNumber = :chplProductNumber"
 				, CertifiedProductBasicSearchResultEntity.class);
 		query.setParameter("chplProductNumber", chplProductNumber);
-		
+
 		List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
 		if(results == null || results.size() == 0) {
 			throw new EntityNotFoundException("No listing with CHPL Product Number " + chplProductNumber + " was found.");
@@ -91,7 +91,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		result.setId(results.get(0).getId());
 		return result;
 	}
-	
+
 	private List<CertifiedProductFlatSearchResult> convert(List<CertifiedProductBasicSearchResultEntity> dbResults) {
 		List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>(dbResults.size());
 		for(CertifiedProductBasicSearchResultEntity dbResult : dbResults) {
@@ -119,7 +119,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 			result.setCriteriaMet(dbResult.getCerts());
 			result.setCqmsMet(dbResult.getCqms());
 			result.setPreviousDevelopers(dbResult.getPreviousDevelopers());
-			
+
 //			if(!StringUtils.isEmpty(dbResult.getPreviousDevelopers())) {
 //				String[] splitDevelopers = dbResult.getPreviousDevelopers().split("\u263A");
 //				if(splitDevelopers != null && splitDevelopers.length > 0) {
@@ -128,7 +128,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 //					}
 //				}
 //			}
-//			
+//
 //			if(!StringUtils.isEmpty(dbResult.getCerts())) {
 //				String[] splitCerts = dbResult.getCerts().split("\u263A");
 //				if(splitCerts != null && splitCerts.length > 0) {
@@ -137,7 +137,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 //					}
 //				}
 //			}
-//			
+//
 //			if(!StringUtils.isEmpty(dbResult.getCqms())) {
 //				String[] splitCqms = dbResult.getCqms().split("\u263A");
 //				if(splitCqms != null && splitCqms.length > 0) {
@@ -146,12 +146,12 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 //					}
 //				}
 //			}
-			
+
 			results.add(result);
 		}
 		return results;
 	}
-	
+
 	private IcsFamilyTreeNode convertIcs(CertifiedProductBasicSearchResultEntity result) {
 		IcsFamilyTreeNode node = new IcsFamilyTreeNode();
 		node.setId(result.getId());

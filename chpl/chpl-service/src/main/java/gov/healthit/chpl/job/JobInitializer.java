@@ -17,16 +17,16 @@ import gov.healthit.chpl.dto.job.JobDTO;
 @Component
 public class JobInitializer {
 	private static final Logger logger = LogManager.getLogger(JobInitializer.class);
-	
+
 	@Autowired private TaskExecutor taskExecutor;
 	@Autowired private RunnableJobFactory jobFactory;
 	@Autowired private JobDAO jobDao;
-	
+
 	@PostConstruct
 	@Async
 	public void initialize() {
 		List<JobDTO> runningJobs = jobDao.findAllRunning();
-		
+
 		logger.info("Found " + runningJobs.size() + " jobs to start.");
 		for(JobDTO job : runningJobs) {
 			RunnableJob runnableJob = null;
@@ -41,5 +41,5 @@ public class JobInitializer {
 			}
 		}
 	}
-	
+
 }

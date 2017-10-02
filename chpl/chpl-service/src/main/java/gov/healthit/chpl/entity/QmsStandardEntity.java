@@ -14,13 +14,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "qms_standard")
 public class QmsStandardEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "qms_standard_id")
 	private Long id;
-	
+
 	@Basic(optional = false)
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -44,19 +44,19 @@ public class QmsStandardEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

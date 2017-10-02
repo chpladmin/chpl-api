@@ -51,19 +51,19 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		result.add("Difference from CAP Completed and CAP Must Be Completed");
 		return result;
 	}
-	
+
 	protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<List<String>> result = new ArrayList<List<String>>();
-		
+
 		List<String> survFields = getSurveillanceFields(data, surv);
-		
+
 		if(surv.getRequirements() == null || surv.getRequirements().size() == 0) {
 			List<String> row = new ArrayList<String>();
 			row.addAll(survFields);
 			row.addAll(getNoNonconformityFields(data, surv));
 			result.add(row);
 		} else {
-			for(SurveillanceRequirement req : surv.getRequirements()) {	
+			for(SurveillanceRequirement req : surv.getRequirements()) {
 				List<SurveillanceNonconformity> relevantNonconformities = getNonconformities(req);
 				if(relevantNonconformities == null || relevantNonconformities.size() == 0) {
 					List<String> row = new ArrayList<String>();
@@ -82,11 +82,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		}
 		return result;
 	}
-	
+
 	protected List<SurveillanceNonconformity> getNonconformities(SurveillanceRequirement req) {
 		return req.getNonconformities();
 	}
-	
+
 	protected List<String> getSurveillanceFields(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<String> survFields = new ArrayList<String>();
 		survFields.add(data.getDeveloper().getName());
@@ -96,7 +96,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
 		if(!productDetailsUrl.endsWith("/")) {
 			productDetailsUrl += "/";
-		} 
+		}
 		productDetailsUrl += "#/product/" + data.getId();
 		survFields.add(productDetailsUrl);
 		survFields.add(data.getCertifyingBody().get("name").toString());
@@ -106,11 +106,11 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			survFields.add("No status change");
 		} else {
 			LocalDateTime lastStatusChangeDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(lastCertificationChangeMillis), 
+					Instant.ofEpochMilli(lastCertificationChangeMillis),
 				    ZoneId.systemDefault());
 			survFields.add(dateFormatter.format(lastStatusChangeDate));
 		}
-		
+
 		if(surv.getFriendlyId() != null){
 			survFields.add(surv.getFriendlyId());
 		}
@@ -119,7 +119,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		}
 		if(surv.getStartDate() != null) {
 			LocalDateTime survStartDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(surv.getStartDate().getTime()), 
+					Instant.ofEpochMilli(surv.getStartDate().getTime()),
 				    ZoneId.systemDefault());
 			survFields.add(dateFormatter.format(survStartDate));
 		} else {
@@ -127,7 +127,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		}
 		if(surv.getEndDate() != null) {
 			LocalDateTime survEndDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(surv.getEndDate().getTime()), 
+					Instant.ofEpochMilli(surv.getEndDate().getTime()),
 				    ZoneId.systemDefault());
 			survFields.add(dateFormatter.format(survEndDate));
 		} else {
@@ -136,7 +136,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		survFields.add(surv.getType().getName());
 		return survFields;
 	}
-	
+
 	protected List<String> getNoNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<String> ncFields = new ArrayList<String>();
 		ncFields.add("N");
@@ -155,7 +155,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		ncFields.add("");
 		return ncFields;
 	}
-	
+
 	protected List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv, SurveillanceNonconformity nc) {
 		List<String> ncFields = new ArrayList<String>();
 		ncFields.add("Y");
@@ -163,7 +163,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		LocalDateTime ncDeterminationDate = null;
 		if(nc.getDateOfDetermination() != null) {
 			ncDeterminationDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), 
+					Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),
 				    ZoneId.systemDefault());
 			ncFields.add(dateFormatter.format(ncDeterminationDate));
 		} else {
@@ -172,7 +172,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		LocalDateTime capApprovalDate = null;
 		if(nc.getCapApprovalDate() != null) {
 			capApprovalDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()),
 				    ZoneId.systemDefault());
 			ncFields.add(dateFormatter.format(capApprovalDate));
 		} else {
@@ -181,7 +181,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		LocalDateTime capStartDate = null;
 		if(nc.getCapStartDate() != null) {
 			capStartDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapStartDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapStartDate().getTime()),
 				    ZoneId.systemDefault());
 			ncFields.add(dateFormatter.format(capStartDate));
 		} else {
@@ -190,7 +190,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		LocalDateTime capMustCompleteDate  = null;
 		if(nc.getCapMustCompleteDate() != null) {
 			capMustCompleteDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()),
 				    ZoneId.systemDefault());
 			ncFields.add(dateFormatter.format(capMustCompleteDate));
 		} else {
@@ -199,13 +199,13 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 		LocalDateTime capEndDate = null;
 		if(nc.getCapEndDate() != null) {
 			capEndDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapEndDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
 				    ZoneId.systemDefault());
 			ncFields.add(dateFormatter.format(capEndDate));
 		} else {
 			ncFields.add("");
 		}
-		
+
 		if(capApprovalDate != null) {
 			//calculate number of days from nc determination to cap approval date
 			Duration timeBetween = Duration.between(ncDeterminationDate, capApprovalDate);
@@ -217,7 +217,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			Duration timeBetween = Duration.between(ncDeterminationDate, LocalDateTime.now());
 			ncFields.add(timeBetween.toDays()+"");
 		}
-		
+
 		if(capApprovalDate != null && capStartDate != null) {
 			Duration timeBetween = Duration.between(capApprovalDate, capStartDate);
 			ncFields.add(timeBetween.toDays()+"");
@@ -230,7 +230,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			ncFields.add("");
 			ncFields.add("");
 		}
-		
+
 		if(capStartDate != null && capEndDate != null) {
 			Duration timeBetween = Duration.between(capStartDate, capEndDate);
 			ncFields.add(timeBetween.toDays()+"");
@@ -243,7 +243,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			ncFields.add("");
 			ncFields.add("");
 		}
-		
+
 		if(capEndDate != null && capMustCompleteDate != null) {
 			Duration timeBetween = Duration.between(capMustCompleteDate, capEndDate);
 			ncFields.add(timeBetween.toDays()+"");

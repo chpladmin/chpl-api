@@ -15,41 +15,41 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name="education_type")
 public class EducationTypeEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "education_type_id", nullable = false )
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Size(min = 1)
 	@Column(name="name")
 	private String name;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@NotNull()
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@NotNull()
 	@Column( nullable = false  )
 	private Boolean deleted;
-	
-	
+
+
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setId(Long long1) {
 		this.id = long1;
 	}
@@ -93,5 +93,5 @@ public class EducationTypeEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }

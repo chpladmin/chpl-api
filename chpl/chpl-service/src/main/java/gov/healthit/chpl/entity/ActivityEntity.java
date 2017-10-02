@@ -25,59 +25,59 @@ import gov.healthit.chpl.domain.concept.ActivityConcept;
 @Entity
 @Table(name="activity")
 public class ActivityEntity {
-    
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "activity_id", nullable = false )
 	private Long id;
-	
+
 	@Basic( optional = true )
 	@Column( name = "description", nullable = true )
 	private String description;
-	
+
 	@Basic( optional = true )
 	@Column( name = "original_data", nullable = true )
 	private String originalData;
-	
+
 	@Basic( optional = true )
 	@Column( name = "new_data", nullable = true )
 	private String newData;
-	
+
 	@Basic( optional = false )
 	@Column( name = "activity_date", nullable = false )
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date activityDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "activity_object_id", nullable = false)
 	private Long activityObjectId;
-	
+
 	@Basic( optional = false )
 	@Column( name = "activity_object_concept_id", nullable = false)
 	private Long activityObjectConceptId;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false )
 	private Boolean deleted;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@Fetch(FetchMode.JOIN)
 	@JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable= false)
 	private UserEntity user;
-	
+
 	transient ActivityConcept concept;
 
 	public Long getId() {
@@ -117,7 +117,7 @@ public class ActivityEntity {
 	}
 
 	public void setActivityObjectConceptId(Long activityObjectClassId) {
-		
+
 		for (ActivityConcept concept : ActivityConcept.values()) {
 			if(concept.getId().equals(activityObjectClassId)){
 				this.concept = concept;
@@ -126,11 +126,11 @@ public class ActivityEntity {
 		}
 		this.activityObjectConceptId = activityObjectClassId;
 	}
-	
+
 	public ActivityConcept getConcept() {
-		
+
 		if (this.concept == null){
-			
+
 			for (ActivityConcept concept : ActivityConcept.values()) {
 				if(concept.getId().equals(this.getActivityObjectConceptId())){
 					this.concept = concept;
@@ -145,7 +145,7 @@ public class ActivityEntity {
 		this.activityObjectConceptId = concept.getId();
 		this.concept = concept;
 	}
-	
+
 
 	public Date getCreationDate() {
 		return creationDate;
@@ -178,7 +178,7 @@ public class ActivityEntity {
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
-	
+
 	public String getOriginalData() {
 		return originalData;
 	}
@@ -203,5 +203,5 @@ public class ActivityEntity {
 		this.user = user;
 	}
 
-	
+
 }

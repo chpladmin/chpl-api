@@ -22,59 +22,59 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 @Entity
 @Table(name = "pending_surveillance")
 public class PendingSurveillanceEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "surveillance_id_to_replace")
 	private String survFriendlyIdToReplace;
-	
+
 	@Column(name = "certified_product_unique_id")
 	private String certifiedProductUniqueId;
-	
+
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
 	private CertifiedProductEntity certifiedProduct;
-	
+
 	@Column(name = "start_date")
 	private Date startDate;
-	
+
 	@Column(name = "end_date")
 	private Date endDate;
-	
+
 	@Column(name = "type_value")
 	private String surveillanceType;
-	
+
 	@Column(name = "randomized_sites_used")
 	private Integer numRandomizedSites;
-	
+
 	@Column(name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column(name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column(name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
-	
+
 	@Column(name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
-	
+
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId"  )
 	@Basic( optional = false )
 	@Column( name = "pending_surveillance_id", nullable = false  )
 	private Set<PendingSurveillanceRequirementEntity> surveilledRequirements = new HashSet<PendingSurveillanceRequirementEntity>();
-	
+
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceId"  )
 	@Basic( optional = false )
 	@Column( name = "pending_surveillance_id", nullable = false  )
 	private Set<PendingSurveillanceValidationEntity> validation = new HashSet<PendingSurveillanceValidationEntity>();
-	
+
 	public Long getId() {
 		return id;
 	}

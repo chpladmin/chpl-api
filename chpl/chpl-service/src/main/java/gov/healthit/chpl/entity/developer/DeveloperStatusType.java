@@ -6,29 +6,29 @@ public enum DeveloperStatusType {
 	Active,
 	SuspendedByOnc("Suspended by ONC"),
 	UnderCertificationBanByOnc("Under certification ban by ONC");
-	
+
 	private String name;
 	private DeveloperStatusType() {
-		
+
 	}
-	
+
 	private DeveloperStatusType(String name) {
 		this.name= name;
 	}
-	
+
 	@Override
 	public String toString() {
 		if(!StringUtils.isEmpty(this.name)) {
 			return this.name;
-		} 
+		}
 		return name();
 	}
-	
+
 	public static DeveloperStatusType getValue(String value) {
 		if(value == null) {
 			return null;
 		}
-		
+
 		DeveloperStatusType result = null;
 		DeveloperStatusType[] values = DeveloperStatusType.values();
 		for(int i = 0; i < values.length && result == null; i++) {

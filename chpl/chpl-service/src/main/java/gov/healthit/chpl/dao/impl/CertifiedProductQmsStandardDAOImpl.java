@@ -20,7 +20,7 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 
 	@Override
 	public CertifiedProductQmsStandardDTO createCertifiedProductQms(CertifiedProductQmsStandardDTO toCreate) throws EntityCreationException {
-		
+
 		CertifiedProductQmsStandardEntity toCreateEntity = new CertifiedProductQmsStandardEntity();
 		toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
 		toCreateEntity.setQmsStandardId(toCreate.getQmsStandardId());
@@ -35,10 +35,10 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 
 		return new CertifiedProductQmsStandardDTO(toCreateEntity);
 	}
-	
+
 	@Override
 	public CertifiedProductQmsStandardDTO updateCertifiedProductQms(CertifiedProductQmsStandardDTO toUpdate) throws EntityRetrievalException {
-		
+
 		CertifiedProductQmsStandardEntity curr = getEntityById(toUpdate.getId());
 		if(curr == null) {
 			throw new EntityRetrievalException("Could not find mapping with id " + toUpdate.getId());
@@ -52,10 +52,10 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 
 		return new CertifiedProductQmsStandardDTO(curr);
 	}
-	
+
 	@Override
 	public CertifiedProductQmsStandardDTO deleteCertifiedProductQms(Long id) throws EntityRetrievalException {
-		
+
 		CertifiedProductQmsStandardEntity curr = getEntityById(id);
 		if(curr == null) {
 			throw new EntityRetrievalException("Could not find mapping with id " + id);
@@ -68,19 +68,19 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 
 		return new CertifiedProductQmsStandardDTO(curr);
 	}
-	
+
 	@Override
 	public List<CertifiedProductQmsStandardDTO> getQmsStandardsByCertifiedProductId(Long certifiedProductId)
 			throws EntityRetrievalException {
 		List<CertifiedProductQmsStandardEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CertifiedProductQmsStandardDTO> dtos = new ArrayList<CertifiedProductQmsStandardDTO>();
-		
+
 		for (CertifiedProductQmsStandardEntity entity : entities){
 			dtos.add(new CertifiedProductQmsStandardDTO(entity));
 		}
 		return dtos;
 	}
-	
+
 	@Override
 	public CertifiedProductQmsStandardDTO lookupMapping(Long certifiedProductId, Long qmsStandardId)
 			throws EntityRetrievalException {
@@ -92,34 +92,34 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 		}
 		return result;
 	}
-	
+
 	private CertifiedProductQmsStandardEntity getEntityById(Long id) throws EntityRetrievalException {
 		CertifiedProductQmsStandardEntity entity = null;
 		Query query = entityManager.createQuery( "SELECT qms from CertifiedProductQmsStandardEntity qms "
 				+ "LEFT OUTER JOIN FETCH qms.qmsStandard "
-				+ "where (NOT qms.deleted = true) AND (certified_product_qms_standard_id = :entityid) ", 
+				+ "where (NOT qms.deleted = true) AND (certified_product_qms_standard_id = :entityid) ",
 				CertifiedProductQmsStandardEntity.class );
 
 		query.setParameter("entityid", id);
 		List<CertifiedProductQmsStandardEntity> result = query.getResultList();
 		if(result.size() >= 1) {
 			entity = result.get(0);
-		} 
+		}
 		return entity;
 	}
-	
+
 	private List<CertifiedProductQmsStandardEntity> getEntitiesByCertifiedProductId(Long productId) throws EntityRetrievalException {
 		Query query = entityManager.createQuery( "SELECT qms from CertifiedProductQmsStandardEntity qms "
 				+ "LEFT OUTER JOIN FETCH qms.qmsStandard "
-				+ "where (NOT qms.deleted = true) AND (certified_product_id = :entityid) ", 
+				+ "where (NOT qms.deleted = true) AND (certified_product_id = :entityid) ",
 				CertifiedProductQmsStandardEntity.class );
 
 		query.setParameter("entityid", productId);
 		List<CertifiedProductQmsStandardEntity> result = query.getResultList();
-		
+
 		return result;
 	}
-	
+
 	private List<CertifiedProductQmsStandardEntity> findSpecificMapping(Long productId, Long qmsId) throws EntityRetrievalException {
 		Query query = entityManager.createQuery( "SELECT qms from CertifiedProductQmsStandardEntity qms "
 				+ "LEFT OUTER JOIN FETCH qms.qmsStandard "
@@ -131,7 +131,7 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 		query.setParameter("productId", productId);
 		query.setParameter("qmsId", qmsId);
 		List<CertifiedProductQmsStandardEntity> result = query.getResultList();
-		
+
 		return result;
 	}
 }

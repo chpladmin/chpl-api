@@ -26,12 +26,12 @@ public interface SurveillanceDAO {
 	public SurveillanceNonconformityDocumentationEntity getDocumentById(Long documentId) throws EntityRetrievalException;
 	public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException ;
 	public void deleteNonconformityDocument(Long documentId) throws EntityRetrievalException;
-	
+
 	public Long insertPendingSurveillance(Surveillance surv);
 	public PendingSurveillanceEntity getPendingSurveillanceById(Long id, boolean includeDeleted) throws EntityRetrievalException;
 	public List<PendingSurveillanceEntity> getPendingSurveillanceByAcb(Long acbId);
 	public void deletePendingSurveillance(Surveillance surv) throws EntityRetrievalException;
-	
+
 	public List<SurveillanceType> getAllSurveillanceTypes();
 	public SurveillanceType findSurveillanceType(String type);
 	public SurveillanceType findSurveillanceType(Long id);

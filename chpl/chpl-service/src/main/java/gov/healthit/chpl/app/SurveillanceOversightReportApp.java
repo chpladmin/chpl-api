@@ -13,9 +13,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
-public abstract class SurveillanceOversightReportApp extends NotificationEmailerReportApp {	
+public abstract class SurveillanceOversightReportApp extends NotificationEmailerReportApp {
 	private static final Logger logger = LogManager.getLogger(SurveillanceOversightReportApp.class);
-	
+
 	 protected static final String TRIGGER_DESCRIPTIONS = "<h4>Description of Surveillance Rules</h4>" +
         "<ol>" +
         "<li>" + SurveillanceOversightRule.LONG_SUSPENSION.getTitle() + ": " + SurveillanceOversightRule.LONG_SUSPENSION.getDescription() + "</li>" +
@@ -25,11 +25,11 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
         "<li>" + SurveillanceOversightRule.CAP_NOT_CLOSED.getTitle() + ": " + SurveillanceOversightRule.CAP_NOT_CLOSED.getDescription() + "</li>" +
         "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getDescription() + "</li>" +
         "</ol>";
-	 
+
 	public SurveillanceOversightReportApp(){
 		super();
 	}
-	
+
 	@Override
 	public List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails() {
 		List<CertifiedProductDetailsDTO> allCertifiedProducts = this.getCertifiedProductDAO().findWithSurveillance();
@@ -44,7 +44,7 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
 		}
 		return allCertifiedProductDetails;
 	}
-	
+
 	protected String createHtmlEmailBody(Map<SurveillanceOversightRule, Integer> brokenRules, String noContentMsg) throws IOException {
 		//were any rules broken?
 		boolean anyRulesBroken = hasBrokenRules(brokenRules);
@@ -61,7 +61,7 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
         	htmlMessage += "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + brokenRules.get(SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE) + "</li>";
         	htmlMessage += "</ul>";
         }
-        
+
         htmlMessage += TRIGGER_DESCRIPTIONS;
         return htmlMessage;
 	}

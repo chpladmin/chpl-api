@@ -13,50 +13,50 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_certification_result_additional_software")
 public class PendingCertificationResultAdditionalSoftwareEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_certification_result_additional_software_id", nullable = false  )
 	private Long id;
 
 	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
+	@Column(name = "pending_certification_result_id", nullable = false )
 	private Long pendingCertificationResultId;
 
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
-	
+
 	@Column(name = "certified_product_chpl_id")
 	private String chplId;
-	
+
 	@Column(name = "name")
 	private String softwareName;
-	
+
 	@Column(name = "version")
 	private String softwareVersion;
-	
+
 	@Column(name = "justification")
 	private String justification;
-	
+
 	@Column(name = "grouping")
 	private String grouping;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -65,7 +65,7 @@ public class PendingCertificationResultAdditionalSoftwareEntity {
 		this.id = id;
 	}
 
-	
+
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
@@ -153,6 +153,6 @@ public class PendingCertificationResultAdditionalSoftwareEntity {
 	public void setGrouping(String grouping) {
 		this.grouping = grouping;
 	}
-	
-	
+
+
 }

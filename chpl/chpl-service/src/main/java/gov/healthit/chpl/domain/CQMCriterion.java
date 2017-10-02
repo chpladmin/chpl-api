@@ -14,8 +14,8 @@ public class CQMCriterion implements Serializable {
 	private String nqfNumber;
 	private String number;
 	private String title;
-	
-	
+
+
 	public Long getCriterionId() {
 		return criterionId;
 	}
@@ -76,5 +76,5 @@ public class CQMCriterion implements Serializable {
 	public void setCqmVersion(String cqmVersion) {
 		this.cqmVersion = cqmVersion;
 	}
-	
+
 }

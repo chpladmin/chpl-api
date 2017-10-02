@@ -15,36 +15,36 @@ import gov.healthit.chpl.dto.MacraMeasureDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MacraMeasure implements Serializable {
 	private static final long serialVersionUID = 3070401446291821552L;
-	
+
 	/**
 	 * An internal ID for each valid measure
 	 */
 	@XmlElement(required = false, nillable = true)
 	private Long id;
-	
+
 	/**
 	 * The criteria for which a given measure is valid.
 	 */
 	@XmlElement(required = false, nillable = true)
 	private CertificationCriterion criteria;;
-	
+
 	@XmlElement(required = true)
 	private String abbreviation;
-	
+
 	/**
-	 * The name of the measure that was successfully tested. For example, 
+	 * The name of the measure that was successfully tested. For example,
 	 * "Computerized Provider Order Entry - Medications: Eligible Hospital/Critical"
 	 */
 	@XmlElement(required = false, nillable = true)
 	private String name;
-	
+
 	/**
-	 * The required test associated with each measure. For example, 
+	 * The required test associated with each measure. For example,
 	 * "Required Test 10: Stage 2 Objective 3 Measure 1 and Stage 3 Objective 4 Measure 1"
 	 */
 	@XmlElement(required = false, nillable = true)
 	private String description;
-	
+
 	public MacraMeasure() {
 	}
 
@@ -60,24 +60,24 @@ public class MacraMeasure implements Serializable {
 		this.name = dto.getName();
 		this.description = dto.getDescription();
 	}
-	
+
 	//not overriding equals on purpose
 	//this is meant to determine if a user would think two macra measures
 	//are the same, not as thorough as equals
 	public boolean matches(MacraMeasure anotherMeasure) {
 		boolean result = false;
-		if(!StringUtils.isEmpty(this.getAbbreviation()) && 
-				!StringUtils.isEmpty(anotherMeasure.getAbbreviation()) && 
+		if(!StringUtils.isEmpty(this.getAbbreviation()) &&
+				!StringUtils.isEmpty(anotherMeasure.getAbbreviation()) &&
 				this.getAbbreviation().equalsIgnoreCase(anotherMeasure.getAbbreviation())) {
 			result = true;
-		}  else if(!StringUtils.isEmpty(this.getName()) && 
-				!StringUtils.isEmpty(anotherMeasure.getName()) && 
+		}  else if(!StringUtils.isEmpty(this.getName()) &&
+				!StringUtils.isEmpty(anotherMeasure.getName()) &&
 				this.getName().equalsIgnoreCase(anotherMeasure.getName())) {
 			result = true;
 		}
 		return result;
 	}
-		
+
 	public Long getId() {
 		return id;
 	}

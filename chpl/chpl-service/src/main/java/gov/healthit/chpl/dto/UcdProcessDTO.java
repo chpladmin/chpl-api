@@ -8,10 +8,10 @@ public class UcdProcessDTO implements Serializable {
 	private static final long serialVersionUID = -7841496230766088264L;
 	private Long id;
 	private String name;
-	
+
 	public UcdProcessDTO(){}
-	
-	public UcdProcessDTO(UcdProcessEntity entity){		
+
+	public UcdProcessDTO(UcdProcessEntity entity){
 		this.id = entity.getId();
 		this.name = entity.getName();
 	}

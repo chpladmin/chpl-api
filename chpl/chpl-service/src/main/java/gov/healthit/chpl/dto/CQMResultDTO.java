@@ -17,13 +17,13 @@ public class CQMResultDTO implements Serializable {
 	private Long lastModifiedUser;
 	private Boolean success;
 	private Boolean deleted;
-	
+
 	private List<CQMResultCriteriaDTO> criteria;
-	
+
 	public CQMResultDTO(){
 		criteria = new ArrayList<CQMResultCriteriaDTO>();
 	}
-	
+
 	public CQMResultDTO(CQMResultEntity entity){
 		this();
 		this.id = entity.getId();
@@ -35,7 +35,7 @@ public class CQMResultDTO implements Serializable {
 		this.success = entity.isSuccess();
 		this.deleted = entity.isDeleted();
 	}
-	
+
 	public Long getCqmCriterionId() {
 		return cqmCriterionId;
 	}

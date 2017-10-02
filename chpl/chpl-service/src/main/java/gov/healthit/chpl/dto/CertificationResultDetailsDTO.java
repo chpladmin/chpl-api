@@ -18,11 +18,11 @@ public class CertificationResultDetailsDTO implements Serializable {
     private Boolean g2Success;
     private String apiDocumentation;
 	private String privacySecurityFramework;
-	
+
     public CertificationResultDetailsDTO(){}
-    
+
     public CertificationResultDetailsDTO(CertificationResultDetailsEntity entity){
-    	
+
     	this.id = entity.getId();
     	this.certificationCriterionId = entity.getCertificationCriterionId();
     	this.success = entity.getSuccess();
@@ -35,8 +35,8 @@ public class CertificationResultDetailsDTO implements Serializable {
     	this.apiDocumentation = entity.getApiDocumentation();
     	this.privacySecurityFramework = entity.getPrivacySecurityFramework();
     }
-    
-    
+
+
 	public Long getId() {
 		return id;
 	}

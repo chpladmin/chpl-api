@@ -10,16 +10,16 @@ public class PendingCertificationResultTestFunctionalityDTO implements Serializa
 	private Long pendingCertificationResultId;
 	private Long testFunctionalityId;
 	private String number;
-	
+
 	public PendingCertificationResultTestFunctionalityDTO() {}
-	
+
 	public PendingCertificationResultTestFunctionalityDTO(PendingCertificationResultTestFunctionalityEntity entity) {
 		this.setId(entity.getId());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
 		this.setTestFunctionalityId(entity.getTestFunctionalityId());
 		this.setNumber(entity.getTestFunctionalityNumber());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

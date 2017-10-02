@@ -19,47 +19,47 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_certification_result_test_task")
 public class PendingCertificationResultTestTaskEntity {
-		
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_certification_result_test_task_id", nullable = false  )
 	private Long id;
 
 	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
+	@Column(name = "pending_certification_result_id", nullable = false )
 	private Long pendingCertificationResultId;
 
 	@Basic( optional = false )
-	@Column(name = "pending_test_task_id", nullable = false )	
+	@Column(name = "pending_test_task_id", nullable = false )
 	private Long pendingTestTaskId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingTestTaskEntity testTask;
-	
+
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultTestTaskId"  )
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_test_task_id", nullable = false  )
 	private Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<PendingCertificationResultTestTaskParticipantEntity>();
-	
- 	
+
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -68,7 +68,7 @@ public class PendingCertificationResultTestTaskEntity {
 		this.id = id;
 	}
 
-	
+
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}

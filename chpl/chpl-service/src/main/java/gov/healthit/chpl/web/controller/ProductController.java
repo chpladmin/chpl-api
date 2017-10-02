@@ -47,25 +47,25 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/products")
 public class ProductController {
-	
+
 	@Autowired ProductManager productManager;
 	@Autowired ProductVersionManager versionManager;
 	@Autowired CertifiedProductManager cpManager;
-	
-	@ApiOperation(value="List all products", 
+
+	@ApiOperation(value="List all products",
 			notes="Either list all products or optionally just all products belonging to a specific developer.")
 	@RequestMapping(value="", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) Long developerId) {
-		
+
 		List<ProductDTO> productList = null;
-		
+
 		if(developerId != null && developerId > 0) {
-			productList = productManager.getByDeveloper(developerId);	
+			productList = productManager.getByDeveloper(developerId);
 		} else {
 			productList = productManager.getAll();
 		}
-		
+
 		List<Product> products = new ArrayList<Product>();
 		if(productList != null && productList.size() > 0) {
 			for(ProductDTO dto : productList) {
@@ -73,32 +73,32 @@ public class ProductController {
 				products.add(result);
 			}
 		}
-		
+
 		ProductResults results = new ProductResults();
 		results.setProducts(products);
 		return results;
 	}
-	
-	@ApiOperation(value="Get information about a specific product.", 
+
+	@ApiOperation(value="Get information about a specific product.",
 			notes="")
 	@RequestMapping(value="/{productId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
-	public @ResponseBody Product getProductById(@PathVariable("productId") Long productId) 
+	public @ResponseBody Product getProductById(@PathVariable("productId") Long productId)
 			throws EntityRetrievalException {
 		ProductDTO product = productManager.getById(productId);
-		
+
 		Product result = null;
 		if(product != null) {
 			result = new Product(product);
 		}
 		return result;
 	}
-	
-	@ApiOperation(value="Get all listings owned by the specified product.", 
+
+	@ApiOperation(value="Get all listings owned by the specified product.",
 			notes="")
 	@RequestMapping(value="/{productId}/listings", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
-	public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") Long productId) 
+	public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") Long productId)
 			throws EntityRetrievalException {
 		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(productId);
 		List<CertifiedProduct> results = new ArrayList<CertifiedProduct>();
@@ -107,8 +107,8 @@ public class ProductController {
 		}
 		return results;
 	}
-	
-	@ApiOperation(value="Update a product or merge products.", 
+
+	@ApiOperation(value="Update a product or merge products.",
 			notes="This method serves two purposes: to update a single product's information and to merge two products into one. "
 					+ " A user of this service should pass in a single productId to update just that product. "
 					+ " If multiple product IDs are passed in, the service performs a merge meaning that a new product "
@@ -116,19 +116,19 @@ public class ProductController {
 					+ " previously assigned to the productIds specified are reassigned to the newly created product. The "
 					+ " old products are then deleted. "
 					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
-	@RequestMapping(value="/update", method= RequestMethod.POST, 
+	@RequestMapping(value="/update", method= RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset = utf-8")
-	public ResponseEntity<Product> updateProduct(@RequestBody(required = true) UpdateProductsRequest productInfo) throws EntityCreationException, 
+	public ResponseEntity<Product> updateProduct(@RequestBody(required = true) UpdateProductsRequest productInfo) throws EntityCreationException,
 		EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
-		
+
 		ProductDTO result = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
 
 		if(productInfo.getProductIds() == null || productInfo.getProductIds().size() == 0) {
 			throw new InvalidArgumentsException("At least one product id must be provided in the request.");
 		}
-		
+
 		if(productInfo.getProduct() == null && productInfo.newDeveloperId() != null) {
 			//no new product is specified, so we just need to update the developer id
 			for(Long productId : productInfo.getProductIds()) {
@@ -139,7 +139,7 @@ public class ProductController {
 			}
 		} else {
 			if(productInfo.getProductIds().size() > 1) {
-				//if a product was sent in, we need to do a "merge" of the new product and old products 
+				//if a product was sent in, we need to do a "merge" of the new product and old products
 				//create a new product with the rest of the passed in information
 				ProductDTO newProduct = new ProductDTO();
 				newProduct.setName(productInfo.getProduct().getName());
@@ -196,34 +196,34 @@ public class ProductController {
 				}
 				result = productManager.update(toUpdate, true);
 				responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-			}	
+			}
 		}
 
 		if(result == null) {
 			throw new EntityCreationException("There was an error inserting or updating the product information.");
 		}
-		
+
 		//get the updated product since all transactions should be complete by this point
 		ProductDTO updatedProduct = productManager.getById(result.getId());
 		return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
 	}
-	
-	
-	@ApiOperation(value="Split a product - some versions stay with the existing product and some versions are moved to a new product.", 
+
+
+	@ApiOperation(value="Split a product - some versions stay with the existing product and some versions are moved to a new product.",
 			notes="The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
-	@RequestMapping(value="/{productId}/split", method= RequestMethod.POST, 
+	@RequestMapping(value="/{productId}/split", method= RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset = utf-8")
-	public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") Long productId, 
-			@RequestBody(required = true) SplitProductsRequest splitRequest) 
+	public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") Long productId,
+			@RequestBody(required = true) SplitProductsRequest splitRequest)
 			throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
-		
+
 		if(splitRequest.getNewProductCode() != null) {
 			splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
 		}
 		if(StringUtils.isEmpty(splitRequest.getNewProductCode())) {
 			throw new InvalidArgumentsException("A new product code is required.");
-		} 
+		}
 		if(splitRequest.getNewProductName() != null) {
 			splitRequest.setNewProductName(splitRequest.getNewProductName().trim());
 		}
@@ -242,7 +242,7 @@ public class ProductController {
 		if(productId.longValue() != splitRequest.getOldProduct().getProductId().longValue()) {
 			throw new InvalidArgumentsException("The productId passed into the URL (" + productId + ") does not match the product id specified in the request body (" + splitRequest.getOldProduct().getProductId() + ").");
 		}
-		
+
 		HttpHeaders responseHeaders = new HttpHeaders();
 		ProductDTO oldProduct = productManager.getById(splitRequest.getOldProduct().getProductId());
 		ProductDTO newProduct = new ProductDTO();
@@ -261,15 +261,15 @@ public class ProductController {
 		SplitProductResponse response = new SplitProductResponse();
 		response.setNewProduct(new Product(splitProductNew));
 		response.setOldProduct(new Product(splitProductOld));
-		
-		//find out which CHPL product numbers would have changed (only new-style ones) 
+
+		//find out which CHPL product numbers would have changed (only new-style ones)
 		// and add them to the response header
 		List<CertifiedProductDetailsDTO> possibleChangedChplIds = cpManager.getByProduct(splitProductNew.getId());
 		if(possibleChangedChplIds != null && possibleChangedChplIds.size() > 0) {
 			StringBuffer buf = new StringBuffer();
 			for(CertifiedProductDetailsDTO possibleChanged : possibleChangedChplIds) {
 				CertifiedProduct prodWithChplNumber = new CertifiedProduct(possibleChanged);
-				if(!StringUtils.isEmpty(prodWithChplNumber.getChplProductNumber()) && 
+				if(!StringUtils.isEmpty(prodWithChplNumber.getChplProductNumber()) &&
 						prodWithChplNumber.getChplProductNumber().split("\\.").length > 1) {
 					if(buf.length() > 0) {
 						buf.append(",");

@@ -7,12 +7,12 @@ public enum NonconformityType implements Serializable {
 	K2("170.523 (k)(2)"),
 	L("170.523 (l)"),
 	OTHER("Other Non-Conformity");
-	
+
 	private String name;
 	private NonconformityType(String name) {
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

@@ -44,7 +44,7 @@ public class Validator2015 extends Validator {
 		this.counts.put("domainsRequired", 0);
 		this.counts.put("domainsRequiredMet", 0);
 	}
-	
+
 	//**********************************************************************
 	// onValidate
 	//
@@ -71,16 +71,16 @@ public class Validator2015 extends Validator {
 				this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
 			}
 		}
-		
+
 		boolean cpoeValid = isCPOEValid();
 		boolean dpValid = isDPValid();
-		
+
 		this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + this.counts.get("criteriaCpoeRequired") + this.counts.get("criteriaDpRequired"));
 		this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + this.counts.get("criteriaCpoeRequiredMet") + this.counts.get("criteriaDpRequiredMet"));
-		
+
 		return (criteriaValid && cpoeValid && dpValid);
 	}
-	
+
 	//**********************************************************************
 	// isCqmsValid
 	//
@@ -102,7 +102,7 @@ public class Validator2015 extends Validator {
 	//**********************************************************************
 	// isCPOEValid
 	//
-	// At least one of the four Computerized Provider Order Entry-related 
+	// At least one of the four Computerized Provider Order Entry-related
 	// criteria must be met.
 	//**********************************************************************
 	protected boolean isCPOEValid() {
@@ -114,16 +114,16 @@ public class Validator2015 extends Validator {
 		}
 		return false;
 	}
-	
+
 	//**********************************************************************
 	// isDPValid
 	//
-	// Either Direct Project or Direct Project, Edge Protocol, and 
+	// Either Direct Project or Direct Project, Edge Protocol, and
 	// XDR/XDM must be met.
 	//**********************************************************************
 	protected boolean isDPValid() {
 		this.counts.put("criteriaDpRequired", 1);
-		
+
 		// 170.315 (h)(1)
 		if (this.criteriaMet.containsKey("170.315 (h)(1)")) {
 			this.counts.put("criteriaDpRequiredMet", 1);
@@ -133,7 +133,7 @@ public class Validator2015 extends Validator {
 		if (this.criteriaMet.containsKey("170.315 (h)(2)")) {
 			this.counts.put("criteriaDpRequiredMet", 1);
 		}
-	
+
 		return (this.counts.get("criteriaDpRequiredMet") >= this.counts.get("criteriaDpRequired"));
-	}	
+	}
 }

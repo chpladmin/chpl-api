@@ -12,25 +12,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TransparencyAttestationMap implements Serializable {
 	private static final long serialVersionUID = 584097086020777727L;
-	
+
 	/**
 	 * Certification body internal ID
 	 */
 	@XmlElement(required = true)
 	private Long acbId;
-	
+
 	/**
 	 * Certification body name
 	 */
 	@XmlElement(required = false, nillable = true)
 	private String acbName;
-	
+
 	/**
 	 * Affirmative, Negative, or N/A
 	 */
 	@XmlElement(required = true)
 	private String attestation;
-	
+
 	public TransparencyAttestationMap() {}
 
 	public Long getAcbId() {
@@ -56,5 +56,5 @@ public class TransparencyAttestationMap implements Serializable {
 	public void setAttestation(String attestation) {
 		this.attestation = attestation;
 	}
-	
+
 }

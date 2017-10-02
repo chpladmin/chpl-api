@@ -22,10 +22,10 @@ public class CQMCriterionDTO implements Serializable {
 	private String number;
 	private String title;
 	private Boolean retired;
-	
+
 	public CQMCriterionDTO(){
 	}
-	
+
 	public CQMCriterionDTO(CQMCriterionEntity entity){
 		this();
 		this.cmsId = entity.getCmsId();
@@ -43,10 +43,10 @@ public class CQMCriterionDTO implements Serializable {
 		this.number = entity.getNumber();
 		this.title = entity.getTitle();
 		this.setRetired(entity.getRetired());
-		
+
 	}
-	
-	
+
+
 	public String getCmsId() {
 		return cmsId;
 	}

@@ -17,11 +17,11 @@ public class TestParticipantDTO implements Serializable {
 	private Integer computerExperienceMonths;
 	private Integer productExperienceMonths;
 	private String assistiveTechnologyNeeds;
-	
+
 	private String pendingUniqueId;
-	
+
 	public TestParticipantDTO(){}
-	
+
 	public TestParticipantDTO(TestParticipantEntity entity)
 	{
 		if(entity != null) {
@@ -42,7 +42,7 @@ public class TestParticipantDTO implements Serializable {
 			this.assistiveTechnologyNeeds = entity.getAssistiveTechnologyNeeds();
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

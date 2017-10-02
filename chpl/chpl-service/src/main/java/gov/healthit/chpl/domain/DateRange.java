@@ -7,12 +7,12 @@ public class DateRange implements Serializable{
 	private static final long serialVersionUID = 6702794674787630221L;
 	Date startDate;
 	Date endDate;
-	
+
 	public DateRange(Date startDate, Date endDate){
 		setStartDate(startDate);
 		setEndDate(endDate);
 	}
-	
+
 	public Date getStartDate() {
 		return startDate;
 	}

@@ -16,16 +16,16 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 
 	@Override
 	public MacraMeasureDTO getById(Long id) {
-		
+
 		MacraMeasureDTO dto = null;
 		MacraMeasureEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new MacraMeasureDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<MacraMeasureDTO> findAll() {
 		Query query = entityManager.createQuery("from MacraMeasureEntity mme "
@@ -33,36 +33,36 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 				+ "LEFT OUTER JOIN FETCH cce.certificationEdition "
 				+ "WHERE (NOT mme.deleted = true)", MacraMeasureEntity.class );
 		List<MacraMeasureEntity> results = query.getResultList();
-		
+
 		List<MacraMeasureDTO> dtos = new ArrayList<MacraMeasureDTO>(results.size());
 		for(MacraMeasureEntity result : results) {
 			dtos.add(new MacraMeasureDTO(result));
 		}
 		return dtos;
 	}
-	
+
 	@Override
 	public List<MacraMeasureDTO> getByCriteriaNumber(String criteriaNumber) {
 		List<MacraMeasureEntity> entities = getMeasuresByCertificationCriteria(criteriaNumber);
 		List<MacraMeasureDTO> dtos = new ArrayList<MacraMeasureDTO>();
-		
+
 		for (MacraMeasureEntity entity : entities) {
 			MacraMeasureDTO dto = new MacraMeasureDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
-	
+
 	@Override
 	public MacraMeasureDTO getByCriteriaNumberAndValue(String criteriaNumber, String value) {
 		MacraMeasureEntity entity = getMeasureByCertificationCriteriaAndValue(criteriaNumber, value);
-		if(entity == null) { 
+		if(entity == null) {
 			return null;
-		} 
-		return new MacraMeasureDTO(entity);	
+		}
+		return new MacraMeasureDTO(entity);
 	}
-	
+
 	private List<MacraMeasureEntity> getMeasuresByCertificationCriteria(String criteriaNumber) {
 		Query query = entityManager.createQuery( "FROM MacraMeasureEntity mme "
 				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
@@ -73,7 +73,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 		List<MacraMeasureEntity> result = query.getResultList();
 		return result;
 	}
-	
+
 	private MacraMeasureEntity getMeasureByCertificationCriteriaAndValue(String criteriaNumber, String value) {
 		Query query = entityManager.createQuery( "FROM MacraMeasureEntity mme "
 				+ "LEFT OUTER JOIN FETCH mme.certificationCriterion cce "
@@ -89,7 +89,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 		}
 		return result.get(0);
 	}
-	
+
 	private MacraMeasureEntity getEntityById(Long id) {
 		MacraMeasureEntity entity = null;
 		Query query = entityManager.createQuery( "from MacraMeasureEntity mme "
@@ -98,7 +98,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 				+ "where (NOT mme.deleted = true) AND (mme.id = :entityid) ", MacraMeasureEntity.class );
 		query.setParameter("entityid", id);
 		List<MacraMeasureEntity> result = query.getResultList();
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}

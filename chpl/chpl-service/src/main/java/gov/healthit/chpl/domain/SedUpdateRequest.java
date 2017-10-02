@@ -5,7 +5,7 @@ import java.util.List;
 
 public class SedUpdateRequest {
 	private List<TestTask> testTasks;
-	
+
 	public SedUpdateRequest() {
 		this.testTasks = new ArrayList<TestTask>();
 	}

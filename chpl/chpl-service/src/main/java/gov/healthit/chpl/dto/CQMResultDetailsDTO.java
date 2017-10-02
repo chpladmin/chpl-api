@@ -20,13 +20,13 @@ public class CQMResultDetailsDTO implements Serializable {
 	private String domain;
 	private Long cqmVersionId;
 	private String version;
-	
+
 	private List<CQMResultCriteriaDTO> criteria;
-	
+
 	public CQMResultDetailsDTO(){
 		criteria = new ArrayList<CQMResultCriteriaDTO>();
 	}
-	
+
 	public CQMResultDetailsDTO(CQMResultDetailsEntity entity){
 		this();
 		this.id = entity.getId();
@@ -41,9 +41,9 @@ public class CQMResultDetailsDTO implements Serializable {
 		this.domain = entity.getDomain();
 		this.cqmVersionId = entity.getCqmVersionId();
 		this.version = entity.getVersion();
-		
+
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -128,5 +128,5 @@ public class CQMResultDetailsDTO implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 }

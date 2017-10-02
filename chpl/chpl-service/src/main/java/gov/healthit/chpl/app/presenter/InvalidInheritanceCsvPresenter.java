@@ -24,7 +24,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 	private Properties props;
 	private ListingGraphDAO inheritanceDao;
 	private MessageSource messageSource;
-	
+
 	protected List<String> generateHeaderValues() {
 		List<String> result = new ArrayList<String>();
 		result.add("CHPL ID");
@@ -36,7 +36,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 		result.add("Reason for Inclusion");
 		return result;
 	}
-	
+
 	protected List<String> generateRowValue(CertifiedProductSearchDetails data) {
 		//determine if this listing is breaking any of the ICS rules we want to trigger on
 		String reason = breaksIcsRules(data);
@@ -50,7 +50,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 			String productDetailsUrl = props.getProperty("chplUrlBegin").trim();
 			if(!productDetailsUrl.endsWith("/")) {
 				productDetailsUrl += "/";
-			} 
+			}
 			productDetailsUrl += "#/product/" + data.getId();
 			result.add(productDetailsUrl);
 			result.add(reason);
@@ -58,7 +58,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 		}
 		return null;
 	}
-	
+
 	private String breaksIcsRules(CertifiedProductSearchDetails listing) {
 		String uniqueId = listing.getChplProductNumber();
 		String[] uniqueIdParts = uniqueId.split("\\.");
@@ -70,28 +70,28 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 			Integer icsCode = new Integer(icsCodePart);
 			boolean hasIcs = icsCode.intValue() == 1 ||
 					(listing.getIcs() != null && listing.getIcs().getInherits() == Boolean.TRUE);
-			
+
 			//check if listing has ICS but no family ties
-			if(hasIcs && (listing.getIcs() == null || listing.getIcs().getParents() == null || 
+			if(hasIcs && (listing.getIcs() == null || listing.getIcs().getParents() == null ||
 					listing.getIcs().getParents().size() == 0)) {
 				return messageSource.getMessage(new DefaultMessageSourceResolvable("ics.noInheritanceError"), LocaleContextHolder.getLocale());
 			}
-			
+
 			//check if this listing has correct ICS incrementation
 			//this listing's ICS code must be greater than the max of parent ICS codes
-			if(hasIcs && listing.getIcs() != null && listing.getIcs().getParents() != null && 
+			if(hasIcs && listing.getIcs() != null && listing.getIcs().getParents() != null &&
 					listing.getIcs().getParents().size() > 0) {
 				List<Long> parentIds = new ArrayList<Long>();
 				for(CertifiedProduct potentialParent : listing.getIcs().getParents()) {
 					parentIds.add(potentialParent.getId());
 				}
-				
+
 				Integer largestIcs = getInheritanceDao().getLargestIcs(parentIds);
 				int expectedIcsCode = largestIcs.intValue()+1;
 				if(largestIcs != null && icsCode.intValue() != expectedIcsCode) {
 					return String.format(
-							messageSource.getMessage(new DefaultMessageSourceResolvable("ics.badIncrementError"), 
-							LocaleContextHolder.getLocale()), 
+							messageSource.getMessage(new DefaultMessageSourceResolvable("ics.badIncrementError"),
+							LocaleContextHolder.getLocale()),
 							icsCode.toString(), expectedIcsCode+"");
 				}
 			}
@@ -100,7 +100,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 		}
 		return null;
 	}
-	
+
 	public Properties getProps() {
 		return props;
 	}

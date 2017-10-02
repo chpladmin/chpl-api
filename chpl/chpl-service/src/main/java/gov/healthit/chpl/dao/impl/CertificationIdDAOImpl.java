@@ -40,7 +40,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	public static String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
 	public static int CERT_ID_LENGTH = 15;
 	private static long MODIFIED_USER_ID = -4L;
-	
+
 	private static int ENCODED_RADIX = 36;			// The radix base for values within the Key
 	private static int ENCODED_PADDED_LENGTH = 8;	// The number if digits for each value in the Key
 
@@ -49,11 +49,11 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
 		CertificationIdEntity entity = null;
 		CertificationIdDTO newDto = null;
-			
+
 		if (null != entity) {
 			throw new EntityCreationException("An entity with this Certification ID already exists.");
 		} else {
-				
+
 			// Create a new EHR Certification ID record
 			entity = new CertificationIdEntity();
 			entity.setCertificationId(this.generateCertificationIdString(year));
@@ -87,43 +87,43 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 			// Store the map entities
 			entityManager.flush();
 		}
-		
+
 		return newDto;
 	}
-	
+
 	@Override
 	@Transactional
 	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
-		
+
 		CertificationIdEntity entity = null;
 		try {
-			if (null != dto.getId()) 
+			if (null != dto.getId())
 				entity = this.getEntityById(dto.getId());
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this record ID or Certification ID already exists.");
 		} else {
-			
+
 			entity = new CertificationIdEntity();
 			entity.setCertificationId(dto.getCertificationId());
 			entity.setYear(dto.getYear());
 			entity.setPracticeTypeId(dto.getPracticeTypeId());
-			
+
 			if(dto.getLastModifiedUser() != null) {
 				entity.setLastModifiedUser(dto.getLastModifiedUser());
 			} else {
 				entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			}		
-			
+			}
+
 			if(dto.getLastModifiedDate() != null) {
 				entity.setLastModifiedDate(dto.getLastModifiedDate());
 			} else {
 				entity.setLastModifiedDate(new Date());
 			}
-			
+
 			if(dto.getCreationDate() != null) {
 				entity.setCreationDate(dto.getCreationDate());
 			} else {
@@ -133,7 +133,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 			create(entity);
 			return new CertificationIdDTO(entity);
 		}
-		
+
 	}
 
 	@Override
@@ -147,7 +147,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		}
 		return results;
 	}
-	
+
 	@Override
 	public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
 		List<CQMMetDTO> dtos = new ArrayList<CQMMetDTO>();
@@ -159,16 +159,16 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 			query.setParameter("productIds", productIds);
 			dtos = query.getResultList();
 		}
-		
+
 		return dtos;
 	}
-	
+
 	@Override
 	public List<CertificationIdDTO> findAll() {
-		
+
 		List<CertificationIdEntity> entities = getAllEntities();
 		List<CertificationIdDTO> dtos = new ArrayList<>();
-		
+
 		for (CertificationIdEntity entity : entities) {
 			CertificationIdDTO dto = new CertificationIdDTO(entity);
 			dtos.add(dto);
@@ -178,32 +178,32 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
 	@Override
 	public CertificationIdDTO getById(Long id) throws EntityRetrievalException {
-		
+
 		CertificationIdEntity entity = getEntityById(id);
-		if(entity == null) { 
+		if(entity == null) {
 			return null;
 		}
 		CertificationIdDTO dto = new CertificationIdDTO(entity);
 		return dto;
-		
+
 	}
 
 	@Override
 	public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
-		
+
 		CertificationIdEntity entity = getEntityByCertificationId(certificationId);
-		if(entity == null) { 
+		if(entity == null) {
 			return null;
 		}
 		CertificationIdDTO dto = new CertificationIdDTO(entity);
 		return dto;
-		
+
 	}
 
 	@Override
 	public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts() {
 		List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
-		
+
 		List<CertificationIdAndCertifiedProductDTO> results = new ArrayList<CertificationIdAndCertifiedProductDTO>();
 		for(CertificationIdAndCertifiedProductEntity entity : entities) {
 			CertificationIdAndCertifiedProductDTO dto = new CertificationIdAndCertifiedProductDTO(entity);
@@ -211,29 +211,29 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		}
 		return results;
 	}
-	
+
 	@Override
 	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
 
 		Query query = entityManager.createQuery( "select certifiedProductId from CertificationIdProductMapEntity where certificationIdId = :id ", Long.class );
 		query.setParameter("id", id);
 		List<Long> queryResult = query.getResultList();
-		return queryResult;	
-		
+		return queryResult;
+
 	}
-	
+
 	@Override
 	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
-		
+
 		CertificationIdEntity entity = getEntityByProductIds(productIds, year);
 		if (entity == null) {
 			return null;
 		}
 		CertificationIdDTO dto = new CertificationIdDTO(entity);
 		return dto;
-		
+
 	}
-	
+
 	@Override
 	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
 		Map<String, Boolean> results = new HashMap<String, Boolean>();
@@ -246,38 +246,38 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		for (CertificationIdEntity entity : queryResult) {
 			results.put(entity.getCertificationId(), true);
 		}
-		
+
 		// then merge in the IDs that where not found.
 		for (String certId : certificationIds) {
 			if (null == results.get(certId)) {
 				results.put(certId, false);
 			}
 		}
-		
+
 		return results;
 	}
-	
+
 	private void create(CertificationIdEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
-	
+
 	private List<CertificationIdEntity> getAllEntities() {
-		
+
 		List<CertificationIdEntity> result = entityManager.createQuery( "from CertificationIdEntity ", CertificationIdEntity.class).getResultList();
 		return result;
-		
+
 	}
-	
+
 	private CertificationIdEntity getEntityById(Long id) throws EntityRetrievalException {
-		
+
 		CertificationIdEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from CertificationIdEntity where (ehr_certification_id_id = :entityid) ", CertificationIdEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationIdEntity> result = query.getResultList();
-		
+
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
@@ -286,18 +286,18 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
 
 	private CertificationIdEntity getEntityByCertificationId(String certificationId) throws EntityRetrievalException {
-		
+
 		CertificationIdEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from CertificationIdEntity where (certification_id = :certid) ", CertificationIdEntity.class );
 		query.setParameter("certid", certificationId);
 		List<CertificationIdEntity> result = query.getResultList();
-		
+
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
@@ -306,10 +306,10 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
+
 	private CertificationIdEntity getEntityByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
 
 		CertificationIdEntity entity = null;
@@ -321,10 +321,10 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		//		this filters out CertIDs that only contain a subset of those products specified.
 		List<CertificationIdEntity> result = new ArrayList<CertificationIdEntity>();
 		Query query = entityManager.createQuery(
-				
+
 			"from CertificationIdEntity " +
 			"where ehr_certification_id_id in (" +
-			
+
 				"select mpx.certificationIdId " +
 				"from CertificationIdProductMapEntity as mpx " +
 				"where mpx.certifiedProductId in :productIds " +
@@ -342,31 +342,31 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 				") " +
 				"group by mpx.certificationIdId " +
 				"having count(mpx.certificationIdId) = :productCount " +
-				
+
 			") " +
 			"and year = :year",
 			CertificationIdEntity.class
 		);
-		
+
 		query.setParameter("productIds", productIds);
 		query.setParameter("productCount", new Long(productIds.size()));
 		query.setParameter("year", year);
 		result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
 
     private static String encodeCollectionKey(List<Long> numbers) {
-        
+
         // Sort the product numbers before we encode them so they are in order
 		Collections.sort(numbers);
-        
+
         // Collect encoded version of all numbers.
 		String numbersString = "";
         for (Long number : numbers) {
@@ -376,15 +376,15 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         	}
         	numbersString += encodedNumber;
         }
-        
+
         return numbersString.toUpperCase();
     }
-	
+
 	private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {
-		
+
 		return entityManager.createQuery("from CertificationIdAndCertifiedProductEntity", CertificationIdAndCertifiedProductEntity.class).getResultList();
 	}
-	
+
 	private static String generateCertificationIdString(String year) {
 		// Form the EHR Certification ID prefix and edition year identifier.
 		// The identifier begins with the two-digit year followed by an "E" to indicate
@@ -393,21 +393,21 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		// represent the highest (current) year number...
 		StringBuffer newId = new StringBuffer("00");
 		newId.append(year.substring(year.length() - 2));
-		
+
 		// ...Decide if it's a hybrid year or not and attach the "E" or "H".
 		if (-1 == year.indexOf("/")) {
 			newId.append("E");
 		} else {
 			newId.append("H");
 		}
-		
+
 		int suffixLength = (CERT_ID_LENGTH - newId.length());
 
 		// Generate the remainder of the ID
 		int alphaCount = 1;
 		for (int i = 0; i < suffixLength; ++i) {
 			char newChar = CERT_ID_CHARS.charAt(new Random().nextInt(CERT_ID_CHARS.length()));
-			
+
 			// In order to prevent words from forming within the ID, we do not allow strings of
 			// more than 3 sequential alpha characters. After 3 the next character is forced to
 			// to be numeric.
@@ -423,7 +423,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 					alphaCount = 0;
 				}
 			}
-			
+
 			// Add newChar to Cert ID string
 			newId.append(newChar);
 		}

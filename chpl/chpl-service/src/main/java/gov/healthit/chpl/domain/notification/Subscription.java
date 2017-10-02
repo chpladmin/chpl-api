@@ -6,7 +6,7 @@ import gov.healthit.chpl.dto.notification.SubscriptionDTO;
 public class Subscription {
 	private CertificationBody acb;
 	private NotificationType notificationType;
-	
+
 	public Subscription() {}
 	public Subscription(SubscriptionDTO dto) {
 		if(dto.getAcb() != null) {
@@ -16,7 +16,7 @@ public class Subscription {
 			this.notificationType = new NotificationType(dto.getNotificationType());
 		}
 	}
-	
+
 	public CertificationBody getAcb() {
 		return acb;
 	}
@@ -29,4 +29,4 @@ public class Subscription {
 	public void setNotificationType(NotificationType notificationType) {
 		this.notificationType = notificationType;
 	}
-}	
+}

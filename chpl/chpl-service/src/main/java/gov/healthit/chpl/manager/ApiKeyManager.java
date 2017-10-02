@@ -10,23 +10,23 @@ import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.dto.ApiKeyDTO;
 
 public interface ApiKeyManager {
-	
-	public ApiKeyDTO createKey(ApiKeyDTO toCreate) 
+
+	public ApiKeyDTO createKey(ApiKeyDTO toCreate)
 			throws EntityCreationException, JsonProcessingException, EntityRetrievalException;
-	public void deleteKey(Long keyId) throws EntityRetrievalException, 
+	public void deleteKey(Long keyId) throws EntityRetrievalException,
 	JsonProcessingException, EntityCreationException;
-	public void deleteKey(String keyString) throws JsonProcessingException, 
+	public void deleteKey(String keyString) throws JsonProcessingException,
 	EntityCreationException, EntityRetrievalException;
 	public ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException;
 	public ApiKeyDTO findKey(String keyString) throws EntityRetrievalException;
 	public List<ApiKeyDTO> findAll();
-	public void logApiKeyActivity(String keyString, String activityPath) 
+	public void logApiKeyActivity(String keyString, String activityPath)
 			throws EntityRetrievalException, EntityCreationException;
 	public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException;
-	public List<ApiKeyActivity> getApiKeyActivity(String apiKeyFilter, Integer pageNumber, 
-			Integer pageSize, boolean dateAscending, Long startDate, Long endDate) 
+	public List<ApiKeyActivity> getApiKeyActivity(String apiKeyFilter, Integer pageNumber,
+			Integer pageSize, boolean dateAscending, Long startDate, Long endDate)
 					throws EntityRetrievalException;
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString) throws EntityRetrievalException;
-	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, 
+	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber,
 			Integer pageSize) throws EntityRetrievalException;
 }

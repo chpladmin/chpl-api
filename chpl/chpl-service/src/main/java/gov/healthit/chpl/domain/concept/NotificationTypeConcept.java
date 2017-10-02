@@ -11,13 +11,13 @@ public enum NotificationTypeConcept implements Serializable {
 	ONC_WEEKLY_ICS_FAMILY_ERRORS("ONC Weekly ICS Family Errors"),
 	SUMMARY_STATISTICS("Summary Statistics"),
 	QUESTIONABLE_ACTIVITY("Questionable Activity");
-	
+
 	private String name;
-	
+
 	private NotificationTypeConcept(String name){
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

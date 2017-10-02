@@ -18,22 +18,22 @@ import org.hibernate.annotations.Where;
 @Immutable
 @Table(name = "notification_recipient")
 public class RecipientWithSubscriptionsEntity {
-	
-	@Id 
+
+	@Id
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "email")
 	private String email;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "recipientId")
 	@Column(name = "recipient_id", nullable = false)
 	@Where(clause="deleted <> 'true'")
 	private Set<NotificationTypeRecipientMapEntity> subscriptions = new HashSet<NotificationTypeRecipientMapEntity>();
-	
+
 	@Column(name = "deleted")
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}

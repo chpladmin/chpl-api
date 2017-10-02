@@ -4,7 +4,7 @@ public class CertificationStatusStatistics {
 	private Integer id;
 	private String name;
 	private CertifiedBodyStatistics certifiedBodyStatistics;
-	
+
 	public Integer getId() {
 		return id;
 	}
@@ -23,5 +23,5 @@ public class CertificationStatusStatistics {
 	public void setCertifiedBodyStatistics(CertifiedBodyStatistics certifiedBodyStatistics) {
 		this.certifiedBodyStatistics = certifiedBodyStatistics;
 	}
-	
+
 }

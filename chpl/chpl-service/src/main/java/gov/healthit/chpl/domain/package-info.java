@@ -1,5 +1,5 @@
 /**
- * Domain classes used to produce the JSON and XML output for the RESTful services. 
+ * Domain classes used to produce the JSON and XML output for the RESTful services.
  * These classes contain the JAXB annotations.
 */
 @XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)

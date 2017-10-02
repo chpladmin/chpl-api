@@ -16,9 +16,9 @@ public class PracticeTypeDTO implements Serializable {
 	private String name;
 
 	public PracticeTypeDTO(){}
-	
+
 	public PracticeTypeDTO(PracticeTypeEntity entity){
-		
+
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
@@ -26,10 +26,10 @@ public class PracticeTypeDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
-		
+
 	}
-	
-	
+
+
 	public Long getId() {
 		return id;
 	}

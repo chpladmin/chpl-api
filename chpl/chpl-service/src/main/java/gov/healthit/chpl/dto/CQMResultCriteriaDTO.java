@@ -10,11 +10,11 @@ public class CQMResultCriteriaDTO implements Serializable {
 	private Long cqmResultId;
 	private Long criterionId;
 	private CertificationCriterionDTO criterion;
-	
+
 	public CQMResultCriteriaDTO(){}
-	
+
 	public CQMResultCriteriaDTO(CQMResultCriteriaEntity entity){
-		
+
 		this.id = entity.getId();
 		this.cqmResultId = entity.getCqmResultId();
 		this.criterionId = entity.getCertificationCriterionId();
@@ -22,7 +22,7 @@ public class CQMResultCriteriaDTO implements Serializable {
 			this.criterion = new CertificationCriterionDTO(entity.getCertCriteria());
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

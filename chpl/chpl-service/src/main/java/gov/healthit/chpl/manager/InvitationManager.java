@@ -13,10 +13,10 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public interface InvitationManager {
-			
-	
+
+
 	public InvitationDTO inviteAdmin(String emailAddress, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
-	public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions) 
+	public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions)
 			throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 	public InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
 	public InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException;
@@ -25,10 +25,10 @@ public interface InvitationManager {
 	public InvitationDTO getByInvitationHash(String hash);
 	public InvitationDTO getById(Long id)  throws UserRetrievalException;
 	public InvitationDTO getByConfirmationHash(String hash);
-	public UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user) 
+	public UserDTO createUserFromInvitation(InvitationDTO invitation, UserCreationJSONObject user)
 			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
 			UserCreationException;
 	public UserDTO confirmAccountEmail(InvitationDTO invitation) throws UserRetrievalException;
-	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user) 
+	public UserDTO updateUserFromInvitation(InvitationDTO invitation, UserDTO user)
 			throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException;
 }

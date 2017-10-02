@@ -20,7 +20,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 
 	@Override
 	public ApiKeyActivityDTO create(ApiKeyActivityDTO dto) throws EntityCreationException {
-		
+
 		ApiKeyActivityEntity entity = null;
 		try {
 			if (dto.getId() != null){
@@ -29,15 +29,15 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
-			
+
 			entity = new ApiKeyActivityEntity();
 			entity.setApiKeyId(dto.getApiKeyId());
-			entity.setApiCallPath(dto.getApiCallPath());	
-			
+			entity.setApiCallPath(dto.getApiCallPath());
+
 			if(dto.getLastModifiedDate() != null) {
 				entity.setLastModifiedDate(dto.getLastModifiedDate());
 			} else {
@@ -49,13 +49,13 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 				entity.setCreationDate(new Date());
 			}
 			entity.setDeleted(dto.getDeleted());
-			
+
 			if (Util.getCurrentUser() == null){
 				entity.setLastModifiedUser(-3L);
 			} else {
 				entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			}
-			
+
 			create(entity);
 		}
 		return new ApiKeyActivityDTO(entity);
@@ -63,12 +63,12 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 
 	@Override
 	public ApiKeyActivityDTO update(ApiKeyActivityDTO dto) throws EntityRetrievalException {
-		
+
 		ApiKeyActivityEntity entity = getEntityById(dto.getId());
-		
+
 		entity.setApiKeyId(dto.getApiKeyId());
 		entity.setApiCallPath(dto.getApiCallPath());
-		
+
 		if(dto.getLastModifiedDate() != null) {
 			entity.setLastModifiedDate(dto.getLastModifiedDate());
 		} else {
@@ -77,112 +77,112 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		entity.setDeleted(dto.getDeleted());
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		update(entity);
-		
+
 		return new ApiKeyActivityDTO(entity);
 	}
 
 	@Override
 	public void delete(Long id) {
-		
+
 		Query query = entityManager.createQuery("UPDATE ApiKeyActivityEntity SET deleted = true WHERE api_activity_id = :entityid");
 		query.setParameter("entityid", id);
 		query.executeUpdate();
-		
+
 	}
 
 	@Override
 	public List<ApiKeyActivityDTO> findAll() {
-		
+
 		List<ApiKeyActivityEntity> entities = getAllEntities();
 		List<ApiKeyActivityDTO> dtos = new ArrayList<>();
-		
+
 		for (ApiKeyActivityEntity entity : entities) {
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
-	
+
 	@Override
 	public List<ApiKeyActivityDTO> findAll(Integer pageNumber, Integer pageSize) {
-		
+
 		List<ApiKeyActivityEntity> entities = getAllEntities(pageNumber, pageSize);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<>();
-		
+
 		for (ApiKeyActivityEntity entity : entities) {
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
-	
+
 
 	@Override
 	public ApiKeyActivityDTO getById(Long id) throws EntityRetrievalException {
-		
+
 		ApiKeyActivityDTO dto = null;
 		ApiKeyActivityEntity entity = getEntityById(id);
 		if (entity != null){
 			dto = new ApiKeyActivityDTO(entity);
 		}
 		return dto;
-		
+
 	}
 
 	@Override
 	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId) {
 		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyId(apiKeyId);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
-		
+
 		for (ApiKeyActivityEntity entity : entities){
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
 	}
-	
+
 	@Override
 	public List<ApiKeyActivityDTO> findByKeyId(Long apiKeyId, Integer pageNumber, Integer pageSize) {
-		
+
 		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyId(apiKeyId, pageNumber, pageSize);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
-		
+
 		for (ApiKeyActivityEntity entity : entities){
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
 	}
-	
+
 	private void create(ApiKeyActivityEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
-	
+
 	private void update(ApiKeyActivityEntity entity) {
-		
+
 		entityManager.merge(entity);
 		entityManager.flush();
-	
+
 	}
-	
+
 	public List<ApiKeyActivityEntity> getAllEntities() {
-		
+
 		List<ApiKeyActivityEntity> result = entityManager.createQuery( "from ApiKeyActivityEntity where (NOT deleted = true) ", ApiKeyActivityEntity.class).getResultList();
 		return result;
 	}
-	
+
 	private ApiKeyActivityEntity getEntityById(Long entityId) throws EntityRetrievalException {
-		
+
 		ApiKeyActivityEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "from ApiKeyActivityEntity where (NOT deleted = true) AND (api_activity_id = :entityid) ", ApiKeyActivityEntity.class );
 		query.setParameter("entityid", entityId);
 		List<ApiKeyActivityEntity> result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
 		} else if(result.size() == 1) {
@@ -190,47 +190,47 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		}
 		return entity;
 	}
-	
+
 	private List<ApiKeyActivityEntity> getAllEntities(Integer pageNumber, Integer pageSize) {
-		
+
 		Query query = entityManager.createQuery("from ApiKeyActivityEntity where (NOT deleted = true) ", ApiKeyActivityEntity.class);
 		query.setMaxResults(pageSize);
 	    query.setFirstResult(pageNumber * pageSize);
 		List<ApiKeyActivityEntity> result = query.getResultList();
-		
+
 		return result;
 	}
-	
+
 	private List<ApiKeyActivityEntity> getActivityEntitiesByKeyId(Long keyId) {
-		
+
 		Query query = entityManager.createQuery( "from ApiKeyActivityEntity where (NOT deleted = true) AND (api_key_id = :apikeyid) ", ApiKeyActivityEntity.class );
 		query.setParameter("apikeyid", keyId);
 		List<ApiKeyActivityEntity> result = query.getResultList();
 		return result;
-		
+
 	}
-	
+
 	private List<ApiKeyActivityEntity> getActivityEntitiesByKeyId(Long keyId, Integer pageNumber, Integer pageSize) {
-		
-		
+
+
 		Query query = entityManager.createQuery( "from ApiKeyActivityEntity where (NOT deleted = true) AND (api_key_id = :apikeyid) ", ApiKeyActivityEntity.class );
 		query.setParameter("apikeyid", keyId);
 		query.setMaxResults(pageSize);
 	    query.setFirstResult(pageNumber * pageSize);
-		
+
 		List<ApiKeyActivityEntity> result = query.getResultList();
 		return result;
-		
+
 	}
 
-	/** Gets a list of ApiKeyActivityDTOs using parameters to filter API keys by 
+	/** Gets a list of ApiKeyActivityDTOs using parameters to filter API keys by
 	 * creation start & end dates
 	 * Also sorts results in ascending or descending order
 	 * Parameters:
 	 * String apiKeyFilter - String of API key(s)
 	 * Integer pageNumber - page of the API key
 	 * Integer pageSize - size of the page
-	 * boolean dateAscending - true if API key creation date is sorted in ascending order; 
+	 * boolean dateAscending - true if API key creation date is sorted in ascending order;
 	 * false if descending
 	 * Long startDate - Filter out keys before the creation start date
 	 * Long endDate - Filter out keys after the creation end date
@@ -243,7 +243,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyStringWithFilter
 				(keyString, pageNumber, pageSize, dateAscending, startDate, endDate);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
-		
+
 		for (ApiKeyActivityEntity entity : entities){
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
@@ -251,13 +251,13 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		return dtos;
 	}
 
-	/** Gets activity entities by an API key string. Uses parameters that filter by 
+	/** Gets activity entities by an API key string. Uses parameters that filter by
 	 * start and endDate.
 	 * Parameters:
 	 * String apiKeyFilter - String of API key(s)
 	 * Integer pageNumber - page of the API key
 	 * Integer pageSize - size of the page
-	 * boolean dateAscending - true if API key creation date is sorted in ascending order; 
+	 * boolean dateAscending - true if API key creation date is sorted in ascending order;
 	 * false if descending
 	 * Long startDate - Filter out keys before the creation start date
 	 * Long endDate - Filter out keys after the creation end date
@@ -268,8 +268,8 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 			Integer pageSize, boolean dateAscending, Long startDateMilli, Long endDateMilli) {
 		Date startDate = new Date();
 		Date endDate = new Date();
-		
-		String queryStr = 
+
+		String queryStr =
 				"FROM ApiKeyActivityEntity a "
 				+ "WHERE (NOT a.deleted = true) ";
 		if(startDateMilli != null){
@@ -296,9 +296,9 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 			queryStr+= "ASC";
 		}
 		else{
-			queryStr+= "DESC"; 
+			queryStr+= "DESC";
 		}
-		
+
 		Query query = entityManager.createQuery(queryStr, ApiKeyActivityEntity.class);
 		if(startDateMilli != null){
 			query.setParameter("startDate", startDate);

@@ -13,11 +13,11 @@ public class NotificationTypeDTO {
 	private String description;
 	private Boolean requiresAcb;
 	private List<UserPermissionDTO> permissions;
-	
+
 	public NotificationTypeDTO() {
 		permissions = new ArrayList<UserPermissionDTO>();
 	}
-	
+
 	public NotificationTypeDTO(NotificationTypeEntity entity) {
 		this();
 		this.id = entity.getId();
@@ -29,7 +29,7 @@ public class NotificationTypeDTO {
 				UserPermissionDTO perm = new UserPermissionDTO(notifPerm.getPermission());
 				this.permissions.add(perm);
 			}
-		} 
+		}
 	}
 
 	public Long getId() {

@@ -8,7 +8,7 @@ public class SearchOption implements Serializable {
 	private static final long serialVersionUID = -6671338026335670632L;
 	private boolean expandable;
 	private Set<? extends Object> data;
-	
+
 	public SearchOption() {
 		this.data = new HashSet<KeyValueModel>();
 	}
@@ -28,5 +28,5 @@ public class SearchOption implements Serializable {
 	public void setData(Set<? extends Object> data) {
 		this.data = data;
 	}
-	
+
 }

@@ -12,12 +12,12 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
 	private String name;
 	private String modification;
 	private String applicableCriteria;
-	
+
 	public PendingCertifiedProductQmsStandardDTO() {}
-	
+
 	public PendingCertifiedProductQmsStandardDTO(PendingCertifiedProductQmsStandardEntity entity) {
 		this.setId(entity.getId());
-				
+
 		if(entity.getMappedProduct() != null) {
 			this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
 		}
@@ -26,7 +26,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
 		this.setModification(entity.getModification());
 		this.setApplicableCriteria(entity.getApplicableCriteria());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

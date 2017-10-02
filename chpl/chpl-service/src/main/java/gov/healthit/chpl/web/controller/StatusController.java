@@ -22,7 +22,7 @@ public class StatusController {
 	private static final Logger logger = LogManager.getLogger(StatusController.class);
 	@Autowired private CacheUtil cacheUtil;
 
-	@ApiOperation(value="Check that the rest services are up and running.", 
+	@ApiOperation(value="Check that the rest services are up and running.",
 			notes="")
 	@RequestMapping(value="/status", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
@@ -30,7 +30,7 @@ public class StatusController {
 		logger.warn("/status called");
 		return "{\"status\": \"OK\"}";
 	}
-	
+
 	@ApiOperation(value = "Check if the basic search cache has completed loading. "
 			+ "{ status: 'OK' } is returned if it's finished and { status: 'INITIALIZING' } is returned if not.",
 			notes="")

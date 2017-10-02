@@ -7,15 +7,15 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 
 public class DeveloperStatusEventDTO implements Serializable {
 	private static final long serialVersionUID = -2492374479266782228L;
-	
+
 	private Long id;
 	private Long developerId;
 	private DeveloperStatusDTO status;
 	private Date statusDate;
-	
+
 	public DeveloperStatusEventDTO(){
 	}
-	
+
 	public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity){
 		this();
 		this.id = entity.getId();
@@ -23,14 +23,14 @@ public class DeveloperStatusEventDTO implements Serializable {
 		this.status = new DeveloperStatusDTO(entity.getDeveloperStatus());
 		this.statusDate = entity.getStatusDate();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Long getDeveloperId() {
 		return developerId;
 	}

@@ -8,7 +8,7 @@ public class CreateUserFromInvitationRequest implements Serializable {
 	private static final long serialVersionUID = 5216297040793549351L;
 	private String hash;
 	private UserCreationJSONObject user;
-	
+
 	public UserCreationJSONObject getUser() {
 		return user;
 	}

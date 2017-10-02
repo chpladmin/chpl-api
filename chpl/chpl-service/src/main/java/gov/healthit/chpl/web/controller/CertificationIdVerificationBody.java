@@ -5,9 +5,9 @@ import java.util.List;
 public class CertificationIdVerificationBody {
 
 	private List<String> ids;
-	
+
 	public CertificationIdVerificationBody(){}
-	
+
 	public CertificationIdVerificationBody(List<String> ids){
 		this.ids = ids;
 	}
@@ -17,5 +17,5 @@ public class CertificationIdVerificationBody {
 	public void setIds(List<String> ids) {
 		this.ids = ids;
 	}
-	
+
 }

@@ -7,7 +7,7 @@ import java.util.List;
 public class CorrectiveActionPlanResults implements Serializable {
 	private static final long serialVersionUID = 8597873999181093677L;
 	private List<CorrectiveActionPlanDetails> plans;
-	
+
 	public CorrectiveActionPlanResults() {
 		plans = new ArrayList<CorrectiveActionPlanDetails>();
 	}

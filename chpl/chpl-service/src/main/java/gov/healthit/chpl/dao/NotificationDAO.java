@@ -19,7 +19,7 @@ public interface NotificationDAO {
 	public boolean hasNotificationType(NotificationTypeDTO type, Set<GrantedPermission> permissions);
 	public List<NotificationTypeDTO> getAllNotificationTypes(Set<GrantedPermission> permissions);
 	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappings(Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
-	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappingsForType(Set<GrantedPermission> permissions, 
+	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappingsForType(Set<GrantedPermission> permissions,
 			NotificationTypeConcept notificationType, List<CertificationBodyDTO> acbs);
 	public RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(
 			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs)

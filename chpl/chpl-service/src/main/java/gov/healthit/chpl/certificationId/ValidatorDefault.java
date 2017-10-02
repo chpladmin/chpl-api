@@ -14,7 +14,7 @@ public class ValidatorDefault extends Validator {
 		this.counts.put("domainsRequired", 0);
 		this.counts.put("domainsRequiredMet", 0);
 	}
-	
+
 	//**********************************************************************
 	// onValidate
 	//
@@ -31,7 +31,7 @@ public class ValidatorDefault extends Validator {
 	protected boolean isCriteriaValid() {
 		return false;
 	}
-	
+
 	//**********************************************************************
 	// isCqmsValid
 	//

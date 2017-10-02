@@ -47,18 +47,18 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
-	
+
 	@Autowired private TestingLabDAO testingLabDao;
 	@Autowired UserManager userManager;
 	@Autowired UserDAO userDAO;
 	@Autowired PendingCertifiedProductManager pendingCpManager;
-	
+
 	@Autowired
 	private MutableAclService mutableAclService;
 
 	@Autowired
 	private ActivityManager activityManager;
-	
+
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -68,7 +68,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		String maxCode = certificationBodyDAO.getMaxCode();
 		int maxCodeValue = Integer.parseInt(maxCode);
 		int nextCodeValue = maxCodeValue + 1;
-		
+
 		String nextAcbCode = "";
 		if(nextCodeValue < 10) {
 			nextAcbCode = "0" + nextCodeValue;
@@ -78,29 +78,29 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			nextAcbCode = nextCodeValue + "";
 		}
 		acb.setAcbCode(nextAcbCode);
-		
+
 		// Create the ACB itself
 		CertificationBodyDTO result = certificationBodyDAO.create(acb);
 
 		// Grant the current principal administrative permission to the ACB
 		addPermission(result, Util.getCurrentUser().getId(),
 				BasePermission.ADMINISTRATION);
-		
+
 		logger.debug("Created acb " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
-		
+
 		String activityMsg = "Created Certification Body "+result.getName();
-		
+
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, null, result);
-		
+
 		return result;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin)")
 	@ClearAllCaches
 	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
-		
+
 		CertificationBodyDTO result = null;
 		CertificationBodyDTO toUpdate = certificationBodyDAO.getById(acb.getId());
 		result = certificationBodyDAO.update(acb);
@@ -109,7 +109,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, toUpdate, result);
 		return result;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ClearAllCaches
@@ -117,27 +117,27 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		CertificationBodyDTO original = certificationBodyDAO.getById(acb.getId(), true);
 		acb.setDeleted(false);
 		CertificationBodyDTO result = certificationBodyDAO.update(acb);
-		
+
 		String activityMsg = "ACB " + original.getName() + " is no longer marked as deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, original, result);	
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, result.getId(), activityMsg, original, result);
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@ClearAllCaches
-	public void delete(CertificationBodyDTO acb) 
+	public void delete(CertificationBodyDTO acb)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
-		
+
 		//get the users associated with this ACB
 		//normally we shouldn't call an internal manager method because permissions will be
 		//ignored but we know the user calling this has ROLE_ADMIN already
 		List<UserDTO> usersOnAcb = getAllUsersOnAcb(acb);
-		
+
 		//check all the ACBs to see if each user has permission on it
 		List<CertificationBodyDTO> allAcbs = certificationBodyDAO.findAll(false);
 		List<TestingLabDTO> allTestingLabs = testingLabDao.findAll(false);
-		
+
 		for(UserDTO currUser : usersOnAcb) {
 			boolean userHasOtherPermissions = false;
 			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(currUser);
@@ -154,7 +154,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 					if(currAcb.getId().longValue() != acb.getId().longValue()) {
 						ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, currAcb.getId());
 						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-						
+
 						List<AccessControlEntry> entries = acl.getEntries();
 						for (int i = 0; i < entries.size(); i++) {
 							AccessControlEntry currEntry = entries.get(i);
@@ -164,13 +164,13 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 						}
 					}
 				}
-				
+
 				if(!userHasOtherAccesses) {
 					//does the user have access to any ATLs?
 					for(TestingLabDTO currTestingLab : allTestingLabs) {
 						ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, currTestingLab.getId());
 						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-						
+
 						List<AccessControlEntry> entries = acl.getEntries();
 						for (int i = 0; i < entries.size(); i++) {
 							AccessControlEntry currEntry = entries.get(i);
@@ -181,32 +181,32 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 					}
 				}
 			}
-			
+
 			if(!userHasOtherPermissions && !userHasOtherAccesses) {
 				UserDTO prevUser = currUser;
 				//if not, then mark their account disabled
 				currUser.setAccountEnabled(false);
 				UserDTO updatedUser = userManager.update(currUser);
 				//log this activity
-				activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, currUser.getId(), 
-						"Disabled account for " + currUser.getSubjectName() + " because it was only associated with a deleted ACB.", 
+				activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, currUser.getId(),
+						"Disabled account for " + currUser.getSubjectName() + " because it was only associated with a deleted ACB.",
 						prevUser, updatedUser);
 			}
 		}
-		
+
 		//mark the ACB deleted
 		certificationBodyDAO.delete(acb.getId());
 		//log ACB delete activity
 		String activityMsg = "Deleted acb " + acb.getName();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY, acb.getId(), activityMsg, acb, null);
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, admin) or hasPermission(#acb, read)")
 	public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		Set<String> userNames = new HashSet<String>();
 		List<AccessControlEntry> entries = acl.getEntries();
 		for (int i = 0; i < entries.size(); i++) {
@@ -227,12 +227,12 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 		return users;
 	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, read) or hasPermission(#acb, admin)") 
+
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#acb, read) or hasPermission(#acb, admin)")
 	public List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		List<Permission> permissions = new ArrayList<Permission>();
 		List<AccessControlEntry> entries = acl.getEntries();
 		for (int i = 0; i < entries.size(); i++) {
@@ -243,7 +243,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 		return permissions;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
@@ -262,7 +262,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		if(user == null || user.getSubjectName() == null) {
 			throw new UserRetrievalException("Could not find user with id " + userId);
 		}
-		
+
 		Sid recipient = new PrincipalSid(user.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
 			logger.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
@@ -279,7 +279,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		List<AccessControlEntry> entries = acl.getEntries();
 
 		//if the current size is only 1 we shouldn't be able to delete the last one right??
@@ -302,14 +302,14 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		//TODO: this seems very dangerous. I think we should somehow prevent from deleting the ADMIN user???
 		List<AccessControlEntry> entries = acl.getEntries();
 
 		for (int i = 0; i < entries.size(); i++) {
 			if(entries.get(i).getSid().equals(recipient)) {
 				acl.deleteAce(i);
-				//cannot just loop through deleting because the "entries" 
+				//cannot just loop through deleting because the "entries"
 				//list changes size each time that we delete one
 				//so we have to re-fetch the entries and re-set the counter
 				entries = acl.getEntries();
@@ -320,18 +320,18 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
 	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')") 
+
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
 		if(userDto.getSubjectName() == null) {
 			userDto = userDAO.getById(userDto.getId());
 		}
-		
+
 		List<CertificationBodyDTO> acbs = certificationBodyDAO.findAll(false);
 		for(CertificationBodyDTO acb : acbs) {
 			ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
 			MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-			
+
 			List<Permission> permissions = new ArrayList<Permission>();
 			List<AccessControlEntry> entries = acl.getEntries();
 			for (int i = 0; i < entries.size(); i++) {
@@ -342,26 +342,26 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			}
 		}
 	}
-	
+
 	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {
 		boolean permissionExists = false;
 		List<AccessControlEntry> entries = acl.getEntries();
 
 		for (int i = 0; i < entries.size(); i++) {
 			AccessControlEntry currEntry = entries.get(i);
-			if(currEntry.getSid().equals(recipient) && 
+			if(currEntry.getSid().equals(recipient) &&
 					currEntry.getPermission().equals(permission)) {
 				permissionExists = true;
 			}
 		}
 		return permissionExists;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<CertificationBodyDTO> getAll(boolean showDeleted) {
 		return certificationBodyDAO.findAll(showDeleted);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<CertificationBodyDTO> getAllForUser(boolean showDeleted) {
@@ -375,7 +375,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException {
 		return certificationBodyDAO.getById(id);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.CertificationBodyDTO', read) or "
@@ -383,11 +383,11 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException {
 		return certificationBodyDAO.getById(id, includeDeleted);
 	}
-	
+
 	public MutableAclService getMutableAclService() {
 		return mutableAclService;
 	}
-	
+
 	public void setCertificationBodyDAO(CertificationBodyDAO acbDAO) {
 		this.certificationBodyDAO = acbDAO;
 	}
@@ -395,5 +395,5 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 	public void setMutableAclService(MutableAclService mutableAclService) {
 		this.mutableAclService = mutableAclService;
 	}
-	
+
 }

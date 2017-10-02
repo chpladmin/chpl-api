@@ -11,8 +11,8 @@ public interface CertificationStatusEventDAO {
 	public CertificationStatusEventDTO update(CertificationStatusEventDTO dto) throws EntityRetrievalException;
 	public void delete(Long id) throws EntityRetrievalException;
 	public CertificationStatusEventDTO getById(Long id) throws EntityRetrievalException;
-	public List<CertificationStatusEventDTO> findAll();	
-	public List<CertificationStatusEventDTO> findByCertifiedProductId(Long certifiedProductId);	
+	public List<CertificationStatusEventDTO> findAll();
+	public List<CertificationStatusEventDTO> findByCertifiedProductId(Long certifiedProductId);
 	public CertificationStatusEventDTO findInitialCertificationEventForCertifiedProduct(Long certifiedProductId);
-	
+
 }

@@ -21,36 +21,36 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
 	/** Serial Version UID. */
 	private static final long serialVersionUID = 4174889617079658144L;
 
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "certification_status_event_id")
 	private Long id;
-	
+
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
-	
+
 	@Column( name = "event_date")
 	private Date eventDate;
-	
+
 	@Column(name = "certification_status_id")
 	private Long certificationStatusId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_status_id", insertable = false, updatable = false)
 	private CertificationStatusEntity certificationStatus;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
 
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -58,7 +58,7 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Long getCertifiedProductId() {
 		return certifiedProductId;
 	}

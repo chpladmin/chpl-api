@@ -15,9 +15,9 @@ public class ProductVersionDTO implements Serializable {
 	private Long productId;
 	private String productName;
 	private String version;
-	
+
 	public ProductVersionDTO(){}
-	
+
 	public ProductVersionDTO(ProductVersionEntity entity){
 		if(entity != null) {
 			this.id = entity.getId();
@@ -32,8 +32,8 @@ public class ProductVersionDTO implements Serializable {
 			}
 		}
 	}
-	
-	
+
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

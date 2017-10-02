@@ -11,17 +11,17 @@ public class Recipient {
 	private Long id;
 	private String email;
 	private List<Subscription> subscriptions;
-	
+
 	public Recipient() {
 		subscriptions = new ArrayList<Subscription>();
 	}
-	
+
 	public Recipient(RecipientDTO dto) {
 		this();
 		this.id = dto.getId();
 		this.email = dto.getEmailAddress();
 	}
-	
+
 	public Recipient(RecipientWithSubscriptionsDTO dto) {
 		this();
 		this.id = dto.getId();
@@ -33,7 +33,7 @@ public class Recipient {
 			}
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -21,6 +21,6 @@ public class PendingCertifiedProductResults implements Serializable {
 	public void setPendingCertifiedProducts(List<PendingCertifiedProductDetails> pendingCertifiedProducts) {
 		this.pendingCertifiedProducts = pendingCertifiedProducts;
 	}
-	
-	
+
+
 }

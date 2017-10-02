@@ -15,7 +15,7 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 @Repository("listingStatisticsDAO")
 public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStatisticsDAO {
 	/**
-	 * Total # of Certified Unique Products (Regardless of Status or Edition – Including 2011) 
+	 * Total # of Certified Unique Products (Regardless of Status or Edition – Including 2011)
 	 */
 	@Override
 	public Long getTotalCertifiedProducts(DateRange dateRange) {
@@ -26,7 +26,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
 	}
-	
+
 	/**
 	 * Total # of unique Products with 2014 Listings
 	 */
@@ -40,7 +40,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
 	}
-	
+
 	/**
 	 * Total # of unique Products by certified product with Listings in each year
 	 */
@@ -54,11 +54,11 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 				+ ") t "
 				+ "GROUP BY certification_body_name, year "
 				+ "ORDER BY t.certification_body_name ";
-		
+
 		Query query = entityManager.createNativeQuery(queryStr);
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
-		
+
 		List<Object[]> results = query.getResultList();
 		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
 		for(Object[] obj : results){
@@ -71,7 +71,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		}
 		return cbStats;
 	}
-	
+
 	/**
 	 * Total # of unique Products by certified product with Listings in each year
 	 */
@@ -85,11 +85,11 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 				+ ") t "
 				+ "GROUP BY certification_body_name, year, certification_status_name "
 				+ "ORDER BY t.certification_body_name ";
-		
+
 		Query query = entityManager.createNativeQuery(queryStr);
 		query.setParameter("creationStartDate", dateRange.getStartDate());
 		query.setParameter("creationEndDate", dateRange.getEndDate());
-		
+
 		List<Object[]> results = query.getResultList();
 		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
 		for(Object[] obj : results){
@@ -116,7 +116,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
 	}
-	
+
 	/**
 	 * Total # of unique Products with Suspended (by ONC or ONC-ACB) 2014 Listings
 	 */
@@ -136,7 +136,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
 	}
-	
+
 	/**
 	 * Total # of unique Products with 2015 Listings
 	 */
@@ -166,7 +166,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (long) query.getResultList().size();
 	}
-	
+
 	/**
 	 * Total # of unique Products with Suspended (by ONC or ONC-ACB) 2015 Listings
 	 */
@@ -196,7 +196,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	}
 
 	/**
-	 * Total # of Listings (Regardless of Status or Edition) 
+	 * Total # of Listings (Regardless of Status or Edition)
 	 */
 	@Override
 	public Long getTotalListings(DateRange dateRange) {
@@ -224,7 +224,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
 	}
-	
+
 	/**
 	 * Total # of Active Listings in each year
 	 */
@@ -258,7 +258,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 	public Long getTotalActive2015Listings(DateRange dateRange) {
 		Query query = entityManager.createQuery("SELECT count(*) FROM CertifiedProductDetailsEntity "
 				+ " WHERE year = '2015' AND UPPER(certificationStatusName) IN ('" +
-				CertificationStatusType.Active.getName().toUpperCase() + "', '" + 
+				CertificationStatusType.Active.getName().toUpperCase() + "', '" +
 				CertificationStatusType.SuspendedByAcb.getName().toUpperCase() + "', '" +
 				CertificationStatusType.SuspendedByOnc.getName().toUpperCase() + "')"
 				+ " AND (deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "

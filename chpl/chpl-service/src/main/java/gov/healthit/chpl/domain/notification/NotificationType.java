@@ -7,7 +7,7 @@ public class NotificationType {
 	private String name;
 	private String description;
 	private Boolean requiresAcb;
-	
+
 	public NotificationType() {}
 	public NotificationType(NotificationTypeDTO dto) {
 		this.id = dto.getId();

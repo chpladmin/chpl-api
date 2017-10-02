@@ -13,54 +13,54 @@ import javax.persistence.Table;
 @Table(name = "ehr_certification_ids_and_products")
 public class CertificationIdAndCertifiedProductEntity implements Serializable {
 	private static final long serialVersionUID = -1L;
-	
+
 	@Id
 	@Basic( optional = false )
     @Column(name = "id")
     private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "ehr_certification_id", nullable = false  )
 	private Long ehrCertificationId;
-    
+
 	@Basic( optional = false )
 	@Column( name = "ehr_certification_id_text", length = 255, nullable = false)
 	private String certificationId;
-	
+
 	@Basic( optional = false )
 	@Column( name = "ehr_certification_id_creation_date", nullable = false )
 	private Date creationDate;
-    
+
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
-	
+
 	@Column(name = "chpl_product_number")
 	private String legacyChplNumber;
-	
+
 	@Column(name = "year")
 	private String certificationYear;
-	
+
 	@Column(name = "testing_lab_code")
 	private String atlCode;
-	
+
 	@Column(name = "certification_body_code")
 	private String acbCode;
-	
+
 	@Column(name = "vendor_code")
 	private String developerCode;
-	
+
 	@Column(name = "product_code")
 	private String productCode;
-	
+
 	@Column(name = "version_code")
 	private String versionCode;
-	
+
 	@Column(name = "ics_code")
 	private String icsCode;
-	
+
 	@Column(name = "additional_software_code")
 	private String additionalSoftwareCode;
-	
+
 	@Column(name = "certified_date_code")
 	private String certifiedDateCode;
 
@@ -69,16 +69,16 @@ public class CertificationIdAndCertifiedProductEntity implements Serializable {
 
 	public Date getCreationDate() {
 		return this.creationDate;
-		
+
 	}
-	
+
 	public void setCreationDate(final Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
 	public Long getId() {
 		return this.id;
-		
+
 	}
 
 	public void setId(final Long id) {

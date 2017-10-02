@@ -12,19 +12,19 @@ public class CertificationResultMacraMeasure implements Serializable {
 	private Long id;
 	Long certificationResultId;
 	private MacraMeasure measure;
-	
+
 	public CertificationResultMacraMeasure() {
 		super();
 	}
-	
+
 	public CertificationResultMacraMeasure(CertificationResultMacraMeasureDTO dto) {
 		this.id = dto.getId();
 		this.certificationResultId = dto.getCertificationResultId();
 		if(dto.getMeasure() != null) {
 			this.measure = new MacraMeasure(dto.getMeasure());
-		} 
+		}
 	}
-	
+
 	public CertificationResultMacraMeasure(PendingCertificationResultMacraMeasureDTO dto) {
 		this.id = dto.getId();
 		this.certificationResultId = dto.getPendingCertificationResultId();
@@ -35,13 +35,13 @@ public class CertificationResultMacraMeasure implements Serializable {
 			this.measure.setId(dto.getMacraMeasureId());
 		}
 	}
-	
+
 	//not overriding equals on purpose
 	//this is meant to determine if a user would think two macra measures
 	//are the same, not as thorough as equals
 	public boolean matches(CertificationResultMacraMeasure anotherMeasure) {
 		boolean result = false;
-		if(this.getId() != null && anotherMeasure.getId() != null && 
+		if(this.getId() != null && anotherMeasure.getId() != null &&
 			this.getId().longValue() == anotherMeasure.getId().longValue()) {
 			result = true;
 		} else if(this.getMeasure() != null && anotherMeasure.getMeasure() != null) {
@@ -49,7 +49,7 @@ public class CertificationResultMacraMeasure implements Serializable {
 		}
 		return result;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

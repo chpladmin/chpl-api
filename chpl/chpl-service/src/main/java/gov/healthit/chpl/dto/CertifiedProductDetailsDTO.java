@@ -60,13 +60,13 @@ public class CertifiedProductDetailsDTO implements Serializable {
 	private String transparencyAttestation;
 	private String transparencyAttestationUrl;
 	private Long numMeaningfulUse;
-    
+
     public CertifiedProductDetailsDTO(){
     }
-    
+
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
     	this();
-    	
+
     	this.id = entity.getId();
     	this.testingLabCode = entity.getTestingLabCode();
     	this.productCode = entity.getProductCode();
@@ -96,13 +96,13 @@ public class CertifiedProductDetailsDTO implements Serializable {
     	this.testingLabId = entity.getTestingLabId();
     	this.testingLabName = entity.getTestingLabName();
     	this.numMeaningfulUse = entity.getMeaningfulUseUsers();
-    	
+
 		this.developer = new DeveloperDTO();
     	this.developer.setId(entity.getDeveloperId());
     	this.developer.setName(entity.getDeveloperName());
     	this.developer.setDeveloperCode(entity.getDeveloperCode());
     	this.developer.setWebsite(entity.getDeveloperWebsite());
-    	
+
     	if(entity.getDeveloperStatusId() != null) {
     		developerCurrentStatus = new DeveloperStatusEventDTO();
     		developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
@@ -113,7 +113,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     		developerCurrentStatus.setStatusDate(entity.getDeveloperStatusDate());
     		this.developer.getStatusEvents().add(developerCurrentStatus);
     	}
-    	
+
     	if(entity.getAddressId() != null) {
     		AddressDTO developerAddress = new AddressDTO();
     		developerAddress.setId(entity.getAddressId());
@@ -135,17 +135,17 @@ public class CertifiedProductDetailsDTO implements Serializable {
     		developerContact.setTitle(entity.getTitle());
     		this.developer.setContact(developerContact);
     	}
-    	
+
     	if(entity.getProduct() != null) {
     		this.product = new ProductDTO(entity.getProduct());
     	}
-    	
+
     	if(entity.getProductVersionId() != null) {
     		this.version = new ProductVersionDTO();
     		this.version.setId(entity.getProductVersionId());
     		this.version.setVersion(entity.getProductVersion());
     	}
-    	
+
     	this.ics = entity.getIcs();
     	this.sedTesting = entity.getSedTesting();
     	this.qmsTesting = entity.getQmsTesting();
@@ -167,8 +167,8 @@ public class CertifiedProductDetailsDTO implements Serializable {
     	this.countClosedNonconformities = entity.getCountClosedNonconformities();
     	this.lastModifiedDate = entity.getLastModifiedDate();
     }
-    
-    
+
+
 	public Long getId() {
 		return id;
 	}
@@ -299,7 +299,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
 	public void setCertificationStatusName(String certificationStatusName) {
 		this.certificationStatusName = certificationStatusName;
 	}
-	
+
 	public String getYearCode() {
 		if(StringUtils.isEmpty(this.getYear())) {
 			return "";
@@ -307,10 +307,10 @@ public class CertifiedProductDetailsDTO implements Serializable {
 			return this.getYear();
 		} else if(this.getYear().length() == 4) {
 			return this.getYear().substring(this.getYear().length()-2);
-		} 
+		}
 		return "??";
 	}
-	
+
 	public String getProductCode() {
 		return productCode;
 	}

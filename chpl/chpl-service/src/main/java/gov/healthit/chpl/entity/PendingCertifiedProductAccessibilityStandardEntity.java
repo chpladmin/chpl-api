@@ -17,39 +17,39 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pending_certified_product_accessibility_standard")
 public class PendingCertifiedProductAccessibilityStandardEntity {
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_accessibility_standard_id", nullable = false  )
 	private Long id;
-    
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingCertifiedProductEntity mappedProduct;
-	
+
 	@Column(name="pending_certified_product_id")
 	private Long pendingCertifiedProductId;
-	
+
     @Column(name = "accessibility_standard_id")
     private Long accessibilityStandardId;
-    
+
     @Column(name = "accessibility_standard_name")
     private String name;
-    
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column(name = "deleted", nullable = false  )
 	private Boolean deleted;

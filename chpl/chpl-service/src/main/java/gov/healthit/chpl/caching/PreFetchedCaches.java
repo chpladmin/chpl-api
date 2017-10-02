@@ -17,7 +17,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 public class PreFetchedCaches {
 	private static final Logger logger = LogManager.getLogger(PreFetchedCaches.class);
 	@Autowired private CertifiedProductSearchDAO certifiedProductSearchDao;
-	
+
 	@Transactional
 	@CacheEvict(value = CacheNames.COLLECTIONS_PREFETCHED_LISTINGS, beforeInvocation = true, allEntries = true)
 	@Cacheable(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS)

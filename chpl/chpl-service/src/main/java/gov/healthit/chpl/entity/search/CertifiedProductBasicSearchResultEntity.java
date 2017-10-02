@@ -11,80 +11,80 @@ import javax.persistence.Table;
 @Table(name = "certified_product_search")
 public class CertifiedProductBasicSearchResultEntity {
 	private static final long serialVersionUID = -2928065796550377869L;
-	
-    @Id 
+
+    @Id
 	@Column(name = "certified_product_id", nullable = false)
 	private Long id;
-    
+
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
-    
+
     @Column(name = "year")
     private String edition;
-    
+
     @Column(name = "testing_lab_name")
     private String atlName;
-    
+
     @Column(name = "certification_body_name")
     private String acbName;
-    
+
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
 
 	@Column(name = "practice_type_name")
     private String practiceTypeName;
-    
+
 	@Column( name = "product_version")
 	private String version;
-	
+
 	@Column(name = "product_name")
 	private String product;
-	
+
 	@Column(name = "vendor_name")
 	private String developer;
-	
+
 	@Column(name = "owner_history")
 	private String previousDevelopers;
-	
+
 	@Column( name = "certification_date")
 	private Date certificationDate;
-	
+
 	@Column( name = "certification_status_name")
 	private String certificationStatus;
-	
+
 	@Column( name = "decertification_date")
 	private Date decertificationDate;
-	
+
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
-	
+
 	@Column(name = "api_documentation")
 	private String apiDocumentation;
-	
+
     @Column(name = "surveillance_count")
     private Long surveillanceCount;
 
     @Column(name = "open_nonconformity_count")
     private Long openNonconformityCount;
-    
+
     @Column(name = "closed_nonconformity_count")
     private Long closedNonconformityCount;
-  
+
     @Column( name = "meaningful_use_users")
 	private Long meaningfulUseUserCount;
-    
+
     @Column(name = "certs")
     private String certs; // comma-separated list of all certification criteria met by the certified product
-    
+
     @Column(name = "cqms")
     private String cqms; // comma-separated list of all cqms met by the certified product
-    
+
     @Column(name = "parent")
     private String parent; // comma-separated list of all parents
-    
+
     @Column(name = "child")
     private String child; // comma-separated list of all children
-  
+
 	public CertifiedProductBasicSearchResultEntity() {
 	}
 
@@ -159,7 +159,7 @@ public class CertifiedProductBasicSearchResultEntity {
 	public void setAcbCertificationId(String acbCertificationId) {
 		this.acbCertificationId = acbCertificationId;
 	}
-	
+
 	public String getVersion() {
 		return version;
 	}
@@ -215,7 +215,7 @@ public class CertifiedProductBasicSearchResultEntity {
 	public void setOpenNonconformityCount(Long openNonconformityCount) {
 		this.openNonconformityCount = openNonconformityCount;
 	}
-	
+
 	public Long getClosedNonconformityCount() {
 		return closedNonconformityCount;
 	}

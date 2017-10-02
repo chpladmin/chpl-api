@@ -19,28 +19,28 @@ import gov.healthit.chpl.entity.UcdProcessEntity;
 @Entity
 @Table(name = "certification_result_ucd_process")
 public class CertificationResultUcdProcessEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certification_result_ucd_process_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long certificationResultId;
-	
+
 	@Column(name = "ucd_process_id")
 	private Long ucdProcessId;
-	
+
 	@Column(name = "ucd_process_details")
 	private String ucdProcessDetails;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "ucd_process_id", unique = true, nullable = true, insertable = false, updatable= false)
 	private UcdProcessEntity ucdProcess;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -56,23 +56,23 @@ public class CertificationResultUcdProcessEntity {
 	public void setCertificationResultId(Long certificationResultId) {
 		this.certificationResultId = certificationResultId;
 	}
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

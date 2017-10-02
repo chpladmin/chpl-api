@@ -48,13 +48,13 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("certifiedProductHandler2014")
 public class CertifiedProductHandler2014 extends CertifiedProductHandler {
-	
+
 	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler2014.class);
-	
+
 	public PendingCertifiedProductEntity handle() {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
 		pendingCertifiedProduct.setStatus(getDefaultStatusId());
-		
+
 		//get the first row of the certified product
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(1);
@@ -62,11 +62,11 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				parseCertifiedProductDetails(record, pendingCertifiedProduct);
 			}
 		}
-	
+
 		//get the QMS's for the certified product
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(1);
-			if(!StringUtils.isEmpty(statusStr) && 
+			if(!StringUtils.isEmpty(statusStr) &&
 					(FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr) ||
 					 SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
 				parseQms(record, pendingCertifiedProduct);
@@ -77,28 +77,28 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		} else if(pendingCertifiedProduct.isHasQms() && pendingCertifiedProduct.getQmsStandards().size() == 0) {
 			pendingCertifiedProduct.getErrorMessages().add(pendingCertifiedProduct.getUniqueId() + " has 'true' in the QMS column but no QMS was found.");
 		}
-		
+
 		//parse CQMs starts at index 28
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(1);
-			if(!StringUtils.isEmpty(statusStr) && 
+			if(!StringUtils.isEmpty(statusStr) &&
 					(FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr) ||
 					 SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
 				parseCqms(record, pendingCertifiedProduct);
 			}
 		}
-		
+
 		//parse criteria starts at index 30
 		CSVRecord firstRow = null;
 		for(int i = 0; i < getRecord().size() && firstRow == null; i++) {
 			CSVRecord currRecord = getRecord().get(i);
 			String statusStr = currRecord.get(1);
-			if(!StringUtils.isEmpty(statusStr) && 
+			if(!StringUtils.isEmpty(statusStr) &&
 					FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
 				firstRow = currRecord;
 			}
 		}
-		
+
 		if(firstRow != null) {
 			int criteriaBeginIndex = 30;
 			int criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
@@ -144,7 +144,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct, "170.314 (a)(14)", firstRow, criteriaBeginIndex, criteriaEndIndex));
 			criteriaBeginIndex = criteriaEndIndex+1;
 			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct, "170.314 (a)(15)", firstRow, criteriaBeginIndex, criteriaEndIndex));	
+			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct, "170.314 (a)(15)", firstRow, criteriaBeginIndex, criteriaEndIndex));
 			criteriaBeginIndex = criteriaEndIndex+1;
 			criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
 			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct, "170.314 (a)(16)", firstRow, criteriaBeginIndex, criteriaEndIndex));
@@ -281,16 +281,16 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 
 		return pendingCertifiedProduct;
 	}
-	
+
 	private void parseCertifiedProductDetails(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 0;
-		
+
 		String uniqueId = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setUniqueId(uniqueId);
-		
+
 		String recordStatus = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setRecordStatus(recordStatus);
-		
+
 		//practice type
 		String practiceType = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setPracticeType(practiceType);
@@ -298,7 +298,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		if(foundPracticeType != null) {
 			pendingCertifiedProduct.setPracticeTypeId(foundPracticeType.getId());
 		}
-		
+
 		//developer, product, version
 		String developer = record.get(colIndex++).trim();
 		String product = record.get(colIndex++).trim();
@@ -310,20 +310,20 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		DeveloperDTO foundDeveloper = developerDao.getByName(developer);
 		if(foundDeveloper != null) {
 			pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
-			
+
 			//product
 			ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
 			if(foundProduct != null) {
 				pendingCertifiedProduct.setProductId(foundProduct.getId());
-				
+
 				//version
 				ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(), productVersion);
 				if(foundVersion != null) {
 					pendingCertifiedProduct.setProductVersionId(foundVersion.getId());
 				}
 			}
-		}	
-		
+		}
+
 		//certification year
 		String certificaitonYear = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
@@ -334,10 +334,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		if(foundEdition != null) {
 			pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
 		}
-		
+
 		//acb certification id
-		pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++).trim());	
-		
+		pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++).trim());
+
 		//certification body
 		String acbName = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setCertificationBodyName(acbName);
@@ -347,15 +347,15 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		} else {
 			pendingCertifiedProduct.getErrorMessages().add("No certification body with name " + acbName + " could be found.");
 		}
-		
+
 		//testing lab
 		String atlName = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setTestingLabName(atlName);
 		TestingLabDTO foundAtl = atlDao.getByName(atlName);
 		if(foundAtl != null) {
 			pendingCertifiedProduct.setTestingLabId(foundAtl.getId());
-		}	
-		
+		}
+
 		//product classification
 		String classification = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setProductClassificationName(classification);
@@ -363,7 +363,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		if(foundClassification != null) {
 			pendingCertifiedProduct.setProductClassificationId(foundClassification.getId());
 		}
-	
+
 		//certification date
 		String dateStr = record.get(colIndex++).trim();
 		try {
@@ -371,8 +371,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			pendingCertifiedProduct.setCertificationDate(certificationDate);
 		} catch(ParseException ex) {
 			pendingCertifiedProduct.setCertificationDate(null);
-		}		
-		
+		}
+
 		//developer address info
 		String developerStreetAddress = record.get(colIndex++).trim();
 		String developerState = record.get(colIndex++).trim();
@@ -387,10 +387,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		pendingCertifiedProduct.setDeveloperState(developerState);
 		pendingCertifiedProduct.setDeveloperZipCode(developerZipcode);
 		pendingCertifiedProduct.setDeveloperWebsite(developerWebsite);
-		pendingCertifiedProduct.setDeveloperEmail(developerEmail);	
+		pendingCertifiedProduct.setDeveloperEmail(developerEmail);
 		pendingCertifiedProduct.setDeveloperPhoneNumber(developerPhone);
 		pendingCertifiedProduct.setDeveloperContactName(developerContactName);
-		
+
 		//look for contact in db
 		ContactDTO contactToFind = new ContactDTO();
 		contactToFind.setLastName(developerContactName);
@@ -400,7 +400,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		if(foundContact != null) {
 			pendingCertifiedProduct.setDeveloperContactId(foundContact.getId());
 		}
-		
+
 		AddressDTO toFind = new AddressDTO();
 		toFind.setStreetLineOne(developerStreetAddress);
 		toFind.setCity(developerCity);
@@ -415,31 +415,31 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				addressEntity = null;
 			}
 			pendingCertifiedProduct.setDeveloperAddress(addressEntity);
-		}		
-		
+		}
+
 		//report file location
-		pendingCertifiedProduct.setReportFileLocation(record.get(colIndex++).trim());	
-		
+		pendingCertifiedProduct.setReportFileLocation(record.get(colIndex++).trim());
+
 		//sed report link
 		pendingCertifiedProduct.setSedReportFileLocation(record.get(colIndex++).trim());
-		
+
 		String hasQmsStr = record.get(colIndex++);
 		Boolean hasQms = asBoolean(hasQmsStr);
 		if(hasQms != null) {
 			pendingCertifiedProduct.setHasQms(hasQms.booleanValue());
 		}
-		
+
 		//qms standards
 		colIndex++;
 		//qms modification
 		colIndex++;
-		
+
 		String hasIcsStr = record.get(colIndex++).trim();
 		pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
 
 		//(k)(1)  url
 		pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++).trim());
-		
+
 		//(k)(2) attestation status
 		String k2AttestationStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(k2AttestationStr)) {
@@ -454,14 +454,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			pendingCertifiedProduct.setTransparencyAttestation(null);
 		}
 	}
-	
+
 	private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int colIndex = 23;
 		if(!StringUtils.isEmpty(record.get(colIndex))) {
 			String qmsStandardName = record.get(colIndex++).trim();
 			QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName);
 			String qmsMods = record.get(colIndex).trim();
-			
+
 			PendingCertifiedProductQmsStandardEntity qmsEntity = new PendingCertifiedProductQmsStandardEntity();
 			qmsEntity.setMappedProduct(pendingCertifiedProduct);
 			qmsEntity.setModification(qmsMods);
@@ -470,16 +470,16 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				qmsEntity.setQmsStandardId(qmsStandard.getId());
 			}
 			pendingCertifiedProduct.getQmsStandards().add(qmsEntity);
-		} 
+		}
 	}
-	
+
 	private void parseCqms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
 		int cqmNameIndex = 28;
 		int cqmVersionIndex = 29;
-		
+
 		String cqmName = record.get(cqmNameIndex).trim();
 		String cqmVersions = record.get(cqmVersionIndex).trim();
-		
+
 		List<PendingCqmCriterionEntity> criterion = handleCqmCmsCriterion(pendingCertifiedProduct, cqmName, cqmVersions);
 		for(PendingCqmCriterionEntity entity : criterion) {
 			if(entity != null && entity.getMappedCriterion() != null && entity.getMeetsCriteria() == Boolean.TRUE) {
@@ -487,14 +487,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			}
 		}
 	}
-	
+
 	private int getCriteriaEndIndex(int beginIndex) {
 		int criteriaBeginIndex = beginIndex;
 		int criteriaEndIndex = criteriaBeginIndex+1;
 		String colTitle = getHeading().get(criteriaBeginIndex).toString();
 		if(colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
 			colTitle = getHeading().get(criteriaEndIndex).toString();
-			while(criteriaEndIndex <= getLastDataIndex() && 
+			while(criteriaEndIndex <= getLastDataIndex() &&
 					!colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
 				criteriaEndIndex++;
 				if(criteriaEndIndex <= getLastDataIndex()) {
@@ -506,13 +506,13 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		}
 		return criteriaEndIndex-1;
 	}
-	
+
 	private PendingCertificationResultEntity parseCriteria(PendingCertifiedProductEntity pendingCertifiedProduct, String criteriaNumber, CSVRecord firstRow, int beginIndex, int endIndex) {
 		int currIndex = beginIndex;
 		PendingCertificationResultEntity cert = null;
 		try {
 			cert = getCertificationResult(criteriaNumber, firstRow.get(currIndex++).trim());
-			
+
 			while(currIndex <= endIndex) {
 				String colTitle = getHeading().get(currIndex);
 				if(!StringUtils.isEmpty(colTitle)) {
@@ -539,7 +539,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
 						cert.setHasAdditionalSoftware(hasAdditionalSoftware);
 						parseAdditionalSoftware(pendingCertifiedProduct, cert, currIndex);
-						currIndex += 4; 
+						currIndex += 4;
 						break;
 					case "TEST TOOL NAME":
 						parseTestTools(pendingCertifiedProduct, cert, currIndex);
@@ -573,11 +573,11 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						currIndex++;
 					}
 				}
-			}						
+			}
 		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
 		return cert;
 	}
-	
+
 	private void parseTestStandards(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int tsColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tsValue = row.get(tsColumn).trim();
@@ -592,7 +592,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			}
 		}
 	}
-	
+
 	private void parseTestFunctionality(PendingCertifiedProductEntity listing, PendingCertificationResultEntity cert, int tfColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tfValue = row.get(tfColumn).trim();
@@ -607,11 +607,11 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			}
 		}
 	}
-	
+
 	private void parseAdditionalSoftware(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert, int asColumnBegin) {
 		int cpSourceColumn = asColumnBegin+1;
 		int nonCpSourceColumn = asColumnBegin+2;
-		
+
 		for(CSVRecord row : getRecord()) {
 			String cpSourceValue = row.get(cpSourceColumn).trim();
 			if(!StringUtils.isEmpty(cpSourceValue)) {
@@ -633,7 +633,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 					}
 				}
 				cert.getAdditionalSoftware().add(asEntity);
-			} 
+			}
 			String nonCpSourceValue = row.get(nonCpSourceColumn).trim();
 			if(!StringUtils.isEmpty(nonCpSourceValue)) {
 				PendingCertificationResultAdditionalSoftwareEntity asEntity = new PendingCertificationResultAdditionalSoftwareEntity();
@@ -642,14 +642,14 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				cert.getAdditionalSoftware().add(asEntity);
 			}
 		}
-		
+
 		if(cert.getHasAdditionalSoftware() != null && cert.getHasAdditionalSoftware().booleanValue() == true && cert.getAdditionalSoftware().size() == 0) {
 			product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates additional software should be present but none was found.");
 		} else if((cert.getHasAdditionalSoftware() == null || cert.getHasAdditionalSoftware().booleanValue() == false) && cert.getAdditionalSoftware().size() > 0) {
 			product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates additional software should not be present but some was found.");
 		}
 	}
-	
+
 	private void parseTestProcedures(PendingCertificationResultEntity cert, int tpColumn) {
 		for(CSVRecord row : getRecord()) {
 			String tpValue = row.get(tpColumn).trim();
@@ -664,7 +664,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			}
 		}
 	}
-	
+
 	private void parseTestData(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert, int tdColumnBegin) {
 		for(CSVRecord row : getRecord()) {
 			String tdVersionValue = row.get(tdColumnBegin).trim();
@@ -675,16 +675,16 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				tdEntity.setHasAlteration(hasAlteration);
 				String alterationStr = row.get(tdColumnBegin+2).trim();
 				if(tdEntity.isHasAlteration() && StringUtils.isEmpty(alterationStr)) {
-					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was altered however no test data alteration was found."); 
+					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was altered however no test data alteration was found.");
 				} else if(!tdEntity.isHasAlteration() && !StringUtils.isEmpty(alterationStr)) {
-					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was not altered however a test data alteration was found."); 
+					product.getErrorMessages().add("Certification " + cert.getMappedCriterion().getNumber() + " for product " + product.getUniqueId() + " indicates test data was not altered however a test data alteration was found.");
 				}
 				tdEntity.setAlteration(row.get(tdColumnBegin+2).trim());
 				cert.getTestData().add(tdEntity);
 			}
 		}
 	}
-	
+
 	private void parseTestTools(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert, int toolColumnBegin) {
 		for(CSVRecord row : getRecord()) {
 			String testToolName = row.get(toolColumnBegin).trim();
@@ -701,7 +701,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			}
 		}
 	}
-	
+
 	public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 		for (CQMCriterion criterion : allCqms) {
@@ -712,7 +712,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		return criteria;
 	}
 
-	
+
 	/**
 	 * look up a CQM CMS criteria by number and version. throw an error if we can't find it
 	 * @param criterionNum
@@ -724,7 +724,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		if(!StringUtils.isEmpty(version)) {
 			version = version.trim();
 		}
-		
+
 		List<PendingCqmCriterionEntity> result = new ArrayList<PendingCqmCriterionEntity>();
 
 		if(!StringUtils.isEmpty(version) && !"0".equals(version)) {
@@ -734,7 +734,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				//also try splitting on ,
 				versionList= version.split(",");
 			}
-			
+
 			for(int i = 0; i < versionList.length; i++) {
 				String currVersion = versionList[i].trim();
 				if(!criterionNum.startsWith("CMS")) {
@@ -744,10 +744,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 				if(cqmEntity == null) {
 					product.getErrorMessages().add("Could not find a CQM CMS criterion matching " + criterionNum + " and version " + currVersion);
 				}
-				
+
 				PendingCqmCriterionEntity currResult = new PendingCqmCriterionEntity();
 				currResult.setMappedCriterion(cqmEntity);
-				currResult.setMeetsCriteria(true);	
+				currResult.setMeetsCriteria(true);
 				result.add(currResult);
 			}
 		}

@@ -20,36 +20,36 @@ public class JobDTO implements Serializable {
 	private Date endTime;
 	private String data;
 	private List<JobMessageDTO> messages;
-	
+
 	public JobDTO(){
 		messages = new ArrayList<JobMessageDTO>();
 	}
-	
+
 	public JobDTO(JobEntity entity){
 		this();
 		this.id = entity.getId();
 		this.startTime = entity.getStartTime();
 		this.endTime = entity.getEndTime();
 		this.data = entity.getData();
-		
+
 		if(entity.getJobType() != null) {
 			this.jobType = new JobTypeDTO(entity.getJobType());
 		} else {
 			this.jobType = new JobTypeDTO();
 			this.jobType.setId(entity.getJobTypeId());
 		}
-		
+
 		if(entity.getUser() != null) {
 			this.user = new UserDTO(entity.getUser());
 		} else {
 			this.user = new UserDTO();
 			this.user.setId(entity.getUserId());
 		}
-		
+
 		if(entity.getStatus() != null) {
 			this.status = new JobStatusDTO(entity.getStatus());
 		}
-		
+
 		if(entity.getMessages() != null) {
 			for(JobMessageEntity message : entity.getMessages()) {
 				this.messages.add(new JobMessageDTO(message));

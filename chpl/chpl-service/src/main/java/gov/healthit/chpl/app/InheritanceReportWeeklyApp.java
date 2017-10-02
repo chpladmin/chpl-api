@@ -33,32 +33,32 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 @Component("inheritanceReportWeeklyApp")
 public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 	private InvalidInheritanceCsvPresenter presenter;
-	
+
     public InheritanceReportWeeklyApp() {
     }
-    
+
 	public static void main(String[] args) throws Exception {
 		InheritanceReportWeeklyApp app = new InheritanceReportWeeklyApp();
 		app.setLocalContext();
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		app.initiateSpringBeans(context);
         File downloadFolder = app.getDownloadFolder();
-        
+
 		// Get ACBs for ONC-ACB emails
      	List<CertificationBodyDTO> acbs = app.getCertificationBodyDAO().findAll(false);
      	Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
  		permissions.add(new GrantedPermission("ROLE_ADMIN"));
  		List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions = app.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_WEEKLY_ICS_FAMILY_ERRORS, null);
  		List<RecipientWithSubscriptionsDTO> allAcbRecipientSubscriptions = app.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_ACB_WEEKLY_ICS_FAMILY_ERRORS, acbs);
- 		
+
 		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0){
 			// Get full set of data to send in ONC email
 			List<CertifiedProductSearchDetails> allCertifiedProductDetails = app.getAllCertifiedProductSearchDetails();
 			CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();
 			allCps.setListings(allCertifiedProductDetails);
 			// Get Certification-specific set of data to send in emails
-			Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadMap = app.getCertificationDownloadResponse(allCertifiedProductDetails, acbs);	
-			
+			Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadMap = app.getCertificationDownloadResponse(allCertifiedProductDetails, acbs);
+
 			// send emails
 			app.sendOncWeeklyEmail(oncRecipientSubscriptions, downloadFolder, allCps);
 			for(CertificationBodyDTO acb : acbs) {
@@ -70,7 +70,7 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 		}
         context.close();
 	}
-	
+
 	@Override
 	protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
 		super.initiateSpringBeans(context);
@@ -79,10 +79,10 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 		this.getPresenter().setMessageSource((MessageSource)context.getBean("messageSource"));
 		this.getPresenter().setInheritanceDao((ListingGraphDAO)context.getBean("listingGraphDao"));
 	}
-	
+
 	private void sendOncWeeklyEmail(List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions, File downloadFolder, CertifiedProductDownloadResponse cpList) throws IOException, AddressException, MessagingException {
 		Properties props = getProperties();
-		
+
         String reportFilename = props.getProperty("inheritanceReportEmailWeeklyFileName");
         File reportFile = new File(downloadFolder.getAbsolutePath() + File.separator + reportFilename);
     	String subject = props.getProperty("inheritanceReportEmailWeeklySubject");
@@ -104,35 +104,35 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 	        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
     	}
 	}
-	
+
 	private void sendAcbWeeklyEmail(CertificationBodyDTO acb, List<RecipientWithSubscriptionsDTO> acbRecipientSubscriptions, File downloadFolder, Map<CertificationBodyDTO, CertifiedProductDownloadResponse> acbDownloadMap) throws IOException, AddressException, MessagingException {
 		Properties props = getProperties();
-		
+
 		//get emails
     	Set<String> acbEmails = new HashSet<String>();
     	for(RecipientWithSubscriptionsDTO recip : acbRecipientSubscriptions) {
     		acbEmails.add(recip.getEmail());
     	}
-    	
+
     	List<File> files = new ArrayList<File>();
     	String fmtAcbName = acb.getName().replaceAll("\\W", "").toLowerCase();
     	String reportFilename = fmtAcbName + "-" + props.getProperty("inheritanceReportEmailWeeklyFileName");
     	File reportFile = new File(downloadFolder.getAbsolutePath() + File.separator + reportFilename);
-    	
-    	// Generate this ACB's download file  	
+
+    	// Generate this ACB's download file
     	int numRows = this.getPresenter().presentAsFile(reportFile, acbDownloadMap.get(acb));
-		files.add(reportFile);	
+		files.add(reportFile);
 
     	String subject = acb.getName() + " " + props.getProperty("inheritanceReportEmailWeeklySubject");
     	String htmlMessage = props.getProperty("inheritanceReportEmailWeeklyHtmlMessage");
     	String[] bccEmail = acbEmails.toArray(new String[acbEmails.size()]);
-    	
+
     	// Get broken rules for email body
     	if(bccEmail.length > 0) {
     		//TODO: put in the no content html body if empty
 	        htmlMessage += createHtmlEmailBody(numRows, props.getProperty("oversightEmailWeeklyNoContent"));
 	        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
-    	} 
+    	}
 	}
 
 	@Override
@@ -153,7 +153,7 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 		}
 		return allCertifiedProductDetails;
 	}
-	
+
 	protected String createHtmlEmailBody(int numRecords, String noContentMsg) throws IOException {
         String htmlMessage = "";
 		if(numRecords == 0) {
@@ -163,7 +163,7 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
         }
         return htmlMessage;
 	}
-	
+
 	private InvalidInheritanceCsvPresenter getPresenter() {
 		return presenter;
 	}

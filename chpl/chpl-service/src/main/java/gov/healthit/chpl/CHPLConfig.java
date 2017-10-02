@@ -53,19 +53,19 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"})
 public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
-	
+
 	private static final Logger logger = LogManager.getLogger(CHPLConfig.class);
-	
+
 	@Autowired private ApiKeyManager apiKeyManager;
-	
+
 	@Autowired private Environment env;
-	
+
 	@Override
     public void setEnvironment(final Environment environment) {
 		logger.info("setEnvironment");
         this.env = environment;
     }
-	
+
 	@Bean
 	public MappingJackson2HttpMessageConverter jsonConverter(){
 		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
@@ -75,7 +75,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 		bean.setSupportedMediaTypes(mediaTypes);
 		return bean;
 	}
-	
+
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
 		logger.info("get LocalEntityManagerFactoryBean");
@@ -83,7 +83,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
 		return bean;
 	}
-	 
+
 	@Bean
 	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
 		logger.info("get JpaTransactionManager");
@@ -91,33 +91,33 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
 		return bean;
 	}
-	
+
 	@Bean
 	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
 		logger.info("get PersistenceAnnotationBeanPostProcessor");
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
-	
+
 	@Bean(name="multipartResolver")
 	public CommonsMultipartResolver getResolver() throws IOException{
 		logger.info("get CommonsMultipartResolver");
 	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-	         
+
 	        //Set the maximum allowed size (in bytes) for each individual file.
 	        resolver.setMaxUploadSize(5242880);//5MB
-	         
+
 	        //You may also set other available properties.
-	        
+
 	        return resolver;
 	}
-	
+
 	@Bean
 	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
 	{
 		logger.info("get APIKeyAuthenticationFilter");
 		return new APIKeyAuthenticationFilter(apiKeyManager);
 	}
-	
+
 	@Bean
 	public TaskExecutor taskExecutor() {
 		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
@@ -132,7 +132,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 		logger.info("get Marshaller");
 		return new CastorMarshaller();
 	}
-	
+
 	@Bean
 	public CacheManager cacheManager() {
 		logger.info("get CacheManager");
@@ -147,7 +147,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 		cmfb.setShared(true);
 		return cmfb;
 	}
-	
+
 	@Bean
 	public ReloadableResourceBundleMessageSource messageSource(){
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
@@ -190,5 +190,5 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
 		return new MeaningfulUseUploadJob();
 	}
-	
+
 }

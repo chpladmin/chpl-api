@@ -31,16 +31,16 @@ public abstract class NotificationEmailerReportApp extends App {
 	protected NotificationDAO notificationDAO;
 	protected CertificationBodyDAO certificationBodyDAO;
 	protected CertificationEditionDAO editionDAO;
-	
+
 	protected static final Logger logger = LogManager.getLogger(NotificationEmailerReportApp.class);
-	
+
 	public NotificationEmailerReportApp(){
 		timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 	}
-	
+
 	public Map<CertificationBodyDTO, CertifiedProductDownloadResponse> getCertificationDownloadResponse(List<CertifiedProductSearchDetails> allCertifiedProductDetails, List<CertificationBodyDTO> acbs){
 		Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadResponse = new HashMap<CertificationBodyDTO, CertifiedProductDownloadResponse>();
-		
+
 		for(CertificationBodyDTO cbDTO : acbs){
 			CertifiedProductDownloadResponse cpDlResponse = new CertifiedProductDownloadResponse();
 			List<CertifiedProductSearchDetails> acbCpSearchDetails = new ArrayList<CertifiedProductSearchDetails>();
@@ -54,7 +54,7 @@ public abstract class NotificationEmailerReportApp extends App {
 		}
 		return certificationDownloadResponse;
 	}
-	
+
 	@Override
 	protected void initiateSpringBeans(AbstractApplicationContext context)  throws IOException {
 		this.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
@@ -64,7 +64,7 @@ public abstract class NotificationEmailerReportApp extends App {
 		this.setEditionDAO((CertificationEditionDAO)context.getBean("certificationEditionDAO"));
 		this.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
 	}
-	
+
 	protected List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails() {
 		List<CertifiedProductDetailsDTO> allCertifiedProducts = this.getCertifiedProductDAO().findAll();
 	    List<CertifiedProductSearchDetails> allCertifiedProductDetails = new ArrayList<CertifiedProductSearchDetails>(allCertifiedProducts.size());
@@ -78,7 +78,7 @@ public abstract class NotificationEmailerReportApp extends App {
 		}
 		return allCertifiedProductDetails;
 	}
-	
+
 	public CertifiedProductDetailsManager getCpdManager() {
 		return cpdManager;
 	}

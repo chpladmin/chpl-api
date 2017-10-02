@@ -8,7 +8,7 @@ public class UpdateProductsRequest implements Serializable {
 	private List<Long> productIds;
 	private Product product;
 	private Long newDeveloperId;
-	
+
 	public List<Long> getProductIds() {
 		return productIds;
 	}

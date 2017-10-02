@@ -14,6 +14,6 @@ public interface JobManager {
 	public List<JobTypeDTO> getAllJobTypes();
 	public List<JobDTO> getJobsForUser(UserDTO user) throws EntityRetrievalException;
 	public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException;
-	
+
 	public boolean start(JobDTO job) throws EntityRetrievalException;
 }

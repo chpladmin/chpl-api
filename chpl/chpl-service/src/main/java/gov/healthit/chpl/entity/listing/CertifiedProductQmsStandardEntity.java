@@ -19,13 +19,13 @@ import gov.healthit.chpl.entity.QmsStandardEntity;
 @Entity
 @Table(name = "certified_product_qms_standard")
 public class CertifiedProductQmsStandardEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certified_product_qms_standard_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long certifiedProductId;
@@ -33,20 +33,20 @@ public class CertifiedProductQmsStandardEntity {
 	@Basic( optional = false )
 	@Column( name = "qms_standard_id", nullable = false  )
 	private Long qmsStandardId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "qms_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private QmsStandardEntity qmsStandard;
-	
+
 	@Basic( optional = false )
 	@Column( name = "modification", nullable = false  )
 	private String modification;
-	
+
 	@Basic( optional = false )
 	@Column( name = "applicable_criteria", nullable = false  )
 	private String applicableCriteria;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -98,19 +98,19 @@ public class CertifiedProductQmsStandardEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

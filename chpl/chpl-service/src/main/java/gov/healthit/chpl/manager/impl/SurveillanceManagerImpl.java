@@ -66,15 +66,15 @@ import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationExcepti
 public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl implements SurveillanceManager {
 	private static final Logger logger = LogManager.getLogger(SurveillanceManagerImpl.class);
 	@Autowired private Environment env;
-	
+
 	@Autowired SurveillanceDAO survDao;
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired UserDAO userDAO;
 	@Autowired SurveillanceValidator validator;
 	@Autowired UserPermissionDAO userPermissionDao;
-	
+
 	@Autowired private ActivityManager activityManager;
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public Surveillance getById(Long survId) throws EntityRetrievalException {
@@ -83,7 +83,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		validator.validate(result);
 		return result;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId) {
@@ -95,7 +95,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		validator.validate(result);
 		return result;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<Surveillance> getByCertifiedProduct(Long cpId) {
@@ -110,20 +110,20 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		return results;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
 	throws EntityRetrievalException {
 		SurveillanceNonconformityDocumentationEntity docEntity = survDao.getDocumentById(docId);
-		
+
 		SurveillanceNonconformityDocument doc = null;
 		if(docEntity != null) {
 			doc = convertToDomain(docEntity, getFileContents);
 		}
 		return doc;
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -134,29 +134,29 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		Long insertedId = null;
 		checkSurveillanceAuthority(surv);
 		updateNullAuthority(surv);
-		
+
 		try {
 			insertedId = survDao.insertSurveillance(surv);
 		} catch(UserPermissionRetrievalException ex) {
 			logger.error("Error inserting surveillance.", ex);
 			throw ex;
 		}
-		
+
 		return insertedId;
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) 
+	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc)
 	throws EntityRetrievalException {
 		Long insertedId = null;
 		insertedId = survDao.insertNonconformityDocument(nonconformityId, doc);
 		return insertedId;
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -182,7 +182,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			throw ex;
 		}
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -193,17 +193,17 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		checkSurveillanceAuthority(surv);
 		survDao.deleteSurveillance(surv);
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
 			+ "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public void deleteNonconformityDocument(Long acbId, Long documentId) 
+	public void deleteNonconformityDocument(Long acbId, Long documentId)
 	throws EntityRetrievalException {
 		survDao.deleteNonconformityDocument(documentId);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
@@ -219,48 +219,48 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		return results;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) 
+	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted)
 	throws EntityRetrievalException {
 		PendingSurveillanceEntity pending = survDao.getPendingSurveillanceById(survId, includeDeleted);
 		Surveillance surv = convertToDomain(pending);
 		return surv;
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public Long createPendingSurveillance(Long acbId, Surveillance surv) {	
+	public Long createPendingSurveillance(Long acbId, Surveillance surv) {
 		Long insertedId = null;
-		
+
 		try {
 			insertedId = survDao.insertPendingSurveillance(surv);
 		} catch(Exception ex) {
 			logger.error("Error inserting pending surveillance.", ex);
 		}
-		
+
 		return insertedId;
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) 
-	throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {		
+	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
+	throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
 		PendingSurveillanceEntity surv = survDao.getPendingSurveillanceById(survId, true);
 		CertifiedProductEntity ownerCp = surv.getCertifiedProduct();
 		if(ownerCp == null) {
 			throw new EntityNotFoundException("Could not find certified product associated with pending surveillance.");
 		}
-		
+
 		Surveillance toDelete = getPendingById(acbId, survId, true);
-		
+
 		if(isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
 			try {
 				survDao.deletePendingSurveillance(toDelete);
@@ -273,10 +273,10 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			} else{
 				activityMsg.append("rejected.");
 			}
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);	
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);
 		}
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
@@ -292,17 +292,17 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		boolean userHasAcbPermissions = false;
 		for(CertificationBodyDTO acb : userAcbs) {
-			if(acb.getId() != null && 
-					ownerCp.getCertificationBodyId() != null && 
+			if(acb.getId() != null &&
+					ownerCp.getCertificationBodyId() != null &&
 					acb.getId().longValue() == ownerCp.getCertificationBodyId().longValue()) {
 				userHasAcbPermissions = true;
 			}
 		}
-		
+
 		if(!userHasAcbPermissions) {
 			throw new AccessDeniedException("Permission denied on ACB " + ownerCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
 		}
-		
+
 		if(isPendingSurveillanceAvailableForUpdate(ownerCp.getCertificationBodyId(), surv)) {
 			Surveillance toDelete = convertToDomain(surv);
 			try {
@@ -310,7 +310,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			} catch(Exception ex) {
 				logger.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
 			}
-			
+
 			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
 			if(isConfirmed){
 				activityMsg.append("confirmed.");
@@ -320,7 +320,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);
 		}
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
@@ -330,12 +330,12 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		PendingSurveillanceEntity pendingSurv = survDao.getPendingSurveillanceById(pendingSurvId, true);
 		return isPendingSurveillanceAvailableForUpdate(acbId, pendingSurv);
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv) 
+	public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
 	throws EntityRetrievalException, ObjectMissingValidationException {
 		if(pendingSurv.getDeleted().booleanValue() == true) {
 			ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
@@ -343,7 +343,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			alreadyDeletedEx.setObjectId(pendingSurv.getId().toString());
 			alreadyDeletedEx.setStartDate(pendingSurv.getStartDate());
 			alreadyDeletedEx.setEndDate(pendingSurv.getEndDate());
-			
+
 			try {
 				UserDTO lastModifiedUser = userDAO.getById(pendingSurv.getLastModifiedUser());
 				if(lastModifiedUser != null) {
@@ -364,13 +364,13 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		return pendingSurv != null;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public void validate(Surveillance surveillance) {
 		validator.validate(surveillance);
 	}
-	
+
 	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
 		String message = "";
@@ -380,38 +380,38 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			Surveillance original = (Surveillance) src;
 			message =  "<p>Questionable activity was detected on " + original.getCertifiedProduct().getChplProductNumber() + ". "
 					+ "An action was taken related to surveillance " + fmt.format(original.getStartDate()) + ".<p>"
-					+ "<p>To view the details of this activity go to: " + 
+					+ "<p>To view the details of this activity go to: " +
 					env.getProperty("chplUrlBegin") + "/#/admin/reports</p>";
-		} 
+		}
 		return message;
 	}
-	
+
 	public boolean isQuestionableActivity(Object src, Object dest) {
 		//it's questionable if the surveillance was deleted (dest is null)
 		return src instanceof Surveillance && dest == null;
 	}
-	
+
 	@Override
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public File getProtectedDownloadFile(String filenameToDownload) throws IOException {
 		return getFileFromDownloadFolder(filenameToDownload);
 	}
-	
+
 	@Override
 	public File getDownloadFile(String filenameToDownload) throws IOException {
 		return getFileFromDownloadFolder(filenameToDownload);
 	}
-	
+
 	private File getFileFromDownloadFolder(String filenameToDownload) throws IOException {
 		String downloadFileLocation = env.getProperty("downloadFolderPath");
-		
+
 		File downloadFile = new File(downloadFileLocation + File.separator + filenameToDownload);
 		if(!downloadFile.exists() || !downloadFile.canRead()) {
 			throw new IOException("Cannot read download file at " + downloadFileLocation + ". File does not exist or cannot be read.");
-		} 
+		}
 		return downloadFile;
 	}
-	
+
 	private Surveillance convertToDomain(PendingSurveillanceEntity pr) {
 		Surveillance surv = new Surveillance();
 		surv.setId(pr.getId());
@@ -433,11 +433,11 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			cp.setChplProductNumber(pr.getCertifiedProductUniqueId());
 			surv.setCertifiedProduct(cp);
 		}
-		
+
 		SurveillanceType survType = new SurveillanceType();
 		survType.setName(pr.getSurveillanceType());
 		surv.setType(survType);
-		
+
 		if(pr.getSurveilledRequirements() != null) {
 			for(PendingSurveillanceRequirementEntity preq : pr.getSurveilledRequirements()) {
 				SurveillanceRequirement req = new SurveillanceRequirement();
@@ -449,7 +449,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 				SurveillanceRequirementType reqType = new SurveillanceRequirementType();
 				reqType.setName(preq.getRequirementType());
 				req.setType(reqType);
-				
+
 				if(preq.getNonconformities() != null) {
 					for(PendingSurveillanceNonconformityEntity pnc : preq.getNonconformities()) {
 						SurveillanceNonconformity nc = new SurveillanceNonconformity();
@@ -475,7 +475,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 				surv.getRequirements().add(req);
 			}
 		}
-		
+
 		if(pr.getValidation() != null && pr.getValidation().size() > 0) {
 			for(PendingSurveillanceValidationEntity validation : pr.getValidation()) {
 				if(validation.getMessageType() == ValidationMessageType.Error) {
@@ -485,7 +485,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		return surv;
 	}
-	
+
 	private SurveillanceNonconformityDocument convertToDomain(SurveillanceNonconformityDocumentationEntity entity, boolean getContents) {
 		SurveillanceNonconformityDocument doc = new SurveillanceNonconformityDocument();
 		doc.setId(entity.getId());
@@ -496,7 +496,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		return doc;
 	}
-	
+
 	private Surveillance convertToDomain(SurveillanceEntity entity) {
 		Surveillance surv = new Surveillance();
 		surv.setId(entity.getId());
@@ -505,7 +505,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		surv.setEndDate(entity.getEndDate());
 		surv.setRandomizedSitesUsed(entity.getNumRandomizedSites());
 		surv.setAuthority(userPermissionDao.findById(entity.getUserPermissionId()).getAuthority());
-		
+
 		if(entity.getCertifiedProduct() != null) {
 			CertifiedProductEntity cpEntity = entity.getCertifiedProduct();
 			try {
@@ -519,7 +519,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			cp.setId(entity.getCertifiedProductId());
 			surv.setCertifiedProduct(cp);
 		}
-		
+
 		if(entity.getSurveillanceType() != null) {
 			SurveillanceType survType = new SurveillanceType();
 			survType.setId(entity.getSurveillanceType().getId());
@@ -530,7 +530,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			survType.setId(entity.getSurveillanceTypeId());
 			surv.setType(survType);
 		}
-		
+
 		if(entity.getSurveilledRequirements() != null) {
 			for(SurveillanceRequirementEntity reqEntity : entity.getSurveilledRequirements()) {
 				SurveillanceRequirement req = new SurveillanceRequirement();
@@ -551,7 +551,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 					result.setId(reqEntity.getSurveillanceResultTypeId());
 					req.setResult(result);
 				}
-				
+
 				if(reqEntity.getSurveillanceRequirementType() != null) {
 					SurveillanceRequirementType result = new SurveillanceRequirementType();
 					result.setId(reqEntity.getSurveillanceRequirementType().getId());
@@ -562,7 +562,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 					result.setId(reqEntity.getSurveillanceRequirementTypeId());
 					req.setType(result);
 				}
-				
+
 				if(reqEntity.getNonconformities() != null) {
 					for(SurveillanceNonconformityEntity ncEntity : reqEntity.getNonconformities()) {
 						SurveillanceNonconformity nc = new SurveillanceNonconformity();
@@ -590,7 +590,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 							nc.setStatus(status);
 						}
 						req.getNonconformities().add(nc);
-						
+
 						if(ncEntity.getDocuments() != null && ncEntity.getDocuments().size() > 0) {
 							for(SurveillanceNonconformityDocumentationEntity docEntity : ncEntity.getDocuments()) {
 								SurveillanceNonconformityDocument doc = convertToDomain(docEntity, false);
@@ -604,7 +604,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		return surv;
 	}
-	
+
 	private void checkSurveillanceAuthority(Surveillance surv) throws SurveillanceAuthorityAccessDeniedException {
 		Boolean hasOncAdmin = Util.isUserRoleAdmin();
 		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
@@ -612,7 +612,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		if(StringUtils.isEmpty(surv.getAuthority())){
 			// If user has ROLE_ADMIN and ROLE_ACB_ADMIN or ROLE_ACB_STAFF, return 403
 			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)){
-				String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and " 
+				String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and "
 						+ Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF;
 				logger.error(errorMsg);
 				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
@@ -623,10 +623,10 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		    if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin){
 		    	String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
 				logger.error(errorMsg);
-				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);	
+				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
 			}
 		    // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
-		    else if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) 
+		    else if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN)
 		    		|| surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
 		    	if(!hasOncAdmin && !hasAcbAdmin && !hasAcbStaff){
 		    		String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
@@ -636,7 +636,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		    }
 		}
 	}
-	
+
 	private void updateNullAuthority(Surveillance surv){
 		Boolean hasOncAdmin = Util.isUserRoleAdmin();
 		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();

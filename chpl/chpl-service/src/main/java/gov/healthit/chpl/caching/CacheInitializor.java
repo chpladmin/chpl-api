@@ -41,7 +41,7 @@ public class CacheInitializor {
 	private Future<Boolean> isInitializeFindByAcbId;
 	private Properties props;
 	private String enableCacheInitializationValue;
-	
+
 	@Autowired private AsynchronousCacheInitialization asynchronousCacheInitialization;
 
 	  @PostConstruct
@@ -49,7 +49,7 @@ public class CacheInitializor {
 	  public void initialize() throws IOException, EntityRetrievalException, InterruptedException {
 		  if(props == null){
 			  InputStream in = CacheInitializor.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-			  
+
 			  if (in == null) {
 					props = null;
 					throw new FileNotFoundException("Environment Properties File not found in class path.");
@@ -58,47 +58,47 @@ public class CacheInitializor {
 					props.load(in);
 					in.close();
 				}
-			  
+
 			  enableCacheInitializationValue = props.getProperty("enableCacheInitialization").toString();
 			  initializeTimeoutSecs = Integer.parseInt(props.getProperty("cacheInitializeTimeoutSecs").toString());
 			  clearAllCachesTimeoutSecs = Integer.parseInt(props.getProperty("cacheClearTimeoutSecs").toString());
 		  }
-		  
+
 		  tInitStart = System.currentTimeMillis();
 		  if(tInitEnd != null) {
 			  tInitElapsedSecs = (tInitStart - tInitEnd) / 1000.0;
 		  }
-		  
+
 		  if(tInitEnd == null || tInitElapsedSecs > initializeTimeoutSecs) {
 			  manager = CacheManager.getInstance();
-			  
+
 			  try {
 				if(enableCacheInitializationValue != null && enableCacheInitializationValue.equalsIgnoreCase("true")){
 					if(isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()){
 						isInitializeSearchOptionsDone.cancel(true);
 					}
 					isInitializeSearchOptionsDone = asynchronousCacheInitialization.initializeSearchOptions();
-					
+
 					if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()){
 						isInitializeCertificationIdsGetAllDone.cancel(true);
 					}
 					isInitializeCertificationIdsGetAllDone = asynchronousCacheInitialization.initializeCertificationIdsGetAll();
-					
+
 					if(isInitializeCertificationIdsGetAllWithProductsDone != null && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()){
 						isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
 					}
 					isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization.initializeCertificationIdsGetAllWithProducts();
-					
+
 					if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()){
 						isInitializeDecertifiedDevelopers.cancel(true);
 					}
 					isInitializeDecertifiedDevelopers = asynchronousCacheInitialization.initializeDecertifiedDevelopers();
-					
+
 					if(isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()){
 						isInitializeBasicSearch.cancel(true);
 					}
 					isInitializeBasicSearch = asynchronousCacheInitialization.initializeBasicSearch();
-					
+
 					if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()){
 						isInitializeFindByAcbId.cancel(true);
 					}
@@ -111,36 +111,36 @@ public class CacheInitializor {
 		  }
 			  tInitEnd = System.currentTimeMillis();
 	  }
-	  
+
 	@Before("@annotation(ClearAllCaches)")
     public void beforeClearAllCachesMethod() {
 		tClearAllStart = System.currentTimeMillis();
 		if(tClearAllEnd != null){
 			  tClearAllElapsedSecs = (tClearAllStart - tClearAllEnd) / 1000.0;
 		  }
-		
+
 		if(tClearAllEnd == null || tClearAllElapsedSecs > clearAllCachesTimeoutSecs) {
 			// Stop initializing caches if running
 			if(isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()){
 				isInitializeSearchOptionsDone.cancel(true);
 			}
-			
+
 			if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()){
 				isInitializeCertificationIdsGetAllDone.cancel(true);
 			}
-			
+
 			if(isInitializeCertificationIdsGetAllWithProductsDone != null && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()){
 				isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
 			}
-			
+
 			if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()){
 				isInitializeDecertifiedDevelopers.cancel(true);
 			}
-			
+
 			if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()){
 				isInitializeFindByAcbId.cancel(true);
 			}
-			
+
 			logger.info("Clearing all caches before @ClearAllCaches method execution.");
 			manager.clearAll();
 		}

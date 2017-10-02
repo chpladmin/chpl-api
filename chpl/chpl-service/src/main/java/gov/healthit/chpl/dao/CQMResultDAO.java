@@ -6,7 +6,7 @@ import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 
 public interface CQMResultDAO {
-	
+
 	public CQMResultDTO create(CQMResultDTO cqmResult) throws EntityCreationException;
 	public CQMResultCriteriaDTO createCriteriaMapping(CQMResultCriteriaDTO criteria);
 	public void delete(Long cqmResultId);

@@ -13,38 +13,38 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_certification_result_test_functionality")
 public class PendingCertificationResultTestFunctionalityEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_certification_result_test_functionality_id", nullable = false  )
 	private Long id;
 
 	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
+	@Column(name = "pending_certification_result_id", nullable = false )
 	private Long pendingCertificationResultId;
 
 	@Column(name = "test_functionality_id")
 	private Long testFunctionalityId;
-	
+
 	@Column(name = "test_functionality_number")
 	private String testFunctionalityNumber;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -53,7 +53,7 @@ public class PendingCertificationResultTestFunctionalityEntity {
 		this.id = id;
 	}
 
-	
+
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}

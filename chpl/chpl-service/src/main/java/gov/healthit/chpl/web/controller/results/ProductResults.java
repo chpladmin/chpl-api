@@ -17,5 +17,5 @@ public class ProductResults implements Serializable {
 		this.products = products;
 	}
 
-	
+
 }

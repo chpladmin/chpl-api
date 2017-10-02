@@ -34,9 +34,9 @@ public class AnnouncementDTO implements Serializable {
 		this.creationDate = entity.getCreationDate();
 
 	}
-	
-	
-	
+
+
+
 	public String getTitle() {
 		return title;
 	}

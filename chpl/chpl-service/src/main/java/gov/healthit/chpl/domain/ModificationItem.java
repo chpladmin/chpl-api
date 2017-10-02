@@ -8,8 +8,8 @@ public class ModificationItem implements Serializable {
 	private String subject;
 	private String action;
 	private Date date;
-	
-	
+
+
 	public String getSubject() {
 		return subject;
 	}
@@ -28,5 +28,5 @@ public class ModificationItem implements Serializable {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
+
 }

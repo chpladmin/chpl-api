@@ -59,7 +59,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Autowired private CertificationResultRules certRules;
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductValidatorFactory validatorFactory;
-	
+
 	@Autowired PendingCertifiedProductDAO pcpDao;
 	@Autowired CertificationStatusDAO statusDao;
 	@Autowired CertificationBodyManager acbManager;
@@ -69,10 +69,10 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Autowired private MacraMeasureDAO macraDao;
 	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
 	private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
-	
+
 	@Autowired
 	private ActivityManager activityManager;
-	
+
 	@PostConstruct
 	public void setup() {
 		loadCQMCriteria();
@@ -82,23 +82,23 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id) 
+	public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
 			throws EntityRetrievalException, AccessDeniedException {
-		
+
 		PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, false);
 		boolean userHasAcbPermissions = false;
 		for(CertificationBodyDTO acb : userAcbs) {
-			if(acb.getId() != null && 
-					pendingCp.getCertificationBodyId() != null && 
+			if(acb.getId() != null &&
+					pendingCp.getCertificationBodyId() != null &&
 					acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
 				userHasAcbPermissions = true;
 			}
 		}
-		
+
 		if(!userHasAcbPermissions) {
 			throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
 		}
-		
+
 		//the user has permission so continue getting the pending cp
 		updateCertResults(pendingCp);
 		validate(pendingCp);
@@ -106,10 +106,10 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
 		addAllVersionsToCmsCriterion(pcpDetails);
 		addAllMeasuresToCertificationCriteria(pcpDetails);
-		
+
 		return pcpDetails;
 	}
-	
+
 	@Override
 	@Transactional (readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or "
@@ -119,49 +119,49 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
 		updateCertResults(products);
 		validate(products);
-		
+
 		return products;
 	}
-	
+
 	@Override
 	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class})
 	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate) 
+	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
 		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
 		if(existingId != null) {
 			pcpDao.delete(existingId);
 		}
-		
+
 		//insert the record
 		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
 		updateCertResults(pendingCpDto);
 		validate(pendingCpDto);
-		
+
 		String activityMsg = "Certified product "+pendingCpDto.getProductName()+" is pending.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, null, pendingCpDto);
-		
+
 		return pendingCpDto;
 	}
-	
+
 	@Override
 	@Transactional
 	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
 	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId) 
-			throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, 
+	public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId)
+			throws EntityRetrievalException, EntityNotFoundException, EntityCreationException,
 			AccessDeniedException, JsonProcessingException, ObjectMissingValidationException {
-		
+
 		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
 		if(pendingCp == null) {
 			throw new EntityNotFoundException("Could not find pending certified product with id " + pendingProductId);
-		} 
+		}
 		boolean userHasAcbPermissions = false;
 		for(CertificationBodyDTO acb : userAcbs) {
-			if(acb.getId() != null && 
-					pendingCp.getCertificationBodyId() != null && 
+			if(acb.getId() != null &&
+					pendingCp.getCertificationBodyId() != null &&
 					acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
 				userHasAcbPermissions = true;
 			}
@@ -169,14 +169,14 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		if(!userHasAcbPermissions) {
 			throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
 		}
-		
+
 		if(isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
 			pcpDao.delete(pendingProductId);
 			String activityMsg = "Pending certified product "+pendingCp.getProductName()+" has been rejected.";
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, null);	
+			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, null);
 		}
 	}
-	
+
 	@Override
 	@Transactional
 	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
@@ -185,13 +185,13 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	public void confirm(Long acbId, Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
 		pcpDao.delete(pendingProductId);
-		
+
 		String activityMsg = "Pending certified product "+pendingCp.getProductName()+" has been confirmed.";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, pendingCp);
-		
+
 	}
-	
-	
+
+
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
@@ -201,18 +201,18 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
 		return isPendingListingAvailableForUpdate(acbId, pendingCp);
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp) 
+	public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp)
 	throws EntityRetrievalException, ObjectMissingValidationException {
 		if(pendingCp.getDeleted().booleanValue() == true) {
 			ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
 			alreadyDeletedEx.getErrorMessages().add("This pending certified product has already been confirmed or rejected by another user.");
 			alreadyDeletedEx.setObjectId(pendingCp.getUniqueId());
-			
+
 			try {
 				UserDTO lastModifiedUser = userDAO.getById(pendingCp.getLastModifiedUser());
 				if(lastModifiedUser != null) {
@@ -229,18 +229,18 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			} catch(UserRetrievalException ex) {
 				alreadyDeletedEx.setContact(null);
 			}
-			
+
 			throw alreadyDeletedEx;
 		}
 		return pendingCp != null;
 	}
-	
+
 	private void updateCertResults(PendingCertifiedProductDTO dto) {
 		List<PendingCertifiedProductDTO> products = new ArrayList<PendingCertifiedProductDTO>();
 		products.add(dto);
 		updateCertResults(products);
 	}
-	
+
 	private void updateCertResults(List<PendingCertifiedProductDTO> products) {
 		for(PendingCertifiedProductDTO product : products) {
 			for(PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
@@ -295,7 +295,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			}
 		}
 	}
-	
+
 	private void loadCriteriaMacraMeasures() {
 		List<MacraMeasureDTO> dtos = macraDao.findAll();
 		for(MacraMeasureDTO dto : dtos) {
@@ -303,8 +303,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			macraMeasures.add(measure);
 		}
 	}
-	
-	private void loadCQMCriteria() {		
+
+	private void loadCQMCriteria() {
 		List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
 		for (CQMCriterionDTO dto: dtos) {
 			CQMCriterion criterion = new CQMCriterion();
@@ -321,10 +321,10 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			cqmCriteria.add(criterion);
 		}
 	}
-	
+
 	private List<CQMCriterion> getAvailableCQMVersions(){
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
-		
+
 		for (CQMCriterion criterion : cqmCriteria){
 			if(!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
@@ -332,7 +332,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		}
 		return criteria;
 	}
-	
+
 	private void validate(List<PendingCertifiedProductDTO> products) {
 		for(PendingCertifiedProductDTO dto : products) {
 			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
@@ -341,7 +341,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			}
 		}
 	}
-	
+
 	private void validate(PendingCertifiedProductDTO... products) {
 		for(PendingCertifiedProductDTO dto : products) {
 			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
@@ -350,7 +350,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			}
 		}
 	}
-	
+
 	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails) {
 		//now add allVersions for CMSs
 		String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
@@ -379,7 +379,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 			}
 		}
 	}
-	
+
 	@Override
 	public void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails) {
 		//now add allMeasures for criteria

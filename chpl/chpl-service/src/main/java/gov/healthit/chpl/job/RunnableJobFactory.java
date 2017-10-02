@@ -12,28 +12,28 @@ import gov.healthit.chpl.dto.job.JobTypeDTO;
 
 @Component
 public class RunnableJobFactory {
-	
+
 	public RunnableJob getRunnableJob(JobDTO job) throws NoJobTypeException {
 		RunnableJob result = null;
 		JobTypeDTO jobType = job.getJobType();
 		if(jobType == null || StringUtils.isEmpty(jobType.getName())) {
 			throw new NoJobTypeException();
 		}
-		
+
 		//find the job type enum value
 		JobTypeConcept jobTypeConcept = JobTypeConcept.findByName(jobType.getName());
 		if(jobTypeConcept == null) {
 			throw new NoJobTypeException();
 		}
-		
+
 		switch(jobTypeConcept) {
 		case MUU_UPLOAD:
-			result = getMeaningfulUseUploadJob();			
+			result = getMeaningfulUseUploadJob();
 			break;
 		default:
 			throw new NoJobTypeException();
 		}
-		
+
 		result.setJob(job);
 		if(Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
 			JWTAuthenticatedUser jobUser = new JWTAuthenticatedUser();
@@ -50,7 +50,7 @@ public class RunnableJobFactory {
 		}
 		return result;
 	}
-	
+
 	@Lookup
 	public MeaningfulUseUploadJob getMeaningfulUseUploadJob(){
 		//return (MeaningfulUseUploadJob) context.getBean("meaningfulUseUploadJob");

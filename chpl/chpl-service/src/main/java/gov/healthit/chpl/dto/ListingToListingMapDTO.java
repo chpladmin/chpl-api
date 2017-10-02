@@ -16,24 +16,24 @@ public class ListingToListingMapDTO implements Serializable {
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	
+
 	public ListingToListingMapDTO(){
 	}
 	public ListingToListingMapDTO(ListingToListingMapEntity entity){
 		this();
-		
+
 		this.id = entity.getId();
 		this.parentId = entity.getParentId();
 		this.childId = entity.getChildId();
 		this.parent = new CertifiedProductDetailsDTO(entity.getParent());
 		this.child = new CertifiedProductDetailsDTO(entity.getChild());
-		
+
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 	}
-	
+
 	public Long getParentId() {
 		return parentId;
 	}

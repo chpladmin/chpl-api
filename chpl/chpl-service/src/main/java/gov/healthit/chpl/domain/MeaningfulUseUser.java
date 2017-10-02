@@ -9,33 +9,33 @@ public class MeaningfulUseUser implements Serializable {
 	private Long numberOfUsers;
 	private Integer csvLineNumber;
 	private String error;
-	
+
 	public MeaningfulUseUser(){}
-	
+
 	public MeaningfulUseUser(String productNumber,  Long numberOfUsers){
 		this.productNumber = productNumber;
 		this.numberOfUsers = numberOfUsers;
 	}
-	
+
 	public MeaningfulUseUser(String productNumber, Long certifiedProductId, Long numberOfUsers, Integer csvLineNumber){
 		this.productNumber = productNumber;
 		this.certifiedProductId = certifiedProductId;
 		this.numberOfUsers = numberOfUsers;
 		this.csvLineNumber = csvLineNumber;
 	}
-	
+
 	public void setCertifiedProductId(Long certifiedProductId){
 		this.certifiedProductId = certifiedProductId;
 	}
-	
+
 	public Long getCertifiedProductId(){
 		return this.certifiedProductId;
 	}
-	
+
 	public void setProductNumber(String productNumber){
 		this.productNumber = productNumber;
 	}
-	
+
 	public String getProductNumber(){
 		return this.productNumber;
 	}

@@ -15,26 +15,26 @@ import javax.persistence.Table;
 @Table(name="muu_accurate_as_of_date")
 public class MeaningfulUseAccurateAsOfEntity implements Cloneable, Serializable {
 	private static final long serialVersionUID = -1463562876433962214L;
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
 	@Column(name = "muu_accurate_as_of_date_id", nullable = false)
 	private Long id;
-	
+
 	@Basic(optional = false)
 	@Column(name = "accurate_as_of_date", updatable = true, nullable = false)
 	private Date accurateAsOfDate;
-	
+
 	@Column(name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column(name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column(name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column(name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
 

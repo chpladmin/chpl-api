@@ -17,26 +17,26 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "test_functionality")
 public class TestFunctionalityEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "test_functionality_id")
 	private Long id;
-	
+
 	@Column( name = "name", nullable = false  )
 	private String name;
 
 	@Column(name = "number")
 	private String number;
-	
+
 	@Column(name = "certification_edition_id")
 	private Long certificationEditionId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
 	private CertificationEditionEntity certificationEdition;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -44,7 +44,7 @@ public class TestFunctionalityEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -56,19 +56,19 @@ public class TestFunctionalityEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

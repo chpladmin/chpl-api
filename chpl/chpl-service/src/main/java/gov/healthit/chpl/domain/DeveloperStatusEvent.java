@@ -14,34 +14,34 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DeveloperStatusEvent implements Serializable {
 	private static final long serialVersionUID = -7303257499336378800L;
-	
+
 	/**
 	 * Developer status event internal ID
 	 */
 	@XmlElement(required = false, nillable = true)
 	private Long id;
-	
+
 	/**
 	 * Developer internal ID
 	 */
 	@XmlElement(required = true)
 	private Long developerId;
-	
+
 	/**
 	 * The status the developer changed TO with this status event.
 	 */
 	@XmlElement(required = true)
 	private DeveloperStatus status;
-	
+
 	/**
 	 * Date this status event occurred.
 	 */
 	@XmlElement(required = true)
 	private Date statusDate;
-	
+
 	public DeveloperStatusEvent() {
 	}
-	
+
 	public DeveloperStatusEvent(DeveloperStatusEventDTO dto) {
 		this.id = dto.getId();
 		this.developerId = dto.getDeveloperId();

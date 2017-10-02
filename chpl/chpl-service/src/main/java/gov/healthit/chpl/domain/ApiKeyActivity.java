@@ -12,9 +12,9 @@ public class ApiKeyActivity implements Serializable {
 	private String name;
 	private String apiCallPath;
 	private Date creationDate;
-	
+
 	public ApiKeyActivity(){}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -57,5 +57,5 @@ public class ApiKeyActivity implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }

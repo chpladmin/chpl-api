@@ -12,25 +12,25 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationStatusEvent implements Serializable {
 	private static final long serialVersionUID = -2498656549844148886L;
-	
+
 	/**
 	 * Internal ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
 	 * The date on which a change of certification status occurred.
 	 */
 	@XmlElement(required = true)
 	private Long eventDate;
-	
+
 	/**
 	 * Internal certification status ID.
 	 */
 	@XmlElement(required = true)
 	private Long certificationStatusId;
-	
+
 	/**
 	 * Certification status name.
 	 */
@@ -39,12 +39,12 @@ public class CertificationStatusEvent implements Serializable {
 
 	@XmlTransient
 	private Long lastModifiedUser;
-	
+
 	@XmlTransient
 	private Long lastModifiedDate;
-	
+
 	public CertificationStatusEvent(){}
-	
+
 	public Long getId() {
 		return id;
 	}

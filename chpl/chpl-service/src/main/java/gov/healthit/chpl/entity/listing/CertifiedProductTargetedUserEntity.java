@@ -19,13 +19,13 @@ import gov.healthit.chpl.entity.TargetedUserEntity;
 @Entity
 @Table(name = "certified_product_targeted_user")
 public class CertifiedProductTargetedUserEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certified_product_targeted_user_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long certifiedProductId;
@@ -33,12 +33,12 @@ public class CertifiedProductTargetedUserEntity {
 	@Basic( optional = false )
 	@Column( name = "targeted_user_id", nullable = false  )
 	private Long targetedUserId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "targeted_user_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private TargetedUserEntity targetedUser;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -59,19 +59,19 @@ public class CertifiedProductTargetedUserEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

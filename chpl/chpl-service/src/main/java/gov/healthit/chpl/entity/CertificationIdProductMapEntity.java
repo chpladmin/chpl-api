@@ -13,11 +13,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 
-/** 
+/**
  * Object mapping for hibernate-handled table: product.
  * Table to store products that are submitted for developers
  *
- * @author 
+ * @author
  */
 
 @Entity
@@ -25,24 +25,24 @@ import javax.persistence.Transient;
 public class CertificationIdProductMapEntity implements Serializable {
 	private static final long serialVersionUID = -1L;
 
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "ehr_certification_id_product_map_id", nullable = false  )
 	private Long id;
-    
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-    
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "ehr_certification_id_id", nullable = false)
 	private Long certificationIdId;
@@ -50,7 +50,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false)
 	private Long certifiedProductId;
-	
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -79,10 +79,10 @@ public class CertificationIdProductMapEntity implements Serializable {
 	 */
 	public Date getCreationDate() {
 		return this.creationDate;
-		
+
 	}
-	
-	 /**  
+
+	 /**
 	 * Set the value related to the column: creationDate.
 	 * @param creationDate the creationDate value you wish to set
 	 */
@@ -96,10 +96,10 @@ public class CertificationIdProductMapEntity implements Serializable {
 	 */
 	public Long getId() {
 		return this.id;
-		
+
 	}
-	
-	 /**  
+
+	 /**
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
 	 */
@@ -114,10 +114,10 @@ public class CertificationIdProductMapEntity implements Serializable {
 	public Date getLastModifiedDate() {
 		return this.lastModifiedDate;
 	}
-	
 
-  
-	 /**  
+
+
+	 /**
 	 * Set the value related to the column: lastModifiedDate.
 	 * @param lastModifiedDate the lastModifiedDate value you wish to set
 	 */
@@ -131,10 +131,10 @@ public class CertificationIdProductMapEntity implements Serializable {
 	 */
 	public Long getLastModifiedUser() {
 		return this.lastModifiedUser;
-		
+
 	}
-	
-	 /**  
+
+	 /**
 	 * Set the value related to the column: lastModifiedUser.
 	 * @param lastModifiedUser the lastModifiedUser value you wish to set
 	 */
@@ -142,9 +142,9 @@ public class CertificationIdProductMapEntity implements Serializable {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	
-	
-	
+
+
+
 	 /**
 	 * Return the value associated with the column: certified_product_id.
 	 * @return A Long object (this.certifiedProductId)
@@ -153,7 +153,7 @@ public class CertificationIdProductMapEntity implements Serializable {
 		return this.certifiedProductId;
 	}
 
-	 /**  
+	 /**
 	 * Set the value related to the column: product_id.
 	 * @param certifiedProductId the certifiedProductId value you wish to set
 	 */
@@ -169,14 +169,14 @@ public class CertificationIdProductMapEntity implements Serializable {
 		return this.certificationIdId;
 	}
 
-	 /**  
+	 /**
 	 * Set the value related to the column: ehr_certification_id_id.
 	 * @param certificationIdId the certificationIdId value you wish to set
 	 */
 	public void setCertificationIdId(Long certificationIdId) {
 		this.certificationIdId = certificationIdId;
 	}
-	
+
 	/** Provides toString implementation.
 	 * @see java.lang.Object#toString()
 	 * @return String representation of this class.
@@ -184,13 +184,13 @@ public class CertificationIdProductMapEntity implements Serializable {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		
+
 		sb.append("creationDate: " + this.getCreationDate() + ", ");
 		sb.append("id: " + this.getId() + ", ");
 		sb.append("lastModifiedDate: " + this.getLastModifiedDate() + ", ");
 		sb.append("lastModifiedUser: " + this.getLastModifiedUser() + ", ");
 		sb.append("certifiedProductId: " + this.getCertifiedProductId() + ", ");
 		sb.append("certificationIdId: " + this.getCertificationIdId() + ", ");
-		return sb.toString();		
+		return sb.toString();
 	}
 }

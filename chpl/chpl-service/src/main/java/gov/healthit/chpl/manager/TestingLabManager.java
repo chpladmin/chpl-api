@@ -17,9 +17,9 @@ import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 
 
 public interface TestingLabManager {
-	
+
 	public void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException;
-	
+
 	public void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission);
 	public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient);
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;

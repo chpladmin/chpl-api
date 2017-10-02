@@ -14,11 +14,11 @@ public class ApiKeyActivityDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private Boolean deleted;
-	
+
 	public ApiKeyActivityDTO(){}
-	
+
 	public ApiKeyActivityDTO(ApiKeyActivityEntity entity){
-		
+
 		this.id = entity.getId();
 		this.apiKeyId = entity.getApiKeyId();
 		this.apiCallPath = entity.getApiCallPath();
@@ -26,9 +26,9 @@ public class ApiKeyActivityDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.deleted = entity.getDeleted();
-		
+
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

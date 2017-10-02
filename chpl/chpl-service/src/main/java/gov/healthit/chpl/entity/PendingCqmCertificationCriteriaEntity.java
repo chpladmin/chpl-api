@@ -16,20 +16,20 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_cqm_certification_criteria")
 public class PendingCqmCertificationCriteriaEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_cqm_certification_criteria_id", nullable = false  )
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "pending_cqm_criterion_id", nullable = false  )
 	private Long pendingCqmId;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certification_criterion_id", nullable = false  )
 	private Long certificationId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false, updatable= false)
@@ -38,19 +38,19 @@ public class PendingCqmCertificationCriteriaEntity {
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -58,7 +58,7 @@ public class PendingCqmCertificationCriteriaEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}

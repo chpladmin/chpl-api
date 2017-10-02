@@ -20,22 +20,22 @@ import javax.persistence.Transient;
 @Entity
 @Table(name="pending_certification_result")
 public class PendingCertificationResultEntity {
-	
-	@Transient 
+
+	@Transient
 	private Boolean hasAdditionalSoftware;
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Long id;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_criterion_id", unique = true, nullable = true)
 	private CertificationCriterionEntity mappedCriterion;
-	
+
 	@Basic( optional = false )
-	@Column(name = "pending_certified_product_id", nullable = false )	
+	@Column(name = "pending_certified_product_id", nullable = false )
 	private Long pendingCertifiedProductId;
 
 	@Column(name = "meets_criteria")
@@ -43,34 +43,34 @@ public class PendingCertificationResultEntity {
 
 	@Column(name = "gap")
 	private Boolean gap;
-	
+
 	@Column(name = "sed")
 	private Boolean sed;
-	
+
 	@Column(name = "g1_success")
 	private Boolean g1Success;
-	
+
 	@Column(name = "g2_success")
 	private Boolean g2Success;
-	
+
 	@Column(name = "api_documentation")
 	private String apiDocumentation;
-	
+
 	@Column(name = "privacy_security_framework")
 	private String privacySecurityFramework;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
@@ -79,52 +79,52 @@ public class PendingCertificationResultEntity {
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultUcdProcessEntity> ucdProcesses;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestStandardEntity> testStandards;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestFunctionalityEntity> testFunctionality;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultAdditionalSoftwareEntity> additionalSoftware;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestProcedureEntity> testProcedures;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestDataEntity> testData;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestToolEntity> testTools;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
 	@Basic( optional = false )
 	@Column( name = "pending_certification_result_id", nullable = false  )
 	private Set<PendingCertificationResultTestTaskEntity> testTasks;
-	
+
 	public PendingCertificationResultEntity() {
 		ucdProcesses = new HashSet<PendingCertificationResultUcdProcessEntity>();
 		testStandards = new HashSet<PendingCertificationResultTestStandardEntity>();
@@ -137,7 +137,7 @@ public class PendingCertificationResultEntity {
 		g2MacraMeasures = new HashSet<PendingCertificationResultG2MacraMeasureEntity>();
 		testTasks = new HashSet<PendingCertificationResultTestTaskEntity>();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -297,7 +297,7 @@ public class PendingCertificationResultEntity {
 	public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
 		this.hasAdditionalSoftware = hasAdditionalSoftware;
 	}
-	
+
 	public Set<PendingCertificationResultTestTaskEntity> getTestTasks() {
 		return testTasks;
 	}

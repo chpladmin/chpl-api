@@ -9,7 +9,7 @@ public class UserActivity implements Serializable {
 	private static final long serialVersionUID = -4162353900589961524L;
 	private User user;
 	private List<ActivityEvent> events;
-	
+
 	public User getUser() {
 		return user;
 	}

@@ -15,14 +15,14 @@ import gov.healthit.chpl.domain.SurveillanceNonconformity;
 @Component("ruleComplianceCalculator")
 public class RuleComplianceCalculator {
 	private Properties props;
-	
+
 	@Autowired private LongSuspensionComplianceChecker lsc;
 	@Autowired private CapApprovalComplianceChecker capApproval;
 	@Autowired private CapStartedComplianceChecker capStarted;
 	@Autowired private CapCompletedComplianceChecker capCompleted;
 	@Autowired private CapClosedComplianceChecker capClosed;
 	@Autowired private NonconformityOpenCapCompleteComplianceChecker ncOpenCapClosed;
-		
+
 	public RuleComplianceCalculator() {
 	}
 
@@ -34,18 +34,18 @@ public class RuleComplianceCalculator {
 		lscResult.setRule(lsc.getRuleChecked());
 		lscResult.setDateBroken(lsc.check(cp, surv, null));
 		survRuleResults.add(lscResult);
-		
+
 		if(nc != null) {
 			OversightRuleResult capApprovalResult = new OversightRuleResult();
 			capApprovalResult.setRule(capApproval.getRuleChecked());
 			capApprovalResult.setDateBroken(capApproval.check(cp, surv, nc));
 			survRuleResults.add(capApprovalResult);
-			
+
 			OversightRuleResult capStartedResult = new OversightRuleResult();
 			capStartedResult.setRule(capStarted.getRuleChecked());
 			capStartedResult.setDateBroken(capStarted.check(cp, surv, nc));
 			survRuleResults.add(capStartedResult);
-			
+
 			OversightRuleResult capCompletedResult = new OversightRuleResult();
 			capCompletedResult.setRule(capCompleted.getRuleChecked());
 			capCompletedResult.setDateBroken(capCompleted.check(cp, surv, nc));

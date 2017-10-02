@@ -22,7 +22,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
 	@Override
 	public ApiKeyDTO create(ApiKeyDTO dto) throws EntityCreationException {
-		
+
 		ApiKeyEntity entity = null;
 		try {
 			if (dto.getId() != null){
@@ -31,11 +31,11 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
-			
+
 			entity = new ApiKeyEntity();
 			entity.setApiKey(dto.getApiKey());
 			entity.setEmail(dto.getEmail());
@@ -46,7 +46,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 			} else {
 				entity.setLastModifiedDate(dto.getLastModifiedDate());
 			}
-			
+
 			entity.setDeleted(dto.getDeleted());
 			if (dto.getLastModifiedUser() == null){
 				entity.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -60,9 +60,9 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
 	@Override
 	public ApiKeyDTO update(ApiKeyDTO dto) throws EntityRetrievalException {
-		
+
 		ApiKeyEntity entity = getEntityById(dto.getId());
-		
+
 		entity.setApiKey(dto.getApiKey());
 		entity.setEmail(dto.getEmail());
 		entity.setNameOrganization(dto.getNameOrganization());
@@ -79,126 +79,126 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 			entity.setLastModifiedUser(dto.getLastModifiedUser());
 		}
 		update(entity);
-		
+
 		return new ApiKeyDTO(entity);
 	}
 
 	@Override
 	public void delete(Long id) {
-		
+
 		Query query = entityManager.createQuery("UPDATE ApiKeyEntity SET deleted = true WHERE api_key_id = :entityid");
 		query.setParameter("entityid", id);
 		query.executeUpdate();
-		
+
 	}
 
 	@Override
 	public List<ApiKeyDTO> findAll() {
-		
+
 		List<ApiKeyEntity> entities = getAllEntities();
 		List<ApiKeyDTO> dtos = new ArrayList<>();
-		
+
 		for (ApiKeyEntity entity : entities) {
 			ApiKeyDTO dto = new ApiKeyDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
 
 	@Override
 	public ApiKeyDTO getById(Long id) throws EntityRetrievalException {
-		
+
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
-		
+
 	}
 
 	@Override
 	public ApiKeyDTO getByKey(String apiKey) throws EntityRetrievalException {
-		
+
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getEntityByKey(apiKey);
-		
+
 		if (entity != null){
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
 	}
-	
-	
+
+
 	@Override
 	public List<ApiKeyDTO> findAllRevoked() {
-		
+
 		List<ApiKeyEntity> entities = getAllRevokedEntities();
 		List<ApiKeyDTO> dtos = new ArrayList<>();
-		
+
 		for (ApiKeyEntity entity : entities) {
 			ApiKeyDTO dto = new ApiKeyDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
 
 	@Override
 	public ApiKeyDTO getRevokedKeyById(Long id) throws EntityRetrievalException {
-		
+
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getRevokedEntityById(id);
-		
+
 		if (entity != null){
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
-		
+
 	}
 
 	@Override
 	public ApiKeyDTO getRevokedKeyByKey(String apiKey) {
-		
+
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getRevokedEntityByKey(apiKey);
-		
+
 		if (entity != null){
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	private void create(ApiKeyEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
-	
+
 	private void update(ApiKeyEntity entity) {
-		
+
 		entityManager.merge(entity);
 		entityManager.flush();
-	
+
 	}
-	
+
 	private List<ApiKeyEntity> getAllEntities() {
-		
+
 		List<ApiKeyEntity> result = entityManager.createQuery( "from ApiKeyEntity where (NOT deleted = true) ", ApiKeyEntity.class).getResultList();
 		return result;
 	}
-	
+
 	private ApiKeyEntity getEntityById(Long entityId) throws EntityRetrievalException {
-		
+
 		ApiKeyEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "from ApiKeyEntity where (NOT deleted = true) AND (api_key_id = :entityid) ", ApiKeyEntity.class );
 		query.setParameter("entityid", entityId);
 		List<ApiKeyEntity> result = query.getResultList();
-		
-		
+
+
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("apikey.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
@@ -209,15 +209,15 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		}
 		return entity;
 	}
-	
+
 	private ApiKeyEntity getEntityByKey(String key) throws EntityRetrievalException {
-		
+
 		ApiKeyEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "from ApiKeyEntity where (NOT deleted = true) AND (api_key = :apikey) ", ApiKeyEntity.class );
 		query.setParameter("apikey", key);
 		List<ApiKeyEntity> result = query.getResultList();
-		
+
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("apikey.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
@@ -226,21 +226,21 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		}
 		return entity;
 	}
-	
+
 	private List<ApiKeyEntity> getAllRevokedEntities() {
-		
+
 		List<ApiKeyEntity> result = entityManager.createQuery( "from ApiKeyEntity where (deleted = true) ", ApiKeyEntity.class).getResultList();
 		return result;
 	}
-	
+
 	private ApiKeyEntity getRevokedEntityById(Long entityId) throws EntityRetrievalException {
-		
+
 		ApiKeyEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "from ApiKeyEntity where (deleted = true) AND (api_key_id = :entityid) ", ApiKeyEntity.class );
 		query.setParameter("entityid", entityId);
 		List<ApiKeyEntity> result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
 		} else if(result.size() == 1) {
@@ -248,19 +248,19 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		}
 		return entity;
 	}
-	
+
 	private ApiKeyEntity getRevokedEntityByKey(String key) {
-		
+
 		ApiKeyEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "from ApiKeyEntity where (deleted = true) AND (api_key = :apikey) ", ApiKeyEntity.class );
 		query.setParameter("apikey", key);
 		List<ApiKeyEntity> result = query.getResultList();
-		
+
 		if(result != null && result.size() > 0) {
 			entity = result.get(0);
 		}
 		return entity;
 	}
-	
+
 }

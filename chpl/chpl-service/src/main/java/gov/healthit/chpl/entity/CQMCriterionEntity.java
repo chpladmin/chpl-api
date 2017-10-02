@@ -16,61 +16,61 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "cqm_criterion", schema = "openchpl")
 public class CQMCriterionEntity {
-	
-	
+
+
 	@Basic( optional = true )
 	@Column( name = "cms_id", length = 15  )
 	private String cmsId;
-	
+
 	@Column(name = "cqm_criterion_type_id", nullable = false )
 	private Long cqmCriterionTypeId;
-	
+
 	@Basic( optional = true )
 	@Column( name = "cqm_domain", length = 250  )
 	private String cqmDomain;
-	
+
 	@Basic( optional = true )
 	@Column( name = "cqm_version_id", length = 10)
 	private Long cqmVersionId;
-	
+
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name="cqm_version_id", insertable = false, updatable = false )
 	private CQMVersionEntity cqmVersion;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	private Boolean deleted;
-	
+
 	@Basic( optional = true )
 	@Column( length = 1000  )
 	private String description;
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "cqm_criterion_id", nullable = false  )
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = true )
 	@Column( name = "nqf_number", length = 50  )
 	private String nqfNumber;
-	
+
 	@Basic( optional = true )
 	@Column( length = 20  )
 	private String number;
-	
+
 	@Basic( optional = true )
 	@Column( length = 250  )
 	private String title;
@@ -78,7 +78,7 @@ public class CQMCriterionEntity {
 	@Basic( optional = false )
 	@Column( name="retired", length = 10  )
 	private Boolean retired;
-	
+
 
 	public String getCmsId() {
 		return cmsId;
@@ -183,11 +183,11 @@ public class CQMCriterionEntity {
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	
+
 	public CQMVersionEntity getCqmVersionEntity() {
 		return cqmVersion;
 	}
-	
+
 	public Boolean getRetired() {
 		return retired;
 	}
@@ -195,15 +195,15 @@ public class CQMCriterionEntity {
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
-	
+
 	public String getCqmVersion(){
-		
+
 		if (this.cqmVersion != null){
 			return this.cqmVersion.getVersion();
 		} else {
 			return null;
 		}
-		
+
 	}
-	
+
 }

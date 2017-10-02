@@ -68,6 +68,6 @@ public class PopulateSearchOptions implements Serializable {
 	public void setCertificationStatuses(Set<KeyValueModel> certificationStatuses) {
 		this.certificationStatuses = certificationStatuses;
 	}
-	
+
 
 }

@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.SurveillanceOversightRule;
 @Component(value="capStartedComplianceChecker")
 public class CapStartedComplianceChecker implements RuleComplianceChecker {
 	private int numDaysAllowed = 0;
-	
+
 	public SurveillanceOversightRule getRuleChecked() {
 		return SurveillanceOversightRule.CAP_NOT_STARTED;
 	}
@@ -26,7 +26,7 @@ public class CapStartedComplianceChecker implements RuleComplianceChecker {
 			LocalDateTime capApprovalDate = null;
 			if(nc.getCapApprovalDate() != null) {
 				capApprovalDate = LocalDateTime.ofInstant(
-						Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()), 
+						Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()),
 					    ZoneId.systemDefault());
 				Duration timeBetween = Duration.between(capApprovalDate, LocalDateTime.now());
 				long numDays = timeBetween.toDays();
@@ -36,10 +36,10 @@ public class CapStartedComplianceChecker implements RuleComplianceChecker {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public int getNumDaysAllowed() {
 		return numDaysAllowed;
 	}

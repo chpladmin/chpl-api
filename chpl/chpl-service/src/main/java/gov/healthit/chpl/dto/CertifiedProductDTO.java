@@ -23,13 +23,13 @@ public class CertifiedProductDTO implements Serializable {
 	public static final int ICS_CODE_INDEX = 6;
 	public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
 	public static final int CERTIFIED_DATE_CODE_INDEX = 8;
-	
+
 	public static final int PRODUCT_CODE_LENGTH = 4;
 	public static final int VERSION_CODE_LENGTH = 2;
 	public static final int ICS_CODE_LENGTH = 2;
 	public static final int ADDITIONAL_SOFTWARE_CODE_LENGTH = 1;
 	public static final int CERTIFIED_DATE_CODE_LENGTH = 6;
-	
+
 	private Long id;
 	private String productCode;
 	private String versionCode;
@@ -62,9 +62,9 @@ public class CertifiedProductDTO implements Serializable {
 	private Boolean accessibilityCertified;
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation = null;
-	
+
 	public CertifiedProductDTO(){}
-	
+
 	public CertifiedProductDTO(CertifiedProductEntity entity){
 		this.id = entity.getId();
 		this.productCode = entity.getProductCode();
@@ -89,7 +89,7 @@ public class CertifiedProductDTO implements Serializable {
 		this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
 		this.sedTestingEnd = entity.getSedTestingEnd();
 		this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
-		this.testingLabId = entity.getTestingLabId();		
+		this.testingLabId = entity.getTestingLabId();
 		this.certificationStatusId = entity.getCertificationStatusId();
 		this.otherAcb = entity.getOtherAcb();
 		this.setIcs(entity.getIcs());
@@ -123,9 +123,9 @@ public class CertifiedProductDTO implements Serializable {
 		this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? false : from.getIcs().getInherits());
 		this.setAccessibilityCertified(from.getAccessibilityCertified());
 		this.setProductAdditionalSoftware(from.getProductAdditionalSoftware());
-		
+
 		this.setTransparencyAttestationUrl(from.getTransparencyAttestationUrl());
-		
+
 		//set the pieces of the unique id
 		if(!StringUtils.isEmpty(from.getChplProductNumber())) {
 			if(from.getChplProductNumber().startsWith("CHP-")) {
@@ -142,14 +142,14 @@ public class CertifiedProductDTO implements Serializable {
 					this.setAdditionalSoftwareCode(chplProductIdComponents[7]);
 					this.setCertifiedDateCode(chplProductIdComponents[8]);
 				}
-				
+
 				if(from.getCertificationDate() != null) {
 					Date certDate = new Date(from.getCertificationDate());
 					SimpleDateFormat dateCodeFormat = new SimpleDateFormat("yyMMdd");
 					String dateCode = dateCodeFormat.format(certDate);
 					this.setCertifiedDateCode(dateCode);
 				}
-				
+
 				if(from.getCertificationResults() != null && from.getCertificationResults().size() > 0) {
 					boolean hasSoftware = false;
 					for(CertificationResult cert : from.getCertificationResults()) {
@@ -164,9 +164,9 @@ public class CertifiedProductDTO implements Serializable {
 					}
 				}
 			}
-		} 
+		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

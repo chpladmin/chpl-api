@@ -46,7 +46,7 @@ public class SummaryStatistics {
 	private Properties props;
 	private AsynchronousStatisticsInitializor asynchronousStatisticsInitializor;
 	private NotificationDAO notificationDao;
-	
+
 	public SummaryStatistics(){}
 
 	/**
@@ -60,7 +60,7 @@ public class SummaryStatistics {
 		InputStream in = SummaryStatistics.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 		Properties props = summaryStats.loadProperties(in);
 		LocalContext ctx = LocalContextFactory.createLocalContext(summaryStats.props.getProperty("dbDriverClass"));
-		ctx.addDataSource(summaryStats.props.getProperty("dataSourceName"), summaryStats.props.getProperty("dataSourceConnection"), 
+		ctx.addDataSource(summaryStats.props.getProperty("dataSourceName"), summaryStats.props.getProperty("dataSourceConnection"),
 				 summaryStats.props.getProperty("dataSourceUsername"), summaryStats.props.getProperty("dataSourcePassword"));
 		 AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 		 summaryStats.initializeSpringClasses(context);
@@ -68,7 +68,7 @@ public class SummaryStatistics {
 		 Statistics emailBodyStats = futureEmailBodyStats.get();
 		 List<Statistics> csvStats = new ArrayList<Statistics>();
 		 Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
-		 calendarCounter.setTime(startDate); 
+		 calendarCounter.setTime(startDate);
 		 calendarCounter.add(Calendar.DATE, numDaysInPeriod);
 		 while(endDate.compareTo(calendarCounter.getTime()) >= 0){
 			 logger.info("Getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
@@ -87,7 +87,7 @@ public class SummaryStatistics {
 		 File csvFile = new File(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
 		 files.add(csvFile);
 		 String htmlMessage = summaryStats.createHtmlMessage(emailBodyStats, files);
-		 
+
 		 //send the email
 		 Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
 		 permissions.add(new GrantedPermission("ROLE_ADMIN"));
@@ -102,11 +102,11 @@ public class SummaryStatistics {
 			 SendMailUtil mailUtil = new SendMailUtil();
 			 mailUtil.sendEmail(null, emailAddrs, props.getProperty("summaryEmailSubject").toString(), htmlMessage, files, props);
 		 }
-		 
+
 		 logger.info("Completed SummaryStatistics execution.");
 		 context.close();
 	}
-	
+
 	/**
 	 * Updates the startDate, endDate, and numDaysInPeriod using the command-line arguments
 	 * @param args
@@ -136,7 +136,7 @@ public class SummaryStatistics {
 			}
 			catch(ParseException e){
 				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
-			} 
+			}
 			catch(NumberFormatException e){
 				logger.info("Third command line argument could not be parsed to integer. " + e.getMessage());
 				numDaysInPeriod = 7;
@@ -146,7 +146,7 @@ public class SummaryStatistics {
 			throw new Exception("ParseActivities expects two or three command-line arguments: startDate, endDate and optionally numDaysInPeriod");
 		}
 	}
-	
+
 	/**
 	 * Get relevant beans
 	 * @param context
@@ -157,7 +157,7 @@ public class SummaryStatistics {
 		 setNotificationDao((NotificationDAO)context.getBean("notificationDAO"));
 
 	}
-	
+
 	/**
 	 * Set the ParseActivities.Properties (props) using an InputStream to get all properties from the InputStream
 	 * @param parseActivities
@@ -185,10 +185,10 @@ public class SummaryStatistics {
 		 emailMessage.append("<ul><li>Total # of Developers with Active 2014 Listings - " + stats.getTotalDevelopersWithActive2014Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
-			 if(cbStat.getYear() == 2014 && 
+			 if(cbStat.getYear() == 2014 &&
 					 getActiveDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) > 0){
-				 
-				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 								 getActiveDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
 			 }
 		 }
@@ -200,7 +200,7 @@ public class SummaryStatistics {
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
 			 if(cbStat.getYear() == 2014 && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")){
 				 if(!uniqueAcbList.contains(cbStat.getName())){
-					 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+					 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 							 getSuspendedDevelopersForAcb(2014, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
 					 uniqueAcbList.add(cbStat.getName());
 					 hasSuspended = true;
@@ -211,7 +211,7 @@ public class SummaryStatistics {
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
-		 
+
 		 emailMessage.append("<li>Total # of Developers with 2014 Listings (Regardless of Status) - " + stats.getTotalDevelopersWith2014Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
@@ -220,18 +220,18 @@ public class SummaryStatistics {
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 emailMessage.append("<li>Total # of Developers with Active 2015 Listings - " + stats.getTotalDevelopersWithActive2015Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
-			 if(cbStat.getYear() == 2015 && 
+			 if(cbStat.getYear() == 2015 &&
 				 getActiveDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) > 0){
-				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 					 getActiveDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 emailMessage.append("<li>Total # of Developers with Suspended by ONC-ACB/Suspended by ONC 2015 Listings</li>");
 		 uniqueAcbList.clear(); // make sure not to add one ACB more than once
 		 hasSuspended = false;
@@ -239,7 +239,7 @@ public class SummaryStatistics {
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear()){
 			 if(cbStat.getYear() == 2015 && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")){
 				 if(!uniqueAcbList.contains(cbStat.getName())){
-					 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+					 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 						 getSuspendedDevelopersForAcb(2015, stats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(), cbStat.getName()) + "</li>");
 					 uniqueAcbList.add(cbStat.getName());
 					 hasSuspended = true;
@@ -250,7 +250,7 @@ public class SummaryStatistics {
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
-		 
+
 		 emailMessage.append("<li>Total # of Developers with 2015 Listings (Regardless of Status) - " + stats.getTotalDevelopersWith2015Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalDevelopersByCertifiedBodyWithListingsEachYear()){
@@ -259,7 +259,7 @@ public class SummaryStatistics {
 			 }
 		 }
 		 emailMessage.append("</ul></ul>");
-		 
+
 		 emailMessage.append("<h4>Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011) -  " + stats.getTotalCertifiedProducts() + "</h4>");
 		 emailMessage.append("<ul>");
 		 emailMessage.append("<li>Total # of Unique Products with 2014 Listings (Regardless of Status) -  " + stats.getTotalCPs2014Listings() + "</li>");
@@ -270,28 +270,28 @@ public class SummaryStatistics {
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 uniqueAcbList.clear();
 		 emailMessage.append("<li>Total # of Unique Products with Active 2014 Listings - " + stats.getTotalCPsActive2014Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0 && 
-					 (cbStat.getCertificationStatusName().equalsIgnoreCase("active"))){ 
-				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0 &&
+					 (cbStat.getCertificationStatusName().equalsIgnoreCase("active"))){
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 					 getActiveCPsForAcb(2014, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
 				 uniqueAcbList.add(cbStat.getName());
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 uniqueAcbList.clear();
 		 hasSuspended = false;
 		 emailMessage.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2014 Listings -  " + stats.getTotalCPsSuspended2014Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear().intValue() == 2014 && cbStat.getTotalListings() > 0 && 
+			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear().intValue() == 2014 && cbStat.getTotalListings() > 0 &&
 					 cbStat.getCertificationStatusName().toLowerCase().contains("suspended")){
-				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 					 getSuspendedCPsForAcb(2014, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
 				 uniqueAcbList.add(cbStat.getName());
 				 hasSuspended = true;
@@ -301,7 +301,7 @@ public class SummaryStatistics {
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
-		 
+
 		 emailMessage.append("<li>Total # of Unique Products with 2015 Listings (Regardless of Status) -  " + stats.getTotalCPs2015Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBody()){
@@ -310,28 +310,28 @@ public class SummaryStatistics {
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 uniqueAcbList.clear();
 		 emailMessage.append("<li>Total # of Unique Products with Active 2015 Listings -  " + stats.getTotalCPsActive2015Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
 			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0 && (
 					 cbStat.getCertificationStatusName().equalsIgnoreCase("active"))){
-				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 					 getActiveCPsForAcb(2015, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
 				 uniqueAcbList.add(cbStat.getName());
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 uniqueAcbList.clear();
 		 hasSuspended = false;
 		 emailMessage.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings -  " + stats.getTotalCPsSuspended2015Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()){
-			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0 && 
+			 if(!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0 &&
 					 cbStat.getCertificationStatusName().contains("suspended")){
-				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " + 
+				 emailMessage.append("<li>Certified by " + cbStat.getName() + " - " +
 					 getSuspendedCPsForAcb(2015, stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(), cbStat.getName()) + "</li>");
 				 uniqueAcbList.add(cbStat.getName());
 				 hasSuspended = true;
@@ -341,13 +341,13 @@ public class SummaryStatistics {
 		 if(!hasSuspended){
 			 emailMessage.append("<ul><li>No certified bodies have suspended listings</li></ul>");
 		 }
-		 
+
 		 uniqueAcbList.clear();
 		 emailMessage.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - " + stats.getTotalCPsActiveListings() + "</ul></li>");
 		 emailMessage.append("</ul>");
 		 emailMessage.append("<h4>Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings() + "</h4>");
 		 emailMessage.append("<ul><li>Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) - " + stats.getTotalActive2014Listings() + "</li>");
-		 
+
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()){
 			 if(cbStat.getYear() == 2014 && cbStat.getTotalListings() > 0){
@@ -355,7 +355,7 @@ public class SummaryStatistics {
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 emailMessage.append("<li>Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings) - " + stats.getTotalActive2015Listings() + "</li>");
 		 emailMessage.append("<ul>");
 		 for(CertifiedBodyStatistics cbStat : stats.getTotalActiveListingsByCertifiedBody()){
@@ -364,7 +364,7 @@ public class SummaryStatistics {
 			 }
 		 }
 		 emailMessage.append("</ul>");
-		 
+
 		 emailMessage.append("<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
 		 emailMessage.append("<li>Total # of 2015 Listings (Regardless of Status) - " + stats.getTotal2015Listings() + "</li>");
 		 emailMessage.append("<li>Total # of 2011 Listings (Regardless of Status) - " + stats.getTotal2011Listings() + "</li></ul>");
@@ -377,45 +377,45 @@ public class SummaryStatistics {
 		 logger.info(emailMessage.toString());
 		 return emailMessage.toString();
 	}
-	
+
 	private void setAsynchronousStatisticsInitializor(AsynchronousStatisticsInitializor asynchronousStatisticsInitializor){
 		this.asynchronousStatisticsInitializor = asynchronousStatisticsInitializor;
 	}
-	
+
 	private Long getSuspendedDevelopersForAcb(Integer year, List<CertifiedBodyStatistics> cbStats, String acb){
 		Long count = 0L;
 		for(CertifiedBodyStatistics cbStat : cbStats){
-			if(cbStat.getYear().equals(year) && 
-				cbStat.getName().equalsIgnoreCase(acb) && 
+			if(cbStat.getYear().equals(year) &&
+				cbStat.getName().equalsIgnoreCase(acb) &&
 				cbStat.getCertificationStatusName().toLowerCase().contains("suspended")){
 				count = count + cbStat.getTotalDevelopersWithListings();
 			}
 		}
 		return count;
 	}
-	
+
 	private Long getActiveDevelopersForAcb(Integer year, List<CertifiedBodyStatistics> cbStats, String acb){
 		Long count = 0L;
 		for(CertifiedBodyStatistics cbStat : cbStats){
-			if(cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb) && 
+			if(cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb) &&
 					(cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active"))){
 				count = count + cbStat.getTotalDevelopersWithListings();
 			}
 		}
 		return count;
 	}
-	
+
 	private Long getActiveCPsForAcb(Integer year, List<CertifiedBodyStatistics> cbStats, String acb){
 		Long count = 0L;
 		for(CertifiedBodyStatistics cbStat : cbStats){
-			if(cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb) && 
+			if(cbStat.getYear().equals(year) && cbStat.getName().equalsIgnoreCase(acb) &&
 					(cbStat.getCertificationStatusName().toLowerCase().equalsIgnoreCase("active"))){
 				count = count + cbStat.getTotalListings();
 			}
 		}
 		return count;
 	}
-	
+
 	private Long getSuspendedCPsForAcb(Integer year, List<CertifiedBodyStatistics> cbStats, String acb){
 		Long count = 0L;
 		for(CertifiedBodyStatistics cbStat : cbStats){

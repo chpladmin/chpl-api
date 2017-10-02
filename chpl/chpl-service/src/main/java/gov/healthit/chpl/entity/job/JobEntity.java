@@ -24,62 +24,62 @@ import gov.healthit.chpl.auth.entity.UserEntity;
 @Entity
 @Table(name = "job")
 public class JobEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "job_type_id")
 	private Long jobTypeId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "job_type_id", insertable = false, updatable = false)
 	private JobTypeEntity jobType;
-	
+
 	@Column(name = "user_id")
 	private Long userId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", insertable = false, updatable = false)
 	private UserEntity user;
-	
+
 	@Column(name = "job_status_id")
 	private Long statusId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
  	@Where(clause="deleted <> 'true'")
 	@JoinColumn(name = "job_status_id", insertable = false, updatable = false)
 	private JobStatusEntity status;
-	
+
 	@Column(name = "start_time")
 	private Date startTime;
-	
+
 	@Column(name = "end_time")
 	private Date endTime;
-	
+
 	@Column(name = "job_data")
 	private String data;
-	
+
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "jobId"  )
 	@Basic( optional = false )
 	@Column( name = "job_id", nullable = false  )
  	@Where(clause="deleted <> 'true'")
 	private Set<JobMessageEntity> messages = new HashSet<JobMessageEntity>();
-	
- 	
+
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -7,7 +7,7 @@ public class UpdateUserAndAcbRequest implements Serializable {
 	private Long acbId;
 	private Long userId;
 	private ChplPermission authority;
-	
+
 	public Long getAcbId() {
 		return acbId;
 	}
@@ -26,5 +26,5 @@ public class UpdateUserAndAcbRequest implements Serializable {
 	public void setAuthority(ChplPermission authority) {
 		this.authority = authority;
 	}
-	
+
 }

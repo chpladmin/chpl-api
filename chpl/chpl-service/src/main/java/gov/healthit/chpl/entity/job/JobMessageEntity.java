@@ -13,30 +13,30 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "job_message")
 public class JobMessageEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "job_id")
 	private Long jobId;
-	
+
 	@Column(name = "message")
 	private String message;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -14,38 +14,38 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "cqm_version")
 public class CQMVersionEntity {
-	
+
 	/** Serial Version UID. */
 	private static final long serialVersionUID = 4790039831454925594L;
-	
-	
+
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	private Boolean deleted;
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "cqm_version_id", nullable = false  )
     private Long id;
-    
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false, length = 25  )
 	private String version;
-	
-	
+
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

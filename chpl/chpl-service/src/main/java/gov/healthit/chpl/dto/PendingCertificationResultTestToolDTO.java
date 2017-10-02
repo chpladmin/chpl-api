@@ -11,9 +11,9 @@ public class PendingCertificationResultTestToolDTO implements Serializable {
 	private Long testToolId;
 	private String name;
 	private String version;
-	
+
 	public PendingCertificationResultTestToolDTO() {}
-	
+
 	public PendingCertificationResultTestToolDTO(PendingCertificationResultTestToolEntity entity) {
 		this.setId(entity.getId());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
@@ -21,7 +21,7 @@ public class PendingCertificationResultTestToolDTO implements Serializable {
 		this.setName(entity.getTestToolName());
 		this.setVersion(entity.getTestToolVersion());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -26,14 +26,14 @@ public class TestTaskDTO implements Serializable {
 	private Float taskRatingStddev;
 	private String pendingUniqueId;
 	private List<TestParticipantDTO> participants;
-	
+
 	public TestTaskDTO(){
 		participants = new ArrayList<TestParticipantDTO>();
 	}
-	
+
 	public TestTaskDTO(TestTaskEntity entity) {
 		this();
-		
+
 		if(entity != null) {
 			this.id = entity.getId();
 			this.description = entity.getDescription();
@@ -57,7 +57,7 @@ public class TestTaskDTO implements Serializable {
 			}
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

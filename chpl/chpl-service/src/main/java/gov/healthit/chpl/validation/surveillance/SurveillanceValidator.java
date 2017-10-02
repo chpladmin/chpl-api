@@ -52,7 +52,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 
 	public void validate(Surveillance surv) {
 		CertifiedProductDetailsDTO cpDetails = null;
-		
+
 		//make sure chpl id is valid
 		if(surv.getCertifiedProduct() == null) {
 			surv.getErrorMessages().add(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.nullCertifiedProduct"), LocaleContextHolder.getLocale()));
@@ -142,7 +142,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 				surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.randomizedSitesNotApplicable"), LocaleContextHolder.getLocale()), surv.getType().getName()));
 			}
 		}
-				
+
 		List<CertificationResultDetailsDTO> certResults = null;
 		if(surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
 			try {
@@ -151,7 +151,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 				logger.error("Could not find cert results for certified product " + surv.getCertifiedProduct().getId(), ex);
 			}
 		}
-		
+
 		validateSurveillanceAuthority(surv);
 		validateSurveillanceRequirements(surv, certResults);
 		validateSurveillanceNonconformities(surv, certResults);
@@ -308,7 +308,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 								nc.setStatus(ncStatus);
 							}
 						}
-						
+
 						if(!StringUtils.isEmpty(nc.getCapApprovalDate()) && StringUtils.isEmpty(nc.getCapMustCompleteDate())){
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPMustCompleteIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
@@ -316,11 +316,11 @@ public class SurveillanceValidator implements MessageSourceAware {
 						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())){
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPStartIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
-						
+
 						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())){
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPApprovalIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
-						
+
 						if(!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate()) && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0){
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPEndNotGreaterThanDateCAPStart"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
@@ -383,12 +383,12 @@ public class SurveillanceValidator implements MessageSourceAware {
         	surv.getErrorMessages().add(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.endDateRequiredNoOpenNonConformities"), LocaleContextHolder.getLocale()));
 		}
 	}
-	
+
 	public void validateSurveillanceAuthority(Surveillance surv) {
 		// non-null surveillance must be ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF
 		if(!StringUtils.isEmpty(surv.getAuthority())){
-			if(!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) 
-					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN) 
+			if(!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
+					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN)
 					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
 				surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.authorityRequired"), LocaleContextHolder.getLocale()), Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN, Authority.ROLE_ACB_STAFF));
 			}

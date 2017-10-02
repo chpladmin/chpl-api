@@ -39,37 +39,37 @@ public class CollectionsController {
 	private static final Logger logger = LogManager.getLogger(CollectionsController.class);
 	@Autowired private CertifiedProductSearchManager certifiedProductSearchManager;
 	@Autowired private DeveloperManager developerManager;
-		
-	@ApiOperation(value="Get basic data about all certified products in the system.", 
+
+	@ApiOperation(value="Get basic data about all certified products in the system.",
 			notes="")
 	@RequestMapping(value="/certified_products", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
-	public @ResponseBody String getAllCertifiedProducts(@RequestParam(value="fields", required = false) String delimitedFieldNames) 
+	public @ResponseBody String getAllCertifiedProducts(@RequestParam(value="fields", required = false) String delimitedFieldNames)
 	throws JsonProcessingException {
-		
+
 		List<CertifiedProductFlatSearchResult> cachedSearchResults = certifiedProductSearchManager.search();
-		
-		String result = "";		
+
+		String result = "";
 		if(!StringUtils.isEmpty(delimitedFieldNames)) {
 			//write out objects as json but do not include properties with a null value
 			ObjectMapper nonNullJsonMapper = new ObjectMapper();
 			nonNullJsonMapper.setSerializationInclusion(Include.NON_NULL);
 			nonNullJsonMapper.configure(MapperFeature.DEFAULT_VIEW_INCLUSION, false);
-			
-			//create a copy of the search results since we will be manipulating them 
+
+			//create a copy of the search results since we will be manipulating them
 			//by setting fields to null but do not want to overwrite the cached data
 			List<CertifiedProductFlatSearchResult> mutableSearchResults = new ArrayList<CertifiedProductFlatSearchResult>(cachedSearchResults.size());
 			for(CertifiedProductFlatSearchResult cachedSearchResult : cachedSearchResults) {
 				mutableSearchResults.add(new CertifiedProductFlatSearchResult(cachedSearchResult));
 			}
-			
+
 			//parse the field names that we want to send back
 			String[] fieldNames = delimitedFieldNames.split(",");
 			List<String> requiredFields = new ArrayList<String>(fieldNames.length);
 			for(int i = 0; i < fieldNames.length; i++) {
 				requiredFields.add(fieldNames[i].toUpperCase());
 			}
-			
+
 			//compare all the field names in the results with the required field names
 			List<Field> searchResultFields = getAllInheritedFields(CertifiedProductFlatSearchResult.class, new ArrayList<Field>());
 			for(Field searchResultField : searchResultFields) {
@@ -80,7 +80,7 @@ public class CollectionsController {
 						isSearchResultFieldRequired = true;
 					}
 				}
-				
+
 				//if the field is not required, set it to null
 				//assumes standard java bean getter/setter names
 				if(!isSearchResultFieldRequired && !searchResultField.getName().equalsIgnoreCase("serialVersionUID")) {
@@ -124,9 +124,9 @@ public class CollectionsController {
 
 		return result;
 	}
-	
+
 	@ApiOperation(value="Get a list of all developers with transparency attestation URLs"
-			+ "and ACB attestations.", 
+			+ "and ACB attestations.",
 			notes="")
 	@RequestMapping(value="/developers", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
@@ -134,7 +134,7 @@ public class CollectionsController {
 		List<DeveloperTransparency> developerResults = developerManager.getDeveloperCollection();
 		return developerResults;
 	}
-	
+
 	private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {
 	    Class superClazz = clazz.getSuperclass();
 	    if(superClazz != null){

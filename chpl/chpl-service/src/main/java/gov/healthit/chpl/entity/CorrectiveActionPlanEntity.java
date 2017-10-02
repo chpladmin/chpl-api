@@ -14,13 +14,13 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name="corrective_action_plan")
 public class CorrectiveActionPlanEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "corrective_action_plan_id", nullable = false  )
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column(name="certified_product_id")
 	private Long certifiedProductId;
@@ -28,52 +28,52 @@ public class CorrectiveActionPlanEntity {
 	@Basic( optional = false )
 	@Column(name="surveillance_start")
 	private Date surveillanceStartDate;
-	
+
 	@Column(name="surveillance_end")
 	private Date surveillanceEndDate;
-	
+
 	@Basic( optional = false )
 	@Column(name = "surveillance_result")
 	private Boolean surveillanceResult;
-	
+
 	@Basic( optional = false )
 	@Column(name = "noncompliance_determination_date")
 	private Date nonComplianceDeterminationDate;
-	
+
 	@Column(name = "approval_date")
 	private Date approvalDate;
-	
+
 	@Column(name = "start_date")
 	private Date startDate;
-	
+
 	@Column(name = "completion_date_required")
 	private Date requiredCompletionDate;
-	
+
 	@Column(name = "completion_date_actual")
 	private Date actualCompletionDate;
-	
+
 	@Column(name = "summary")
 	private String summary;
-	
+
 	@Column(name = "developer_explanation")
 	private String developerExplanation;
-	
+
 	@Column(name = "resolution")
 	private String resolution;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@NotNull()
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@NotNull()
 	@Column( nullable = false  )
@@ -102,7 +102,7 @@ public class CorrectiveActionPlanEntity {
 	public void setApprovalDate(Date approvalDate) {
 		this.approvalDate = approvalDate;
 	}
-	
+
 	public Date getActualCompletionDate() {
 		return actualCompletionDate;
 	}
@@ -110,7 +110,7 @@ public class CorrectiveActionPlanEntity {
 	public void setActualCompletionDate(Date actualCompletionDate) {
 		this.actualCompletionDate = actualCompletionDate;
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

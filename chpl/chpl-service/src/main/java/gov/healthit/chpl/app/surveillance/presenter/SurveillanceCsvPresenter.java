@@ -33,11 +33,11 @@ public class SurveillanceCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(SurveillanceCsvPresenter.class);
 	protected Properties props;
 	protected DateTimeFormatter dateFormatter;
-	
+
 	public SurveillanceCsvPresenter() {
 		dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
 	}
-	
+
 	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
 		FileWriter writer = null;
 		CSVPrinter csvPrinter = null;
@@ -45,7 +45,7 @@ public class SurveillanceCsvPresenter {
 			writer = new FileWriter(file);
 			csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 			csvPrinter.printRecord(generateHeaderValues());
-			
+
 			for(CertifiedProductSearchDetails cp : cpList.getListings()) {
 				if(cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
 					for(Surveillance currSurveillance : cp.getSurveillance()) {
@@ -101,10 +101,10 @@ public class SurveillanceCsvPresenter {
 		result.add("RESOLUTION_DESCRIPTION");
 		return result;
 	}
-	
+
 	protected List<List<String>> generateMultiRowValue(CertifiedProductSearchDetails data, Surveillance surv) {
 		List<List<String>> result = new ArrayList<List<String>>();
-		
+
 		List<String> firstRow = new ArrayList<String>();
 		firstRow.add("Update");
 		List<String> survValues = generateSurveillanceRowValues(data, surv);
@@ -116,7 +116,7 @@ public class SurveillanceCsvPresenter {
 			for(SurveillanceRequirement req : surv.getRequirements()) {
 				List<String> reqValues = generateSurveilledRequirementRowValues(req);
 				List<String> reqRow = null;
-				
+
 				if(isFirstSurvRow) {
 					//put data in firstRow
 					firstRow.addAll(reqValues);
@@ -128,7 +128,7 @@ public class SurveillanceCsvPresenter {
 					reqRow.addAll(reqValues);
 					result.add(reqRow);
 				}
-				
+
 				if(req.getNonconformities() != null && req.getNonconformities().size() > 0) {
 					boolean isFirstReqRow = true;
 					for(SurveillanceNonconformity nc : req.getNonconformities()) {
@@ -149,13 +149,13 @@ public class SurveillanceCsvPresenter {
 						}
 					}
 				}
-				
+
 				isFirstSurvRow = false;
 			}
 		}
 		return result;
 	}
-	
+
 	protected List<String> generateSurveillanceRowValues(CertifiedProductSearchDetails listing, Surveillance surv) {
 		List<String> result = new ArrayList<String>();
 		result.add(listing.getChplProductNumber());
@@ -168,7 +168,7 @@ public class SurveillanceCsvPresenter {
 		result.add(surv.getFriendlyId());
 		if(surv.getStartDate() != null) {
 			LocalDateTime survStartDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(surv.getStartDate().getTime()), 
+					Instant.ofEpochMilli(surv.getStartDate().getTime()),
 				    ZoneId.systemDefault());
 			result.add(dateFormatter.format(survStartDate));
 		} else {
@@ -176,7 +176,7 @@ public class SurveillanceCsvPresenter {
 		}
 		if(surv.getEndDate() != null) {
 			LocalDateTime survEndDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(surv.getEndDate().getTime()), 
+					Instant.ofEpochMilli(surv.getEndDate().getTime()),
 				    ZoneId.systemDefault());
 			result.add(dateFormatter.format(survEndDate));
 		} else {
@@ -190,10 +190,10 @@ public class SurveillanceCsvPresenter {
 		}
 		return result;
 	}
-	
+
 	protected List<String> generateSurveilledRequirementRowValues(SurveillanceRequirement req) {
 		List<String> reqRow = new ArrayList<String>();
-		
+
 		if(req.getType() != null) {
 			reqRow.add(req.getType().getName());
 		} else {
@@ -211,7 +211,7 @@ public class SurveillanceCsvPresenter {
 		}
 		return reqRow;
 	}
-	
+
 	protected List<String> generateNonconformityRowValues(SurveillanceNonconformity nc) {
 		List<String> ncRow = new ArrayList<String>();
 		if(nc.getNonconformityType() != null) {
@@ -226,7 +226,7 @@ public class SurveillanceCsvPresenter {
 		}
 		if(nc.getDateOfDetermination() != null) {
 			LocalDateTime ncDeterminationDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), 
+					Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),
 				    ZoneId.systemDefault());
 			ncRow.add(dateFormatter.format(ncDeterminationDate));
 		} else {
@@ -234,7 +234,7 @@ public class SurveillanceCsvPresenter {
 		}
 		if(nc.getCapApprovalDate() != null) {
 			LocalDateTime ncApprovalDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapApprovalDate().getTime()),
 				    ZoneId.systemDefault());
 			ncRow.add(dateFormatter.format(ncApprovalDate));
 		} else {
@@ -242,7 +242,7 @@ public class SurveillanceCsvPresenter {
 		}
 		if(nc.getCapStartDate() != null) {
 			LocalDateTime ncStartDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapStartDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapStartDate().getTime()),
 				    ZoneId.systemDefault());
 			ncRow.add(dateFormatter.format(ncStartDate));
 		} else {
@@ -250,7 +250,7 @@ public class SurveillanceCsvPresenter {
 		}
 		if(nc.getCapMustCompleteDate() != null) {
 			LocalDateTime ncMustCompleteDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapMustCompleteDate().getTime()),
 				    ZoneId.systemDefault());
 			ncRow.add(dateFormatter.format(ncMustCompleteDate));
 		} else {
@@ -258,7 +258,7 @@ public class SurveillanceCsvPresenter {
 		}
 		if(nc.getCapEndDate() != null) {
 			LocalDateTime ncEndDate = LocalDateTime.ofInstant(
-					Instant.ofEpochMilli(nc.getCapEndDate().getTime()), 
+					Instant.ofEpochMilli(nc.getCapEndDate().getTime()),
 				    ZoneId.systemDefault());
 			ncRow.add(dateFormatter.format(ncEndDate));
 		} else {
@@ -296,7 +296,7 @@ public class SurveillanceCsvPresenter {
 		}
 		return ncRow;
 	}
-	
+
 	public Properties getProps() {
 		return props;
 	}

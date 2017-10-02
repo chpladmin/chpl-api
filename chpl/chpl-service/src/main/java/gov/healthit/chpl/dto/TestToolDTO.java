@@ -10,10 +10,10 @@ public class TestToolDTO implements Serializable {
 	private String name;
 	private String description;
 	private boolean retired;
-	
+
 	public TestToolDTO(){}
-	
-	public TestToolDTO(TestToolEntity entity){		
+
+	public TestToolDTO(TestToolEntity entity){
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.description = entity.getDescription();

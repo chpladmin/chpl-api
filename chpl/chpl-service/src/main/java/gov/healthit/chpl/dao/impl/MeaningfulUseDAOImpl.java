@@ -14,17 +14,17 @@ import gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity;
 
 @Repository("meaningfulUseDAO")
 public class MeaningfulUseDAOImpl extends BaseDAOImpl implements MeaningfulUseDAO {
-	
+
 	@Transactional
 	public MeaningfulUseAccurateAsOfDTO getMeaningfulUseAccurateAsOf(){
-		Query query = entityManager.createQuery("SELECT muu from MeaningfulUseAccurateAsOfEntity muu where (NOT muu.deleted = true)", 
+		Query query = entityManager.createQuery("SELECT muu from MeaningfulUseAccurateAsOfEntity muu where (NOT muu.deleted = true)",
 				MeaningfulUseAccurateAsOfEntity.class);
 		MeaningfulUseAccurateAsOfEntity entity = null;
 		entity = (MeaningfulUseAccurateAsOfEntity) query.getSingleResult();
 		MeaningfulUseAccurateAsOfDTO muuAccurateDTO = new MeaningfulUseAccurateAsOfDTO(entity);
 		return muuAccurateDTO;
 	}
-	
+
 	@Transactional
 	public MeaningfulUseAccurateAsOfDTO updateAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuAccurateDTO){
 		MeaningfulUseAccurateAsOfEntity muuEntity = new MeaningfulUseAccurateAsOfEntity();
@@ -38,9 +38,9 @@ public class MeaningfulUseDAOImpl extends BaseDAOImpl implements MeaningfulUseDA
 		MeaningfulUseAccurateAsOfDTO dto = new MeaningfulUseAccurateAsOfDTO(muuEntity);
 		return dto;
 	}
-	
+
 	private void update(MeaningfulUseAccurateAsOfEntity entity) {
-		entityManager.merge(entity);	
+		entityManager.merge(entity);
 		entityManager.flush();
 	}
 }

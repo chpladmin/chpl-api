@@ -18,16 +18,16 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 	private static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
 	private static final String PRODUCT_CLASSIFICATION_MODULAR = "Modular EHR";
 	private static final String PRODUCT_CLASSIFICATION_COMPLETE = "Complete EHR";
-	
+
 	@Autowired private CertifiedProductAllowedValidator allowedValidator;
 	@Autowired private AmbulatoryComplete2014Validator ambulatoryComplete2014Validator;
 	@Autowired private AmbulatoryModular2014Validator ambulatoryModular2014Validator;
 	@Autowired private InpatientComplete2014Validator inpatientComplete2014Validator;
 	@Autowired private InpatientModular2014Validator inpatientModular2014Validator;
 	@Autowired private CertifiedProduct2015Validator cp2015Validator;
-	
+
 	@Override
-	public CertifiedProductValidator getValidator(PendingCertifiedProductDTO product) {		
+	public CertifiedProductValidator getValidator(PendingCertifiedProductDTO product) {
 		if(product.getCertificationEdition().equals("2014")) {
 			if(product.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
 				if(product.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
@@ -66,13 +66,13 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 		if(productCertificationEdition != null && productCertificationEdition.equals("2014")) {
 			String practiceTypeName = product.getPracticeType().get("name").toString();
 			String productClassificationName = product.getClassificationType().get("name").toString();
-			
+
 			if(StringUtils.isEmpty(practiceTypeName) || StringUtils.isEmpty(productClassificationName)) {
 				product.getErrorMessages().add("Cannot determine if this product is Ambulatory or Inpatient so it cannot be validated.");
 				logger.error("Cannot validate a product that doesn't have practice type and/or classification specified.");
 				return null;
 			}
-			
+
 			if(practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_AMBULATORY)) {
 				if(productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
 					return ambulatoryModular2014Validator;

@@ -35,7 +35,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
 		}
 		return result;
 	}
-	
+
 	@Override
 	protected List<String> generateRowValue(CertifiedProductSearchDetails data) {
 		List<String> result = new ArrayList<String>();
@@ -43,7 +43,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
 		result.add(data.getChplProductNumber());
 		result.add(data.getAcbCertificationId());
 		LocalDateTime date = LocalDateTime.ofInstant(
-				Instant.ofEpochMilli(data.getCertificationDate()), 
+				Instant.ofEpochMilli(data.getCertificationDate()),
 			    ZoneId.systemDefault());
 		result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
 		result.add(data.getCertificationStatus().get("name").toString());

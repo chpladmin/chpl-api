@@ -12,28 +12,28 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceNonconformityDocument implements Serializable {
 	private static final long serialVersionUID = -7456509117016763596L;
-	
+
 	/**
 	 * Document internal ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
 	 * Document file name
 	 */
 	@XmlElement(required = true)
 	private String fileName;
-	
+
 	/**
 	 * Document file type (XML, PDF, etc)
 	 */
 	@XmlElement(required = true)
 	private String fileType;
-	
+
 	@XmlTransient
 	private byte[] fileContents;
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -12,14 +12,14 @@ public class CertificationIdDTO implements Serializable {
 	private String year;
 	private Long practiceTypeId;
 	private String key;
-	
+
 	private Date creationDate;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	
+
 	public CertificationIdDTO(){}
 	public CertificationIdDTO(CertificationIdEntity entity){
-		
+
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -29,7 +29,7 @@ public class CertificationIdDTO implements Serializable {
 		this.practiceTypeId = entity.getPracticeTypeId();
 		this.key = entity.getKey();
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -58,11 +58,11 @@ public class CertificationIdDTO implements Serializable {
 	public void setCertificationId(String certId) {
 		this.certificationId = certId;
 	}
-	
+
 	public String getCertificationId() {
 		return this.certificationId;
 	}
-	
+
 	public void setYear(String year) {
 		this.year = year;
 	}
@@ -70,7 +70,7 @@ public class CertificationIdDTO implements Serializable {
 	public String getYear() {
 		return this.year;
 	}
-	
+
 	public void setPracticeTypeId(Long practiceTypeId) {
 		this.practiceTypeId = practiceTypeId;
 	}
@@ -86,7 +86,7 @@ public class CertificationIdDTO implements Serializable {
 	public String getKey() {
 		return this.key;
 	}
-	
+
 	/** Provides toString implementation.
 	 * @see java.lang.Object#toString()
 	 * @return String representation of this class.
@@ -102,6 +102,6 @@ public class CertificationIdDTO implements Serializable {
 		sb.append("certificationId: " + this.getCertificationId() + ", ");
 		sb.append("year: " + this.getYear() + ", ");
 		sb.append("practiceTypeId: " + this.getPracticeTypeId() + ", ");
-		return sb.toString();		
+		return sb.toString();
 	}
 }

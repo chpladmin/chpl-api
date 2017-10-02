@@ -30,13 +30,13 @@ import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
-	
+
 	@Autowired private ContactDAO contactDao;
-	
+
 	@Override
 	public ProductDTO create(ProductDTO dto) throws EntityCreationException,
 			EntityRetrievalException {
-		
+
 		ProductEntity entity = null;
 		try {
 			if (dto.getId() != null){
@@ -45,11 +45,11 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		} catch (EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
-			
+
 			entity = new ProductEntity();
 			entity.setName(dto.getName());
 			entity.setReportFileLocation(dto.getReportFileLocation());
@@ -72,9 +72,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 					}
 				}
 			}
-			
-			create(entity);	
-			
+
+			create(entity);
+
 			ProductDTO result = new ProductDTO(entity);
 			if(dto.getOwnerHistory() != null && dto.getOwnerHistory().size() > 0) {
 				for(ProductOwnerDTO prevOwner : dto.getOwnerHistory()) {
@@ -85,9 +85,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			}
 			return result;
 		}
-		
+
 	}
-	
+
 	@Override
 	public ProductDTO update(ProductDTO dto) throws EntityRetrievalException, EntityCreationException {
 		ProductEntity entity = this.getEntityById(dto.getId());
@@ -118,11 +118,11 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			entity.setContactId(null);
 			entity.setContact(null);
 		}
-		
+
 		update(entity);
 
 		//update ownership history
-		
+
 		//there used to be owners but aren't anymore so delete the existing ones
 		if(dto.getOwnerHistory() == null || dto.getOwnerHistory().size() == 0) {
 			if(entity.getOwnerHistory() != null && entity.getOwnerHistory().size() > 0) {
@@ -139,32 +139,32 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			//in the list of previous owners.
 			for(ProductOwnerDTO updatedProductPrevOwner : dto.getOwnerHistory()) {
 				boolean alreadyExists = false;
-				
+
 				Iterator<ProductActiveOwnerEntity> ownerHistoryIter = entity.getOwnerHistory().iterator();
 				while(ownerHistoryIter.hasNext()) {
 					ProductActiveOwnerEntity existingProductPreviousOwner = ownerHistoryIter.next();
-					if(existingProductPreviousOwner.getDeveloper() != null && 
-							updatedProductPrevOwner.getDeveloper() != null && 
-								existingProductPreviousOwner.getDeveloper().getId().longValue() == 
+					if(existingProductPreviousOwner.getDeveloper() != null &&
+							updatedProductPrevOwner.getDeveloper() != null &&
+								existingProductPreviousOwner.getDeveloper().getId().longValue() ==
 								updatedProductPrevOwner.getDeveloper().getId().longValue()) {
 							alreadyExists = true;
 						}
 				}
-				
+
 				if(!alreadyExists) {
 					addOwnershipHistory(updatedProductPrevOwner);
 				}
 			}
-			
-			//Look for entries in the existing ownership history that are 
+
+			//Look for entries in the existing ownership history that are
 			//not in the passed-in history for the updated product
 			for(ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
 				boolean isInUpdate = false;
 				for(int i = 0; i < dto.getOwnerHistory().size() && !isInUpdate; i++) {
 					ProductOwnerDTO updatedProductPreviousOwner = dto.getOwnerHistory().get(i);
-					if(existingPrevOwner.getDeveloper() != null && 
-						updatedProductPreviousOwner.getDeveloper() != null && 
-						existingPrevOwner.getDeveloper().getId().longValue() == 
+					if(existingPrevOwner.getDeveloper() != null &&
+						updatedProductPreviousOwner.getDeveloper() != null &&
+						existingPrevOwner.getDeveloper().getId().longValue() ==
 						updatedProductPreviousOwner.getDeveloper().getId().longValue()) {
 						isInUpdate = true;
 					}
@@ -178,7 +178,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				}
 			}
 		}
-		
+
 		entityManager.clear();
 		return getById(dto.getId());
 	}
@@ -205,7 +205,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
 		update(toDelete);
 	}
-	
+
 	@Override
 	public ProductOwnerDTO addOwnershipHistory(ProductOwnerDTO toAdd) {
 		ProductInsertableOwnerEntity entityToAdd = new ProductInsertableOwnerEntity();
@@ -220,10 +220,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		entityToAdd.setTransferDate(new Date(toAdd.getTransferDate()));
 		entityManager.persist(entityToAdd);
 		entityManager.flush();
-		
+
 		return new ProductOwnerDTO(entityToAdd);
 	}
-	
+
 	@Override
 	public void deletePreviousOwner(Long previousOwnershipId) throws EntityRetrievalException {
 		ProductActiveOwnerEntity toDelete = getProductPreviousOwner(previousOwnershipId);
@@ -236,26 +236,26 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		entityManager.merge(toDelete);
 		entityManager.flush();
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public List<ProductDTO> findAll() {
-		
+
 		List<ProductEntity> entities = getAllEntities();
 		List<ProductDTO> dtos = new ArrayList<>();
-		
+
 		for (ProductEntity entity : entities) {
 			ProductDTO dto = new ProductDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<ProductDTO> findAllIncludingDeleted() {
 		List<ProductEntity> entities = getAllEntitiesIncludingDeleted();
 		List<ProductDTO> dtos = new ArrayList<>();
-		
+
 		for (ProductEntity entity : entities) {
 			ProductDTO dto = new ProductDTO(entity);
 			dtos.add(dto);
@@ -266,18 +266,18 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 	@Override
 	@Transactional(readOnly = true)
 	public ProductDTO getById(Long id) throws EntityRetrievalException {
-		
+
 		ProductEntity entity = getEntityById(id);
-		if(entity == null) { 
+		if(entity == null) {
 			return null;
 		}
 		ProductDTO dto = new ProductDTO(entity);
 		return dto;
-		
+
 	}
-	
+
 	@Transactional(readOnly = true)
-	public List<ProductDTO> getByDeveloper(Long developerId) {		
+	public List<ProductDTO> getByDeveloper(Long developerId) {
 		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
 				+ "LEFT JOIN FETCH pe.developer "
@@ -288,14 +288,14 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "AND (NOT pe.deleted = true)", ProductEntity.class );
 		query.setParameter("entityid", developerId);
 		List<ProductEntity> results = query.getResultList();
-		
+
 		List<ProductDTO> dtoResults = new ArrayList<ProductDTO>();
 		for(ProductEntity result : results) {
 			dtoResults.add(new ProductDTO(result));
 		}
 		return dtoResults;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<ProductDTO> getByDevelopers(List<Long> developerIds) {
 		Query query = entityManager.createQuery( "SELECT DISTINCT pe "
@@ -315,7 +315,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		}
 		return dtoResults;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public ProductDTO getByDeveloperAndName(Long developerId, String name) {
 		Query query = entityManager.createQuery( "SELECT distinct pe "
@@ -330,30 +330,30 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		query.setParameter("developerId", developerId);
 		query.setParameter("name", name);
 		List<ProductEntity> results = query.getResultList();
-		
+
 		ProductDTO result = null;
 		if(results != null && results.size() > 0) {
 			result = new ProductDTO(results.get(0));
 		}
 		return result;
 	}
-	
+
 	private void create(ProductEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
 		entityManager.clear();
 	}
-	
+
 	private void update(ProductEntity entity) {
-		
-		entityManager.merge(entity);	
+
+		entityManager.merge(entity);
 		entityManager.flush();
 		entityManager.clear();
 	}
-	
+
 	private List<ProductEntity> getAllEntities() {
-		
+
 		List<ProductEntity> result = entityManager.createQuery( "SELECT distinct pe "
 				+ "FROM ProductEntity pe "
 				+ "LEFT JOIN FETCH pe.developer "
@@ -361,18 +361,18 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "LEFT JOIN FETCH pe.ownerHistory "
 				+ "LEFT JOIN FETCH pe.productVersions "
 				+ "LEFT JOIN FETCH pe.productCertificationStatuses "
-				+ "where (NOT pe.deleted = true) ", 
+				+ "where (NOT pe.deleted = true) ",
 				ProductEntity.class).getResultList();
-		
+
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
-		
+
 	}
 
 	private ProductActiveOwnerEntity getProductPreviousOwner(Long ppoId) {
 		ProductActiveOwnerEntity result = null;
 		Query query = entityManager.createQuery("SELECT po "
-				+ "FROM ProductActiveOwnerEntity po " 
+				+ "FROM ProductActiveOwnerEntity po "
 				+ "LEFT OUTER JOIN FETCH po.developer "
 				+ "WHERE (po.id = :ppoId)", ProductActiveOwnerEntity.class);
 		query.setParameter("ppoId", ppoId);
@@ -381,9 +381,9 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			result = results.get(0);
 		}
 		return result;
-		
+
 	}
-	
+
 	private List<ProductEntity> getAllEntitiesIncludingDeleted() {
 		List<ProductEntity> result = entityManager.createQuery( "SELECT DISTINCT pe "
 				+ "FROM ProductEntity pe "
@@ -395,7 +395,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
 	}
-	
+
 	private ProductEntity getEntityById(Long id) throws EntityRetrievalException {
 		ProductEntity entity = null;
 
@@ -409,7 +409,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "AND (pe.id = :entityid) ", ProductEntity.class );
 		query.setParameter("entityid", id);
 		List<ProductEntity> result = query.getResultList();
-		
+
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("product.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
@@ -418,7 +418,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
 }

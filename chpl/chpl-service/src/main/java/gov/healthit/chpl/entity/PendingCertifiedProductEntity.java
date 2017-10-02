@@ -23,7 +23,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 
-/** 
+/**
  * Object mapping for hibernate-handled table: certified_product.
  * A product that has been Certified
  *
@@ -33,128 +33,128 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "pending_certified_product")
 public class PendingCertifiedProductEntity {
-	
+
 	@Transient
 	private List<String> errorMessages = new ArrayList<String>();
-	
+
 	/**
 	 * fields we generate mostly from spreadsheet values
 	 */
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Long id;
-    
+
     @Column(name = "practice_type_id")
     private Long practiceTypeId;
-    
+
     @Column(name = "vendor_id")
     private Long developerId;
-    
+
     @Column(name = "vendor_contact_id")
     private Long developerContactId;
-    
+
     @Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_address_id", unique = true, nullable = true)
 	private AddressEntity developerAddress;
-    
+
     @Column(name = "product_id")
     private Long productId;
-    
+
     @Column(name = "product_version_id")
     private Long productVersionId;
-    
+
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
-    
+
     @Column(name = "certification_body_id")
     private Long certificationBodyId;
-    
+
     @Column(name = "product_classification_id")
     private Long productClassificationId;
-    
+
     @Column(name = "testing_lab_id")
     private Long testingLabId;
-    
-	@Basic(optional = false) 
+
+	@Basic(optional = false)
 	@Column( name = "certification_status_id" , nullable = false)
 	private Long status;
-	
+
     /**
     * fields directly from the spreadsheet
     **/
     @Column(name = "unique_id")
     private String uniqueId;
-    
+
     @Column(name = "record_status")
     private String recordStatus;
-    
+
     @Column(name = "practice_type")
     private String practiceType;
-    
+
     @Column(name = "testing_lab_name")
     private String testingLabName;
-    
+
     @Column(name="vendor_name")
     private String developerName;
-    
+
     @Column(name = "product_name")
     private String productName;
-    
+
     @Column(name = "product_version")
     private String productVersion;
-    
+
     @Column(name = "certification_edition")
     private String certificationEdition;
-    
+
     @Column(name = "acb_certification_id")
     private String acbCertificationId;
-    
+
     @Column(name = "certification_body_name")
     private String certificationBodyName;
-    
+
     @Column(name = "product_classification_name")
     private String productClassificationName;
 
     @Column(name = "certification_date")
     private Date certificationDate;
-    
+
     @Column(name = "vendor_street_address")
     private String developerStreetAddress;
-    
+
     @Column(name = "vendor_transparency_attestation")
 	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
 	private AttestationType transparencyAttestation;
-    
+
     @Column(name = "vendor_transparency_attestation_url")
     private String transparencyAttestationUrl;
-    
+
     @Column(name = "vendor_city")
     private String developerCity;
-    
+
     @Column(name = "vendor_state")
     private String developerState;
-    
+
     @Column(name = "vendor_zip_code")
     private String developerZipCode;
-    
+
     @Column(name = "vendor_website")
     private String developerWebsite;
-    
+
     @Column(name = "vendor_email")
     private String developerEmail;
 
     @Column(name = "vendor_contact_name")
     private String developerContactName;
-    
+
     @Column(name = "vendor_phone")
     private String developerPhoneNumber;
-    
+
     @Column(name = "test_report_url")
     private String reportFileLocation;
-    
+
     @Column(name = "sed_report_file_location")
     private String sedReportFileLocation;
 
@@ -163,10 +163,10 @@ public class PendingCertifiedProductEntity {
 
     @Column(name = "sed_testing_end")
     private Date sedTestingEnd;
-	
+
 	@Column(name = "ics")
 	private Boolean ics;
-	
+
 	@Column(name = "accessibility_certified")
 	private Boolean accessibilityCertified;
 
@@ -174,46 +174,46 @@ public class PendingCertifiedProductEntity {
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCertificationResultEntity> certificationCriterion;
-    
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCqmCriterionEntity> cqmCriterion;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCertifiedProductQmsStandardEntity> qmsStandards;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCertifiedProductTargetedUserEntity> targetedUsers;
-	
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertifiedProductId")
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_id", nullable = false  )
 	private Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards;
-	
+
 	@Transient
 	private boolean hasQms;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column(name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public PendingCertifiedProductEntity() {
 		certificationCriterion = new HashSet<PendingCertificationResultEntity>();
 		cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
@@ -226,7 +226,7 @@ public class PendingCertifiedProductEntity {
 		this();
 		this.id = id;
 	}
-	
+
 	@Transient
 	public Class<?> getClassType() {
 		return PendingCertifiedProductEntity.class;

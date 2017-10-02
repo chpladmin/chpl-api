@@ -33,7 +33,7 @@ public class Validator2014 extends Validator {
 		"170.314 (a)(19)",
 		"170.314 (a)(20)"
 	));
-	
+
 	protected static final List<String> INPATIENT_CQMS = new ArrayList<String> (Arrays.asList(
 		"CMS9",
 		"CMS26",
@@ -132,7 +132,7 @@ public class Validator2014 extends Validator {
 		"CMS179",
 		"CMS182"
 	));
-	
+
 	protected static final List<String> AMBULATORY_CORE_CQMS = new ArrayList<String>(Arrays.asList(
 		"CMS2",
 		"CMS50",
@@ -150,7 +150,7 @@ public class Validator2014 extends Validator {
 		"CMS155",
 		"CMS156",
 		"CMS165",
-		"CMS166"	
+		"CMS166"
 	));
 
 	public Validator2014() {
@@ -169,7 +169,7 @@ public class Validator2014 extends Validator {
 		this.counts.put("domainsRequired", 3);
 		this.counts.put("domainsRequiredMet", 0);
 	}
-	
+
 	//**********************************************************************
 	// onValidate
 	//
@@ -196,16 +196,16 @@ public class Validator2014 extends Validator {
 				this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
 			}
 		}
-		
+
 		boolean cpoeValid = isCPOEValid();
 		boolean tocValid = isTOCValid();
-		
+
 		this.counts.put("criteriaRequired", this.counts.get("criteriaRequired") + this.counts.get("criteriaCpoeRequired") + this.counts.get("criteriaTocRequired"));
 		this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + this.counts.get("criteriaCpoeRequiredMet") + this.counts.get("criteriaTocRequiredMet"));
-		
+
 		return (criteriaValid && cpoeValid && tocValid);
 	}
-	
+
 	//**********************************************************************
 	// isCqmsValid
 	//
@@ -228,7 +228,7 @@ public class Validator2014 extends Validator {
 	// At least 3 CQM Domains must be met.
 	//**********************************************************************
 	protected boolean isDomainsValid() {
-		this.counts.put("domainsRequiredMet", 
+		this.counts.put("domainsRequiredMet",
 			this.domainsMet.size() >= this.counts.get("domainsRequired") ?
 				this.counts.get("domainsRequired") : this.domainsMet.size());
 		return (this.counts.get("domainsRequiredMet") >= this.counts.get("domainsRequired"));
@@ -246,7 +246,7 @@ public class Validator2014 extends Validator {
 				++cqmCount;
 			}
 		}
-		
+
 		this.counts.put("cqmsInpatientRequiredMet", cqmCount);
 		return (this.counts.get("cqmsInpatientRequiredMet") >= this.counts.get("cqmsInpatientRequired"));
 	}
@@ -254,7 +254,7 @@ public class Validator2014 extends Validator {
 	//**********************************************************************
 	// isAmbulatoryCqmsValid
 	//
-	// At least 9 total Ambulatory CQMs with at least 6 of those being 
+	// At least 9 total Ambulatory CQMs with at least 6 of those being
 	// Ambulatory Core CQMs.
 	//**********************************************************************
 	protected boolean isAmbulatoryCqmsValid() {
@@ -269,18 +269,18 @@ public class Validator2014 extends Validator {
 				++nonCoreAmbulatory;
 			}
 		}
-		
+
 		this.counts.put("cqmsAmbulatoryRequiredMet", nonCoreAmbulatory);
 		this.counts.put("cqmsAmbulatoryCoreRequiredMet", coreAmbulatory);
-		
-		return ((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) >= 
+
+		return ((this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")) >=
 			(this.counts.get("cqmsAmbulatoryRequiredMet") + this.counts.get("cqmsAmbulatoryCoreRequiredMet")));
 	}
 
 	//**********************************************************************
 	// isCPOEValid
 	//
-	// At least one of the four Computerized Provider Order Entry-related 
+	// At least one of the four Computerized Provider Order Entry-related
 	// criteria must be met.
 	//**********************************************************************
 	protected boolean isCPOEValid() {
@@ -292,7 +292,7 @@ public class Validator2014 extends Validator {
 		}
 		return false;
 	}
-	
+
 	//**********************************************************************
 	// isTOCValid
 	//
@@ -315,7 +315,7 @@ public class Validator2014 extends Validator {
 			this.counts.put("criteriaTocRequired", 3);
 			return true;
 		}
-		
+
 		// 170.314(b)(1) and 170.314(b)(2) and 170.314(b)(8)
 		if (this.criteriaMet.containsKey("170.314 (b)(1)") && this.criteriaMet.containsKey("170.314 (b)(2)") &&
 			this.criteriaMet.containsKey("170.314 (b)(8)")) {
@@ -323,7 +323,7 @@ public class Validator2014 extends Validator {
 			this.counts.put("criteriaTocRequired", 3);
 			return true;
 		}
-		
+
 		// 170.314(b)(8) and 170.314(h)(1)
 		if (this.criteriaMet.containsKey("170.314 (b)(8)") && this.criteriaMet.containsKey("170.314 (h)(1)")) {
 			this.counts.put("criteriaTocRequiredMet", 2);
@@ -337,7 +337,7 @@ public class Validator2014 extends Validator {
 			this.counts.put("criteriaTocRequired", 2);
 			return true;
 		}
-	
+
 		return false;
-	}	
+	}
 }

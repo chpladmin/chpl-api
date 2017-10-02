@@ -16,19 +16,19 @@ import gov.healthit.chpl.domain.SurveillanceOversightRule;
 @Component(value="capApprovalComplianceChecker")
 public class CapApprovalComplianceChecker implements RuleComplianceChecker {
 	private int numDaysAllowed = 0;
-	
+
 	public SurveillanceOversightRule getRuleChecked() {
 		return SurveillanceOversightRule.CAP_NOT_APPROVED;
 	}
-	
+
 	public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
 		Date result = null;
-		
+
 		if(nc.getCapApprovalDate() == null) {
 			LocalDateTime capDateOfDetermination = null;
 			if(nc.getDateOfDetermination() != null) {
 				capDateOfDetermination = LocalDateTime.ofInstant(
-						Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()), 
+						Instant.ofEpochMilli(nc.getDateOfDetermination().getTime()),
 					    ZoneId.systemDefault());
 				Duration timeBetween = Duration.between(capDateOfDetermination, LocalDateTime.now());
 				long numDays = timeBetween.toDays();
@@ -38,10 +38,10 @@ public class CapApprovalComplianceChecker implements RuleComplianceChecker {
 				}
 			}
 		}
-		
+
 		return result;
 	}
-	
+
 	public int getNumDaysAllowed() {
 		return numDaysAllowed;
 	}

@@ -44,7 +44,7 @@ public class CertificationResultRules {
 	private static final Logger logger = LogManager.getLogger(CertificationResultRules.class);
 
 	private Map<String, List<CertificationResultOption>> rules = new HashMap<String, List<CertificationResultOption>>();
-	
+
 	public CertificationResultRules() {
 		ClassPathResource cpr = new ClassPathResource("certificationResultRules.xml");
 		InputStream xmlInput = null;
@@ -54,7 +54,7 @@ public class CertificationResultRules {
 			logger.fatal("Could not load rules file.", ioEx);
 			return;
 		}
-		
+
         Document dom;
         // Make an  instance of the DocumentBuilderFactory
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -67,14 +67,14 @@ public class CertificationResultRules {
         try {
             // use the factory to take an instance of the document builder
             DocumentBuilder db = dbf.newDocumentBuilder();
-            // parse using the builder to get the DOM mapping of the    
+            // parse using the builder to get the DOM mapping of the
             // XML file
             dom = db.parse(xmlInput);
             Element doc = dom.getDocumentElement();
             NodeList certNodes = doc.getElementsByTagName("certificationResult");
             for(int i = 0; i < certNodes.getLength(); i++) {
             	Element certNode = (Element)certNodes.item(i);
-            	String certNumber = getTextValue(certNode, "number"); 
+            	String certNumber = getTextValue(certNode, "number");
             	NodeList propertiesNodes = certNode.getElementsByTagName("properties");
             	if(propertiesNodes.getLength() == 1) {
             		Element certProperties = (Element)propertiesNodes.item(0);
@@ -108,10 +108,10 @@ public class CertificationResultRules {
             logger.error(ioe.getMessage(), ioe);
         }
 	}
-	
+
 	public boolean hasCertOption(String certNumber, String optionName) {
 		boolean result = false;
-		
+
 		List<CertificationResultOption> options = rules.get(certNumber);
 		if(options != null && options.size() > 0) {
 			for(CertificationResultOption option : options) {
@@ -122,7 +122,7 @@ public class CertificationResultRules {
 		}
 		return result;
 	}
-	
+
 	private String getTextValue(Element ele, String tagName) {
 		String textVal = null;
 		NodeList nl = ele.getElementsByTagName(tagName);

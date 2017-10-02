@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.hibernate.HibernateException;
 
 public class PostgresAttestationType extends PostgresEnumType {
-	
+
 	@Override
 	public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
 	    String name = rs.getString(names[0]);

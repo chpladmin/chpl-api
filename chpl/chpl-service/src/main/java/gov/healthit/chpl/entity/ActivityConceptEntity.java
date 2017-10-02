@@ -14,38 +14,38 @@ import javax.persistence.Table;
 @Entity
 @Table(name="activity_class")
 public class ActivityConceptEntity {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "activity_id", nullable = false )
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "class", nullable = false)
 	private String className;
-	
+
 	@Basic ( optional = false )
 	@Column( name = "creation_date", nullable = false)
 	private Date creationDate;
-	
+
 	@Basic ( optional = false )
 	@Column( name = "last_modified_date", nullable = false)
 	private Date lastModifiedDate;
-	
+
 	@Basic ( optional = false )
 	@Column( name = "last_modified_user", nullable = false)
 	private Long lastModifiedUser;
-	
+
 	@Basic ( optional = false )
 	@Column( name = "deleted", nullable = false )
 	private Boolean deleted;
-	
+
 
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -85,9 +85,9 @@ public class ActivityConceptEntity {
 	public Boolean getDeleted() {
 		return deleted;
 	}
-	
+
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
-	
+
 }

@@ -20,10 +20,10 @@ public class CertificationCriterionDTO implements Serializable {
 	private String number;
 	private Boolean requiresSed;
 	private String title;
-	
+
 	public CertificationCriterionDTO(){}
 	public CertificationCriterionDTO(CertificationCriterionEntity entity){
-		
+
 		this.id = entity.getId();
 		this.automatedMeasureCapable = entity.isAutomatedMeasureCapable();
 		this.automatedNumeratorCapable = entity.isAutomatedNumeratorCapable();
@@ -37,13 +37,13 @@ public class CertificationCriterionDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.number = entity.getNumber();
-		
+
 		this.requiresSed = entity.isRequiresSed();
 		this.title = entity.getTitle();
-		
+
 	}
-	
-	
+
+
 	public Long getId() {
 		return id;
 	}

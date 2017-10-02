@@ -26,7 +26,7 @@ import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO {
 	private static final Logger logger = LogManager.getLogger(ListingGraphDAOImpl.class);
 	@Autowired MessageSource messageSource;
-	
+
 	public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException {
 		ListingToListingMapEntity entity = new ListingToListingMapEntity();
 		entity.setChildId(toCreate.getChildId());
@@ -45,16 +45,16 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 		entity = getListingMapEntity(toCreate.getChildId(), toCreate.getParentId());
 		return new ListingToListingMapDTO(entity);
 	}
-	
+
 	public void deleteListingMap(ListingToListingMapDTO toDelete) {
 		ListingToListingMapEntity entity = null;
-		
+
 		if(toDelete.getId() != null) {
 			entity = entityManager.find(ListingToListingMapEntity.class, toDelete.getId());
 		} else if(toDelete.getParentId() != null && toDelete.getChildId() != null) {
 			entity = getListingMapEntity(toDelete.getChildId(), toDelete.getParentId());
 		}
-		
+
 		if(entity != null) {
 			entity.setDeleted(true);
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -62,7 +62,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 			entityManager.flush();
 		}
 	}
-	
+
 	/**
 	 * Get the maximum ICS value from the proposed parent nodes
 	 * @param listingIds proposed parent nodes
@@ -77,7 +77,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 		BigDecimal result = (BigDecimal)query.getSingleResult();
 		return new Integer(result.intValue());
 	}
-	
+
 	/**
 	 * Find the first-level parent nodes of a specific listing
 	 * @param listingId Listing to find the parents of
@@ -90,14 +90,14 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 				+ "AND listingMap.deleted <> true ", CertifiedProductDetailsEntity.class );
 		query.setParameter("childId", listingId);
 		List<CertifiedProductDetailsEntity> parentEntities = query.getResultList();
-		
+
 		List<CertifiedProductDetailsDTO> result = new ArrayList<CertifiedProductDetailsDTO>();
 		for(CertifiedProductDetailsEntity parentEntity : parentEntities) {
 			result.add(new CertifiedProductDetailsDTO(parentEntity));
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Find the first-level child nodes of a specific listing
 	 * @param listingId Listing to find the children of
@@ -110,24 +110,24 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 				+ "AND listingMap.deleted <> true", CertifiedProductDetailsEntity.class );
 		query.setParameter("parentId", listingId);
 		List<CertifiedProductDetailsEntity> childEntities = query.getResultList();
-		
+
 		List<CertifiedProductDetailsDTO> result = new ArrayList<CertifiedProductDetailsDTO>();
 		for(CertifiedProductDetailsEntity childEntity : childEntities) {
 			result.add(new CertifiedProductDetailsDTO(childEntity));
 		}
 		return result;
 	}
-	
+
 	public ListingToListingMapDTO getListingMap(Long childId, Long parentId) {
 		ListingToListingMapEntity mapEntity = getListingMapEntity(childId, parentId);
-		
+
 		ListingToListingMapDTO result = null;
 		if(mapEntity != null) {
 			result = new ListingToListingMapDTO(mapEntity);
 		}
 		return result;
 	}
-	
+
 	private ListingToListingMapEntity getListingMapEntity(Long childId, Long parentId) {
 		Query query = entityManager.createQuery( "SELECT listingMap "
 				+ "FROM ListingToListingMapEntity listingMap "
@@ -139,7 +139,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 		query.setParameter("parentId", parentId);
 		query.setParameter("childId", childId);
 		List<ListingToListingMapEntity> mapEntities = query.getResultList();
-		
+
 		if(mapEntities != null && mapEntities.size() > 0) {
 			return mapEntities.get(0);
 		}

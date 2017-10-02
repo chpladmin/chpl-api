@@ -12,20 +12,20 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 @Component("inpatientComplete2014Validator")
 public class InpatientComplete2014Validator extends InpatientModular2014Validator {
 
-	private static final String[] requiredCriteria = {"170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", 
-			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(9)", 
-			"170.314 (a)(10)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", 
-			"170.314 (a)(15)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(3)", "170.314 (b)(4)", 
-			"170.314 (b)(5)(B)", "170.314 (b)(6)", "170.314 (b)(7)", "170.314 (c)(1)", "170.314 (c)(2)", 
+	private static final String[] requiredCriteria = {"170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)",
+			"170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(9)",
+			"170.314 (a)(10)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
+			"170.314 (a)(15)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(3)", "170.314 (b)(4)",
+			"170.314 (b)(5)(B)", "170.314 (b)(6)", "170.314 (b)(7)", "170.314 (c)(1)", "170.314 (c)(2)",
 			"170.314 (c)(3)", "170.314 (d)(1)", "170.314 (d)(2)", "170.314 (d)(3)", "170.314 (d)(4)",
 			"170.314 (d)(5)", "170.314 (d)(6)", "170.314 (d)(7)", "170.314 (d)(8)",
-			"170.314 (e)(1)", "170.314 (f)(1)", "170.314 (f)(2)", 
+			"170.314 (e)(1)", "170.314 (f)(1)", "170.314 (f)(2)",
 			"170.314 (f)(3)", "170.314 (g)(2)", "170.314 (g)(3)", "170.314 (g)(4)"};
 
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		super.validate(product);
-		
+
 		List<PendingCertificationResultDTO> certificationCriterion = product.getCertificationCriterion();
 		for(int i = 0; i < requiredCriteria.length; i++) {
 			boolean hasCert = false;
@@ -33,12 +33,12 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 				if(certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.getMeetsCriteria()) {
 					hasCert = true;
 				}
-			}	
+			}
 			if(!hasCert) {
 				product.getErrorMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
-		}		
-		
+		}
+
 		//(a)(1) (OR) ((a)(18), (a)(19), (a)(20))"
 		boolean hasA1 = false;
 		boolean hasA18 = false;
@@ -63,13 +63,13 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 				product.getErrorMessages().add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
 			}
 		}
-		
-		//(b)(1), (b)(2)** 
-		//(in replacement for (b)(1) and (b)(2) - 
-		//(b)(1) and (b)(8), OR 
-		//(b)(8) and (h)(1), OR 
-		//(b)(1) and (b)(2) and (b)(8), OR 
-		//(b)(1) and (b)(2) and (h)(1), OR 
+
+		//(b)(1), (b)(2)**
+		//(in replacement for (b)(1) and (b)(2) -
+		//(b)(1) and (b)(8), OR
+		//(b)(8) and (h)(1), OR
+		//(b)(1) and (b)(2) and (b)(8), OR
+		//(b)(1) and (b)(2) and (h)(1), OR
 		//(b)(1) and (b)(2) and (b)(8) and (h)(1)"
 		boolean hasB1 = false;
 		boolean hasB2 = false;
@@ -101,7 +101,7 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 	@Override
 	public void validate(CertifiedProductSearchDetails product) {
 		super.validate(product);
-		
+
 		List<CertificationResult> certificationCriterion = product.getCertificationResults();
 		for(int i = 0; i < requiredCriteria.length; i++) {
 			boolean hasCert = false;
@@ -109,12 +109,12 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 				if(certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.isSuccess()) {
 					hasCert = true;
 				}
-			}	
+			}
 			if(!hasCert) {
 				product.getErrorMessages().add("Required certification criteria " + requiredCriteria[i] + " was not found.");
 			}
-		}		
-		
+		}
+
 		//(a)(1) (OR) ((a)(18), (a)(19), (a)(20))"
 		boolean hasA1 = false;
 		boolean hasA18 = false;
@@ -139,13 +139,13 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
 				product.getErrorMessages().add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
 			}
 		}
-		
-		//(b)(1), (b)(2)** 
-		//(in replacement for (b)(1) and (b)(2) - 
-		//(b)(1) and (b)(8), OR 
-		//(b)(8) and (h)(1), OR 
-		//(b)(1) and (b)(2) and (b)(8), OR 
-		//(b)(1) and (b)(2) and (h)(1), OR 
+
+		//(b)(1), (b)(2)**
+		//(in replacement for (b)(1) and (b)(2) -
+		//(b)(1) and (b)(8), OR
+		//(b)(8) and (h)(1), OR
+		//(b)(1) and (b)(2) and (b)(8), OR
+		//(b)(1) and (b)(2) and (h)(1), OR
 		//(b)(1) and (b)(2) and (b)(8) and (h)(1)"
 		boolean hasB1 = false;
 		boolean hasB2 = false;

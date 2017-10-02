@@ -8,14 +8,14 @@ public class QmsStandardDTO implements Serializable {
 	private static final long serialVersionUID = 5091557483274894084L;
 	private Long id;
 	private String name;
-	
+
 	public QmsStandardDTO(){}
-	
+
 	public QmsStandardDTO(QmsStandardEntity entity){
 		this.id = entity.getId();
 		this.name = entity.getName();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

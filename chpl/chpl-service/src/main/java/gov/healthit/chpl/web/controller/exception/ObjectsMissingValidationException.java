@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ObjectsMissingValidationException extends Exception {
 	private static final long serialVersionUID = -6542978782655873229L;
-	
+
 	private List<ObjectMissingValidationException> exceptions;
 
 	public ObjectsMissingValidationException() {

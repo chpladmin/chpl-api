@@ -28,19 +28,19 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
 	@Autowired
 	private ActivityManager activityManager;
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public AnnouncementDTO create(AnnouncementDTO announcement) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		// Create the announcement itself
 		AnnouncementDTO result = announcementDAO.create(announcement);
-		
-		String activityMsg = "Created announcement: " + announcement.getTitle(); 
+
+		String activityMsg = "Created announcement: " + announcement.getTitle();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, result.getId(), activityMsg, null, result);
-		
+
 		return result;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public AnnouncementDTO update(AnnouncementDTO announcement) throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
@@ -55,38 +55,38 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
 		return result;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public void delete(AnnouncementDTO announcement) 
+	public void delete(AnnouncementDTO announcement)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 			UserRetrievalException {
-		
+
 		//mark the announcement deleted
 		announcementDAO.delete(announcement.getId());
 		//log announcement delete activity
 		String activityMsg = "Deleted announcement: " + announcement.getTitle();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, announcement.getId(), activityMsg, announcement, null);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<AnnouncementDTO> getAll() {
 		boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
 		return announcementDAO.findAll(isLoggedIn);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public AnnouncementDTO getById(Long id) throws EntityRetrievalException {
 		boolean isLoggedIn = Util.getCurrentUser() == null ? false : true;
 		return announcementDAO.getById(id, isLoggedIn);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public AnnouncementDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException {
 		return announcementDAO.getByIdToUpdate(id, includeDeleted);
 	}
-	
-	
+
+
 	public void setAnnouncementDAO(AnnouncementDAO announcementDAO) {
 		this.announcementDAO = announcementDAO;
 	}
@@ -95,7 +95,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 	public List<AnnouncementDTO> getAllFuture() {
 		return announcementDAO.findAllFuture();
 	}
-	
+
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public List<AnnouncementDTO> getAllCurrentAndFuture() {
 		return announcementDAO.findAllCurrentAndFuture();

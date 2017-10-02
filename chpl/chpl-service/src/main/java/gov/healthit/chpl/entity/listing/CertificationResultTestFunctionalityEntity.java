@@ -19,25 +19,25 @@ import gov.healthit.chpl.entity.TestFunctionalityEntity;
 @Entity
 @Table(name = "certification_result_test_functionality")
 public class CertificationResultTestFunctionalityEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certification_result_test_functionality_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long certificationResultId;
-	
+
 	@Column(name = "test_functionality_id")
 	private Long testFunctionalityId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_functionality_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private TestFunctionalityEntity testFunctionality;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -74,19 +74,19 @@ public class CertificationResultTestFunctionalityEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

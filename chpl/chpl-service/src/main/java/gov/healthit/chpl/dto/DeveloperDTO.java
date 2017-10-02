@@ -24,18 +24,18 @@ public class DeveloperDTO implements Serializable {
 	private List<DeveloperStatusEventDTO> statusEvents;
 	private List<DeveloperACBMapDTO> transparencyAttestationMappings;
 	private Statuses statuses;
-	
+
 	public DeveloperDTO(){
 		this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
 		this.statusEvents = new ArrayList<DeveloperStatusEventDTO>();
 	}
-	
+
 	public DeveloperDTO(DeveloperEntity entity){
 		this();
 		this.id = entity.getId();
 		this.developerCode = entity.getDeveloperCode();
 		if(entity.getAddress() != null) {
-			this.address = new AddressDTO(entity.getAddress());			
+			this.address = new AddressDTO(entity.getAddress());
 		}
 		if(entity.getContact() != null) {
 			this.contact = new ContactDTO(entity.getContact());
@@ -45,7 +45,7 @@ public class DeveloperDTO implements Serializable {
 				this.statusEvents.add(new DeveloperStatusEventDTO(statusEntity));
 			}
 		}
-		
+
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
@@ -53,16 +53,16 @@ public class DeveloperDTO implements Serializable {
 		this.name = entity.getName();
 		this.website = entity.getWebsite();
 		if(entity.getDeveloperCertificationStatusesEntity() != null){
-			this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(), 
-					entity.getDeveloperCertificationStatusesEntity().getRetired(), 
-					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByDeveloper(), 
-					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByAcb(), 
+			this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(),
+					entity.getDeveloperCertificationStatusesEntity().getRetired(),
+					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByDeveloper(),
+					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByAcb(),
 					entity.getDeveloperCertificationStatusesEntity().getSuspendedByAcb(),
 					entity.getDeveloperCertificationStatusesEntity().getSuspendedByOnc(),
 					entity.getDeveloperCertificationStatusesEntity().getTerminatedByOnc());
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -121,7 +121,7 @@ public class DeveloperDTO implements Serializable {
 	public void setDeveloperCode(String developerCode) {
 		this.developerCode = developerCode;
 	}
-	
+
 	public ContactDTO getContact() {
 		return contact;
 	}
@@ -137,11 +137,11 @@ public class DeveloperDTO implements Serializable {
 	public void setTransparencyAttestationMappings(List<DeveloperACBMapDTO> transparencyAttestationMappings) {
 		this.transparencyAttestationMappings = transparencyAttestationMappings;
 	}
-	
+
 	public Statuses getStatuses(){
 		return statuses;
 	}
-	
+
 	public void setStatuses(Statuses statuses){
 		this.statuses = statuses;
 	}
@@ -153,7 +153,7 @@ public class DeveloperDTO implements Serializable {
 	public void setStatusEvents(List<DeveloperStatusEventDTO> statusEvents) {
 		this.statusEvents = statusEvents;
 	}
-	
+
 	public DeveloperStatusEventDTO getStatus() {
 		DeveloperStatusEventDTO mostRecentStatus = null;
 

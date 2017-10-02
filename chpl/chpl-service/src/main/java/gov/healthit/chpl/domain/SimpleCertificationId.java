@@ -9,14 +9,14 @@ public class SimpleCertificationId implements Serializable {
 	private static final long serialVersionUID = 2521257609141032011L;
 	private String certificationId;
 	private Date created;
-	
+
 	public SimpleCertificationId() {}
-	
+
 	public SimpleCertificationId(CertificationIdDTO dto) {
 		this.certificationId = dto.getCertificationId();
 		this.created = dto.getCreationDate();
 	}
-	
+
 	public String getCertificationId() {
 		return certificationId;
 	}
@@ -29,7 +29,7 @@ public class SimpleCertificationId implements Serializable {
 	public void setCreated(Date created) {
 		this.created = created;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if(obj == null) {
@@ -38,7 +38,7 @@ public class SimpleCertificationId implements Serializable {
 		if(!(obj instanceof SimpleCertificationId)) {
 			return false;
 		}
-		
+
 		SimpleCertificationId anotherId = (SimpleCertificationId) obj;
 		if((this.certificationId == null && anotherId.certificationId != null) ||
 			(this.certificationId != null && anotherId.certificationId == null)) {
@@ -48,10 +48,10 @@ public class SimpleCertificationId implements Serializable {
 			(this.created != null && anotherId.created == null)) {
 			return false;
 		}
-		return this.certificationId.equals(anotherId.certificationId) && 
+		return this.certificationId.equals(anotherId.certificationId) &&
 				this.created.equals(anotherId.created);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return this.certificationId.hashCode() + this.created.hashCode();

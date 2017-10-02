@@ -17,14 +17,14 @@ public class TestingLabDTO implements Serializable {
 	private String name;
 	private String website;
 	private String accredidationNumber;
-	
+
 	public TestingLabDTO(){}
-	
+
 	public TestingLabDTO(TestingLabEntity entity){
 		this.id = entity.getId();
 		this.testingLabCode = entity.getTestingLabCode();
 		if(entity.getAddress() != null) {
-			this.address = new AddressDTO(entity.getAddress());			
+			this.address = new AddressDTO(entity.getAddress());
 		}
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
@@ -34,8 +34,8 @@ public class TestingLabDTO implements Serializable {
 		this.website = entity.getWebsite();
 		this.accredidationNumber = entity.getAccredidationNumber();
 	}
-	
-	
+
+
 	public Long getId() {
 		return id;
 	}

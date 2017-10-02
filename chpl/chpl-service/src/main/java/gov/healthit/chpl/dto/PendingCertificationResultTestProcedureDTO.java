@@ -10,16 +10,16 @@ public class PendingCertificationResultTestProcedureDTO implements Serializable 
 	private Long pendingCertificationResultId;
 	private Long testProcedureId;
 	private String version;
-	
+
 	public PendingCertificationResultTestProcedureDTO() {}
-	
+
 	public PendingCertificationResultTestProcedureDTO(PendingCertificationResultTestProcedureEntity entity) {
 		this.setId(entity.getId());
 		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
 		this.setTestProcedureId(entity.getTestProcedureId());
 		this.setVersion(entity.getTestProcedureVersion());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

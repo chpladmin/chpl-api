@@ -14,9 +14,9 @@ public class ContactDTO implements Serializable {
 	private String phoneNumber;
 	private String title;
 	private Date signatureDate;
-	
+
 	public ContactDTO(){}
-	
+
 	public ContactDTO(ContactEntity entity)
 	{
 		if(entity != null) {
@@ -29,7 +29,7 @@ public class ContactDTO implements Serializable {
 			this.signatureDate = entity.getSignatureDate();
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

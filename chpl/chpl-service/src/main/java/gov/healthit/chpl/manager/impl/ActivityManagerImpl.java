@@ -45,36 +45,36 @@ public class ActivityManagerImpl implements ActivityManager {
 
 	@Autowired
 	ActivityDAO activityDAO;
-	
+
 	@Autowired
 	UserDAO userDAO;
-	
+
 	@Autowired DeveloperDAO devDao;
-	
+
 	private ObjectMapper jsonMapper = new ObjectMapper();
 	private JsonFactory factory = jsonMapper.getFactory();
-	
+
 	@Override
 	@Transactional
 	public void addActivity(ActivityConcept concept, Long objectId,
 			String activityDescription, Object originalData, Object newData)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
+
 		String originalDataStr = JSONUtils.toJSON(originalData);
 		String newDataStr = JSONUtils.toJSON(newData);
-		
+
 		Boolean originalMatchesNew = false;
-		
+
 		try {
 			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
 		} catch (IOException e){
-			
+
 		}
-		
-		
+
+
 		// Do not add the activity if nothing has changed.
 		if (!originalMatchesNew){
-			
+
 			ActivityDTO dto = new ActivityDTO();
 			dto.setConcept(concept);
 			dto.setId(null);
@@ -89,33 +89,33 @@ public class ActivityManagerImpl implements ActivityManager {
 				dto.setLastModifiedUser(Util.getCurrentUser().getId());
 			}
 			dto.setDeleted(false);
-			
+
 			activityDAO.create(dto);
 		}
-		
+
 	}
-	
+
 	@Override
 	@Transactional
 	public void addActivity(ActivityConcept concept, Long objectId,
 			String activityDescription, Object originalData, Object newData, Long asUser)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-		
+
 		String originalDataStr = JSONUtils.toJSON(originalData);
 		String newDataStr = JSONUtils.toJSON(newData);
-		
+
 		Boolean originalMatchesNew = false;
-		
+
 		try {
 			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
 		} catch (IOException e){
-			
+
 		}
-		
-		
+
+
 		// Do not add the activity if nothing has changed.
 		if (!originalMatchesNew){
-			
+
 			ActivityDTO dto = new ActivityDTO();
 			dto.setConcept(concept);
 			dto.setId(null);
@@ -128,10 +128,10 @@ public class ActivityManagerImpl implements ActivityManager {
 			dto.setLastModifiedDate(new Date());
 			dto.setLastModifiedUser(asUser);
 			dto.setDeleted(false);
-			
+
 			activityDAO.create(dto);
 		}
-		
+
 	}
 
 	@Override
@@ -140,21 +140,21 @@ public class ActivityManagerImpl implements ActivityManager {
 			String activityDescription, Object originalData, Object newData,
 			Date timestamp) throws EntityCreationException,
 			EntityRetrievalException, JsonProcessingException {
-		
+
 		String originalDataStr = JSONUtils.toJSON(originalData);
 		String newDataStr = JSONUtils.toJSON(newData);
-		
+
 		Boolean originalMatchesNew = false;
-		
+
 		try {
 			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
 		} catch (IOException e){
-			
+
 		}
-		
+
 		// Do not add the activity if nothing has changed.
 		if (!originalMatchesNew){
-		
+
 			ActivityDTO dto = new ActivityDTO();
 			dto.setConcept(concept);
 			dto.setId(null);
@@ -167,18 +167,18 @@ public class ActivityManagerImpl implements ActivityManager {
 			dto.setLastModifiedDate(new Date());
 			dto.setLastModifiedUser(Util.getCurrentUser().getId());
 			dto.setDeleted(false);
-			
+
 			activityDAO.create(dto);
 		}
 	}
-	
+
 	@Override
 	@Transactional
 	public List<ActivityEvent> getAllActivity(boolean showDeleted) throws JsonParseException, IOException {
-		
+
 		List<ActivityDTO> dtos = activityDAO.findAll(showDeleted);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO dto : dtos){
 			ActivityEvent event = getActivityEventFromDTO(dto);
 			events.add(event);
@@ -190,10 +190,10 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Transactional
 	public List<ActivityEvent> getActivityForObject(boolean showDeleted,
 			ActivityConcept concept, Long objectId) throws JsonParseException, IOException {
-		
+
 		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO dto : dtos){
 			ActivityEvent event = getActivityEventFromDTO(dto);
 			events.add(event);
@@ -205,24 +205,24 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Override
 	@Transactional
 	public List<ActivityEvent> getActivityForConcept(boolean showDeleted, ActivityConcept concept) throws JsonParseException, IOException {
-		
+
 		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO dto : dtos){
 			ActivityEvent event = getActivityEventFromDTO(dto);
 			events.add(event);
 		}
 		return events;
 	}
-	
+
 	@Override
 	@Transactional
 	public List<ActivityEvent> getAllActivityInDateRange(boolean showDeleted, Date startDate, Date endDate) throws JsonParseException, IOException {
-		
+
 		List<ActivityDTO> dtos = activityDAO.findAllInDateRange(showDeleted, startDate, endDate);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO dto : dtos){
 			ActivityEvent event = getActivityEventFromDTO(dto);
 			events.add(event);
@@ -234,10 +234,10 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Transactional
 	public List<ActivityEvent> getActivityForObject(boolean showDeleted,
 			ActivityConcept concept, Long objectId, Date startDate, Date endDate) throws JsonParseException, IOException {
-		
+
 		List<ActivityDTO> dtos = activityDAO.findByObjectId(showDeleted, objectId, concept, startDate, endDate);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO dto : dtos){
 			ActivityEvent event = getActivityEventFromDTO(dto);
 			events.add(event);
@@ -249,48 +249,48 @@ public class ActivityManagerImpl implements ActivityManager {
 	@Transactional
 	public List<ActivityEvent> getActivityForConcept(boolean showDeleted,
 			ActivityConcept concept, Date startDate, Date endDate) throws JsonParseException, IOException {
-		
+
 		List<ActivityDTO> dtos = activityDAO.findByConcept(showDeleted, concept, startDate, endDate);
 		List<ActivityEvent> events = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO dto : dtos){
 			ActivityEvent event = getActivityEventFromDTO(dto);
 			events.add(event);
 		}
 		return events;
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void deleteActivity(Long toDelete) throws EntityRetrievalException{
-		
+
 		ActivityDTO dto = activityDAO.getById(toDelete);
 		dto.setDeleted(true);
 		activityDAO.update(dto);
-		
+
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException{
-		
+
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUser();
 		List<UserActivity> userActivities = new ArrayList<UserActivity>();
-		
+
 		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()){
 				UserDTO activityUser = userEntry.getValue().get(0).getUser();
 				if(activityUser != null) {
 					User userObj = new User(activityUser);
-					
+
 					List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-					
+
 					for (ActivityDTO userEventDTO : userEntry.getValue()){
 						ActivityEvent event = getActivityEventFromDTO(userEventDTO);
 						userActivityEvents.add(event);
 					}
-					
+
 					UserActivity userActivity = new UserActivity();
 					userActivity.setUser(userObj);
 					userActivity.setEvents(userActivityEvents);
@@ -299,27 +299,27 @@ public class ActivityManagerImpl implements ActivityManager {
 		}
 		return userActivities;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate) throws JsonParseException, IOException, UserRetrievalException{
-		
+
 		Map<Long, List<ActivityDTO> > activity = activityDAO.findAllByUserInDateRange(startDate, endDate);
 		List<UserActivity> userActivities = new ArrayList<UserActivity>();
-		
+
 		for (Map.Entry<Long, List<ActivityDTO> > userEntry : activity.entrySet()) {
 			UserDTO activityUser = userEntry.getValue().get(0).getUser();
 			if(activityUser != null){
 				User userObj = new User(activityUser);
-				
+
 				List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-				
+
 				for (ActivityDTO userEventDTO : userEntry.getValue()){
 					ActivityEvent event = getActivityEventFromDTO(userEventDTO);
 					userActivityEvents.add(event);
 				}
-				
+
 				UserActivity userActivity = new UserActivity();
 				userActivity.setUser(userObj);
 				userActivity.setEvents(userActivityEvents);
@@ -328,36 +328,36 @@ public class ActivityManagerImpl implements ActivityManager {
 		}
 		return userActivities;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException{
-		
+
 		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId)){
 			ActivityEvent event = getActivityEventFromDTO(userEventDTO);
 			userActivityEvents.add(event);
 		}
 		return userActivityEvents;
 	}
-	
-	
+
+
 	@Override
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
 	public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate) throws JsonParseException, IOException{
-		
+
 		List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-		
+
 		for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId, startDate, endDate)){
 			ActivityEvent event = getActivityEventFromDTO(userEventDTO);
 			userActivityEvents.add(event);
 		}
 		return userActivityEvents;
 	}
-	
+
 
 	private ActivityEvent getActivityEventFromDTO(ActivityDTO dto) throws JsonParseException, IOException{
 		ActivityEvent event = null;
@@ -366,29 +366,29 @@ public class ActivityManagerImpl implements ActivityManager {
 		} else {
 			event = new ActivityEvent();
 		}
-		
+
 		event.setId(dto.getId());
 		event.setDescription(dto.getDescription());
 		event.setActivityDate(dto.getActivityDate());
 		event.setActivityObjectId(dto.getActivityObjectId());
-		event.setConcept(dto.getConcept());			
+		event.setConcept(dto.getConcept());
 		event.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
-		
+
 		JsonNode originalJSON = null;
 		if (dto.getOriginalData()!= null){
 			JsonParser origData = factory.createParser(dto.getOriginalData());
 			originalJSON = jsonMapper.readTree(origData);
 		}
-		
+
 		JsonNode newJSON = null;
 		if (dto.getNewData()!= null){
 			JsonParser newData = factory.createParser(dto.getNewData());
 			newJSON = jsonMapper.readTree(newData);
 		}
-		
+
 		event.setOriginalData(originalJSON);
 		event.setNewData(newJSON);
-		
+
 		if(event instanceof ProductActivityEvent && event.getNewData() != null) {
 			JsonNode devIdNode = event.getNewData().get("developerId");
 			Long devId = devIdNode.asLong();

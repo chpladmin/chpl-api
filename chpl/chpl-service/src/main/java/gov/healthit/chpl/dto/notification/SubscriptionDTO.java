@@ -5,7 +5,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 public class SubscriptionDTO {
 	private CertificationBodyDTO acb;
 	private NotificationTypeDTO notificationType;
-	
+
 	public SubscriptionDTO() {}
 
 	public CertificationBodyDTO getAcb() {

@@ -16,28 +16,28 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 public class StatsCsvFileWriter {
 	//Delimiter used in CSV file
 	private static final String NEW_LINE_SEPARATOR = "\n";
-		
+
     //CSV file header
     private static final Object [] FILE_HEADER = {"Date","Total Developers","Total Developers With 2014 Listings","Total Developers With 2015 Listings","Total Unique Products",
     		"Total Products With Active 2014 Listings","Total Products With Active 2015 Listings","Total Products With Active Listings",
     		"Total Listings", "Total 2014 Listings", "Total 2015 Listings", "Total 2011 Listings","Total Surveillance Activities","Total Open Surveillance Activities",
     		"Total Closed Surveillance Activities","Total NonConformities","Total Open NonConformities","Total Closed NonConformities"};
-    
+
     public static void writeCsvFile(String fileName, List<Statistics> statsCsvOutput){
     	FileWriter fileWriter = null;
     	CSVPrinter csvFilePrinter = null;
     	CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
     	SimpleDateFormat dateFormat = new SimpleDateFormat("E MMM dd yyyy");
-    	
+
     	try {
     		// initialize FileWriter object
     		fileWriter = new FileWriter(fileName);
-    		
+
     		// initialize CSVPrinter object
     		csvFilePrinter = new CSVPrinter(fileWriter, csvFileFormat);
-    		
+
     		csvFilePrinter.printRecord(FILE_HEADER);
-    		
+
     		// Write a new StatisticsCSVOutput object list to the CSV file
     		for (Statistics stat : statsCsvOutput){
     			List<String> statRecord = new ArrayList<String>();
@@ -63,9 +63,9 @@ public class StatsCsvFileWriter {
     			statRecord.add(String.valueOf(stat.getTotalClosedNonconformities()));
     			csvFilePrinter.printRecord(statRecord);
     		}
-    		
+
     		System.out.println("CSV file was created successfully!");
-    		
+
     	} catch (Exception e){
     		System.out.println("Error in CsvFileWriter!");
     		e.printStackTrace();
@@ -80,5 +80,5 @@ public class StatsCsvFileWriter {
     		}
     	}
     }
-    
+
 }

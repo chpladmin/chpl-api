@@ -19,17 +19,17 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_cqm_criterion")
 public class PendingCqmCriterionEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_cqm_criterion_id", nullable = false  )
 	private Long id;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "cqm_criterion_id", unique = true, nullable = true)
 	private CQMCriterionEntity mappedCriterion;
-	
+
 	@Column(name="pending_certified_product_id")
 	private Long pendingCertifiedProductId;
 
@@ -40,23 +40,23 @@ public class PendingCqmCriterionEntity {
 	@Basic( optional = false )
 	@Column( name = "pending_cqm_criterion_id", nullable = false  )
 	private Set<PendingCqmCertificationCriteriaEntity> certifications = new HashSet<PendingCqmCertificationCriteriaEntity>();
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}

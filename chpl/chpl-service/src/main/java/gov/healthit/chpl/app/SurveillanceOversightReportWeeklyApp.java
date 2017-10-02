@@ -33,7 +33,7 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
     public SurveillanceOversightReportWeeklyApp() {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
-    
+
 	public static void main(String[] args) throws Exception {
 		SurveillanceOversightReportWeeklyApp oversightApp = new SurveillanceOversightReportWeeklyApp();
 		oversightApp.setLocalContext();
@@ -55,7 +55,7 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 			allCps.setListings(allCertifiedProductDetails);
 			// Get Certification-specific set of data to send in emails
 			Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadMap = oversightApp.getCertificationDownloadResponse(allCertifiedProductDetails, acbs);
-			
+
 			// send emails
 			oversightApp.sendOncWeeklyEmail(oncRecipientSubscriptions, downloadFolder, allCps);
 			for(CertificationBodyDTO acb : acbs) {
@@ -65,20 +65,20 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 				oversightApp.sendAcbWeeklyEmail(acb, acbRecipientSubscriptions, downloadFolder, certificationDownloadMap);
 			}
 		}
-        
+
         context.close();
 	}
-	
+
 	@Override
 	protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
 		super.initiateSpringBeans(context);
 		this.setPresenter((SurveillanceOversightAllBrokenRulesCsvPresenter)context.getBean("surveillanceOversightAllBrokenRulesCsvPresenter"));
 		this.getPresenter().setProps(getProperties());
 	}
-	
+
 	private void sendOncWeeklyEmail(List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions, File downloadFolder, CertifiedProductDownloadResponse cpList) throws IOException, AddressException, MessagingException {
 		Properties props = getProperties();
-		
+
         String surveillanceReportFilename = props.getProperty("oversightEmailWeeklyFileName");
         File surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
     	String subject = props.getProperty("oversightEmailWeeklySubject");
@@ -100,36 +100,36 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 	        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
     	}
 	}
-	
+
 	private void sendAcbWeeklyEmail(CertificationBodyDTO acb, List<RecipientWithSubscriptionsDTO> acbRecipientSubscriptions, File downloadFolder, Map<CertificationBodyDTO, CertifiedProductDownloadResponse> acbDownloadMap) throws IOException, AddressException, MessagingException {
 		Properties props = getProperties();
-		
+
 		//get emails
     	Set<String> acbEmails = new HashSet<String>();
     	for(RecipientWithSubscriptionsDTO recip : acbRecipientSubscriptions) {
     		acbEmails.add(recip.getEmail());
     	}
-    	
+
     	List<File> files = new ArrayList<File>();
     	String fmtAcbName = acb.getName().replaceAll("\\W", "").toLowerCase();
     	String surveillanceReportFilename = fmtAcbName + "-" + props.getProperty("oversightEmailWeeklyFileName");
     	File surveillanceReportFile = new File(downloadFolder.getAbsolutePath() + File.separator + surveillanceReportFilename);
     	this.getPresenter().clear();
-    	
-    	// Generate this ACB's download file  	
+
+    	// Generate this ACB's download file
         this.getPresenter().presentAsFile(surveillanceReportFile, acbDownloadMap.get(acb));
-		files.add(surveillanceReportFile);	
+		files.add(surveillanceReportFile);
 
     	String subject = acb.getName() + " " + props.getProperty("oversightEmailWeeklySubject");
     	String[] bccEmail = acbEmails.toArray(new String[acbEmails.size()]);
-    	
+
     	// Get broken rules for email body
     	if(bccEmail.length > 0) {
 	        Map<SurveillanceOversightRule, Integer> brokenRules = this.getPresenter().getAllBrokenRulesCounts();
 	    	String htmlMessage = props.getProperty("oversightEmailAcbWeeklyHtmlMessage");
 	        htmlMessage += createHtmlEmailBody(brokenRules, props.getProperty("oversightEmailWeeklyNoContent"));
 	        this.getMailUtils().sendEmail(null, bccEmail, subject, htmlMessage, files, props);
-    	} 
+    	}
 	}
 
     private SurveillanceOversightAllBrokenRulesCsvPresenter getPresenter() {

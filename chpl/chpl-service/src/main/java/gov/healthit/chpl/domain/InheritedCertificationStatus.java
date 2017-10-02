@@ -16,28 +16,28 @@ public class InheritedCertificationStatus implements Serializable {
 	private static final long serialVersionUID = 2456763191912903082L;
 
 	/**
-	 * This variable indicates whether or not the certification issued was a result 
-	 * of an inherited certified status request. This variable is applicable for 2014 and 
-	 * 2015 Edition and a binary variable that takes either true or false value. 
+	 * This variable indicates whether or not the certification issued was a result
+	 * of an inherited certified status request. This variable is applicable for 2014 and
+	 * 2015 Edition and a binary variable that takes either true or false value.
 	 */
 	@XmlElement(name = "inherits")
 	private Boolean inherits;
-	
+
 	/**
 	 * The first-level parent listings that this listing inherits from
 	 */
 	@XmlElementWrapper(name = "parents", nillable = true, required = false)
 	@XmlElement(name = "parent")
 	private List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
-	
+
 	/**
 	 * The first-level child listings that inherit from this listings
 	 */
 	@XmlElementWrapper(name = "children", nillable = true, required = false)
 	@XmlElement(name = "child")
 	private List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
-	
-	
+
+
 	public List<CertifiedProduct> getParents() {
 		return parents;
 	}

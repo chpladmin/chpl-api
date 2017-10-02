@@ -6,7 +6,7 @@ import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.entity.AnnouncementEntity;
 
 public interface AnnouncementDAO {
-	
+
 	public AnnouncementDTO create(AnnouncementDTO acb) throws EntityRetrievalException, EntityCreationException;
 
 	public void delete(Long acbId);
@@ -23,5 +23,5 @@ public interface AnnouncementDAO {
 	public List<AnnouncementDTO> findAllCurrentAndFuture();
 
 	List<AnnouncementEntity> getAllEntitiesFuture();
-	
+
 }

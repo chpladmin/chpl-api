@@ -26,11 +26,11 @@ public abstract class DownloadableResourceCreatorApp extends App {
 	protected CertifiedProductDetailsManager cpdManager;
 	protected CertifiedProductDAO certifiedProductDao;
 	protected CertificationCriterionDAO criteriaDao;
-	
+
     public DownloadableResourceCreatorApp() {
     	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
-    
+
 	protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
 		this.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
 		this.setCertifiedProductDao((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
@@ -39,11 +39,11 @@ public abstract class DownloadableResourceCreatorApp extends App {
 
 	protected abstract List<CertifiedProductDetailsDTO> getRelevantListings();
 	protected abstract void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results) throws IOException;
-	
+
 	protected void runJob(String[] args) throws Exception {
 		File downloadFolder = getDownloadFolder();
 		List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-		
+
 		CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
 		for(CertifiedProductDetailsDTO currListing : listings) {
 			try {
@@ -51,15 +51,15 @@ public abstract class DownloadableResourceCreatorApp extends App {
 				Date start = new Date();
 				CertifiedProductSearchDetails product = getCpdManager().getCertifiedProductDetails(currListing.getId());
 				Date end = new Date();
-				logger.info("Got details for listing ID " + currListing.getId() + " in " + (end.getTime() - start.getTime())/1000 + " seconds"); 
-				results.getListings().add(product);				
+				logger.info("Got details for listing ID " + currListing.getId() + " in " + (end.getTime() - start.getTime())/1000 + " seconds");
+				results.getListings().add(product);
 			} catch(EntityRetrievalException ex) {
 				logger.error("Could not get details for certified product " + currListing.getId());
 			}
 		}
 		writeToFile(downloadFolder, results);
 	}
-	
+
 	public CertifiedProductDAO getCertifiedProductDao() {
 		return certifiedProductDao;
 	}

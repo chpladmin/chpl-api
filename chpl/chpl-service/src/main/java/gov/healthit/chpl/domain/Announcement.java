@@ -31,7 +31,7 @@ public class Announcement implements Serializable {
 		this.lastModifiedUser = dto.getLastModifiedUser();
 		this.creationDate = dto.getCreationDate();
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}

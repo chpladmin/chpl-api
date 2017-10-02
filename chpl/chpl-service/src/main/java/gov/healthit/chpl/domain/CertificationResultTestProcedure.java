@@ -19,23 +19,23 @@ import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestProcedure implements Serializable {
 	private static final long serialVersionUID = -8648559250833503194L;
-	
+
 	/**
 	 * Test Procedure to certification result mapping internal ID
 	 */
 	@XmlElement(required = true)
 	private Long id;
-	
+
 	/**
 	 * Test procedure internal ID
 	 */
 	@XmlElement(required = true)
 	private Long testProcedureId;
-	
+
 	/**
-	 * The test procedure version used for a given certification criteria. 
-	 * This variable is a string variable that does not take any restrictions on formatting 
-	 * or values and is applicable for 2014 and 2015 Edition. 
+	 * The test procedure version used for a given certification criteria.
+	 * This variable is a string variable that does not take any restrictions on formatting
+	 * or values and is applicable for 2014 and 2015 Edition.
 	 */
 	@XmlElement(required = true)
 	private String testProcedureVersion;
@@ -43,26 +43,26 @@ public class CertificationResultTestProcedure implements Serializable {
 	public CertificationResultTestProcedure() {
 		super();
 	}
-	
+
 	public CertificationResultTestProcedure(CertificationResultTestProcedureDTO dto) {
 		this.id = dto.getId();
 		this.testProcedureId = dto.getTestProcedureId();
 		this.testProcedureVersion = dto.getTestProcedureVersion();
 	}
-	
+
 	public boolean matches(CertificationResultTestProcedure anotherProc) {
 		boolean result = false;
-		if(this.getTestProcedureId() != null && anotherProc.getTestProcedureId() != null && 
+		if(this.getTestProcedureId() != null && anotherProc.getTestProcedureId() != null &&
 				this.getTestProcedureId().longValue() == anotherProc.getTestProcedureId().longValue()) {
 			result = true;
-		} else if(!StringUtils.isEmpty(this.getTestProcedureVersion()) && 
-				!StringUtils.isEmpty(anotherProc.getTestProcedureVersion()) && 
+		} else if(!StringUtils.isEmpty(this.getTestProcedureVersion()) &&
+				!StringUtils.isEmpty(anotherProc.getTestProcedureVersion()) &&
 				this.getTestProcedureVersion().equalsIgnoreCase(anotherProc.getTestProcedureVersion())) {
 			result = true;
 		}
 		return result;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

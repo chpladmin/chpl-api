@@ -40,9 +40,9 @@ public class CertifiedProductSearchResult implements Serializable {
 	private Integer countClosedSurveillance;
 	private Integer countOpenNonconformities;
 	private Integer countClosedNonconformities;
-	
+
 	private Long numMeaningfulUse;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -247,5 +247,5 @@ public class CertifiedProductSearchResult implements Serializable {
 	public void setDecertificationDate(Long decertificationDate) {
 		this.decertificationDate = decertificationDate;
 	}
-	
+
 }

@@ -11,7 +11,7 @@ public class ObjectMissingValidationErrorJSONObject implements Serializable {
 	private Collection<String> warningMessages;
 	private String objectId;
 	private Contact contact;
-	
+
 	public Collection<String> getErrorMessages() {
 		return errorMessages;
 	}

@@ -17,37 +17,37 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "certification_result_additional_software")
 public class CertificationResultAdditionalSoftwareEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certification_result_additional_software_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long certificationResultId;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column(name = "version")
 	private String version;
-	
+
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
-	
+
 	@Column(name = "justification")
 	private String justification;
 
 	@Column(name = "grouping")
 	private String grouping;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certified_product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private CertifiedProductDetailsEntity certifiedProduct;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -63,7 +63,7 @@ public class CertificationResultAdditionalSoftwareEntity {
 	public void setCertificationResultId(Long certificationResultId) {
 		this.certificationResultId = certificationResultId;
 	}
-	
+
 	public String getJustification() {
 		return justification;
 	}
@@ -99,19 +99,19 @@ public class CertificationResultAdditionalSoftwareEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

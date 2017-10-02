@@ -24,16 +24,16 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 	private static final Logger logger = LogManager.getLogger(ListingsByEditionResourceCreatorApp.class);
 
 	private String edition;
-	
+
 	public ListingsByEditionResourceCreatorApp() {
 		super();
 	}
-	
+
 	public ListingsByEditionResourceCreatorApp(String edition) {
 		this();
 		this.edition = edition;
 	}
-	
+
 	protected List<CertifiedProductDetailsDTO> getRelevantListings() {
 		logger.info("Finding all listings for edition " + getEdition() + ".");
 		Date start = new Date();
@@ -42,11 +42,11 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 		logger.info("Found the " + listingsForEdition.size() + " listings from " + getEdition() + " in " + (end.getTime() - start.getTime())/1000 + " seconds");
 		return listingsForEdition;
 	}
-	
+
 	protected void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results) throws IOException {
 		Date now = new Date();
 		//write out a download file for this edition
-		String xmlFilename = downloadFolder.getAbsolutePath() + File.separator + 
+		String xmlFilename = downloadFolder.getAbsolutePath() + File.separator +
 				"chpl-" + getEdition() + "-" + getTimestampFormat().format(now) + ".xml";
 		File xmlFile = new File(xmlFilename);
 		if(!xmlFile.exists()) {
@@ -60,9 +60,9 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 		xmlPresenter.presentAsFile(xmlFile, results);
 		Date end = new Date();
 		logger.info("Wrote " + getEdition() + " XML file in " + (end.getTime() - start.getTime())/1000 + " seconds");
-		
+
 		//present as csv
-		String csvFilename = downloadFolder.getAbsolutePath() + File.separator + 
+		String csvFilename = downloadFolder.getAbsolutePath() + File.separator +
 				"chpl-" + getEdition() + "-" + getTimestampFormat().format(now) + ".csv";
 		File csvFile = new File(csvFilename);
 		if(!csvFile.exists()) {
@@ -78,14 +78,14 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 		}
 		List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(getEdition());
 		csvPresenter.setApplicableCriteria(criteria);
-		
+
 		logger.info("Writing " + getEdition() + " CSV file");
 		start = new Date();
 		csvPresenter.presentAsFile(csvFile, results);
 		end = new Date();
 		logger.info("Wrote " + getEdition() + " CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 	}
-	
+
 	public String getEdition() {
 		return edition;
 	}
@@ -93,7 +93,7 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 	public void setEdition(String edition) {
 		this.edition = edition;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		if(args == null || args.length < 1) {
 			logger.error("ListingsByEditionResourceCreatorApp HELP: \n"
@@ -101,7 +101,7 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 					+ "\tListingsByEditionResourceCreatorApp expects an argument that is the edition (2011, 2014, or 2015)");
 			return;
 		}
-		
+
 		String edition = args[0].trim();
 		ListingsByEditionResourceCreatorApp app = new ListingsByEditionResourceCreatorApp(edition);
 		app.setLocalContext();

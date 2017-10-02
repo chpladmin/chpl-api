@@ -17,39 +17,39 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pending_certified_product_targeted_user")
 public class PendingCertifiedProductTargetedUserEntity {
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "pending_certified_product_targeted_user_id", nullable = false  )
 	private Long id;
-    
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingCertifiedProductEntity mappedProduct;
-	
+
 	@Column(name="pending_certified_product_id")
 	private Long pendingCertifiedProductId;
-	
+
     @Column(name = "targeted_user_id")
     private Long targetedUserId;
-    
+
     @Column(name = "targeted_user_name")
     private String name;
-    
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column(name = "deleted", nullable = false  )
 	private Boolean deleted;
@@ -125,6 +125,6 @@ public class PendingCertifiedProductTargetedUserEntity {
 	public void setTargetedUserId(Long targetedUserId) {
 		this.targetedUserId = targetedUserId;
 	}
-	
-	
+
+
 }

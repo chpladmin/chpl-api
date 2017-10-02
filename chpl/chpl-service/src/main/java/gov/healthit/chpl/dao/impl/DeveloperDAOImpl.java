@@ -79,13 +79,13 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 					ContactEntity contact = contactDao.create(dto.getContact());
 					if(contact != null) {
 						entity.setContactId(contact.getId());
-					}				
+					}
 				}
 			}
 
 			entity.setName(dto.getName());
 			entity.setWebsite(dto.getWebsite());
-			
+
 			if(dto.getDeleted() != null) {
 				entity.setDeleted(dto.getDeleted());
 			} else {
@@ -111,7 +111,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			}
 
 			create(entity);
-			
+
 			//create a status history entry - will be Active by default
 			if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
 				DeveloperStatusEventEntity initialDeveloperStatus = new DeveloperStatusEventEntity();
@@ -125,8 +125,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				entityManager.flush();
 			} else {
 				for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
-					if(providedDeveloperStatusEvent.getStatus() != null && 
-						!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) && 
+					if(providedDeveloperStatusEvent.getStatus() != null &&
+						!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) &&
 						providedDeveloperStatusEvent.getStatusDate() != null) {
 						DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
 						currDevStatus.setDeveloperId(entity.getId());
@@ -150,7 +150,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 					}
 				}
 			}
-			
+
 			Long id = entity.getId();
 			entityManager.clear();
 			return getById(id);
@@ -171,7 +171,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		entityManager.flush();
 		return new DeveloperACBMapDTO(mapping);
 	}
-	
+
 	@Override
 	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException {
 		DeveloperEntity entity = this.getEntityById(dto.getId());
@@ -205,7 +205,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				if(contact != null) {
 					entity.setContactId(dto.getContact().getId());
 					entity.setContact(contact);
-				}			
+				}
 			}
 		} else {
 			//if there's no contact at all, set the id to null
@@ -235,15 +235,15 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 
 		update(entity);
-		
-		//update the status history 
+
+		//update the status history
 		//check to make sure at least 1 status event was passed in, we can't delete them all
 		if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
 			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer " + entity.getName();
 			logger.error(msg);
 			throw new EntityCreationException(msg);
 		}
-		
+
 		//delete existing developer status history
 		for(DeveloperStatusEventEntity existingDeveloperStatusEvent : entity.getStatusEvents()) {
 			DeveloperStatusEventDTO newDeveloperStatusEvent = null;
@@ -270,12 +270,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			entityManager.merge(existingDeveloperStatusEvent);
 		}
 		entityManager.flush();
-		
+
 		//add passed-in developer status history
 		for(DeveloperStatusEventDTO providedDeveloperStatusEvent : dto.getStatusEvents()) {
-			if(providedDeveloperStatusEvent.getId() == null && 
-				providedDeveloperStatusEvent.getStatus() != null && 
-				!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) && 
+			if(providedDeveloperStatusEvent.getId() == null &&
+				providedDeveloperStatusEvent.getStatus() != null &&
+				!StringUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatusName()) &&
 				providedDeveloperStatusEvent.getStatusDate() != null) {
 				DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
 				currDevStatus.setDeveloperId(entity.getId());
@@ -294,7 +294,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				}
 			}
 		}
-		
+
 		entityManager.clear();
 		return getById(dto.getId());
 	}
@@ -302,8 +302,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 	@Override
 	public void updateStatus(DeveloperStatusEventDTO newStatusEvent) throws EntityCreationException {
 		//create a new status history entry
-		if(newStatusEvent.getStatus() != null && 
-			!StringUtils.isEmpty(newStatusEvent.getStatus().getStatusName()) && 
+		if(newStatusEvent.getStatus() != null &&
+			!StringUtils.isEmpty(newStatusEvent.getStatus().getStatusName()) &&
 			newStatusEvent.getStatusDate() != null) {
 			DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
 			currDevStatus.setDeveloperId(newStatusEvent.getDeveloperId());
@@ -326,7 +326,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			throw new EntityCreationException(msg);
 		}
 	}
-	
+
 	@Override
 	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto) {
 		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(dto.getDeveloperId(), dto.getAcbId());
@@ -379,7 +379,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		return dtos;
 	}
-	
+
 	public List<DeveloperDTO> findAllIncludingDeleted() {
 
 		List<DeveloperEntity> entities = getAllEntitiesIncludingDeleted();
@@ -397,8 +397,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		Query query = entityManager.createQuery("SELECT dt "
 				+ "FROM DeveloperTransparencyEntity dt "
 				, DeveloperTransparencyEntity.class);
-		
-		List<DeveloperTransparencyEntity> entityResults = query.getResultList();		
+
+		List<DeveloperTransparencyEntity> entityResults = query.getResultList();
 		List<DeveloperTransparency> domainResults = new ArrayList<DeveloperTransparency>();
 		for(DeveloperTransparencyEntity entity : entityResults) {
 			DeveloperTransparency domain = new DeveloperTransparency();
@@ -420,7 +420,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		return domainResults;
 	}
-	
+
 	@Override
 	public DeveloperACBMapDTO getTransparencyMapping(Long developerId, Long acbId) {
 		DeveloperACBMapEntity mapping = getTransparencyMappingEntity(developerId, acbId);
@@ -492,9 +492,9 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		}
 		return null;
 	}
-	
+
 	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
-		
+
 		Query getDecertifiedDevelopers =
 				entityManager.createQuery(
 				"FROM CertifiedProductDetailsEntity "
@@ -552,7 +552,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				logger.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
 			}
 		}
-		
+
 		return dtoList;
 	}
 
@@ -560,7 +560,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		entityManager.persist(entity);
 		entityManager.flush();
 	}
-	
+
 	private void update(DeveloperEntity entity) {
 		entityManager.merge(entity);
 		entityManager.flush();
@@ -577,7 +577,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				+ "where (NOT v.deleted = true)", DeveloperEntity.class).getResultList();
 		return result;
 	}
-	
+
 	private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
 		List<DeveloperEntity> result = entityManager.createQuery( "SELECT DISTINCT v from "
 				+ "DeveloperEntity v "
@@ -675,14 +675,14 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		List<DeveloperACBTransparencyMapEntity> result = entityManager.createQuery( "FROM DeveloperACBTransparencyMapEntity",DeveloperACBTransparencyMapEntity.class).getResultList();
 		return result;
 	}
-	
+
 	private DeveloperStatusEntity getStatusByName(String statusName) {
 		DeveloperStatusDAOImpl statusDaoImpl = (DeveloperStatusDAOImpl) statusDao;
 		List<DeveloperStatusEntity> statuses = statusDaoImpl.getEntitiesByName(statusName);
 		if(statuses == null || statuses.size() == 0) {
 			logger.error("Could not find the " + statusName + " status");
 			return null;
-		} 
+		}
 		return statuses.get(0);
 	}
 }

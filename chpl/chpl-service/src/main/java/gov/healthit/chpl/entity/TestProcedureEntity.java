@@ -14,13 +14,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "test_procedure")
 public class TestProcedureEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "test_procedure_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "version", nullable = false  )
 	private String version;
@@ -40,23 +40,23 @@ public class TestProcedureEntity {
 	public void setVersion(String version) {
 		this.version = version;
 	}
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

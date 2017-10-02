@@ -13,27 +13,27 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "surveillance_result")
 public class SurveillanceResultTypeEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "name")
 	private String name;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -49,7 +49,7 @@ public class SurveillanceResultTypeEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

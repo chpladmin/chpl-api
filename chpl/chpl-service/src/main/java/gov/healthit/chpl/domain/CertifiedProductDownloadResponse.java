@@ -16,11 +16,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(namespace = "http://chpl.healthit.gov/listings", name = "results")
 public class CertifiedProductDownloadResponse implements Serializable {
 	private static final long serialVersionUID = -9189179189014761036L;
-	
+
 	@XmlElementWrapper(name = "listings", nillable = false, required = true)
 	@XmlElement(name = "listing")
 	private List<CertifiedProductSearchDetails> listings;
-	
+
 	public CertifiedProductDownloadResponse(){
 		listings = new ArrayList<CertifiedProductSearchDetails>();
 	}

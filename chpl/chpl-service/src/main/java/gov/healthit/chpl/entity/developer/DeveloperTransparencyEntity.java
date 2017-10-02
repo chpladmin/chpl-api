@@ -9,50 +9,50 @@ import javax.persistence.Table;
 @Table(name = "developers_with_attestations")
 public class DeveloperTransparencyEntity {
 	private static final long serialVersionUID = -2928065796554477869L;
-	
-    @Id 
+
+    @Id
 	@Column(name = "vendor_id", nullable = false)
 	private Long id;
-    
+
     @Column(name = "vendor_name")
     private String name;
-    
+
     @Column(name = "status_name")
     private String status;
-    
+
     @Column(name = "countActiveListings")
     private Long countActiveListings;
-    
+
     @Column(name = "countRetiredListings")
     private Long countRetiredListings;
-    
+
     @Column(name = "countPendingListings")
     private Long countPendingListings;
-    
+
     @Column(name = "countWithdrawnByDeveloperListings")
     private Long countWithdrawnByDeveloperListings;
-    
+
     @Column(name = "countWithdrawnByOncAcbListings")
     private Long countWithdrawnByOncAcbListings;
-    
+
     @Column(name = "countSuspendedByOncAcbListings")
     private Long countSuspendedByOncAcbListings;
-    
+
     @Column(name = "countSuspendedByOncListings")
     private Long countSuspendedByOncListings;
-    
+
     @Column(name = "countTerminatedByOncListings")
     private Long countTerminatedByOncListings;
-    
+
     @Column(name = "countWithdrawnByDeveloperUnderSurveillanceListings")
     private Long countWithdrawnByDeveloperUnderSurveillanceListings;
-    
+
     @Column(name = "transparency_attestation_urls")
     private String transparencyAttestationUrls;
-    
+
     @Column(name = "attestations")
     private String acbAttestations;
-   
+
 	public DeveloperTransparencyEntity() {
 	}
 

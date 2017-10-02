@@ -13,45 +13,45 @@ public class CertificationResultDetailsEntity {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
-	
-    @Id 
+
+    @Id
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long id;
-    
+
     @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
-    
+
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
-    
+
     @Column(name = "success")
     private Boolean success;
-    
+
     @Column(name = "number")
     private String number;
-    
+
     @Column(name = "title")
     private String title;
-    
+
     @Column(name = "gap")
 	private Boolean gap;
-    
+
 	@Column(name = "sed")
 	private Boolean sed;
-	
+
 	@Column(name = "g1_success")
 	private Boolean g1Success;
-	
+
 	@Column(name = "g2_success")
 	private Boolean g2Success;
-	
+
 	@Column(name = "api_documentation")
 	private String apiDocumentation;
-	
+
 	@Column(name = "privacy_security_framework")
 	private String privacySecurityFramework;
-	
+
 	public Long getId() {
 		return id;
 	}

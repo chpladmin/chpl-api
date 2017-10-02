@@ -7,9 +7,9 @@ public class NotificationTypeRecipientMapDTO {
 	private Long id;
 	private RecipientDTO recipient;
 	private SubscriptionDTO subscription;
-	
+
 	public NotificationTypeRecipientMapDTO() {}
-	
+
 	public NotificationTypeRecipientMapDTO(NotificationTypeRecipientMapEntity entity) {
 		this.id = entity.getId();
 		if(entity.getRecipient() != null) {
@@ -18,7 +18,7 @@ public class NotificationTypeRecipientMapDTO {
 			this.recipient = new RecipientDTO();
 			this.recipient.setId(entity.getRecipientId());
 		}
-		
+
 		SubscriptionDTO subscription = new SubscriptionDTO();
 		if(entity.getNotificationType() != null) {
 			subscription.setNotificationType(new NotificationTypeDTO(entity.getNotificationType()));
@@ -27,7 +27,7 @@ public class NotificationTypeRecipientMapDTO {
 			notificationType.setId(entity.getNotificationTypeId());
 			subscription.setNotificationType(notificationType);
 		}
-		
+
 		if(entity.getAcb() != null) {
 			subscription.setAcb(new CertificationBodyDTO(entity.getAcb()));
 		} else if(entity.getAcbId() != null) {

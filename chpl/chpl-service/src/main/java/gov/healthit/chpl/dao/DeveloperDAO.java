@@ -14,7 +14,7 @@ public interface DeveloperDAO {
 	public DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
 
 	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException;
-	public void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException;	
+	public void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException;
 	public void delete(Long id) throws EntityRetrievalException;
 
 	public List<DeveloperDTO> findAll();

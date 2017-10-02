@@ -12,10 +12,10 @@ public class CertificationResultTestStandardDTO implements Serializable {
 	private String testStandardDescription;
 	private String testStandardName;
 	private Boolean deleted;
-	
+
 	public CertificationResultTestStandardDTO(){}
-	
-	public CertificationResultTestStandardDTO(CertificationResultTestStandardEntity entity){		
+
+	public CertificationResultTestStandardDTO(CertificationResultTestStandardEntity entity){
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testStandardId = entity.getTestStandardId();

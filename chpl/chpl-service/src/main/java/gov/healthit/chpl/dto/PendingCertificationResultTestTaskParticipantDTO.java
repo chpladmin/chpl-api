@@ -9,10 +9,10 @@ public class PendingCertificationResultTestTaskParticipantDTO implements Seriali
 	private Long id;
 	private Long pendingCertificationResultTestTaskId;
 	private PendingTestParticipantDTO testParticipant;
-	
+
 	public PendingCertificationResultTestTaskParticipantDTO() {
 	}
-	
+
 	public PendingCertificationResultTestTaskParticipantDTO(PendingCertificationResultTestTaskParticipantEntity entity) {
 		this();
 		this.setId(entity.getId());
@@ -21,7 +21,7 @@ public class PendingCertificationResultTestTaskParticipantDTO implements Seriali
 			this.testParticipant = new PendingTestParticipantDTO(entity.getTestParticipant());
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

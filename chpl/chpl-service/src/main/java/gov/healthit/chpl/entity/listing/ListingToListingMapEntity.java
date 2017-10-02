@@ -17,38 +17,38 @@ import javax.persistence.Table;
 @Table(name = "listing_to_listing_map")
 public class ListingToListingMapEntity {
 	private static final long serialVersionUID = -2928065796550375579L;
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "listing_to_listing_map_id", nullable = false  )
 	private Long id;
-        
+
     @Column( name = "parent_listing_id", nullable = false  )
 	private Long parentId;
-    
+
     @OneToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "parent_listing_id", insertable = false, updatable = false)
     private CertifiedProductDetailsEntity parent;
-    
+
     @Column( name = "child_listing_id", nullable = false  )
 	private Long childId;
-    
+
     @OneToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "child_listing_id", insertable = false, updatable = false)
     private CertifiedProductDetailsEntity child;
-   
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

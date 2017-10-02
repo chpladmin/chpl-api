@@ -4,9 +4,9 @@ public class CertifiedBodyStatistics extends Statistic {
 	private String certificationStatusName;
 	private Long totalDevelopersWithListings;
 	private Long totalListings;
-	
+
 	public CertifiedBodyStatistics(){}
-	
+
 	public String getCertificationStatusName() {
 		return certificationStatusName;
 	}

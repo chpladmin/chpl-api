@@ -6,7 +6,7 @@ import gov.healthit.chpl.domain.Contact;
 
 public class ObjectMissingValidationException extends ValidationException {
 	private static final long serialVersionUID = -6542978782670873229L;
-	
+
 	private String objectId;
 	private Contact contact;
 	private Date startDate;
@@ -15,9 +15,9 @@ public class ObjectMissingValidationException extends ValidationException {
 	public ObjectMissingValidationException() {
 		super();
 	}
-	
-	public ObjectMissingValidationException(String message, Contact contact, String objectId) { 
-		super(); 
+
+	public ObjectMissingValidationException(String message, Contact contact, String objectId) {
+		super();
 		errorMessages.add(message);
 		setContact(contact);
 		this.objectId = objectId;

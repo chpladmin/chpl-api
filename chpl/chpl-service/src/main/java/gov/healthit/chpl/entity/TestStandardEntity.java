@@ -17,38 +17,38 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "test_standard")
 public class TestStandardEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "test_standard_id")
 	private Long id;
-	
+
 	@Column( name = "number", nullable = false  )
 	private String name;
-	
+
 	@Column( name = "name", nullable = false  )
 	private String description;
-	
+
 	@Column(name = "certification_edition_id")
 	private Long certificationEditionId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
 	private CertificationEditionEntity certificationEdition;
-	
+
 	@Column( name="deleted", nullable = false  )
 	protected Boolean deleted;
 
 	@Column( name = "last_modified_user", nullable = false )
 	protected Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -64,7 +64,7 @@ public class TestStandardEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

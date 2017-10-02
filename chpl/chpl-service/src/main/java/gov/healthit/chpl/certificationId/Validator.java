@@ -19,7 +19,7 @@ public abstract class Validator {
 	protected Map<String, Integer> percents = new HashMap<String, Integer>();
 	protected Map<String, Integer> counts = new HashMap<String, Integer>();
 	protected boolean valid = false;
-	
+
 	public Map<String, Integer> getCounts() {
 		return this.counts;
 	}
@@ -27,7 +27,7 @@ public abstract class Validator {
 	public Map<String, Integer> getPercents() {
 		return this.percents;
 	}
-	
+
 	public Map<String, Integer> getCriteriaMet() {
 		return this.criteriaMet;
 	}
@@ -39,15 +39,15 @@ public abstract class Validator {
 	public Map<String, Integer> getDomainsMet() {
 		return this.domainsMet;
 	}
-	
+
 	public String getAttestationYear() {
 		return this.attestationYear;
 	}
-	
+
 	public boolean isValid() {
 		return this.valid;
 	}
-	
+
 	protected abstract boolean onValidate();
 	protected abstract boolean isCriteriaValid();
 	protected abstract boolean isCqmsValid();
@@ -64,7 +64,7 @@ public abstract class Validator {
 		this.calculatePercentages();
 		return this.isValid();
 	}
-	
+
 	//**********************************************************************
 	// collectMetData
 	//
@@ -73,7 +73,7 @@ public abstract class Validator {
 
 		// Collect the certification years
 		editionYears.addAll(years);
-		
+
 		// Collect criteria met
 		if (null != certDtos) {
 			criteriaMet = new HashMap<String, Integer>(certDtos.size());
@@ -91,13 +91,13 @@ public abstract class Validator {
 				if (null == verMet) {
 					verMet = new Integer(0);
 				}
-				
+
 				// ...store the version that's higher.
 				Integer ver = Integer.parseInt(cqmDetail.getVersion().substring(1));
 				if ( ver > verMet) {
 					cqmsMet.put(cqmDetail.getCmsId(), ver);
 				}
-				
+
 				if (null != cqmDetail.getDomain()) {
 					domainsMet.put(cqmDetail.getDomain(), 1);
 				}
@@ -105,31 +105,31 @@ public abstract class Validator {
 		}
 
 	}
-	
+
 	//**********************************************************************
 	// calculatePercentages
 	//
 	//**********************************************************************
 	protected void calculatePercentages() {
-		this.percents.put("criteriaMet", 
+		this.percents.put("criteriaMet",
 			(0 == this.counts.get("criteriaRequired")) ? 0 :
 				Math.min((int)Math.floor((this.counts.get("criteriaRequiredMet") * 100.0) / this.counts.get("criteriaRequired")), 100)
 		);
-		this.percents.put("cqmDomains", 
+		this.percents.put("cqmDomains",
 			(0 == this.counts.get("domainsRequired")) ? 0 :
 				Math.min((int)Math.floor((this.counts.get("domainsRequiredMet") * 100.0) / this.counts.get("domainsRequired")), 100)
 		);
-		this.percents.put("cqmsInpatient", 
+		this.percents.put("cqmsInpatient",
 			(0 == this.counts.get("cqmsInpatientRequired")) ? 0 :
 				Math.min((int)Math.floor((this.counts.get("cqmsInpatientRequiredMet") * 100.0) / this.counts.get("cqmsInpatientRequired")), 100)
 		);
-		this.percents.put("cqmsAmbulatory", 
+		this.percents.put("cqmsAmbulatory",
 			(0 == this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired")) ? 0 :
 				Math.min(
 				(int)Math.floor(
 					(
 						(
-							this.counts.get("cqmsAmbulatoryCoreRequiredMet") + 
+							this.counts.get("cqmsAmbulatoryCoreRequiredMet") +
 							Math.min(this.counts.get("cqmsAmbulatoryRequiredMet"), this.counts.get("cqmsAmbulatoryRequired"))
 						)
 						/ (double)(this.counts.get("cqmsAmbulatoryRequired") + this.counts.get("cqmsAmbulatoryCoreRequired"))
@@ -145,9 +145,9 @@ public abstract class Validator {
 	//**********************************************************************
 	public static String calculateAttestationYear(SortedSet<Integer> editionYears) {
 		String attYearString = null;
-		
+
 		if ((null != editionYears) && (editionYears.size() > 0)) {
-			
+
 			// Get the lowest year...
 			attYearString = editionYears.first().toString();
 
@@ -157,8 +157,8 @@ public abstract class Validator {
 				attYearString += "/" + editionYears.last().toString();
 			}
 		}
-		
+
 		return attYearString;
 	}
-	
+
 }

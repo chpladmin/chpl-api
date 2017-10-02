@@ -15,11 +15,11 @@ public class Job {
 	private Long startTime;
 	private Long endTime;
 	private List<String> messages;
-	
+
 	public Job() {
 		messages = new ArrayList<String>();
 	}
-	
+
 	public Job(JobDTO dto) {
 		this();
 		this.id = dto.getId();

@@ -6,7 +6,7 @@ public class ApiKeyRegistration implements Serializable {
 	private static final long serialVersionUID = 1101884894293322964L;
 	private String email;
 	private String name;
-	
+
 	public String getEmail() {
 		return email;
 	}
@@ -19,5 +19,5 @@ public class ApiKeyRegistration implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 }

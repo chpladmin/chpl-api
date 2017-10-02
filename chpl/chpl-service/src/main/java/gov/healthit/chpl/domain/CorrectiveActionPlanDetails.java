@@ -27,10 +27,10 @@ public class CorrectiveActionPlanDetails implements Serializable {
 	private String acbSummary;
 	private String developerSummary;
 	private String resolution;
-	
+
 	private List<CorrectiveActionPlanCertificationResult> certifications;
 	private List<CorrectiveActionPlanDocumentation> documentation;
-	
+
 	public CorrectiveActionPlanDetails() {
 		this.certifications = new ArrayList<CorrectiveActionPlanCertificationResult>();
 		this.documentation = new ArrayList<CorrectiveActionPlanDocumentation>();
@@ -50,7 +50,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
 		this.acbSummary = dto.getSummary();
 		this.developerSummary = dto.getDeveloperExplanation();
 		this.resolution = dto.getResolution();
-		
+
 	}
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
 		this(dto);
@@ -61,7 +61,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
 			}
 		}
 	}
-	
+
 	public CorrectiveActionPlanDetails(CorrectiveActionPlanDTO dto, List<CorrectiveActionPlanCertificationResultDTO> certDtos,
 			List<CorrectiveActionPlanDocumentationDTO> docs) {
 		this(dto, certDtos);
@@ -72,7 +72,7 @@ public class CorrectiveActionPlanDetails implements Serializable {
 			}
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -85,28 +85,28 @@ public class CorrectiveActionPlanDetails implements Serializable {
 	public void setCertifiedProductId(Long certifiedProductId) {
 		this.certifiedProductId = certifiedProductId;
 	}
-	
+
 	public Date getApprovalDate() {
 		return approvalDate;
 	}
 	public void setApprovalDate(Date approvalDate) {
 		this.approvalDate = approvalDate;
 	}
-	
+
 	public Date getActualCompletionDate() {
 		return actualCompletionDate;
 	}
 	public void setActualCompletionDate(Date actualCompletionDate) {
 		this.actualCompletionDate = actualCompletionDate;
 	}
-	
+
 	public List<CorrectiveActionPlanCertificationResult> getCertifications() {
 		return certifications;
 	}
 	public void setCertifications(List<CorrectiveActionPlanCertificationResult> certifications) {
 		this.certifications = certifications;
 	}
-	
+
 	public void setCertificationDtos(List<CorrectiveActionPlanCertificationResultDTO> certDtos) {
 		if(certDtos != null && certDtos.size() > 0) {
 			for(CorrectiveActionPlanCertificationResultDTO certDto : certDtos) {
@@ -115,14 +115,14 @@ public class CorrectiveActionPlanDetails implements Serializable {
 			}
 		}
 	}
-	
+
 	public List<CorrectiveActionPlanDocumentation> getDocumentation() {
 		return documentation;
 	}
 	public void setDocumentation(List<CorrectiveActionPlanDocumentation> documentation) {
 		this.documentation = documentation;
 	}
-	
+
 	public void setDocumentationDtos(List<CorrectiveActionPlanDocumentationDTO> docDtos) {
 		if(docDtos != null && docDtos.size() > 0) {
 			for(CorrectiveActionPlanDocumentationDTO docDto : docDtos) {

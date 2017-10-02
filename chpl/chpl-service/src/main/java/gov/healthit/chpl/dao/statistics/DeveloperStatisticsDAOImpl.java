@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements DeveloperStatisticsDAO {
 
 	/**
-	 * Total # of Unique Developers (Regardless of Edition) 
+	 * Total # of Unique Developers (Regardless of Edition)
 	 */
 	@Override
 	public Long getTotalDevelopers(DateRange dateRange) {
@@ -39,7 +39,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
 	}
-	
+
 	/**
 	 * Total # of Developers with 2014 Listings
 	 */
@@ -52,7 +52,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
 	}
-	
+
 	/**
 	 * Total # of Developers with 2015 Listings
 	 */
@@ -65,7 +65,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
 	}
-	
+
 	/**
 	 * Total # of Developers with Active 2015 Listings
 	 */
@@ -78,7 +78,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		return (Long) query.getSingleResult();
 	}
-	
+
 	/**
 	 * Total # of Developers with listings by certified body in each year
 	 */
@@ -103,7 +103,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 		}
 		return cbStats;
 	}
-	
+
 	/**
 	 * Total # of Developers with listings by certified body in each year
 	 */

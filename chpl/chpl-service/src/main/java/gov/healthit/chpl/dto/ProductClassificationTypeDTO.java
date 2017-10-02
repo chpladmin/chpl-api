@@ -14,11 +14,11 @@ public class ProductClassificationTypeDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 	private String name;
-	
+
 	public ProductClassificationTypeDTO(){}
-	
+
 	public ProductClassificationTypeDTO(ProductClassificationTypeEntity entity){
-		
+
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
@@ -26,9 +26,9 @@ public class ProductClassificationTypeDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
-		
+
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -72,7 +72,7 @@ public class ProductClassificationTypeDTO implements Serializable {
 		this.name = name;
 	}
 
-	
-	
+
+
 
 }

@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class TestTool extends KeyValueModel implements Serializable {
 	private static final long serialVersionUID = -3761135258251736516L;
 	private boolean retired;
-	
+
 	public TestTool() {
 		super();
 	}
@@ -15,12 +15,12 @@ public class TestTool extends KeyValueModel implements Serializable {
 	public TestTool(Long id, String name, String description) {
 		super(id, name, description);
 	}
-	
+
 	public boolean getRetired() {
 		return retired;
 	}
 	public void setRetired(boolean retired) {
 		this.retired = retired;
 	}
-	
+
 }

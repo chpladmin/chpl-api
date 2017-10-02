@@ -16,9 +16,9 @@ public class CertificationBodyDTO implements Serializable {
 	private String name;
 	private String website;
 	private AddressDTO address;
-	
+
 	public CertificationBodyDTO(){}
-	
+
 	public CertificationBodyDTO(CertificationBodyEntity entity){
 		this.id = entity.getId();
 		this.acbCode = entity.getAcbCode();
@@ -29,11 +29,11 @@ public class CertificationBodyDTO implements Serializable {
 		this.website = entity.getWebsite();
 		this.creationDate = entity.getCreationDate();
 		if(entity.getAddress() != null) {
-			this.address = new AddressDTO(entity.getAddress());			
+			this.address = new AddressDTO(entity.getAddress());
 		}
 	}
-	
-	
+
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -92,5 +92,5 @@ public class CertificationBodyDTO implements Serializable {
 	public void setAcbCode(String acbCode) {
 		this.acbCode = acbCode;
 	}
-	
+
 }

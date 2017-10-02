@@ -10,7 +10,7 @@ public interface ProductOwnerEntity {
 	public void setId(Long id);
 	public Long getDeveloperId();
 	public void setDeveloperId(Long developerId);
-	public Long getProductId(); 
+	public Long getProductId();
 	public void setProductId(Long productId);
 	public Date getTransferDate();
 	public void setTransferDate(Date transferDate);

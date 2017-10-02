@@ -39,9 +39,9 @@ public class Statistics implements Serializable {
 	private Long totalNonConformities;
 	private Long totalOpenNonconformities;
 	private Long totalClosedNonconformities;
-	
+
 	public Statistics(){}
-	
+
 	public Long getTotalDevelopers() {
 		return totalDevelopers;
 	}
@@ -261,5 +261,5 @@ public class Statistics implements Serializable {
 			List<CertifiedBodyStatistics> totalCPListingsEachYearByCertifiedBodyAndCertificationStatus) {
 		this.totalCPListingsEachYearByCertifiedBodyAndCertificationStatus = totalCPListingsEachYearByCertifiedBodyAndCertificationStatus;
 	}
-	
+
 }

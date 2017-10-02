@@ -19,5 +19,5 @@ public class ValidationErrorJSONObject implements Serializable {
 	public void setWarningMessages(Collection<String> warningMessages) {
 		this.warningMessages = warningMessages;
 	}
-	
+
 }

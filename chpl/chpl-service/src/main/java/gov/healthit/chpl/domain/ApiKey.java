@@ -8,7 +8,7 @@ public class ApiKey implements Serializable {
 	private String email;
 	private String key;
 
-	
+
 	public String getName() {
 		return name;
 	}
@@ -31,6 +31,6 @@ public class ApiKey implements Serializable {
 
 	public void setKey(String key) {
 		this.key = key;
-	}	
-	
+	}
+
 }

@@ -36,23 +36,23 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 	private static final String DATE_FORMAT = "yyyyMMdd";
 	private static final String FIRST_ROW_REGEX = "^NEW|UPDATE$";
 	private static final String SUBSEQUENT_ROW = "SUBELEMENT";
-	
+
 	@Autowired CertifiedProductDAO cpDao;
 	@Autowired SurveillanceDAO survDao;
-	
+
 	protected SimpleDateFormat dateFormatter;
 	private List<CSVRecord> record;
 	private CSVRecord heading;
 	private int lastDataIndex;
-	
+
 	public SurveillanceUploadHandler2015() {
 		dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 	}
-	
+
 	@Transactional(readOnly = true)
 	public Surveillance handle() throws InvalidArgumentsException {
 		Surveillance surv = new Surveillance();
-		
+
 		//get things that are only in the first row of the surveillance
 		for(CSVRecord record : getRecord()) {
 			String statusStr = record.get(0).trim();
@@ -60,34 +60,34 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				parseSurveillanceDetails(record, surv, statusStr.equalsIgnoreCase("UPDATE"));
 			}
 		}
-		
+
 		//if we got errors here, don't parse the rest of it
 		if(surv.getErrorMessages() == null || surv.getErrorMessages().size() == 0) {
 			//get surveilled requirements
 			for(CSVRecord record : getRecord()) {
 				String statusStr = record.get(0).trim();
-				if(!StringUtils.isEmpty(statusStr) && 
+				if(!StringUtils.isEmpty(statusStr) &&
 						(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
 					parseSurveilledRequirements(record, surv);
 				}
 			}
-				
+
 			//get nonconformities
 			for(CSVRecord record : getRecord()) {
 				String statusStr = record.get(0).trim();
-				if(!StringUtils.isEmpty(statusStr) && 
+				if(!StringUtils.isEmpty(statusStr) &&
 						(statusStr.toUpperCase().matches(FIRST_ROW_REGEX) || statusStr.toUpperCase().equalsIgnoreCase(SUBSEQUENT_ROW))) {
 					parseNonconformities(record, surv);
 				}
 			}
 		}
-				
+
 		return surv;
 	}
 
 	public void parseSurveillanceDetails(CSVRecord record, Surveillance surv, boolean isUpdate) {
 		int colIndex = 1;
-		
+
 		//find the chpl product this surveillance will be attached to
 		String chplId = record.get(colIndex++).trim();
 		if(chplId.startsWith("CHP-")) {
@@ -118,29 +118,29 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Exception looking up " + chplId, ex);
 			}
 		}
-		
+
 		if(surv.getCertifiedProduct() == null || surv.getCertifiedProduct().getId() == null) {
-			surv.getErrorMessages().add("Could not find Certified Product with unique id " + chplId);	
+			surv.getErrorMessages().add("Could not find Certified Product with unique id " + chplId);
 			return;
 		}
-		
+
 		//find the surveillance id in case this is an update
 		String survFriendlyId = record.get(colIndex++).trim();
 		if(isUpdate && StringUtils.isEmpty(survFriendlyId)) {
 			logger.error("Surveillance UPDATE specified but no surveillance ID was found");
 			surv.getErrorMessages().add("No surveillance ID was specified for surveillance update on certified product " + chplId);
 			return;
-		} else if (isUpdate && 
+		} else if (isUpdate &&
 				survDao.getSurveillanceByCertifiedProductAndFriendlyId(
 						surv.getCertifiedProduct().getId(), survFriendlyId) == null) {
-			logger.error("Could not find existing surveillance for update with certified product id " + 
+			logger.error("Could not find existing surveillance for update with certified product id " +
 					surv.getCertifiedProduct().getId() + " and friendly id " + survFriendlyId);
-			surv.getErrorMessages().add("No surveillance exists for certified product " + 
+			surv.getErrorMessages().add("No surveillance exists for certified product " +
 					surv.getCertifiedProduct().getChplProductNumber() + " and surveillance id " + survFriendlyId);
 			return;
 		}
 		surv.setSurveillanceIdToReplace(survFriendlyId);
-		
+
 		//surveillance begin date
 		String beginDateStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(beginDateStr)) {
@@ -151,7 +151,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse begin date '" + beginDateStr + "'.");
 			}
 		}
-		
+
 		//surveillance end date
 		String endDateStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(endDateStr)) {
@@ -162,7 +162,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse end date '" + endDateStr + "'.");
 			}
 		}
-		
+
 		//surveillance type
 		String survTypeStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(survTypeStr)) {
@@ -170,7 +170,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			type.setName(survTypeStr);
 			surv.setType(type);
 		}
-		
+
 		//randomized sites num used
 		String randomizedSitesUsedStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(randomizedSitesUsedStr)) {
@@ -182,10 +182,10 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			}
 		}
 	}
-	
+
 	public void parseSurveilledRequirements(CSVRecord record, Surveillance surv) {
 		SurveillanceRequirement req = new SurveillanceRequirement();
-		
+
 		int colIndex = 7;
 		//requirement type
 		String requirementTypeStr = record.get(colIndex++).trim();
@@ -194,11 +194,11 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			requirementType.setName(requirementTypeStr);
 			req.setType(requirementType);
 		}
-		
+
 		//the requirement
 		String requirementStr = record.get(colIndex++).trim();
 		req.setRequirement(requirementStr);
-		
+
 		//surveillance result
 		String resultTypeStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(resultTypeStr)) {
@@ -208,14 +208,14 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		}
 		surv.getRequirements().add(req);
 	}
-	
+
 	public void parseNonconformities(CSVRecord record, Surveillance surv) {
 		int ncBeginIndex = 10;
 		//if the first nonconformity cell is blank, forget it
 		if(StringUtils.isEmpty(record.get(ncBeginIndex).trim())) {
 			return;
 		}
-		
+
 		//find the requirement this nonconformity belongs to
 		int colIndex = 8;
 		SurveillanceRequirement req = null;
@@ -224,21 +224,21 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			Iterator<SurveillanceRequirement> reqIter = surv.getRequirements().iterator();
 			while(reqIter.hasNext() && req == null) {
 				SurveillanceRequirement currReq = reqIter.next();
-				if(currReq.getRequirement() != null && 
+				if(currReq.getRequirement() != null &&
 						currReq.getRequirement().equalsIgnoreCase(requirementStr)) {
 					req = currReq;
 				}
 			}
 		}
-		
+
 		//parse out all nonconformity data
 		colIndex = 10;
 		SurveillanceNonconformity nc = new SurveillanceNonconformity();
-		
+
 		//nonconformity type
 		String ncTypeStr = record.get(colIndex++).trim();
 		nc.setNonconformityType(ncTypeStr);
-		
+
 		//nonconformity status
 		String ncStatusStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(ncStatusStr)) {
@@ -246,7 +246,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			ncStatus.setName(ncStatusStr);
 			nc.setStatus(ncStatus);
 		}
-		
+
 		//date of determination
 		String determinationDateStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(determinationDateStr)) {
@@ -257,7 +257,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse determination date '" + determinationDateStr + "'.");
 			}
 		}
-		
+
 		//CAP approval date
 		String capApprovalDateStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(capApprovalDateStr)) {
@@ -267,8 +267,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			} catch(ParseException pex) {
 				logger.error("Could not parse CAP approval date '" + capApprovalDateStr + "'.");
 			}
-		}		
-		
+		}
+
 		//action begin date
 		String actionBeginDateStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(actionBeginDateStr)) {
@@ -279,7 +279,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse action begin date '" + actionBeginDateStr + "'.");
 			}
 		}
-		
+
 		//must complete date
 		String mustCompleteDateStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(mustCompleteDateStr)) {
@@ -290,7 +290,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse must complete date '" + mustCompleteDateStr + "'.");
 			}
 		}
-		
+
 		//was complete date
 		String wasCompleteDateStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(wasCompleteDateStr)) {
@@ -301,15 +301,15 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse was complete date '" + wasCompleteDateStr + "'.");
 			}
 		}
-		
+
 		//summary
 		String summary = record.get(colIndex++).trim();
 		nc.setSummary(summary);
-		
+
 		//findings
 		String findings = record.get(colIndex++).trim();
 		nc.setFindings(findings);
-		
+
 		//sites passed
 		String sitesPassedStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(sitesPassedStr)) {
@@ -320,7 +320,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse '" + sitesPassedStr + "' as an integer.");
 			}
 		}
-		
+
 		//total sites used
 		String totalSitesUsedStr = record.get(colIndex++).trim();
 		if(!StringUtils.isEmpty(totalSitesUsedStr)) {
@@ -331,20 +331,20 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				logger.error("Could not parse '" + totalSitesUsedStr + "' as an integer.");
 			}
 		}
-		
+
 		//developer explanation
 		String devExplanationStr = record.get(colIndex++).trim();
 		nc.setDeveloperExplanation(devExplanationStr);
-				
+
 		//resolution
 		String resolutionStr = record.get(colIndex++).trim();
 		nc.setResolution(resolutionStr);
-		
+
 		if(req != null) {
 			req.getNonconformities().add(nc);
 		}
 	}
-	
+
 	public List<CSVRecord> getRecord() {
 		return record;
 	}

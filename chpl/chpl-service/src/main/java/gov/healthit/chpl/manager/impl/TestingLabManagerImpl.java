@@ -49,16 +49,16 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	@Autowired CertificationBodyDAO certificationBodyDao;
 	@Autowired
 	private TestingLabDAO testingLabDAO;
-	
+
 	@Autowired UserManager userManager;
 	@Autowired UserDAO userDAO;
-	
+
 	@Autowired
 	private MutableAclService mutableAclService;
 
 	@Autowired
 	private ActivityManager activityManager;
-	
+
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -66,7 +66,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		String maxCode = testingLabDAO.getMaxCode();
 		int maxCodeValue = Integer.parseInt(maxCode);
 		int nextCodeValue = maxCodeValue + 1;
-		
+
 		String nextAtlCode = "";
 		if(nextCodeValue < 10) {
 			nextAtlCode = "0" + nextCodeValue;
@@ -76,48 +76,48 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 			nextAtlCode = nextCodeValue + "";
 		}
 		atl.setTestingLabCode(nextAtlCode);
-		
+
 		// Create the atl itself
 		TestingLabDTO result = testingLabDAO.create(atl);
 
 		// Grant the current principal administrative permission to the ATL
 		addPermission(result, Util.getCurrentUser().getId(),
 				BasePermission.ADMINISTRATION);
-		
+
 		logger.debug("Created testing lab " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
-		
+
 		String activityMsg = "Created Testing Lab "+result.getName();
-		
+
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, null, result);
-		
+
 		return result;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, admin)")
 	@CacheEvict(value = {CacheNames.SEARCH}, allEntries = true)
 	public TestingLabDTO update(TestingLabDTO atl) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateTestingLabException {
-		
+
 		TestingLabDTO toUpdate = testingLabDAO.getById(atl.getId());
 		TestingLabDTO result = testingLabDAO.update(atl);
-		
+
 		String activityMsg = "Updated testing lab " + atl.getName();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, toUpdate, result);
 		return result;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void undelete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 		TestingLabDTO original = testingLabDAO.getById(atl.getId(), true);
 		atl.setDeleted(false);
 		TestingLabDTO result = testingLabDAO.update(atl);
-		
+
 		String activityMsg = "Testing Lab " + original.getName() + " is no longer marked as deleted.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, original, result);	
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, result.getId(), activityMsg, original, result);
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	public void delete(TestingLabDTO atl) throws JsonProcessingException, EntityCreationException,
@@ -147,7 +147,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 					if(currTestingLab.getId().longValue() != atl.getId().longValue()) {
 						ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, currTestingLab.getId());
 						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-						
+
 						List<AccessControlEntry> entries = acl.getEntries();
 						for (int i = 0; i < entries.size(); i++) {
 							AccessControlEntry currEntry = entries.get(i);
@@ -157,13 +157,13 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 						}
 					}
 				}
-				
+
 				if(!userHasOtherAccesses) {
 					for(CertificationBodyDTO currAcb : allAcbs) {
 						//does the user have access to any ACBs?
 						ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, currAcb.getId());
 						MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-							
+
 						List<AccessControlEntry> entries = acl.getEntries();
 						for (int i = 0; i < entries.size(); i++) {
 							AccessControlEntry currEntry = entries.get(i);
@@ -171,35 +171,35 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 								userHasOtherAccesses = true;
 							}
 						}
-					}	
+					}
 				}
 			}
-			
+
 			if(!userHasOtherPermissions && !userHasOtherAccesses) {
 				UserDTO prevUser = currUser;
 				//if not, then mark their account disabled
 				currUser.setAccountEnabled(false);
 				UserDTO updatedUser = userManager.update(currUser);
 				//log this activity
-				activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, currUser.getId(), 
-						"Disabled account for " + currUser.getSubjectName() + " because it was only associated with a deleted ATL.", 
+				activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, currUser.getId(),
+						"Disabled account for " + currUser.getSubjectName() + " because it was only associated with a deleted ATL.",
 						prevUser, updatedUser);
 			}
 		}
-		
+
 		//delete the ATL
 		testingLabDAO.delete(atl.getId());
 		String activityMsg = "Deleted testing lab " + atl.getName();
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_ATL, atl.getId(), activityMsg, atl, null);
-		
+
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, admin) or hasPermission(#atl, read)")
 	public List<UserDTO> getAllUsersOnAtl(TestingLabDTO atl) {
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		Set<String> userNames = new HashSet<String>();
 		List<AccessControlEntry> entries = acl.getEntries();
 		for (int i = 0; i < entries.size(); i++) {
@@ -220,12 +220,12 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		}
 		return users;
 	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, read) or hasPermission(#atl, admin)") 
+
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasPermission(#atl, read) or hasPermission(#atl, admin)")
 	public List<Permission> getPermissionsForUser(TestingLabDTO atl, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		List<Permission> permissions = new ArrayList<Permission>();
 		List<AccessControlEntry> entries = acl.getEntries();
 		for (int i = 0; i < entries.size(); i++) {
@@ -236,7 +236,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		}
 		return permissions;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "(hasRole('ROLE_ATL_ADMIN') and hasPermission(#atl, admin))")
@@ -255,7 +255,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		if(user == null || user.getSubjectName() == null) {
 			throw new UserRetrievalException("Could not find user with id " + userId);
 		}
-		
+
 		Sid recipient = new PrincipalSid(user.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
 			logger.debug("User " + recipient + " already has permission on the testing lab " + atl.getName());
@@ -272,7 +272,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	public void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission) {
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		List<AccessControlEntry> entries = acl.getEntries();
 
 		//if the current size is only 1 we shouldn't be able to delete the last one right??
@@ -295,14 +295,14 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient) {
 		ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 		MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-		
+
 		//TODO: this seems very dangerous. I think we should somehow prevent from deleting the ADMIN user???
 		List<AccessControlEntry> entries = acl.getEntries();
 
 		for (int i = 0; i < entries.size(); i++) {
 			if(entries.get(i).getSid().equals(recipient)) {
 				acl.deleteAce(i);
-				//cannot just loop through deleting because the "entries" 
+				//cannot just loop through deleting because the "entries"
 				//list changes size each time that we delete one
 				//so we have to re-fetch the entries and re-set the counter
 				entries = acl.getEntries();
@@ -313,18 +313,18 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		mutableAclService.updateAcl(acl);
 		logger.debug("Deleted all testing lab " + atl.getName() + " ACL permissions for recipient " + recipient);
 	}
-	
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ATL_ADMIN')") 
+
+	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ATL_ADMIN')")
 	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
 		if(userDto.getSubjectName() == null) {
 			userDto = userDAO.getById(userDto.getId());
 		}
-		
+
 		List<TestingLabDTO> atls = testingLabDAO.findAll(false);
 		for(TestingLabDTO atl : atls) {
 			ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
 			MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
-			
+
 			List<Permission> permissions = new ArrayList<Permission>();
 			List<AccessControlEntry> entries = acl.getEntries();
 			for (int i = 0; i < entries.size(); i++) {
@@ -335,26 +335,26 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 			}
 		}
 	}
-	
+
 	private boolean permissionExists(MutableAcl acl, Sid recipient, Permission permission) {
 		boolean permissionExists = false;
 		List<AccessControlEntry> entries = acl.getEntries();
 
 		for (int i = 0; i < entries.size(); i++) {
 			AccessControlEntry currEntry = entries.get(i);
-			if(currEntry.getSid().equals(recipient) && 
+			if(currEntry.getSid().equals(recipient) &&
 					currEntry.getPermission().equals(permission)) {
 				permissionExists = true;
 			}
 		}
 		return permissionExists;
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<TestingLabDTO> getAll(boolean showDeleted) {
 		return testingLabDAO.findAll(showDeleted);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@PostFilter("hasRole('ROLE_ADMIN') or hasPermission(filterObject, 'read') or hasPermission(filterObject, admin)")
 	public List<TestingLabDTO> getAllForUser(boolean showDeleted) {
@@ -368,7 +368,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 	public TestingLabDTO getById(Long id) throws EntityRetrievalException {
 		return testingLabDAO.getById(id);
 	}
-	
+
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
 			+ "hasPermission(#id, 'gov.healthit.chpl.dto.TestingLabDTO', read) or "

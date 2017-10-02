@@ -29,7 +29,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 
 	@Override
 	public QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
-		
+
 		QmsStandardEntity entity = null;
 		if (dto.getId() != null){
 			entity = this.getEntityById(dto.getId());
@@ -52,29 +52,29 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 				throw new EntityCreationException(msg);
 			}
 			return new QmsStandardDTO(entity);
-		}		
+		}
 	}
 
 	@Override
 	public QmsStandardDTO update(QmsStandardDTO dto)
 			throws EntityRetrievalException {
 		QmsStandardEntity entity = this.getEntityById(dto.getId());
-		
+
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
-		
+
 		entity.setName(dto.getName());
-		
+
 		update(entity);
 		return new QmsStandardDTO(entity);
 	}
 
 	@Override
 	public void delete(Long id) throws EntityRetrievalException {
-		
+
 		QmsStandardEntity toDelete = getEntityById(id);
-		
+
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -87,37 +87,37 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 	public QmsStandardDTO getById(Long id) {
 		QmsStandardDTO dto = null;
 		QmsStandardEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new QmsStandardDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public QmsStandardDTO getByName(String name) {
-		
+
 		QmsStandardDTO dto = null;
 		List<QmsStandardEntity> entities = getEntitiesByName(name);
-		
+
 		if (entities != null && entities.size() > 0){
 			dto = new QmsStandardDTO(entities.get(0));
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<QmsStandardDTO> findAll() {
-		
+
 		List<QmsStandardEntity> entities = getAllEntities();
 		List<QmsStandardDTO> dtos = new ArrayList<QmsStandardDTO>();
-		
+
 		for (QmsStandardEntity entity : entities) {
 			QmsStandardDTO dto = new QmsStandardDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
 
 	@Override
@@ -127,8 +127,8 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 			result = getById(id);
 		} else if(!StringUtils.isEmpty(name)) {
 			result = getByName(name);
-		} 
-		
+		}
+
 		if(result == null){
 			QmsStandardDTO toCreate = new QmsStandardDTO();
 			toCreate.setName(name.trim());
@@ -136,28 +136,28 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		}
 		return result;
 	}
-	
+
 	private void create(QmsStandardEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
-		
+
 	}
-	
+
 	private void update(QmsStandardEntity entity) {
-		
-		entityManager.merge(entity);	
+
+		entityManager.merge(entity);
 		entityManager.flush();
 	}
-	
+
 	private List<QmsStandardEntity> getAllEntities() {
 		return entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) ", QmsStandardEntity.class).getResultList();
 	}
-	
+
 	private QmsStandardEntity getEntityById(Long id) {
-		
+
 		QmsStandardEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) AND (id = :entityid) ", QmsStandardEntity.class );
 		query.setParameter("entityid", id);
 		List<QmsStandardEntity> result = query.getResultList();
@@ -165,20 +165,20 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
-	
+
+
 	private List<QmsStandardEntity> getEntitiesByName(String name) {
-		
+
 		Query query = entityManager.createQuery( "from QmsStandardEntity where "
 				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", QmsStandardEntity.class );
 		query.setParameter("name", name.toUpperCase().trim());
 		List<QmsStandardEntity> result = query.getResultList();
-		
+
 		return result;
 	}
-	
-	
+
+
 }

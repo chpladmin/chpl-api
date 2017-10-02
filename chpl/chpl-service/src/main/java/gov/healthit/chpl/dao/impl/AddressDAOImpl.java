@@ -25,7 +25,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 
 	@Override
 	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {
-		
+
 		AddressEntity toInsert = new AddressEntity();
 		toInsert.setStreetLineOne(dto.getStreetLineOne());
 		toInsert.setStreetLineTwo(dto.getStreetLineTwo());
@@ -39,7 +39,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		} else {
 			toInsert.setDeleted(false);
 		}
-		
+
 		if(dto.getLastModifiedUser() != null) {
 			toInsert.setLastModifiedUser(dto.getLastModifiedUser());
 		} else {
@@ -54,8 +54,8 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 			toInsert.setCreationDate(dto.getCreationDate());
 		} else {
 			toInsert.setCreationDate(new Date());
-		}		
-		
+		}
+
 		entityManager.persist(toInsert);
 		entityManager.flush();
 		return toInsert;
@@ -70,27 +70,27 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		if(addressDto.getStreetLineOne() != null) {
 			address.setStreetLineOne(addressDto.getStreetLineOne());
 		}
-		
+
 		if(addressDto.getCity() != null) {
 			address.setCity(addressDto.getCity());
 		}
-		
+
 		if(addressDto.getState() != null) {
 			address.setState(addressDto.getState());
 		}
-		
+
 		if(addressDto.getZipcode() != null) {
 			address.setZipcode(addressDto.getZipcode());
 		}
-		
+
 		if(addressDto.getCountry() != null) {
 			address.setCountry(addressDto.getCountry());
 		}
-		
+
 		if(addressDto.getDeleted() != null) {
 			address.setDeleted(addressDto.getDeleted());
 		}
-		
+
 		if(addressDto.getLastModifiedUser() != null) {
 			address.setLastModifiedUser(addressDto.getLastModifiedUser());
 		} else {
@@ -101,7 +101,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		} else {
 			address.setLastModifiedDate(new Date());
 		}
-		
+
 		entityManager.merge(address);
 		return address;
 	}
@@ -110,7 +110,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 	@Transactional
 	public void delete(Long id) throws EntityRetrievalException {
 		AddressEntity toDelete = getEntityById(id);
-		
+
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -128,15 +128,15 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		}
 		return dtos;
 	}
-	
+
 	@Override
 	public AddressDTO getById(Long id) throws EntityRetrievalException {
-		
+
 		AddressDTO dto = null;
 		AddressEntity ae = this.getEntityById(id);
-		
+
 		if (ae != null){
-			dto = new AddressDTO(ae); 
+			dto = new AddressDTO(ae);
 		}
 		return dto;
 	}
@@ -149,7 +149,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		}
 		return new AddressDTO(ae);
 	}
-	
+
 	@Override
 	public AddressEntity mergeAddress(AddressDTO addressDto) throws EntityRetrievalException, EntityCreationException {
 		AddressEntity address = null;
@@ -168,43 +168,43 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		} else {
 			address = getEntityByValues(addressDto);
 		}
-		
+
 		if(address == null) {
 			//if we didn't find it, create and save a new address entity before setting it on the developer
 			address = create(addressDto);
 		}
-		
+
 		return address;
 	}
-	
+
 	private List<AddressEntity> findAllEntities() {
 		Query query = entityManager.createQuery("SELECT a from AddressEntity a where (NOT a.deleted = true)");
 		return query.getResultList();
 	}
-	
+
 	public AddressEntity getEntityById(Long id) throws EntityRetrievalException {
 		AddressEntity entity = null;
-		
+
 		Query query = entityManager.createQuery( "from AddressEntity a where (NOT deleted = true) AND (address_id = :entityid) ", AddressEntity.class );
 		query.setParameter("entityid", id);
 		List<AddressEntity> result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate address id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
+
 	private AddressEntity getEntityByValues(AddressDTO address) {
 		return this.searchEntities(address);
 	}
-	
+
 	private AddressEntity searchEntities(AddressDTO toSearch) {
 		AddressEntity entity = null;
-		
+
 		String addressQuery = "from AddressEntity a where (NOT deleted = true) "
 				+ " AND (street_line_1 = :line1) "
 				+ " AND (city = :city)"
@@ -225,13 +225,13 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		if(toSearch.getStreetLineTwo() != null) {
 			query.setParameter("line2", toSearch.getStreetLineTwo());
 		}
-		
+
 		List<AddressEntity> result = query.getResultList();
-		
+
 		if (result.size() >= 1){
 			entity = result.get(0);
-		} 
-		
+		}
+
 		return entity;
 	}
 }

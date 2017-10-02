@@ -29,12 +29,12 @@ import gov.healthit.chpl.manager.JobManager;
 public class JobManagerImpl extends ApplicationObjectSupport implements JobManager {
 	private static final Logger logger = LogManager.getLogger(JobManagerImpl.class);
 	private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
-	
+
 	@Autowired private Environment env;
 	@Autowired private TaskExecutor taskExecutor;
 	@Autowired private RunnableJobFactory jobFactory;
 	@Autowired private JobDAO jobDao;
-	
+
 	@Transactional
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
 	public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException {
@@ -42,17 +42,17 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 		if(user == null || user.getId() == null) {
 			throw new EntityRetrievalException("A user is required.");
 		}
-		
+
 		JobDTO created = jobDao.create(job);
 		return created;
 	}
-	
+
 	@Transactional
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
 	public JobDTO getJobById(Long jobId) {
 		return jobDao.getById(jobId);
 	}
-	
+
 	/**
 	 * Gets the jobs that are either currently running or have completed within a configurable window of time
 	 */
@@ -67,14 +67,14 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 			logger.error("Could not format " + completedJobThresholdDaysStr + " as an integer. Defaulting to 0 instead.");
 		}
 		Long earliestCompletedJobMillis = System.currentTimeMillis() - (completedJobThresholdDays * MILLIS_PER_DAY);
-		
+
 		Long userId = null;
 		if(!Util.isUserRoleAdmin()) {
 			userId = Util.getCurrentUser().getId();
 		}
 		return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date(), userId);
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -84,13 +84,13 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 		}
 		return jobDao.getByUser(user.getId());
 	}
-	
+
 	@Override
 	@Transactional
 	public List<JobTypeDTO> getAllJobTypes() {
 		return jobDao.findAllTypes();
 	}
-	
+
 	@Override
 	@Transactional
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
@@ -101,14 +101,14 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 		} catch(NoJobTypeException ex) {
 			logger.error("No runnable job for job type " + job.getJobType().getName() + " found.");
 		}
-		
+
 		if(runnableJob == null) {
 			try {
 				jobDao.delete(job.getId());
 			} catch(Exception ignore) {}
 			return false;
 		}
-		
+
 		taskExecutor.execute(runnableJob);
 		return true;
 	}

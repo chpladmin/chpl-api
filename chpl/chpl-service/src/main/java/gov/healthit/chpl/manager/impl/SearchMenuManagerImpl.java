@@ -78,22 +78,22 @@ import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Service("searchMenuManager")
 public class SearchMenuManagerImpl implements SearchMenuManager {
-	
+
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
-	
+
 	@Autowired
 	private CQMCriterionDAO cqmCriterionDAO;
-	
+
 	@Autowired
 	private CertificationCriterionDAO certificationCriterionDAO;
-	
+
 	@Autowired
 	private CertificationEditionDAO certificationEditionDAO;
-	
+
 	@Autowired
 	private CertificationStatusDAO certificationStatusDao;
-	
+
 	@Autowired private EducationTypeDAO educationTypeDao;
 	@Autowired private AgeRangeDAO ageRangeDao;
 	@Autowired private TestFunctionalityDAO testFuncDao;
@@ -105,25 +105,25 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Autowired private TargetedUserDAO tuDao;
 	@Autowired private DeveloperStatusDAO devStatusDao;
 	@Autowired private SurveillanceDAO survDao;
-	
+
 	@Autowired
 	private ProductClassificationTypeDAO productClassificationTypeDAO;
-	
+
 	@Autowired
 	private ProductDAO productDAO;
-	
+
 	@Autowired
 	private JobDAO jobDao;
-	
+
 	@Autowired
 	private PracticeTypeDAO practiceTypeDAO;
-	
+
 	@Autowired
 	private DeveloperDAO developerDAO;
-	
+
 	@Autowired private MacraMeasureDAO macraDao;
 	@Autowired private NotificationDAO notificationDao;
-	
+
 	@Transactional
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
 	public Set<NotificationType> getNotificationTypes() {
@@ -146,19 +146,19 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		}
 		return results;
 	}
-	
+
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CLASSIFICATION_NAMES)
 	public Set<KeyValueModel> getClassificationNames() {
-		
+
 		List<ProductClassificationTypeDTO> classificationTypes = productClassificationTypeDAO.findAll();
 		Set<KeyValueModel> classificationTypeNames = new HashSet<KeyValueModel>();
-		
+
 		for (ProductClassificationTypeDTO dto : classificationTypes) {
 			classificationTypeNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
-		
+
 		return classificationTypeNames;
 	}
 
@@ -166,12 +166,12 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Override
 	@Cacheable(CacheNames.EDITION_NAMES)
 	public Set<KeyValueModel> getEditionNames(Boolean simple) {
-		
+
 		List<CertificationEditionDTO> certificationEditions = certificationEditionDAO.findAll();
 		Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
-		
+
 		for (CertificationEditionDTO dto : certificationEditions) {
-			
+
 			if (simple){
 				if (dto.getYear().equals("2011")){
 					continue;
@@ -179,7 +179,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			}
 			editionNames.add(new KeyValueModel(dto.getId(), dto.getYear()));
 		}
-		
+
 		return editionNames;
 	}
 
@@ -189,26 +189,26 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	public Set<KeyValueModel> getCertificationStatuses() {
 		List<CertificationStatusDTO> certificationStatuses = certificationStatusDao.findAll();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-		
+
 		for(CertificationStatusDTO dto : certificationStatuses) {
 			results.add(new KeyValueModel(dto.getId(), dto.getStatus()));
 		}
-		
+
 		return results;
 	}
-	
+
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.PRACTICE_TYPE_NAMES)
 	public Set<KeyValueModel> getPracticeTypeNames() {
-		
+
 		List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDAO.findAll();
 		Set<KeyValueModel> practiceTypeNames = new HashSet<KeyValueModel>();
-		
+
 		for (PracticeTypeDTO dto : practiceTypeDTOs) {
 			practiceTypeNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
-		
+
 		return practiceTypeNames;
 	}
 
@@ -216,14 +216,14 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Override
 	@Cacheable(CacheNames.PRODUCT_NAMES)
 	public Set<KeyValueModelStatuses> getProductNames() {
-		
+
 		List<ProductDTO> productDTOs = this.productDAO.findAll();
 		Set<KeyValueModelStatuses> productNames = new HashSet<KeyValueModelStatuses>();
-		
+
 		for (ProductDTO dto : productDTOs) {
 			productNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
 		}
-		
+
 		return productNames;
 	}
 
@@ -231,14 +231,14 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Override
 	@Cacheable(CacheNames.DEVELOPER_NAMES)
 	public Set<KeyValueModelStatuses> getDeveloperNames() {
-		
+
 		List<DeveloperDTO> developerDTOs = this.developerDAO.findAll();
 		Set<KeyValueModelStatuses> developerNames = new HashSet<KeyValueModelStatuses>();
-		
+
 		for (DeveloperDTO dto : developerDTOs) {
 			developerNames.add(new KeyValueModelStatuses(dto.getId(), dto.getName(), dto.getStatuses()));
 		}
-		
+
 		return developerNames;
 	}
 
@@ -246,92 +246,92 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Override
 	@Cacheable(CacheNames.CERT_BODY_NAMES)
 	public Set<KeyValueModel> getCertBodyNames(Boolean showDeleted) {
-		
+
 		List<CertificationBodyDTO> dtos = this.certificationBodyDAO.findAll(showDeleted);
 		Set<KeyValueModel> acbNames = new HashSet<KeyValueModel>();
-		
+
 		for (CertificationBodyDTO dto : dtos) {
 			acbNames.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
-		
+
 		return acbNames;
 	}
-	
+
 	@Transactional
 	@Override
 	public Set<KeyValueModel> getEducationTypes() {
-		
+
 		List<EducationTypeDTO> dtos = this.educationTypeDao.getAll();
 		Set<KeyValueModel> educationTypes = new HashSet<KeyValueModel>();
-		
+
 		for (EducationTypeDTO dto : dtos) {
 			educationTypes.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
-		
+
 		return educationTypes;
 	}
-	
+
 	@Transactional
 	@Override
 	public Set<KeyValueModel> getAgeRanges() {
-		
+
 		List<AgeRangeDTO> dtos = this.ageRangeDao.getAll();
 		Set<KeyValueModel> ageRanges = new HashSet<KeyValueModel>();
-		
+
 		for (AgeRangeDTO dto : dtos) {
 			ageRanges.add(new KeyValueModel(dto.getId(), dto.getAge()));
 		}
-		
+
 		return ageRanges;
 	}
-	
+
 	@Transactional
 	@Override
 	public Set<TestFunctionality> getTestFunctionality() {
-		
+
 		List<TestFunctionalityDTO> dtos = this.testFuncDao.findAll();
 		Set<TestFunctionality> testFuncs = new HashSet<TestFunctionality>();
-		
+
 		for (TestFunctionalityDTO dto : dtos) {
 			testFuncs.add(new TestFunctionality(dto));
 		}
-		
+
 		return testFuncs;
 	}
-	
+
 	@Transactional
 	@Override
 	public Set<KeyValueModel> getTestTools() {
-		
+
 		List<TestToolDTO> dtos = this.testToolsDao.findAll();
 		Set<KeyValueModel> testTools = new HashSet<KeyValueModel>();
-		
+
 		for (TestToolDTO dto : dtos) {
 			TestTool tt = new TestTool(dto.getId(), dto.getName(), dto.getDescription());
 			tt.setRetired(dto.isRetired());
 			testTools.add(tt);
 		}
-		
+
 		return testTools;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getDeveloperStatuses() {
 		List<DeveloperStatusDTO> dtos = this.devStatusDao.findAll();
 		Set<KeyValueModel> statuses = new HashSet<KeyValueModel>();
-		
+
 		for (DeveloperStatusDTO dto : dtos) {
 			statuses.add(new KeyValueModel(dto.getId(), dto.getStatusName()));
 		}
-		
+
 		return statuses;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getAccessibilityStandards() {
 		List<AccessibilityStandardDTO> dtos = this.asDao.findAll();
 		Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
-		
+
 		for(AccessibilityStandardDTO dto : dtos) {
 			standards.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
@@ -342,7 +342,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	public Set<KeyValueModel> getUcdProcesses() {
 		List<UcdProcessDTO> dtos = this.ucdDao.findAll();
 		Set<KeyValueModel> ucds = new HashSet<KeyValueModel>();
-		
+
 		for(UcdProcessDTO dto : dtos) {
 			ucds.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
@@ -353,18 +353,18 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	public Set<KeyValueModel> getQmsStandards() {
 		List<QmsStandardDTO> dtos = this.qmsDao.findAll();
 		Set<KeyValueModel> qms = new HashSet<KeyValueModel>();
-		
+
 		for(QmsStandardDTO dto : dtos) {
 			qms.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
 		return qms;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getTargetedUesrs() {
 		List<TargetedUserDTO> dtos = this.tuDao.findAll();
 		Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
-		
+
 		for(TargetedUserDTO dto : dtos) {
 			standards.add(new KeyValueModel(dto.getId(), dto.getName()));
 		}
@@ -374,32 +374,32 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Transactional
 	@Override
 	public Set<TestStandard> getTestStandards() {
-		
+
 		List<TestStandardDTO> dtos = this.testStandardDao.findAll();
 		Set<TestStandard> testStds = new HashSet<TestStandard>();
-		
+
 		for (TestStandardDTO dto : dtos) {
 			testStds.add(new TestStandard(dto));
 		}
-		
+
 		return testStds;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getSurveillanceTypes() {
 		List<SurveillanceType> daoResults = survDao.getAllSurveillanceTypes();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-		
+
 		for(SurveillanceType result : daoResults) {
 			results.add(new KeyValueModel(result.getId(), result.getName()));
 		}
 		return results;
 	}
-	
+
 	@Override
 	public SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
 		SurveillanceRequirementOptions result = new SurveillanceRequirementOptions();
-		
+
 		List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
 		for(CertificationCriterionDTO crit : criteria2014) {
 			result.getCriteriaOptions2014().add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
@@ -408,16 +408,16 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		for(CertificationCriterionDTO crit : criteria2015) {
 			result.getCriteriaOptions2015().add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
 		}
-		
+
 		result.getTransparencyOptions().add(RequirementTypeEnum.K1.getName());
 		result.getTransparencyOptions().add(RequirementTypeEnum.K2.getName());
 		return result;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getNonconformityTypeOptions() {
 		Set<KeyValueModel> result = new HashSet<KeyValueModel>();
-		
+
 		List<CertificationCriterionDTO> criteria2014 = certificationCriterionDAO.findByCertificationEditionYear("2014");
 		for(CertificationCriterionDTO crit : criteria2014) {
 			result.add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
@@ -426,61 +426,61 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 		for(CertificationCriterionDTO crit : criteria2015) {
 			result.add(new KeyValueModel(crit.getId(), crit.getNumber(), crit.getDescription()));
 		}
-		
+
 		result.add(new KeyValueModel(null, NonconformityType.K1.getName()));
 		result.add(new KeyValueModel(null, NonconformityType.K2.getName()));
 		result.add(new KeyValueModel(null, NonconformityType.L.getName()));
 		result.add(new KeyValueModel(null, NonconformityType.OTHER.getName()));
 		return result;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getSurveillanceRequirementTypes() {
 		List<SurveillanceRequirementType> daoResults = survDao.getAllSurveillanceRequirementTypes();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-		
+
 		for(SurveillanceRequirementType result : daoResults) {
 			results.add(new KeyValueModel(result.getId(), result.getName()));
 		}
 		return results;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getSurveillanceResultTypes() {
 		List<SurveillanceResultType> daoResults = survDao.getAllSurveillanceResultTypes();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-		
+
 		for(SurveillanceResultType result : daoResults) {
 			results.add(new KeyValueModel(result.getId(), result.getName()));
 		}
 		return results;
 	}
-	
+
 	@Override
 	public Set<KeyValueModel> getNonconformityStatusTypes() {
 		List<SurveillanceNonconformityStatus> daoResults = survDao.getAllSurveillanceNonconformityStatusTypes();
 		Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-		
+
 		for(SurveillanceNonconformityStatus result : daoResults) {
 			results.add(new KeyValueModel(result.getId(), result.getName()));
 		}
 		return results;
 	}
-	
+
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.MACRA_MEASURES)
 	public Set<CriteriaSpecificDescriptiveModel> getMacraMeasures() {
 		List<MacraMeasureDTO> measureDtos = macraDao.findAll();
 		Set<CriteriaSpecificDescriptiveModel> measures = new HashSet<CriteriaSpecificDescriptiveModel>();
-		
+
 		for (MacraMeasureDTO dto : measureDtos) {
-			measures.add(new CriteriaSpecificDescriptiveModel(dto.getId(), dto.getValue(), dto.getName(), 
+			measures.add(new CriteriaSpecificDescriptiveModel(dto.getId(), dto.getValue(), dto.getName(),
 					dto.getDescription(), new CertificationCriterion(dto.getCriteria())));
 		}
 		return measures;
 	}
-	
+
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)
@@ -488,15 +488,15 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
-		
+
 		for (CertificationCriterionDTO dto : dtos) {
 			criterionNames.add( new DescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle()));
 		}
-		
+
 		return criterionNames;
-		
+
 	}
-	
+
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
@@ -504,13 +504,13 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
 		Set<CertificationCriterion> criterion = new HashSet<CertificationCriterion>();
-		
+
 		for (CertificationCriterionDTO dto : dtos) {
 			criterion.add( new CertificationCriterion(dto));
 		}
-		
+
 		return criterion;
-		
+
 	}
 	
 	@Transactional

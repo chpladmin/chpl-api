@@ -13,12 +13,12 @@ import javax.naming.spi.InitialContextFactoryBuilder;
 public class LocalContext extends InitialContext implements InitialContextFactoryBuilder, InitialContextFactory {
 
 	Map<Object,Object> dataSources;
-	
+
 	LocalContext() throws NamingException {
 		super();
 		dataSources = new HashMap<Object,Object>();
 	}
-	
+
 	public void addDataSource(String name, String connectionString, String username, String password) {
 		this.
 		dataSources.put(name, new LocalDataSource(connectionString,username,password));
@@ -39,5 +39,5 @@ public class LocalContext extends InitialContext implements InitialContextFactor
 	public Object lookup(String name) throws NamingException {
 		Object ret = dataSources.get(name);
 		return (ret != null) ? ret : super.lookup(name);
-	}	
+	}
 }

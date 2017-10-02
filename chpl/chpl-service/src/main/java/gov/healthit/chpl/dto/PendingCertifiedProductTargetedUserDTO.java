@@ -10,19 +10,19 @@ public class PendingCertifiedProductTargetedUserDTO implements Serializable {
 	private Long pendingCertifiedProductId;
 	private Long targetedUserId;
 	private String name;
-	
+
 	public PendingCertifiedProductTargetedUserDTO() {}
-	
+
 	public PendingCertifiedProductTargetedUserDTO(PendingCertifiedProductTargetedUserEntity entity) {
 		this.setId(entity.getId());
-				
+
 		if(entity.getMappedProduct() != null) {
 			this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
 		}
 		this.setTargetedUserId(entity.getTargetedUserId());
 		this.setName(entity.getName());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -10,9 +10,9 @@ public class CertifiedProductAccessibilityStandardDTO implements Serializable {
 	private Long certifiedProductId;
 	private Long accessibilityStandardId;
 	private String accessibilityStandardName;
-	
+
 	public CertifiedProductAccessibilityStandardDTO(){}
-	
+
 	public CertifiedProductAccessibilityStandardDTO(CertifiedProductAccessibilityStandardEntity entity){
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
@@ -22,7 +22,7 @@ public class CertifiedProductAccessibilityStandardDTO implements Serializable {
 		}
 	}
 
-	
+
 	public Long getId() {
 		return id;
 	}

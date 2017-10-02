@@ -19,33 +19,33 @@ import gov.healthit.chpl.auth.entity.UserPermissionEntity;
 @Immutable
 @Table(name = "notification_type_permission")
 public class NotificationPermissionEntity {
-	
-	@Id 
+
+	@Id
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "notification_type_id")
 	private Long notificationTypeId;
-	
+
 	@Column(name = "permission_id")
 	private String permissionId;
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "permission_id", insertable = false, updatable = false)
 	private UserPermissionEntity permission;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

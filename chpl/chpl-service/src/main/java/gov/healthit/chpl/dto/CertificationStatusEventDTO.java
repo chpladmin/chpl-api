@@ -16,11 +16,11 @@ public class CertificationStatusEventDTO implements Serializable {
 	private Boolean deleted;
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
-	
+
 	public CertificationStatusEventDTO(){}
-	
+
 	public CertificationStatusEventDTO(CertificationStatusEventEntity entity){
-		
+
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.eventDate = entity.getEventDate();
@@ -34,16 +34,16 @@ public class CertificationStatusEventDTO implements Serializable {
 		this.deleted = entity.getDeleted();
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
-		
+
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -89,5 +89,5 @@ public class CertificationStatusEventDTO implements Serializable {
 	public void setStatus(CertificationStatusDTO status) {
 		this.status = status;
 	}
-	
+
 }

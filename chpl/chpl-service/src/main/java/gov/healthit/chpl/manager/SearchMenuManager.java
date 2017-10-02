@@ -43,5 +43,5 @@ public interface SearchMenuManager {
 	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException;
 	public Set<CertificationCriterion> getCertificationCriterion();
 	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple);
-	
+
 }

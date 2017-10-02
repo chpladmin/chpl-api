@@ -11,15 +11,15 @@ public class CertificationResultTestProcedureDTO implements Serializable {
 	private Long testProcedureId;
 	private String testProcedureVersion;
 	private Boolean deleted;
-	
+
 	public CertificationResultTestProcedureDTO(){}
-	
-	public CertificationResultTestProcedureDTO(CertificationResultTestProcedureEntity entity){		
+
+	public CertificationResultTestProcedureDTO(CertificationResultTestProcedureEntity entity){
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testProcedureId = entity.getTestProcedureId();
 		if(entity.getTestProcedure() != null) {
-			this.testProcedureVersion = entity.getTestProcedure().getVersion();	
+			this.testProcedureVersion = entity.getTestProcedure().getVersion();
 		}
 		this.deleted = entity.getDeleted();
 	}

@@ -24,7 +24,7 @@ public interface SurveillanceManager extends QuestionableActivityHandler {
 	public File getDownloadFile(String filename) throws IOException;
 	public File getProtectedDownloadFile(String filename) throws IOException;
 	public void validate(Surveillance surveillance);
-	
+
 	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
 	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) throws EntityRetrievalException;
 	public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
@@ -34,11 +34,11 @@ public interface SurveillanceManager extends QuestionableActivityHandler {
 	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents) throws EntityRetrievalException;
 	public void deleteSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException;
 	public void deleteNonconformityDocument(Long acbId, Long documentId) throws EntityRetrievalException;
-	
+
 	public List<Surveillance> getPendingByAcb(Long acbId);
 	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
 	public Long createPendingSurveillance(Long acbId, Surveillance surv);
-	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, 
+	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException,
 	EntityRetrievalException, EntityCreationException;
 	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
 			throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException;

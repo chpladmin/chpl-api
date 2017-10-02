@@ -19,25 +19,25 @@ import gov.healthit.chpl.entity.TestStandardEntity;
 @Entity
 @Table(name = "certification_result_test_standard")
 public class CertificationResultTestStandardEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certification_result_test_standard_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certification_result_id", nullable = false  )
 	private Long certificationResultId;
-	
+
 	@Column(name = "test_standard_id")
 	private Long testStandardId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "test_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private TestStandardEntity testStandard;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -69,23 +69,23 @@ public class CertificationResultTestStandardEntity {
 	public void setTestStandard(TestStandardEntity testStandard) {
 		this.testStandard = testStandard;
 	}
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

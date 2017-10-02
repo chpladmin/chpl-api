@@ -9,14 +9,14 @@ public class CorrectiveActionPlanDocumentation implements Serializable {
 	private Long id;
 	private String fileName;
 	private String fileType;
-	
+
 	public CorrectiveActionPlanDocumentation() {}
 	public CorrectiveActionPlanDocumentation(CorrectiveActionPlanDocumentationDTO dto) {
 		this.id = dto.getId();
 		this.fileName = dto.getFileName();
 		this.fileType = dto.getFileType();
 	}
-		
+
 	public Long getId() {
 		return id;
 	}

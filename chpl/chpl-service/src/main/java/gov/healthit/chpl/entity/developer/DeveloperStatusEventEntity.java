@@ -19,37 +19,37 @@ import javax.persistence.Table;
 public class DeveloperStatusEventEntity implements Cloneable, Serializable {
 	private static final long serialVersionUID = 1730728043307135377L;
 
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "vendor_status_history_id", nullable = false  )
 	private Long id;
-	
+
 	@Column(name = "vendor_id")
 	private Long developerId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_id", insertable = false, updatable = false)
 	private DeveloperEntity developer;
-	
+
 	@Column(name = "vendor_status_id")
 	private Long developerStatusId;
 
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "vendor_status_id", insertable = false, updatable = false)
 	private DeveloperStatusEntity developerStatus;
-	
+
 	@Column(name = "status_date")
 	private Date statusDate;
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
 

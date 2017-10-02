@@ -20,9 +20,9 @@ import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
 
 @Repository("correctiveActionPlanDocumentationDAO")
 public class CorrectiveActionPlanDocumentationDAOImpl extends BaseDAOImpl implements CorrectiveActionPlanDocumentationDAO {
-	
+
 	@Autowired CorrectiveActionPlanDAO capDao;
-	
+
 	@Override
 	public CorrectiveActionPlanDocumentationDTO create(CorrectiveActionPlanDocumentationDTO toCreate) throws EntityCreationException,
 		EntityRetrievalException {
@@ -34,7 +34,7 @@ public class CorrectiveActionPlanDocumentationDAOImpl extends BaseDAOImpl implem
 		} catch(EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
-		
+
 		if(entity != null) {
 			throw new EntityCreationException("An entity with this id already exists.");
 		} else {
@@ -68,7 +68,7 @@ public class CorrectiveActionPlanDocumentationDAOImpl extends BaseDAOImpl implem
 	public List<CorrectiveActionPlanDocumentationDTO> getAllForCorrectiveActionPlan(Long correctiveActionPlanId) {
 		List<CorrectiveActionPlanDocumentationEntity> entities = getEntitiesByCorrectiveActionPlan(correctiveActionPlanId);
 		List<CorrectiveActionPlanDocumentationDTO> dtos = new ArrayList<CorrectiveActionPlanDocumentationDTO>();
-		
+
 		for(CorrectiveActionPlanDocumentationEntity entity : entities) {
 			CorrectiveActionPlanDocumentationDTO dto = new CorrectiveActionPlanDocumentationDTO(entity);
 			dtos.add(dto);
@@ -84,51 +84,51 @@ public class CorrectiveActionPlanDocumentationDAOImpl extends BaseDAOImpl implem
 		entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		update(entity);
 	}
-	
+
 	private void create(CorrectiveActionPlanDocumentationEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
-		
+
 	}
-	
+
 	private void update(CorrectiveActionPlanDocumentationEntity entity) {
-		
-		entityManager.merge(entity);	
+
+		entityManager.merge(entity);
 		entityManager.flush();
 	}
-	
+
 	private CorrectiveActionPlanDocumentationEntity getEntityById(Long id) throws EntityRetrievalException {
-		
+
 		CorrectiveActionPlanDocumentationEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from CorrectiveActionPlanDocumentationEntity capDoc "
-				+ "JOIN FETCH capDoc.correctiveActionPlan cap " 
+				+ "JOIN FETCH capDoc.correctiveActionPlan cap "
 				+ "where (NOT capDoc.deleted = true) AND (capDoc.id = :entityid) ", CorrectiveActionPlanDocumentationEntity.class );
 		query.setParameter("entityid", id);
 		List<CorrectiveActionPlanDocumentationEntity> result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate corrective action plan documentation id in database.");
 		}
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
-	
-	
+
+
+
 	private List<CorrectiveActionPlanDocumentationEntity> getEntitiesByCorrectiveActionPlan(Long id) {
-		
+
 		Query query = entityManager.createQuery( "from CorrectiveActionPlanDocumentationEntity capDoc "
 				+ "JOIN FETCH capDoc.correctiveActionPlan cap "
 				+ "where (NOT capDoc.deleted = true) AND (cap.id = :corrective_action_plan_id) ", CorrectiveActionPlanDocumentationEntity.class );
 		query.setParameter("corrective_action_plan_id", id);
 		List<CorrectiveActionPlanDocumentationEntity> result = query.getResultList();
-		
+
 		return result;
-	}	
+	}
 }

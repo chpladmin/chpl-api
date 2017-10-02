@@ -15,68 +15,68 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name="address")
 public class AddressEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "address_id", nullable = false )
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Size(min = 1)
 	@Column(name="street_line_1")
 	private String streetLineOne;
-	
+
 	@Column(name="street_line_2")
 	private String streetLineTwo;
-	
+
 	@Basic( optional = false )
 	@Size(min = 1)
 	@Column(name = "city")
 	private String city;
-	
+
 	@Basic( optional = false )
 	@Size(min = 1)
 	@Column(name = "state")
 	private String state;
-	
+
 	@Basic( optional = false )
 	@Size(min = 1)
 	@Column(name = "zipcode")
 	private String zipcode;
-	
+
 	@Basic( optional = false )
 	@Size(min = 1)
 	@Column(name = "country")
 	private String country;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@NotNull()
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@NotNull()
 	@Column( nullable = false  )
 	private Boolean deleted;
-	
-	
+
+
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setId(Long long1) {
 		this.id = long1;
 	}
-	
+
 	public String getStreetLineOne() {
 		return streetLineOne;
 	}
@@ -116,7 +116,7 @@ public class AddressEntity {
 	public void setZipcode(String zipcode) {
 		this.zipcode = zipcode;
 	}
-	
+
 	public String getCountry() {
 		return country;
 	}
@@ -156,5 +156,5 @@ public class AddressEntity {
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
-	
+
 }

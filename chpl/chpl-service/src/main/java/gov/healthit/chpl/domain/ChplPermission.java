@@ -9,7 +9,7 @@ public enum ChplPermission implements Serializable {
 	READ(),
 	DELETE(),
 	ADMIN();
-	
+
 	public static Permission toPermission(ChplPermission cbp) {
 		Permission permission = null;
 		if(cbp == ChplPermission.READ) {
@@ -21,7 +21,7 @@ public enum ChplPermission implements Serializable {
 		}
 		return permission;
 	}
-	
+
 	public static ChplPermission fromPermission(Permission perm) {
 		ChplPermission permission = null;
 		if(perm == BasePermission.READ) {

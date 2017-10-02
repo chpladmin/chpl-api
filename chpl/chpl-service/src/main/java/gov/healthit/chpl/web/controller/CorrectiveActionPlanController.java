@@ -49,7 +49,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/corrective_action_plan")
 public class CorrectiveActionPlanController {
-	
+
 	private static final Logger logger = LogManager.getLogger(CorrectiveActionPlanController.class);
 
 	@Autowired CorrectiveActionPlanManager capManager;
@@ -57,8 +57,8 @@ public class CorrectiveActionPlanController {
 	@Autowired CertifiedProductDetailsManager productDetailsManager;
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired ActivityManager activityManager;
-	
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>List corrective action plans for a certified product.", 
+
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>List corrective action plans for a certified product.",
 			notes="List all corrective action plans, both open and resolved, for a certified product.")
 	@RequestMapping(value="", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
@@ -66,13 +66,13 @@ public class CorrectiveActionPlanController {
 	public @ResponseBody CorrectiveActionPlanResults getCorrectiveActionPlansForCertifiedProduct(
 			@RequestParam(value = "certifiedProductId", required = true) Long cpId) throws EntityRetrievalException {
 		List<CorrectiveActionPlanDetails> plans = capManager.getPlansForCertifiedProductDetails(cpId);
-		
+
 		CorrectiveActionPlanResults results = new CorrectiveActionPlanResults();
 		results.getPlans().addAll(plans);
 		return results;
 	}
-	
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/> Get corrective action plan details.", 
+
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/> Get corrective action plan details.",
 			notes="Get all of the information about a specific corrective action plan. These details "
 					+ " include the presence and associated id's of any uploaded supporting "
 					+ " documentation but not the contents of those documents. Use /documentation/{capDocId} to "
@@ -83,15 +83,15 @@ public class CorrectiveActionPlanController {
 	public @ResponseBody CorrectiveActionPlanDetails getCorrectiveActionPlanById(@PathVariable("capId") Long capId) throws EntityRetrievalException {
 		return capManager.getPlanDetails(capId);
 	}
-	
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/> Download CAP supporting documentation.", 
+
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/> Download CAP supporting documentation.",
 			notes="Download a specific file that was previously uploaded to a corrective action plan.")
 	@RequestMapping(value="/documentation/{capDocId}", method = RequestMethod.GET)
 	@Deprecated
 	public void getCorrectiveActionPlanDocumentationById(
 			@PathVariable("capDocId") Long capDocId, HttpServletResponse response) throws EntityRetrievalException, IOException {
 		CorrectiveActionPlanDocumentationDTO doc = capManager.getDocumentationById(capDocId);
-		
+
 		if(doc != null && doc.getFileData() != null && doc.getFileData().length > 0) {
 	        ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getFileData());
 	        // get MIME type of the file
@@ -103,46 +103,46 @@ public class CorrectiveActionPlanController {
 	        // set content attributes for the response
 	        response.setContentType(mimeType);
 	        response.setContentLength((int) doc.getFileData().length);
-	 
+
 	        // set headers for the response
 	        String headerKey = "Content-Disposition";
 	        String headerValue = String.format("attachment; filename=\"%s\"",
 	                doc.getFileName());
 	        response.setHeader(headerKey, headerValue);
-	 
+
 	        // get output stream of the response
 	        OutputStream outStream = response.getOutputStream();
-	 
+
 	        byte[] buffer = new byte[1024];
 	        int bytesRead = -1;
-	 
+
 	        // write bytes read from the input stream into the output stream
 	        while ((bytesRead = inputStream.read(buffer)) != -1) {
 	            outStream.write(buffer, 0, bytesRead);
 	        }
-	 
+
 	        inputStream.close();
-	        outStream.close();	
-		}   
+	        outStream.close();
+		}
 	}
 
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Update a corrective action plan.", 
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Update a corrective action plan.",
 			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ "authority on the ACB associated with the corrective action plan.")
 	@RequestMapping(value="/update", method = RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	@Deprecated
-	public @ResponseBody CorrectiveActionPlanDetails update(@RequestBody(required = true) CorrectiveActionPlanDetails updateRequest) 
+	public @ResponseBody CorrectiveActionPlanDetails update(@RequestBody(required = true) CorrectiveActionPlanDetails updateRequest)
 		throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
 		InvalidArgumentsException {
-		
+
 		List<String> capErrors = validateCAP(updateRequest);
 		if(capErrors != null && capErrors.size() > 0) {
 			throw new InvalidArgumentsException(capErrors.get(0));
-		} 
-		
+		}
+
 		CorrectiveActionPlanDetails before = capManager.getPlanDetails(updateRequest.getId());
-		
+
 		CorrectiveActionPlanDTO toUpdate = new CorrectiveActionPlanDTO();
 		toUpdate.setId(updateRequest.getId());
 		toUpdate.setActualCompletionDate(updateRequest.getActualCompletionDate());
@@ -176,7 +176,7 @@ public class CorrectiveActionPlanController {
 		} else {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
-		
+
 		//update data for any certifications that already exist
 		List<CorrectiveActionPlanCertificationResultDTO> existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
 		for(int i = 0; i < existingCerts.size(); i++) {
@@ -194,7 +194,7 @@ public class CorrectiveActionPlanController {
 				}
 			}
 		}
-		
+
 		//remove certifications that aren't there anymore
 		List<CorrectiveActionPlanCertificationResultDTO> certsToDelete = new ArrayList<CorrectiveActionPlanCertificationResultDTO>();
 		existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
@@ -207,7 +207,7 @@ public class CorrectiveActionPlanController {
 					foundCert = true;
 				}
 			}
-			
+
 			if(!foundCert) {
 				CorrectiveActionPlanCertificationResultDTO certToDelete = new CorrectiveActionPlanCertificationResultDTO();
 				certToDelete.setId(existingCert.getId());
@@ -218,7 +218,7 @@ public class CorrectiveActionPlanController {
 		if(certsToDelete.size() > 0) {
 			capManager.removeCertificationsFromPlan(owningAcbId, certsToDelete);
 		}
-		
+
 		//add certifications that weren't there before
 		List<CorrectiveActionPlanCertificationResultDTO> certsToAdd = new ArrayList<CorrectiveActionPlanCertificationResultDTO>();
 		existingCerts = capManager.getCertificationsForPlan(existingPlan.getId());
@@ -231,7 +231,7 @@ public class CorrectiveActionPlanController {
 					foundCert = true;
 				}
 			}
-			
+
 			if(!foundCert) {
 				CorrectiveActionPlanCertificationResultDTO certToAdd = new CorrectiveActionPlanCertificationResultDTO();
 				certToAdd.setCorrectiveActionPlanId(updateRequest.getId());
@@ -240,7 +240,7 @@ public class CorrectiveActionPlanController {
 				certToAdd.setNumSitesPassed(updateCert.getSurveillancePassRate());
 				certToAdd.setNumSitesTotal(updateCert.getSurveillanceSitesSurveilled());
 				certToAdd.setSummary(updateCert.getAcbSummary());
-				
+
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setNumber(updateCert.getCertificationCriterionNumber());
 				certToAdd.setCertCriterion(criterion);
@@ -250,8 +250,8 @@ public class CorrectiveActionPlanController {
 		if(certsToAdd.size() > 0) {
 			capManager.addCertificationsToPlan(owningAcbId, updateRequest.getId(), certsToAdd);
 		}
-		//END 
-		
+		//END
+
 		CorrectiveActionPlanDetails after = capManager.getPlanDetails(updateRequest.getId());
 		if(after.getCertifiedProductId().longValue() != before.getCertifiedProductId().longValue()) {
 			CertifiedProductDTO certifiedProduct = productManager.getById(after.getCertifiedProductId());
@@ -265,36 +265,36 @@ public class CorrectiveActionPlanController {
 		} else {
 			after.setAcbName(before.getAcbName());
 		}
-		
+
 		CertifiedProductSearchDetails cpSearchDetails = productDetailsManager.getCertifiedProductDetails(after.getCertifiedProductId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, updateRequest.getId(), 
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, updateRequest.getId(),
 				"A corrective action plan for certified product "+ cpSearchDetails.getChplProductNumber() + " was updated.", before, after);
 		return capManager.getPlanDetails(toUpdate.getId());
 	}
-	
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Add documentation to an existing CAP.", 
+
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Add documentation to an existing CAP.",
 			notes="Upload a file of any kind (current size limit 5MB) as supporting "
 					+ " documentation to an existing CAP. The logged in user uploading the file "
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{capId}/documentation", method = RequestMethod.POST,
-			produces="application/json; charset = utf-8") 
+			produces="application/json; charset = utf-8")
 	@Deprecated
 	public @ResponseBody String upload(@PathVariable("capId") Long correctiveActionPlanId,
-			@RequestParam("file") MultipartFile file) throws 
+			@RequestParam("file") MultipartFile file) throws
 			InvalidArgumentsException, MaxUploadSizeExceededException, Exception {
 		if (file.isEmpty()) {
 			throw new InvalidArgumentsException("You cannot upload an empty file!");
 		}
-		
+
 		CorrectiveActionPlanDetails before = capManager.getPlanDetails(correctiveActionPlanId);
 
 		CorrectiveActionPlanDocumentationDTO toCreate = new CorrectiveActionPlanDocumentationDTO();
 		toCreate.setFileType(file.getContentType());
 		toCreate.setFileName(file.getOriginalFilename());
-		toCreate.setFileData(file.getBytes());	
+		toCreate.setFileData(file.getBytes());
 		toCreate.setCorrectiveActionPlanId(correctiveActionPlanId);
-		
+
 		Long owningAcbId = null;
 		CorrectiveActionPlanDTO existingPlan = capManager.getPlanById(correctiveActionPlanId);
 		if(existingPlan.getCertifiedProductId() != null) {
@@ -312,31 +312,31 @@ public class CorrectiveActionPlanController {
 		} else {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
-		
+
 		CorrectiveActionPlanDetails after = capManager.getPlanDetails(correctiveActionPlanId);
 		after.setAcbName(before.getAcbName());
 		CertifiedProductSearchDetails cpSearchDetails = productDetailsManager.getCertifiedProductDetails(after.getCertifiedProductId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, correctiveActionPlanId, 
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, correctiveActionPlanId,
 				"Documentation was added to a corrective action plan for certified product " + cpSearchDetails.getChplProductNumber(), before, after);
 		return "{\"success\": \"true\"}";
 	}
-	
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods. <br/>Create a new corrective action plan.", 
+
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods. <br/>Create a new corrective action plan.",
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/create", method = RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	@Deprecated
-	public @ResponseBody CorrectiveActionPlanDetails create(@RequestBody(required = true) CorrectiveActionPlanDetails createRequest) 
+	public @ResponseBody CorrectiveActionPlanDetails create(@RequestBody(required = true) CorrectiveActionPlanDetails createRequest)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
 			InvalidArgumentsException {
-		
+
 		List<String> capErrors = validateCAP(createRequest);
 		if(capErrors != null && capErrors.size() > 0) {
 			throw new InvalidArgumentsException(capErrors.get(0));
 		}
-		
+
 		CorrectiveActionPlanDTO toCreate = new CorrectiveActionPlanDTO();
 		toCreate.setActualCompletionDate(createRequest.getActualCompletionDate());
 		toCreate.setApprovalDate(createRequest.getApprovalDate());
@@ -350,11 +350,11 @@ public class CorrectiveActionPlanController {
 		toCreate.setSummary(createRequest.getAcbSummary());
 		toCreate.setDeveloperExplanation(createRequest.getDeveloperSummary());
 		toCreate.setResolution(createRequest.getResolution());
-		
+
 		Long createdPlanId = null;
 		Long acbId = null;
-		
-		//get the acb that owns the product to make sure we have permissions to create it		
+
+		//get the acb that owns the product to make sure we have permissions to create it
 		CertifiedProductDTO certifiedProduct = productManager.getById(toCreate.getCertifiedProductId());
 		if(certifiedProduct != null) {
 			acbId = certifiedProduct.getCertificationBodyId();
@@ -363,7 +363,7 @@ public class CorrectiveActionPlanController {
 		} else {
 			throw new InvalidArgumentsException("Could not find the certified product for this plan.");
 		}
-		
+
 		List<CorrectiveActionPlanCertificationResultDTO> certsToCreate = new ArrayList<CorrectiveActionPlanCertificationResultDTO>();
 		if(createRequest.getCertifications() != null && createRequest.getCertifications().size() > 0) {
 			for(CorrectiveActionPlanCertificationResult cert : createRequest.getCertifications()) {
@@ -374,7 +374,7 @@ public class CorrectiveActionPlanController {
 				currCertToCreate.setNumSitesPassed(cert.getSurveillancePassRate());
 				currCertToCreate.setNumSitesTotal(cert.getSurveillanceSitesSurveilled());
 				currCertToCreate.setSummary(cert.getAcbSummary());
-				
+
 				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
 				criterion.setId(cert.getCertificationCriterionId());
 				criterion.setNumber(cert.getCertificationCriterionNumber());
@@ -382,30 +382,30 @@ public class CorrectiveActionPlanController {
 				certsToCreate.add(currCertToCreate);
 			}
 		}
-		
+
 		CorrectiveActionPlanDetails result = capManager.addCertificationsToPlan(acbId, createdPlanId, certsToCreate);
 		CertificationBodyDTO acb = acbManager.getById(acbId);
 		if(acb != null) {
 			result.setAcbName(acb.getName());
 		}
         CertifiedProductSearchDetails cpSearchDetails = productDetailsManager.getCertifiedProductDetails(result.getCertifiedProductId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(), 
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(),
 				"A corrective action plan for certified product " + cpSearchDetails.getChplProductNumber() +" was created.", null, result);
 
 		return result;
 	}
-	
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Delete a corrective action plan.", 
+
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Delete a corrective action plan.",
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/{planId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	@Deprecated
-	public String deleteAcb(@PathVariable("planId") Long planId) 
+	public String deleteAcb(@PathVariable("planId") Long planId)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 				InvalidArgumentsException {
-		
+
 		//get the acb that owns the product to make sure we have permissions to update it
 		Long acbId = null;
 		CorrectiveActionPlanDetails before = capManager.getPlanDetails(planId);
@@ -424,29 +424,29 @@ public class CorrectiveActionPlanController {
 		} else {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
-		
+
 		CertifiedProductSearchDetails cpSearchDetails = productDetailsManager.getCertifiedProductDetails(before.getCertifiedProductId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(), 
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(),
 				"A corrective action plan for certified product " + cpSearchDetails.getChplProductNumber() +" was deleted.", before, null);
 
 		return "{\"deleted\" : true }";
 	}
-	
-	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Remove documentation from a corrective action plan.", 
+
+	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>Remove documentation from a corrective action plan.",
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
 	@RequestMapping(value="/documentation/{docId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	@Deprecated
-	public String deleteDocumentationById(@PathVariable("docId") Long docId) 
+	public String deleteDocumentationById(@PathVariable("docId") Long docId)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 				InvalidArgumentsException {
-		
+
 		CorrectiveActionPlanDocumentationDTO doc = capManager.getDocumentationById(docId);
-		
+
 		//get the acb that owns the product to make sure we have permissions to update it
-		CorrectiveActionPlanDetails before = capManager.getPlanDetails(doc.getCorrectiveActionPlanId());		
+		CorrectiveActionPlanDetails before = capManager.getPlanDetails(doc.getCorrectiveActionPlanId());
 		if(before.getCertifiedProductId() != null) {
 			CertifiedProductDTO certifiedProduct = productManager.getById(before.getCertifiedProductId());
 			if(certifiedProduct != null) {
@@ -462,20 +462,20 @@ public class CorrectiveActionPlanController {
 		} else {
 			throw new InvalidArgumentsException("No certified product id was found for this plan.");
 		}
-		
+
 		CorrectiveActionPlanDetails after = capManager.getPlanDetails(doc.getCorrectiveActionPlanId());
 		after.setAcbName(before.getAcbName());
 		CertifiedProductSearchDetails cpSearchDetails = productDetailsManager.getCertifiedProductDetails(before.getCertifiedProductId());
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(), 
+		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, before.getId(),
 				"Documentation was removed from a corrective action plan for certified product " + cpSearchDetails.getChplProductNumber(), before, after);
 
-		
+
 		return "{\"deleted\" : true }";
 	}
-	
+
 	private List<String> validateCAP(CorrectiveActionPlanDetails cap) {
 		List<String> errors = new ArrayList<String>();
-		
+
 		//surveillance start date, surveillance result, and noncompliance date are always required
 		if(cap.getSurveillanceStartDate() == null) {
 			errors.add("Surveillance start date is required.");
@@ -486,17 +486,17 @@ public class CorrectiveActionPlanController {
 		if(cap.getNoncomplianceDate() == null) {
 			errors.add("Date of determination of noncompliance is required.");
 		}
-		
+
 		//if surveillance end date is filled in, everything is required
 		if(cap.getSurveillanceEndDate() != null) {
-			if(cap.getActualCompletionDate() == null || cap.getApprovalDate() == null || 
+			if(cap.getActualCompletionDate() == null || cap.getApprovalDate() == null ||
 					cap.getEstimatedCompletionDate() == null || cap.getEffectiveDate() == null) {
 				errors.add("When surveillance end date is entered, all other fields are required.");
 			}
 			//check the fields for each certification
 			boolean missingField = false;
 			for(CorrectiveActionPlanCertificationResult criteria : cap.getCertifications()) {
-				if(StringUtils.isEmpty(criteria.getDeveloperSummary()) || 
+				if(StringUtils.isEmpty(criteria.getDeveloperSummary()) ||
 						StringUtils.isEmpty(criteria.getResolution()) ||
 						StringUtils.isEmpty(criteria.getAcbSummary())) {
 					missingField = true;
@@ -505,7 +505,7 @@ public class CorrectiveActionPlanController {
 			if(missingField) {
 				errors.add("When surveillance end date is entered, all fields for non-compliant criteria are required.");
 			}
-			
+
 			//if surveillance result is true, then the num sites passed/total are required
 			//for each cap criteria
 			if(cap.getRandomizedSurveillance() == Boolean.TRUE) {
@@ -516,13 +516,13 @@ public class CorrectiveActionPlanController {
 						missingSiteInfo = true;
 					}
 				}
-				
+
 				if(missingSiteInfo) {
 					errors.add("Since 'randomized surveillance' is true, the number of sites that passed and total number of sites are required.");
 				}
 			}
 		}
-			
+
 		return errors;
 	}
 }

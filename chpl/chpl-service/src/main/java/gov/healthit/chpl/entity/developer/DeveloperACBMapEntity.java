@@ -26,23 +26,23 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 
 	private static final long serialVersionUID = 555395798107190947L;
 
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "acb_vendor_map_id")
 	private Long id;
-	
+
 	@Column(name = "vendor_id")
 	private Long developerId;
-	
+
 	@Column(name = "certification_body_id")
 	private Long certificationBodyId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certification_body_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private CertificationBodyEntity certificationBody;
-	
+
 	@Column(name = "transparency_attestation")
 	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
 	private AttestationType transparencyAttestation;
@@ -85,24 +85,24 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 
 	public void setDeveloperId(Long developerId) {
 		this.developerId = developerId;
-	} 
-	
+	}
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

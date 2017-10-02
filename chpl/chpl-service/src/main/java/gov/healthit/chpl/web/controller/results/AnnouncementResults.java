@@ -13,7 +13,7 @@ public class AnnouncementResults implements Serializable {
 	public AnnouncementResults() {
 		announcements = new ArrayList<Announcement>();
 	}
-	
+
 	public List<Announcement> getAnnouncements() {
 		return announcements;
 	}

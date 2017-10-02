@@ -18,10 +18,10 @@ public class CertificationEditionDTO implements Serializable {
 	private Long lastModifiedUser;
 	private String year;
 	private Boolean retired;
-	
+
 	public CertificationEditionDTO(){}
 	public CertificationEditionDTO(CertificationEditionEntity entity){
-		
+
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
 		this.deleted = entity.isDeleted();
@@ -37,7 +37,7 @@ public class CertificationEditionDTO implements Serializable {
 			}
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -93,5 +93,5 @@ public class CertificationEditionDTO implements Serializable {
 	public void setRetired(Boolean retired) {
 		this.retired = retired;
 	}
-	
+
 }

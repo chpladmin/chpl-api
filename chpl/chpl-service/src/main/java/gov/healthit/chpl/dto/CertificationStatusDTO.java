@@ -8,13 +8,13 @@ public class CertificationStatusDTO implements Serializable {
 	private static final long serialVersionUID = 7214567031021821333L;
 	private Long id;
 	private String status;
-	
+
 	public CertificationStatusDTO() {}
 	public CertificationStatusDTO(CertificationStatusEntity entity) {
 		this.setId(entity.getId());
 		this.setStatus(entity.getStatus());
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

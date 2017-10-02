@@ -14,7 +14,7 @@ import gov.healthit.chpl.entity.CertificationStatusEntity;
 
 @Repository("certificationStatusDAO")
 public class CertificationStatusDAOImpl extends BaseDAOImpl implements CertificationStatusDAO {
-	
+
 	@Override
 	public List<CertificationStatusDTO> findAll() {
 		List<CertificationStatusEntity> entities = getAllEntities();
@@ -27,7 +27,7 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 
 	@Override
 	public CertificationStatusDTO getById(Long id) throws EntityRetrievalException {
-		
+
 		CertificationStatusDTO dto = null;
 		CertificationStatusEntity entity = getEntityById(id);
 		if (entity != null){
@@ -41,45 +41,45 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 		CertificationStatusEntity entity = getEntityByName(statusName);
 		return new CertificationStatusDTO(entity);
 	}
-	
+
 	private List<CertificationStatusEntity> getAllEntities() {
-		
+
 		List<CertificationStatusEntity> result = entityManager.createQuery( "from CertificationStatusEntity where (NOT deleted = true) ", CertificationStatusEntity.class).getResultList();
 		return result;
-		
+
 	}
-	
+
 	public CertificationStatusEntity getEntityById(Long id) throws EntityRetrievalException {
-		
+
 		CertificationStatusEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from CertificationStatusEntity where (NOT deleted = true) AND (certification_status_id = :entityid) ", CertificationStatusEntity.class );
 		query.setParameter("entityid", id);
 		List<CertificationStatusEntity> result = query.getResultList();
-		
+
 		if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate status id in database.");
 		}
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-			
+
 		return entity;
 	}
-	
+
 	public CertificationStatusEntity getEntityByName(String name) {
-		
+
 		CertificationStatusEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from CertificationStatusEntity where (NOT deleted = true) AND (certification_status = :name) ", CertificationStatusEntity.class );
 		query.setParameter("name", name);
 		List<CertificationStatusEntity> result = query.getResultList();
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-			
+
 		return entity;
 	}
 }

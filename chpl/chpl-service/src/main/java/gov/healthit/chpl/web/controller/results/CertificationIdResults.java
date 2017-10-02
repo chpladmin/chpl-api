@@ -23,7 +23,7 @@ public class CertificationIdResults implements Serializable {
 		public String getVersion() {
 			return this.version;
 		}
-		
+
 		public void setVersion(String version) {
 			this.version = version;
 		}
@@ -31,21 +31,21 @@ public class CertificationIdResults implements Serializable {
 		public String getName() {
 			return this.name;
 		}
-		
+
 		public void setName(String name) {
 			this.name = name;
 		}
-		
+
 		public Long getProductId() {
 			return this.productId;
 		}
-		
+
 		public void setProductId(Long id) {
 			this.productId = id;
 		}
 
 	}
-	
+
 	private List<Product> products;
 	private String ehrCertificationId;
 	private Map<String, Integer> metCounts;
@@ -56,11 +56,11 @@ public class CertificationIdResults implements Serializable {
 	public String getYear() {
 		return this.year;
 	}
-	
+
 	public void setYear(String year) {
 		this.year = year;
 	}
-	
+
 	public boolean getIsValid() {
 		return isValid;
 	}
@@ -68,7 +68,7 @@ public class CertificationIdResults implements Serializable {
 	public void setIsValid(boolean valid) {
 		this.isValid = valid;
 	}
-	
+
 	public List<Product> getProducts() {
 		return products;
 	}
@@ -80,11 +80,11 @@ public class CertificationIdResults implements Serializable {
 	public String getEhrCertificationId() {
 		return this.ehrCertificationId;
 	}
-	
+
 	public void setEhrCertificationId(String ehrCertificationId) {
 		this.ehrCertificationId = ehrCertificationId;
 	}
-	
+
 	public Map<String, Integer> getMetPercentages() {
 		return this.metPercentages;
 	}

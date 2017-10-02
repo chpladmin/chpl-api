@@ -25,7 +25,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 @Component("surveillanceNonconformityCsvPresenter")
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 	private static final Logger logger = LogManager.getLogger(NonconformityCsvPresenter.class);
-	
+
 	@Override
 	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
 		FileWriter writer = null;
@@ -34,7 +34,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 			writer = new FileWriter(file);
 			csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 			csvPrinter.printRecord(generateHeaderValues());
-			
+
 			for(CertifiedProductSearchDetails cp : cpList.getListings()) {
 				if(cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
 					for(Surveillance currSurveillance : cp.getSurveillance()) {
@@ -50,13 +50,13 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 									reqsToRemove.add(req);
 								}
 							}
-							
+
 							//remove requirements without nonconformities
 							for(SurveillanceRequirement reqToRemove : reqsToRemove) {
 								currSurveillance.getRequirements().remove(reqToRemove);
 							}
 						}
-						
+
 						if(hasNc) {
 							//write out surveillance with nonconformities only
 							List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);

@@ -11,8 +11,8 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
 	private String fileName;
 	private String fileType;
 	private byte[] fileData;
-	
-	public CorrectiveActionPlanDocumentationDTO() {} 
+
+	public CorrectiveActionPlanDocumentationDTO() {}
 	public CorrectiveActionPlanDocumentationDTO(CorrectiveActionPlanDocumentationEntity entity) {
 		this.fileData = entity.getFileData();
 		this.fileName = entity.getFileName();
@@ -22,7 +22,7 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
 			this.correctiveActionPlanId = entity.getCorrectiveActionPlan().getId();
 		}
 	}
-	
+
 	public String getFileName() {
 		return fileName;
 	}
@@ -53,6 +53,6 @@ public class CorrectiveActionPlanDocumentationDTO implements Serializable {
 	public void setCorrectiveActionPlanId(Long correctiveActionPlanId) {
 		this.correctiveActionPlanId = correctiveActionPlanId;
 	}
-	
-	
+
+
 }

@@ -10,7 +10,7 @@ public class TestFunctionality implements Serializable {
 	private String name;
 	private String description;
 	private String year;
-	
+
 	public TestFunctionality() {}
 	public TestFunctionality(TestFunctionalityDTO dto) {
 		this.id = dto.getId();

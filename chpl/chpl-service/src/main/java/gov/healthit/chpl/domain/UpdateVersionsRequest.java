@@ -8,7 +8,7 @@ public class UpdateVersionsRequest implements Serializable {
 	private List<Long> versionIds;
 	private ProductVersion version;
 	private Long newProductId;
-	
+
 	public List<Long> getVersionIds() {
 		return versionIds;
 	}
@@ -27,5 +27,5 @@ public class UpdateVersionsRequest implements Serializable {
 	public void setNewProductId(Long newProductId) {
 		this.newProductId = newProductId;
 	}
-	
+
 }

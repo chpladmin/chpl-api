@@ -9,7 +9,7 @@ public class SurveillanceRequirementOptions implements Serializable {
 	private List<KeyValueModel> criteriaOptions2014;
 	private List<KeyValueModel> criteriaOptions2015;
 	private List<String> transparencyOptions;
-	
+
 	public SurveillanceRequirementOptions() {
 		criteriaOptions2014 = new ArrayList<KeyValueModel>();
 		criteriaOptions2015 = new ArrayList<KeyValueModel>();

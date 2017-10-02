@@ -28,10 +28,10 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	private static final Logger logger = LogManager.getLogger(TestStandardDAOImpl.class);
 	@Autowired MessageSource messageSource;
 	@Autowired CertificationEditionDAO editionDao;
-	
+
 	@Override
 	public TestStandardDTO create(TestStandardDTO dto) throws EntityCreationException {
-		
+
 		TestStandardEntity entity = null;
 		if (dto.getId() != null){
 			entity = this.getEntityById(dto.getId());
@@ -55,12 +55,12 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 			}
 			entity.setDeleted(false);
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			
+
 			try {
 				entityManager.persist(entity);
 				entityManager.flush();
 			} catch(Exception ex) {
-				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestStandard"), LocaleContextHolder.getLocale()), 
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestStandard"), LocaleContextHolder.getLocale()),
 						dto.getName());
 				logger.error(msg, ex);
 				throw new EntityCreationException(msg);
@@ -73,31 +73,31 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	public TestStandardDTO getById(Long id) {
 		TestStandardDTO dto = null;
 		TestStandardEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new TestStandardDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<TestStandardDTO> findAll() {
 		List<TestStandardEntity> entities = getAllEntities();
 		List<TestStandardDTO> dtos = new ArrayList<TestStandardDTO>();
-		
+
 		for (TestStandardEntity entity : entities) {
 			TestStandardDTO dto = new TestStandardDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
 
 	@Override
 	public TestStandardDTO getByNumberAndEdition(String number, Long editionId) {
 		TestStandardDTO dto = null;
 		List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
-		
+
 		if (entities != null && entities.size() > 0){
 			dto = new TestStandardDTO(entities.get(0));
 		}
@@ -107,23 +107,23 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	private List<TestStandardEntity> getAllEntities() {
 		return entityManager.createQuery( "from TestStandardEntity where (NOT deleted = true) ", TestStandardEntity.class).getResultList();
 	}
-	
+
 	private TestStandardEntity getEntityById(Long id) {
 		TestStandardEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "SELECT ts "
 				+ "FROM TestStandardEntity ts "
 				+ "WHERE (NOT deleted = true) "
 				+ "AND (ts.id = :entityid) ", TestStandardEntity.class );
 		query.setParameter("entityid", id);
 		List<TestStandardEntity> result = query.getResultList();
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
 		return entity;
 	}
-	
+
 	private List<TestStandardEntity> getEntitiesByNumberAndYear(String number, Long editionId) {
 		TestStandardEntity entity = null;
 		String tsQuery = "SELECT ts "
@@ -135,7 +135,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		Query query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
 		query.setParameter("number", number.toUpperCase());
 		query.setParameter("editionId", editionId);
-		
+
 		List<TestStandardEntity> matches = query.getResultList();
 		if(matches == null || matches.size() == 0) {
 			//if this didn't find anything try again with spaces removed from the number

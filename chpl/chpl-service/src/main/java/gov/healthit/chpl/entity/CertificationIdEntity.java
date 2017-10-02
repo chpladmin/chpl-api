@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 
-/** 
+/**
  * Object mapping for hibernate-handled table: product.
  * Table to store products that are submitted for developers
  *
@@ -25,24 +25,24 @@ import javax.persistence.Transient;
 public class CertificationIdEntity implements Serializable {
 	private static final long serialVersionUID = -1L;
 
-	@Id 
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column( name = "ehr_certification_id_id", nullable = false  )
 	private Long id;
-    
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certification_id", length = 255, nullable = false)
 	private String certificationId;
@@ -50,7 +50,7 @@ public class CertificationIdEntity implements Serializable {
 	@Basic( optional = false )
 	@Column( name = "key", nullable = false)
 	private String key;
-	
+
 	@Basic( optional = true )
 	@Column(name = "practice_type_id", nullable = true )
 	private Long practiceTypeId;
@@ -73,7 +73,7 @@ public class CertificationIdEntity implements Serializable {
 		this.id = id;
 	}
 
- 
+
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/
@@ -88,10 +88,10 @@ public class CertificationIdEntity implements Serializable {
 	 */
 	public Date getCreationDate() {
 		return this.creationDate;
-		
+
 	}
-	
-	 /**  
+
+	 /**
 	 * Set the value related to the column: creationDate.
 	 * @param creationDate the creationDate value you wish to set
 	 */
@@ -105,12 +105,12 @@ public class CertificationIdEntity implements Serializable {
 	 */
 	public Long getId() {
 		return this.id;
-		
-	}
-	
 
-  
-	 /**  
+	}
+
+
+
+	 /**
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
 	 */
@@ -125,10 +125,10 @@ public class CertificationIdEntity implements Serializable {
 	public Date getLastModifiedDate() {
 		return this.lastModifiedDate;
 	}
-	
 
-  
-	 /**  
+
+
+	 /**
 	 * Set the value related to the column: lastModifiedDate.
 	 * @param lastModifiedDate the lastModifiedDate value you wish to set
 	 */
@@ -142,10 +142,10 @@ public class CertificationIdEntity implements Serializable {
 	 */
 	public Long getLastModifiedUser() {
 		return this.lastModifiedUser;
-		
+
 	}
-	
-	 /**  
+
+	 /**
 	 * Set the value related to the column: lastModifiedUser.
 	 * @param lastModifiedUser the lastModifiedUser value you wish to set
 	 */
@@ -161,7 +161,7 @@ public class CertificationIdEntity implements Serializable {
 		return this.certificationId;
 	}
 
-	 /**  
+	 /**
 	 * Set the value related to the column: certification_id.
 	 * @param certificationId the certificationId value you wish to set
 	 */
@@ -177,14 +177,14 @@ public class CertificationIdEntity implements Serializable {
 		return this.key;
 	}
 
-	 /**  
+	 /**
 	 * Set the value related to the column: key.
 	 * @param key the key value you wish to set
 	 */
 	public void setKey(String key) {
 		this.key = key;
 	}
-	
+
 	 /**
 	 * Return the value associated with the column: practice_type_id.
 	 * @return A Long object (this.practiceTypeId)
@@ -193,7 +193,7 @@ public class CertificationIdEntity implements Serializable {
 		return this.practiceTypeId;
 	}
 
-	 /**  
+	 /**
 	 * Set the value related to the column: practice_type_id.
 	 * @param practiceTypeId the practiceTypeId value you wish to set
 	 */
@@ -209,14 +209,14 @@ public class CertificationIdEntity implements Serializable {
 		return this.year;
 	}
 
-	 /**  
+	 /**
 	 * Set the value related to the column: year.
 	 * @param year the year value you wish to set
 	 */
 	public void setYear(String year) {
 		this.year = year;
 	}
-	
+
 	/** Provides toString implementation.
 	 * @see java.lang.Object#toString()
 	 * @return String representation of this class.
@@ -224,7 +224,7 @@ public class CertificationIdEntity implements Serializable {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
-		
+
 		sb.append("creationDate: " + this.getCreationDate() + ", ");
 		sb.append("id: " + this.getId() + ", ");
 		sb.append("key: " + this.getKey() + ", ");
@@ -233,7 +233,7 @@ public class CertificationIdEntity implements Serializable {
 		sb.append("certificationId: " + this.getCertificationId() + ", ");
 		sb.append("year: " + this.getYear() + ", ");
 		sb.append("practiceTypeId: " + this.getPracticeTypeId() + ", ");
-		return sb.toString();		
+		return sb.toString();
 	}
 
 }

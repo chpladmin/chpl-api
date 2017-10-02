@@ -20,9 +20,9 @@ public class PendingTestParticipantDTO implements Serializable {
 	private Integer computerExperienceMonths;
 	private Integer productExperienceMonths;
 	private String assistiveTechnologyNeeds;
-	
+
 	public PendingTestParticipantDTO() {}
-	
+
 	public PendingTestParticipantDTO(PendingTestParticipantEntity entity) {
 		this.setId(entity.getId());
 		this.uniqueId = entity.getUniqueId();
@@ -43,7 +43,7 @@ public class PendingTestParticipantDTO implements Serializable {
 		this.productExperienceMonths = entity.getProductExperienceMonths();
 		this.assistiveTechnologyNeeds = entity.getAssistiveTechnologyNeeds();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -66,7 +66,7 @@ public class PendingTestParticipantDTO implements Serializable {
 	public void setGender(String gender) {
 		this.gender = gender;
 	}
-	
+
 	public Long getEducationTypeId() {
 		return educationTypeId;
 	}

@@ -5,7 +5,7 @@ import java.util.List;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 
 public interface CertificationBodyDAO {
-	
+
 	public CertificationBodyDTO create(CertificationBodyDTO acb) throws EntityRetrievalException, EntityCreationException;
 
 	public void delete(Long acbId);
@@ -18,5 +18,5 @@ public interface CertificationBodyDAO {
 	public CertificationBodyDTO getByName(String name);
 	public String getMaxCode();
 	public CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
-	
+
 }

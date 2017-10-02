@@ -23,7 +23,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 	private static final Logger logger = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
 	private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
-	
+
 	/**
 	 * Required to setCriteriaNames before calling this function.
 	 * Returns number of rows printed (minus the header)
@@ -37,7 +37,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 			writer = new FileWriter(file);
 			csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
 			csvPrinter.printRecord(generateHeaderValues());
-			
+
 			for(CertifiedProductSearchDetails data : cpList.getListings()) {
 				List<String> rowValue = generateRowValue(data);
 				if(rowValue != null) { //a subclass could return null to skip a row
@@ -73,7 +73,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 		result.add("Total Surveillance Activities");
 		result.add("Total Nonconformities");
 		result.add("Open Nonconformities");
-		
+
 		if(applicableCriteria != null) {
 			for(CertificationCriterionDTO criteria : applicableCriteria) {
 				result.add(criteria.getNumber());
@@ -81,14 +81,14 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 		}
 		return result;
 	}
-	
+
 	protected List<String> generateRowValue(CertifiedProductSearchDetails data) {
 		List<String> result = new ArrayList<String>();
 		result.add(data.getCertificationEdition().get("name").toString());
 		result.add(data.getChplProductNumber());
 		result.add(data.getAcbCertificationId());
 		LocalDateTime date = LocalDateTime.ofInstant(
-				Instant.ofEpochMilli(data.getCertificationDate()), 
+				Instant.ofEpochMilli(data.getCertificationDate()),
 			    ZoneId.systemDefault());
 		result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
 		result.add(data.getCertificationStatus().get("name").toString());
@@ -104,7 +104,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 		result.addAll(criteria);
 		return result;
 	}
-	
+
 	protected List<String> generateCriteriaValues(CertifiedProductSearchDetails data) {
 		List<String> result = new ArrayList<String>();
 
@@ -120,7 +120,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 		}
 		return result;
 	}
-	
+
 	public List<CertificationCriterionDTO> getApplicableCriteria() {
 		return applicableCriteria;
 	}

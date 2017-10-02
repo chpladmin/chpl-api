@@ -15,7 +15,7 @@ public class MeaningfulUseUserResults implements Serializable {
 		setMeaningfulUseUsers(new ArrayList<MeaningfulUseUser>());
 		errors = new ArrayList<MeaningfulUseUser>();
 	}
-	
+
 	public MeaningfulUseUserResults(List<MeaningfulUseUser> results) {
 		this.setMeaningfulUseUsers(results);
 	}

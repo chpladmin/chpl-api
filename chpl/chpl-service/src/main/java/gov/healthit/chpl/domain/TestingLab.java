@@ -13,9 +13,9 @@ public class TestingLab implements Serializable {
 	private String accredidationNumber;
 	private Address address;
 	private boolean isDeleted;
-	
+
 	public TestingLab() {}
-	
+
 	public TestingLab(TestingLabDTO dto) {
 		this.id = dto.getId();
 		this.atlCode = dto.getTestingLabCode();
@@ -27,7 +27,7 @@ public class TestingLab implements Serializable {
 		}
 		this.isDeleted = dto.getDeleted();
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -68,11 +68,11 @@ public class TestingLab implements Serializable {
 	public void setAccredidationNumber(String accredidationNumber) {
 		this.accredidationNumber = accredidationNumber;
 	}
-	
+
 	public boolean getIsDeleted(){
 		return isDeleted;
 	}
-	
+
 	public void setIsDeleted(boolean deleted){
 		this.isDeleted = deleted;
 	}

@@ -19,13 +19,13 @@ import gov.healthit.chpl.entity.AccessibilityStandardEntity;
 @Entity
 @Table(name = "certified_product_accessibility_standard")
 public class CertifiedProductAccessibilityStandardEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic( optional = false )
 	@Column(name = "certified_product_accessibility_standard_id")
 	private Long id;
-	
+
 	@Basic( optional = false )
 	@Column( name = "certified_product_id", nullable = false  )
 	private Long certifiedProductId;
@@ -33,12 +33,12 @@ public class CertifiedProductAccessibilityStandardEntity {
 	@Basic( optional = false )
 	@Column( name = "accessibility_standard_id", nullable = false  )
 	private Long accessibilityStandardId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "accessibility_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private AccessibilityStandardEntity accessibilityStandard;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -59,19 +59,19 @@ public class CertifiedProductAccessibilityStandardEntity {
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}

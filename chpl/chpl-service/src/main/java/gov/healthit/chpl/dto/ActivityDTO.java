@@ -22,11 +22,11 @@ public class ActivityDTO implements Serializable {
 	private Long lastModifiedUser;
 	private Boolean deleted;
 	private UserDTO user;
-	
+
 	public ActivityDTO(){}
-	
+
 	public ActivityDTO(ActivityEntity entity){
-		
+
 		this.id = entity.getId();
 		this.description = entity.getDescription();
 		this.originalData = entity.getOriginalData();
@@ -38,12 +38,12 @@ public class ActivityDTO implements Serializable {
 		this.lastModifiedDate = entity.getLastModifiedDate();
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.deleted = entity.getDeleted();
-		
+
 		if(entity.getUser() != null) {
 			this.user = new UserDTO(entity.getUser());
 		}
 	}
-	
+
 	public Long getId() {
 		return id;
 	}

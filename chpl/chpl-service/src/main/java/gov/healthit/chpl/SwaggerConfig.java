@@ -27,7 +27,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @PropertySource("classpath:environment.properties")
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
-	
+
 	private static final Logger logger = LogManager.getLogger(SwaggerConfig.class);
 
 	@Autowired ServletContext context;
@@ -80,7 +80,7 @@ public class SwaggerConfig implements EnvironmentAware {
     		  regex("/download.*"),
     		  regex("/jobs.*"),
     		  regex("/key.*"),
-    		  regex("/notifications.*"),    		  
+    		  regex("/notifications.*"),
     		  regex("/products.*"),
     		  regex("/search.*"),
     		  regex("/surveillance.*"),

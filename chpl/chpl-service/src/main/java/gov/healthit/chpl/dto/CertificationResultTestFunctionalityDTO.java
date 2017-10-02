@@ -13,10 +13,10 @@ public class CertificationResultTestFunctionalityDTO implements Serializable {
 	private String testFunctionalityNumber;
 	private String testFunctionalityEdition;
 	private Boolean deleted;
-	
+
 	public CertificationResultTestFunctionalityDTO(){}
-	
-	public CertificationResultTestFunctionalityDTO(CertificationResultTestFunctionalityEntity entity){		
+
+	public CertificationResultTestFunctionalityDTO(CertificationResultTestFunctionalityEntity entity){
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testFunctionalityId = entity.getTestFunctionalityId();

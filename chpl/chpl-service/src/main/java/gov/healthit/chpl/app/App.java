@@ -11,15 +11,15 @@ import org.springframework.context.support.AbstractApplicationContext;
 public abstract class App {
 	private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
 	protected Properties properties;
-	
+
 	protected abstract void initiateSpringBeans(AbstractApplicationContext context) throws IOException;
-	
+
 	protected void setLocalContext() throws Exception{
 		LocalContext ctx = LocalContextFactory.createLocalContext(getProperties().getProperty("dbDriverClass"));
-		ctx.addDataSource(getProperties().getProperty("dataSourceName"),getProperties().getProperty("dataSourceConnection"), 
+		ctx.addDataSource(getProperties().getProperty("dataSourceName"),getProperties().getProperty("dataSourceConnection"),
 				getProperties().getProperty("dataSourceUsername"), getProperties().getProperty("dataSourcePassword"));
 	}
-	
+
 	protected File getDownloadFolder() throws IOException {
 		String downloadFolderPath = getProperties().getProperty("downloadFolderPath");
 		File downloadFolder = new File(downloadFolderPath);
@@ -28,7 +28,7 @@ public abstract class App {
         }
         return downloadFolder;
 	}
-	
+
 	protected Properties getProperties() throws IOException {
 		if(properties == null || properties.isEmpty()) {
 			InputStream in = SurveillanceOversightReportDailyApp.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);

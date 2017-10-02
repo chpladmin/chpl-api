@@ -8,7 +8,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 
-public interface CertifiedProductDetailsManager {	
-	public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId) 
+public interface CertifiedProductDetailsManager {
+	public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
 			throws EntityRetrievalException;
 }

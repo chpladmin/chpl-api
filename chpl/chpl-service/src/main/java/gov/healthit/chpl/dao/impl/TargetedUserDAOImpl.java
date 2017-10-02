@@ -26,16 +26,16 @@ import gov.healthit.chpl.entity.TargetedUserEntity;
 public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO {
 	private static final Logger logger = LogManager.getLogger(TargetedUserDAOImpl.class);
 	@Autowired MessageSource messageSource;
-	
+
 	@Override
 	public TargetedUserDTO create(TargetedUserDTO dto)
 			throws EntityCreationException {
-		
+
 		TargetedUserEntity entity = null;
 		if (dto.getId() != null){
 			entity = this.getEntityById(dto.getId());
 		}
-		
+
 		if (entity != null) {
 			throw new EntityCreationException("An entity with this ID already exists.");
 		} else {
@@ -53,29 +53,29 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 				throw new EntityCreationException(msg);
 			}
 			return new TargetedUserDTO(entity);
-		}		
+		}
 	}
 
 	@Override
 	public TargetedUserDTO update(TargetedUserDTO dto)
 			throws EntityRetrievalException {
 		TargetedUserEntity entity = this.getEntityById(dto.getId());
-		
+
 		if(entity == null) {
 			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
 		}
-		
+
 		entity.setName(dto.getName());
-		
+
 		update(entity);
 		return new TargetedUserDTO(entity);
 	}
 
 	@Override
 	public void delete(Long id) throws EntityRetrievalException {
-		
+
 		TargetedUserEntity toDelete = getEntityById(id);
-		
+
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
 			toDelete.setLastModifiedDate(new Date());
@@ -86,40 +86,40 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 
 	@Override
 	public TargetedUserDTO getById(Long id) {
-		
+
 		TargetedUserDTO dto = null;
 		TargetedUserEntity entity = getEntityById(id);
-		
+
 		if (entity != null){
 			dto = new TargetedUserDTO(entity);
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public TargetedUserDTO getByName(String name) {
-		
+
 		TargetedUserDTO dto = null;
 		List<TargetedUserEntity> entities = getEntitiesByName(name);
-		
+
 		if (entities != null && entities.size() > 0){
 			dto = new TargetedUserDTO(entities.get(0));
 		}
 		return dto;
 	}
-	
+
 	@Override
 	public List<TargetedUserDTO> findAll() {
-		
+
 		List<TargetedUserEntity> entities = getAllEntities();
 		List<TargetedUserDTO> dtos = new ArrayList<TargetedUserDTO>();
-		
+
 		for (TargetedUserEntity entity : entities) {
 			TargetedUserDTO dto = new TargetedUserDTO(entity);
 			dtos.add(dto);
 		}
 		return dtos;
-		
+
 	}
 
 	@Override
@@ -129,8 +129,8 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 			result = getById(id);
 		} else if(!StringUtils.isEmpty(name)) {
 			result = getByName(name);
-		} 
-		
+		}
+
 		if(result == null){
 			TargetedUserDTO toCreate = new TargetedUserDTO();
 			toCreate.setName(name.trim());
@@ -138,49 +138,49 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 		}
 		return result;
 	}
-	
+
 	private void create(TargetedUserEntity entity) {
-		
+
 		entityManager.persist(entity);
 		entityManager.flush();
-		
+
 	}
-	
+
 	private void update(TargetedUserEntity entity) {
-		
-		entityManager.merge(entity);	
+
+		entityManager.merge(entity);
 		entityManager.flush();
 	}
-	
+
 	private List<TargetedUserEntity> getAllEntities() {
 		return entityManager.createQuery( "from TargetedUserEntity where (NOT deleted = true) ", TargetedUserEntity.class).getResultList();
 	}
-	
+
 	private TargetedUserEntity getEntityById(Long id) {
-		
+
 		TargetedUserEntity entity = null;
-			
+
 		Query query = entityManager.createQuery( "from TargetedUserEntity where (NOT deleted = true) AND (id = :entityid) ", TargetedUserEntity.class );
 		query.setParameter("entityid", id);
 		List<TargetedUserEntity> result = query.getResultList();
-		
+
 		if (result.size() > 0){
 			entity = result.get(0);
 		}
-		
+
 		return entity;
 	}
-	
-	
+
+
 	private List<TargetedUserEntity> getEntitiesByName(String name) {
-		
+
 		Query query = entityManager.createQuery( "from TargetedUserEntity where "
 				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", TargetedUserEntity.class );
 		query.setParameter("name", name.toUpperCase());
 		List<TargetedUserEntity> result = query.getResultList();
-		
+
 		return result;
 	}
-	
-	
+
+
 }

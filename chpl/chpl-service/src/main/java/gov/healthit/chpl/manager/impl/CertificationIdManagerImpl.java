@@ -30,7 +30,7 @@ import gov.healthit.chpl.manager.CertificationIdManager;
 public class CertificationIdManagerImpl implements CertificationIdManager {
 
 	@Autowired CertificationIdDAO CertificationIdDAO;
-	
+
 	@Autowired
 	ActivityManager activityManager;
 
@@ -39,7 +39,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
 		return CertificationIdDAO.getByProductIds(productIds, year);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	public CertificationIdDTO getById(Long id) throws EntityRetrievalException {
@@ -51,7 +51,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
 		return CertificationIdDAO.getByCertificationId(certificationId);
 	}
-	
+
 	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
 		return CertificationIdDAO.getProductIdsById(id);
 	}
@@ -73,7 +73,7 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
 		return CertificationIdDAO.verifyByCertificationId(certificationIds);
 	}
-	
+
 	@Override
 	@Transactional(readOnly = true)
 	@Cacheable(CacheNames.ALL_CERT_IDS)
@@ -120,15 +120,15 @@ public class CertificationIdManagerImpl implements CertificationIdManager {
 				results.add(currResult);
 			}
 		}
-	
+
 	return results;
 	}
-	
+
 	@Override
 	@Transactional(readOnly = false)
 	@CacheEvict(value = {CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS}, allEntries = true)
 	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		
+
 		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);
 
 		String activityMsg = "CertificationId "+result.getCertificationId()+" was created.";

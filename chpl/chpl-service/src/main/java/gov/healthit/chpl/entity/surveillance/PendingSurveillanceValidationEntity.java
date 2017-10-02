@@ -20,39 +20,39 @@ import gov.healthit.chpl.entity.ValidationMessageType;
 @Entity
 @Table(name = "pending_surveillance_validation")
 public class PendingSurveillanceValidationEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "pending_surveillance_id")
 	private Long pendingSurveillanceId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_surveillance_id", insertable = false, updatable = false)
 	private PendingSurveillanceEntity pendingSurveillance;
-	
+
 	@Column(name = "message_type")
-	@Type(type = "gov.healthit.chpl.entity.PostgresValidationMessageType", 
+	@Type(type = "gov.healthit.chpl.entity.PostgresValidationMessageType",
 		parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.ValidationMessageType")} )
 	private ValidationMessageType messageType;
-	
+
 	@Column(name = "message")
 	private String message;
-	
+
 	@Column(name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column(name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column(name = "creation_date", insertable = false, updatable = false)
 	private Date creationDate;
-	
+
 	@Column(name = "last_modified_date", insertable = false, updatable = false)
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

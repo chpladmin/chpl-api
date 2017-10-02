@@ -9,11 +9,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 public class CertificationStatus implements Serializable{
-	
+
 	private static final long serialVersionUID = 818896721132619130L;
-	
+
 	private String name;
-	
+
 	public CertificationStatus(String name){
 		this.name = name;
 	}
@@ -26,6 +26,6 @@ public class CertificationStatus implements Serializable{
 		this.name = name;
 	}
 
-	
+
 
 }

@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 
-/** 
+/**
  * Object mapping for hibernate-handled table: certified_product.
  * A product that has been Certified
  *
@@ -30,115 +30,115 @@ public class CertifiedProductEntity {
 
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -2928065796550377879L;
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
 	@Column(name = "certified_product_id", nullable = false)
 	private Long id;
-    
+
     @Column(name = "product_code")
     private String productCode;
-    
+
     @Column(name = "version_code")
     private String versionCode;
-    
+
     @Column(name = "ics_code")
     private String icsCode;
-    
+
     @Column(name = "additional_software_code")
     private String additionalSoftwareCode;
-    
+
     @Column(name = "certified_date_code")
     private String certifiedDateCode;
-    
+
 	@Basic( optional = true )
 	@Column( name = "acb_certification_id", length = 250  )
 	private String acbCertificationId;
-	
+
 	@Basic( optional = false )
 	@Column(name = "certification_body_id", nullable = false )
 	private Long certificationBodyId;
-	
+
 	@Basic( optional = false )
 	@Column(name = "certification_edition_id", nullable = false )
 	private Long certificationEditionId;
-	
+
 	@Basic( optional = true )
 	@Column( name = "chpl_product_number", length = 250  )
 	private String chplProductNumber;
-	
+
 	@Basic( optional = true )
 	@Column(name = "practice_type_id", nullable = true )
 	private Long practiceTypeId;
-	
+
 	@Basic( optional = true )
 	@Column(name = "product_classification_type_id", nullable = true )
 	private Long productClassificationTypeId;
-	
+
 	@Basic( optional = false )
 	@Column(name = "product_version_id", nullable = false )
 	private Long productVersionId;
-	
+
 	@Basic( optional = true )
 	@Column( name = "report_file_location", length = 255  )
 	private String reportFileLocation;
-	
-	@Basic(optional = true) 
+
+	@Basic(optional = true)
 	@Column(name = "sed_report_file_location")
 	private String sedReportFileLocation;
-	
-	@Basic(optional = true) 
+
+	@Basic(optional = true)
     @Column(name = "sed_intended_user_description")
     private String sedIntendedUserDescription;
 
-	@Basic(optional = true) 
+	@Basic(optional = true)
     @Column(name = "sed_testing_end")
     private Date sedTestingEnd;
-    
+
 	@Basic( optional = true )
 	@Column(name = "testing_lab_id", nullable = true )
 	private Long testingLabId;
-	
-	@Basic(optional = true) 
+
+	@Basic(optional = true)
 	@Column(name = "other_acb", length = 64)
 	private String otherAcb;
-	
+
 	@Basic(optional = false)
 	@Column(name ="certification_status_id", nullable = false)
 	private Long certificationStatusId;
-	
+
 	@Basic(optional = true)
 	@Column(name ="meaningful_use_users", nullable = true)
 	private Long meaningfulUseUsers;
-	
+
 	@Column(name = "transparency_attestation_url")
 	private String transparencyAttestationUrl;
-	
+
 	@Column(name = "ics")
 	private Boolean ics;
-	
+
 	@Column(name = "sed")
 	private Boolean sedTesting;
-	
+
 	@Column(name = "qms")
 	private Boolean qmsTesting;
-	
+
 	@Column(name = "accessibility_certified")
 	private Boolean accessibilityCertified;
-	
+
 	@Column(name = "product_additional_software")
 	private String productAdditionalSoftware;
-	
+
 	@Basic(optional = true)
 	@OneToMany(targetEntity = CertificationResultEntity.class, mappedBy = "certifiedProduct", fetch = FetchType.LAZY)
 	private List<CertificationResultEntity> certificationResult;
-	
+
 	@Basic(optional = true)
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "certified_product_id", nullable = false, insertable = false, updatable = false)
 	private CertifiedProductEntity certifiedProduct;
-	
+
 	/**
 	 * Default constructor, mainly for hibernate use.
 	 */
@@ -152,7 +152,7 @@ public class CertifiedProductEntity {
 	public CertifiedProductEntity(Long id) {
 		this.id = id;
 	}
-	
+
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/
@@ -336,23 +336,23 @@ public class CertifiedProductEntity {
 	public void setProductAdditionalSoftware(String productAdditionalSoftware) {
 		this.productAdditionalSoftware = productAdditionalSoftware;
 	}
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	protected Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( nullable = false  )
 	protected Boolean deleted;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	protected Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	protected Long lastModifiedUser;
-	
+
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -384,7 +384,7 @@ public class CertifiedProductEntity {
 	public void setMeaningfulUseUsers(Long meaningfulUseUsers){
 		this.meaningfulUseUsers = meaningfulUseUsers;
 	}
-	
+
 	public String getTransparencyAttestationUrl() {
 		return transparencyAttestationUrl;
 	}
@@ -416,7 +416,7 @@ public class CertifiedProductEntity {
 	public void setSedTestingEnd(Date sedTestingEnd) {
 		this.sedTestingEnd = sedTestingEnd;
 	}
-	
+
 	public CertifiedProductEntity getCertifiedProduct(){
 		return this;
 	}

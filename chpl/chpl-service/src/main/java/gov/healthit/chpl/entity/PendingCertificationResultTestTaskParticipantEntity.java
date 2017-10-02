@@ -16,46 +16,46 @@ import javax.persistence.Table;
 @Entity
 @Table(name="pending_certification_result_test_task_participant")
 public class PendingCertificationResultTestTaskParticipantEntity {
-		
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column( name = "pending_certification_result_test_task_participant_id", nullable = false  )
 	private Long id;
 
 	@Basic( optional = false )
-	@Column(name = "pending_certification_result_test_task_id", nullable = false )	
+	@Column(name = "pending_certification_result_test_task_id", nullable = false )
 	private Long pendingCertificationResultTestTaskId;
 
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_certification_result_test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingCertificationResultTestTaskEntity certTestTask;
-	
+
 	@Basic( optional = false )
-	@Column(name = "pending_test_participant_id", nullable = false )	
+	@Column(name = "pending_test_participant_id", nullable = false )
 	private Long pendingTestParticipantId;
-	
+
 	@Basic( optional = true )
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "pending_test_participant_id", unique = true, nullable = true, insertable = false, updatable = false)
 	private PendingTestParticipantEntity testParticipant;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_date", nullable = false  )
 	private Date lastModifiedDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "last_modified_user", nullable = false  )
 	private Long lastModifiedUser;
-	
+
 	@Basic( optional = false )
 	@Column( name = "creation_date", nullable = false  )
 	private Date creationDate;
-	
+
 	@Basic( optional = false )
 	@Column( name = "deleted", nullable = false  )
 	private Boolean deleted;
-	
+
 	public Long getId() {
 		return id;
 	}
@@ -64,7 +64,7 @@ public class PendingCertificationResultTestTaskParticipantEntity {
 		this.id = id;
 	}
 
-	
+
 	public Date getLastModifiedDate() {
 		return lastModifiedDate;
 	}
@@ -112,7 +112,7 @@ public class PendingCertificationResultTestTaskParticipantEntity {
 	public void setCertTestTask(PendingCertificationResultTestTaskEntity certTestTask) {
 		this.certTestTask = certTestTask;
 	}
-	
+
 	public Long getPendingTestParticipantId() {
 		return pendingTestParticipantId;
 	}

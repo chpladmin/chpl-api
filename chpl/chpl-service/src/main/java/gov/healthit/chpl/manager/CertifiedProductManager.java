@@ -30,17 +30,17 @@ public interface CertifiedProductManager extends QuestionableActivityHandler {
 	public List<CertifiedProductDetailsDTO> getByProduct(Long productId) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId) throws EntityRetrievalException;
 	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId) throws EntityRetrievalException;
-	
+
 	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, 
-			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
+	public CertifiedProductDTO update(Long acbId,
+			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing)
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, InvalidArgumentsException;
-	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing) 
+	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
 			throws EntityNotFoundException;
 	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
 			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
-	
-	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
+
+	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
 			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException;
 	public CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException;

@@ -13,5 +13,5 @@ public class ProductActivityEvent extends ActivityEvent implements Serializable 
 	public void setDeveloper(Developer developer) {
 		this.developer = developer;
 	}
-	
+
 }

@@ -19,9 +19,9 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 	protected static final String FIRST_ROW_INDICATOR = "NEW";
 	protected static final String SUBSEQUENT_ROW_INDICATOR = "SUBELEMENT";
 	protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
-	
+
 	public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
-	
+
 	public Long getDefaultStatusId() {
 		CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
 		if(statusDto != null) {
@@ -29,7 +29,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 		}
 		return null;
 	}
-	
+
 	/**
 	 * look up the certification criteria by name and throw an error if we can't find it
 	 * @param criterionName
@@ -42,36 +42,36 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 		if(certEntity == null) {
 			throw new InvalidArgumentsException("Could not find a certification criterion matching " + criterionName);
 		}
-		
-		PendingCertificationResultEntity result = new PendingCertificationResultEntity();		
+
+		PendingCertificationResultEntity result = new PendingCertificationResultEntity();
 		result.setMappedCriterion(certEntity);
-		result.setMeetsCriteria(asBoolean(columnValue));		
+		result.setMeetsCriteria(asBoolean(columnValue));
 		return result;
 	}
-	
-	
+
+
 	protected Boolean asBoolean(String value) {
 		value = value.trim();
-		
+
 		if(StringUtils.isEmpty(value)) {
 			return false;
 		}
-		
+
 		//look for a string
-		if(value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || 
+		if(value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") ||
 			value.equalsIgnoreCase("yes") || value.equalsIgnoreCase("y")) {
 			return true;
 		}
-		
+
 		try {
 			double numValue = Double.parseDouble(value);
 			if(numValue > 0) {
 				return true;
-			} 
+			}
 		} catch(NumberFormatException ex) {
 			logger.error("Could not parse " + value + " as an integer");
 		}
-		
+
 		return false;
 	}
 }

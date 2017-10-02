@@ -6,7 +6,7 @@ public class JobType {
 	private Long id;
 	private String name;
 	private String description;
-	
+
 	public JobType() {}
 	public JobType(JobTypeDTO dto) {
 		this.id = dto.getId();

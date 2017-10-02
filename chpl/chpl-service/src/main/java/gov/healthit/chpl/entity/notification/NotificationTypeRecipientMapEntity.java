@@ -18,45 +18,45 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 @Entity
 @Table(name = "notification_type_recipient_map")
 public class NotificationTypeRecipientMapEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "recipient_id")
 	private Long recipientId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "recipient_id", insertable = false, updatable = false)
 	private NotificationRecipientEntity recipient;
-	
+
 	@Column(name = "notification_type_id")
 	private Long notificationTypeId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "notification_type_id", insertable = false, updatable = false)
 	private NotificationTypeEntity notificationType;
-	
+
 	@Column(name = "acb_id")
 	private Long acbId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "acb_id", insertable = false, updatable = false)
 	private CertificationBodyEntity acb;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	public Long getId() {
 		return id;
 	}

@@ -22,9 +22,9 @@ public class AsynchronousStatistics {
 	@Autowired DeveloperStatisticsDAO developerStatisticsDAO;
 	@Autowired ListingStatisticsDAO listingStatisticsDAO;
 	@Autowired SurveillanceStatisticsDAO surveillanceStatisticsDAO;
-	
+
 	/**
-	 * Total # of Unique Developers (Regardless of Edition) 
+	 * Total # of Unique Developers (Regardless of Edition)
 	 */
 	@Transactional
 	@Async
@@ -40,7 +40,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalDevelopersWith2014Listings(DateRange dateRange) {
 		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2014Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of Developers with Active 2014 Listings
 	 */
@@ -49,7 +49,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
 		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWithActive2014Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of Developers by certified body with listings for each year
 	 */
@@ -58,7 +58,7 @@ public class AsynchronousStatistics {
 	public Future<List<CertifiedBodyStatistics>> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange) {
 		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange));
 	}
-	
+
 	/**
 	 * Total # of Developers by certified body with listings in each certification status and year
 	 */
@@ -76,7 +76,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalDevelopersWith2015Listings(DateRange dateRange) {
 		return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2015Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of Developers with Active 2015 Listings
 	 */
@@ -87,14 +87,14 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011) 
+	 * Total # of Certified Unique Products (Regardless of Status or Edition - Including 2011)
 	 */
 	@Async
 	@Transactional
 	public Future<Long> getTotalCertifiedProducts(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCertifiedProducts(dateRange));
 	}
-	
+
 	/**
 	 * Total # of Certified Unique Products each year by certified body
 	 */
@@ -103,7 +103,7 @@ public class AsynchronousStatistics {
 	public Future<List<CertifiedBodyStatistics>> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBody(dateRange));
 	}
-	
+
 	/**
 	 * Total # of Certified Unique Products each year by certified body and certification status
 	 */
@@ -112,7 +112,7 @@ public class AsynchronousStatistics {
 	public Future<List<CertifiedBodyStatistics>> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(dateRange));
 	}
-	
+
 	/**
 	 * Total # of unique Products with 2014 Listings
 	 */
@@ -121,7 +121,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalCPs2014Listings(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPs2014Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of unique Products with Active 2014 Listings
 	 */
@@ -130,7 +130,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalCPsActive2014Listings(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2014Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of unique Products with Suspended (by ONC and ONC-ACB) 2014 Listings
 	 */
@@ -139,7 +139,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalCPsSuspended2014Listings(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsSuspended2014Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of unique Products with 2015 Listings
 	 */
@@ -157,7 +157,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalCPsActive2015Listings(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2015Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of unique Products with Suspended (by ONC and ONC-ACB) 2015 Listings
 	 */
@@ -177,7 +177,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of Listings (Regardless of Status or Edition) 
+	 * Total # of Listings (Regardless of Status or Edition)
 	 */
 	@Async
 	@Transactional
@@ -202,7 +202,7 @@ public class AsynchronousStatistics {
 	public Future<Long> getTotalActive2015Listings(DateRange dateRange) {
 		return new AsyncResult<>(listingStatisticsDAO.getTotalActive2015Listings(dateRange));
 	}
-	
+
 	/**
 	 * Total # of Active Listings by Certified Body
 	 */
@@ -240,7 +240,7 @@ public class AsynchronousStatistics {
 	}
 
 	/**
-	 * Total # of Surveillance Activities* 
+	 * Total # of Surveillance Activities*
 	 */
 	@Async
 	@Transactional

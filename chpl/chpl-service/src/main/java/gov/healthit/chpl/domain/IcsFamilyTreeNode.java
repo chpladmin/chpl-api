@@ -16,27 +16,27 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 public class IcsFamilyTreeNode implements Serializable{
-	
+
 	private static final long serialVersionUID = 4170181178663367311L;
 
 	private Long id;
-	
+
 	private Date certificationDate;
 
 	private String chplProductNumber;
-	
+
 	private CertificationStatus certificationStatus;
-	
+
 	private List<CertifiedProduct> parents;
-	
+
 	private List<CertifiedProduct> children;
-	
+
 	private Developer developer;
-	
+
 	private ProductVersion version;
-	
+
 	private Product product;
-	
+
 	public IcsFamilyTreeNode(){
 		parents = new ArrayList<CertifiedProduct>();
 		children = new ArrayList<CertifiedProduct>();
@@ -113,6 +113,6 @@ public class IcsFamilyTreeNode implements Serializable{
 	public void setCertificationDate(Date certificationDate) {
 		this.certificationDate = certificationDate;
 	}
-	
-	
+
+
 }

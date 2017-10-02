@@ -52,16 +52,16 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 	@Autowired DeveloperDAO developerDao;
 	@Autowired TestToolDAO testToolDao;
 	@Autowired ListingGraphDAO inheritanceDao;
-	
+
 	@Autowired
 	protected CertificationResultRules certRules;
-	
+
 	protected Boolean hasIcsConflict;
-	
+
 	protected Integer icsCodeInteger;
-	
+
 	Pattern urlRegex;
-	
+
 	public CertifiedProductValidatorImpl() {
 		urlRegex = Pattern.compile(URL_PATTERN);
 	}
@@ -76,79 +76,79 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		} catch(EntityRetrievalException ex) {}
 		return true;
 	}
-	
+
 	@Override
 	public boolean validateProductCodeCharacters(String chplProductNumber) {
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-			
+
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
-			if(StringUtils.isEmpty(productCode) || 
+			if(StringUtils.isEmpty(productCode) ||
 				!productCode.matches("^[a-zA-Z0-9_]{"+CertifiedProductDTO.PRODUCT_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean validateVersionCodeCharacters(String chplProductNumber) {
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-			
+
 			//validate that these pieces match up with data
 			String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
-			if(StringUtils.isEmpty(versionCode) || 
+			if(StringUtils.isEmpty(versionCode) ||
 				!versionCode.matches("^[a-zA-Z0-9_]{"+CertifiedProductDTO.VERSION_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean validateIcsCodeCharacters(String chplProductNumber) {
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			//validate that these pieces match up with data
 			String icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
-			if(StringUtils.isEmpty(icsCode) || 
+			if(StringUtils.isEmpty(icsCode) ||
 				!icsCode.matches("^[0-9]{"+CertifiedProductDTO.ICS_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean validateAdditionalSoftwareCodeCharacters(String chplProductNumber) {
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			//validate that these pieces match up with data
 			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
-			if(StringUtils.isEmpty(additionalSoftwareCode) || 
+			if(StringUtils.isEmpty(additionalSoftwareCode) ||
 				!additionalSoftwareCode.matches("^0|1$")) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean validateCertifiedDateCodeCharacters(String chplProductNumber) {
 		String[] uniqueIdParts = chplProductNumber.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			//validate that these pieces match up with data
 			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
-			if(StringUtils.isEmpty(certifiedDateCode) || 
+			if(StringUtils.isEmpty(certifiedDateCode) ||
 				!certifiedDateCode.matches("^[0-9]{"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
 		return true;
 	}
-	
+
 	private void updateChplProductNumber(CertifiedProductSearchDetails product, int productNumberIndex, String newValue) {
 		String[] uniqueIdParts = product.getChplProductNumber().split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
@@ -159,7 +159,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				} else {
 					newChplProductCode += uniqueIdParts[idx];
 				}
-				
+
 				if(idx < uniqueIdParts.length-1) {
 					newChplProductCode += ".";
 				}
@@ -167,7 +167,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			product.setChplProductNumber(newChplProductCode);
 		}
 	}
-	
+
 	@Override
 	public void validate(PendingCertifiedProductDTO product) {
 		String uniqueId = product.getUniqueId();
@@ -175,7 +175,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 			product.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have " + CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS + " parts separated by '.'");
 			return;
-		} 
+		}
 		//validate that these pieces match up with data
 		String editionCode = uniqueIdParts[CertifiedProductDTO.EDITION_CODE_INDEX];
 		String atlCode = uniqueIdParts[CertifiedProductDTO.ATL_CODE_INDEX];
@@ -185,14 +185,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
 		String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 		String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
-		
+
 		try {
 			CertificationEditionDTO certificationEdition = certEditionDao.getById(product.getCertificationEditionId());
 			if(("2014".equals(certificationEdition.getYear()) && !"14".equals(editionCode)) ||
 				("2015".equals(certificationEdition.getYear()) && !"15".equals(editionCode))) {
 				product.getErrorMessages().add("The first part of the CHPL ID must match the certification year of the product.");
 			}
-			
+
 			if(product.getTestingLabId() == null) {
 				product.getErrorMessages().add("No testing lab was found matching the name '" + product.getTestingLabName() + "'");
 			} else {
@@ -201,7 +201,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					product.getErrorMessages().add("The testing lab code provided does not match the assigned testing lab code '" + testingLab.getTestingLabCode() + "'.");
 				}
 			}
-			
+
 			CertificationBodyDTO certificationBody = null;
 			if(product.getCertificationBodyId() == null) {
 				product.getErrorMessages().add("No certification body was found matching the name '" + product.getCertificationBodyName() + "'.");
@@ -211,7 +211,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					product.getErrorMessages().add("The ACB code provided does not match the assigned ACB code '" + certificationBody.getAcbCode() + "'.");
 				}
 			}
-			
+
 			if(product.getDeveloperId() != null && !developerCode.matches("X+")) {
 				DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
 				if(developer != null) {
@@ -221,7 +221,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					} else if(!mostRecentStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 						product.getErrorMessages().add("The developer " + developer.getName() + " has a status of " + mostRecentStatus.getStatus().getStatusName() + ". Certified products belonging to this developer cannot be created until its status returns to Active.");
 					}
-					
+
 					if(!developer.getDeveloperCode().equals(developerCode)) {
 						product.getErrorMessages().add("The developer code '" + developerCode + "' does not match the assigned developer code for " + product.getDeveloperName() + ": '" + developer.getDeveloperCode() + "'.");
 					}
@@ -230,7 +230,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						if(mapping != null) {
 							//check transparency attestation and url for warnings
 							if( (mapping.getTransparencyAttestation() == null && product.getTransparencyAttestation() != null) ||
-								(mapping.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) || 
+								(mapping.getTransparencyAttestation() != null && product.getTransparencyAttestation() == null) ||
 								(mapping.getTransparencyAttestation() != null && !mapping.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
 								product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 							}
@@ -250,26 +250,26 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		} catch(EntityRetrievalException ex) {
 			product.getErrorMessages().add(ex.getMessage());
 		}
-		
+
 		if(!validateProductCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add(
 					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()),
 							CertifiedProductDTO.PRODUCT_CODE_LENGTH));
 		}
-		
+
 		if(!validateVersionCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add(
 					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badVersionCodeChars"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.badVersionCodeChars"), LocaleContextHolder.getLocale()),
 							CertifiedProductDTO.VERSION_CODE_LENGTH));
 		}
-		
+
 		hasIcsConflict = false;
 		if(!validateIcsCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add(
 					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()),
 							CertifiedProductDTO.ICS_CODE_LENGTH));
 		} else {
 			icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
@@ -283,11 +283,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 		}
-		
+
 		if(!validateAdditionalSoftwareCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add(
 					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()),
 							CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
 		} else {
 			if(additionalSoftwareCode.equals("0")) {
@@ -310,123 +310,123 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				if(!hasAS) {
 					product.getErrorMessages().add("The unique id indicates the product has additional software but none is specified in the upload file.");
 				}
-			} 
+			}
 		}
-		
+
 		if(!validateCertifiedDateCodeCharacters(product.getUniqueId())) {
 			product.getErrorMessages().add(
 					String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.badCertifiedDateCodeChars"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.badCertifiedDateCodeChars"), LocaleContextHolder.getLocale()),
 							CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH));
 		}
 		SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
 		try {
 			Date idDate = idDateFormat.parse(certifiedDateCode);
-			if(product.getCertificationDate() == null || 
+			if(product.getCertificationDate() == null ||
 					idDate.getTime() != product.getCertificationDate().getTime()) {
 				product.getErrorMessages().add("The certification date provided in the unique id does not match the certification date in the upload file.");
 			}
 		} catch (ParseException pex) {
 			product.getErrorMessages().add("Could not parse the certification date part of the product id: " + certifiedDateCode);
 		}
-		
+
 		//make sure the unique id is really uniqiue
 		if(!validateUniqueId(product.getUniqueId())) {
 			product.getErrorMessages().add("The id " + product.getUniqueId() + " must be unique among all other certified products but one already exists with this ID.");
 		}
-		
+
 		validateDemographics(product);
-		
+
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if( (cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
 				if(cert.getG1Success() != null && cert.getG1Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G1 Success"));
 				}
 				if(cert.getG2Success() != null && cert.getG2Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G2 Success"));
 				}
 				if(cert.getGap() != null && cert.getGap().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "GAP"));
 				}
 				if(cert.getSed() != null && cert.getSed().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "SED"));
 				}
 				if(!StringUtils.isEmpty(cert.getApiDocumentation())) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "API Documentation"));
 				}
 				if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Privacy and Security Framework"));
 				}
 				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Additional Software"));
 				}
 				if(cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G1 Macra Measures"));
 				}
 				if(cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G2 Macra Measures"));
 				}
 				if(cert.getTestData() != null && cert.getTestData().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Data"));
 				}
 				if(cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Functionality"));
 				}
 				if(cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Procedures"));
 				}
 				if(cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Standards"));
 				}
 				if(cert.getTestTasks() != null && cert.getTestTasks().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Tasks"));
 				}
 				if(cert.getTestTools() != null && cert.getTestTools().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Tools"));
 				}
 				if(cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "UCD Processes"));
 				}
 			}
-			
+
 			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
 				if(foundPrivacyAndSecurityFramework == null){
-					product.getErrorMessages().add("Certification " + cert.getNumber() + 
-							" contains Privacy and Security Framework value '" + 
+					product.getErrorMessages().add("Certification " + cert.getNumber() +
+							" contains Privacy and Security Framework value '" +
 							formattedPrivacyAndSecurityFramework + "' which must match one of " +
 							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
 				}
@@ -435,8 +435,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
 				if(foundPrivacyAndSecurityFramework == null){
-					product.getErrorMessages().add("Certification " + cert.getNumber() + 
-							" contains Privacy and Security Framework value '" + 
+					product.getErrorMessages().add("Certification " + cert.getNumber() +
+							" contains Privacy and Security Framework value '" +
 							formattedPrivacyAndSecurityFramework + "' which must match one of " +
 							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
 				}
@@ -457,11 +457,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		String uniqueId = product.getChplProductNumber();
 		String[] uniqueIdParts = uniqueId.split("\\.");
 		if(uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-			
+
 			//validate that these pieces match up with data
 			String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
 			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
-			
+
 			try {
 				if(product.getDeveloper() != null && product.getDeveloper().getDeveloperId() != null) {
 					DeveloperDTO developer = developerDao.getById(product.getDeveloper().getDeveloperId());
@@ -479,52 +479,52 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			} catch(EntityRetrievalException ex) {
 				product.getErrorMessages().add("Could not find distinct developer with id " + product.getDeveloper().getDeveloperId());
 			}
-			
+
 			if(!validateProductCodeCharacters(product.getChplProductNumber())) {
 				product.getErrorMessages().add(
 						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()), 
+								new DefaultMessageSourceResolvable("listing.badProductCodeChars"), LocaleContextHolder.getLocale()),
 								CertifiedProductDTO.PRODUCT_CODE_LENGTH));
 			}
-			
+
 			if(!validateVersionCodeCharacters(product.getChplProductNumber())) {
 				product.getErrorMessages().add(
 						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badVersionCodeChars"), LocaleContextHolder.getLocale()), 
+								new DefaultMessageSourceResolvable("listing.badVersionCodeChars"), LocaleContextHolder.getLocale()),
 								CertifiedProductDTO.VERSION_CODE_LENGTH));
 			}
-			
+
 			hasIcsConflict = false;
 			if(!validateIcsCodeCharacters(product.getChplProductNumber())) {
 				product.getErrorMessages().add(
 						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()), 
+								new DefaultMessageSourceResolvable("listing.badIcsCodeChars"), LocaleContextHolder.getLocale()),
 								CertifiedProductDTO.ICS_CODE_LENGTH));
 			} else {
 				icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
 				if(icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
-					if(product.getIcs() != null && product.getIcs().getParents() != null && 
+					if(product.getIcs() != null && product.getIcs().getParents() != null &&
 							product.getIcs().getParents().size() > 0) {
 						product.getErrorMessages().add("ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
-					} 
-						
-					if(product.getIcs() != null && product.getIcs().getInherits() != null && 
+					}
+
+					if(product.getIcs() != null && product.getIcs().getInherits() != null &&
 							product.getIcs().getInherits().equals(Boolean.TRUE)) {
 						product.getErrorMessages().add("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
 						hasIcsConflict = true;
 					}
 				} else if(product.getIcs() == null || product.getIcs().getInherits() == null ||
-						product.getIcs().getInherits().equals(Boolean.FALSE) && 
+						product.getIcs().getInherits().equals(Boolean.FALSE) &&
 						icsCodeInteger != null && icsCodeInteger.intValue() > 0) {
 					product.getErrorMessages().add("The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
 					hasIcsConflict = true;
 				}
 			}
-			
+
 			if(!validateAdditionalSoftwareCodeCharacters(product.getChplProductNumber())) {
 				product.getErrorMessages().add(
 						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()), 
+								new DefaultMessageSourceResolvable("listing.badAdditionalSoftwareCodeChars"), LocaleContextHolder.getLocale()),
 								CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_LENGTH));
 			} else {
 				boolean hasAS = false;
@@ -539,11 +539,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					productIdChanged = true;
 				}
 			}
-			
+
 			if(!validateCertifiedDateCodeCharacters(product.getChplProductNumber())) {
 				product.getErrorMessages().add(
 						String.format(messageSource.getMessage(
-								new DefaultMessageSourceResolvable("listing.badCertifiedDateCodeChars"), LocaleContextHolder.getLocale()), 
+								new DefaultMessageSourceResolvable("listing.badCertifiedDateCodeChars"), LocaleContextHolder.getLocale()),
 								CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH));
 			}
 			SimpleDateFormat idDateFormat = new SimpleDateFormat("yyMMdd");
@@ -555,7 +555,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				productIdChanged = true;
 			}
 		}
-		
+
 		if(productIdChanged) {
 			//make sure the unique id is really unique - only check this if we know it changed
 			//because if it hasn't changes there will be 1 product with its id
@@ -563,90 +563,90 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				product.getErrorMessages().add("The id " + product.getChplProductNumber() + " must be unique among all other certified products but one already exists with this ID.");
 			}
 		}
-		
+
 		validateDemographics(product);
-		
+
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if( (cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
 				if(cert.isG1Success() != null && cert.isG1Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G1 Success"));
 				}
 				if(cert.isG2Success() != null && cert.isG2Success().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G2 Success"));
 				}
 				if(cert.isGap() != null && cert.isGap().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "GAP"));
 				}
 				if(cert.isSed() != null && cert.isSed().booleanValue() == true) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "SED"));
 				}
 				if(!StringUtils.isEmpty(cert.getApiDocumentation())) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "API Documentation"));
 				}
 				if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "API Documentation"));
 				}
 				if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Additional Software"));
 				}
 				if(cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G1 Macra Measures"));
 				}
 				if(cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "G2 Macra Measures"));
 				}
 				if(cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Data"));
 				}
 				if(cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Functionality"));
 				}
 				if(cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Procedures"));
 				}
 				if(cert.getTestStandards() != null && cert.getTestStandards().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Standards"));
 				}
 				if(cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
 					product.getWarningMessages().add(String.format(messageSource.getMessage(
-							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+							new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 							cert.getNumber(), "Test Tools"));
 				}
-				
+
 				if(product.getSed() != null && product.getSed().getTestTasks() != null && product.getSed().getTestTasks().size() > 0) {
 					for(TestTask tt : product.getSed().getTestTasks()) {
 						for(CertificationCriterion ttCriteria : tt.getCriteria()) {
 							if(ttCriteria.getNumber() != null && ttCriteria.getNumber().equals(cert.getNumber())) {
 								product.getWarningMessages().add(String.format(messageSource.getMessage(
-										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 										cert.getNumber(), "Test Tasks"));
-							} 
+							}
 						}
 					}
 				}
@@ -655,25 +655,25 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						for(CertificationCriterion ucdCriteria : ucd.getCriteria()) {
 							if(ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
 								product.getWarningMessages().add(String.format(messageSource.getMessage(
-										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()), 
+										new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"), LocaleContextHolder.getLocale()),
 										cert.getNumber(), "UCD Processes"));
-							} 
+							}
 						}
 					}
 				}
 			}
-			
+
 			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
 				if(foundPrivacyAndSecurityFramework == null){
-					product.getErrorMessages().add("Certification " + cert.getNumber() + 
-							" contains Privacy and Security Framework value '" + 
+					product.getErrorMessages().add("Certification " + cert.getNumber() +
+							" contains Privacy and Security Framework value '" +
 							formattedPrivacyAndSecurityFramework + "' which must match one of " +
 							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
 				}
 			}
-			
+
 			if(cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
 				for(CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
 					if(asDto.getCertifiedProductId() == null && !StringUtils.isEmpty(asDto.getCertifiedProductNumber())) {
@@ -688,7 +688,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 		}
 	}
-	
+
 	protected void validateDemographics(PendingCertifiedProductDTO product) {
 		if(product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
 			product.getErrorMessages().add("Certification edition is required but was not found.");
@@ -704,36 +704,36 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(product.getCertificationBodyId() == null) {
 			product.getErrorMessages().add("ACB ID is required but was not found.");
 		}
-		
+
 		if(StringUtils.isEmpty(product.getUniqueId())) {
 			product.getErrorMessages().add("The product unique id is required.");
 		}
-		
+
 		if(StringUtils.isEmpty(product.getDeveloperName())) {
 			product.getErrorMessages().add("A developer name is required.");
 		}
-		
+
 		if(StringUtils.isEmpty(product.getProductName())) {
 			product.getErrorMessages().add("A product name is required.");
 		}
-		
+
 		if(StringUtils.isEmpty(product.getProductVersion())) {
 			product.getErrorMessages().add("A product version is required.");
 		}
-		
+
 		if(product.getDeveloperAddress() != null) {
 			if(StringUtils.isEmpty(product.getDeveloperAddress().getStreetLineOne())) {
 				product.getErrorMessages().add("Developer street address is required.");
 			}
-			
+
 			if(StringUtils.isEmpty(product.getDeveloperAddress().getCity())) {
 				product.getErrorMessages().add("Developer city is required.");
 			}
-			
+
 			if(StringUtils.isEmpty(product.getDeveloperAddress().getState())) {
 				product.getErrorMessages().add("Developer state is required.");
 			}
-			
+
 			if(StringUtils.isEmpty(product.getDeveloperAddress().getZipcode())) {
 				product.getErrorMessages().add("Developer zip code is required.");
 			}
@@ -741,32 +741,32 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			if(StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
 				product.getErrorMessages().add("Developer street address is required.");
 			}
-			
+
 			if(StringUtils.isEmpty(product.getDeveloperCity())) {
 				product.getErrorMessages().add("Developer city is required.");
 			}
-			
+
 			if(StringUtils.isEmpty(product.getDeveloperState())) {
 				product.getErrorMessages().add("Developer state is required.");
 			}
-			
+
 			if(StringUtils.isEmpty(product.getDeveloperZipCode())) {
 				product.getErrorMessages().add("Developer zip code is required.");
 			}
 		}
-		
+
 		if(StringUtils.isEmpty(product.getDeveloperWebsite())) {
 			product.getErrorMessages().add("Developer website is required.");
 		}
-		
+
 		if(StringUtils.isEmpty(product.getDeveloperEmail())) {
 			product.getErrorMessages().add("Developer contact email address is required.");
 		}
-		
+
 		if(StringUtils.isEmpty(product.getDeveloperPhoneNumber())) {
 			product.getErrorMessages().add("Developer contact phone number is required.");
 		}
-		
+
 		if(StringUtils.isEmpty(product.getDeveloperContactName())) {
 			product.getErrorMessages().add("Developer contact name is required.");
 		}
@@ -774,12 +774,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(product.getIcs() == null) {
 			product.getErrorMessages().add("ICS is required.");
 		}
-		
-//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
+
+//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) &&
 //				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
 //			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
 //		}
-		
+
 		for(PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
 			if(cert.getMeetsCriteria() == null) {
 				product.getErrorMessages().add("0 or 1 is required to inidicate whether " + cert.getNumber() + " was met.");
@@ -788,14 +788,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						cert.getGap() == null) {
 					product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
 				}
-				
+
 				boolean gapEligibleAndTrue = false;
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&
 						cert.getGap() == Boolean.TRUE) {
 					gapEligibleAndTrue = true;
 				}
-				
-				if(!gapEligibleAndTrue && 
+
+				if(!gapEligibleAndTrue &&
 						certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION) &&
 						(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
 					product.getErrorMessages().add("Test Procedures are required for certification " + cert.getNumber() + ".");
@@ -803,7 +803,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			}
 		}
 	}
-	
+
 	protected void validateDemographics(CertifiedProductSearchDetails product) {
 		if(product.getCertificationEdition() == null || product.getCertificationEdition().get("id") == null) {
 			product.getErrorMessages().add("Certification edition is required but was not found.");
@@ -819,24 +819,24 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 		if(product.getCertifyingBody() == null || product.getCertifyingBody().get("id") == null) {
 			product.getErrorMessages().add("ACB ID is required but was not found.");
 		}
-		
+
 		if(product.getDeveloper() == null) {
 			product.getErrorMessages().add("A developer is required.");
 		}
-		
+
 		if(product.getProduct() == null || StringUtils.isEmpty(product.getProduct().getName())) {
 			product.getErrorMessages().add("A product name is required.");
 		}
-		
+
 		if(product.getVersion() == null || StringUtils.isEmpty(product.getVersion().getVersion())) {
 			product.getErrorMessages().add("A product version is required.");
 		}
-		
-//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) && 
+
+//		if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) &&
 //				urlRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false) {
 //			product.getErrorMessages().add("Transparency attestation URL is not a valid URL format.");
 //		}
-		
+
 		for(CertificationResult cert : product.getCertificationResults()) {
 			if(cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
 				if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) &&

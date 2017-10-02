@@ -24,59 +24,59 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 @Entity
 @Table(name = "surveillance")
 public class SurveillanceEntity {
-	
-	@Id 
+
+	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
+
 	@Column(name = "friendly_id", insertable = false, updatable = false)
 	private String friendlyId;
-	
+
 	@Column(name = "certified_product_id")
 	private Long certifiedProductId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
 	private CertifiedProductEntity certifiedProduct;
-	
+
 	@Column(name = "start_date")
 	private Date startDate;
-	
+
 	@Column(name = "end_date")
 	private Date endDate;
-	
+
 	@Column(name = "type_id")
 	private Long surveillanceTypeId;
-	
+
 	@OneToOne(optional = true, fetch = FetchType.LAZY)
 	@JoinColumn(name = "type_id", insertable = false, updatable = false)
 	private SurveillanceTypeEntity surveillanceType;
-	
+
 	@Column(name = "randomized_sites_used")
 	private Integer numRandomizedSites;
-	
+
 	@Column( name = "deleted")
 	private Boolean deleted;
-	
+
 	@Column( name = "last_modified_user")
 	private Long lastModifiedUser;
-	
+
 	@Column( name = "creation_date", insertable = false, updatable = false  )
 	private Date creationDate;
-	
+
 	@Column( name = "last_modified_date", insertable = false, updatable = false )
 	private Date lastModifiedDate;
-	
+
 	@Column(name = "user_permission_id")
 	private Long userPermissionId;
-	
+
  	@OneToMany( fetch = FetchType.LAZY, mappedBy = "surveillanceId"  )
 	@Basic( optional = false )
 	@Column( name = "surveillance_id", nullable = false  )
  	@Where(clause="deleted <> 'true'")
 	private Set<SurveillanceRequirementEntity> surveilledRequirements = new HashSet<SurveillanceRequirementEntity>();
-	
+
 	public Long getId() {
 		return id;
 	}

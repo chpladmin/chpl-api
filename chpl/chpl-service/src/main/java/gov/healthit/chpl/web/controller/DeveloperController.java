@@ -77,21 +77,21 @@ public class DeveloperController {
 		return results;
 	}
 
-	@ApiOperation(value="Get information about a specific developer.", 
+	@ApiOperation(value="Get information about a specific developer.",
 			notes="")
 	@RequestMapping(value="/{developerId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId) throws EntityRetrievalException {
 		DeveloperDTO developer = developerManager.getById(developerId);
-		
+
 		Developer result = null;
 		if(developer != null) {
 			result = new Developer(developer);
 		}
 		return result;
 	}
-	
-	@ApiOperation(value="Update a developer or merge developers.", 
+
+	@ApiOperation(value="Update a developer or merge developers.",
 			notes="This method serves two purposes: to update a single developer's information and to merge two developers into one. "
 					+ " A user of this service should pass in a single developerId to update just that developer. "
 					+ " If multiple developer IDs are passed in, the service performs a merge meaning that a new developer "
@@ -99,29 +99,29 @@ public class DeveloperController {
 					+ " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
 					+ " old developers are then deleted. "
 					+ " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
-	@RequestMapping(value="/update", method= RequestMethod.POST, 
+	@RequestMapping(value="/update", method= RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset = utf-8")
-	public ResponseEntity<Developer> updateDeveloper(@RequestBody(required = true) UpdateDevelopersRequest developerInfo) 
+	public ResponseEntity<Developer> updateDeveloper(@RequestBody(required = true) UpdateDevelopersRequest developerInfo)
 			throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
 		DeveloperDTO result = null;
 		HttpHeaders responseHeaders = new HttpHeaders();
 
 		if(developerInfo.getDeveloperIds().size() > 1) {
-			//merge these developers into one 
+			//merge these developers into one
 			// - create a new developer with the rest of the passed in information
 			DeveloperDTO toCreate = new DeveloperDTO();
 			toCreate.setDeveloperCode(developerInfo.getDeveloper().getDeveloperCode());
 			toCreate.setName(developerInfo.getDeveloper().getName());
 			toCreate.setWebsite(developerInfo.getDeveloper().getWebsite());
-			
-			if(developerInfo.getDeveloper().getStatusEvents() != null && 
+
+			if(developerInfo.getDeveloper().getStatusEvents() != null &&
 					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
 				List<String> statusErrors = validateDeveloperStatusEvents(developerInfo.getDeveloper().getStatusEvents());
 				if(statusErrors != null && statusErrors.size() > 0) {
 					//can only have one error message here for the status text so just pick the first one
 					throw new InvalidArgumentsException(statusErrors.get(0));
-				}				
+				}
 				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setStatusName(providedStatusHistory.getStatus().getStatus());
@@ -133,7 +133,7 @@ public class DeveloperController {
 				//if no history is passed in, an Active status gets added in the DAO
 				//when the new developer is created
 			}
-			
+
 			Address developerAddress = developerInfo.getDeveloper().getAddress();
 			if(developerAddress != null) {
 				AddressDTO toCreateAddress = new AddressDTO();
@@ -172,16 +172,16 @@ public class DeveloperController {
 				devMap.setAcbName(attMap.getAcbName());
 				devMap.setTransparencyAttestation(attMap.getAttestation());
 				toUpdate.getTransparencyAttestationMappings().add(devMap);
-			}	
-			
-			if(developerInfo.getDeveloper().getStatusEvents() != null && 
+			}
+
+			if(developerInfo.getDeveloper().getStatusEvents() != null &&
 					developerInfo.getDeveloper().getStatusEvents().size() > 0) {
 				List<String> statusErrors = validateDeveloperStatusEvents(developerInfo.getDeveloper().getStatusEvents());
 				if(statusErrors != null && statusErrors.size() > 0) {
 					//can only have one error message here for the status text so just pick the first one
 					throw new InvalidArgumentsException(statusErrors.get(0));
 				}
-				
+
 				for(DeveloperStatusEvent providedStatusHistory : developerInfo.getDeveloper().getStatusEvents()) {
 					DeveloperStatusDTO status = new DeveloperStatusDTO();
 					status.setId(providedStatusHistory.getStatus().getId());
@@ -196,7 +196,7 @@ public class DeveloperController {
 			} else {
 				throw new InvalidArgumentsException("The developer must have a current status specified.");
 			}
-			
+
 			if(developerInfo.getDeveloper().getAddress() != null) {
 				AddressDTO address = new AddressDTO();
 				address.setId(developerInfo.getDeveloper().getAddress().getAddressId());
@@ -218,18 +218,18 @@ public class DeveloperController {
 				toUpdateContact.setTitle(developerContact.getTitle());
 				toUpdate.setContact(toUpdateContact);
 			}
-			
+
 			result = developerManager.update(toUpdate);
 			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 		}
-		
+
 		if(result == null) {
 			throw new EntityCreationException("There was an error inserting or updating the developer information.");
 		}
 		Developer restResult = new Developer(result);
 		return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
 	}
-	
+
 	private List<String> validateDeveloperStatusEvents(List<DeveloperStatusEvent> statusEvents) {
 		List<String> errors = new ArrayList<String>();
 		if(statusEvents == null || statusEvents.size() == 0) {
@@ -252,7 +252,7 @@ public class DeveloperController {
 					}
 				}
 			});
-			
+
 			//now that the list is sorted by date, make sure no two statuses next to each other are the same
 			Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
 			DeveloperStatusEvent prev = null, curr = null;
@@ -265,8 +265,8 @@ public class DeveloperController {
 					prev = curr;
 					curr = iter.next();
 				}
-				
-				if(prev != null && curr != null && 
+
+				if(prev != null && curr != null &&
 					prev.getStatus().getStatus().equalsIgnoreCase(curr.getStatus().getStatus())) {
 					errors.add("The status '" + prev.getStatus().getStatus() + "' cannot be listed twice in a row.");
 				}
