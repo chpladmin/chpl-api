@@ -6,82 +6,83 @@ import java.util.Date;
 import gov.healthit.chpl.entity.ContactEntity;
 
 public class ContactDTO implements Serializable {
-	private static final long serialVersionUID = 5417465972193498436L;
-	private Long id;
-	private String firstName;
-	private String lastName;
-	private String email;
-	private String phoneNumber;
-	private String title;
-	private Date signatureDate;
+    private static final long serialVersionUID = 5417465972193498436L;
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phoneNumber;
+    private String title;
+    private Date signatureDate;
 
-	public ContactDTO() {}
+    public ContactDTO() {
+    }
 
-	public ContactDTO(ContactEntity entity)
-	{
-		if(entity != null) {
-			this.id = entity.getId();
-			this.firstName = entity.getFirstName();
-			this.lastName = entity.getLastName();
-			this.email = entity.getEmail();
-			this.phoneNumber = entity.getPhoneNumber();
-			this.title = entity.getTitle();
-			this.signatureDate = entity.getSignatureDate();
-		}
-	}
+    public ContactDTO(ContactEntity entity) {
+        if (entity != null) {
+            this.id = entity.getId();
+            this.firstName = entity.getFirstName();
+            this.lastName = entity.getLastName();
+            this.email = entity.getEmail();
+            this.phoneNumber = entity.getPhoneNumber();
+            this.title = entity.getTitle();
+            this.signatureDate = entity.getSignatureDate();
+        }
+    }
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public String getFirstName() {
-		return firstName;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public Date getSignatureDate() {
-		return signatureDate;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setSignatureDate(Date signatureDate) {
-		this.signatureDate = signatureDate;
-	}
+    public Date getSignatureDate() {
+        return signatureDate;
+    }
+
+    public void setSignatureDate(Date signatureDate) {
+        this.signatureDate = signatureDate;
+    }
 }

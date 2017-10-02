@@ -19,315 +19,324 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.entity.AnnouncementEntity;
 
-
-@Repository(value="announcementDAO")
+@Repository(value = "announcementDAO")
 public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO {
 
-	@Transactional
-	public AnnouncementDTO create(AnnouncementDTO dto) throws EntityRetrievalException, EntityCreationException {
-		AnnouncementEntity entity = null;
-		try {
-			if (dto.getId() != null) {
-				entity = this.getEntityById(dto.getId(), true);
-			}
-		} catch (final EntityRetrievalException e) {
-			throw new EntityCreationException(e);
-		}
+    @Transactional
+    public AnnouncementDTO create(AnnouncementDTO dto) throws EntityRetrievalException, EntityCreationException {
+        AnnouncementEntity entity = null;
+        try {
+            if (dto.getId() != null) {
+                entity = this.getEntityById(dto.getId(), true);
+            }
+        } catch (final EntityRetrievalException e) {
+            throw new EntityCreationException(e);
+        }
 
-		if (entity != null) {
-			throw new EntityCreationException("An entity with this ID already exists.");
-		} else {
-			entity = new AnnouncementEntity();
+        if (entity != null) {
+            throw new EntityCreationException("An entity with this ID already exists.");
+        } else {
+            entity = new AnnouncementEntity();
 
-			if(dto.getTitle() != null) {
-				entity.setTitle(dto.getTitle());
-			}
+            if (dto.getTitle() != null) {
+                entity.setTitle(dto.getTitle());
+            }
 
-			if(dto.getText() != null) {
-				entity.setText(dto.getText());
-			}
+            if (dto.getText() != null) {
+                entity.setText(dto.getText());
+            }
 
-			if(dto.getStartDate() != null) {
-				entity.setStartDate(dto.getStartDate());
-			}
+            if (dto.getStartDate() != null) {
+                entity.setStartDate(dto.getStartDate());
+            }
 
-			if(dto.getEndDate() != null) {
-				entity.setEndDate(dto.getEndDate());
-			}
+            if (dto.getEndDate() != null) {
+                entity.setEndDate(dto.getEndDate());
+            }
 
-			if(dto.getIsPublic() != null) {
-				entity.setIsPublic(dto.getIsPublic());
-			} else {
-				entity.setIsPublic(false);
-			}
+            if (dto.getIsPublic() != null) {
+                entity.setIsPublic(dto.getIsPublic());
+            } else {
+                entity.setIsPublic(false);
+            }
 
-			if(dto.getDeleted() != null) {
-				entity.setDeleted(dto.getDeleted());
-			}else {
-				entity.setDeleted(false);
-			}
+            if (dto.getDeleted() != null) {
+                entity.setDeleted(dto.getDeleted());
+            } else {
+                entity.setDeleted(false);
+            }
 
-			if(dto.getLastModifiedUser() != null) {
-				entity.setLastModifiedUser(dto.getLastModifiedUser());
-			} else {
-				entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			}
+            if (dto.getLastModifiedUser() != null) {
+                entity.setLastModifiedUser(dto.getLastModifiedUser());
+            } else {
+                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            }
 
-			if(dto.getLastModifiedDate() != null) {
-				entity.setLastModifiedDate(dto.getLastModifiedDate());
-			} else {
-				entity.setLastModifiedDate(new Date());
-			}
+            if (dto.getLastModifiedDate() != null) {
+                entity.setLastModifiedDate(dto.getLastModifiedDate());
+            } else {
+                entity.setLastModifiedDate(new Date());
+            }
 
-			if(dto.getCreationDate() != null) {
-				entity.setCreationDate(dto.getCreationDate());
-			} else {
-				entity.setCreationDate(new Date());
-			}
+            if (dto.getCreationDate() != null) {
+                entity.setCreationDate(dto.getCreationDate());
+            } else {
+                entity.setCreationDate(new Date());
+            }
 
-			create(entity);
-			return new AnnouncementDTO(entity);
-		}
-	}
+            create(entity);
+            return new AnnouncementDTO(entity);
+        }
+    }
 
-	@Transactional
-	public AnnouncementDTO update(AnnouncementDTO dto, boolean includeDeleted) throws EntityRetrievalException {
+    @Transactional
+    public AnnouncementDTO update(AnnouncementDTO dto, boolean includeDeleted) throws EntityRetrievalException {
 
-		AnnouncementEntity entity = getEntityByIdToUpdate(dto.getId(), includeDeleted);
-		if(entity == null) {
-			throw new EntityRetrievalException("Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
-		}
+        AnnouncementEntity entity = getEntityByIdToUpdate(dto.getId(), includeDeleted);
+        if (entity == null) {
+            throw new EntityRetrievalException(
+                    "Cannot update entity with id " + dto.getId() + ". Entity does not exist.");
+        }
 
-		if(dto.getText() != null) {
-			entity.setText(dto.getText());
-		}
+        if (dto.getText() != null) {
+            entity.setText(dto.getText());
+        }
 
-		if(dto.getTitle() != null) {
-			entity.setTitle(dto.getTitle());
-		}
+        if (dto.getTitle() != null) {
+            entity.setTitle(dto.getTitle());
+        }
 
-		if(dto.getStartDate() != null) {
-			entity.setStartDate(dto.getStartDate());
-		}
+        if (dto.getStartDate() != null) {
+            entity.setStartDate(dto.getStartDate());
+        }
 
-		if(dto.getEndDate() != null) {
-			entity.setEndDate(dto.getEndDate());
-		}
+        if (dto.getEndDate() != null) {
+            entity.setEndDate(dto.getEndDate());
+        }
 
-		if(dto.getIsPublic() != null) {
-			entity.setIsPublic(dto.getIsPublic());
-		} else {
-			entity.setIsPublic(false);
-		}
+        if (dto.getIsPublic() != null) {
+            entity.setIsPublic(dto.getIsPublic());
+        } else {
+            entity.setIsPublic(false);
+        }
 
-		if(dto.getDeleted() != null) {
-			entity.setDeleted(dto.getDeleted());
-		}
-		if(dto.getLastModifiedUser() != null) {
-			entity.setLastModifiedUser(dto.getLastModifiedUser());
-		} else {
-			entity.setLastModifiedUser(Util.getCurrentUser().getId());
-		}
+        if (dto.getDeleted() != null) {
+            entity.setDeleted(dto.getDeleted());
+        }
+        if (dto.getLastModifiedUser() != null) {
+            entity.setLastModifiedUser(dto.getLastModifiedUser());
+        } else {
+            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+        }
 
-		if(dto.getLastModifiedDate() != null) {
-			entity.setLastModifiedDate(dto.getLastModifiedDate());
-		} else {
-			entity.setLastModifiedDate(new Date());
-		}
+        if (dto.getLastModifiedDate() != null) {
+            entity.setLastModifiedDate(dto.getLastModifiedDate());
+        } else {
+            entity.setLastModifiedDate(new Date());
+        }
 
-		update(entity);
-		return new AnnouncementDTO(entity);
-	}
+        update(entity);
+        return new AnnouncementDTO(entity);
+    }
 
-	@Transactional
-	public void delete(Long aId) {
+    @Transactional
+    public void delete(Long aId) {
 
-		// TODO: How to delete this without leaving orphans
+        // TODO: How to delete this without leaving orphans
 
-		Query query = entityManager.createQuery("UPDATE AnnouncementEntity SET deleted = true WHERE announcement_id = :aid");
-		query.setParameter("aid", aId);
-		query.executeUpdate();
+        Query query = entityManager
+                .createQuery("UPDATE AnnouncementEntity SET deleted = true WHERE announcement_id = :aid");
+        query.setParameter("aid", aId);
+        query.executeUpdate();
 
-	}
+    }
 
-	public List<AnnouncementDTO> findAll(boolean isLoggedIn) {
+    public List<AnnouncementDTO> findAll(boolean isLoggedIn) {
 
-		List<AnnouncementEntity> entities = getAllEntities(isLoggedIn);
-		List<AnnouncementDTO> announcements = new ArrayList<>();
+        List<AnnouncementEntity> entities = getAllEntities(isLoggedIn);
+        List<AnnouncementDTO> announcements = new ArrayList<>();
 
-		for (AnnouncementEntity entity : entities) {
-			AnnouncementDTO announcement = new AnnouncementDTO(entity);
-			announcements.add(announcement);
-		}
-		return announcements;
+        for (AnnouncementEntity entity : entities) {
+            AnnouncementDTO announcement = new AnnouncementDTO(entity);
+            announcements.add(announcement);
+        }
+        return announcements;
 
-	}
+    }
 
-	public List<AnnouncementDTO> findAllCurrentAndFuture() {
+    public List<AnnouncementDTO> findAllCurrentAndFuture() {
 
-		List<AnnouncementEntity> entities = getAllEntitiesCurrentAndFuture();
-		List<AnnouncementDTO> announcements = new ArrayList<>();
+        List<AnnouncementEntity> entities = getAllEntitiesCurrentAndFuture();
+        List<AnnouncementDTO> announcements = new ArrayList<>();
 
-		for (AnnouncementEntity entity : entities) {
-			AnnouncementDTO announcement = new AnnouncementDTO(entity);
-			announcements.add(announcement);
-		}
-		return announcements;
+        for (AnnouncementEntity entity : entities) {
+            AnnouncementDTO announcement = new AnnouncementDTO(entity);
+            announcements.add(announcement);
+        }
+        return announcements;
 
-	}
+    }
 
-	public List<AnnouncementDTO> findAllFuture() {
+    public List<AnnouncementDTO> findAllFuture() {
 
-		List<AnnouncementEntity> entities = getAllEntitiesFuture();
-		List<AnnouncementDTO> announcements = new ArrayList<>();
+        List<AnnouncementEntity> entities = getAllEntitiesFuture();
+        List<AnnouncementDTO> announcements = new ArrayList<>();
 
-		for (AnnouncementEntity entity : entities) {
-			AnnouncementDTO announcement = new AnnouncementDTO(entity);
-			announcements.add(announcement);
-		}
-		return announcements;
+        for (AnnouncementEntity entity : entities) {
+            AnnouncementDTO announcement = new AnnouncementDTO(entity);
+            announcements.add(announcement);
+        }
+        return announcements;
 
-	}
+    }
 
-	public AnnouncementDTO getById(Long announcementId, boolean isLoggedIn) throws EntityRetrievalException {
-		AnnouncementEntity entity = getEntityById(announcementId, isLoggedIn);
+    public AnnouncementDTO getById(Long announcementId, boolean isLoggedIn) throws EntityRetrievalException {
+        AnnouncementEntity entity = getEntityById(announcementId, isLoggedIn);
 
-		AnnouncementDTO dto = null;
-		if(entity != null) {
-			dto = new AnnouncementDTO(entity);
-		}
-		return dto;
+        AnnouncementDTO dto = null;
+        if (entity != null) {
+            dto = new AnnouncementDTO(entity);
+        }
+        return dto;
 
-	}
+    }
 
-	public AnnouncementDTO getByIdToUpdate(Long announcementId, boolean includeDeleted) throws EntityRetrievalException {
-		AnnouncementEntity entity = getEntityByIdToUpdate(announcementId, includeDeleted);
+    public AnnouncementDTO getByIdToUpdate(Long announcementId, boolean includeDeleted)
+            throws EntityRetrievalException {
+        AnnouncementEntity entity = getEntityByIdToUpdate(announcementId, includeDeleted);
 
-		AnnouncementDTO dto = null;
-		if(entity != null) {
-			dto = new AnnouncementDTO(entity);
-		}
-		return dto;
+        AnnouncementDTO dto = null;
+        if (entity != null) {
+            dto = new AnnouncementDTO(entity);
+        }
+        return dto;
 
-	}
+    }
 
-	private void create(AnnouncementEntity announcement) {
+    private void create(AnnouncementEntity announcement) {
 
-		entityManager.persist(announcement);
-		entityManager.flush();
-	}
+        entityManager.persist(announcement);
+        entityManager.flush();
+    }
 
-	private void update(AnnouncementEntity announcement) {
+    private void update(AnnouncementEntity announcement) {
 
-		entityManager.merge(announcement);
-		entityManager.flush();
+        entityManager.merge(announcement);
+        entityManager.flush();
 
-	}
+    }
 
-	private List<AnnouncementEntity> getAllEntities(boolean isLoggedIn) {
+    private List<AnnouncementEntity> getAllEntities(boolean isLoggedIn) {
 
-		List<AnnouncementEntity> result = null;
-		if(isLoggedIn) {
-			result = entityManager.createQuery( "from AnnouncementEntity"
-												+ " where deleted = false"
-												+ " AND start_date <= now() AND end_date > now()", AnnouncementEntity.class).getResultList();
-		}else {
-			result = entityManager.createQuery( "from AnnouncementEntity where"
-												+ " deleted = false"
-												+ " AND (start_date <= now() AND end_date > now())"
-												+ " AND ispublic = true", AnnouncementEntity.class).getResultList();
-		}
-		return result;
-	}
+        List<AnnouncementEntity> result = null;
+        if (isLoggedIn) {
+            result = entityManager
+                    .createQuery("from AnnouncementEntity" + " where deleted = false"
+                            + " AND start_date <= now() AND end_date > now()", AnnouncementEntity.class)
+                    .getResultList();
+        } else {
+            result = entityManager.createQuery(
+                    "from AnnouncementEntity where" + " deleted = false"
+                            + " AND (start_date <= now() AND end_date > now())" + " AND ispublic = true",
+                    AnnouncementEntity.class).getResultList();
+        }
+        return result;
+    }
 
-	private AnnouncementEntity getEntityById(Long entityId, boolean isLoggedIn) throws EntityRetrievalException {
+    private AnnouncementEntity getEntityById(Long entityId, boolean isLoggedIn) throws EntityRetrievalException {
 
-		List<AnnouncementEntity> results = null;
-		AnnouncementEntity entity = null;
-		Query query = null;
+        List<AnnouncementEntity> results = null;
+        AnnouncementEntity entity = null;
+        Query query = null;
 
-		if(isLoggedIn) {
-			query = entityManager.createQuery ("from AnnouncementEntity"
-					+ " where deleted = false AND (announcement_id = :entityid)"
-					+ " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
-			query.setParameter("entityid", entityId);
-			results = query.getResultList();
-			if(results == null || results.size() == 0) {
-				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
-				throw new EntityRetrievalException(msg);
-			} else {
-				entity = results.get(0);
-			}
-		}else {
-			query = entityManager.createQuery ("from AnnouncementEntity"
-					+ " where deleted = false AND (announcement_id = :entityid)"
-					+ " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
-			query.setParameter("entityid", entityId);
-			results = query.getResultList();
-			if(results == null || results.size() == 0) {
-				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
-				throw new EntityRetrievalException(msg);
-			} else {
-				AnnouncementEntity ret = results.get(0);
-				boolean isPublic = ret.getIsPublic();
-				if(isPublic) {
-					entity = ret;
-				}else {
-					throw new AccessDeniedException("Only logged in member can see non-public announcements.");
-				}
-			}
-		}
+        if (isLoggedIn) {
+            query = entityManager
+                    .createQuery("from AnnouncementEntity" + " where deleted = false AND (announcement_id = :entityid)"
+                            + " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
+            query.setParameter("entityid", entityId);
+            results = query.getResultList();
+            if (results == null || results.size() == 0) {
+                String msg = String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+                throw new EntityRetrievalException(msg);
+            } else {
+                entity = results.get(0);
+            }
+        } else {
+            query = entityManager
+                    .createQuery("from AnnouncementEntity" + " where deleted = false AND (announcement_id = :entityid)"
+                            + " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
+            query.setParameter("entityid", entityId);
+            results = query.getResultList();
+            if (results == null || results.size() == 0) {
+                String msg = String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+                throw new EntityRetrievalException(msg);
+            } else {
+                AnnouncementEntity ret = results.get(0);
+                boolean isPublic = ret.getIsPublic();
+                if (isPublic) {
+                    entity = ret;
+                } else {
+                    throw new AccessDeniedException("Only logged in member can see non-public announcements.");
+                }
+            }
+        }
 
-		return entity;
-	}
+        return entity;
+    }
 
-	private AnnouncementEntity getEntityByIdToUpdate(Long entityId, boolean includeDeleted) throws EntityRetrievalException {
+    private AnnouncementEntity getEntityByIdToUpdate(Long entityId, boolean includeDeleted)
+            throws EntityRetrievalException {
 
-		List<AnnouncementEntity> results = null;
-		AnnouncementEntity entity = null;
-		Query query = null;
+        List<AnnouncementEntity> results = null;
+        AnnouncementEntity entity = null;
+        Query query = null;
 
-		if(includeDeleted) {
-			query = entityManager.createQuery ("from AnnouncementEntity"
-					+ " where (announcement_id = :entityid)", AnnouncementEntity.class);
-			query.setParameter("entityid", entityId);
-			results = query.getResultList();
-			if(results.size() == 0) {
-				throw new EntityRetrievalException("There is no announcement with that id");
-			}else {
-				entity = results.get(0);
-			}
-		}else {
-			query = entityManager.createQuery ("from AnnouncementEntity"
-					+ " where deleted = false AND (announcement_id = :entityid)", AnnouncementEntity.class);
-			query.setParameter("entityid", entityId);
-			results = query.getResultList();
-			if(results.size() == 0) {
-				throw new EntityRetrievalException("There is no announcement with that id");
-			}else {
-				entity = results.get(0);
-			}
-		}
+        if (includeDeleted) {
+            query = entityManager.createQuery("from AnnouncementEntity" + " where (announcement_id = :entityid)",
+                    AnnouncementEntity.class);
+            query.setParameter("entityid", entityId);
+            results = query.getResultList();
+            if (results.size() == 0) {
+                throw new EntityRetrievalException("There is no announcement with that id");
+            } else {
+                entity = results.get(0);
+            }
+        } else {
+            query = entityManager.createQuery(
+                    "from AnnouncementEntity" + " where deleted = false AND (announcement_id = :entityid)",
+                    AnnouncementEntity.class);
+            query.setParameter("entityid", entityId);
+            results = query.getResultList();
+            if (results.size() == 0) {
+                throw new EntityRetrievalException("There is no announcement with that id");
+            } else {
+                entity = results.get(0);
+            }
+        }
 
-		return entity;
-	}
+        return entity;
+    }
 
-	@Override
-	public List<AnnouncementEntity> getAllEntitiesFuture() {
-		List<AnnouncementEntity> result = null;
-		result = entityManager.createQuery( "from AnnouncementEntity"
-												+ " where deleted = false"
-												+ " AND (start_date > now())", AnnouncementEntity.class).getResultList();
+    @Override
+    public List<AnnouncementEntity> getAllEntitiesFuture() {
+        List<AnnouncementEntity> result = null;
+        result = entityManager
+                .createQuery("from AnnouncementEntity" + " where deleted = false" + " AND (start_date > now())",
+                        AnnouncementEntity.class)
+                .getResultList();
 
-		return result;
-	}
+        return result;
+    }
 
-	private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
-		List<AnnouncementEntity> result = null;
-		result = entityManager.createQuery( "from AnnouncementEntity"
-												+ " where deleted = false"
-												+ " AND (end_date > now())", AnnouncementEntity.class).getResultList();
+    private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
+        List<AnnouncementEntity> result = null;
+        result = entityManager
+                .createQuery("from AnnouncementEntity" + " where deleted = false" + " AND (end_date > now())",
+                        AnnouncementEntity.class)
+                .getResultList();
 
-		return result;
-	}
+        return result;
+    }
 }

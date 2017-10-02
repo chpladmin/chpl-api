@@ -10,9 +10,11 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 public interface CertifiedProductSearchDAO {
 
-	public Long getListingIdByUniqueChplNumber(String chplProductNumber);
-	public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts();
-	public CertifiedProduct getByChplProductNumber(String chplProductNumber)
-			throws EntityNotFoundException;
-	public IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId);
+    public Long getListingIdByUniqueChplNumber(String chplProductNumber);
+
+    public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts();
+
+    public CertifiedProduct getByChplProductNumber(String chplProductNumber) throws EntityNotFoundException;
+
+    public IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId);
 }

@@ -18,44 +18,48 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.manager.QuestionableActivityHandler;
 
 public abstract class QuestionableActivityHandlerImpl implements QuestionableActivityHandler {
-	private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityHandlerImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityHandlerImpl.class);
 
-	@Autowired protected NotificationDAO notificationDao;
-	@Autowired protected SendMailUtil sendMailService;
+    @Autowired
+    protected NotificationDAO notificationDao;
+    @Autowired
+    protected SendMailUtil sendMailService;
 
-	public abstract boolean isQuestionableActivity(Object src, Object dest);
-	public abstract String getQuestionableActivityHtmlMessage(Object src, Object dest);
+    public abstract boolean isQuestionableActivity(Object src, Object dest);
 
-	public String getQuestionableActivitySubject(Object src, Object dest) {
-		return "CHPL Questionable Activity";
-	}
+    public abstract String getQuestionableActivityHtmlMessage(Object src, Object dest);
 
-	public void handleActivity(Object src, Object dest) {
-		if(isQuestionableActivity(src, dest)) {
-			sendQuestionableActivityEmail(getQuestionableActivitySubject(src, dest),
-					getQuestionableActivityHtmlMessage(src, dest));
-		}
-	}
+    public String getQuestionableActivitySubject(Object src, Object dest) {
+        return "CHPL Questionable Activity";
+    }
 
-	private void sendQuestionableActivityEmail(String subject, String htmlMessage) {
-		Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-		permissions.add(new GrantedPermission("ROLE_ADMIN"));
-		List<RecipientWithSubscriptionsDTO> questionableActivityRecipients =
-				notificationDao.getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
-		if(questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
-			String[] emailAddrs = new String[questionableActivityRecipients.size()];
-			for(int i = 0; i < questionableActivityRecipients.size(); i++) {
-				RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
-				emailAddrs[i] = recip.getEmail();
-			}
+    public void handleActivity(Object src, Object dest) {
+        if (isQuestionableActivity(src, dest)) {
+            sendQuestionableActivityEmail(getQuestionableActivitySubject(src, dest),
+                    getQuestionableActivityHtmlMessage(src, dest));
+        }
+    }
 
-			try {
-				sendMailService.sendEmail(null, emailAddrs, subject, htmlMessage);
-			} catch(final MessagingException me) {
-				LOGGER.error("Could not send questionable activity email", me);
-			}
-		} else {
-			LOGGER.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
-		}
-	}
+    private void sendQuestionableActivityEmail(String subject, String htmlMessage) {
+        Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+        permissions.add(new GrantedPermission("ROLE_ADMIN"));
+        List<RecipientWithSubscriptionsDTO> questionableActivityRecipients = notificationDao
+                .getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
+        if (questionableActivityRecipients != null && questionableActivityRecipients.size() > 0) {
+            String[] emailAddrs = new String[questionableActivityRecipients.size()];
+            for (int i = 0; i < questionableActivityRecipients.size(); i++) {
+                RecipientWithSubscriptionsDTO recip = questionableActivityRecipients.get(i);
+                emailAddrs[i] = recip.getEmail();
+            }
+
+            try {
+                sendMailService.sendEmail(null, emailAddrs, subject, htmlMessage);
+            } catch (final MessagingException me) {
+                LOGGER.error("Could not send questionable activity email", me);
+            }
+        } else {
+            LOGGER.warn("No recipients were found for notification type "
+                    + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
+        }
+    }
 }

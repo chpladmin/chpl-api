@@ -8,11 +8,11 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "developers_with_attestations")
 public class DeveloperTransparencyEntity {
-	private static final long serialVersionUID = -2928065796554477869L;
+    private static final long serialVersionUID = -2928065796554477869L;
 
     @Id
-	@Column(name = "vendor_id", nullable = false)
-	private Long id;
+    @Column(name = "vendor_id", nullable = false)
+    private Long id;
 
     @Column(name = "vendor_name")
     private String name;
@@ -53,119 +53,119 @@ public class DeveloperTransparencyEntity {
     @Column(name = "attestations")
     private String acbAttestations;
 
-	public DeveloperTransparencyEntity() {
-	}
+    public DeveloperTransparencyEntity() {
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public Long getCountActiveListings() {
-		return countActiveListings;
-	}
+    public Long getCountActiveListings() {
+        return countActiveListings;
+    }
 
-	public void setCountActiveListings(Long countActiveListings) {
-		this.countActiveListings = countActiveListings;
-	}
+    public void setCountActiveListings(Long countActiveListings) {
+        this.countActiveListings = countActiveListings;
+    }
 
-	public Long getCountRetiredListings() {
-		return countRetiredListings;
-	}
+    public Long getCountRetiredListings() {
+        return countRetiredListings;
+    }
 
-	public void setCountRetiredListings(Long countRetiredListings) {
-		this.countRetiredListings = countRetiredListings;
-	}
+    public void setCountRetiredListings(Long countRetiredListings) {
+        this.countRetiredListings = countRetiredListings;
+    }
 
-	public Long getCountPendingListings() {
-		return countPendingListings;
-	}
+    public Long getCountPendingListings() {
+        return countPendingListings;
+    }
 
-	public void setCountPendingListings(Long countPendingListings) {
-		this.countPendingListings = countPendingListings;
-	}
+    public void setCountPendingListings(Long countPendingListings) {
+        this.countPendingListings = countPendingListings;
+    }
 
-	public Long getCountWithdrawnByDeveloperListings() {
-		return countWithdrawnByDeveloperListings;
-	}
+    public Long getCountWithdrawnByDeveloperListings() {
+        return countWithdrawnByDeveloperListings;
+    }
 
-	public void setCountWithdrawnByDeveloperListings(Long countWithdrawnByDeveloperListings) {
-		this.countWithdrawnByDeveloperListings = countWithdrawnByDeveloperListings;
-	}
+    public void setCountWithdrawnByDeveloperListings(Long countWithdrawnByDeveloperListings) {
+        this.countWithdrawnByDeveloperListings = countWithdrawnByDeveloperListings;
+    }
 
-	public Long getCountWithdrawnByOncAcbListings() {
-		return countWithdrawnByOncAcbListings;
-	}
+    public Long getCountWithdrawnByOncAcbListings() {
+        return countWithdrawnByOncAcbListings;
+    }
 
-	public void setCountWithdrawnByOncAcbListings(Long countWithdrawnByOncAcbListings) {
-		this.countWithdrawnByOncAcbListings = countWithdrawnByOncAcbListings;
-	}
+    public void setCountWithdrawnByOncAcbListings(Long countWithdrawnByOncAcbListings) {
+        this.countWithdrawnByOncAcbListings = countWithdrawnByOncAcbListings;
+    }
 
-	public Long getCountSuspendedByOncAcbListings() {
-		return countSuspendedByOncAcbListings;
-	}
+    public Long getCountSuspendedByOncAcbListings() {
+        return countSuspendedByOncAcbListings;
+    }
 
-	public void setCountSuspendedByOncAcbListings(Long countSuspendedByOncAcbListings) {
-		this.countSuspendedByOncAcbListings = countSuspendedByOncAcbListings;
-	}
+    public void setCountSuspendedByOncAcbListings(Long countSuspendedByOncAcbListings) {
+        this.countSuspendedByOncAcbListings = countSuspendedByOncAcbListings;
+    }
 
-	public Long getCountSuspendedByOncListings() {
-		return countSuspendedByOncListings;
-	}
+    public Long getCountSuspendedByOncListings() {
+        return countSuspendedByOncListings;
+    }
 
-	public void setCountSuspendedByOncListings(Long countSuspendedByOncListings) {
-		this.countSuspendedByOncListings = countSuspendedByOncListings;
-	}
+    public void setCountSuspendedByOncListings(Long countSuspendedByOncListings) {
+        this.countSuspendedByOncListings = countSuspendedByOncListings;
+    }
 
-	public Long getCountTerminatedByOncListings() {
-		return countTerminatedByOncListings;
-	}
+    public Long getCountTerminatedByOncListings() {
+        return countTerminatedByOncListings;
+    }
 
-	public void setCountTerminatedByOncListings(Long countTerminatedByOncListings) {
-		this.countTerminatedByOncListings = countTerminatedByOncListings;
-	}
+    public void setCountTerminatedByOncListings(Long countTerminatedByOncListings) {
+        this.countTerminatedByOncListings = countTerminatedByOncListings;
+    }
 
-	public Long getCountWithdrawnByDeveloperUnderSurveillanceListings() {
-		return countWithdrawnByDeveloperUnderSurveillanceListings;
-	}
+    public Long getCountWithdrawnByDeveloperUnderSurveillanceListings() {
+        return countWithdrawnByDeveloperUnderSurveillanceListings;
+    }
 
-	public void setCountWithdrawnByDeveloperUnderSurveillanceListings(
-			Long countWithdrawnByDeveloperUnderSurveillanceListings) {
-		this.countWithdrawnByDeveloperUnderSurveillanceListings = countWithdrawnByDeveloperUnderSurveillanceListings;
-	}
+    public void setCountWithdrawnByDeveloperUnderSurveillanceListings(
+            Long countWithdrawnByDeveloperUnderSurveillanceListings) {
+        this.countWithdrawnByDeveloperUnderSurveillanceListings = countWithdrawnByDeveloperUnderSurveillanceListings;
+    }
 
-	public String getTransparencyAttestationUrls() {
-		return transparencyAttestationUrls;
-	}
+    public String getTransparencyAttestationUrls() {
+        return transparencyAttestationUrls;
+    }
 
-	public void setTransparencyAttestationUrls(String transparencyAttestationUrls) {
-		this.transparencyAttestationUrls = transparencyAttestationUrls;
-	}
+    public void setTransparencyAttestationUrls(String transparencyAttestationUrls) {
+        this.transparencyAttestationUrls = transparencyAttestationUrls;
+    }
 
-	public String getAcbAttestations() {
-		return acbAttestations;
-	}
+    public String getAcbAttestations() {
+        return acbAttestations;
+    }
 
-	public void setAcbAttestations(String acbAttestations) {
-		this.acbAttestations = acbAttestations;
-	}
+    public void setAcbAttestations(String acbAttestations) {
+        this.acbAttestations = acbAttestations;
+    }
 }

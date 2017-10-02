@@ -20,30 +20,30 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @Component("surveillanceResourceCreatorApp")
 public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorApp {
-	private static final Logger LOGGER = LogManager.getLogger(SurveillanceResourceCreatorApp.class);
+    private static final Logger LOGGER = LogManager.getLogger(SurveillanceResourceCreatorApp.class);
 
-	public SurveillanceResourceCreatorApp() {
-		super();
-	}
+    public SurveillanceResourceCreatorApp() {
+        super();
+    }
 
-	protected List<CertifiedProductDetailsDTO> getRelevantListings() {
-		LOGGER.info("Finding all listings with surveillance");
-		Date start = new Date();
-		List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findWithSurveillance();
-		Date end = new Date();
-		LOGGER.info("Found " + listingsForEdition.size() + " listings with surveillance in " + (end.getTime() - start.getTime())/1000 + " seconds");
-		return listingsForEdition;
-	}
+    protected List<CertifiedProductDetailsDTO> getRelevantListings() {
+        LOGGER.info("Finding all listings with surveillance");
+        Date start = new Date();
+        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findWithSurveillance();
+        Date end = new Date();
+        LOGGER.info("Found " + listingsForEdition.size() + " listings with surveillance in "
+                + (end.getTime() - start.getTime()) / 1000 + " seconds");
+        return listingsForEdition;
+    }
 
-	protected void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results) throws IOException {
-		 //write out a csv file containing all surveillance
-        String allSurvCsvFilename = downloadFolder.getAbsolutePath() + File.separator +
-        		"surveillance-all.csv";
+    protected void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results) throws IOException {
+        // write out a csv file containing all surveillance
+        String allSurvCsvFilename = downloadFolder.getAbsolutePath() + File.separator + "surveillance-all.csv";
         File allSurvCsvFile = new File(allSurvCsvFilename);
-        if(!allSurvCsvFile.exists()) {
-        	allSurvCsvFile.createNewFile();
+        if (!allSurvCsvFile.exists()) {
+            allSurvCsvFile.createNewFile();
         } else {
-        	allSurvCsvFile.delete();
+            allSurvCsvFile.delete();
         }
         SurveillanceCsvPresenter survCsvPresenter = new SurveillanceCsvPresenter();
         survCsvPresenter.setProps(getProperties());
@@ -52,16 +52,16 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         Date start = new Date();
         survCsvPresenter.presentAsFile(allSurvCsvFile, results);
         Date end = new Date();
-        LOGGER.info("Wrote all surveillance CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
+        LOGGER.info("Wrote all surveillance CSV file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
 
-        //write out a csv file containing surveillance with nonconformities
-        String nonconformityCsvFilename = downloadFolder.getAbsolutePath() + File.separator +
-        		"surveillance-with-nonconformities.csv";
+        // write out a csv file containing surveillance with nonconformities
+        String nonconformityCsvFilename = downloadFolder.getAbsolutePath() + File.separator
+                + "surveillance-with-nonconformities.csv";
         File nonconformityCsvFile = new File(nonconformityCsvFilename);
-        if(!nonconformityCsvFile.exists()) {
-        	nonconformityCsvFile.createNewFile();
+        if (!nonconformityCsvFile.exists()) {
+            nonconformityCsvFile.createNewFile();
         } else {
-        	nonconformityCsvFile.delete();
+            nonconformityCsvFile.delete();
         }
 
         NonconformityCsvPresenter ncCsvPresenter = new NonconformityCsvPresenter();
@@ -70,16 +70,15 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         start = new Date();
         ncCsvPresenter.presentAsFile(nonconformityCsvFile, results);
         end = new Date();
-        LOGGER.info("Wrote nonconformity CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
+        LOGGER.info("Wrote nonconformity CSV file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
 
-        //write out a csv file containing surveillance basic report
-        String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator +
-        		"surveillance-basic-report.csv";
+        // write out a csv file containing surveillance basic report
+        String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator + "surveillance-basic-report.csv";
         File basicReportCsvFile = new File(basicReportCsvName);
-        if(!basicReportCsvFile.exists()) {
-        	basicReportCsvFile.createNewFile();
+        if (!basicReportCsvFile.exists()) {
+            basicReportCsvFile.createNewFile();
         } else {
-        	basicReportCsvFile.delete();
+            basicReportCsvFile.delete();
         }
 
         SurveillanceReportCsvPresenter basicReportCsvPresenter = new SurveillanceReportCsvPresenter();
@@ -88,15 +87,15 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         start = new Date();
         basicReportCsvPresenter.presentAsFile(basicReportCsvFile, results);
         end = new Date();
-        LOGGER.info("Wrote basic surveillance report file in " + (end.getTime() - start.getTime())/1000 + " seconds");
-	}
+        LOGGER.info("Wrote basic surveillance report file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
+    }
 
-	public static void main(String[] args) throws Exception {
-		SurveillanceResourceCreatorApp app = new SurveillanceResourceCreatorApp();
-		app.setLocalContext();
-		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-		app.initiateSpringBeans(context);
-		app.runJob(args);
-		context.close();
-	}
+    public static void main(String[] args) throws Exception {
+        SurveillanceResourceCreatorApp app = new SurveillanceResourceCreatorApp();
+        app.setLocalContext();
+        AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        app.initiateSpringBeans(context);
+        app.runJob(args);
+        context.close();
+    }
 }

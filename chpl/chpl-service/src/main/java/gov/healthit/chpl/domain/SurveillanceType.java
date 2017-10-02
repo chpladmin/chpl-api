@@ -10,35 +10,36 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceType implements Serializable {
-	private static final long serialVersionUID = 5788880200952752783L;
+    private static final long serialVersionUID = 5788880200952752783L;
 
-	/**
-	 * Surveillance type internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
+    /**
+     * Surveillance type internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	/**
-	 * Surveillance type name (randomized, reactive)
-	 */
-	@XmlElement(required = true)
-	private String name;
+    /**
+     * Surveillance type name (randomized, reactive)
+     */
+    @XmlElement(required = true)
+    private String name;
 
-	public SurveillanceType() {}
+    public SurveillanceType() {
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 }

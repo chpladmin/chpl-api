@@ -51,144 +51,146 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @EnableAspectJAutoProxy
 @EnableScheduling
 @PropertySource("classpath:/environment.properties")
-@ComponentScan(basePackages = {"gov.healthit.chpl.**"})
+@ComponentScan(basePackages = {
+        "gov.healthit.chpl.**"
+})
 public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
-	private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
+    private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
 
-	@Autowired private ApiKeyManager apiKeyManager;
+    @Autowired
+    private ApiKeyManager apiKeyManager;
 
-	@Autowired private Environment env;
+    @Autowired
+    private Environment env;
 
-	@Override
+    @Override
     public void setEnvironment(final Environment environment) {
-		LOGGER.info("setEnvironment");
+        LOGGER.info("setEnvironment");
         this.env = environment;
     }
 
-	@Bean
-	public MappingJackson2HttpMessageConverter jsonConverter() {
-		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
-		bean.setPrefixJson(false);
-		List<MediaType> mediaTypes = new ArrayList<MediaType>();
-		mediaTypes.add(MediaType.APPLICATION_JSON);
-		bean.setSupportedMediaTypes(mediaTypes);
-		return bean;
-	}
+    @Bean
+    public MappingJackson2HttpMessageConverter jsonConverter() {
+        MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
+        bean.setPrefixJson(false);
+        List<MediaType> mediaTypes = new ArrayList<MediaType>();
+        mediaTypes.add(MediaType.APPLICATION_JSON);
+        bean.setSupportedMediaTypes(mediaTypes);
+        return bean;
+    }
 
-	@Bean
-	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
-		LOGGER.info("get LocalEntityManagerFactoryBean");
-		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
-		return bean;
-	}
+    @Bean
+    public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
+        LOGGER.info("get LocalEntityManagerFactoryBean");
+        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+        bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
+        return bean;
+    }
 
-	@Bean
-	public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
-		LOGGER.info("get JpaTransactionManager");
-		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
-		bean.setEntityManagerFactory(entityManagerFactory().getObject());
-		return bean;
-	}
+    @Bean
+    public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
+        LOGGER.info("get JpaTransactionManager");
+        org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
+        bean.setEntityManagerFactory(entityManagerFactory().getObject());
+        return bean;
+    }
 
-	@Bean
-	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
-		LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
-		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
-	}
+    @Bean
+    public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
+        LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
+        return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
+    }
 
-	@Bean(name="multipartResolver")
-	public CommonsMultipartResolver getResolver() throws IOException {
-		LOGGER.info("get CommonsMultipartResolver");
-	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver getResolver() throws IOException {
+        LOGGER.info("get CommonsMultipartResolver");
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 
-	        //Set the maximum allowed size (in bytes) for each individual file.
-	        resolver.setMaxUploadSize(5242880);//5MB
+        // Set the maximum allowed size (in bytes) for each individual file.
+        resolver.setMaxUploadSize(5242880);// 5MB
 
-	        //You may also set other available properties.
+        // You may also set other available properties.
 
-	        return resolver;
-	}
+        return resolver;
+    }
 
-	@Bean
-	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
-	{
-		LOGGER.info("get APIKeyAuthenticationFilter");
-		return new APIKeyAuthenticationFilter(apiKeyManager);
-	}
+    @Bean
+    public APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
+        LOGGER.info("get APIKeyAuthenticationFilter");
+        return new APIKeyAuthenticationFilter(apiKeyManager);
+    }
 
-	@Bean
-	public TaskExecutor taskExecutor() {
-		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
-		te.setCorePoolSize(10);
-		te.setMaxPoolSize(100);
-		return te;
-	}
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+        te.setCorePoolSize(10);
+        te.setMaxPoolSize(100);
+        return te;
+    }
 
-	@Bean
-	public Marshaller marshaller()
-	{
-		LOGGER.info("get Marshaller");
-		return new CastorMarshaller();
-	}
+    @Bean
+    public Marshaller marshaller() {
+        LOGGER.info("get Marshaller");
+        return new CastorMarshaller();
+    }
 
-	@Bean
-	public CacheManager cacheManager() {
-		LOGGER.info("get CacheManager");
-		return new EhCacheCacheManager(ehCacheCacheManager().getObject());
-	}
+    @Bean
+    public CacheManager cacheManager() {
+        LOGGER.info("get CacheManager");
+        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
+    }
 
-	@Bean
-	public EhCacheManagerFactoryBean ehCacheCacheManager() {
-		LOGGER.info("get EhCacheManagerFactoryBean");
-		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-		cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
-		cmfb.setShared(true);
-		return cmfb;
-	}
+    @Bean
+    public EhCacheManagerFactoryBean ehCacheCacheManager() {
+        LOGGER.info("get EhCacheManagerFactoryBean");
+        EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
+        cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
+        cmfb.setShared(true);
+        return cmfb;
+    }
 
-	@Bean
-	public ReloadableResourceBundleMessageSource messageSource() {
-		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("classpath:/errors");
-		messageSource.setDefaultEncoding("UTF-8");
-		return messageSource;
-	}
+    @Bean
+    public ReloadableResourceBundleMessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:/errors");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
 
-	@Bean
-	public CookieLocaleResolver localeResolver() {
-		CookieLocaleResolver localeResolver = new CookieLocaleResolver();
-		localeResolver.setDefaultLocale(Locale.ENGLISH);
-		localeResolver.setCookieName("my-locale-cookie");
-		localeResolver.setCookieMaxAge(3600);
-		return localeResolver;
-	}
+    @Bean
+    public CookieLocaleResolver localeResolver() {
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.ENGLISH);
+        localeResolver.setCookieName("my-locale-cookie");
+        localeResolver.setCookieMaxAge(3600);
+        return localeResolver;
+    }
 
-	@Bean
-	public LocaleChangeInterceptor localeInterceptor() {
-		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-		interceptor.setParamName("lang");
-		return interceptor;
-	}
+    @Bean
+    public LocaleChangeInterceptor localeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("lang");
+        return interceptor;
+    }
 
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(localeInterceptor());
-	}
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeInterceptor());
+    }
 
-	@Bean
-	public InternalResourceViewResolver viewResolver() {
-		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setViewClass(JstlView.class);
-		viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
-		viewResolver.setSuffix(".jsp");
-		return viewResolver;
-	}
+    @Bean
+    public InternalResourceViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
+    }
 
-	@Bean
-	public MeaningfulUseUploadJob meaningfulUseUploadJob() {
-		return new MeaningfulUseUploadJob();
-	}
+    @Bean
+    public MeaningfulUseUploadJob meaningfulUseUploadJob() {
+        return new MeaningfulUseUploadJob();
+    }
 
 }

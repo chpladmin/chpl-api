@@ -16,30 +16,33 @@ import gov.healthit.chpl.dto.job.JobDTO;
 
 @Component
 public class JobInitializer {
-	private static final Logger LOGGER = LogManager.getLogger(JobInitializer.class);
+    private static final Logger LOGGER = LogManager.getLogger(JobInitializer.class);
 
-	@Autowired private TaskExecutor taskExecutor;
-	@Autowired private RunnableJobFactory jobFactory;
-	@Autowired private JobDAO jobDao;
+    @Autowired
+    private TaskExecutor taskExecutor;
+    @Autowired
+    private RunnableJobFactory jobFactory;
+    @Autowired
+    private JobDAO jobDao;
 
-	@PostConstruct
-	@Async
-	public void initialize() {
-		List<JobDTO> runningJobs = jobDao.findAllRunning();
+    @PostConstruct
+    @Async
+    public void initialize() {
+        List<JobDTO> runningJobs = jobDao.findAllRunning();
 
-		LOGGER.info("Found " + runningJobs.size() + " jobs to start.");
-		for(JobDTO job : runningJobs) {
-			RunnableJob runnableJob = null;
-			try {
-				runnableJob = jobFactory.getRunnableJob(job);
-			} catch(final NoJobTypeException ex) {
-				LOGGER.error("No runnable job type found for " + job.getJobType().getName());
-			}
-			if(runnableJob != null) {
-				LOGGER.info("Starting job with ID " + job.getId() + " for user " + job.getUser().getSubjectName());
-				taskExecutor.execute(runnableJob);
-			}
-		}
-	}
+        LOGGER.info("Found " + runningJobs.size() + " jobs to start.");
+        for (JobDTO job : runningJobs) {
+            RunnableJob runnableJob = null;
+            try {
+                runnableJob = jobFactory.getRunnableJob(job);
+            } catch (final NoJobTypeException ex) {
+                LOGGER.error("No runnable job type found for " + job.getJobType().getName());
+            }
+            if (runnableJob != null) {
+                LOGGER.info("Starting job with ID " + job.getId() + " for user " + job.getUser().getSubjectName());
+                taskExecutor.execute(runnableJob);
+            }
+        }
+    }
 
 }

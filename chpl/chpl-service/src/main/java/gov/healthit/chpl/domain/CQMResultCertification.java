@@ -16,59 +16,59 @@ import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CQMResultCertification implements Serializable {
-	private static final long serialVersionUID = 2547864525772721622L;
+    private static final long serialVersionUID = 2547864525772721622L;
 
-	/**
-	 * CQM to criteria mapping internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
+    /**
+     * CQM to criteria mapping internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	/**
-	 * Criteria internal ID
-	 */
-	@XmlElement(required = true)
-	private Long certificationId;
+    /**
+     * Criteria internal ID
+     */
+    @XmlElement(required = true)
+    private Long certificationId;
 
-	/**
-	 * Certification number (i.e. 170.314 (c)(1)) of the criteria
-	 */
-	@XmlElement(required = false, nillable = true)
-	private String certificationNumber;
+    /**
+     * Certification number (i.e. 170.314 (c)(1)) of the criteria
+     */
+    @XmlElement(required = false, nillable = true)
+    private String certificationNumber;
 
-	public CQMResultCertification() {
+    public CQMResultCertification() {
 
-	}
+    }
 
-	public CQMResultCertification(CQMResultCriteriaDTO dto) {
-		this.id = dto.getId();
-		this.certificationId = dto.getCriterionId();
-		if(dto.getCriterion() != null) {
-			this.certificationNumber = dto.getCriterion().getNumber();
-		}
-	}
+    public CQMResultCertification(CQMResultCriteriaDTO dto) {
+        this.id = dto.getId();
+        this.certificationId = dto.getCriterionId();
+        if (dto.getCriterion() != null) {
+            this.certificationNumber = dto.getCriterion().getNumber();
+        }
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Long getCertificationId() {
-		return certificationId;
-	}
+    public Long getCertificationId() {
+        return certificationId;
+    }
 
-	public void setCertificationId(Long criteriaId) {
-		this.certificationId = criteriaId;
-	}
+    public void setCertificationId(Long criteriaId) {
+        this.certificationId = criteriaId;
+    }
 
-	public String getCertificationNumber() {
-		return certificationNumber;
-	}
+    public String getCertificationNumber() {
+        return certificationNumber;
+    }
 
-	public void setCertificationNumber(String criteriaNumber) {
-		this.certificationNumber = criteriaNumber;
-	}
+    public void setCertificationNumber(String criteriaNumber) {
+        this.certificationNumber = criteriaNumber;
+    }
 }

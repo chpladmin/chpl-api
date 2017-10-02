@@ -4,29 +4,33 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class ModificationItem implements Serializable {
-	private static final long serialVersionUID = 3049027227760878239L;
-	private String subject;
-	private String action;
-	private Date date;
+    private static final long serialVersionUID = 3049027227760878239L;
+    private String subject;
+    private String action;
+    private Date date;
 
+    public String getSubject() {
+        return subject;
+    }
 
-	public String getSubject() {
-		return subject;
-	}
-	public void setSubject(String subject) {
-		this.subject = subject;
-	}
-	public String getAction() {
-		return action;
-	}
-	public void setAction(String action) {
-		this.action = action;
-	}
-	public Date getDate() {
-		return date;
-	}
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
 }

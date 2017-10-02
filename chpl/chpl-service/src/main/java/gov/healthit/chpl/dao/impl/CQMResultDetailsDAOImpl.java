@@ -13,30 +13,32 @@ import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
 
 @Repository(value = "cqmResultDetailsDAO")
-public class CQMResultDetailsDAOImpl extends BaseDAOImpl implements
-		CQMResultDetailsDAO {
+public class CQMResultDetailsDAOImpl extends BaseDAOImpl implements CQMResultDetailsDAO {
 
+    public List<CQMResultDetailsDTO> getCQMResultDetailsByCertifiedProductId(Long certifiedProductId)
+            throws EntityRetrievalException {
 
-	public List<CQMResultDetailsDTO> getCQMResultDetailsByCertifiedProductId(Long certifiedProductId)throws EntityRetrievalException {
+        List<CQMResultDetailsEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
+        List<CQMResultDetailsDTO> dtos = new ArrayList<CQMResultDetailsDTO>(entities.size());
 
-		List<CQMResultDetailsEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
-		List<CQMResultDetailsDTO> dtos = new ArrayList<CQMResultDetailsDTO>(entities.size());
+        for (CQMResultDetailsEntity entity : entities) {
+            dtos.add(new CQMResultDetailsDTO(entity));
+        }
+        return dtos;
+    }
 
-		for (CQMResultDetailsEntity entity : entities) {
-			dtos.add(new CQMResultDetailsDTO(entity));
-		}
-		return dtos;
-	}
+    private List<CQMResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId)
+            throws EntityRetrievalException {
 
-	private List<CQMResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId) throws EntityRetrievalException {
+        CQMResultDetailsEntity entity = null;
 
-		CQMResultDetailsEntity entity = null;
+        Query query = entityManager.createQuery(
+                "from CQMResultDetailsEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
+                CQMResultDetailsEntity.class);
+        query.setParameter("entityid", productId);
+        List<CQMResultDetailsEntity> result = query.getResultList();
 
-		Query query = entityManager.createQuery( "from CQMResultDetailsEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ", CQMResultDetailsEntity.class );
-		query.setParameter("entityid", productId);
-		List<CQMResultDetailsEntity> result = query.getResultList();
-
-		return result;
-	}
+        return result;
+    }
 
 }

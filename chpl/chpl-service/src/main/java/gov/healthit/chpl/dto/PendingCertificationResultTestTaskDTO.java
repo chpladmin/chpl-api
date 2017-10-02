@@ -8,69 +8,71 @@ import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.PendingCertificationResultTestTaskParticipantEntity;
 
 public class PendingCertificationResultTestTaskDTO implements Serializable {
-	private static final long serialVersionUID = 8314437789172874904L;
-	private Long id;
-	private Long pendingCertificationResultId;
-	private Long pendingTestTaskId;
-	private PendingTestTaskDTO pendingTestTask;
-	private Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants;
+    private static final long serialVersionUID = 8314437789172874904L;
+    private Long id;
+    private Long pendingCertificationResultId;
+    private Long pendingTestTaskId;
+    private PendingTestTaskDTO pendingTestTask;
+    private Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants;
 
-	public PendingCertificationResultTestTaskDTO() {
-		taskParticipants = new HashSet<PendingCertificationResultTestTaskParticipantDTO>();
-	}
+    public PendingCertificationResultTestTaskDTO() {
+        taskParticipants = new HashSet<PendingCertificationResultTestTaskParticipantDTO>();
+    }
 
-	public PendingCertificationResultTestTaskDTO(PendingCertificationResultTestTaskEntity entity) {
-		this();
-		this.setId(entity.getId());
-		this.pendingCertificationResultId = entity.getPendingCertificationResultId();
-		this.pendingTestTaskId = entity.getPendingTestTaskId();
-		if(entity.getTestTask() != null) {
-			pendingTestTask = new PendingTestTaskDTO(entity.getTestTask());
-		}
-		if(entity.getTestParticipants() != null) {
-			for(PendingCertificationResultTestTaskParticipantEntity partEntity : entity.getTestParticipants()) {
-				PendingCertificationResultTestTaskParticipantDTO partDto = new PendingCertificationResultTestTaskParticipantDTO(partEntity);
-				this.taskParticipants.add(partDto);
-			}
-		}
-	}
+    public PendingCertificationResultTestTaskDTO(PendingCertificationResultTestTaskEntity entity) {
+        this();
+        this.setId(entity.getId());
+        this.pendingCertificationResultId = entity.getPendingCertificationResultId();
+        this.pendingTestTaskId = entity.getPendingTestTaskId();
+        if (entity.getTestTask() != null) {
+            pendingTestTask = new PendingTestTaskDTO(entity.getTestTask());
+        }
+        if (entity.getTestParticipants() != null) {
+            for (PendingCertificationResultTestTaskParticipantEntity partEntity : entity.getTestParticipants()) {
+                PendingCertificationResultTestTaskParticipantDTO partDto = new PendingCertificationResultTestTaskParticipantDTO(
+                        partEntity);
+                this.taskParticipants.add(partDto);
+            }
+        }
+    }
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
 
-	public Long getPendingTestTaskId() {
-		return pendingTestTaskId;
-	}
+    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
 
-	public void setPendingTestTaskId(Long pendingTestTaskId) {
-		this.pendingTestTaskId = pendingTestTaskId;
-	}
+    public Long getPendingTestTaskId() {
+        return pendingTestTaskId;
+    }
 
-	public PendingTestTaskDTO getPendingTestTask() {
-		return pendingTestTask;
-	}
+    public void setPendingTestTaskId(Long pendingTestTaskId) {
+        this.pendingTestTaskId = pendingTestTaskId;
+    }
 
-	public void setPendingTestTask(PendingTestTaskDTO pendingTestTask) {
-		this.pendingTestTask = pendingTestTask;
-	}
+    public PendingTestTaskDTO getPendingTestTask() {
+        return pendingTestTask;
+    }
 
-	public Set<PendingCertificationResultTestTaskParticipantDTO> getTaskParticipants() {
-		return taskParticipants;
-	}
+    public void setPendingTestTask(PendingTestTaskDTO pendingTestTask) {
+        this.pendingTestTask = pendingTestTask;
+    }
 
-	public void setTaskParticipants(Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants) {
-		this.taskParticipants = taskParticipants;
-	}
+    public Set<PendingCertificationResultTestTaskParticipantDTO> getTaskParticipants() {
+        return taskParticipants;
+    }
+
+    public void setTaskParticipants(Set<PendingCertificationResultTestTaskParticipantDTO> taskParticipants) {
+        this.taskParticipants = taskParticipants;
+    }
 }

@@ -1,26 +1,27 @@
 package gov.healthit.chpl.domain.concept;
 
 public enum JobTypeConcept {
-	MUU_UPLOAD("MUU Upload");
+    MUU_UPLOAD("MUU Upload");
 
-	private String name;
-	private JobTypeConcept(String name) {
-		this.name = name;
-	}
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    private JobTypeConcept(String name) {
+        this.name = name;
+    }
 
-	public static JobTypeConcept findByName(String jobTypeName) {
-		JobTypeConcept result = null;
-		JobTypeConcept[] availableJobTypes = values();
-		for(int i = 0; i < availableJobTypes.length && result == null; i++) {
-			if(availableJobTypes[i].getName().equalsIgnoreCase(jobTypeName) ||
-				availableJobTypes[i].name().equalsIgnoreCase(jobTypeName)) {
-				result = availableJobTypes[i];
-			}
-		}
-		return result;
-	}
+    public String getName() {
+        return name;
+    }
+
+    public static JobTypeConcept findByName(String jobTypeName) {
+        JobTypeConcept result = null;
+        JobTypeConcept[] availableJobTypes = values();
+        for (int i = 0; i < availableJobTypes.length && result == null; i++) {
+            if (availableJobTypes[i].getName().equalsIgnoreCase(jobTypeName)
+                    || availableJobTypes[i].name().equalsIgnoreCase(jobTypeName)) {
+                result = availableJobTypes[i];
+            }
+        }
+        return result;
+    }
 }

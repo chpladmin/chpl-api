@@ -27,90 +27,96 @@ import gov.healthit.chpl.manager.JobManager;
 
 @Service
 public class JobManagerImpl extends ApplicationObjectSupport implements JobManager {
-	private static final Logger LOGGER = LogManager.getLogger(JobManagerImpl.class);
-	private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
+    private static final Logger LOGGER = LogManager.getLogger(JobManagerImpl.class);
+    private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
-	@Autowired private Environment env;
-	@Autowired private TaskExecutor taskExecutor;
-	@Autowired private RunnableJobFactory jobFactory;
-	@Autowired private JobDAO jobDao;
+    @Autowired
+    private Environment env;
+    @Autowired
+    private TaskExecutor taskExecutor;
+    @Autowired
+    private RunnableJobFactory jobFactory;
+    @Autowired
+    private JobDAO jobDao;
 
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
-	public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException {
-		UserDTO user = job.getUser();
-		if(user == null || user.getId() == null) {
-			throw new EntityRetrievalException("A user is required.");
-		}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
+    public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException {
+        UserDTO user = job.getUser();
+        if (user == null || user.getId() == null) {
+            throw new EntityRetrievalException("A user is required.");
+        }
 
-		JobDTO created = jobDao.create(job);
-		return created;
-	}
+        JobDTO created = jobDao.create(job);
+        return created;
+    }
 
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
-	public JobDTO getJobById(Long jobId) {
-		return jobDao.getById(jobId);
-	}
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
+    public JobDTO getJobById(Long jobId) {
+        return jobDao.getById(jobId);
+    }
 
-	/**
-	 * Gets the jobs that are either currently running or have completed within a configurable window of time
-	 */
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
-	public List<JobDTO> getAllJobs() {
-		String completedJobThresholdDaysStr = env.getProperty("jobThresholdDays").trim();
-		Integer completedJobThresholdDays = 0;
-		try {
-			completedJobThresholdDays = Integer.parseInt(completedJobThresholdDaysStr);
-		} catch(final NumberFormatException ex) {
-			LOGGER.error("Could not format " + completedJobThresholdDaysStr + " as an integer. Defaulting to 0 instead.");
-		}
-		Long earliestCompletedJobMillis = System.currentTimeMillis() - (completedJobThresholdDays * MILLIS_PER_DAY);
+    /**
+     * Gets the jobs that are either currently running or have completed within
+     * a configurable window of time
+     */
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
+    public List<JobDTO> getAllJobs() {
+        String completedJobThresholdDaysStr = env.getProperty("jobThresholdDays").trim();
+        Integer completedJobThresholdDays = 0;
+        try {
+            completedJobThresholdDays = Integer.parseInt(completedJobThresholdDaysStr);
+        } catch (final NumberFormatException ex) {
+            LOGGER.error(
+                    "Could not format " + completedJobThresholdDaysStr + " as an integer. Defaulting to 0 instead.");
+        }
+        Long earliestCompletedJobMillis = System.currentTimeMillis() - (completedJobThresholdDays * MILLIS_PER_DAY);
 
-		Long userId = null;
-		if(!Util.isUserRoleAdmin()) {
-			userId = Util.getCurrentUser().getId();
-		}
-		return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date(), userId);
-	}
+        Long userId = null;
+        if (!Util.isUserRoleAdmin()) {
+            userId = Util.getCurrentUser().getId();
+        }
+        return jobDao.findAllRunningAndCompletedBetweenDates(new Date(earliestCompletedJobMillis), new Date(), userId);
+    }
 
-	@Override
-	@Transactional
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public List<JobDTO> getJobsForUser(UserDTO user) throws EntityRetrievalException {
-		if(user == null || user.getId() == null) {
-			throw new EntityRetrievalException("A user is required.");
-		}
-		return jobDao.getByUser(user.getId());
-	}
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public List<JobDTO> getJobsForUser(UserDTO user) throws EntityRetrievalException {
+        if (user == null || user.getId() == null) {
+            throw new EntityRetrievalException("A user is required.");
+        }
+        return jobDao.getByUser(user.getId());
+    }
 
-	@Override
-	@Transactional
-	public List<JobTypeDTO> getAllJobTypes() {
-		return jobDao.findAllTypes();
-	}
+    @Override
+    @Transactional
+    public List<JobTypeDTO> getAllJobTypes() {
+        return jobDao.findAllTypes();
+    }
 
-	@Override
-	@Transactional
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
-	public boolean start(JobDTO job) throws EntityRetrievalException {
-		RunnableJob runnableJob = null;
-		try {
-			runnableJob = jobFactory.getRunnableJob(job);
-		} catch(final NoJobTypeException ex) {
-			LOGGER.error("No runnable job for job type " + job.getJobType().getName() + " found.");
-		}
+    @Override
+    @Transactional
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC_STAFF')")
+    public boolean start(JobDTO job) throws EntityRetrievalException {
+        RunnableJob runnableJob = null;
+        try {
+            runnableJob = jobFactory.getRunnableJob(job);
+        } catch (final NoJobTypeException ex) {
+            LOGGER.error("No runnable job for job type " + job.getJobType().getName() + " found.");
+        }
 
-		if(runnableJob == null) {
-			try {
-				jobDao.delete(job.getId());
-			} catch(Exception ignore) {}
-			return false;
-		}
+        if (runnableJob == null) {
+            try {
+                jobDao.delete(job.getId());
+            } catch (Exception ignore) {
+            }
+            return false;
+        }
 
-		taskExecutor.execute(runnableJob);
-		return true;
-	}
+        taskExecutor.execute(runnableJob);
+        return true;
+    }
 }
-

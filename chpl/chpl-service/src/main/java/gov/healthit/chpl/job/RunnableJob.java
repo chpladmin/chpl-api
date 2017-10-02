@@ -18,107 +18,113 @@ import gov.healthit.chpl.entity.job.JobStatusType;
 
 @Component
 public class RunnableJob implements Runnable {
-	private static final Logger LOGGER = LogManager.getLogger(RunnableJob.class);
+    private static final Logger LOGGER = LogManager.getLogger(RunnableJob.class);
 
-	@Autowired protected SendMailUtil mailUtils;
-	@Autowired protected JobDAO jobDao;
-	protected JobDTO job;
-	protected User user; //run this job as this user
+    @Autowired
+    protected SendMailUtil mailUtils;
+    @Autowired
+    protected JobDAO jobDao;
+    protected JobDTO job;
+    protected User user; // run this job as this user
 
-	public JobDTO getJob() {
-		return job;
-	}
-	public void setJob(JobDTO job) {
-		this.job = job;
-	}
+    public JobDTO getJob() {
+        return job;
+    }
 
-	public User getUser() {
-		return user;
-	}
-	public void setUser(User user) {
-		this.user = user;
-	}
+    public void setJob(JobDTO job) {
+        this.job = job;
+    }
 
-	public JobDAO getJobDao() {
-		return jobDao;
-	}
-	public void setJobDao(JobDAO jobDao) {
-		this.jobDao = jobDao;
-	}
+    public User getUser() {
+        return user;
+    }
 
-	protected void start() {
-		SecurityContextHolder.getContext().setAuthentication(this.user);
-		LOGGER.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
-		try {
-			jobDao.markStarted(this.job);
-		} catch(Exception ex) {
-			LOGGER.error("Could not mark the job " + this.job.getId() + " as started.", ex);
-		}
-	}
+    public void setUser(User user) {
+        this.user = user;
+    }
 
-	protected void updateStatus(double percentComplete, JobStatusType statusType) {
-		try {
-			jobDao.updateStatus(this.job, (int)percentComplete, statusType);
-		} catch(Exception ex) {
-			LOGGER.error("Could not update the job status " + this.job.getId() + ". Error was: " + ex.getMessage(), ex);
-		}
-	}
+    public JobDAO getJobDao() {
+        return jobDao;
+    }
 
-	protected void addJobMessage(String message) {
-		try {
-			jobDao.addJobMessage(this.job, message);
-		} catch(Exception ex) {
-			LOGGER.error("Could not add message " + message + " to job " + this.job.getId() + ". Error was: " + ex.getMessage(), ex);
-		}
-	}
+    public void setJobDao(JobDAO jobDao) {
+        this.jobDao = jobDao;
+    }
 
-	/**
-	 * Create an email to send to the user responsible for this job.
-	 * Email should say the job is done and include any status or messages from the job execution.
-	 */
-	public void complete() {
-		updateStatus(100, JobStatusType.Complete);
+    protected void start() {
+        SecurityContextHolder.getContext().setAuthentication(this.user);
+        LOGGER.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
+        try {
+            jobDao.markStarted(this.job);
+        } catch (Exception ex) {
+            LOGGER.error("Could not mark the job " + this.job.getId() + " as started.", ex);
+        }
+    }
 
-		JobDTO completedJob = jobDao.getById(this.job.getId());
-		this.job = completedJob;
+    protected void updateStatus(double percentComplete, JobStatusType statusType) {
+        try {
+            jobDao.updateStatus(this.job, (int) percentComplete, statusType);
+        } catch (Exception ex) {
+            LOGGER.error("Could not update the job status " + this.job.getId() + ". Error was: " + ex.getMessage(), ex);
+        }
+    }
 
-		if(this.job.getUser() == null || StringUtils.isEmpty(this.job.getUser().getEmail())) {
-			LOGGER.fatal("Cannot send email message regarding job ID " + this.job.getId() + " because email address is blank.");
-			return;
-		} else {
-			LOGGER.info("Sending email to " + this.job.getUser().getEmail());
-		}
+    protected void addJobMessage(String message) {
+        try {
+            jobDao.addJobMessage(this.job, message);
+        } catch (Exception ex) {
+            LOGGER.error("Could not add message " + message + " to job " + this.job.getId() + ". Error was: "
+                    + ex.getMessage(), ex);
+        }
+    }
 
-		String[] to = {this.job.getUser().getEmail()};
-		String subject = this.job.getJobType().getSuccessMessage();
-		String htmlMessage = "<h3>Job Details:</h3>"
-				+ "<ul>"
-				+ "<li>Started: " + this.job.getStartTime() + "</li>"
-				+ "<li>Ended: " + this.job.getEndTime() + "</li>"
-				+ "<li>Status: " + this.job.getStatus().getStatus().toString() + "</li>"
-				+ "</ul>";
-		if(this.job.getMessages() != null && this.job.getMessages().size() > 0) {
-			htmlMessage += "<h4>The following messages were generated: </h4>"
-				+ "<ul>";
-			for(JobMessageDTO message : this.job.getMessages()) {
-				htmlMessage += "<li>" + message.getMessage() + "</li>";
-			}
-			htmlMessage += "</ul>";
-		} else {
-			htmlMessage += "<p>No messages were generated.</p>";
-		}
+    /**
+     * Create an email to send to the user responsible for this job. Email
+     * should say the job is done and include any status or messages from the
+     * job execution.
+     */
+    public void complete() {
+        updateStatus(100, JobStatusType.Complete);
 
-		try {
-			mailUtils.sendEmail(to, null, subject, htmlMessage);
-		} catch(final MessagingException ex) {
-			LOGGER.error("Error sending email " + ex.getMessage(), ex);
-		} finally {
-			LOGGER.info("Completed " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
-			SecurityContextHolder.getContext().setAuthentication(null);
-		}
-	}
+        JobDTO completedJob = jobDao.getById(this.job.getId());
+        this.job = completedJob;
 
-	public void run() {
-		this.start();
-	}
+        if (this.job.getUser() == null || StringUtils.isEmpty(this.job.getUser().getEmail())) {
+            LOGGER.fatal("Cannot send email message regarding job ID " + this.job.getId()
+                    + " because email address is blank.");
+            return;
+        } else {
+            LOGGER.info("Sending email to " + this.job.getUser().getEmail());
+        }
+
+        String[] to = {
+                this.job.getUser().getEmail()
+        };
+        String subject = this.job.getJobType().getSuccessMessage();
+        String htmlMessage = "<h3>Job Details:</h3>" + "<ul>" + "<li>Started: " + this.job.getStartTime() + "</li>"
+                + "<li>Ended: " + this.job.getEndTime() + "</li>" + "<li>Status: "
+                + this.job.getStatus().getStatus().toString() + "</li>" + "</ul>";
+        if (this.job.getMessages() != null && this.job.getMessages().size() > 0) {
+            htmlMessage += "<h4>The following messages were generated: </h4>" + "<ul>";
+            for (JobMessageDTO message : this.job.getMessages()) {
+                htmlMessage += "<li>" + message.getMessage() + "</li>";
+            }
+            htmlMessage += "</ul>";
+        } else {
+            htmlMessage += "<p>No messages were generated.</p>";
+        }
+
+        try {
+            mailUtils.sendEmail(to, null, subject, htmlMessage);
+        } catch (final MessagingException ex) {
+            LOGGER.error("Error sending email " + ex.getMessage(), ex);
+        } finally {
+            LOGGER.info("Completed " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+    }
+
+    public void run() {
+        this.start();
+    }
 }

@@ -12,92 +12,94 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 
 /**
- * A standard used to meet a certification criterion.
- * You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference Tables.
+ * A standard used to meet a certification criterion. You can find a list of
+ * potential values in the 2014 or 2015 Functionality and Standards Reference
+ * Tables.
  *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestStandard implements Serializable {
-	private static final long serialVersionUID = -9182555768595891414L;
+    private static final long serialVersionUID = -9182555768595891414L;
 
-	/**
-	 * Test standard to certification result mapping internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
+    /**
+     * Test standard to certification result mapping internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	/**
-	 * Test standard internal ID
-	 */
-	@XmlElement(required = true)
-	private Long testStandardId;
+    /**
+     * Test standard internal ID
+     */
+    @XmlElement(required = true)
+    private Long testStandardId;
 
-	/**
-	 * Description of test standard
-	 */
-	@XmlElement(required = false, nillable = true)
-	private String testStandardDescription;
+    /**
+     * Description of test standard
+     */
+    @XmlElement(required = false, nillable = true)
+    private String testStandardDescription;
 
-	/**
-	 * Name of test standard
-	 */
-	@XmlElement(required = true)
-	private String testStandardName;
+    /**
+     * Name of test standard
+     */
+    @XmlElement(required = true)
+    private String testStandardName;
 
-	public CertificationResultTestStandard() {
-		super();
-	}
+    public CertificationResultTestStandard() {
+        super();
+    }
 
-	public CertificationResultTestStandard(CertificationResultTestStandardDTO dto) {
-		this.id = dto.getId();
-		this.testStandardId = dto.getTestStandardId();
-		this.testStandardDescription = dto.getTestStandardDescription();
-		this.testStandardName = dto.getTestStandardName();
-	}
+    public CertificationResultTestStandard(CertificationResultTestStandardDTO dto) {
+        this.id = dto.getId();
+        this.testStandardId = dto.getTestStandardId();
+        this.testStandardDescription = dto.getTestStandardDescription();
+        this.testStandardName = dto.getTestStandardName();
+    }
 
-	public boolean matches(CertificationResultTestStandard anotherStd) {
-		boolean result = false;
-		if(this.getTestStandardId() != null && anotherStd.getTestStandardId() != null &&
-				this.getTestStandardId().longValue() == anotherStd.getTestStandardId().longValue()) {
-			result = true;
-		} else if(!StringUtils.isEmpty(this.getTestStandardName()) && !StringUtils.isEmpty(anotherStd.getTestStandardName()) &&
-				this.getTestStandardName().equalsIgnoreCase(anotherStd.getTestStandardName())) {
-			result = true;
-		}
-		return result;
-	}
+    public boolean matches(CertificationResultTestStandard anotherStd) {
+        boolean result = false;
+        if (this.getTestStandardId() != null && anotherStd.getTestStandardId() != null
+                && this.getTestStandardId().longValue() == anotherStd.getTestStandardId().longValue()) {
+            result = true;
+        } else if (!StringUtils.isEmpty(this.getTestStandardName())
+                && !StringUtils.isEmpty(anotherStd.getTestStandardName())
+                && this.getTestStandardName().equalsIgnoreCase(anotherStd.getTestStandardName())) {
+            result = true;
+        }
+        return result;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Long getTestStandardId() {
-		return testStandardId;
-	}
+    public Long getTestStandardId() {
+        return testStandardId;
+    }
 
-	public void setTestStandardId(Long testStandardId) {
-		this.testStandardId = testStandardId;
-	}
+    public void setTestStandardId(Long testStandardId) {
+        this.testStandardId = testStandardId;
+    }
 
-	public String getTestStandardDescription() {
-		return testStandardDescription;
-	}
+    public String getTestStandardDescription() {
+        return testStandardDescription;
+    }
 
-	public void setTestStandardDescription(String testStandardDescription) {
-		this.testStandardDescription = testStandardDescription;
-	}
+    public void setTestStandardDescription(String testStandardDescription) {
+        this.testStandardDescription = testStandardDescription;
+    }
 
-	public String getTestStandardName() {
-		return testStandardName;
-	}
+    public String getTestStandardName() {
+        return testStandardName;
+    }
 
-	public void setTestStandardName(String testStandardName) {
-		this.testStandardName = testStandardName;
-	}
+    public void setTestStandardName(String testStandardName) {
+        this.testStandardName = testStandardName;
+    }
 
 }

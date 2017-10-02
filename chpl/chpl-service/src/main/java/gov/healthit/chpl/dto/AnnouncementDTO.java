@@ -1,121 +1,118 @@
 package gov.healthit.chpl.dto;
+
 import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.AnnouncementEntity;
 
-
 public class AnnouncementDTO implements Serializable {
-	private static final long serialVersionUID = -964637928651441411L;
-	private Long id;
-	private String title;
-	private String text;
-	private Date startDate;
-	private Date endDate;
-	private Boolean isPublic;
-	private Date creationDate;
-	private Boolean deleted;
-	private Date lastModifiedDate;
-	private Long lastModifiedUser;
+    private static final long serialVersionUID = -964637928651441411L;
+    private Long id;
+    private String title;
+    private String text;
+    private Date startDate;
+    private Date endDate;
+    private Boolean isPublic;
+    private Date creationDate;
+    private Boolean deleted;
+    private Date lastModifiedDate;
+    private Long lastModifiedUser;
 
+    public AnnouncementDTO() {
+    }
 
-	public AnnouncementDTO() {}
+    public AnnouncementDTO(AnnouncementEntity entity) {
+        this.id = entity.getId();
+        this.title = entity.getTitle();
+        this.text = entity.getText();
+        this.startDate = entity.getStartDate();
+        this.endDate = entity.getEndDate();
+        this.isPublic = entity.getIsPublic();
+        this.deleted = entity.getDeleted();
+        this.lastModifiedDate = entity.getLastModifiedDate();
+        this.lastModifiedUser = entity.getLastModifiedUser();
+        this.creationDate = entity.getCreationDate();
 
-	public AnnouncementDTO(AnnouncementEntity entity) {
-		this.id = entity.getId();
-		this.title = entity.getTitle();
-		this.text = entity.getText();
-		this.startDate = entity.getStartDate();
-		this.endDate = entity.getEndDate();
-		this.isPublic = entity.getIsPublic();
-		this.deleted = entity.getDeleted();
-		this.lastModifiedDate = entity.getLastModifiedDate();
-		this.lastModifiedUser = entity.getLastModifiedUser();
-		this.creationDate = entity.getCreationDate();
+    }
 
-	}
+    public String getTitle() {
+        return title;
+    }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
+    public Long getId() {
+        return id;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public String getText() {
+        return text;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Date getStartDate() {
+        return startDate;
+    }
 
-	public String getText() {
-		return text;
-	}
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public Date getEndDate() {
+        return endDate;
+    }
 
-	public Date getStartDate() {
-		return startDate;
-	}
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public Boolean getIsPublic() {
+        return isPublic;
+    }
 
-	public Date getEndDate() {
-		return endDate;
-	}
+    public void setIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public Boolean getIsPublic() {
-		return isPublic;
-	}
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public void setIsPublic(Boolean isPublic) {
-		this.isPublic = isPublic;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setLastModifiedUser(Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
 }
-

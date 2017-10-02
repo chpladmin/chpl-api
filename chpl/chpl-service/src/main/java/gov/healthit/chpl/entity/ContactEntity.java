@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-
 /**
  * Object mapping for hibernate-handled table: contact.
  *
@@ -24,236 +23,269 @@ import javax.persistence.Table;
 public class ContactEntity implements Cloneable, Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "contact_id", nullable = false  )
-	private Long id;
+    @Basic(optional = false)
+    @Column(name = "contact_id", nullable = false)
+    private Long id;
 
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	private Boolean deleted;
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	@Basic( optional = true )
-	@Column( nullable = false, length = 250  )
-	private String email;
+    @Basic(optional = true)
+    @Column(nullable = false, length = 250)
+    private String email;
 
-	@Basic( optional = true )
-	@Column( name = "first_name", nullable = false, length = 250  )
-	private String firstName;
+    @Basic(optional = true)
+    @Column(name = "first_name", nullable = false, length = 250)
+    private String firstName;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	@Basic( optional = true )
-	@Column( name = "last_name", nullable = false, length = 250  )
-	private String lastName;
+    @Basic(optional = true)
+    @Column(name = "last_name", nullable = false, length = 250)
+    private String lastName;
 
-	@Basic( optional = true )
-	@Column( name = "phone_number", nullable = false, length = 50  )
-	private String phoneNumber;
+    @Basic(optional = true)
+    @Column(name = "phone_number", nullable = false, length = 50)
+    private String phoneNumber;
 
-	@Basic( optional = true )
-	@Column( name = "signature_date"  )
-	private Date signatureDate;
+    @Basic(optional = true)
+    @Column(name = "signature_date")
+    private Date signatureDate;
 
-	@Basic( optional = true )
-	@Column( length = 250  )
-	private String title;
+    @Basic(optional = true)
+    @Column(length = 250)
+    private String title;
 
-	/**
-	 * Default constructor, mainly for hibernate use.
-	 */
-	public ContactEntity() {
-		// Default constructor
-	}
+    /**
+     * Default constructor, mainly for hibernate use.
+     */
+    public ContactEntity() {
+        // Default constructor
+    }
 
-	/** Constructor taking a given ID.
-	 * @param id to set
-	 */
-	public ContactEntity(Long id) {
-		this.id = id;
-	}
+    /**
+     * Constructor taking a given ID.
+     * 
+     * @param id
+     *            to set
+     */
+    public ContactEntity(Long id) {
+        this.id = id;
+    }
 
-	public Date getCreationDate() {
-		return this.creationDate;
+    public Date getCreationDate() {
+        return this.creationDate;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: creationDate.
-	 * @param creationDate the creationDate value you wish to set
-	 */
-	public void setCreationDate(final Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    /**
+     * Set the value related to the column: creationDate.
+     * 
+     * @param creationDate
+     *            the creationDate value you wish to set
+     */
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	 /**
-	 * Return the value associated with the column: deleted.
-	 * @return A Boolean object (this.deleted)
-	 */
-	public Boolean isDeleted() {
-		return this.deleted;
+    /**
+     * Return the value associated with the column: deleted.
+     * 
+     * @return A Boolean object (this.deleted)
+     */
+    public Boolean isDeleted() {
+        return this.deleted;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: deleted.
-	 * @param deleted the deleted value you wish to set
-	 */
-	public void setDeleted(final Boolean deleted) {
-		this.deleted = deleted;
-	}
+    /**
+     * Set the value related to the column: deleted.
+     * 
+     * @param deleted
+     *            the deleted value you wish to set
+     */
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	 /**
-	 * Return the value associated with the column: email.
-	 * @return A String object (this.email)
-	 */
-	public String getEmail() {
-		return this.email;
+    /**
+     * Return the value associated with the column: email.
+     * 
+     * @return A String object (this.email)
+     */
+    public String getEmail() {
+        return this.email;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: email.
-	 * @param email the email value you wish to set
-	 */
-	public void setEmail(final String email) {
-		this.email = email;
-	}
+    /**
+     * Set the value related to the column: email.
+     * 
+     * @param email
+     *            the email value you wish to set
+     */
+    public void setEmail(final String email) {
+        this.email = email;
+    }
 
-	 /**
-	 * Return the value associated with the column: firstName.
-	 * @return A String object (this.firstName)
-	 */
-	public String getFirstName() {
-		return this.firstName;
+    /**
+     * Return the value associated with the column: firstName.
+     * 
+     * @return A String object (this.firstName)
+     */
+    public String getFirstName() {
+        return this.firstName;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: firstName.
-	 * @param firstName the firstName value you wish to set
-	 */
-	public void setFirstName(final String firstName) {
-		this.firstName = firstName;
-	}
+    /**
+     * Set the value related to the column: firstName.
+     * 
+     * @param firstName
+     *            the firstName value you wish to set
+     */
+    public void setFirstName(final String firstName) {
+        this.firstName = firstName;
+    }
 
-	 /**
-	 * Return the value associated with the column: id.
-	 * @return A Long object (this.id)
-	 */
-	public Long getId() {
-		return this.id;
+    /**
+     * Return the value associated with the column: id.
+     * 
+     * @return A Long object (this.id)
+     */
+    public Long getId() {
+        return this.id;
 
-	}
+    }
 
-	 /**
-	 * Return the value associated with the column: lastModifiedDate.
-	 * @return A Date object (this.lastModifiedDate)
-	 */
-	public Date getLastModifiedDate() {
-		return this.lastModifiedDate;
+    /**
+     * Return the value associated with the column: lastModifiedDate.
+     * 
+     * @return A Date object (this.lastModifiedDate)
+     */
+    public Date getLastModifiedDate() {
+        return this.lastModifiedDate;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: lastModifiedDate.
-	 * @param lastModifiedDate the lastModifiedDate value you wish to set
-	 */
-	public void setLastModifiedDate(final Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    /**
+     * Set the value related to the column: lastModifiedDate.
+     * 
+     * @param lastModifiedDate
+     *            the lastModifiedDate value you wish to set
+     */
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	 /**
-	 * Return the value associated with the column: lastModifiedUser.
-	 * @return A Long object (this.lastModifiedUser)
-	 */
-	public Long getLastModifiedUser() {
-		return this.lastModifiedUser;
+    /**
+     * Return the value associated with the column: lastModifiedUser.
+     * 
+     * @return A Long object (this.lastModifiedUser)
+     */
+    public Long getLastModifiedUser() {
+        return this.lastModifiedUser;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: lastModifiedUser.
-	 * @param lastModifiedUser the lastModifiedUser value you wish to set
-	 */
-	public void setLastModifiedUser(final Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    /**
+     * Set the value related to the column: lastModifiedUser.
+     * 
+     * @param lastModifiedUser
+     *            the lastModifiedUser value you wish to set
+     */
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	 /**
-	 * Return the value associated with the column: lastName.
-	 * @return A String object (this.lastName)
-	 */
-	public String getLastName() {
-		return this.lastName;
+    /**
+     * Return the value associated with the column: lastName.
+     * 
+     * @return A String object (this.lastName)
+     */
+    public String getLastName() {
+        return this.lastName;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: lastName.
-	 * @param lastName the lastName value you wish to set
-	 */
-	public void setLastName(final String lastName) {
-		this.lastName = lastName;
-	}
+    /**
+     * Set the value related to the column: lastName.
+     * 
+     * @param lastName
+     *            the lastName value you wish to set
+     */
+    public void setLastName(final String lastName) {
+        this.lastName = lastName;
+    }
 
-	 /**
-	 * Return the value associated with the column: phoneNumber.
-	 * @return A String object (this.phoneNumber)
-	 */
-	public String getPhoneNumber() {
-		return this.phoneNumber;
+    /**
+     * Return the value associated with the column: phoneNumber.
+     * 
+     * @return A String object (this.phoneNumber)
+     */
+    public String getPhoneNumber() {
+        return this.phoneNumber;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: phoneNumber.
-	 * @param phoneNumber the phoneNumber value you wish to set
-	 */
-	public void setPhoneNumber(final String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
+    /**
+     * Set the value related to the column: phoneNumber.
+     * 
+     * @param phoneNumber
+     *            the phoneNumber value you wish to set
+     */
+    public void setPhoneNumber(final String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-	 /**
-	 * Return the value associated with the column: signatureDate.
-	 * @return A Date object (this.signatureDate)
-	 */
-	public Date getSignatureDate() {
-		return this.signatureDate;
+    /**
+     * Return the value associated with the column: signatureDate.
+     * 
+     * @return A Date object (this.signatureDate)
+     */
+    public Date getSignatureDate() {
+        return this.signatureDate;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: signatureDate.
-	 * @param signatureDate the signatureDate value you wish to set
-	 */
-	public void setSignatureDate(final Date signatureDate) {
-		this.signatureDate = signatureDate;
-	}
+    /**
+     * Set the value related to the column: signatureDate.
+     * 
+     * @param signatureDate
+     *            the signatureDate value you wish to set
+     */
+    public void setSignatureDate(final Date signatureDate) {
+        this.signatureDate = signatureDate;
+    }
 
-	 /**
-	 * Return the value associated with the column: title.
-	 * @return A String object (this.title)
-	 */
-	public String getTitle() {
-		return this.title;
+    /**
+     * Return the value associated with the column: title.
+     * 
+     * @return A String object (this.title)
+     */
+    public String getTitle() {
+        return this.title;
 
-	}
+    }
 
-	 /**
-	 * Set the value related to the column: title.
-	 * @param title the title value you wish to set
-	 */
-	public void setTitle(final String title) {
-		this.title = title;
-	}
+    /**
+     * Set the value related to the column: title.
+     * 
+     * @param title
+     *            the title value you wish to set
+     */
+    public void setTitle(final String title) {
+        this.title = title;
+    }
 }

@@ -15,15 +15,16 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 @Component
 public class PreFetchedCaches {
-	private static final Logger LOGGER = LogManager.getLogger(PreFetchedCaches.class);
-	@Autowired private CertifiedProductSearchDAO certifiedProductSearchDao;
+    private static final Logger LOGGER = LogManager.getLogger(PreFetchedCaches.class);
+    @Autowired
+    private CertifiedProductSearchDAO certifiedProductSearchDao;
 
-	@Transactional
-	@CacheEvict(value = CacheNames.COLLECTIONS_PREFETCHED_LISTINGS, beforeInvocation = true, allEntries = true)
-	@Cacheable(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS)
-	public List<CertifiedProductFlatSearchResult> loadPreFetchedBasicSearch() {
-		LOGGER.info("Loading PreFetchedBasicSearch");
-		List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();
-		return results;
-	}
+    @Transactional
+    @CacheEvict(value = CacheNames.COLLECTIONS_PREFETCHED_LISTINGS, beforeInvocation = true, allEntries = true)
+    @Cacheable(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS)
+    public List<CertifiedProductFlatSearchResult> loadPreFetchedBasicSearch() {
+        LOGGER.info("Loading PreFetchedBasicSearch");
+        List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDao.getAllCertifiedProducts();
+        return results;
+    }
 }

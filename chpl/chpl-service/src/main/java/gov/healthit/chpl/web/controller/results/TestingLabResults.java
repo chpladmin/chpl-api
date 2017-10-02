@@ -7,18 +7,18 @@ import java.util.List;
 import gov.healthit.chpl.domain.TestingLab;
 
 public class TestingLabResults implements Serializable {
-	private static final long serialVersionUID = -6741433293000497548L;
-	private List<TestingLab> atls;
+    private static final long serialVersionUID = -6741433293000497548L;
+    private List<TestingLab> atls;
 
-	public TestingLabResults() {
-		atls = new ArrayList<TestingLab>();
-	}
+    public TestingLabResults() {
+        atls = new ArrayList<TestingLab>();
+    }
 
-	public List<TestingLab> getAtls() {
-		return atls;
-	}
+    public List<TestingLab> getAtls() {
+        return atls;
+    }
 
-	public void setAtls(List<TestingLab> atls) {
-		this.atls = atls;
-	}
+    public void setAtls(List<TestingLab> atls) {
+        this.atls = atls;
+    }
 }

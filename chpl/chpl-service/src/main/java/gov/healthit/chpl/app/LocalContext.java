@@ -12,32 +12,29 @@ import javax.naming.spi.InitialContextFactoryBuilder;
 
 public class LocalContext extends InitialContext implements InitialContextFactoryBuilder, InitialContextFactory {
 
-	Map<Object,Object> dataSources;
+    Map<Object, Object> dataSources;
 
-	LocalContext() throws NamingException {
-		super();
-		dataSources = new HashMap<Object,Object>();
-	}
+    LocalContext() throws NamingException {
+        super();
+        dataSources = new HashMap<Object, Object>();
+    }
 
-	public void addDataSource(String name, String connectionString, String username, String password) {
-		this.
-		dataSources.put(name, new LocalDataSource(connectionString,username,password));
-	}
+    public void addDataSource(String name, String connectionString, String username, String password) {
+        this.dataSources.put(name, new LocalDataSource(connectionString, username, password));
+    }
 
-	public InitialContextFactory createInitialContextFactory(
-			Hashtable<?, ?> hsh) throws NamingException {
-		dataSources.putAll(hsh);
-		return this;
-	}
+    public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> hsh) throws NamingException {
+        dataSources.putAll(hsh);
+        return this;
+    }
 
-	public Context getInitialContext(Hashtable<?, ?> arg0)
-			throws NamingException {
-		return this;
-	}
+    public Context getInitialContext(Hashtable<?, ?> arg0) throws NamingException {
+        return this;
+    }
 
-	@Override
-	public Object lookup(String name) throws NamingException {
-		Object ret = dataSources.get(name);
-		return (ret != null) ? ret : super.lookup(name);
-	}
+    @Override
+    public Object lookup(String name) throws NamingException {
+        Object ret = dataSources.get(name);
+        return (ret != null) ? ret : super.lookup(name);
+    }
 }

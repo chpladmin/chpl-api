@@ -23,239 +23,237 @@ import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 @Entity
 @Table(name = "test_task")
 public class TestTaskEntity implements Cloneable, Serializable {
-	private static final long serialVersionUID = -6364783003138741063L;
+    private static final long serialVersionUID = -6364783003138741063L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "test_task_id", nullable = false  )
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "test_task_id", nullable = false)
+    private Long id;
 
-	@Column(name = "description", nullable = false  )
-	private String description;
+    @Column(name = "description", nullable = false)
+    private String description;
 
-	@Column(name = "task_success_avg_pct", nullable = false  )
-	private Float taskSuccessAverage;
+    @Column(name = "task_success_avg_pct", nullable = false)
+    private Float taskSuccessAverage;
 
-	@Column(name = "task_success_stddev_pct", nullable = false  )
-	private Float taskSuccessStddev;
+    @Column(name = "task_success_stddev_pct", nullable = false)
+    private Float taskSuccessStddev;
 
-	@Column( name = "task_path_deviation_observed", nullable = false  )
-	private Integer taskPathDeviationObserved;
+    @Column(name = "task_path_deviation_observed", nullable = false)
+    private Integer taskPathDeviationObserved;
 
-	@Column( name = "task_path_deviation_optimal", nullable = false  )
-	private Integer taskPathDeviationOptimal;
+    @Column(name = "task_path_deviation_optimal", nullable = false)
+    private Integer taskPathDeviationOptimal;
 
-	@Column( name = "task_time_avg_seconds", nullable = false  )
-	private Long taskTimeAvg;
+    @Column(name = "task_time_avg_seconds", nullable = false)
+    private Long taskTimeAvg;
 
-	@Column( name = "task_time_stddev_seconds", nullable = false  )
-	private Integer taskTimeStddev;
+    @Column(name = "task_time_stddev_seconds", nullable = false)
+    private Integer taskTimeStddev;
 
-	@Column( name = "task_time_deviation_observed_avg_seconds", nullable = false  )
-	private Integer taskTimeDeviationObservedAvg;
+    @Column(name = "task_time_deviation_observed_avg_seconds", nullable = false)
+    private Integer taskTimeDeviationObservedAvg;
 
-	@Column( name = "task_time_deviation_optimal_avg_seconds", nullable = false  )
-	private Integer taskTimeDeviationOptimalAvg;
+    @Column(name = "task_time_deviation_optimal_avg_seconds", nullable = false)
+    private Integer taskTimeDeviationOptimalAvg;
 
-	@Column(name = "task_errors_pct", nullable = false  )
-	private Float taskErrors;
+    @Column(name = "task_errors_pct", nullable = false)
+    private Float taskErrors;
 
-	@Column(name = "task_errors_stddev_pct", nullable = false  )
-	private Float taskErrorsStddev;
+    @Column(name = "task_errors_stddev_pct", nullable = false)
+    private Float taskErrorsStddev;
 
-	@Column(name = "task_rating_scale", nullable = false  )
-	private String taskRatingScale;
+    @Column(name = "task_rating_scale", nullable = false)
+    private String taskRatingScale;
 
-	@Column(name = "task_rating", nullable = false  )
-	private Float taskRating;
+    @Column(name = "task_rating", nullable = false)
+    private Float taskRating;
 
-	@Column(name = "task_rating_stddev", nullable = false  )
-	private Float taskRatingStddev;
+    @Column(name = "task_rating_stddev", nullable = false)
+    private Float taskRatingStddev;
 
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "testTaskId"  )
-	@Basic( optional = false )
-	@Column( name = "test_task_id", nullable = false  )
- 	@Where(clause="deleted <> 'true'")
-	private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testTaskId")
+    @Basic(optional = false)
+    @Column(name = "test_task_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
 
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	@Basic( optional = false )
-	@NotNull
-	@Column( nullable = false  )
-	private Boolean deleted;
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
+    public Long getId() {
+        return id;
+    }
 
-	@Basic( optional = false )
-	@NotNull
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public Float getTaskSuccessAverage() {
+        return taskSuccessAverage;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setTaskSuccessAverage(Float taskSuccessAverage) {
+        this.taskSuccessAverage = taskSuccessAverage;
+    }
 
-	public Float getTaskSuccessAverage() {
-		return taskSuccessAverage;
-	}
+    public Float getTaskSuccessStddev() {
+        return taskSuccessStddev;
+    }
 
-	public void setTaskSuccessAverage(Float taskSuccessAverage) {
-		this.taskSuccessAverage = taskSuccessAverage;
-	}
+    public void setTaskSuccessStddev(Float taskSuccessStddev) {
+        this.taskSuccessStddev = taskSuccessStddev;
+    }
 
-	public Float getTaskSuccessStddev() {
-		return taskSuccessStddev;
-	}
+    public Integer getTaskPathDeviationObserved() {
+        return taskPathDeviationObserved;
+    }
 
-	public void setTaskSuccessStddev(Float taskSuccessStddev) {
-		this.taskSuccessStddev = taskSuccessStddev;
-	}
+    public void setTaskPathDeviationObserved(Integer taskPathDeviationObserved) {
+        this.taskPathDeviationObserved = taskPathDeviationObserved;
+    }
 
-	public Integer getTaskPathDeviationObserved() {
-		return taskPathDeviationObserved;
-	}
+    public Integer getTaskPathDeviationOptimal() {
+        return taskPathDeviationOptimal;
+    }
 
-	public void setTaskPathDeviationObserved(Integer taskPathDeviationObserved) {
-		this.taskPathDeviationObserved = taskPathDeviationObserved;
-	}
+    public void setTaskPathDeviationOptimal(Integer taskPathDeviationOptimal) {
+        this.taskPathDeviationOptimal = taskPathDeviationOptimal;
+    }
 
-	public Integer getTaskPathDeviationOptimal() {
-		return taskPathDeviationOptimal;
-	}
+    public Long getTaskTimeAvg() {
+        return taskTimeAvg;
+    }
 
-	public void setTaskPathDeviationOptimal(Integer taskPathDeviationOptimal) {
-		this.taskPathDeviationOptimal = taskPathDeviationOptimal;
-	}
+    public void setTaskTimeAvg(Long taskTimeAvg) {
+        this.taskTimeAvg = taskTimeAvg;
+    }
 
-	public Long getTaskTimeAvg() {
-		return taskTimeAvg;
-	}
+    public Integer getTaskTimeStddev() {
+        return taskTimeStddev;
+    }
 
-	public void setTaskTimeAvg(Long taskTimeAvg) {
-		this.taskTimeAvg = taskTimeAvg;
-	}
+    public void setTaskTimeStddev(Integer taskTimeStddev) {
+        this.taskTimeStddev = taskTimeStddev;
+    }
 
-	public Integer getTaskTimeStddev() {
-		return taskTimeStddev;
-	}
+    public Integer getTaskTimeDeviationObservedAvg() {
+        return taskTimeDeviationObservedAvg;
+    }
 
-	public void setTaskTimeStddev(Integer taskTimeStddev) {
-		this.taskTimeStddev = taskTimeStddev;
-	}
+    public void setTaskTimeDeviationObservedAvg(Integer taskTimeDeviationObservedAvg) {
+        this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
+    }
 
-	public Integer getTaskTimeDeviationObservedAvg() {
-		return taskTimeDeviationObservedAvg;
-	}
+    public Integer getTaskTimeDeviationOptimalAvg() {
+        return taskTimeDeviationOptimalAvg;
+    }
 
-	public void setTaskTimeDeviationObservedAvg(Integer taskTimeDeviationObservedAvg) {
-		this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
-	}
+    public void setTaskTimeDeviationOptimalAvg(Integer taskTimeDeviationOptimalAvg) {
+        this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
+    }
 
-	public Integer getTaskTimeDeviationOptimalAvg() {
-		return taskTimeDeviationOptimalAvg;
-	}
+    public Float getTaskErrors() {
+        return taskErrors;
+    }
 
-	public void setTaskTimeDeviationOptimalAvg(Integer taskTimeDeviationOptimalAvg) {
-		this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
-	}
+    public void setTaskErrors(Float taskErrors) {
+        this.taskErrors = taskErrors;
+    }
 
-	public Float getTaskErrors() {
-		return taskErrors;
-	}
+    public Float getTaskErrorsStddev() {
+        return taskErrorsStddev;
+    }
 
-	public void setTaskErrors(Float taskErrors) {
-		this.taskErrors = taskErrors;
-	}
+    public void setTaskErrorsStddev(Float taskErrorsStddev) {
+        this.taskErrorsStddev = taskErrorsStddev;
+    }
 
-	public Float getTaskErrorsStddev() {
-		return taskErrorsStddev;
-	}
+    public String getTaskRatingScale() {
+        return taskRatingScale;
+    }
 
-	public void setTaskErrorsStddev(Float taskErrorsStddev) {
-		this.taskErrorsStddev = taskErrorsStddev;
-	}
+    public void setTaskRatingScale(String taskRatingScale) {
+        this.taskRatingScale = taskRatingScale;
+    }
 
-	public String getTaskRatingScale() {
-		return taskRatingScale;
-	}
+    public Float getTaskRating() {
+        return taskRating;
+    }
 
-	public void setTaskRatingScale(String taskRatingScale) {
-		this.taskRatingScale = taskRatingScale;
-	}
+    public void setTaskRating(Float taskRating) {
+        this.taskRating = taskRating;
+    }
 
-	public Float getTaskRating() {
-		return taskRating;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setTaskRating(Float taskRating) {
-		this.taskRating = taskRating;
-	}
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setLastModifiedUser(Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public Float getTaskRatingStddev() {
+        return taskRatingStddev;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setTaskRatingStddev(Float taskRatingStddev) {
+        this.taskRatingStddev = taskRatingStddev;
+    }
 
-	public Float getTaskRatingStddev() {
-		return taskRatingStddev;
-	}
+    public Set<TestTaskParticipantMapEntity> getTestParticipants() {
+        return testParticipants;
+    }
 
-	public void setTaskRatingStddev(Float taskRatingStddev) {
-		this.taskRatingStddev = taskRatingStddev;
-	}
-
-	public Set<TestTaskParticipantMapEntity> getTestParticipants() {
-		return testParticipants;
-	}
-
-	public void setTestParticipants(Set<TestTaskParticipantMapEntity> testParticipants) {
-		this.testParticipants = testParticipants;
-	}
+    public void setTestParticipants(Set<TestTaskParticipantMapEntity> testParticipants) {
+        this.testParticipants = testParticipants;
+    }
 }

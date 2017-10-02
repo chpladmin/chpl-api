@@ -21,187 +21,184 @@ import org.hibernate.annotations.FetchMode;
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 
-
 @Entity
-@Table(name="activity")
+@Table(name = "activity")
 public class ActivityEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "activity_id", nullable = false )
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "activity_id", nullable = false)
+    private Long id;
 
-	@Basic( optional = true )
-	@Column( name = "description", nullable = true )
-	private String description;
+    @Basic(optional = true)
+    @Column(name = "description", nullable = true)
+    private String description;
 
-	@Basic( optional = true )
-	@Column( name = "original_data", nullable = true )
-	private String originalData;
+    @Basic(optional = true)
+    @Column(name = "original_data", nullable = true)
+    private String originalData;
 
-	@Basic( optional = true )
-	@Column( name = "new_data", nullable = true )
-	private String newData;
+    @Basic(optional = true)
+    @Column(name = "new_data", nullable = true)
+    private String newData;
 
-	@Basic( optional = false )
-	@Column( name = "activity_date", nullable = false )
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date activityDate;
+    @Basic(optional = false)
+    @Column(name = "activity_date", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date activityDate;
 
-	@Basic( optional = false )
-	@Column( name = "activity_object_id", nullable = false)
-	private Long activityObjectId;
+    @Basic(optional = false)
+    @Column(name = "activity_object_id", nullable = false)
+    private Long activityObjectId;
 
-	@Basic( optional = false )
-	@Column( name = "activity_object_concept_id", nullable = false)
-	private Long activityObjectConceptId;
+    @Basic(optional = false)
+    @Column(name = "activity_object_concept_id", nullable = false)
+    private Long activityObjectConceptId;
 
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false )
-	private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false )
-	private Date lastModifiedDate;
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false )
-	private Long lastModifiedUser;
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false )
-	private Boolean deleted;
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@Fetch(FetchMode.JOIN)
-	@JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable= false)
-	private UserEntity user;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable = false)
+    private UserEntity user;
 
-	transient ActivityConcept concept;
+    transient ActivityConcept concept;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public Date getActivityDate() {
-		return activityDate;
-	}
+    public Date getActivityDate() {
+        return activityDate;
+    }
 
-	public void setActivityDate(Date activityDate) {
-		this.activityDate = activityDate;
-	}
+    public void setActivityDate(Date activityDate) {
+        this.activityDate = activityDate;
+    }
 
-	public Long getActivityObjectId() {
-		return activityObjectId;
-	}
+    public Long getActivityObjectId() {
+        return activityObjectId;
+    }
 
-	public void setActivityObjectId(Long activityObjectId) {
-		this.activityObjectId = activityObjectId;
-	}
+    public void setActivityObjectId(Long activityObjectId) {
+        this.activityObjectId = activityObjectId;
+    }
 
-	public Long getActivityObjectConceptId() {
-		return activityObjectConceptId;
-	}
+    public Long getActivityObjectConceptId() {
+        return activityObjectConceptId;
+    }
 
-	public void setActivityObjectConceptId(Long activityObjectClassId) {
+    public void setActivityObjectConceptId(Long activityObjectClassId) {
 
-		for (ActivityConcept concept : ActivityConcept.values()) {
-			if(concept.getId().equals(activityObjectClassId)) {
-				this.concept = concept;
-				break;
-			}
-		}
-		this.activityObjectConceptId = activityObjectClassId;
-	}
+        for (ActivityConcept concept : ActivityConcept.values()) {
+            if (concept.getId().equals(activityObjectClassId)) {
+                this.concept = concept;
+                break;
+            }
+        }
+        this.activityObjectConceptId = activityObjectClassId;
+    }
 
-	public ActivityConcept getConcept() {
+    public ActivityConcept getConcept() {
 
-		if (this.concept == null) {
+        if (this.concept == null) {
 
-			for (ActivityConcept concept : ActivityConcept.values()) {
-				if(concept.getId().equals(this.getActivityObjectConceptId())) {
-					this.concept = concept;
-					break;
-				}
-			}
-		}
-		return this.concept;
-	}
+            for (ActivityConcept concept : ActivityConcept.values()) {
+                if (concept.getId().equals(this.getActivityObjectConceptId())) {
+                    this.concept = concept;
+                    break;
+                }
+            }
+        }
+        return this.concept;
+    }
 
-	public void setConcept(ActivityConcept concept) {
-		this.activityObjectConceptId = concept.getId();
-		this.concept = concept;
-	}
+    public void setConcept(ActivityConcept concept) {
+        this.activityObjectConceptId = concept.getId();
+        this.concept = concept;
+    }
 
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public void setLastModifiedUser(Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public String getOriginalData() {
+        return originalData;
+    }
 
-	public String getOriginalData() {
-		return originalData;
-	}
+    public void setOriginalData(String originalData) {
+        this.originalData = originalData;
+    }
 
-	public void setOriginalData(String originalData) {
-		this.originalData = originalData;
-	}
+    public String getNewData() {
+        return newData;
+    }
 
-	public String getNewData() {
-		return newData;
-	}
+    public void setNewData(String newData) {
+        this.newData = newData;
+    }
 
-	public void setNewData(String newData) {
-		this.newData = newData;
-	}
+    public UserEntity getUser() {
+        return user;
+    }
 
-	public UserEntity getUser() {
-		return user;
-	}
-
-	public void setUser(UserEntity user) {
-		this.user = user;
-	}
-
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
 
 }

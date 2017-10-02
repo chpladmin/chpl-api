@@ -29,110 +29,117 @@ import gov.healthit.chpl.manager.CertificationIdManager;
 @Service
 public class CertificationIdManagerImpl implements CertificationIdManager {
 
-	@Autowired CertificationIdDAO CertificationIdDAO;
+    @Autowired
+    CertificationIdDAO CertificationIdDAO;
 
-	@Autowired
-	ActivityManager activityManager;
+    @Autowired
+    ActivityManager activityManager;
 
-	@Override
-	@Transactional(readOnly = true)
-	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
-		return CertificationIdDAO.getByProductIds(productIds, year);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
+        return CertificationIdDAO.getByProductIds(productIds, year);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public CertificationIdDTO getById(Long id) throws EntityRetrievalException {
-		return CertificationIdDAO.getById(id);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public CertificationIdDTO getById(Long id) throws EntityRetrievalException {
+        return CertificationIdDAO.getById(id);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
-		return CertificationIdDAO.getByCertificationId(certificationId);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
+        return CertificationIdDAO.getByCertificationId(certificationId);
+    }
 
-	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
-		return CertificationIdDAO.getProductIdsById(id);
-	}
+    public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+        return CertificationIdDAO.getProductIdsById(id);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
-		return CertificationIdDAO.getCriteriaNumbersMetByCertifiedProductIds(productIds);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
+        return CertificationIdDAO.getCriteriaNumbersMetByCertifiedProductIds(productIds);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
-		return 	CertificationIdDAO.getCqmsMetByCertifiedProductIds(productIds);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
+        return CertificationIdDAO.getCqmsMetByCertifiedProductIds(productIds);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
-		return CertificationIdDAO.verifyByCertificationId(certificationIds);
-	}
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
+        return CertificationIdDAO.verifyByCertificationId(certificationIds);
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	@Cacheable(CacheNames.ALL_CERT_IDS)
-	/**
-	 * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF || ROLE_CMS_STAFF
-	 */
-	public List<SimpleCertificationId> getAll() {
-		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
-		List<CertificationIdDTO> allCertificationIds = CertificationIdDAO.findAll();
-		for(CertificationIdDTO dto : allCertificationIds) {
-			results.add(new SimpleCertificationId(dto));
-		}
-		return results;
-	}
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(CacheNames.ALL_CERT_IDS)
+    /**
+     * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF ||
+     * ROLE_CMS_STAFF
+     */
+    public List<SimpleCertificationId> getAll() {
+        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
+        List<CertificationIdDTO> allCertificationIds = CertificationIdDAO.findAll();
+        for (CertificationIdDTO dto : allCertificationIds) {
+            results.add(new SimpleCertificationId(dto));
+        }
+        return results;
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	@Cacheable(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS)
-	/**
-	 * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF
-	 */
-	public List<SimpleCertificationId> getAllWithProducts() {
-		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
-		List<CertificationIdAndCertifiedProductDTO> allCertificationIds = CertificationIdDAO.getAllCertificationIdsWithProducts();
-		for(CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
-			SimpleCertificationId cert = new SimpleCertificationId();
-			cert.setCertificationId(ehr.getCertificationId());
-			cert.setCreated(ehr.getCreationDate());
-			int index = results.indexOf(cert);
-			if(index >= 0) {
-				SimpleCertificationIdWithProducts currResult = (SimpleCertificationIdWithProducts)results.get(index);
-				if(StringUtils.isEmpty(currResult.getProducts())) {
-					currResult.setProducts(ehr.getChplProductNumber());
-				} else {
-					String currProducts = currResult.getProducts();
-					currProducts = currProducts + ";" + ehr.getChplProductNumber();
-					currResult.setProducts(currProducts);
-				}
-			} else {
-				SimpleCertificationIdWithProducts currResult = new SimpleCertificationIdWithProducts();
-				currResult.setCertificationId(ehr.getCertificationId());
-				currResult.setCreated(ehr.getCreationDate());
-				currResult.setProducts(ehr.getChplProductNumber());
-				results.add(currResult);
-			}
-		}
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(CacheNames.ALL_CERT_IDS_WITH_PRODUCTS)
+    /**
+     * Should be secured at controller level for ROLE_ADMIN || ROLE_ONC_STAFF
+     */
+    public List<SimpleCertificationId> getAllWithProducts() {
+        List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
+        List<CertificationIdAndCertifiedProductDTO> allCertificationIds = CertificationIdDAO
+                .getAllCertificationIdsWithProducts();
+        for (CertificationIdAndCertifiedProductDTO ehr : allCertificationIds) {
+            SimpleCertificationId cert = new SimpleCertificationId();
+            cert.setCertificationId(ehr.getCertificationId());
+            cert.setCreated(ehr.getCreationDate());
+            int index = results.indexOf(cert);
+            if (index >= 0) {
+                SimpleCertificationIdWithProducts currResult = (SimpleCertificationIdWithProducts) results.get(index);
+                if (StringUtils.isEmpty(currResult.getProducts())) {
+                    currResult.setProducts(ehr.getChplProductNumber());
+                } else {
+                    String currProducts = currResult.getProducts();
+                    currProducts = currProducts + ";" + ehr.getChplProductNumber();
+                    currResult.setProducts(currProducts);
+                }
+            } else {
+                SimpleCertificationIdWithProducts currResult = new SimpleCertificationIdWithProducts();
+                currResult.setCertificationId(ehr.getCertificationId());
+                currResult.setCreated(ehr.getCreationDate());
+                currResult.setProducts(ehr.getChplProductNumber());
+                results.add(currResult);
+            }
+        }
 
-	return results;
-	}
+        return results;
+    }
 
-	@Override
-	@Transactional(readOnly = false)
-	@CacheEvict(value = {CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS}, allEntries = true)
-	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    @Override
+    @Transactional(readOnly = false)
+    @CacheEvict(value = {
+            CacheNames.ALL_CERT_IDS, CacheNames.ALL_CERT_IDS_WITH_PRODUCTS
+    }, allEntries = true)
+    public CertificationIdDTO create(List<Long> productIds, String year)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
-		CertificationIdDTO result = CertificationIdDAO.create(productIds, year);
+        CertificationIdDTO result = CertificationIdDAO.create(productIds, year);
 
-		String activityMsg = "CertificationId "+result.getCertificationId()+" was created.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null, result);
-		return result;
-	}
+        String activityMsg = "CertificationId " + result.getCertificationId() + " was created.";
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATIONID, result.getId(), activityMsg, null,
+                result);
+        return result;
+    }
 }

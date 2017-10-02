@@ -9,22 +9,24 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 
-
 public interface AnnouncementManager {
 
-	public AnnouncementDTO create(AnnouncementDTO announcement) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
+    public AnnouncementDTO create(AnnouncementDTO announcement)
+            throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
-	public AnnouncementDTO update(AnnouncementDTO announcement) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+    public AnnouncementDTO update(AnnouncementDTO announcement)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
 
-	public void delete(AnnouncementDTO announcement) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
+    public void delete(AnnouncementDTO announcement)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
 
-	public List<AnnouncementDTO> getAll();
+    public List<AnnouncementDTO> getAll();
 
-	public AnnouncementDTO getById(Long id) throws EntityRetrievalException;
+    public AnnouncementDTO getById(Long id) throws EntityRetrievalException;
 
-	public AnnouncementDTO getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException;
+    public AnnouncementDTO getById(Long announcementId, boolean includeDeleted) throws EntityRetrievalException;
 
-	public List<AnnouncementDTO> getAllFuture();
+    public List<AnnouncementDTO> getAllFuture();
 
-	public List<AnnouncementDTO> getAllCurrentAndFuture();
+    public List<AnnouncementDTO> getAllCurrentAndFuture();
 }

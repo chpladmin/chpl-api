@@ -20,75 +20,78 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public abstract class DownloadableResourceCreatorApp extends App {
-	private static final Logger LOGGER = LogManager.getLogger(DownloadableResourceCreatorApp.class);
+    private static final Logger LOGGER = LogManager.getLogger(DownloadableResourceCreatorApp.class);
 
-	protected SimpleDateFormat timestampFormat;
-	protected CertifiedProductDetailsManager cpdManager;
-	protected CertifiedProductDAO certifiedProductDao;
-	protected CertificationCriterionDAO criteriaDao;
+    protected SimpleDateFormat timestampFormat;
+    protected CertifiedProductDetailsManager cpdManager;
+    protected CertifiedProductDAO certifiedProductDao;
+    protected CertificationCriterionDAO criteriaDao;
 
     public DownloadableResourceCreatorApp() {
-    	timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+        timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
 
-	protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
-		this.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
-		this.setCertifiedProductDao((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		this.setCriteriaDao((CertificationCriterionDAO)context.getBean("certificationCriterionDAO"));
-	}
+    protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
+        this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
+        this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
+        this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
+    }
 
-	protected abstract List<CertifiedProductDetailsDTO> getRelevantListings();
-	protected abstract void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results) throws IOException;
+    protected abstract List<CertifiedProductDetailsDTO> getRelevantListings();
 
-	protected void runJob(String[] args) throws Exception {
-		File downloadFolder = getDownloadFolder();
-		List<CertifiedProductDetailsDTO> listings = getRelevantListings();
+    protected abstract void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results)
+            throws IOException;
 
-		CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
-		for(CertifiedProductDetailsDTO currListing : listings) {
-			try {
-				LOGGER.info("Getting details for listing ID " + currListing.getId());
-				Date start = new Date();
-				CertifiedProductSearchDetails product = getCpdManager().getCertifiedProductDetails(currListing.getId());
-				Date end = new Date();
-				LOGGER.info("Got details for listing ID " + currListing.getId() + " in " + (end.getTime() - start.getTime())/1000 + " seconds");
-				results.getListings().add(product);
-			} catch(final EntityRetrievalException ex) {
-				LOGGER.error("Could not get details for certified product " + currListing.getId());
-			}
-		}
-		writeToFile(downloadFolder, results);
-	}
+    protected void runJob(String[] args) throws Exception {
+        File downloadFolder = getDownloadFolder();
+        List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
-	public CertifiedProductDAO getCertifiedProductDao() {
-		return certifiedProductDao;
-	}
+        CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
+        for (CertifiedProductDetailsDTO currListing : listings) {
+            try {
+                LOGGER.info("Getting details for listing ID " + currListing.getId());
+                Date start = new Date();
+                CertifiedProductSearchDetails product = getCpdManager().getCertifiedProductDetails(currListing.getId());
+                Date end = new Date();
+                LOGGER.info("Got details for listing ID " + currListing.getId() + " in "
+                        + (end.getTime() - start.getTime()) / 1000 + " seconds");
+                results.getListings().add(product);
+            } catch (final EntityRetrievalException ex) {
+                LOGGER.error("Could not get details for certified product " + currListing.getId());
+            }
+        }
+        writeToFile(downloadFolder, results);
+    }
 
-	public void setCertifiedProductDao(CertifiedProductDAO certifiedProductDAO) {
-		this.certifiedProductDao = certifiedProductDAO;
-	}
+    public CertifiedProductDAO getCertifiedProductDao() {
+        return certifiedProductDao;
+    }
 
-	public SimpleDateFormat getTimestampFormat() {
-		return timestampFormat;
-	}
+    public void setCertifiedProductDao(CertifiedProductDAO certifiedProductDAO) {
+        this.certifiedProductDao = certifiedProductDAO;
+    }
 
-	public void setTimestampFormat(SimpleDateFormat timestampFormat) {
-		this.timestampFormat = timestampFormat;
-	}
+    public SimpleDateFormat getTimestampFormat() {
+        return timestampFormat;
+    }
 
-	public CertifiedProductDetailsManager getCpdManager() {
-		return cpdManager;
-	}
+    public void setTimestampFormat(SimpleDateFormat timestampFormat) {
+        this.timestampFormat = timestampFormat;
+    }
 
-	public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
-		this.cpdManager = cpdManager;
-	}
+    public CertifiedProductDetailsManager getCpdManager() {
+        return cpdManager;
+    }
 
-	public CertificationCriterionDAO getCriteriaDao() {
-		return criteriaDao;
-	}
+    public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
+        this.cpdManager = cpdManager;
+    }
 
-	public void setCriteriaDao(CertificationCriterionDAO criteriaDao) {
-		this.criteriaDao = criteriaDao;
-	}
+    public CertificationCriterionDAO getCriteriaDao() {
+        return criteriaDao;
+    }
+
+    public void setCriteriaDao(CertificationCriterionDAO criteriaDao) {
+        this.criteriaDao = criteriaDao;
+    }
 }

@@ -5,49 +5,51 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
 
 public class PendingCertificationResultTestFunctionalityDTO implements Serializable {
-	private static final long serialVersionUID = 4002949679310389672L;
-	private Long id;
-	private Long pendingCertificationResultId;
-	private Long testFunctionalityId;
-	private String number;
+    private static final long serialVersionUID = 4002949679310389672L;
+    private Long id;
+    private Long pendingCertificationResultId;
+    private Long testFunctionalityId;
+    private String number;
 
-	public PendingCertificationResultTestFunctionalityDTO() {}
+    public PendingCertificationResultTestFunctionalityDTO() {
+    }
 
-	public PendingCertificationResultTestFunctionalityDTO(PendingCertificationResultTestFunctionalityEntity entity) {
-		this.setId(entity.getId());
-		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
-		this.setTestFunctionalityId(entity.getTestFunctionalityId());
-		this.setNumber(entity.getTestFunctionalityNumber());
-	}
+    public PendingCertificationResultTestFunctionalityDTO(PendingCertificationResultTestFunctionalityEntity entity) {
+        this.setId(entity.getId());
+        this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
+        this.setTestFunctionalityId(entity.getTestFunctionalityId());
+        this.setNumber(entity.getTestFunctionalityNumber());
+    }
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
 
-	public Long getTestFunctionalityId() {
-		return testFunctionalityId;
-	}
+    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
 
-	public void setTestFunctionalityId(Long testFunctionalityId) {
-		this.testFunctionalityId = testFunctionalityId;
-	}
+    public Long getTestFunctionalityId() {
+        return testFunctionalityId;
+    }
 
-	public String getNumber() {
-		return number;
-	}
+    public void setTestFunctionalityId(Long testFunctionalityId) {
+        this.testFunctionalityId = testFunctionalityId;
+    }
 
-	public void setNumber(String number) {
-		this.number = number;
-	}
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
 }

@@ -5,49 +5,51 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
 
 public class PendingCertificationResultTestProcedureDTO implements Serializable {
-	private static final long serialVersionUID = -3548338679746682621L;
-	private Long id;
-	private Long pendingCertificationResultId;
-	private Long testProcedureId;
-	private String version;
+    private static final long serialVersionUID = -3548338679746682621L;
+    private Long id;
+    private Long pendingCertificationResultId;
+    private Long testProcedureId;
+    private String version;
 
-	public PendingCertificationResultTestProcedureDTO() {}
+    public PendingCertificationResultTestProcedureDTO() {
+    }
 
-	public PendingCertificationResultTestProcedureDTO(PendingCertificationResultTestProcedureEntity entity) {
-		this.setId(entity.getId());
-		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
-		this.setTestProcedureId(entity.getTestProcedureId());
-		this.setVersion(entity.getTestProcedureVersion());
-	}
+    public PendingCertificationResultTestProcedureDTO(PendingCertificationResultTestProcedureEntity entity) {
+        this.setId(entity.getId());
+        this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
+        this.setTestProcedureId(entity.getTestProcedureId());
+        this.setVersion(entity.getTestProcedureVersion());
+    }
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
 
-	public Long getTestProcedureId() {
-		return testProcedureId;
-	}
+    public void setPendingCertificationResultId(Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
 
-	public void setTestProcedureId(Long testProcedureId) {
-		this.testProcedureId = testProcedureId;
-	}
+    public Long getTestProcedureId() {
+        return testProcedureId;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public void setTestProcedureId(Long testProcedureId) {
+        this.testProcedureId = testProcedureId;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }

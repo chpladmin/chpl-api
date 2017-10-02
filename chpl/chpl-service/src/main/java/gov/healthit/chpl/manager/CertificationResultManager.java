@@ -17,19 +17,32 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 
 public interface CertificationResultManager {
-	public int update(Long abcId, CertifiedProductSearchDetails existingListing,
-			CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
-			throws EntityCreationException, EntityRetrievalException;
+    public int update(Long abcId, CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
+            throws EntityCreationException, EntityRetrievalException;
 
-	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
-			Long certificationResultId);
-	public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(Long certificationResultId);
-	public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(Long certificationResultId);
-	public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(Long certificationResultId);
-	public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
+    public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
+            Long certificationResultId);
+
+    public List<CertificationResultUcdProcessDTO> getUcdProcessesForCertificationResult(Long certificationResultId);
+
+    public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId);
+
+    public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId);
+
+    public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId);
+
+    public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(
+            Long certificationResultId);
+
+    public List<CertificationResultTestFunctionalityDTO> getTestFunctionalityForCertificationResult(
+            Long certificationResultId);
+
+    public List<CertificationResultMacraMeasureDTO> getG1MacraMeasuresForCertificationResult(
+            Long certificationResultId);
+
+    public List<CertificationResultMacraMeasureDTO> getG2MacraMeasuresForCertificationResult(
+            Long certificationResultId);
+
+    public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId);
 }

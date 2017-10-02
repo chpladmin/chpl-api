@@ -10,22 +10,20 @@ import javax.xml.bind.annotation.XmlType;
 
 public class CertificationStatus implements Serializable {
 
-	private static final long serialVersionUID = 818896721132619130L;
+    private static final long serialVersionUID = 818896721132619130L;
 
-	private String name;
+    private String name;
 
-	public CertificationStatus(String name) {
-		this.name = name;
-	}
+    public CertificationStatus(String name) {
+        this.name = name;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
+    public void setName(String name) {
+        this.name = name;
+    }
 
 }

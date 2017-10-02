@@ -5,70 +5,74 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
 
 public class PendingCertifiedProductQmsStandardDTO implements Serializable {
-	private static final long serialVersionUID = 6800290521633648570L;
-	private Long id;
-	private Long pendingCertifiedProductId;
-	private Long qmsStandardId;
-	private String name;
-	private String modification;
-	private String applicableCriteria;
+    private static final long serialVersionUID = 6800290521633648570L;
+    private Long id;
+    private Long pendingCertifiedProductId;
+    private Long qmsStandardId;
+    private String name;
+    private String modification;
+    private String applicableCriteria;
 
-	public PendingCertifiedProductQmsStandardDTO() {}
+    public PendingCertifiedProductQmsStandardDTO() {
+    }
 
-	public PendingCertifiedProductQmsStandardDTO(PendingCertifiedProductQmsStandardEntity entity) {
-		this.setId(entity.getId());
+    public PendingCertifiedProductQmsStandardDTO(PendingCertifiedProductQmsStandardEntity entity) {
+        this.setId(entity.getId());
 
-		if(entity.getMappedProduct() != null) {
-			this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
-		}
-		this.setQmsStandardId(entity.getQmsStandardId());
-		this.setName(entity.getName());
-		this.setModification(entity.getModification());
-		this.setApplicableCriteria(entity.getApplicableCriteria());
-	}
+        if (entity.getMappedProduct() != null) {
+            this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
+        }
+        this.setQmsStandardId(entity.getQmsStandardId());
+        this.setName(entity.getName());
+        this.setModification(entity.getModification());
+        this.setApplicableCriteria(entity.getApplicableCriteria());
+    }
 
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public Long getPendingCertifiedProductId() {
-		return pendingCertifiedProductId;
-	}
-	public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
-		this.pendingCertifiedProductId = pendingCertifiedProductId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getQmsStandardId() {
-		return qmsStandardId;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public void setQmsStandardId(Long qmsStandardId) {
-		this.qmsStandardId = qmsStandardId;
-	}
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public Long getQmsStandardId() {
+        return qmsStandardId;
+    }
 
-	public String getModification() {
-		return modification;
-	}
+    public void setQmsStandardId(Long qmsStandardId) {
+        this.qmsStandardId = qmsStandardId;
+    }
 
-	public void setModification(String modification) {
-		this.modification = modification;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getApplicableCriteria() {
-		return applicableCriteria;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setApplicableCriteria(String applicableCriteria) {
-		this.applicableCriteria = applicableCriteria;
-	}
+    public String getModification() {
+        return modification;
+    }
+
+    public void setModification(String modification) {
+        this.modification = modification;
+    }
+
+    public String getApplicableCriteria() {
+        return applicableCriteria;
+    }
+
+    public void setApplicableCriteria(String applicableCriteria) {
+        this.applicableCriteria = applicableCriteria;
+    }
 }

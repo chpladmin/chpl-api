@@ -7,21 +7,22 @@ import gov.healthit.chpl.entity.AnnouncementEntity;
 
 public interface AnnouncementDAO {
 
-	public AnnouncementDTO create(AnnouncementDTO acb) throws EntityRetrievalException, EntityCreationException;
+    public AnnouncementDTO create(AnnouncementDTO acb) throws EntityRetrievalException, EntityCreationException;
 
-	public void delete(Long acbId);
+    public void delete(Long acbId);
 
-	public List<AnnouncementDTO> findAll(boolean isLoggedIn);
+    public List<AnnouncementDTO> findAll(boolean isLoggedIn);
 
-	public AnnouncementDTO getById(Long id, boolean isLoggedIn) throws EntityRetrievalException;
+    public AnnouncementDTO getById(Long id, boolean isLoggedIn) throws EntityRetrievalException;
 
-	public AnnouncementDTO update(AnnouncementDTO contact, boolean includeDeleted) throws EntityRetrievalException;
+    public AnnouncementDTO update(AnnouncementDTO contact, boolean includeDeleted) throws EntityRetrievalException;
 
-	public AnnouncementDTO getByIdToUpdate(Long id, boolean includeDeleted) throws EntityRetrievalException;
+    public AnnouncementDTO getByIdToUpdate(Long id, boolean includeDeleted) throws EntityRetrievalException;
 
-	public List<AnnouncementDTO> findAllFuture();
-	public List<AnnouncementDTO> findAllCurrentAndFuture();
+    public List<AnnouncementDTO> findAllFuture();
 
-	List<AnnouncementEntity> getAllEntitiesFuture();
+    public List<AnnouncementDTO> findAllCurrentAndFuture();
+
+    List<AnnouncementEntity> getAllEntitiesFuture();
 
 }

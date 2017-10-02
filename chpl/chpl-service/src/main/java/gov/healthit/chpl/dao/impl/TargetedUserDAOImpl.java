@@ -24,163 +24,166 @@ import gov.healthit.chpl.entity.TargetedUserEntity;
 
 @Repository("targetedUserDao")
 public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO {
-	private static final Logger LOGGER = LogManager.getLogger(TargetedUserDAOImpl.class);
-	@Autowired MessageSource messageSource;
+    private static final Logger LOGGER = LogManager.getLogger(TargetedUserDAOImpl.class);
+    @Autowired
+    MessageSource messageSource;
 
-	@Override
-	public TargetedUserDTO create(TargetedUserDTO dto)
-			throws EntityCreationException {
+    @Override
+    public TargetedUserDTO create(TargetedUserDTO dto) throws EntityCreationException {
 
-		TargetedUserEntity entity = null;
-		if (dto.getId() != null) {
-			entity = this.getEntityById(dto.getId());
-		}
+        TargetedUserEntity entity = null;
+        if (dto.getId() != null) {
+            entity = this.getEntityById(dto.getId());
+        }
 
-		if (entity != null) {
-			throw new EntityCreationException("An entity with this ID already exists.");
-		} else {
-			try {
-				entity = new TargetedUserEntity();
-				entity.setCreationDate(new Date());
-				entity.setDeleted(false);
-				entity.setLastModifiedDate(new Date());
-				entity.setLastModifiedUser(Util.getCurrentUser().getId());
-				entity.setName(dto.getName());
-				create(entity);
-			} catch(Exception ex) {
-				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"), LocaleContextHolder.getLocale()), dto.getName());
-				LOGGER.error(msg, ex);
-				throw new EntityCreationException(msg);
-			}
-			return new TargetedUserDTO(entity);
-		}
-	}
+        if (entity != null) {
+            throw new EntityCreationException("An entity with this ID already exists.");
+        } else {
+            try {
+                entity = new TargetedUserEntity();
+                entity.setCreationDate(new Date());
+                entity.setDeleted(false);
+                entity.setLastModifiedDate(new Date());
+                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setName(dto.getName());
+                create(entity);
+            } catch (Exception ex) {
+                String msg = String
+                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"),
+                                LocaleContextHolder.getLocale()), dto.getName());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+            return new TargetedUserDTO(entity);
+        }
+    }
 
-	@Override
-	public TargetedUserDTO update(TargetedUserDTO dto)
-			throws EntityRetrievalException {
-		TargetedUserEntity entity = this.getEntityById(dto.getId());
+    @Override
+    public TargetedUserDTO update(TargetedUserDTO dto) throws EntityRetrievalException {
+        TargetedUserEntity entity = this.getEntityById(dto.getId());
 
-		if(entity == null) {
-			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
-		}
+        if (entity == null) {
+            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+        }
 
-		entity.setName(dto.getName());
+        entity.setName(dto.getName());
 
-		update(entity);
-		return new TargetedUserDTO(entity);
-	}
+        update(entity);
+        return new TargetedUserDTO(entity);
+    }
 
-	@Override
-	public void delete(Long id) throws EntityRetrievalException {
+    @Override
+    public void delete(Long id) throws EntityRetrievalException {
 
-		TargetedUserEntity toDelete = getEntityById(id);
+        TargetedUserEntity toDelete = getEntityById(id);
 
-		if(toDelete != null) {
-			toDelete.setDeleted(true);
-			toDelete.setLastModifiedDate(new Date());
-			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-			update(toDelete);
-		}
-	}
+        if (toDelete != null) {
+            toDelete.setDeleted(true);
+            toDelete.setLastModifiedDate(new Date());
+            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            update(toDelete);
+        }
+    }
 
-	@Override
-	public TargetedUserDTO getById(Long id) {
+    @Override
+    public TargetedUserDTO getById(Long id) {
 
-		TargetedUserDTO dto = null;
-		TargetedUserEntity entity = getEntityById(id);
+        TargetedUserDTO dto = null;
+        TargetedUserEntity entity = getEntityById(id);
 
-		if (entity != null) {
-			dto = new TargetedUserDTO(entity);
-		}
-		return dto;
-	}
+        if (entity != null) {
+            dto = new TargetedUserDTO(entity);
+        }
+        return dto;
+    }
 
-	@Override
-	public TargetedUserDTO getByName(String name) {
+    @Override
+    public TargetedUserDTO getByName(String name) {
 
-		TargetedUserDTO dto = null;
-		List<TargetedUserEntity> entities = getEntitiesByName(name);
+        TargetedUserDTO dto = null;
+        List<TargetedUserEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0) {
-			dto = new TargetedUserDTO(entities.get(0));
-		}
-		return dto;
-	}
+        if (entities != null && entities.size() > 0) {
+            dto = new TargetedUserDTO(entities.get(0));
+        }
+        return dto;
+    }
 
-	@Override
-	public List<TargetedUserDTO> findAll() {
+    @Override
+    public List<TargetedUserDTO> findAll() {
 
-		List<TargetedUserEntity> entities = getAllEntities();
-		List<TargetedUserDTO> dtos = new ArrayList<TargetedUserDTO>();
+        List<TargetedUserEntity> entities = getAllEntities();
+        List<TargetedUserDTO> dtos = new ArrayList<TargetedUserDTO>();
 
-		for (TargetedUserEntity entity : entities) {
-			TargetedUserDTO dto = new TargetedUserDTO(entity);
-			dtos.add(dto);
-		}
-		return dtos;
+        for (TargetedUserEntity entity : entities) {
+            TargetedUserDTO dto = new TargetedUserDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
 
-	}
+    }
 
-	@Override
-	public TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException {
-		TargetedUserDTO result = null;
-		if(id != null) {
-			result = getById(id);
-		} else if(!StringUtils.isEmpty(name)) {
-			result = getByName(name);
-		}
+    @Override
+    public TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException {
+        TargetedUserDTO result = null;
+        if (id != null) {
+            result = getById(id);
+        } else if (!StringUtils.isEmpty(name)) {
+            result = getByName(name);
+        }
 
-		if(result == null) {
-			TargetedUserDTO toCreate = new TargetedUserDTO();
-			toCreate.setName(name.trim());
-			result = create(toCreate);
-		}
-		return result;
-	}
+        if (result == null) {
+            TargetedUserDTO toCreate = new TargetedUserDTO();
+            toCreate.setName(name.trim());
+            result = create(toCreate);
+        }
+        return result;
+    }
 
-	private void create(TargetedUserEntity entity) {
+    private void create(TargetedUserEntity entity) {
 
-		entityManager.persist(entity);
-		entityManager.flush();
+        entityManager.persist(entity);
+        entityManager.flush();
 
-	}
+    }
 
-	private void update(TargetedUserEntity entity) {
+    private void update(TargetedUserEntity entity) {
 
-		entityManager.merge(entity);
-		entityManager.flush();
-	}
+        entityManager.merge(entity);
+        entityManager.flush();
+    }
 
-	private List<TargetedUserEntity> getAllEntities() {
-		return entityManager.createQuery( "from TargetedUserEntity where (NOT deleted = true) ", TargetedUserEntity.class).getResultList();
-	}
+    private List<TargetedUserEntity> getAllEntities() {
+        return entityManager
+                .createQuery("from TargetedUserEntity where (NOT deleted = true) ", TargetedUserEntity.class)
+                .getResultList();
+    }
 
-	private TargetedUserEntity getEntityById(Long id) {
+    private TargetedUserEntity getEntityById(Long id) {
 
-		TargetedUserEntity entity = null;
+        TargetedUserEntity entity = null;
 
-		Query query = entityManager.createQuery( "from TargetedUserEntity where (NOT deleted = true) AND (id = :entityid) ", TargetedUserEntity.class );
-		query.setParameter("entityid", id);
-		List<TargetedUserEntity> result = query.getResultList();
+        Query query = entityManager.createQuery(
+                "from TargetedUserEntity where (NOT deleted = true) AND (id = :entityid) ", TargetedUserEntity.class);
+        query.setParameter("entityid", id);
+        List<TargetedUserEntity> result = query.getResultList();
 
-		if (result.size() > 0) {
-			entity = result.get(0);
-		}
+        if (result.size() > 0) {
+            entity = result.get(0);
+        }
 
-		return entity;
-	}
+        return entity;
+    }
 
+    private List<TargetedUserEntity> getEntitiesByName(String name) {
 
-	private List<TargetedUserEntity> getEntitiesByName(String name) {
+        Query query = entityManager.createQuery(
+                "from TargetedUserEntity where " + "(NOT deleted = true) AND (UPPER(name) = :name) ",
+                TargetedUserEntity.class);
+        query.setParameter("name", name.toUpperCase());
+        List<TargetedUserEntity> result = query.getResultList();
 
-		Query query = entityManager.createQuery( "from TargetedUserEntity where "
-				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", TargetedUserEntity.class );
-		query.setParameter("name", name.toUpperCase());
-		List<TargetedUserEntity> result = query.getResultList();
-
-		return result;
-	}
-
+        return result;
+    }
 
 }

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity.listing;
 
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -26,197 +25,210 @@ public class CQMResultEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "cqm_result_id", nullable = false  )
-	private Long id;
+    @Basic(optional = false)
+    @Column(name = "cqm_result_id", nullable = false)
+    private Long id;
 
-	@Basic( optional = false )
-	@Column( name = "cqm_criterion_id", nullable = false )
-	private Long cqmCriterionId;
+    @Basic(optional = false)
+    @Column(name = "cqm_criterion_id", nullable = false)
+    private Long cqmCriterionId;
 
-	@Basic(optional = false)
-	@Column(name = "certified_product_id", nullable = false)
-	private Long certifiedProductId;
+    @Basic(optional = false)
+    @Column(name = "certified_product_id", nullable = false)
+    private Long certifiedProductId;
 
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	@Basic( optional = false )
-	@Column( name = "success", nullable = false  )
-	private Boolean success;
+    @Basic(optional = false)
+    @Column(name = "success", nullable = false)
+    private Boolean success;
 
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	private Boolean deleted;
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	/**
-	 * Default constructor, mainly for hibernate use.
-	 */
-	public CQMResultEntity() {
-		// Default constructor
-	}
+    /**
+     * Default constructor, mainly for hibernate use.
+     */
+    public CQMResultEntity() {
+        // Default constructor
+    }
 
-	/** Constructor taking a given ID.
-	 * @param id to set
-	 */
-	public CQMResultEntity(Long id) {
-		this.id = id;
-	}
+    /**
+     * Constructor taking a given ID.
+     * 
+     * @param id
+     *            to set
+     */
+    public CQMResultEntity(Long id) {
+        this.id = id;
+    }
 
+    /**
+     * Return the type of this class. Useful for when dealing with proxies.
+     * 
+     * @return Defining class.
+     */
+    @Transient
+    public Class<?> getClassType() {
+        return CQMResultEntity.class;
+    }
 
-	/** Return the type of this class. Useful for when dealing with proxies.
-	* @return Defining class.
-	*/
-	@Transient
-	public Class<?> getClassType() {
-		return CQMResultEntity.class;
-	}
+    public Long getCqmCriterionId() {
+        return this.cqmCriterionId;
 
-	public Long getCqmCriterionId() {
-		return this.cqmCriterionId;
+    }
 
-	}
+    /**
+     * Set the value related to the column: cqmCriterion.
+     * 
+     * @param cqmCriterion
+     *            the cqmCriterion value you wish to set
+     */
+    public void setCqmCriterionId(Long cqmCriterionId) {
+        this.cqmCriterionId = cqmCriterionId;
+    }
 
-	 /**
-	 * Set the value related to the column: cqmCriterion.
-	 * @param cqmCriterion the cqmCriterion value you wish to set
-	 */
-	public void setCqmCriterionId(Long cqmCriterionId) {
-		this.cqmCriterionId = cqmCriterionId;
-	}
+    /**
+     * Return the value associated with the column: creationDate.
+     * 
+     * @return A Date object (this.creationDate)
+     */
+    public Date getCreationDate() {
+        return this.creationDate;
 
-	 /**
-	 * Return the value associated with the column: creationDate.
-	 * @return A Date object (this.creationDate)
-	 */
-	public Date getCreationDate() {
-		return this.creationDate;
+    }
 
-	}
+    /**
+     * Set the value related to the column: creationDate.
+     * 
+     * @param creationDate
+     *            the creationDate value you wish to set
+     */
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
+    /**
+     * Return the value associated with the column: deleted.
+     * 
+     * @return A Boolean object (this.deleted)
+     */
+    public Boolean isDeleted() {
+        return this.deleted;
 
+    }
 
-	 /**
-	 * Set the value related to the column: creationDate.
-	 * @param creationDate the creationDate value you wish to set
-	 */
-	public void setCreationDate(final Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    /**
+     * Set the value related to the column: deleted.
+     * 
+     * @param deleted
+     *            the deleted value you wish to set
+     */
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	 /**
-	 * Return the value associated with the column: deleted.
-	 * @return A Boolean object (this.deleted)
-	 */
-	public Boolean isDeleted() {
-		return this.deleted;
+    /**
+     * Return the value associated with the column: id.
+     * 
+     * @return A Long object (this.id)
+     */
+    public Long getId() {
+        return this.id;
 
-	}
+    }
 
+    /**
+     * Set the value related to the column: id.
+     * 
+     * @param id
+     *            the id value you wish to set
+     */
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
+    /**
+     * Return the value associated with the column: lastModifiedDate.
+     * 
+     * @return A Date object (this.lastModifiedDate)
+     */
+    public Date getLastModifiedDate() {
+        return this.lastModifiedDate;
 
-	 /**
-	 * Set the value related to the column: deleted.
-	 * @param deleted the deleted value you wish to set
-	 */
-	public void setDeleted(final Boolean deleted) {
-		this.deleted = deleted;
-	}
+    }
 
-	 /**
-	 * Return the value associated with the column: id.
-	 * @return A Long object (this.id)
-	 */
-	public Long getId() {
-		return this.id;
+    /**
+     * Set the value related to the column: lastModifiedDate.
+     * 
+     * @param lastModifiedDate
+     *            the lastModifiedDate value you wish to set
+     */
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	}
+    /**
+     * Return the value associated with the column: lastModifiedUser.
+     * 
+     * @return A Long object (this.lastModifiedUser)
+     */
+    public Long getLastModifiedUser() {
+        return this.lastModifiedUser;
 
+    }
 
-	 /**
-	 * Set the value related to the column: id.
-	 * @param id the id value you wish to set
-	 */
-	public void setId(final Long id) {
-		this.id = id;
-	}
+    /**
+     * Set the value related to the column: lastModifiedUser.
+     * 
+     * @param lastModifiedUser
+     *            the lastModifiedUser value you wish to set
+     */
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	 /**
-	 * Return the value associated with the column: lastModifiedDate.
-	 * @return A Date object (this.lastModifiedDate)
-	 */
-	public Date getLastModifiedDate() {
-		return this.lastModifiedDate;
+    /**
+     * Return the value associated with the column: success.
+     * 
+     * @return A Boolean object (this.success)
+     */
+    public Boolean isSuccess() {
+        return this.success;
 
-	}
+    }
 
+    /**
+     * Set the value related to the column: success.
+     * 
+     * @param success
+     *            the success value you wish to set
+     */
+    public void setSuccess(final Boolean success) {
+        this.success = success;
+    }
 
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	 /**
-	 * Set the value related to the column: lastModifiedDate.
-	 * @param lastModifiedDate the lastModifiedDate value you wish to set
-	 */
-	public void setLastModifiedDate(final Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setCertifiedProductId(Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	 /**
-	 * Return the value associated with the column: lastModifiedUser.
-	 * @return A Long object (this.lastModifiedUser)
-	 */
-	public Long getLastModifiedUser() {
-		return this.lastModifiedUser;
-
-	}
-
-
-
-	 /**
-	 * Set the value related to the column: lastModifiedUser.
-	 * @param lastModifiedUser the lastModifiedUser value you wish to set
-	 */
-	public void setLastModifiedUser(final Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
-
-	 /**
-	 * Return the value associated with the column: success.
-	 * @return A Boolean object (this.success)
-	 */
-	public Boolean isSuccess() {
-		return this.success;
-
-	}
-
-
-
-	 /**
-	 * Set the value related to the column: success.
-	 * @param success the success value you wish to set
-	 */
-	public void setSuccess(final Boolean success) {
-		this.success = success;
-	}
-
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
-
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
 }

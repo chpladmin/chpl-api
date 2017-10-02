@@ -24,161 +24,164 @@ import gov.healthit.chpl.entity.QmsStandardEntity;
 
 @Repository("qmsStandardDao")
 public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
-	private static final Logger LOGGER = LogManager.getLogger(QmsStandardDAOImpl.class);
-	@Autowired MessageSource messageSource;
+    private static final Logger LOGGER = LogManager.getLogger(QmsStandardDAOImpl.class);
+    @Autowired
+    MessageSource messageSource;
 
-	@Override
-	public QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
+    @Override
+    public QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
 
-		QmsStandardEntity entity = null;
-		if (dto.getId() != null) {
-			entity = this.getEntityById(dto.getId());
-		}
+        QmsStandardEntity entity = null;
+        if (dto.getId() != null) {
+            entity = this.getEntityById(dto.getId());
+        }
 
-		if (entity != null) {
-			throw new EntityCreationException("An entity with this ID already exists.");
-		} else {
-			try {
-				entity = new QmsStandardEntity();
-				entity.setCreationDate(new Date());
-				entity.setDeleted(false);
-				entity.setLastModifiedDate(new Date());
-				entity.setLastModifiedUser(Util.getCurrentUser().getId());
-				entity.setName(dto.getName());
-				create(entity);
-			} catch(Exception ex) {
-				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"), LocaleContextHolder.getLocale()), dto.getName());
-				LOGGER.error(msg, ex);
-				throw new EntityCreationException(msg);
-			}
-			return new QmsStandardDTO(entity);
-		}
-	}
+        if (entity != null) {
+            throw new EntityCreationException("An entity with this ID already exists.");
+        } else {
+            try {
+                entity = new QmsStandardEntity();
+                entity.setCreationDate(new Date());
+                entity.setDeleted(false);
+                entity.setLastModifiedDate(new Date());
+                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setName(dto.getName());
+                create(entity);
+            } catch (Exception ex) {
+                String msg = String
+                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"),
+                                LocaleContextHolder.getLocale()), dto.getName());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+            return new QmsStandardDTO(entity);
+        }
+    }
 
-	@Override
-	public QmsStandardDTO update(QmsStandardDTO dto)
-			throws EntityRetrievalException {
-		QmsStandardEntity entity = this.getEntityById(dto.getId());
+    @Override
+    public QmsStandardDTO update(QmsStandardDTO dto) throws EntityRetrievalException {
+        QmsStandardEntity entity = this.getEntityById(dto.getId());
 
-		if(entity == null) {
-			throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
-		}
+        if (entity == null) {
+            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+        }
 
-		entity.setName(dto.getName());
+        entity.setName(dto.getName());
 
-		update(entity);
-		return new QmsStandardDTO(entity);
-	}
+        update(entity);
+        return new QmsStandardDTO(entity);
+    }
 
-	@Override
-	public void delete(Long id) throws EntityRetrievalException {
+    @Override
+    public void delete(Long id) throws EntityRetrievalException {
 
-		QmsStandardEntity toDelete = getEntityById(id);
+        QmsStandardEntity toDelete = getEntityById(id);
 
-		if(toDelete != null) {
-			toDelete.setDeleted(true);
-			toDelete.setLastModifiedDate(new Date());
-			toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-			update(toDelete);
-		}
-	}
+        if (toDelete != null) {
+            toDelete.setDeleted(true);
+            toDelete.setLastModifiedDate(new Date());
+            toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
+            update(toDelete);
+        }
+    }
 
-	@Override
-	public QmsStandardDTO getById(Long id) {
-		QmsStandardDTO dto = null;
-		QmsStandardEntity entity = getEntityById(id);
+    @Override
+    public QmsStandardDTO getById(Long id) {
+        QmsStandardDTO dto = null;
+        QmsStandardEntity entity = getEntityById(id);
 
-		if (entity != null) {
-			dto = new QmsStandardDTO(entity);
-		}
-		return dto;
-	}
+        if (entity != null) {
+            dto = new QmsStandardDTO(entity);
+        }
+        return dto;
+    }
 
-	@Override
-	public QmsStandardDTO getByName(String name) {
+    @Override
+    public QmsStandardDTO getByName(String name) {
 
-		QmsStandardDTO dto = null;
-		List<QmsStandardEntity> entities = getEntitiesByName(name);
+        QmsStandardDTO dto = null;
+        List<QmsStandardEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0) {
-			dto = new QmsStandardDTO(entities.get(0));
-		}
-		return dto;
-	}
+        if (entities != null && entities.size() > 0) {
+            dto = new QmsStandardDTO(entities.get(0));
+        }
+        return dto;
+    }
 
-	@Override
-	public List<QmsStandardDTO> findAll() {
+    @Override
+    public List<QmsStandardDTO> findAll() {
 
-		List<QmsStandardEntity> entities = getAllEntities();
-		List<QmsStandardDTO> dtos = new ArrayList<QmsStandardDTO>();
+        List<QmsStandardEntity> entities = getAllEntities();
+        List<QmsStandardDTO> dtos = new ArrayList<QmsStandardDTO>();
 
-		for (QmsStandardEntity entity : entities) {
-			QmsStandardDTO dto = new QmsStandardDTO(entity);
-			dtos.add(dto);
-		}
-		return dtos;
+        for (QmsStandardEntity entity : entities) {
+            QmsStandardDTO dto = new QmsStandardDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
 
-	}
+    }
 
-	@Override
-	public QmsStandardDTO findOrCreate(Long id, String name) throws EntityCreationException {
-		QmsStandardDTO result = null;
-		if(id != null) {
-			result = getById(id);
-		} else if(!StringUtils.isEmpty(name)) {
-			result = getByName(name);
-		}
+    @Override
+    public QmsStandardDTO findOrCreate(Long id, String name) throws EntityCreationException {
+        QmsStandardDTO result = null;
+        if (id != null) {
+            result = getById(id);
+        } else if (!StringUtils.isEmpty(name)) {
+            result = getByName(name);
+        }
 
-		if(result == null) {
-			QmsStandardDTO toCreate = new QmsStandardDTO();
-			toCreate.setName(name.trim());
-			result = create(toCreate);
-		}
-		return result;
-	}
+        if (result == null) {
+            QmsStandardDTO toCreate = new QmsStandardDTO();
+            toCreate.setName(name.trim());
+            result = create(toCreate);
+        }
+        return result;
+    }
 
-	private void create(QmsStandardEntity entity) {
+    private void create(QmsStandardEntity entity) {
 
-		entityManager.persist(entity);
-		entityManager.flush();
+        entityManager.persist(entity);
+        entityManager.flush();
 
-	}
+    }
 
-	private void update(QmsStandardEntity entity) {
+    private void update(QmsStandardEntity entity) {
 
-		entityManager.merge(entity);
-		entityManager.flush();
-	}
+        entityManager.merge(entity);
+        entityManager.flush();
+    }
 
-	private List<QmsStandardEntity> getAllEntities() {
-		return entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) ", QmsStandardEntity.class).getResultList();
-	}
+    private List<QmsStandardEntity> getAllEntities() {
+        return entityManager.createQuery("from QmsStandardEntity where (NOT deleted = true) ", QmsStandardEntity.class)
+                .getResultList();
+    }
 
-	private QmsStandardEntity getEntityById(Long id) {
+    private QmsStandardEntity getEntityById(Long id) {
 
-		QmsStandardEntity entity = null;
+        QmsStandardEntity entity = null;
 
-		Query query = entityManager.createQuery( "from QmsStandardEntity where (NOT deleted = true) AND (id = :entityid) ", QmsStandardEntity.class );
-		query.setParameter("entityid", id);
-		List<QmsStandardEntity> result = query.getResultList();
+        Query query = entityManager.createQuery(
+                "from QmsStandardEntity where (NOT deleted = true) AND (id = :entityid) ", QmsStandardEntity.class);
+        query.setParameter("entityid", id);
+        List<QmsStandardEntity> result = query.getResultList();
 
-		if (result.size() > 0) {
-			entity = result.get(0);
-		}
+        if (result.size() > 0) {
+            entity = result.get(0);
+        }
 
-		return entity;
-	}
+        return entity;
+    }
 
+    private List<QmsStandardEntity> getEntitiesByName(String name) {
 
-	private List<QmsStandardEntity> getEntitiesByName(String name) {
+        Query query = entityManager.createQuery(
+                "from QmsStandardEntity where " + "(NOT deleted = true) AND (UPPER(name) = :name) ",
+                QmsStandardEntity.class);
+        query.setParameter("name", name.toUpperCase().trim());
+        List<QmsStandardEntity> result = query.getResultList();
 
-		Query query = entityManager.createQuery( "from QmsStandardEntity where "
-				+ "(NOT deleted = true) AND (UPPER(name) = :name) ", QmsStandardEntity.class );
-		query.setParameter("name", name.toUpperCase().trim());
-		List<QmsStandardEntity> result = query.getResultList();
-
-		return result;
-	}
-
+        return result;
+    }
 
 }

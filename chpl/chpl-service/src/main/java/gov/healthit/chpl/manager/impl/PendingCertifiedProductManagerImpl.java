@@ -54,341 +54,362 @@ import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationExcepti
 
 @Service
 public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
-	private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductManagerImpl.class);
+    private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductManagerImpl.class);
 
-	@Autowired private CertificationResultRules certRules;
-	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
-	@Autowired CertifiedProductValidatorFactory validatorFactory;
+    @Autowired
+    private CertificationResultRules certRules;
+    @Autowired
+    CertifiedProductUploadHandlerFactory uploadHandlerFactory;
+    @Autowired
+    CertifiedProductValidatorFactory validatorFactory;
 
-	@Autowired PendingCertifiedProductDAO pcpDao;
-	@Autowired CertificationStatusDAO statusDao;
-	@Autowired CertificationBodyManager acbManager;
-	@Autowired UserManager userManager;
-	@Autowired UserDAO userDAO;
-	@Autowired private CQMCriterionDAO cqmCriterionDAO;
-	@Autowired private MacraMeasureDAO macraDao;
-	private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
-	private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
+    @Autowired
+    PendingCertifiedProductDAO pcpDao;
+    @Autowired
+    CertificationStatusDAO statusDao;
+    @Autowired
+    CertificationBodyManager acbManager;
+    @Autowired
+    UserManager userManager;
+    @Autowired
+    UserDAO userDAO;
+    @Autowired
+    private CQMCriterionDAO cqmCriterionDAO;
+    @Autowired
+    private MacraMeasureDAO macraDao;
+    private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
+    private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
-	@Autowired
-	private ActivityManager activityManager;
+    @Autowired
+    private ActivityManager activityManager;
 
-	@PostConstruct
-	public void setup() {
-		loadCQMCriteria();
-		loadCriteriaMacraMeasures();
-	}
+    @PostConstruct
+    public void setup() {
+        loadCQMCriteria();
+        loadCriteriaMacraMeasures();
+    }
 
-	@Override
-	@Transactional(readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
-	public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
-			throws EntityRetrievalException, AccessDeniedException {
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
+            throws EntityRetrievalException, AccessDeniedException {
 
-		PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, false);
-		boolean userHasAcbPermissions = false;
-		for(CertificationBodyDTO acb : userAcbs) {
-			if(acb.getId() != null &&
-					pendingCp.getCertificationBodyId() != null &&
-					acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
-				userHasAcbPermissions = true;
-			}
-		}
+        PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, false);
+        boolean userHasAcbPermissions = false;
+        for (CertificationBodyDTO acb : userAcbs) {
+            if (acb.getId() != null && pendingCp.getCertificationBodyId() != null
+                    && acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
+                userHasAcbPermissions = true;
+            }
+        }
 
-		if(!userHasAcbPermissions) {
-			throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
-		}
+        if (!userHasAcbPermissions) {
+            throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId()
+                    + " for user " + Util.getCurrentUser().getSubjectName());
+        }
 
-		//the user has permission so continue getting the pending cp
-		updateCertResults(pendingCp);
-		validate(pendingCp);
+        // the user has permission so continue getting the pending cp
+        updateCertResults(pendingCp);
+        validate(pendingCp);
 
-		PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
-		addAllVersionsToCmsCriterion(pcpDetails);
-		addAllMeasuresToCertificationCriteria(pcpDetails);
+        PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(pendingCp);
+        addAllVersionsToCmsCriterion(pcpDetails);
+        addAllMeasuresToCertificationCriteria(pcpDetails);
 
-		return pcpDetails;
-	}
+        return pcpDetails;
+    }
 
-	@Override
-	@Transactional (readOnly = true)
-	@PreAuthorize("hasRole('ROLE_ADMIN') or "
-			+ "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-			+ "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-	public List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(Long acbId) {
-		List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
-		updateCertResults(products);
-		validate(products);
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
+            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    public List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(Long acbId) {
+        List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
+        updateCertResults(products);
+        validate(products);
 
-		return products;
-	}
+        return products;
+    }
 
-	@Override
-	@Transactional(rollbackFor= {EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class})
-	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
-		throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
-		Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
-		if(existingId != null) {
-			pcpDao.delete(existingId);
-		}
+    @Override
+    @Transactional(rollbackFor = {
+            EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class
+    })
+    @CacheEvict(value = {
+            CacheNames.FIND_BY_ACB_ID
+    }, allEntries = true)
+    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+        Long existingId = pcpDao.findIdByOncId(toCreate.getUniqueId());
+        if (existingId != null) {
+            pcpDao.delete(existingId);
+        }
 
-		//insert the record
-		PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
-		updateCertResults(pendingCpDto);
-		validate(pendingCpDto);
+        // insert the record
+        PendingCertifiedProductDTO pendingCpDto = pcpDao.create(toCreate);
+        updateCertResults(pendingCpDto);
+        validate(pendingCpDto);
 
-		String activityMsg = "Certified product "+pendingCpDto.getProductName()+" is pending.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(), activityMsg, null, pendingCpDto);
+        String activityMsg = "Certified product " + pendingCpDto.getProductName() + " is pending.";
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCpDto.getId(),
+                activityMsg, null, pendingCpDto);
 
-		return pendingCpDto;
-	}
+        return pendingCpDto;
+    }
 
-	@Override
-	@Transactional
-	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
-	@PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
-	public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId)
-			throws EntityRetrievalException, EntityNotFoundException, EntityCreationException,
-			AccessDeniedException, JsonProcessingException, ObjectMissingValidationException {
+    @Override
+    @Transactional
+    @CacheEvict(value = {
+            CacheNames.FIND_BY_ACB_ID
+    }, allEntries = true)
+    @PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
+    public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId)
+            throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
+            JsonProcessingException, ObjectMissingValidationException {
 
-		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-		if(pendingCp == null) {
-			throw new EntityNotFoundException("Could not find pending certified product with id " + pendingProductId);
-		}
-		boolean userHasAcbPermissions = false;
-		for(CertificationBodyDTO acb : userAcbs) {
-			if(acb.getId() != null &&
-					pendingCp.getCertificationBodyId() != null &&
-					acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
-				userHasAcbPermissions = true;
-			}
-		}
-		if(!userHasAcbPermissions) {
-			throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId() + " for user " + Util.getCurrentUser().getSubjectName());
-		}
+        PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
+        if (pendingCp == null) {
+            throw new EntityNotFoundException("Could not find pending certified product with id " + pendingProductId);
+        }
+        boolean userHasAcbPermissions = false;
+        for (CertificationBodyDTO acb : userAcbs) {
+            if (acb.getId() != null && pendingCp.getCertificationBodyId() != null
+                    && acb.getId().longValue() == pendingCp.getCertificationBodyId().longValue()) {
+                userHasAcbPermissions = true;
+            }
+        }
+        if (!userHasAcbPermissions) {
+            throw new AccessDeniedException("Permission denied on ACB " + pendingCp.getCertificationBodyId()
+                    + " for user " + Util.getCurrentUser().getSubjectName());
+        }
 
-		if(isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
-			pcpDao.delete(pendingProductId);
-			String activityMsg = "Pending certified product "+pendingCp.getProductName()+" has been rejected.";
-			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, null);
-		}
-	}
+        if (isPendingListingAvailableForUpdate(pendingCp.getCertificationBodyId(), pendingCp)) {
+            pcpDao.delete(pendingProductId);
+            String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been rejected.";
+            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+                    activityMsg, pendingCp, null);
+        }
+    }
 
-	@Override
-	@Transactional
-	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public void confirm(Long acbId, Long pendingProductId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
-		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-		pcpDao.delete(pendingProductId);
+    @Override
+    @Transactional
+    @CacheEvict(value = {
+            CacheNames.FIND_BY_ACB_ID
+    }, allEntries = true)
+    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    public void confirm(Long acbId, Long pendingProductId)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+        PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
+        pcpDao.delete(pendingProductId);
 
-		String activityMsg = "Pending certified product "+pendingCp.getProductName()+" has been confirmed.";
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(), activityMsg, pendingCp, pendingCp);
+        String activityMsg = "Pending certified product " + pendingCp.getProductName() + " has been confirmed.";
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, pendingCp.getId(),
+                activityMsg, pendingCp, pendingCp);
 
-	}
+    }
 
+    @Override
+    @Transactional
+    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    public boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
+            throws EntityRetrievalException, ObjectMissingValidationException {
+        PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
+        return isPendingListingAvailableForUpdate(acbId, pendingCp);
+    }
 
-	@Override
-	@Transactional
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
-	throws EntityRetrievalException, ObjectMissingValidationException {
-		PendingCertifiedProductDTO pendingCp = pcpDao.findById(pendingProductId, true);
-		return isPendingListingAvailableForUpdate(acbId, pendingCp);
-	}
+    @Override
+    @Transactional
+    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+            + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp)
+            throws EntityRetrievalException, ObjectMissingValidationException {
+        if (pendingCp.getDeleted().booleanValue() == true) {
+            ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
+            alreadyDeletedEx.getErrorMessages()
+                    .add("This pending certified product has already been confirmed or rejected by another user.");
+            alreadyDeletedEx.setObjectId(pendingCp.getUniqueId());
 
-	@Override
-	@Transactional
-	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
-			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
-	public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp)
-	throws EntityRetrievalException, ObjectMissingValidationException {
-		if(pendingCp.getDeleted().booleanValue() == true) {
-			ObjectMissingValidationException alreadyDeletedEx = new ObjectMissingValidationException();
-			alreadyDeletedEx.getErrorMessages().add("This pending certified product has already been confirmed or rejected by another user.");
-			alreadyDeletedEx.setObjectId(pendingCp.getUniqueId());
+            try {
+                UserDTO lastModifiedUser = userDAO.getById(pendingCp.getLastModifiedUser());
+                if (lastModifiedUser != null) {
+                    Contact contact = new Contact();
+                    contact.setFirstName(lastModifiedUser.getFirstName());
+                    contact.setLastName(lastModifiedUser.getLastName());
+                    contact.setEmail(lastModifiedUser.getEmail());
+                    contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
+                    contact.setTitle(lastModifiedUser.getTitle());
+                    alreadyDeletedEx.setContact(contact);
+                } else {
+                    alreadyDeletedEx.setContact(null);
+                }
+            } catch (final UserRetrievalException ex) {
+                alreadyDeletedEx.setContact(null);
+            }
 
-			try {
-				UserDTO lastModifiedUser = userDAO.getById(pendingCp.getLastModifiedUser());
-				if(lastModifiedUser != null) {
-					Contact contact = new Contact();
-					contact.setFirstName(lastModifiedUser.getFirstName());
-					contact.setLastName(lastModifiedUser.getLastName());
-					contact.setEmail(lastModifiedUser.getEmail());
-					contact.setPhoneNumber(lastModifiedUser.getPhoneNumber());
-					contact.setTitle(lastModifiedUser.getTitle());
-					alreadyDeletedEx.setContact(contact);
-				} else {
-					alreadyDeletedEx.setContact(null);
-				}
-			} catch(final UserRetrievalException ex) {
-				alreadyDeletedEx.setContact(null);
-			}
+            throw alreadyDeletedEx;
+        }
+        return pendingCp != null;
+    }
 
-			throw alreadyDeletedEx;
-		}
-		return pendingCp != null;
-	}
+    private void updateCertResults(PendingCertifiedProductDTO dto) {
+        List<PendingCertifiedProductDTO> products = new ArrayList<PendingCertifiedProductDTO>();
+        products.add(dto);
+        updateCertResults(products);
+    }
 
-	private void updateCertResults(PendingCertifiedProductDTO dto) {
-		List<PendingCertifiedProductDTO> products = new ArrayList<PendingCertifiedProductDTO>();
-		products.add(dto);
-		updateCertResults(products);
-	}
+    private void updateCertResults(List<PendingCertifiedProductDTO> products) {
+        for (PendingCertifiedProductDTO product : products) {
+            for (PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
+                    certResult.setGap(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
+                    certResult.setG1Success(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
+                    certResult.setG2Success(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)) {
+                    certResult.setG1MacraMeasures(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
+                    certResult.setG2MacraMeasures(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
+                    certResult.setApiDocumentation(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
+                    certResult.setPrivacySecurityFramework(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
+                    certResult.setSed(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
+                    certResult.setUcdProcesses(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
+                    certResult.setAdditionalSoftware(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
+                    certResult.setTestFunctionality(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
+                    certResult.setTestStandards(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
+                    certResult.setTestData(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)) {
+                    certResult.setTestProcedures(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
+                    certResult.setTestTools(null);
+                }
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
+                    certResult.setTestTasks(null);
+                }
+            }
+        }
+    }
 
-	private void updateCertResults(List<PendingCertifiedProductDTO> products) {
-		for(PendingCertifiedProductDTO product : products) {
-			for(PendingCertificationResultDTO certResult : product.getCertificationCriterion()) {
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
-					certResult.setGap(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
-					certResult.setG1Success(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
-					certResult.setG2Success(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)) {
-					certResult.setG1MacraMeasures(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
-					certResult.setG2MacraMeasures(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.API_DOCUMENTATION)) {
-					certResult.setApiDocumentation(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.PRIVACY_SECURITY)) {
-					certResult.setPrivacySecurityFramework(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.SED)) {
-					certResult.setSed(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.UCD_FIELDS)) {
-					certResult.setUcdProcesses(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
-					certResult.setAdditionalSoftware(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
-					certResult.setTestFunctionality(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
-					certResult.setTestStandards(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
-					certResult.setTestData(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)) {
-					certResult.setTestProcedures(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
-					certResult.setTestTools(null);
-				}
-				if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
-					certResult.setTestTasks(null);
-				}
-			}
-		}
-	}
+    private void loadCriteriaMacraMeasures() {
+        List<MacraMeasureDTO> dtos = macraDao.findAll();
+        for (MacraMeasureDTO dto : dtos) {
+            MacraMeasure measure = new MacraMeasure(dto);
+            macraMeasures.add(measure);
+        }
+    }
 
-	private void loadCriteriaMacraMeasures() {
-		List<MacraMeasureDTO> dtos = macraDao.findAll();
-		for(MacraMeasureDTO dto : dtos) {
-			MacraMeasure measure = new MacraMeasure(dto);
-			macraMeasures.add(measure);
-		}
-	}
+    private void loadCQMCriteria() {
+        List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
+        for (CQMCriterionDTO dto : dtos) {
+            CQMCriterion criterion = new CQMCriterion();
+            criterion.setCmsId(dto.getCmsId());
+            criterion.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
+            criterion.setCqmDomain(dto.getCqmDomain());
+            criterion.setCqmVersionId(dto.getCqmVersionId());
+            criterion.setCqmVersion(dto.getCqmVersion());
+            criterion.setCriterionId(dto.getId());
+            criterion.setDescription(dto.getDescription());
+            criterion.setNqfNumber(dto.getNqfNumber());
+            criterion.setNumber(dto.getNumber());
+            criterion.setTitle(dto.getTitle());
+            cqmCriteria.add(criterion);
+        }
+    }
 
-	private void loadCQMCriteria() {
-		List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
-		for (CQMCriterionDTO dto: dtos) {
-			CQMCriterion criterion = new CQMCriterion();
-			criterion.setCmsId(dto.getCmsId());
-			criterion.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
-			criterion.setCqmDomain(dto.getCqmDomain());
-			criterion.setCqmVersionId(dto.getCqmVersionId());
-			criterion.setCqmVersion(dto.getCqmVersion());
-			criterion.setCriterionId(dto.getId());
-			criterion.setDescription(dto.getDescription());
-			criterion.setNqfNumber(dto.getNqfNumber());
-			criterion.setNumber(dto.getNumber());
-			criterion.setTitle(dto.getTitle());
-			cqmCriteria.add(criterion);
-		}
-	}
+    private List<CQMCriterion> getAvailableCQMVersions() {
+        List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 
-	private List<CQMCriterion> getAvailableCQMVersions() {
-		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
+        for (CQMCriterion criterion : cqmCriteria) {
+            if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
+                criteria.add(criterion);
+            }
+        }
+        return criteria;
+    }
 
-		for (CQMCriterion criterion : cqmCriteria) {
-			if(!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
-				criteria.add(criterion);
-			}
-		}
-		return criteria;
-	}
+    private void validate(List<PendingCertifiedProductDTO> products) {
+        for (PendingCertifiedProductDTO dto : products) {
+            CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+            if (validator != null) {
+                validator.validate(dto);
+            }
+        }
+    }
 
-	private void validate(List<PendingCertifiedProductDTO> products) {
-		for(PendingCertifiedProductDTO dto : products) {
-			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
-			if(validator != null) {
-				validator.validate(dto);
-			}
-		}
-	}
+    private void validate(PendingCertifiedProductDTO... products) {
+        for (PendingCertifiedProductDTO dto : products) {
+            CertifiedProductValidator validator = validatorFactory.getValidator(dto);
+            if (validator != null) {
+                validator.validate(dto);
+            }
+        }
+    }
 
-	private void validate(PendingCertifiedProductDTO... products) {
-		for(PendingCertifiedProductDTO dto : products) {
-			CertifiedProductValidator validator = validatorFactory.getValidator(dto);
-			if(validator != null) {
-				validator.validate(dto);
-			}
-		}
-	}
+    public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails) {
+        // now add allVersions for CMSs
+        String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
+        if (!certificationEdition.startsWith("2011")) {
+            List<CQMCriterion> cqms = getAvailableCQMVersions();
+            for (CQMCriterion cqm : cqms) {
+                boolean cqmExists = false;
+                for (CQMResultDetails details : pcpDetails.getCqmResults()) {
+                    if (cqm.getCmsId().equals(details.getCmsId())) {
+                        cqmExists = true;
+                        details.getAllVersions().add(cqm.getCqmVersion());
+                    }
+                }
+                if (!cqmExists) {
+                    CQMResultDetails result = new CQMResultDetails();
+                    result.setCmsId(cqm.getCmsId());
+                    result.setNqfNumber(cqm.getNqfNumber());
+                    result.setNumber(cqm.getNumber());
+                    result.setTitle(cqm.getTitle());
+                    result.setDescription(cqm.getDescription());
+                    result.setSuccess(Boolean.FALSE);
+                    result.getAllVersions().add(cqm.getCqmVersion());
+                    result.setTypeId(cqm.getCqmCriterionTypeId());
+                    pcpDetails.getCqmResults().add(result);
+                }
+            }
+        }
+    }
 
-	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails) {
-		//now add allVersions for CMSs
-		String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
-		if (!certificationEdition.startsWith("2011")) {
-			List<CQMCriterion> cqms = getAvailableCQMVersions();
-			for(CQMCriterion cqm : cqms) {
-				boolean cqmExists = false;
-				for(CQMResultDetails details : pcpDetails.getCqmResults()) {
-					if(cqm.getCmsId().equals(details.getCmsId())) {
-						cqmExists = true;
-						details.getAllVersions().add(cqm.getCqmVersion());
-					}
-				}
-				if(!cqmExists) {
-					CQMResultDetails result = new CQMResultDetails();
-					result.setCmsId(cqm.getCmsId());
-					result.setNqfNumber(cqm.getNqfNumber());
-					result.setNumber(cqm.getNumber());
-					result.setTitle(cqm.getTitle());
-					result.setDescription(cqm.getDescription());
-					result.setSuccess(Boolean.FALSE);
-					result.getAllVersions().add(cqm.getCqmVersion());
-					result.setTypeId(cqm.getCqmCriterionTypeId());
-					pcpDetails.getCqmResults().add(result);
-				}
-			}
-		}
-	}
-
-	@Override
-	public void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails) {
-		//now add allMeasures for criteria
-		for(CertificationResult cert : pcpDetails.getCertificationResults()) {
-			for(MacraMeasure measure : macraMeasures) {
-				if(measure.getCriteria().getNumber().equals(cert.getNumber())) {
-					cert.getAllowedMacraMeasures().add(measure);
-				}
-			}
-		}
-	}
+    @Override
+    public void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails) {
+        // now add allMeasures for criteria
+        for (CertificationResult cert : pcpDetails.getCertificationResults()) {
+            for (MacraMeasure measure : macraMeasures) {
+                if (measure.getCriteria().getNumber().equals(cert.getNumber())) {
+                    cert.getAllowedMacraMeasures().add(measure);
+                }
+            }
+        }
+    }
 }

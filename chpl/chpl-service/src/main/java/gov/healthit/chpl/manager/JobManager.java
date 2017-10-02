@@ -9,11 +9,15 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 
 public interface JobManager {
-	public JobDTO getJobById(Long id);
-	public List<JobDTO> getAllJobs();
-	public List<JobTypeDTO> getAllJobTypes();
-	public List<JobDTO> getJobsForUser(UserDTO user) throws EntityRetrievalException;
-	public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException;
+    public JobDTO getJobById(Long id);
 
-	public boolean start(JobDTO job) throws EntityRetrievalException;
+    public List<JobDTO> getAllJobs();
+
+    public List<JobTypeDTO> getAllJobTypes();
+
+    public List<JobDTO> getJobsForUser(UserDTO user) throws EntityRetrievalException;
+
+    public JobDTO createJob(JobDTO job) throws EntityCreationException, EntityRetrievalException;
+
+    public boolean start(JobDTO job) throws EntityRetrievalException;
 }

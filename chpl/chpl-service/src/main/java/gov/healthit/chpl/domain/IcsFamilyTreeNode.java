@@ -17,102 +17,101 @@ import javax.xml.bind.annotation.XmlType;
 
 public class IcsFamilyTreeNode implements Serializable {
 
-	private static final long serialVersionUID = 4170181178663367311L;
+    private static final long serialVersionUID = 4170181178663367311L;
 
-	private Long id;
+    private Long id;
 
-	private Date certificationDate;
+    private Date certificationDate;
 
-	private String chplProductNumber;
+    private String chplProductNumber;
 
-	private CertificationStatus certificationStatus;
+    private CertificationStatus certificationStatus;
 
-	private List<CertifiedProduct> parents;
+    private List<CertifiedProduct> parents;
 
-	private List<CertifiedProduct> children;
+    private List<CertifiedProduct> children;
 
-	private Developer developer;
+    private Developer developer;
 
-	private ProductVersion version;
+    private ProductVersion version;
 
-	private Product product;
+    private Product product;
 
-	public IcsFamilyTreeNode() {
-		parents = new ArrayList<CertifiedProduct>();
-		children = new ArrayList<CertifiedProduct>();
-	}
+    public IcsFamilyTreeNode() {
+        parents = new ArrayList<CertifiedProduct>();
+        children = new ArrayList<CertifiedProduct>();
+    }
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Developer getDeveloper() {
-		return developer;
-	}
+    public Developer getDeveloper() {
+        return developer;
+    }
 
-	public void setDeveloper(Developer developer) {
-		this.developer = developer;
-	}
+    public void setDeveloper(Developer developer) {
+        this.developer = developer;
+    }
 
-	public ProductVersion getVersion() {
-		return version;
-	}
+    public ProductVersion getVersion() {
+        return version;
+    }
 
-	public void setVersion(ProductVersion version) {
-		this.version = version;
-	}
+    public void setVersion(ProductVersion version) {
+        this.version = version;
+    }
 
-	public Product getProduct() {
-		return product;
-	}
+    public Product getProduct() {
+        return product;
+    }
 
-	public void setProduct(Product product) {
-		this.product = product;
-	}
+    public void setProduct(Product product) {
+        this.product = product;
+    }
 
-	public String getChplProductNumber() {
-		return chplProductNumber;
-	}
+    public String getChplProductNumber() {
+        return chplProductNumber;
+    }
 
-	public void setChplProductNumber(String chplProductNumber) {
-		this.chplProductNumber = chplProductNumber;
-	}
+    public void setChplProductNumber(String chplProductNumber) {
+        this.chplProductNumber = chplProductNumber;
+    }
 
-	public CertificationStatus getCertificationStatus() {
-		return certificationStatus;
-	}
+    public CertificationStatus getCertificationStatus() {
+        return certificationStatus;
+    }
 
-	public void setCertificationStatus(CertificationStatus certificationStatus) {
-		this.certificationStatus = certificationStatus;
-	}
+    public void setCertificationStatus(CertificationStatus certificationStatus) {
+        this.certificationStatus = certificationStatus;
+    }
 
-	public List<CertifiedProduct> getParents() {
-		return parents;
-	}
+    public List<CertifiedProduct> getParents() {
+        return parents;
+    }
 
-	public void setParents(List<CertifiedProduct> parents) {
-		this.parents = parents;
-	}
+    public void setParents(List<CertifiedProduct> parents) {
+        this.parents = parents;
+    }
 
-	public List<CertifiedProduct> getChildren() {
-		return children;
-	}
+    public List<CertifiedProduct> getChildren() {
+        return children;
+    }
 
-	public void setChildren(List<CertifiedProduct> children) {
-		this.children = children;
-	}
+    public void setChildren(List<CertifiedProduct> children) {
+        this.children = children;
+    }
 
-	public Date getCertificationDate() {
-		return certificationDate;
-	}
+    public Date getCertificationDate() {
+        return certificationDate;
+    }
 
-	public void setCertificationDate(Date certificationDate) {
-		this.certificationDate = certificationDate;
-	}
-
+    public void setCertificationDate(Date certificationDate) {
+        this.certificationDate = certificationDate;
+    }
 
 }

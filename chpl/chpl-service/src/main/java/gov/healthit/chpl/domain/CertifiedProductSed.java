@@ -12,50 +12,50 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * Safety Enhanced Design data that is relied upon by this Health IT Module to
- * demonstrate its compliance with a certification criterion or criteria.
- * The SED data includes both user-centered design and test tasks.
+ * demonstrate its compliance with a certification criterion or criteria. The
+ * SED data includes both user-centered design and test tasks.
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductSed implements Serializable {
-	private static final long serialVersionUID = -4131156681875211447L;
+    private static final long serialVersionUID = -4131156681875211447L;
 
-	/**
-	 * The user-centered design (UCD) process applied for the corresponding
-	 * certification criteria. This variable is applicable for 2014 and 2015 Edition,
-	 * and a string variable that does not take any restrictions on formatting or values.
-	 */
-	@XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
-	@XmlElement(name = "ucdProcess")
-	private List<UcdProcess> ucdProcesses;
+    /**
+     * The user-centered design (UCD) process applied for the corresponding
+     * certification criteria. This variable is applicable for 2014 and 2015
+     * Edition, and a string variable that does not take any restrictions on
+     * formatting or values.
+     */
+    @XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
+    @XmlElement(name = "ucdProcess")
+    private List<UcdProcess> ucdProcesses;
 
-	/**
-	 * Tasks used for SED testing
-	 */
-	@XmlElementWrapper(name = "testTasks", nillable = true, required = false)
-	@XmlElement(name = "testTask")
-	private List<TestTask> testTasks;
+    /**
+     * Tasks used for SED testing
+     */
+    @XmlElementWrapper(name = "testTasks", nillable = true, required = false)
+    @XmlElement(name = "testTask")
+    private List<TestTask> testTasks;
 
+    public CertifiedProductSed() {
+        super();
+        this.ucdProcesses = new ArrayList<UcdProcess>();
+        this.testTasks = new ArrayList<TestTask>();
+    }
 
-	public CertifiedProductSed() {
-		super();
-		this.ucdProcesses = new ArrayList<UcdProcess>();
-		this.testTasks = new ArrayList<TestTask>();
-	}
+    public List<UcdProcess> getUcdProcesses() {
+        return ucdProcesses;
+    }
 
-	public List<UcdProcess> getUcdProcesses() {
-		return ucdProcesses;
-	}
+    public void setUcdProcesses(List<UcdProcess> ucdProcesses) {
+        this.ucdProcesses = ucdProcesses;
+    }
 
-	public void setUcdProcesses(List<UcdProcess> ucdProcesses) {
-		this.ucdProcesses = ucdProcesses;
-	}
+    public List<TestTask> getTestTasks() {
+        return testTasks;
+    }
 
-	public List<TestTask> getTestTasks() {
-		return testTasks;
-	}
-
-	public void setTestTasks(List<TestTask> testTasks) {
-		this.testTasks = testTasks;
-	}
+    public void setTestTasks(List<TestTask> testTasks) {
+        this.testTasks = testTasks;
+    }
 }

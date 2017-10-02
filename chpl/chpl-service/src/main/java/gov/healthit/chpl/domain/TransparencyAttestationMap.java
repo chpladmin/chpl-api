@@ -7,54 +7,54 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TransparencyAttestationMap implements Serializable {
-	private static final long serialVersionUID = 584097086020777727L;
+    private static final long serialVersionUID = 584097086020777727L;
 
-	/**
-	 * Certification body internal ID
-	 */
-	@XmlElement(required = true)
-	private Long acbId;
+    /**
+     * Certification body internal ID
+     */
+    @XmlElement(required = true)
+    private Long acbId;
 
-	/**
-	 * Certification body name
-	 */
-	@XmlElement(required = false, nillable = true)
-	private String acbName;
+    /**
+     * Certification body name
+     */
+    @XmlElement(required = false, nillable = true)
+    private String acbName;
 
-	/**
-	 * Affirmative, Negative, or N/A
-	 */
-	@XmlElement(required = true)
-	private String attestation;
+    /**
+     * Affirmative, Negative, or N/A
+     */
+    @XmlElement(required = true)
+    private String attestation;
 
-	public TransparencyAttestationMap() {}
+    public TransparencyAttestationMap() {
+    }
 
-	public Long getAcbId() {
-		return acbId;
-	}
+    public Long getAcbId() {
+        return acbId;
+    }
 
-	public void setAcbId(Long acbId) {
-		this.acbId = acbId;
-	}
+    public void setAcbId(Long acbId) {
+        this.acbId = acbId;
+    }
 
-	public String getAcbName() {
-		return acbName;
-	}
+    public String getAcbName() {
+        return acbName;
+    }
 
-	public void setAcbName(String acbName) {
-		this.acbName = acbName;
-	}
+    public void setAcbName(String acbName) {
+        this.acbName = acbName;
+    }
 
-	public String getAttestation() {
-		return attestation;
-	}
+    public String getAttestation() {
+        return attestation;
+    }
 
-	public void setAttestation(String attestation) {
-		this.attestation = attestation;
-	}
+    public void setAttestation(String attestation) {
+        this.attestation = attestation;
+    }
 
 }

@@ -24,106 +24,110 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public abstract class NotificationEmailerReportApp extends App {
-	protected SimpleDateFormat timestampFormat;
-	protected CertifiedProductDetailsManager cpdManager;
-	protected CertifiedProductDAO certifiedProductDAO;
-	protected SendMailUtil mailUtils;
-	protected NotificationDAO notificationDAO;
-	protected CertificationBodyDAO certificationBodyDAO;
-	protected CertificationEditionDAO editionDAO;
+    protected SimpleDateFormat timestampFormat;
+    protected CertifiedProductDetailsManager cpdManager;
+    protected CertifiedProductDAO certifiedProductDAO;
+    protected SendMailUtil mailUtils;
+    protected NotificationDAO notificationDAO;
+    protected CertificationBodyDAO certificationBodyDAO;
+    protected CertificationEditionDAO editionDAO;
 
-	protected static final Logger LOGGER = LogManager.getLogger(NotificationEmailerReportApp.class);
+    protected static final Logger LOGGER = LogManager.getLogger(NotificationEmailerReportApp.class);
 
-	public NotificationEmailerReportApp() {
-		timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-	}
+    public NotificationEmailerReportApp() {
+        timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    }
 
-	public Map<CertificationBodyDTO, CertifiedProductDownloadResponse> getCertificationDownloadResponse(List<CertifiedProductSearchDetails> allCertifiedProductDetails, List<CertificationBodyDTO> acbs) {
-		Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadResponse = new HashMap<CertificationBodyDTO, CertifiedProductDownloadResponse>();
+    public Map<CertificationBodyDTO, CertifiedProductDownloadResponse> getCertificationDownloadResponse(
+            List<CertifiedProductSearchDetails> allCertifiedProductDetails, List<CertificationBodyDTO> acbs) {
+        Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadResponse = new HashMap<CertificationBodyDTO, CertifiedProductDownloadResponse>();
 
-		for(CertificationBodyDTO cbDTO : acbs) {
-			CertifiedProductDownloadResponse cpDlResponse = new CertifiedProductDownloadResponse();
-			List<CertifiedProductSearchDetails> acbCpSearchDetails = new ArrayList<CertifiedProductSearchDetails>();
-			for(CertifiedProductSearchDetails cpDetail : allCertifiedProductDetails) {
-				if(cpDetail.getCertifyingBody().get("code").toString().equalsIgnoreCase(cbDTO.getAcbCode())) {
-					acbCpSearchDetails.add(cpDetail);
-				}
-			}
-			cpDlResponse.setListings(acbCpSearchDetails);
-			certificationDownloadResponse.put(cbDTO, cpDlResponse);
-		}
-		return certificationDownloadResponse;
-	}
+        for (CertificationBodyDTO cbDTO : acbs) {
+            CertifiedProductDownloadResponse cpDlResponse = new CertifiedProductDownloadResponse();
+            List<CertifiedProductSearchDetails> acbCpSearchDetails = new ArrayList<CertifiedProductSearchDetails>();
+            for (CertifiedProductSearchDetails cpDetail : allCertifiedProductDetails) {
+                if (cpDetail.getCertifyingBody().get("code").toString().equalsIgnoreCase(cbDTO.getAcbCode())) {
+                    acbCpSearchDetails.add(cpDetail);
+                }
+            }
+            cpDlResponse.setListings(acbCpSearchDetails);
+            certificationDownloadResponse.put(cbDTO, cpDlResponse);
+        }
+        return certificationDownloadResponse;
+    }
 
-	@Override
-	protected void initiateSpringBeans(AbstractApplicationContext context)  throws IOException {
-		this.setCpdManager((CertifiedProductDetailsManager)context.getBean("certifiedProductDetailsManager"));
-		this.setCertifiedProductDAO((CertifiedProductDAO)context.getBean("certifiedProductDAO"));
-		this.setNotificationDAO((NotificationDAO)context.getBean("notificationDAO"));
-		this.setCertificationBodyDAO((CertificationBodyDAO)context.getBean("certificationBodyDAO"));
-		this.setEditionDAO((CertificationEditionDAO)context.getBean("certificationEditionDAO"));
-		this.setMailUtils((SendMailUtil)context.getBean("SendMailUtil"));
-	}
+    @Override
+    protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
+        this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
+        this.setCertifiedProductDAO((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
+        this.setNotificationDAO((NotificationDAO) context.getBean("notificationDAO"));
+        this.setCertificationBodyDAO((CertificationBodyDAO) context.getBean("certificationBodyDAO"));
+        this.setEditionDAO((CertificationEditionDAO) context.getBean("certificationEditionDAO"));
+        this.setMailUtils((SendMailUtil) context.getBean("SendMailUtil"));
+    }
 
-	protected List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails() {
-		List<CertifiedProductDetailsDTO> allCertifiedProducts = this.getCertifiedProductDAO().findAll();
-	    List<CertifiedProductSearchDetails> allCertifiedProductDetails = new ArrayList<CertifiedProductSearchDetails>(allCertifiedProducts.size());
-		for(CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
-			try {
-				CertifiedProductSearchDetails product = this.getCpdManager().getCertifiedProductDetails(currProduct.getId());
-				allCertifiedProductDetails.add(product);
-			} catch(final EntityRetrievalException ex) {
-				LOGGER.error("Could not find certified product details for certified product with id = " + currProduct.getId());
-			}
-		}
-		return allCertifiedProductDetails;
-	}
+    protected List<CertifiedProductSearchDetails> getAllCertifiedProductSearchDetails() {
+        List<CertifiedProductDetailsDTO> allCertifiedProducts = this.getCertifiedProductDAO().findAll();
+        List<CertifiedProductSearchDetails> allCertifiedProductDetails = new ArrayList<CertifiedProductSearchDetails>(
+                allCertifiedProducts.size());
+        for (CertifiedProductDetailsDTO currProduct : allCertifiedProducts) {
+            try {
+                CertifiedProductSearchDetails product = this.getCpdManager()
+                        .getCertifiedProductDetails(currProduct.getId());
+                allCertifiedProductDetails.add(product);
+            } catch (final EntityRetrievalException ex) {
+                LOGGER.error("Could not find certified product details for certified product with id = "
+                        + currProduct.getId());
+            }
+        }
+        return allCertifiedProductDetails;
+    }
 
-	public CertifiedProductDetailsManager getCpdManager() {
-		return cpdManager;
-	}
+    public CertifiedProductDetailsManager getCpdManager() {
+        return cpdManager;
+    }
 
-	public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
-		this.cpdManager = cpdManager;
-	}
+    public void setCpdManager(CertifiedProductDetailsManager cpdManager) {
+        this.cpdManager = cpdManager;
+    }
 
-	public CertifiedProductDAO getCertifiedProductDAO() {
-		return certifiedProductDAO;
-	}
+    public CertifiedProductDAO getCertifiedProductDAO() {
+        return certifiedProductDAO;
+    }
 
-	public void setCertifiedProductDAO(CertifiedProductDAO certifiedProductDAO) {
-		this.certifiedProductDAO = certifiedProductDAO;
-	}
+    public void setCertifiedProductDAO(CertifiedProductDAO certifiedProductDAO) {
+        this.certifiedProductDAO = certifiedProductDAO;
+    }
 
-	public SendMailUtil getMailUtils() {
-		return mailUtils;
-	}
+    public SendMailUtil getMailUtils() {
+        return mailUtils;
+    }
 
-	public void setMailUtils(SendMailUtil mailUtils) {
-		this.mailUtils = mailUtils;
-	}
+    public void setMailUtils(SendMailUtil mailUtils) {
+        this.mailUtils = mailUtils;
+    }
 
-	public NotificationDAO getNotificationDAO() {
-		return notificationDAO;
-	}
+    public NotificationDAO getNotificationDAO() {
+        return notificationDAO;
+    }
 
-	public void setNotificationDAO(NotificationDAO notificationDAO) {
-		this.notificationDAO = notificationDAO;
-	}
+    public void setNotificationDAO(NotificationDAO notificationDAO) {
+        this.notificationDAO = notificationDAO;
+    }
 
-	public CertificationBodyDAO getCertificationBodyDAO() {
-		return certificationBodyDAO;
-	}
+    public CertificationBodyDAO getCertificationBodyDAO() {
+        return certificationBodyDAO;
+    }
 
-	public void setCertificationBodyDAO(CertificationBodyDAO certificationBodyDAO) {
-		this.certificationBodyDAO = certificationBodyDAO;
-	}
+    public void setCertificationBodyDAO(CertificationBodyDAO certificationBodyDAO) {
+        this.certificationBodyDAO = certificationBodyDAO;
+    }
 
-	public CertificationEditionDAO getEditionDAO() {
-		return editionDAO;
-	}
+    public CertificationEditionDAO getEditionDAO() {
+        return editionDAO;
+    }
 
-	public void setEditionDAO(CertificationEditionDAO editionDAO) {
-		this.editionDAO = editionDAO;
-	}
+    public void setEditionDAO(CertificationEditionDAO editionDAO) {
+        this.editionDAO = editionDAO;
+    }
 }

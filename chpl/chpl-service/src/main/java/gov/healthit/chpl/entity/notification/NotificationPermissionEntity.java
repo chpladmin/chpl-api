@@ -14,99 +14,98 @@ import org.hibernate.annotations.Immutable;
 
 import gov.healthit.chpl.auth.entity.UserPermissionEntity;
 
-
 @Entity
 @Immutable
 @Table(name = "notification_type_permission")
 public class NotificationPermissionEntity {
 
-	@Id
-	@Column(name = "id")
-	private Long id;
+    @Id
+    @Column(name = "id")
+    private Long id;
 
-	@Column(name = "notification_type_id")
-	private Long notificationTypeId;
+    @Column(name = "notification_type_id")
+    private Long notificationTypeId;
 
-	@Column(name = "permission_id")
-	private String permissionId;
+    @Column(name = "permission_id")
+    private String permissionId;
 
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "permission_id", insertable = false, updatable = false)
-	private UserPermissionEntity permission;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "permission_id", insertable = false, updatable = false)
+    private UserPermissionEntity permission;
 
-	@Column( name = "deleted")
-	private Boolean deleted;
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public Long getNotificationTypeId() {
-		return notificationTypeId;
-	}
+    public Long getNotificationTypeId() {
+        return notificationTypeId;
+    }
 
-	public void setNotificationTypeId(Long notificationTypeId) {
-		this.notificationTypeId = notificationTypeId;
-	}
+    public void setNotificationTypeId(Long notificationTypeId) {
+        this.notificationTypeId = notificationTypeId;
+    }
 
-	public String getPermissionId() {
-		return permissionId;
-	}
+    public String getPermissionId() {
+        return permissionId;
+    }
 
-	public void setPermissionId(String permissionId) {
-		this.permissionId = permissionId;
-	}
+    public void setPermissionId(String permissionId) {
+        this.permissionId = permissionId;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeleted(Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setLastModifiedUser(Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setLastModifiedDate(Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public UserPermissionEntity getPermission() {
-		return permission;
-	}
+    public UserPermissionEntity getPermission() {
+        return permission;
+    }
 
-	public void setPermission(UserPermissionEntity permission) {
-		this.permission = permission;
-	}
+    public void setPermission(UserPermissionEntity permission) {
+        this.permission = permission;
+    }
 }
