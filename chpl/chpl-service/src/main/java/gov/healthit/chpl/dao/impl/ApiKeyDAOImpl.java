@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
@@ -118,7 +120,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 	}
 
 	@Override
-	public ApiKeyDTO getByKey(String apiKey) {
+	public ApiKeyDTO getByKey(String apiKey) throws EntityRetrievalException {
 		
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getEntityByKey(apiKey);
@@ -196,7 +198,11 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		query.setParameter("entityid", entityId);
 		List<ApiKeyEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("apikey.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else if(result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
@@ -204,7 +210,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		return entity;
 	}
 	
-	private ApiKeyEntity getEntityByKey(String key) {
+	private ApiKeyEntity getEntityByKey(String key) throws EntityRetrievalException {
 		
 		ApiKeyEntity entity = null;
 		
@@ -212,7 +218,10 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		query.setParameter("apikey", key);
 		List<ApiKeyEntity> result = query.getResultList();
 		
-		if(result != null && result.size() > 0) {
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("apikey.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else {
 			entity = result.get(0);
 		}
 		return entity;

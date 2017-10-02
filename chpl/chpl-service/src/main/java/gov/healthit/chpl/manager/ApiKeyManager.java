@@ -18,15 +18,15 @@ public interface ApiKeyManager {
 	public void deleteKey(String keyString) throws JsonProcessingException, 
 	EntityCreationException, EntityRetrievalException;
 	public ApiKeyDTO findKey(Long keyId) throws EntityRetrievalException;
-	public ApiKeyDTO findKey(String keyString);
+	public ApiKeyDTO findKey(String keyString) throws EntityRetrievalException;
 	public List<ApiKeyDTO> findAll();
 	public void logApiKeyActivity(String keyString, String activityPath) 
-			throws EntityCreationException;
+			throws EntityRetrievalException, EntityCreationException;
 	public List<ApiKeyActivity> getApiKeyActivity() throws EntityRetrievalException;
 	public List<ApiKeyActivity> getApiKeyActivity(String apiKeyFilter, Integer pageNumber, 
 			Integer pageSize, boolean dateAscending, Long startDate, Long endDate) 
 					throws EntityRetrievalException;
-	public List<ApiKeyActivity> getApiKeyActivity(String keyString);
+	public List<ApiKeyActivity> getApiKeyActivity(String keyString) throws EntityRetrievalException;
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, 
-			Integer pageSize);
+			Integer pageSize) throws EntityRetrievalException;
 }

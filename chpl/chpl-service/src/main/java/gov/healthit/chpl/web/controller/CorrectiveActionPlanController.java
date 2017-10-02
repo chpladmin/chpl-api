@@ -60,7 +60,7 @@ public class CorrectiveActionPlanController {
 	
 	@ApiOperation(value="DEPRECATED. Use surveillance API methods.<br/>List corrective action plans for a certified product.", 
 			notes="List all corrective action plans, both open and resolved, for a certified product.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	@Deprecated
 	public @ResponseBody CorrectiveActionPlanResults getCorrectiveActionPlansForCertifiedProduct(

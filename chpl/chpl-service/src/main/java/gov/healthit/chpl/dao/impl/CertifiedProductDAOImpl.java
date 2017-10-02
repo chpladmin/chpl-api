@@ -488,7 +488,10 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		query.setParameter("entityid", entityId);
 		List<CertifiedProductEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else if (result.size() > 1){
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
 		

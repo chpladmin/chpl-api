@@ -98,7 +98,7 @@ public class ApiKeyManagerTest extends TestCase {
 	
 	@Transactional
 	@Rollback(true)
-	@Test
+	@Test(expected = EntityRetrievalException.class)
 	public void testDeleteKey() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -122,15 +122,13 @@ public class ApiKeyManagerTest extends TestCase {
 		assertEquals(toCreate.getApiKey(), retrieved.getApiKey());
 		
 		apiKeyManager.deleteKey(retrieved.getId());
-		
-		assertEquals(null, apiKeyManager.findKey(created.getId()));
-		
+		apiKeyManager.findKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
 	@Transactional
 	@Rollback(true)
-	@Test
+	@Test(expected = EntityRetrievalException.class)
 	public void testDeleteByApiKey() throws JsonProcessingException, EntityCreationException, EntityRetrievalException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -154,8 +152,7 @@ public class ApiKeyManagerTest extends TestCase {
 		assertEquals(toCreate.getApiKey(), retrieved.getApiKey());
 		
 		apiKeyManager.deleteKey(retrieved.getId());
-		
-		assertEquals(null, apiKeyManager.findKey(toCreate.getApiKey()));
+		apiKeyManager.findKey(toCreate.getApiKey());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}

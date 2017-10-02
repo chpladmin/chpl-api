@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.notification.Recipient;
 import gov.healthit.chpl.domain.notification.Subscription;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -36,9 +38,9 @@ import io.swagger.annotations.ApiOperation;
 public class NotificationController {
 	
 	private static final Logger logger = LogManager.getLogger(NotificationController.class);
-
 	
 	@Autowired NotificationManager notificationManager;
+	@Autowired MessageSource messageSource;
 
 	@ApiOperation(value = "Get the list of all recipients and their associated subscriptions that are applicable to the currently logged in user")
 	@RequestMapping(value = "/recipients", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
@@ -59,17 +61,13 @@ public class NotificationController {
 	@ApiOperation(value = "Update the email address and associated subscriptions of the recipient specified.")
 	@RequestMapping(value = "/recipients/{recipientId}/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody Recipient updateRecipient(@PathVariable("recipientId") Long recipientId,
-			@RequestBody Recipient updatedRecipient) throws InvalidArgumentsException {
+			@RequestBody Recipient updatedRecipient) throws InvalidArgumentsException, EntityRetrievalException {
 		if(recipientId.longValue() != updatedRecipient.getId().longValue()) {
 			throw new InvalidArgumentsException("Recipient id '" + recipientId + "' in the URL does not match recipient id '" + updatedRecipient.getId() + "' in the request body.");
 		}
 		
 		//get the current subscriptions
 		RecipientWithSubscriptionsDTO existingRecipient = notificationManager.getAllForRecipient(recipientId);			
-		if(existingRecipient == null) {
-			throw new InvalidArgumentsException("No existing recipient was found with id " + recipientId);
-		}
-		
 		RecipientDTO recipient = new RecipientDTO();
 		recipient.setId(updatedRecipient.getId());
 		if(!existingRecipient.getEmail().equals(updatedRecipient.getEmail())) {
@@ -144,7 +142,7 @@ public class NotificationController {
 	@ApiOperation(value = "Creates a new recipient with any subscriptions included in the request body. At least 1 subscription is required.")
 	@RequestMapping(value = "/recipients/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody Recipient createRecipient(@RequestBody Recipient recipientToAdd) 
-		throws InvalidArgumentsException, EntityCreationException {
+		throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
 		if(recipientToAdd.getSubscriptions() == null || recipientToAdd.getSubscriptions().size() == 0) {
 			throw new InvalidArgumentsException("At least one subscription must be included with the request.");
 		}
@@ -192,7 +190,7 @@ public class NotificationController {
 	@ApiOperation(value = "Remove subscription(s) for a recipient.")
 	@RequestMapping(value = "/recipients/{recipientId}/delete", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	public @ResponseBody void deleteRecipient(@PathVariable("recipientId") Long recipientId) 
-		throws InvalidArgumentsException {
+		throws EntityRetrievalException, InvalidArgumentsException {
 		try {
 			notificationManager.deleteRecipient(recipientId);
 		} catch(EntityNotFoundException ex) {

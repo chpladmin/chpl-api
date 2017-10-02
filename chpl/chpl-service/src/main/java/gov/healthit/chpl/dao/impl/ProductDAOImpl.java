@@ -10,6 +10,8 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -408,7 +410,10 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 		query.setParameter("entityid", id);
 		List<ProductEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("product.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate product id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);

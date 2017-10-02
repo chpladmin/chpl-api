@@ -10,11 +10,14 @@ import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -160,7 +163,8 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 	}
 	
 	public RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(
-			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs) {
+			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs) 
+		throws EntityRetrievalException {
 		List<String> authorityNames = new ArrayList<String>();
 		if(permissions != null) {
 			for(GrantedPermission perm : permissions) {
@@ -175,13 +179,15 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		}
 		
 		List<RecipientWithSubscriptionsEntity> allMappings = findRecipientsWithNotifications(recipientId, authorityNames, null, acbIds);
-		if(allMappings != null && allMappings.size() > 0) {
+		if(allMappings == null || allMappings.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("recipient.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else {
 			return new RecipientWithSubscriptionsDTO(allMappings.get(0));
 		}
-		return null;
 	}
 	
-	public RecipientDTO findRecipientByEmail(String email) {
+	public RecipientDTO findRecipientByEmail(String email) throws EntityRetrievalException {
 		Query query = entityManager.createQuery("SELECT recip "
 				+ "FROM NotificationRecipientEntity recip "
 				+ "WHERE recip.deleted <> true "
@@ -190,13 +196,15 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		query.setParameter("email", email.toUpperCase());
 		
 		List<NotificationRecipientEntity> matchedRecipients = query.getResultList();
-		if(matchedRecipients.size() > 0) {
+		if(matchedRecipients == null || matchedRecipients.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("recipient.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else {
 			return new RecipientDTO(matchedRecipients.get(0));
 		}
-		return null;
 	}
 	
-	public RecipientDTO getRecipientById(Long id) {
+	public RecipientDTO getRecipientById(Long id) throws EntityRetrievalException {
 		Query query = entityManager.createQuery("SELECT recip "
 				+ "FROM NotificationRecipientEntity recip "
 				+ "WHERE recip.deleted <> true "
@@ -205,10 +213,12 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 		query.setParameter("id", id);
 		
 		List<NotificationRecipientEntity> matchedRecipients = query.getResultList();
-		if(matchedRecipients.size() > 0) {
+		if(matchedRecipients == null || matchedRecipients.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("recipient.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else {
 			return new RecipientDTO(matchedRecipients.get(0));
 		}
-		return null;
 	}
 	
 	public RecipientDTO updateRecipient(RecipientDTO updatedRecipient) throws EntityNotFoundException {

@@ -27,6 +27,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -167,5 +168,93 @@ public class ActivityControllerTest {
 		Calendar calStart = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 		calStart.add(Calendar.DATE, 20);
 		activityController.activityForACBs(calStart.getTimeInMillis(), calEnd.getTimeInMillis(), false);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetAcbActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForACBById(-100L, null, null, false);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetAnnouncementActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForAnnouncementById(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetAtlActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForATLById(-100L, null, null, false);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetCertificationActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForCertificationById(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetListingActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForCertifiedProductById(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetDeveloperActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForDeveloperById(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetPendingListingActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForPendingCertifiedProductById(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetProductActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForProducts(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=UserRetrievalException.class)
+	public void testGetUserActivityWithBadId() 
+		throws UserRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForUsers(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=UserRetrievalException.class)
+	public void testGetUserActivitesWithBadId() 
+		throws UserRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityByUser(-100L, null, null);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetVersionActivityWithBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		activityController.activityForVersions(-100L, null, null);
 	}
 }

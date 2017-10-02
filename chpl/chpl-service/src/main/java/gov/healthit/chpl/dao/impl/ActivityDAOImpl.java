@@ -350,7 +350,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		String queryStr = "from ActivityEntity ae "
 				+ "LEFT OUTER JOIN FETCH ae.user ";
 		if(!showDeleted) {
-			queryStr += " WHERE (NOT ae.deleted = true)";
+			queryStr += " WHERE (NOT ae.deleted = true) ";
 		}
 		Query query = entityManager.createQuery(queryStr);
 		List<ActivityEntity> result = query.getResultList();

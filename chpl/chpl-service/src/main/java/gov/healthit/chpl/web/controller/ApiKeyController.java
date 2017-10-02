@@ -92,7 +92,7 @@ public class ApiKeyController {
 	
 	@ApiOperation(value="List all API keys that have been created.", 
 			notes="This service is only available to CHPL users with ROLE_ADMIN.")
-	@RequestMapping(value="/", method= RequestMethod.GET,
+	@RequestMapping(value="", method= RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public List<ApiKey> listKeys() {
 		
@@ -120,8 +120,8 @@ public class ApiKeyController {
 			@RequestParam(value = "pageSize", required = false) Integer pageSize ,
 			@RequestParam(value = "filter", required = false) String apiKeyFilter,
 			@RequestParam(value = "dateAscending", required = false) boolean dateAscending,
-			@RequestParam(value = "startDate", required = false) Long startDateMilli,
-			@RequestParam(value = "endDate", required=false) Long endDateMilli) throws EntityRetrievalException
+			@RequestParam(value = "start", required = false) Long startDateMilli,
+			@RequestParam(value = "end", required=false) Long endDateMilli) throws EntityRetrievalException
 	{		
 		if (pageNumber == null){
 			pageNumber = 0;
@@ -149,8 +149,8 @@ public class ApiKeyController {
 	public List<ApiKeyActivity> listActivityByKey(
 			@PathVariable("apiKey") String apiKey,
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-			@RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException
-	{
+			@RequestParam(value = "pageSize", required = false) Integer pageSize) 
+	throws EntityRetrievalException {
 		if (pageNumber == null){
 			pageNumber = 0;
 		}

@@ -83,12 +83,9 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	@Transactional(readOnly = true)
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
 	public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id) 
-			throws EntityNotFoundException, EntityRetrievalException, AccessDeniedException {
+			throws EntityRetrievalException, AccessDeniedException {
 		
 		PendingCertifiedProductDTO pendingCp = pcpDao.findById(id, false);
-		if(pendingCp == null) {
-			throw new EntityNotFoundException("Could not find pending certified product with id " + id);
-		}
 		boolean userHasAcbPermissions = false;
 		for(CertificationBodyDTO acb : userAcbs) {
 			if(acb.getId() != null && 

@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -250,9 +252,10 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 					+ " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
 			query.setParameter("entityid", entityId);
 			results = query.getResultList();
-			if(results.size() == 0){
-				throw new EntityRetrievalException("There is no announcement with that id");
-			}else{
+			if(results == null || results.size() == 0){
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+				throw new EntityRetrievalException(msg);			
+			} else {
 				entity = results.get(0);
 			}
 		}else{
@@ -261,9 +264,10 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 					+ " AND (start_date <= now() AND end_date > now())", AnnouncementEntity.class);
 			query.setParameter("entityid", entityId);
 			results = query.getResultList();
-			if(results.size() == 0){
-				throw new EntityRetrievalException("There is no announcement with that id");
-			}else{
+			if(results == null || results.size() == 0){
+				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("announcement.notFound"), LocaleContextHolder.getLocale()));
+				throw new EntityRetrievalException(msg);
+			} else {
 				AnnouncementEntity ret = results.get(0);
 				boolean isPublic = ret.getIsPublic();
 				if(isPublic){
@@ -273,6 +277,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 				}
 			}
 		}
+
 		return entity;
 	}
 	

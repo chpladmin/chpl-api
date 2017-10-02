@@ -238,10 +238,6 @@ public class SurveillanceController implements MessageSourceAware {
 		}
 		
 		Surveillance surv = survManager.getById(surveillanceId);
-		if(surv == null) {
-			throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
-		}
-
 		CertifiedProductSearchDetails beforeCp = cpdetailsManager.getCertifiedProductDetails(surv.getCertifiedProduct().getId());
 		
 		SurveillanceNonconformityDocument toInsert = new SurveillanceNonconformityDocument();
@@ -376,10 +372,9 @@ public class SurveillanceController implements MessageSourceAware {
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
-	@RequestMapping(value="/{surveillanceId}/nonconformity/{nonconformityId}/document/{docId}/delete", method= RequestMethod.POST,
+	@RequestMapping(value="/{surveillanceId}/document/{docId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset=utf-8")
 	public String deleteNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
-			@PathVariable("nonconformityId") Long nonconformityId,
 			@PathVariable("docId") Long docId) 
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
 				InvalidArgumentsException {

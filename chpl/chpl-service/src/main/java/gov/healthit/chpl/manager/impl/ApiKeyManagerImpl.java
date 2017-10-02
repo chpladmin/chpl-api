@@ -79,13 +79,14 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 
 	@Override
 	@Transactional
-	public ApiKeyDTO findKey(String keyString) {
+	public ApiKeyDTO findKey(String keyString) throws EntityRetrievalException {
 		return apiKeyDAO.getByKey(keyString);
 	}
 
 	@Override
 	@Transactional
-	public void logApiKeyActivity(String keyString, String apiCallPath) throws EntityCreationException {
+	public void logApiKeyActivity(String keyString, String apiCallPath) 
+	throws EntityRetrievalException, EntityCreationException {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
 		ApiKeyActivityDTO apiKeyActivityDto = new ApiKeyActivityDTO();
@@ -100,7 +101,7 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-	public List<ApiKeyActivity> getApiKeyActivity(String keyString) {
+	public List<ApiKeyActivity> getApiKeyActivity(String keyString) throws EntityRetrievalException {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
 		if (apiKey == null){
@@ -131,7 +132,8 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	@Override
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) {
+	public List<ApiKeyActivity> getApiKeyActivity(String keyString, Integer pageNumber, Integer pageSize) 
+	throws EntityRetrievalException {
 		
 		ApiKeyDTO apiKey = findKey(keyString);
 		if (apiKey == null){

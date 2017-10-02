@@ -55,7 +55,7 @@ public class CertificationIdController {
 	//**********************************************************************************************************
 	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_CMS_STAFF, Authority.ROLE_ONC_STAFF})
 	@ApiOperation(value="Retrieves a list of all CMS EHR Certification IDs along with the date they were created.")
-	@RequestMapping(value="/", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
+	@RequestMapping(value="", method=RequestMethod.GET, produces={MediaType.APPLICATION_JSON_VALUE})
 	public List<SimpleCertificationId> getAll() throws IOException {
 		List<SimpleCertificationId> results = new ArrayList<SimpleCertificationId>();
 		if(Util.isUserRoleAdmin() || Util.isUserRoleOncStaff()) {

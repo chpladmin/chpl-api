@@ -380,7 +380,7 @@ public class UserManagementController {
 	
 	@ApiOperation(value="View users of the system.", 
 			notes="Only ROLE_ADMIN will be able to see all users.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody UserListJSONObject getUsers(){
 		

@@ -22,9 +22,10 @@ public interface NotificationDAO {
 	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappingsForType(Set<GrantedPermission> permissions, 
 			NotificationTypeConcept notificationType, List<CertificationBodyDTO> acbs);
 	public RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(
-			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
-	public RecipientDTO findRecipientByEmail(String email);
-	public RecipientDTO getRecipientById(Long id);
+			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs)
+			throws EntityRetrievalException;
+	public RecipientDTO findRecipientByEmail(String email) throws EntityRetrievalException;
+	public RecipientDTO getRecipientById(Long id) throws EntityRetrievalException;
 	public RecipientDTO updateRecipient(RecipientDTO updatedRecipient) throws EntityNotFoundException;
 	public void deleteNotificationMapping(RecipientDTO recipient, NotificationTypeDTO notificationType, CertificationBodyDTO acb);
 }

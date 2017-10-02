@@ -24,7 +24,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -55,7 +54,7 @@ public class ProductController {
 	
 	@ApiOperation(value="List all products", 
 			notes="Either list all products or optionally just all products belonging to a specific developer.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody ProductResults getAllProducts(@RequestParam(required=false) Long developerId) {
 		
@@ -84,7 +83,8 @@ public class ProductController {
 			notes="")
 	@RequestMapping(value="/{productId}", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody Product getProductById(@PathVariable("productId") Long productId) throws EntityRetrievalException {
+	public @ResponseBody Product getProductById(@PathVariable("productId") Long productId) 
+			throws EntityRetrievalException {
 		ProductDTO product = productManager.getById(productId);
 		
 		Product result = null;
@@ -98,7 +98,8 @@ public class ProductController {
 			notes="")
 	@RequestMapping(value="/{productId}/listings", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
-	public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") Long productId) throws EntityRetrievalException {
+	public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") Long productId) 
+			throws EntityRetrievalException {
 		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(productId);
 		List<CertifiedProduct> results = new ArrayList<CertifiedProduct>();
 		for(CertifiedProductDetailsDTO listing : listings) {
@@ -214,8 +215,9 @@ public class ProductController {
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset=utf-8")
 	public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") Long productId, 
-			@RequestBody(required=true) SplitProductsRequest splitRequest) throws EntityCreationException, 
-		EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
+			@RequestBody(required=true) SplitProductsRequest splitRequest) 
+			throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
+		
 		if(splitRequest.getNewProductCode() != null) {
 			splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
 		}

@@ -22,12 +22,24 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.AnnouncementManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.PendingCertifiedProductManager;
+import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.manager.ProductVersionManager;
+import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,8 +52,17 @@ public class ActivityController {
 	
 	@Autowired Environment env;
 
-	@Autowired
-	private ActivityManager activityManager;
+	@Autowired private ActivityManager activityManager;
+	@Autowired private CertificationBodyManager acbManager;
+	@Autowired private AnnouncementManager announcementManager;
+	@Autowired private TestingLabManager atlManager;
+	@Autowired private CertifiedProductManager cpManager;
+	@Autowired private CertificationIdManager certificationIdManager;
+	@Autowired private PendingCertifiedProductManager pcpManager;
+	@Autowired private DeveloperManager developerManager;
+	@Autowired private ProductManager productManager;
+	@Autowired private ProductVersionManager versionManager;
+	@Autowired private UserManager userManager;
 	
 	@ApiOperation(value="Get auditable data for certification bodies.", 
 			notes="Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -82,12 +103,14 @@ public class ActivityController {
 	public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end,
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) 
+		throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+		acbManager.getById(id, showDeleted); //throws 404 if ACB doesn't exist
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
 			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
 			throw new AccessDeniedException("Only Admins can see deleted ACB's");
-		}else{
+		} else {
 			if (start == null && end == null){
 				return getActivityEventsForACBs(showDeleted, id);
 			} else {
@@ -111,6 +134,7 @@ public class ActivityController {
 	@RequestMapping(value="/announcements", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForAnnoucements(@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+		
 		if (start == null && end == null){
 			return getActivityEventsForAnnouncements();
 		} else {
@@ -133,7 +157,10 @@ public class ActivityController {
 	@RequestMapping(value="/announcements/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+		announcementManager.getById(id); //throws 404 if bad id
+		
 		if (start == null && end == null){
 			return getActivityEventsForAnnouncements(id);
 		} else {
@@ -189,8 +216,10 @@ public class ActivityController {
 	public List<ActivityEvent> activityForATLById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
 			@RequestParam(required=false) Long end,
-			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
-
+			@RequestParam(value = "showDeleted", required=false, defaultValue="false") boolean showDeleted) 
+			throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
+		atlManager.getById(id, showDeleted); //throws 404 if bad id
+		
 		if(!Util.isUserRoleAdmin() && showDeleted){
 			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
 			throw new AccessDeniedException("Only Admins can see deleted ATL's");
@@ -264,7 +293,9 @@ public class ActivityController {
 	@RequestMapping(value="/certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
+		cpManager.getById(id); //throws 404 if bad id
 		
 		if (start == null && end == null){
 			return getActivityEventsForCertifiedProducts(id);
@@ -311,7 +342,9 @@ public class ActivityController {
 	@RequestMapping(value="/certifications/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
+		certificationIdManager.getById(id); //throws 404 if bad id
 		
 		if (start == null && end == null){
 			return getActivityEventsForCertifications(id);
@@ -356,9 +389,12 @@ public class ActivityController {
 			notes="Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
 				+ "The default behavior is to return activity for the specified pending certified product across all dates.")
 	@RequestMapping(value="/pending_certified_products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForPendingCertifiedProducts(@PathVariable("id") Long id, 
+	public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
+		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+		pcpManager.getById(acbs, id); //returns 404 if bad id
 		
 		if (start == null && end == null){
 			return getActivityEventsForPendingCertifiedProducts(id);
@@ -405,7 +441,9 @@ public class ActivityController {
 	@RequestMapping(value="/products/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
+		productManager.getById(id); //returns 404 if bad id
 		
 		if (start == null && end == null){
 			return getActivityEventsForProducts(id);
@@ -452,7 +490,9 @@ public class ActivityController {
 	@RequestMapping(value="/versions/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForVersions(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
+		versionManager.getById(id); //returns 404 if bad id
 		
 		if (start == null && end == null){
 			return getActivityEventsForVersions(id);
@@ -499,7 +539,9 @@ public class ActivityController {
 	@RequestMapping(value="/users/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, UserRetrievalException, ValidationException{
+		userManager.getById(id); //throws 404 if bad id
 		
 		if (start == null && end == null){
 			return getActivityEventsForUsers(id);
@@ -544,9 +586,11 @@ public class ActivityController {
 			notes="Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
 				+ "The default behavior is to return activity for the specified developer across all dates.")
 	@RequestMapping(value="/developers/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public List<ActivityEvent> activityForDevelopers(@PathVariable("id") Long id, 
+	public List<ActivityEvent> activityForDeveloperById(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+		throws JsonParseException, IOException, EntityRetrievalException, ValidationException{
+		developerManager.getById(id); //returns 404 if bad id
 		
 		if (start == null && end == null){
 			return getActivityEventsForDevelopers(id);
@@ -595,7 +639,9 @@ public class ActivityController {
 	@RequestMapping(value="/user_activities/{id}", method=RequestMethod.GET, produces="application/json; charset=utf-8")
 	public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, 
 			@RequestParam(required=false) Long start,
-			@RequestParam(required=false) Long end) throws JsonParseException, IOException, ValidationException{
+			@RequestParam(required=false) Long end) 
+			throws JsonParseException, IOException, UserRetrievalException, ValidationException{
+		userManager.getById(id); //throws 404 if bad id
 		
 		if (start == null && end == null){
 			return activityManager.getActivityForUser(id);

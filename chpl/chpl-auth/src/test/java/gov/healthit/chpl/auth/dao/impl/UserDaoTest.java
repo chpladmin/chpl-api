@@ -63,7 +63,7 @@ public class UserDaoTest {
 		SecurityContextHolder.getContext().setAuthentication(authUser);
 	}
 
-	@Test
+	@Test(expected = UserRetrievalException.class)
 	public void testCreateAndDeleteUser() throws UserCreationException, UserRetrievalException {
 		String password = "password";
 		String encryptedPassword = bCryptPasswordEncoder.encode(password);
@@ -87,8 +87,7 @@ public class UserDaoTest {
 		Long insertedUserId = testUser.getId();
 		dao.delete(insertedUserId);
 
-		UserDTO deletedUser = dao.getById(insertedUserId);
-		assertNull(deletedUser);
+		dao.getById(insertedUserId);
 	}
 
 	@Test
@@ -187,11 +186,9 @@ public class UserDaoTest {
 	 * 
 	 * @throws UserRetrievalException
 	 */
-	@Test
+	@Test(expected = UserRetrievalException.class)
 	public void testGetById_returnsNullForDeletedUser() throws UserRetrievalException {
-		UserDTO userDto = null;
-		userDto = dao.getById(-3L);
-		assertTrue(userDto == null);
+		dao.getById(-3L);
 	}
 
 	/**

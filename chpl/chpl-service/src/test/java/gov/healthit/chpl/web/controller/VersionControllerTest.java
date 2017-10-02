@@ -1,9 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.io.IOException;
 
 import org.junit.BeforeClass;
@@ -11,8 +7,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -28,7 +24,6 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,13 +33,16 @@ import gov.healthit.chpl.web.controller.exception.ValidationException;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
-public class ProductControllerTest {
-	@Autowired ProductController productController;
+public class VersionControllerTest {
+	private static JWTAuthenticatedUser adminUser;
+	
+	@Autowired Environment env;
+	
+	@Autowired ProductVersionController versionController;
+	
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	private static JWTAuthenticatedUser adminUser;
 	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
@@ -56,38 +54,11 @@ public class ProductControllerTest {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
-	@Test
-	@Transactional
-	@Rollback(true)
-	public void getProductById() {
-		Product result = null;
-		try {
-			result = productController.getProductById(-1L);
-		} catch(EntityRetrievalException e) {
-			fail(e.getMessage());
-		}
-		assertNotNull(result);
-		assertNotNull(result.getOwner());
-		assertNotNull(result.getOwner().getDeveloperId());
-		assertEquals(-1, result.getOwner().getDeveloperId().longValue());
-		assertNotNull(result.getOwnerHistory());
-		assertEquals(1, result.getOwnerHistory().size());
-		assertEquals(-2, result.getOwnerHistory().get(0).getDeveloper().getDeveloperId().longValue());
-	}
-	
 	@Transactional
 	@Test(expected=EntityRetrievalException.class)
-	public void testGetProductByBadId() 
+	public void testGetVersionByBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		productController.getProductById(-100L);
-	}
-	
-	@Transactional
-	@Test(expected=EntityRetrievalException.class)
-	public void testGetListingForProductByBadId() 
-		throws EntityRetrievalException, IOException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		productController.getListingsForProduct(-100L);
+		versionController.getProductVersionById(-100L);
 	}
 }

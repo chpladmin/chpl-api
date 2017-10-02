@@ -74,7 +74,7 @@ public class UserManagerTest {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
-	@Test
+	@Test(expected = UserRetrievalException.class)
 	public void testCreateDeleteUser() throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -97,13 +97,11 @@ public class UserManagerTest {
 		assertEquals(toCreate.getSubjectName(), created.getSubjectName());
 		
 		userManager.delete(created);
-		
-		UserDTO deleted = userManager.getById(result.getId());
-		assertNull(deleted);
+		userManager.getById(result.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	@Test
+	@Test(expected = UserRetrievalException.class)
 	public void testCreateDeleteUserByUsername() throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -126,9 +124,7 @@ public class UserManagerTest {
 		assertEquals(toCreate.getSubjectName(), created.getSubjectName());
 		
 		userManager.delete(created.getUsername());
-		
-		UserDTO deleted = userManager.getById(result.getId());
-		assertNull(deleted);
+		userManager.getById(result.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -166,6 +162,13 @@ public class UserManagerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		UserDTO result = userManager.getById(-2L);
 		assertEquals(result.getSubjectName(), "admin");
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test(expected=UserRetrievalException.class)
+	public void testGetByIdNotFound() throws UserRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		userManager.getById(-6000L);
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	

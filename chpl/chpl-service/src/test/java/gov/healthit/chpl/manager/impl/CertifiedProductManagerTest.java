@@ -2457,7 +2457,7 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void getListingsOwnedByProduct() {
+	public void getListingsOwnedByProduct() throws EntityRetrievalException {
 		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(-1L);
 		assertNotNull(listings);
 		assertEquals(4, listings.size());

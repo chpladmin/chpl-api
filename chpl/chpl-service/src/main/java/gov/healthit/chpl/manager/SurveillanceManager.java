@@ -26,17 +26,17 @@ public interface SurveillanceManager extends QuestionableActivityHandler {
 	public void validate(Surveillance surveillance);
 	
 	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
-	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc);
-	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
-	public Surveillance getById(Long survId) throws EntityNotFoundException;
+	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc) throws EntityRetrievalException;
+	public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
+	public Surveillance getById(Long survId) throws EntityRetrievalException;
 	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
 	public List<Surveillance> getByCertifiedProduct(Long cpId);
-	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents);
-	public void deleteSurveillance(Long acbId, Surveillance surv) throws SurveillanceAuthorityAccessDeniedException;
-	public void deleteNonconformityDocument(Long acbId, Long documentId);
+	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents) throws EntityRetrievalException;
+	public void deleteSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException;
+	public void deleteNonconformityDocument(Long acbId, Long documentId) throws EntityRetrievalException;
 	
 	public List<Surveillance> getPendingByAcb(Long acbId);
-	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityNotFoundException;
+	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
 	public Long createPendingSurveillance(Long acbId, Surveillance surv);
 	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, 
 	EntityRetrievalException, EntityCreationException;

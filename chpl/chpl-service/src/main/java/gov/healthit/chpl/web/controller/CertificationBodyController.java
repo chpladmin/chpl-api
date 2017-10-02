@@ -58,7 +58,7 @@ public class CertificationBodyController {
 			notes="Setting the 'editable' parameter to true will return all ACBs that the logged in user has edit permissions on."
 					+ "Setting 'showDeleted' to true will include even those ACBs that have been deleted. The logged in user must have ROLE_ADMIN "
 					+ "to see deleted ACBs. The default behavior of this service is to list all of the ACBs in the system that are not deleted.")
-	@RequestMapping(value="/", method=RequestMethod.GET,
+	@RequestMapping(value="", method=RequestMethod.GET,
 			produces="application/json; charset=utf-8")
 	public @ResponseBody CertificationBodyResults getAcbs(
 			@RequestParam(required=false, defaultValue="false") boolean editable,

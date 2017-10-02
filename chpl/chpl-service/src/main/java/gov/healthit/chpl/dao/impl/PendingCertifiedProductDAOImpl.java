@@ -473,7 +473,10 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		query.setParameter("entityid", entityId);
 		List<PendingCertifiedProductEntity> result = query.getResultList();
 		
-		if(result.size() > 0) {
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingListing.notFound"), LocaleContextHolder.getLocale()));
+			throw new EntityRetrievalException(msg);
+		} else if(result.size() > 0) {
 			entity = result.get(0);
 		}
 		
