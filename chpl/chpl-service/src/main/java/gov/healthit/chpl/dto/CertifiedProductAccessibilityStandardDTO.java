@@ -11,9 +11,9 @@ public class CertifiedProductAccessibilityStandardDTO implements Serializable {
 	private Long accessibilityStandardId;
 	private String accessibilityStandardName;
 
-	public CertifiedProductAccessibilityStandardDTO(){}
+	public CertifiedProductAccessibilityStandardDTO() {}
 
-	public CertifiedProductAccessibilityStandardDTO(CertifiedProductAccessibilityStandardEntity entity){
+	public CertifiedProductAccessibilityStandardDTO(CertifiedProductAccessibilityStandardEntity entity) {
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.accessibilityStandardId = entity.getAccessibilityStandardId();

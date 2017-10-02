@@ -23,7 +23,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 
 		CertificationEditionEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -90,14 +90,14 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 		CertificationEditionDTO dto = null;
 		CertificationEditionEntity entity = getEntityById(criterionEditionId);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertificationEditionDTO(entity);
 		}
 		return dto;
 	}
 
 	@Override
-	public List<CertificationEditionDTO> getEditions(List<Long> listingIds){
+	public List<CertificationEditionDTO> getEditions(List<Long> listingIds) {
 		Query query = entityManager.createQuery( "SELECT DISTINCT edition "
 				+ "FROM CertificationEditionEntity edition, CertifiedProductEntity listing "
 				+ "WHERE listing.deleted <> true "
@@ -151,11 +151,11 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 		query.setParameter("entityid", id);
 		List<CertificationEditionEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate criterion edition id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -170,7 +170,7 @@ public class CertificationEditionDAOImpl extends BaseDAOImpl implements Certific
 		query.setParameter("year", year);
 		List<CertificationEditionEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

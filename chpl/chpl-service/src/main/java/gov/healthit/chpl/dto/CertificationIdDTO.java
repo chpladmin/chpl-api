@@ -17,8 +17,8 @@ public class CertificationIdDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 
-	public CertificationIdDTO(){}
-	public CertificationIdDTO(CertificationIdEntity entity){
+	public CertificationIdDTO() {}
+	public CertificationIdDTO(CertificationIdEntity entity) {
 
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();

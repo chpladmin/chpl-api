@@ -35,7 +35,7 @@ public class CertificationResultDTO implements Serializable {
 	private List<CertificationResultMacraMeasureDTO> g1Measures;
 	private List<CertificationResultMacraMeasureDTO> g2Measures;
 
-	public CertificationResultDTO(){
+	public CertificationResultDTO() {
 		ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
 		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
 		testStandards = new ArrayList<CertificationResultTestStandardDTO>();
@@ -48,7 +48,7 @@ public class CertificationResultDTO implements Serializable {
 		g2Measures = new ArrayList<CertificationResultMacraMeasureDTO>();
 	}
 
-	public CertificationResultDTO(CertificationResultEntity entity){
+	public CertificationResultDTO(CertificationResultEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.certificationCriterionId = entity.getCertificationCriterionId();
@@ -66,7 +66,7 @@ public class CertificationResultDTO implements Serializable {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 	}
 
-	public CertificationResultDTO(CertificationResult domain){
+	public CertificationResultDTO(CertificationResult domain) {
 		this();
 		this.gap = domain.isGap();
 		this.sed = domain.isSed();

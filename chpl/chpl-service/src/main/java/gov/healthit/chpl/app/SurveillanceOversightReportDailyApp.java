@@ -43,7 +43,7 @@ public class SurveillanceOversightReportDailyApp extends SurveillanceOversightRe
  		permissions.add(new GrantedPermission("ROLE_ADMIN"));
  		List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_DAILY_SURVEILLANCE_BROKEN_RULES, null);
  		List<RecipientWithSubscriptionsDTO> allAcbRecipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_ACB_DAILY_SURVEILLANCE_BROKEN_RULES, acbs);
-		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0){
+		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0) {
 			// Get full set of data to send in ONC email
 			List<CertifiedProductSearchDetails> allCertifiedProductDetails = oversightApp.getAllCertifiedProductSearchDetails();
 			CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();

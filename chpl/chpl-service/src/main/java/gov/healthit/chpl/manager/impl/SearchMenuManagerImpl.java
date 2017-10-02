@@ -172,8 +172,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
 		for (CertificationEditionDTO dto : certificationEditions) {
 
-			if (simple){
-				if (dto.getYear().equals("2011")){
+			if (simple) {
+				if (dto.getYear().equals("2011")) {
 					continue;
 				}
 			}
@@ -484,7 +484,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)
-	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException{
+	public Set<DescriptiveModel> getCertificationCriterionNumbers(Boolean simple) throws EntityRetrievalException {
 
 		List<CertificationCriterionDTO> dtos = this.certificationCriterionDAO.findAll();
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
@@ -516,7 +516,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 	@Transactional
 	@Override
 	@Cacheable(CacheNames.CQM_CRITERION_NUMBERS)
-	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple){
+	public Set<DescriptiveModel> getCQMCriterionNumbers(Boolean simple) {
 
 		List<CQMCriterionDTO> dtos = this.cqmCriterionDAO.findAll();
 		Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
@@ -525,14 +525,14 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 			
 			String idNumber;
 			
-			if (simple){
-				if (dto.getCmsId() != null){
+			if (simple) {
+				if (dto.getCmsId() != null) {
 					idNumber = dto.getCmsId();
 				} else {
 					continue;
 				}
 			} else {	
-				if (dto.getCmsId() != null){
+				if (dto.getCmsId() != null) {
 					idNumber = dto.getCmsId();
 				} else {
 					idNumber = dto.getNqfNumber();

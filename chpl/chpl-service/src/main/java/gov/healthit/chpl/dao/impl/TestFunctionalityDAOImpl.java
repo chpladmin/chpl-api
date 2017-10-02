@@ -22,7 +22,7 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		TestFunctionalityDTO dto = null;
 		TestFunctionalityEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new TestFunctionalityDTO(entity);
 		}
 		return dto;
@@ -34,7 +34,7 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		TestFunctionalityDTO dto = null;
 		List<TestFunctionalityEntity> entities = getEntitiesByNumberAndYear(number, editionId);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new TestFunctionalityDTO(entities.get(0));
 		}
 		return dto;
@@ -73,11 +73,11 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 		query.setParameter("entityid", id);
 		List<TestFunctionalityEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate test functionality id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

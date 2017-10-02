@@ -26,7 +26,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 
 		ProductVersionEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -140,7 +140,7 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		ProductVersionDTO dto = null;
 		ProductVersionEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new ProductVersionDTO(entity);
 		}
 		return dto;
@@ -242,9 +242,9 @@ public class ProductVersionDAOImpl extends BaseDAOImpl implements ProductVersion
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("version.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
-		} else if (result.size() > 1){
+		} else if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
-		} else if (result.size() == 1){
+		} else if (result.size() == 1) {
 			entity = result.get(0);
 		}
 

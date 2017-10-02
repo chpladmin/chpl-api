@@ -378,10 +378,10 @@ public class CertifiedProductEntity {
 		this.lastModifiedUser = lastModifiedUser;
 	}
 
-	public Long getMeaningfulUseUsers(){
+	public Long getMeaningfulUseUsers() {
 		return meaningfulUseUsers;
 	}
-	public void setMeaningfulUseUsers(Long meaningfulUseUsers){
+	public void setMeaningfulUseUsers(Long meaningfulUseUsers) {
 		this.meaningfulUseUsers = meaningfulUseUsers;
 	}
 
@@ -417,7 +417,7 @@ public class CertifiedProductEntity {
 		this.sedTestingEnd = sedTestingEnd;
 	}
 
-	public CertifiedProductEntity getCertifiedProduct(){
+	public CertifiedProductEntity getCertifiedProduct() {
 		return this;
 	}
 }

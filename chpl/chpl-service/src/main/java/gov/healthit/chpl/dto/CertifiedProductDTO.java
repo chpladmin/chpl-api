@@ -63,9 +63,9 @@ public class CertifiedProductDTO implements Serializable {
 	private String productAdditionalSoftware;
 	private Boolean transparencyAttestation = null;
 
-	public CertifiedProductDTO(){}
+	public CertifiedProductDTO() {}
 
-	public CertifiedProductDTO(CertifiedProductEntity entity){
+	public CertifiedProductDTO(CertifiedProductEntity entity) {
 		this.id = entity.getId();
 		this.productCode = entity.getProductCode();
 		this.versionCode = entity.getVersionCode();

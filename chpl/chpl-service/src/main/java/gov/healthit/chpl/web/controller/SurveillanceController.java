@@ -125,7 +125,7 @@ public class SurveillanceController implements MessageSourceAware {
 
 	@ApiOperation(value="Download nonconformity supporting documentation.",
 			notes="Download a specific file that was previously uploaded to a surveillance nonconformity.")
-	@RequestMapping(value="/document/{documentId}", method = RequestMethod.GET)
+	@RequestMapping(value="/document/ {documentId}", method = RequestMethod.GET)
 	public void streamDocumentContents(@PathVariable("documentId") Long documentId,
 			HttpServletResponse response) throws EntityRetrievalException, IOException {
 		SurveillanceNonconformityDocument doc = survManager.getDocumentById(documentId, true);
@@ -201,10 +201,10 @@ public class SurveillanceController implements MessageSourceAware {
 		//insert the surveillance
 		HttpHeaders responseHeaders = new HttpHeaders();
 		Long insertedSurv = null;
-		try{
+		try {
 			insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
 			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-		} catch(final SurveillanceAuthorityAccessDeniedException ex){
+		} catch(final SurveillanceAuthorityAccessDeniedException ex) {
 			LOGGER.error("User lacks authority to delete surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
 		}
@@ -227,7 +227,7 @@ public class SurveillanceController implements MessageSourceAware {
 					+ " documentation to an existing nonconformity. The logged in user uploading the file "
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
-	@RequestMapping(value="/{surveillanceId}/nonconformity/{nonconformityId}/document/create", method = RequestMethod.POST,
+	@RequestMapping(value="/ {surveillanceId}/nonconformity/ {nonconformityId}/document/create", method = RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
 			@PathVariable("nonconformityId") Long nonconformityId,
@@ -262,7 +262,7 @@ public class SurveillanceController implements MessageSourceAware {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(),
 				"Documentation " + toInsert.getFileName() + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
 				beforeCp, afterCp);
-		return "{\"success\": \"true\"}";
+		return " {\"success\": \"true\"}";
 	}
 
 	@ApiOperation(value="Update a surveillance activity for a certified product.",
@@ -301,7 +301,7 @@ public class SurveillanceController implements MessageSourceAware {
 		try {
 			survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
 			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-		} catch(final SurveillanceAuthorityAccessDeniedException ex){
+		} catch(final SurveillanceAuthorityAccessDeniedException ex) {
 			LOGGER.error("User lacks authority to update surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
 		} catch(Exception ex) {
@@ -323,7 +323,7 @@ public class SurveillanceController implements MessageSourceAware {
 					+ "in the system. "
 					+ "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
 					+ " and administrative authority on the ACB associated with the certified product is required.")
-	@RequestMapping(value="/{surveillanceId}/delete", method = RequestMethod.POST,
+	@RequestMapping(value="/ {surveillanceId}/delete", method = RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
 			@PathVariable(value = "surveillanceId") Long surveillanceId)
@@ -354,7 +354,7 @@ public class SurveillanceController implements MessageSourceAware {
 			survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
 			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			survManager.handleActivity(survToDelete, null);
-		} catch(final SurveillanceAuthorityAccessDeniedException ex){
+		} catch(final SurveillanceAuthorityAccessDeniedException ex) {
 			LOGGER.error("User lacks authority to delete surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
 		} catch(Exception ex) {
@@ -365,14 +365,14 @@ public class SurveillanceController implements MessageSourceAware {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
 				"Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
-		return new ResponseEntity<String>("{\"success\" : true }", responseHeaders, HttpStatus.OK);
+		return new ResponseEntity<String>(" {\"success\" : true }", responseHeaders, HttpStatus.OK);
 	}
 
 	@ApiOperation(value="Remove documentation from a nonconformity.",
 			notes="The logged in user"
 					+ " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
 					+ " authority on the associated ACB.")
-	@RequestMapping(value="/{surveillanceId}/document/{docId}/delete", method= RequestMethod.POST,
+	@RequestMapping(value="/ {surveillanceId}/document/ {docId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public String deleteNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
 			@PathVariable("docId") Long docId)
@@ -403,16 +403,16 @@ public class SurveillanceController implements MessageSourceAware {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(),
 				"A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(),
 				beforeCp, afterCp);
-		return "{\"success\": \"true\"}";
+		return " {\"success\": \"true\"}";
 	}
 
 	@ApiOperation(value="Reject (effectively delete) a pending surveillance item.")
-	@RequestMapping(value="/pending/{pendingSurvId}/reject", method = RequestMethod.POST,
+	@RequestMapping(value="/pending/ {pendingSurvId}/reject", method = RequestMethod.POST,
 			produces = "application/json; charset = utf-8")
 	public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id) throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 		survManager.deletePendingSurveillance(acbs, id, false);
-		return "{\"success\" : true }";
+		return " {\"success\" : true }";
 	}
 
 	@ApiOperation(value="Reject several pending surveillance.",
@@ -441,7 +441,7 @@ public class SurveillanceController implements MessageSourceAware {
 		if(possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
 			throw possibleExceptions;
 		}
-		return "{\"success\" : true }";
+		return " {\"success\" : true }";
 	}
 
 	@ApiOperation(value="Confirm a pending surveillance activity.",

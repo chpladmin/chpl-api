@@ -263,11 +263,11 @@ public class DeveloperEntity implements Cloneable, Serializable {
 		this.website = website;
 	}
 
-	public DeveloperCertificationStatusesEntity getDeveloperCertificationStatusesEntity(){
+	public DeveloperCertificationStatusesEntity getDeveloperCertificationStatusesEntity() {
 		return this.developerCertificationStatuses;
 	}
 
-	public void setDeveloperCertificationStatuses(DeveloperCertificationStatusesEntity developerCertificationStatusesEntity){
+	public void setDeveloperCertificationStatuses(DeveloperCertificationStatusesEntity developerCertificationStatusesEntity) {
 		this.developerCertificationStatuses = developerCertificationStatusesEntity;
 	}
 

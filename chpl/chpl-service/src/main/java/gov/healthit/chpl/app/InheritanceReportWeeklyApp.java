@@ -51,7 +51,7 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
  		List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions = app.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_WEEKLY_ICS_FAMILY_ERRORS, null);
  		List<RecipientWithSubscriptionsDTO> allAcbRecipientSubscriptions = app.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_ACB_WEEKLY_ICS_FAMILY_ERRORS, acbs);
 
-		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0){
+		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0) {
 			// Get full set of data to send in ONC email
 			List<CertifiedProductSearchDetails> allCertifiedProductDetails = app.getAllCertifiedProductSearchDetails();
 			CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();

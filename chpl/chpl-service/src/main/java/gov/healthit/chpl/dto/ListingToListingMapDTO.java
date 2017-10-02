@@ -17,9 +17,9 @@ public class ListingToListingMapDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 
-	public ListingToListingMapDTO(){
+	public ListingToListingMapDTO() {
 	}
-	public ListingToListingMapDTO(ListingToListingMapEntity entity){
+	public ListingToListingMapDTO(ListingToListingMapEntity entity) {
 		this();
 
 		this.id = entity.getId();

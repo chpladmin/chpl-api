@@ -85,7 +85,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 					} else {
 						surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.productUniqueIdNotFound"), LocaleContextHolder.getLocale()), chplId));
 					}
-				} catch(final EntityRetrievalException ex){
+				} catch(final EntityRetrievalException ex) {
 					surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.productDetailsRetrievalException"), LocaleContextHolder.getLocale()), chplId));
 				}
 			}
@@ -233,7 +233,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 					} else {
 						req.setResult(resType);
 					}
-				} else if(req.getResult() != null){
+				} else if(req.getResult() != null) {
 					SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
 					if(resType == null) {
 						surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.resultWithIdNotFound"), LocaleContextHolder.getLocale()), req.getResult().getId(), req.getRequirement()));
@@ -309,19 +309,19 @@ public class SurveillanceValidator implements MessageSourceAware {
 							}
 						}
 
-						if(!StringUtils.isEmpty(nc.getCapApprovalDate()) && StringUtils.isEmpty(nc.getCapMustCompleteDate())){
+						if(!StringUtils.isEmpty(nc.getCapApprovalDate()) && StringUtils.isEmpty(nc.getCapMustCompleteDate())) {
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPMustCompleteIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
 
-						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())){
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapStartDate())) {
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPStartIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
 
-						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())){
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && StringUtils.isEmpty(nc.getCapApprovalDate())) {
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPApprovalIsRequired"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
 
-						if(!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate()) && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0){
+						if(!StringUtils.isEmpty(nc.getCapEndDate()) && !StringUtils.isEmpty(nc.getCapStartDate()) && nc.getCapEndDate().compareTo(nc.getCapStartDate()) < 0) {
 							surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.dateCAPEndNotGreaterThanDateCAPStart"), LocaleContextHolder.getLocale()), req.getRequirement(), nc.getNonconformityType()));
 						}
 
@@ -386,10 +386,10 @@ public class SurveillanceValidator implements MessageSourceAware {
 
 	public void validateSurveillanceAuthority(Surveillance surv) {
 		// non-null surveillance must be ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF
-		if(!StringUtils.isEmpty(surv.getAuthority())){
+		if(!StringUtils.isEmpty(surv.getAuthority())) {
 			if(!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
 					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN)
-					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
+					&& !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)) {
 				surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.authorityRequired"), LocaleContextHolder.getLocale()), Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN, Authority.ROLE_ACB_STAFF));
 			}
 		}

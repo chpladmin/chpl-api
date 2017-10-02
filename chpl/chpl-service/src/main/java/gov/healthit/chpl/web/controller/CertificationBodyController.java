@@ -64,9 +64,9 @@ public class CertificationBodyController {
 			@RequestParam(required = false, defaultValue="false") boolean editable,
 			@RequestParam(value = "showDeleted", required = false, defaultValue="false") boolean showDeleted) {
 		CertificationBodyResults results = new CertificationBodyResults();
-		if(!Util.isUserRoleAdmin() && showDeleted){
+		if(!Util.isUserRoleAdmin() && showDeleted) {
 			throw new AccessDeniedException("Only Admins can see deleted ACB's.");
-		}else{
+		}else {
 			results = new CertificationBodyResults();
 			List<CertificationBodyDTO> acbs = null;
 			if(editable) {
@@ -87,7 +87,7 @@ public class CertificationBodyController {
 	@ApiOperation(value="Get details about a specific certification body (ACB).",
 			notes="The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
 					+ " for the ACB with the provided ID.")
-	@RequestMapping(value="/{acbId}", method = RequestMethod.GET,
+	@RequestMapping(value="/ {acbId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") Long acbId)
 		throws EntityRetrievalException {
@@ -161,7 +161,7 @@ public class CertificationBodyController {
 
 	@ApiOperation(value="Delete an ACB.",
 			notes="The logged in user must have ROLE_ADMIN.")
-	@RequestMapping(value="/{acbId}/delete", method= RequestMethod.POST,
+	@RequestMapping(value="/ {acbId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public String deleteAcb(@PathVariable("acbId") Long acbId)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
@@ -169,13 +169,13 @@ public class CertificationBodyController {
 
 		CertificationBodyDTO toDelete = acbManager.getById(acbId);
 		acbManager.delete(toDelete);
-		return "{\"deletedAcb\" : true }";
+		return " {\"deletedAcb\" : true }";
 	}
 
 	@ApiOperation(value="Restore a deleted ACB.",
 			notes="ACBs are unique in the CHPL in that they can be restored after a delete."
 					+ " The logged in user must have ROLE_ADMIN.")
-	@RequestMapping(value="/{acbId}/undelete", method= RequestMethod.POST,
+	@RequestMapping(value="/ {acbId}/undelete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public String undeleteAcb(@PathVariable("acbId") Long acbId)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
@@ -183,7 +183,7 @@ public class CertificationBodyController {
 
 		CertificationBodyDTO toResurrect = acbManager.getById(acbId, true);
 		acbManager.undelete(toResurrect);
-		return "{\"resurrectedAcb\" : true }";
+		return " {\"resurrectedAcb\" : true }";
 	}
 
 	@ApiOperation(value="Add a user to an ACB.",
@@ -212,18 +212,18 @@ public class CertificationBodyController {
 
 		Permission permission = ChplPermission.toPermission(updateRequest.getAuthority());
 		acbManager.addPermission(acb, updateRequest.getUserId(), permission);
-		return "{\"userAdded\" : true }";
+		return " {\"userAdded\" : true }";
 	}
 
 	@ApiOperation(value="Remove user permissions from an ACB.",
 			notes="The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the "
 					+ " specified ACB. The user specified in the request will have all authorities "
 					+ " removed that are associated with the specified ACB.")
-	@RequestMapping(value="{acbId}/remove_user/{userId}", method= RequestMethod.POST,
+	@RequestMapping(value=" {acbId}/remove_user/ {userId}", method= RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset = utf-8")
 	public String deleteUserFromAcb(@PathVariable Long acbId, @PathVariable Long userId)
-								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{
+								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
 		UserDTO user = userManager.getById(userId);
 		CertificationBodyDTO acb = acbManager.getById(acbId);
@@ -235,13 +235,13 @@ public class CertificationBodyController {
 		//delete all permissions on that acb
 		acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
 
-		return "{\"userDeleted\" : true }";
+		return " {\"userDeleted\" : true }";
 	}
 
 	@ApiOperation(value="List users with permissions on a specified ACB.",
 			notes="The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
 					+ " specified ACB.")
-	@RequestMapping(value="/{acbId}/users", method = RequestMethod.GET,
+	@RequestMapping(value="/ {acbId}/users", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
 		CertificationBodyDTO acb = acbManager.getById(acbId);

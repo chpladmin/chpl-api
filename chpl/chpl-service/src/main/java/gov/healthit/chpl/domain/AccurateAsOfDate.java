@@ -6,9 +6,9 @@ public class AccurateAsOfDate implements Serializable {
 	private static final long serialVersionUID = 8162304032624386529L;
 	private Long accurateAsOfDate;
 
-	public AccurateAsOfDate(){};
+	public AccurateAsOfDate() {};
 
-	public AccurateAsOfDate(Long accurateAsOfDate){
+	public AccurateAsOfDate(Long accurateAsOfDate) {
 		this.accurateAsOfDate = accurateAsOfDate;
 	};
 

@@ -22,7 +22,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
 		List<CertificationResultDetailsEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CertificationResultDetailsDTO> dtos = new ArrayList<CertificationResultDetailsDTO>(entities.size());
 
-		for (CertificationResultDetailsEntity entity : entities){
+		for (CertificationResultDetailsEntity entity : entities) {
 			dtos.add(new CertificationResultDetailsDTO(entity));
 		}
 		return dtos;

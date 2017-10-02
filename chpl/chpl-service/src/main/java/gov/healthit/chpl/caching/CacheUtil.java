@@ -19,7 +19,7 @@ public class CacheUtil {
 	    }
 	    return myCacheManager;
 	  }
-	    else{
+	    else {
 	    	return myCacheManager;
 	    }
 	}

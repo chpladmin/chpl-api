@@ -65,9 +65,9 @@ public class AppConfig {
 	}
 
 	@Bean
-	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
+	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
 
-		if (props == null){
+		if (props == null) {
 			try {
 				loadProperties();
 			} catch (final IOException e) {
@@ -81,19 +81,19 @@ public class AppConfig {
 	}
 
 	@Bean
-	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
+	public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
 		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
 		return bean;
 	}
 
 	@Bean
-	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
+	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 
 	@Bean
-    public ReloadableResourceBundleMessageSource messageSource(){
+    public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:/errors");
         messageSource.setDefaultEncoding("UTF-8");
@@ -101,7 +101,7 @@ public class AppConfig {
     }
 
     @Bean
-    public CookieLocaleResolver localeResolver(){
+    public CookieLocaleResolver localeResolver() {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         localeResolver.setCookieName("my-locale-cookie");
@@ -110,14 +110,14 @@ public class AppConfig {
     }
 
     @Bean
-    public LocaleChangeInterceptor localeInterceptor(){
+    public LocaleChangeInterceptor localeInterceptor() {
         LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
         interceptor.setParamName("lang");
         return interceptor;
     }
 
     @Bean
-    public InternalResourceViewResolver viewResolver(){
+    public InternalResourceViewResolver viewResolver() {
         InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
         viewResolver.setViewClass(JstlView.class);
         viewResolver.setPrefix("/webapp/WEB-INF/jsp/");

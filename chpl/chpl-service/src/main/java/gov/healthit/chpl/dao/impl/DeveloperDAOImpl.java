@@ -53,7 +53,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
 		DeveloperEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -493,7 +493,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		return null;
 	}
 
-	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers(){
+	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers() {
 
 		Query getDecertifiedDevelopers =
 				entityManager.createQuery(
@@ -503,17 +503,17 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		List<CertifiedProductDetailsEntity> result = getDecertifiedDevelopers.getResultList();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		//populate dtoList from result
-		for(CertifiedProductDetailsEntity e : result){
+		for(CertifiedProductDetailsEntity e : result) {
 			LOGGER.debug("CertifiedProductDetailsEntity: " + e.getDeveloperId() + " " + e.getCertificationBodyId() + " " + e.getMeaningfulUseUsers());
 			Boolean dtoIsInList = false;
-			if(dtoList.size() > 0){
-				for(DecertifiedDeveloperDTO dto : dtoList){
+			if(dtoList.size() > 0) {
+				for(DecertifiedDeveloperDTO dto : dtoList) {
 					LOGGER.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperId() + " " + dto.getAcbIdList() + " " + dto.getNumMeaningfulUse());
 					// if developer already exists, update it to include ACB and aggregate numMeaningfulUse
-					if(dto.getDeveloperId().equals(e.getDeveloperId())){
+					if(dto.getDeveloperId().equals(e.getDeveloperId())) {
 						LOGGER.debug(dto.getDeveloperId() + " == " + e.getDeveloperId());
 						// If this developer is not associated with the ACB, add the ACB
-						if(!dto.getAcbIdList().contains(e.getCertificationBodyId())){
+						if(!dto.getAcbIdList().contains(e.getCertificationBodyId())) {
 							LOGGER.debug("dto does not contain " + e.getCertificationBodyName());
 							dto.addAcb(e.getCertificationBodyId());
 							LOGGER.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == " + dto.getDeveloperId());
@@ -521,11 +521,11 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 							LOGGER.debug("set dto dev status to " + e.getDeveloperStatusName());
 							dto.setDecertificationDate(e.getDeveloperStatusDate());
 							LOGGER.debug("set dev decert date to " + e.getDeveloperStatusDate());
-							if(dto.getNumMeaningfulUse() != null){
+							if(dto.getNumMeaningfulUse() != null) {
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
 								LOGGER.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
 							}
-							else{
+							else {
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
 								LOGGER.debug("set dto numMeaningfulUse to value " + e.getMeaningfulUseUsers());
 							}
@@ -533,8 +533,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 							break;
 						}
 						// if developer exists and is associated with ACB, add numMeaningfulUse for this CP
-						else{
-							if(e.getMeaningfulUseUsers() != null){
+						else {
+							if(e.getMeaningfulUseUsers() != null) {
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
 								LOGGER.debug("adding to dto's numMeaningfulUse with value " + e.getMeaningfulUseUsers());
 							}
@@ -544,7 +544,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 					}
 				}
 			}
-			if(!dtoIsInList){
+			if(!dtoIsInList) {
 				List<Long> acbList = new ArrayList<Long>();
 				acbList.add(e.getCertificationBodyId());
 				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), acbList, e.getDeveloperStatusName(), e.getDeveloperStatusDate(), e.getMeaningfulUseUsers());
@@ -606,7 +606,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("developer.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
-		} else if (result.size() > 0){
+		} else if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

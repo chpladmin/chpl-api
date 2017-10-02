@@ -8,7 +8,7 @@ public class CQMMetDTO implements Serializable {
 	private String version;
 	private String domain;
 
-	public CQMMetDTO(){}
+	public CQMMetDTO() {}
 
 	public CQMMetDTO(String cmsId, String version, String domain) {
 		this.cmsId = cmsId;

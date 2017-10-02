@@ -13,10 +13,10 @@ public class DeveloperStatusEventDTO implements Serializable {
 	private DeveloperStatusDTO status;
 	private Date statusDate;
 
-	public DeveloperStatusEventDTO(){
+	public DeveloperStatusEventDTO() {
 	}
 
-	public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity){
+	public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.developerId = entity.getDeveloperId();

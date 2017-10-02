@@ -405,7 +405,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 	public void setCountCqms(Integer countCQMsSuccessful) {
 		this.countCqms = countCQMsSuccessful;
 	}
-	public List<CertificationStatusEvent> getCertificationEvents(){
+	public List<CertificationStatusEvent> getCertificationEvents() {
 		return certificationEvents;
 	}
 	public void setCertificationEvents(

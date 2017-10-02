@@ -14,9 +14,9 @@ public class MeaningfulUseAccurateAsOf implements Serializable {
 	private Long creationDate;
 	private Long lastModifiedDate;
 
-	public MeaningfulUseAccurateAsOf(){};
+	public MeaningfulUseAccurateAsOf() {};
 
-	public MeaningfulUseAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuDTO){
+	public MeaningfulUseAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuDTO) {
 		this.id = muuDTO.getId();
 		this.accurateAsOfDate = muuDTO.getAccurateAsOfDate().getTime();
 		this.deleted = muuDTO.getDeleted();

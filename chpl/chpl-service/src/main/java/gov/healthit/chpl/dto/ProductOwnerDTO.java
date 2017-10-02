@@ -11,8 +11,8 @@ public class ProductOwnerDTO implements Serializable {
 	private DeveloperDTO developer;
 	private Long transferDate;
 
-	public ProductOwnerDTO(){}
-	public ProductOwnerDTO(ProductOwnerEntity entity){
+	public ProductOwnerDTO() {}
+	public ProductOwnerDTO(ProductOwnerEntity entity) {
 
 		this.id = entity.getId();
 		this.productId = entity.getProductId();

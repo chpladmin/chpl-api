@@ -190,7 +190,7 @@ public class UserManagementController {
 			jwtToken = authenticator.getJWT(updatedUser);
 		}
 
-		String jwtJSON = "{\"token\": \""+jwtToken+"\"}";
+		String jwtJSON = " {\"token\": \""+jwtToken+"\"}";
 		return jwtJSON;
 	}
 
@@ -271,7 +271,7 @@ public class UserManagementController {
 	@ApiOperation(value="Delete a user.",
 			notes="Deletes a user account and all associated authorities on ACBs and ATLs. "
 					+ "The logged in user must have ROLE_ADMIN.")
-	@RequestMapping(value="/{userId}/delete", method= RequestMethod.POST,
+	@RequestMapping(value="/ {userId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public String deleteUser(@PathVariable("userId") Long userId)
 			throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException {
@@ -295,7 +295,7 @@ public class UserManagementController {
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, toDelete.getId(), activityDescription, toDelete, null);
 
 
-		return "{\"deletedUser\" : true }";
+		return " {\"deletedUser\" : true }";
 	}
 
 	@ApiOperation(value="Give additional roles to a user.",
@@ -327,7 +327,7 @@ public class UserManagementController {
 		String activityDescription = "User "+user.getSubjectName()+" was granted role "+grantRoleObj.getRole()+".";
 		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user, updated);
 
-		return "{\"roleAdded\" : true }";
+		return " {\"roleAdded\" : true }";
 
 	}
 
@@ -374,7 +374,7 @@ public class UserManagementController {
 
 
 		isSuccess = String.valueOf(true);
-		return "{\"roleRemoved\" : "+isSuccess+" }";
+		return " {\"roleRemoved\" : "+isSuccess+" }";
 
 	}
 
@@ -382,12 +382,12 @@ public class UserManagementController {
 			notes="Only ROLE_ADMIN will be able to see all users.")
 	@RequestMapping(value="", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
-	public @ResponseBody UserListJSONObject getUsers(){
+	public @ResponseBody UserListJSONObject getUsers() {
 
 		List<UserDTO> userList = userManager.getAll();
 		List<UserInfoJSONObject> userInfos = new ArrayList<UserInfoJSONObject>();
 
-		for (UserDTO user : userList){
+		for (UserDTO user : userList) {
 			Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(user);
 
 			UserInfoJSONObject userInfo = new UserInfoJSONObject(user);
@@ -407,7 +407,7 @@ public class UserManagementController {
 	@ApiOperation(value="View a specific user's details.",
 			notes="The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
 					+ "have ROLE_ACB_ADMIN.")
-	@RequestMapping(value="/{userName}/details", method = RequestMethod.GET,
+	@RequestMapping(value="/ {userName}/details", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody UserInfoJSONObject getUser(@PathVariable("userName") String userName) throws UserRetrievalException {
 

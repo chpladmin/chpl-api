@@ -9,9 +9,9 @@ public class TargetedUserDTO implements Serializable {
 	private Long id;
 	private String name;
 
-	public TargetedUserDTO(){}
+	public TargetedUserDTO() {}
 
-	public TargetedUserDTO(TargetedUserEntity entity){
+	public TargetedUserDTO(TargetedUserEntity entity) {
 		this.id = entity.getId();
 		this.name = entity.getName();
 	}

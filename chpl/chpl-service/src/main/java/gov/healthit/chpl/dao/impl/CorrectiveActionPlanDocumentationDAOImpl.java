@@ -108,11 +108,11 @@ public class CorrectiveActionPlanDocumentationDAOImpl extends BaseDAOImpl implem
 		query.setParameter("entityid", id);
 		List<CorrectiveActionPlanDocumentationEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate corrective action plan documentation id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

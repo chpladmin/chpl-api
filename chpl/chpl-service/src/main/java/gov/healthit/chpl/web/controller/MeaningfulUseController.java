@@ -141,7 +141,7 @@ public class MeaningfulUseController {
 			produces="application/json; charset = utf-8")
 	public @ResponseBody AccurateAsOfDate getAccurateAsOfDate() throws EntityRetrievalException {
 		MeaningfulUseAccurateAsOfDTO dto = muManager.getMeaningfulUseAccurateAsOf();
-		if(dto == null){
+		if(dto == null) {
 			throw new EntityRetrievalException("Could not retrieve entity for MeaningfulUseAccurateAsOf");
 		}
 

@@ -23,7 +23,7 @@ public class StatsCsvFileWriter {
     		"Total Listings", "Total 2014 Listings", "Total 2015 Listings", "Total 2011 Listings","Total Surveillance Activities","Total Open Surveillance Activities",
     		"Total Closed Surveillance Activities","Total NonConformities","Total Open NonConformities","Total Closed NonConformities"};
 
-    public static void writeCsvFile(String fileName, List<Statistics> statsCsvOutput){
+    public static void writeCsvFile(String fileName, List<Statistics> statsCsvOutput) {
     	FileWriter fileWriter = null;
     	CSVPrinter csvFilePrinter = null;
     	CSVFormat csvFileFormat = CSVFormat.DEFAULT.withRecordSeparator(NEW_LINE_SEPARATOR);
@@ -39,7 +39,7 @@ public class StatsCsvFileWriter {
     		csvFilePrinter.printRecord(FILE_HEADER);
 
     		// Write a new StatisticsCSVOutput object list to the CSV file
-    		for (Statistics stat : statsCsvOutput){
+    		for (Statistics stat : statsCsvOutput) {
     			List<String> statRecord = new ArrayList<String>();
    			 	dateFormat.setTimeZone(TimeZone.getTimeZone(ZoneOffset.UTC));
    			 	String dateString = dateFormat.format(stat.getDateRange().getEndDate());
@@ -66,7 +66,7 @@ public class StatsCsvFileWriter {
 
     		System.out.println("CSV file was created successfully!");
 
-    	} catch (Exception e){
+    	} catch (Exception e) {
     		System.out.println("Error in CsvFileWriter!");
     		e.printStackTrace();
     	} finally {

@@ -465,7 +465,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		PendingCertifiedProductEntity entity = null;
 		String hql = "SELECT DISTINCT pcp from PendingCertifiedProductEntity pcp "
 				+ " where pcp.id = :entityid";
-		if(!includeDeleted){
+		if(!includeDeleted) {
 			hql += " and pcp.deleted <> true";
 		}
 
@@ -493,11 +493,11 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 		query.setParameter("id", id);
 		List<PendingCertifiedProductEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate ONC id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

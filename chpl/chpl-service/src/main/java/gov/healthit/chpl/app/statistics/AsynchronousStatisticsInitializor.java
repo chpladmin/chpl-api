@@ -25,7 +25,7 @@ public class AsynchronousStatisticsInitializor {
 
 	@Transactional
 	@Async
-	public Future<Statistics> getStatistics(DateRange dateRange, Boolean includeActiveStatistics) throws InterruptedException, ExecutionException{
+	public Future<Statistics> getStatistics(DateRange dateRange, Boolean includeActiveStatistics) throws InterruptedException, ExecutionException {
 		LOGGER.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
 		Statistics stats = new Statistics();
 		stats.setDateRange(dateRange);
@@ -41,7 +41,7 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalCPsSuspended2014Listings = null;
 		Future<Long> totalCPsSuspended2015Listings = null;
 
-		if(includeActiveStatistics){
+		if(includeActiveStatistics) {
 			totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
 			totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
 			totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
@@ -83,7 +83,7 @@ public class AsynchronousStatisticsInitializor {
 		Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
 		Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
 
-		if(includeActiveStatistics){
+		if(includeActiveStatistics) {
 			stats.setTotalActive2014Listings(totalActive2014Listings.get());
 			stats.setTotalActive2015Listings(totalActive2015Listings.get());
 			stats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());

@@ -28,19 +28,19 @@ public class StatusController {
 			produces="application/json; charset = utf-8")
 	public @ResponseBody String getStatus() {
 		LOGGER.warn("/status called");
-		return "{\"status\": \"OK\"}";
+		return " {\"status\": \"OK\"}";
 	}
 
 	@ApiOperation(value = "Check if the basic search cache has completed loading. "
-			+ "{ status: 'OK' } is returned if it's finished and { status: 'INITIALIZING' } is returned if not.",
+			+ " { status: 'OK' } is returned if it's finished and { status: 'INITIALIZING' } is returned if not.",
 			notes="")
 	@RequestMapping(value="/cache_status", method = RequestMethod.GET, produces="application/json; charset = utf-8")
 	public @ResponseBody String getCacheStatus() {
 		CacheManager manager = cacheUtil.getMyCacheManager();
 		Cache basicCache = manager.getCache(CacheNames.COLLECTIONS_LISTINGS);
 		if(basicCache == null || basicCache.getSize() == 0) {
-			return "{\"status\": \"" + CacheStatus.INITIALIZING + "\"}";
+			return " {\"status\": \"" + CacheStatus.INITIALIZING + "\"}";
 		}
-		return "{\"status\": \"" + CacheStatus.OK + "\"}";
+		return " {\"status\": \"" + CacheStatus.OK + "\"}";
 	}
 }

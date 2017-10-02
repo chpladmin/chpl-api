@@ -21,7 +21,7 @@ public class DeveloperStatusDAOImpl extends BaseDAOImpl implements DeveloperStat
 		DeveloperStatusDTO dto = null;
 		DeveloperStatusEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new DeveloperStatusDTO(entity);
 		}
 		return dto;
@@ -33,7 +33,7 @@ public class DeveloperStatusDAOImpl extends BaseDAOImpl implements DeveloperStat
 		DeveloperStatusDTO dto = null;
 		List<DeveloperStatusEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new DeveloperStatusDTO(entities.get(0));
 		}
 		return dto;
@@ -64,7 +64,7 @@ public class DeveloperStatusDAOImpl extends BaseDAOImpl implements DeveloperStat
 		Query query = entityManager.createQuery( "from DeveloperStatusEntity ds where (NOT deleted = true) AND (ds.id = :entityid) ", DeveloperStatusEntity.class );
 		query.setParameter("entityid", id);
 		List<DeveloperStatusEntity> result = query.getResultList();
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

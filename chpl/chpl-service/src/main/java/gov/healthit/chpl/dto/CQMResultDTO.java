@@ -20,11 +20,11 @@ public class CQMResultDTO implements Serializable {
 
 	private List<CQMResultCriteriaDTO> criteria;
 
-	public CQMResultDTO(){
+	public CQMResultDTO() {
 		criteria = new ArrayList<CQMResultCriteriaDTO>();
 	}
 
-	public CQMResultDTO(CQMResultEntity entity){
+	public CQMResultDTO(CQMResultEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.cqmCriterionId = entity.getCqmCriterionId();

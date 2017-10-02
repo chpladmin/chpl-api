@@ -281,7 +281,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
-		} else if (result.size() > 1){
+		} else if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate certificationId id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
@@ -301,7 +301,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
-		} else if(result.size() > 1){
+		} else if(result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
@@ -353,7 +353,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		query.setParameter("year", year);
 		result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);

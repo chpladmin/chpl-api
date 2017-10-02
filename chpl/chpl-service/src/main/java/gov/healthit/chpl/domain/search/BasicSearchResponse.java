@@ -12,7 +12,7 @@ public class BasicSearchResponse implements Serializable {
 
 	public BasicSearchResponse() {}
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	public List<CertifiedProductFlatSearchResult> getResults() {
 		return results;
 	}

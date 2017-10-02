@@ -140,11 +140,11 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 		query.setParameter("entityid", id);
 		List<CorrectiveActionPlanEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate corrective action plan id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

@@ -31,7 +31,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 	public TestTaskDTO create(TestTaskDTO dto) throws EntityCreationException {
 
 		TestTaskEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -118,7 +118,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 		TestTaskDTO dto = null;
 		TestTaskEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new TestTaskDTO(entity);
 		}
 		return dto;
@@ -168,7 +168,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 		query.setParameter("entityid", id);
 		List<TestTaskEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

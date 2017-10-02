@@ -32,7 +32,7 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 			throws EntityCreationException {
 
 		TargetedUserEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -90,7 +90,7 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 		TargetedUserDTO dto = null;
 		TargetedUserEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new TargetedUserDTO(entity);
 		}
 		return dto;
@@ -102,7 +102,7 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 		TargetedUserDTO dto = null;
 		List<TargetedUserEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new TargetedUserDTO(entities.get(0));
 		}
 		return dto;
@@ -131,7 +131,7 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 			result = getByName(name);
 		}
 
-		if(result == null){
+		if(result == null) {
 			TargetedUserDTO toCreate = new TargetedUserDTO();
 			toCreate.setName(name.trim());
 			result = create(toCreate);
@@ -164,7 +164,7 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 		query.setParameter("entityid", id);
 		List<TargetedUserEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

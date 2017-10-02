@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-public class IcsFamilyTreeNode implements Serializable{
+public class IcsFamilyTreeNode implements Serializable {
 
 	private static final long serialVersionUID = 4170181178663367311L;
 
@@ -37,7 +37,7 @@ public class IcsFamilyTreeNode implements Serializable{
 
 	private Product product;
 
-	public IcsFamilyTreeNode(){
+	public IcsFamilyTreeNode() {
 		parents = new ArrayList<CertifiedProduct>();
 		children = new ArrayList<CertifiedProduct>();
 	}

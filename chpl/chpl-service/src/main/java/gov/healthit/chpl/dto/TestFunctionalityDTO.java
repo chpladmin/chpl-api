@@ -11,9 +11,9 @@ public class TestFunctionalityDTO implements Serializable {
 	private String number;
 	private String year;
 
-	public TestFunctionalityDTO(){}
+	public TestFunctionalityDTO() {}
 
-	public TestFunctionalityDTO(TestFunctionalityEntity entity){
+	public TestFunctionalityDTO(TestFunctionalityEntity entity) {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.number = entity.getNumber();

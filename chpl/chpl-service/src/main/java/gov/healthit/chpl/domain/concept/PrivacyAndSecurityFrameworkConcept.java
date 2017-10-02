@@ -8,7 +8,7 @@ public enum PrivacyAndSecurityFrameworkConcept implements Serializable {
 	APPROACH_1_AND_2("Approach 1;Approach 2");
 
 	private String name;
-	private PrivacyAndSecurityFrameworkConcept(String name){
+	private PrivacyAndSecurityFrameworkConcept(String name) {
 		this.name = name;
 	}
 

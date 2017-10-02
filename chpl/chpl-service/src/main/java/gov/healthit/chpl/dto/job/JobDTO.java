@@ -21,11 +21,11 @@ public class JobDTO implements Serializable {
 	private String data;
 	private List<JobMessageDTO> messages;
 
-	public JobDTO(){
+	public JobDTO() {
 		messages = new ArrayList<JobMessageDTO>();
 	}
 
-	public JobDTO(JobEntity entity){
+	public JobDTO(JobEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.startTime = entity.getStartTime();

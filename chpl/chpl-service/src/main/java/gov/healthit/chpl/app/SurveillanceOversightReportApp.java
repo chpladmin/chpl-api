@@ -26,7 +26,7 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
         "<li>" + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getTitle() + ": " + SurveillanceOversightRule.NONCONFORMITY_OPEN_CAP_COMPLETE.getDescription() + "</li>" +
         "</ol>";
 
-	public SurveillanceOversightReportApp(){
+	public SurveillanceOversightReportApp() {
 		super();
 	}
 
@@ -66,7 +66,7 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
         return htmlMessage;
 	}
 
-	protected Boolean hasBrokenRules(Map<SurveillanceOversightRule, Integer> brokenRules){
+	protected Boolean hasBrokenRules(Map<SurveillanceOversightRule, Integer> brokenRules) {
 		Boolean anyRulesBroken = false;
 		for(SurveillanceOversightRule rule : brokenRules.keySet()) {
         	Integer brokenRuleCount = brokenRules.get(rule);

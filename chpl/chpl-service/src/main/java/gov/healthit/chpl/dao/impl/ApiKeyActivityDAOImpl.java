@@ -23,7 +23,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 
 		ApiKeyActivityEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -50,7 +50,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 			}
 			entity.setDeleted(dto.getDeleted());
 
-			if (Util.getCurrentUser() == null){
+			if (Util.getCurrentUser() == null) {
 				entity.setLastModifiedUser(-3L);
 			} else {
 				entity.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -124,7 +124,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 
 		ApiKeyActivityDTO dto = null;
 		ApiKeyActivityEntity entity = getEntityById(id);
-		if (entity != null){
+		if (entity != null) {
 			dto = new ApiKeyActivityDTO(entity);
 		}
 		return dto;
@@ -136,7 +136,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyId(apiKeyId);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
 
-		for (ApiKeyActivityEntity entity : entities){
+		for (ApiKeyActivityEntity entity : entities) {
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
 		}
@@ -149,7 +149,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		List<ApiKeyActivityEntity> entities = getActivityEntitiesByKeyId(apiKeyId, pageNumber, pageSize);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
 
-		for (ApiKeyActivityEntity entity : entities){
+		for (ApiKeyActivityEntity entity : entities) {
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
 		}
@@ -183,7 +183,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		query.setParameter("entityid", entityId);
 		List<ApiKeyActivityEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
@@ -244,7 +244,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 				(keyString, pageNumber, pageSize, dateAscending, startDate, endDate);
 		List<ApiKeyActivityDTO> dtos = new ArrayList<ApiKeyActivityDTO>();
 
-		for (ApiKeyActivityEntity entity : entities){
+		for (ApiKeyActivityEntity entity : entities) {
 			ApiKeyActivityDTO dto = new ApiKeyActivityDTO(entity);
 			dtos.add(dto);
 		}
@@ -272,41 +272,41 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
 		String queryStr =
 				"FROM ApiKeyActivityEntity a "
 				+ "WHERE (NOT a.deleted = true) ";
-		if(startDateMilli != null){
+		if(startDateMilli != null) {
 			startDate = new Date(startDateMilli);
 			queryStr += "AND a.creationDate >= :startDate ";
 		}
-		if(endDateMilli != null){
+		if(endDateMilli != null) {
 			endDate = new Date(endDateMilli);
 			queryStr += "AND a.creationDate <= :endDate ";
 		}
-		if(apiKeyFilter != null && !apiKeyFilter.isEmpty() && apiKeyFilter.length() > 1){
+		if(apiKeyFilter != null && !apiKeyFilter.isEmpty() && apiKeyFilter.length() > 1) {
 			queryStr +=	"AND a.apiKeyId ";
-				if (apiKeyFilter.substring(0,1).contentEquals("!")){
+				if (apiKeyFilter.substring(0,1).contentEquals("!")) {
 					apiKeyFilter = apiKeyFilter.substring(1);
 					queryStr += "NOT IN ";
 				}
-				else{
+				else {
 					queryStr += "IN ";
 				}
 			queryStr += "(SELECT id FROM ApiKeyEntity WHERE apiKey = :apiKeyFilter) ";
 		}
 		queryStr+= "ORDER BY a.creationDate ";
-		if(dateAscending){
+		if(dateAscending) {
 			queryStr+= "ASC";
 		}
-		else{
+		else {
 			queryStr+= "DESC";
 		}
 
 		Query query = entityManager.createQuery(queryStr, ApiKeyActivityEntity.class);
-		if(startDateMilli != null){
+		if(startDateMilli != null) {
 			query.setParameter("startDate", startDate);
 		}
-		if(endDateMilli != null){
+		if(endDateMilli != null) {
 			query.setParameter("endDate", endDate);
 		}
-		if(apiKeyFilter != null && !apiKeyFilter.isEmpty() && apiKeyFilter.length() > 1){
+		if(apiKeyFilter != null && !apiKeyFilter.isEmpty() && apiKeyFilter.length() > 1) {
 			query.setParameter("apiKeyFilter", apiKeyFilter);
 		}
 		query.setMaxResults(pageSize);

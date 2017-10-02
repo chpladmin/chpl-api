@@ -22,7 +22,7 @@ public class JobStatusEntity {
 	private Long id;
 
 	@Column(name = "name")
-	@Type(type = "gov.healthit.chpl.entity.job.PostgresJobStatusType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.job.JobStatusType")} )
+	@Type(type = "gov.healthit.chpl.entity.job.PostgresJobStatusType" , parameters = {@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.job.JobStatusType")} )
 	private JobStatusType status;
 
 	@Column(name = "percent_complete")

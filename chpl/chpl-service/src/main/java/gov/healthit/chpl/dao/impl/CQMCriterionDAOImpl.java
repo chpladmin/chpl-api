@@ -24,7 +24,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 			throws EntityCreationException, EntityRetrievalException {
 		CQMCriterionEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -55,7 +55,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		}
 
 		CQMCriterionDTO result = null;
-		if (entity != null){
+		if (entity != null) {
 			result = new CQMCriterionDTO(entity);
 		}
 		return result;
@@ -116,7 +116,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		CQMCriterionDTO dto = null;
 		CQMCriterionEntity entity = getEntityById(criterionId);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CQMCriterionDTO(entity);
 		}
 		return dto;
@@ -176,11 +176,11 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		query.setParameter("entityid", id);
 		List<CQMCriterionEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -196,7 +196,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		query.setParameter("number", number);
 		List<CQMCriterionEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -212,7 +212,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 		query.setParameter("number", number);
 		List<CQMCriterionEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -238,7 +238,7 @@ public class CQMCriterionDAOImpl extends BaseDAOImpl implements CQMCriterionDAO 
 			query.setParameter("versionId", versionEntity.getId());
 
 			List<CQMCriterionEntity> result = query.getResultList();
-			if (result.size() > 0){
+			if (result.size() > 0) {
 				entity = result.get(0);
 			}
 		}

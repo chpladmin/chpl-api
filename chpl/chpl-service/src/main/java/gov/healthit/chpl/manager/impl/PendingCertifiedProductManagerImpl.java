@@ -124,7 +124,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	}
 
 	@Override
-	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class})
+	@Transactional(rollbackFor= {EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class})
 	@CacheEvict(value = {CacheNames.FIND_BY_ACB_ID}, allEntries = true)
 	@PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
 			+ "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
@@ -322,10 +322,10 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 		}
 	}
 
-	private List<CQMCriterion> getAvailableCQMVersions(){
+	private List<CQMCriterion> getAvailableCQMVersions() {
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 
-		for (CQMCriterion criterion : cqmCriteria){
+		for (CQMCriterion criterion : cqmCriteria) {
 			if(!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
 			}
@@ -354,7 +354,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 	public void addAllVersionsToCmsCriterion(PendingCertifiedProductDetails pcpDetails) {
 		//now add allVersions for CMSs
 		String certificationEdition = pcpDetails.getCertificationEdition().get("name").toString();
-		if (!certificationEdition.startsWith("2011")){
+		if (!certificationEdition.startsWith("2011")) {
 			List<CQMCriterion> cqms = getAvailableCQMVersions();
 			for(CQMCriterion cqm : cqms) {
 				boolean cqmExists = false;

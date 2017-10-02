@@ -13,9 +13,9 @@ public class DeveloperACBMapDTO implements Serializable {
 	private String acbName;
 	private String transparencyAttestation;
 
-	public DeveloperACBMapDTO(){}
+	public DeveloperACBMapDTO() {}
 
-	public DeveloperACBMapDTO(DeveloperACBMapEntity entity){
+	public DeveloperACBMapDTO(DeveloperACBMapEntity entity) {
 		this.id = entity.getId();
 		this.developerId = entity.getDeveloperId();
 		this.acbId = entity.getCertificationBodyId();
@@ -27,7 +27,7 @@ public class DeveloperACBMapDTO implements Serializable {
 		}
 	}
 
-	public DeveloperACBMapDTO(DeveloperACBTransparencyMapEntity entity){
+	public DeveloperACBMapDTO(DeveloperACBTransparencyMapEntity entity) {
 		this.id = entity.getId();
 		this.developerId = entity.getDeveloperId();
 		this.acbId = entity.getCertificationBodyId();

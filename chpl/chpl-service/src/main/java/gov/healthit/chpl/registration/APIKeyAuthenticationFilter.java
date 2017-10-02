@@ -29,7 +29,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 	@Autowired
 	private ApiKeyManager apiKeyManager;
 
-	public APIKeyAuthenticationFilter(ApiKeyManager apiKeyManager){
+	public APIKeyAuthenticationFilter(ApiKeyManager apiKeyManager) {
 		this.apiKeyManager = apiKeyManager;
 	}
 
@@ -41,7 +41,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 		HttpServletRequest request = (HttpServletRequest) req;
 
 		String requestPath;
-		if (request.getQueryString() == null){
+		if (request.getQueryString() == null) {
 			requestPath = request.getRequestURI();
 		} else {
 			requestPath = request.getRequestURI() + "?" + request.getQueryString();
@@ -51,13 +51,13 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 		String keyFromHeader = request.getHeader("API-Key");
 		String keyFromParam = request.getParameter("api_key");
 
-		if (keyFromHeader == keyFromParam){
+		if (keyFromHeader == keyFromParam) {
 			key = keyFromHeader;
 		} else {
 
-			if (keyFromHeader == null){
+			if (keyFromHeader == null) {
 				key = keyFromParam;
-			} else if (keyFromParam == null){
+			} else if (keyFromParam == null) {
 				key = keyFromHeader;
 			} else {
 				// Keys don't match. Don't continue.
@@ -86,7 +86,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 			try {
 				ApiKeyDTO retrievedKey = apiKeyManager.findKey(key);
 
-				if (retrievedKey == null){
+				if (retrievedKey == null) {
 					// Invalid key. Don't continue.
 					ErrorJSONObject errorObj = new ErrorJSONObject("Invalid API Key");
 					ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();

@@ -66,7 +66,7 @@ public class ProductVersionController {
 
 	@ApiOperation(value="Get information about a specific version.",
 			notes="")
-	@RequestMapping(value="/{versionId}", method = RequestMethod.GET,
+	@RequestMapping(value="/ {versionId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId) throws EntityRetrievalException {
 		ProductVersionDTO version = pvManager.getById(versionId);

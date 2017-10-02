@@ -12,9 +12,9 @@ public class CertificationResultTestProcedureDTO implements Serializable {
 	private String testProcedureVersion;
 	private Boolean deleted;
 
-	public CertificationResultTestProcedureDTO(){}
+	public CertificationResultTestProcedureDTO() {}
 
-	public CertificationResultTestProcedureDTO(CertificationResultTestProcedureEntity entity){
+	public CertificationResultTestProcedureDTO(CertificationResultTestProcedureEntity entity) {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testProcedureId = entity.getTestProcedureId();

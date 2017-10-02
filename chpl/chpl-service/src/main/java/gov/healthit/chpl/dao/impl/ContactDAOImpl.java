@@ -94,7 +94,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 		ContactDTO dto = null;
 		ContactEntity ae = this.getEntityById(id);
 
-		if (ae != null){
+		if (ae != null) {
 			dto = new ContactDTO(ae);
 		}
 		return dto;
@@ -121,7 +121,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 		query.setParameter("entityid", id);
 		List<ContactEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate contact id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
@@ -155,7 +155,7 @@ public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
 
 		List<ContactEntity> result = query.getResultList();
 
-		if (result.size() >= 1){
+		if (result.size() >= 1) {
 			entity = result.get(0);
 		}
 

@@ -16,7 +16,7 @@ import gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity;
 public class MeaningfulUseDAOImpl extends BaseDAOImpl implements MeaningfulUseDAO {
 
 	@Transactional
-	public MeaningfulUseAccurateAsOfDTO getMeaningfulUseAccurateAsOf(){
+	public MeaningfulUseAccurateAsOfDTO getMeaningfulUseAccurateAsOf() {
 		Query query = entityManager.createQuery("SELECT muu from MeaningfulUseAccurateAsOfEntity muu where (NOT muu.deleted = true)",
 				MeaningfulUseAccurateAsOfEntity.class);
 		MeaningfulUseAccurateAsOfEntity entity = null;
@@ -26,7 +26,7 @@ public class MeaningfulUseDAOImpl extends BaseDAOImpl implements MeaningfulUseDA
 	}
 
 	@Transactional
-	public MeaningfulUseAccurateAsOfDTO updateAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuAccurateDTO){
+	public MeaningfulUseAccurateAsOfDTO updateAccurateAsOf(MeaningfulUseAccurateAsOfDTO muuAccurateDTO) {
 		MeaningfulUseAccurateAsOfEntity muuEntity = new MeaningfulUseAccurateAsOfEntity();
 		muuEntity.setId(muuAccurateDTO.getId());
 		muuEntity.setAccurateAsOfDate(muuAccurateDTO.getAccurateAsOfDate());

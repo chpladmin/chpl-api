@@ -57,7 +57,7 @@ public class CertifiedProductAccessibilityStandardDAOImpl extends BaseDAOImpl
 		List<CertifiedProductAccessibilityStandardEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CertifiedProductAccessibilityStandardDTO> dtos = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
 
-		for (CertifiedProductAccessibilityStandardEntity entity : entities){
+		for (CertifiedProductAccessibilityStandardEntity entity : entities) {
 			dtos.add(new CertifiedProductAccessibilityStandardDTO(entity));
 		}
 		return dtos;

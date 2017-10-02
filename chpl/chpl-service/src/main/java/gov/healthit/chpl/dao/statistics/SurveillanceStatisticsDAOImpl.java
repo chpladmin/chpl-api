@@ -8,7 +8,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
 
 @Repository("surveillanceStatisticsDAO")
-public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements SurveillanceStatisticsDAO{
+public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements SurveillanceStatisticsDAO {
 	/**
 	 * Total # of Surveillance Activities*
 	 */

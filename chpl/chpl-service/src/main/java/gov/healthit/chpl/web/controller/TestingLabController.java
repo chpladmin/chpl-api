@@ -68,9 +68,9 @@ public class TestingLabController {
 	public @ResponseBody TestingLabResults getAtls(@RequestParam(required = false, defaultValue="false") boolean editable,
 			@RequestParam(required = false, defaultValue="false") boolean showDeleted) {
 		TestingLabResults results = new TestingLabResults();
-		if(!Util.isUserRoleAdmin() && showDeleted){
+		if(!Util.isUserRoleAdmin() && showDeleted) {
 			throw new AccessDeniedException("Only Admin can see deleted ATL's.");
-		}else{
+		}else {
 			results = new TestingLabResults();
 			List<TestingLabDTO> atls = null;
 			if(editable) {
@@ -91,7 +91,7 @@ public class TestingLabController {
 	@ApiOperation(value="Get details about a specific testing lab (ATL).",
 			notes="The logged in user must have ROLE_ADMIN or have either read or"
 					+ "administrative authority on the testing lab with the ID specified.")
-	@RequestMapping(value="/{atlId}", method = RequestMethod.GET,
+	@RequestMapping(value="/ {atlId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody TestingLab getAtlById(@PathVariable("atlId") Long atlId)
 		throws EntityRetrievalException {
@@ -170,28 +170,28 @@ public class TestingLabController {
 
 	@ApiOperation(value="Delete an ATL.",
 			notes="The logged in user must have ROLE_ADMIN.")
-	@RequestMapping(value="/{atlId}/delete", method= RequestMethod.POST,
+	@RequestMapping(value="/ {atlId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public String deleteAtl(@PathVariable("atlId") Long atlId)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
 		TestingLabDTO toDelete = atlManager.getById(atlId);
 		atlManager.delete(toDelete);
-		return "{\"deletedAtl\" : true }";
+		return " {\"deletedAtl\" : true }";
 
 	}
 
 	@ApiOperation(value="Restore a deleted ATL.",
 			notes="ATLs are unique in the CHPL in that they can be restored after a delete."
 					+ " The logged in user must have ROLE_ADMIN.")
-	@RequestMapping(value="/{atlId}/undelete", method= RequestMethod.POST,
+	@RequestMapping(value="/ {atlId}/undelete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public String undeleteAtl(@PathVariable("atlId") Long atlId)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
 		TestingLabDTO toResurrect = atlManager.getById(atlId, true);
 		atlManager.undelete(toResurrect);
-		return "{\"resurrectedAtl\" : true }";
+		return " {\"resurrectedAtl\" : true }";
 
 	}
 
@@ -221,18 +221,18 @@ public class TestingLabController {
 
 		Permission permission = ChplPermission.toPermission(updateRequest.getAuthority());
 		atlManager.addPermission(atl, updateRequest.getUserId(), permission);
-		return "{\"userAdded\" : true }";
+		return " {\"userAdded\" : true }";
 	}
 
 	@ApiOperation(value="Remove user permissions from an ATL.",
 			notes="The logged in user must have ROLE_ADMIN or ROLE_ATL_ADMIN and have administrative authority on the "
 					+ " specified ATL. The user specified in the request will have all authorities "
 					+ " removed that are associated with the specified ATL.")
-	@RequestMapping(value="{atlId}/remove_user/{userId}", method= RequestMethod.POST,
+	@RequestMapping(value=" {atlId}/remove_user/ {userId}", method= RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset = utf-8")
 	public String deleteUserFromAtl(@PathVariable Long atlId, @PathVariable Long userId)
-								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException{
+								throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
 		UserDTO user = userManager.getById(userId);
 		TestingLabDTO atl = atlManager.getById(atlId);
@@ -244,13 +244,13 @@ public class TestingLabController {
 		//delete all permissions on that atl
 		atlManager.deleteAllPermissionsOnAtl(atl, new PrincipalSid(user.getSubjectName()));
 
-		return "{\"userDeleted\" : true }";
+		return " {\"userDeleted\" : true }";
 	}
 
 	@ApiOperation(value="List users with permissions on a specified ATL.",
 			notes="The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
 					+ " specified ATL.")
-	@RequestMapping(value="/{atlId}/users", method = RequestMethod.GET,
+	@RequestMapping(value="/ {atlId}/users", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody PermittedUserResults getUsers(@PathVariable("atlId") Long atlId) throws InvalidArgumentsException, EntityRetrievalException {
 		TestingLabDTO atl = atlManager.getById(atlId);

@@ -111,10 +111,10 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
 			survFields.add(dateFormatter.format(lastStatusChangeDate));
 		}
 
-		if(surv.getFriendlyId() != null){
+		if(surv.getFriendlyId() != null) {
 			survFields.add(surv.getFriendlyId());
 		}
-		else{
+		else {
 			survFields.add("");
 		}
 		if(surv.getStartDate() != null) {

@@ -23,7 +23,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 
 		PracticeTypeEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -88,7 +88,7 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 
 		PracticeTypeDTO dto = null;
 		PracticeTypeEntity entity = getEntityById(id);
-		if (entity != null){
+		if (entity != null) {
 			dto = new PracticeTypeDTO(entity);
 		}
 		return dto;
@@ -130,11 +130,11 @@ public class PracticeTypeDAOImpl extends BaseDAOImpl implements PracticeTypeDAO 
 		query.setParameter("entityid", id);
 		List<PracticeTypeEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate developer id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

@@ -25,12 +25,12 @@ public class DeveloperDTO implements Serializable {
 	private List<DeveloperACBMapDTO> transparencyAttestationMappings;
 	private Statuses statuses;
 
-	public DeveloperDTO(){
+	public DeveloperDTO() {
 		this.transparencyAttestationMappings = new ArrayList<DeveloperACBMapDTO>();
 		this.statusEvents = new ArrayList<DeveloperStatusEventDTO>();
 	}
 
-	public DeveloperDTO(DeveloperEntity entity){
+	public DeveloperDTO(DeveloperEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.developerCode = entity.getDeveloperCode();
@@ -52,7 +52,7 @@ public class DeveloperDTO implements Serializable {
 		this.lastModifiedUser = entity.getLastModifiedUser();
 		this.name = entity.getName();
 		this.website = entity.getWebsite();
-		if(entity.getDeveloperCertificationStatusesEntity() != null){
+		if(entity.getDeveloperCertificationStatusesEntity() != null) {
 			this.statuses = new Statuses(entity.getDeveloperCertificationStatusesEntity().getActive(),
 					entity.getDeveloperCertificationStatusesEntity().getRetired(),
 					entity.getDeveloperCertificationStatusesEntity().getWithdrawnByDeveloper(),
@@ -138,11 +138,11 @@ public class DeveloperDTO implements Serializable {
 		this.transparencyAttestationMappings = transparencyAttestationMappings;
 	}
 
-	public Statuses getStatuses(){
+	public Statuses getStatuses() {
 		return statuses;
 	}
 
-	public void setStatuses(Statuses statuses){
+	public void setStatuses(Statuses statuses) {
 		this.statuses = statuses;
 	}
 

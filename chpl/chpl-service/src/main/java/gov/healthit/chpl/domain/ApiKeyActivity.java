@@ -13,7 +13,7 @@ public class ApiKeyActivity implements Serializable {
 	private String apiCallPath;
 	private Date creationDate;
 
-	public ApiKeyActivity(){}
+	public ApiKeyActivity() {}
 
 	public Long getId() {
 		return id;

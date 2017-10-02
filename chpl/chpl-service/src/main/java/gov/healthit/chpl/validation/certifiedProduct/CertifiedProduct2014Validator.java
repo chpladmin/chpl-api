@@ -158,7 +158,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 								product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
 							}
 							else if(tt.isRetired() && super.icsCodeInteger != null && super.icsCodeInteger.intValue() == 0) {
-								if(super.hasIcsConflict){
+								if(super.hasIcsConflict) {
 									product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber()
 									+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 								}

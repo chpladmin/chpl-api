@@ -165,9 +165,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)
 	public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException, UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
 		SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
-		try{
+		try {
 			dbSurvEntity = survDao.getSurveillanceById(surv.getId());
-		} catch(final NullPointerException e){
+		} catch(final NullPointerException e) {
 			LOGGER.debug("Surveillance id is null");
 		}
 		Surveillance dbSurv = new Surveillance();
@@ -268,9 +268,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 				LOGGER.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
 			}
 			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
-			if(isConfirmed){
+			if(isConfirmed) {
 				activityMsg.append("confirmed.");
-			} else{
+			} else {
 				activityMsg.append("rejected.");
 			}
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);
@@ -312,9 +312,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			}
 
 			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
-			if(isConfirmed){
+			if(isConfirmed) {
 				activityMsg.append("confirmed.");
-			} else{
+			} else {
 				activityMsg.append("rejected.");
 			}
 			activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PENDING_SURVEILLANCE, toDelete.getId(), activityMsg.toString(), toDelete, null);
@@ -609,9 +609,9 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		Boolean hasOncAdmin = Util.isUserRoleAdmin();
 		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
 		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
-		if(StringUtils.isEmpty(surv.getAuthority())){
+		if(StringUtils.isEmpty(surv.getAuthority())) {
 			// If user has ROLE_ADMIN and ROLE_ACB_ADMIN or ROLE_ACB_STAFF, return 403
-			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)){
+			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)) {
 				String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and "
 						+ Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF;
 				LOGGER.error(errorMsg);
@@ -620,15 +620,15 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 		else {
 			// Cannot have surveillance authority as ROLE_ADMIN for user lacking ROLE_ADMIN
-		    if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin){
+		    if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin) {
 		    	String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
 				LOGGER.error(errorMsg);
 				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
 			}
 		    // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
 		    else if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN)
-		    		|| surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
-		    	if(!hasOncAdmin && !hasAcbAdmin && !hasAcbStaff){
+		    		|| surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)) {
+		    	if(!hasOncAdmin && !hasAcbAdmin && !hasAcbStaff) {
 		    		String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
 		    		LOGGER.error(errorMsg);
 		    		throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
@@ -637,21 +637,21 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		}
 	}
 
-	private void updateNullAuthority(Surveillance surv){
+	private void updateNullAuthority(Surveillance surv) {
 		Boolean hasOncAdmin = Util.isUserRoleAdmin();
 		Boolean hasAcbAdmin = Util.isUserRoleAcbAdmin();
 		Boolean hasAcbStaff = Util.isUserRoleAcbStaff();
-		if(StringUtils.isEmpty(surv.getAuthority())){
-			if(hasOncAdmin){
+		if(StringUtils.isEmpty(surv.getAuthority())) {
+			if(hasOncAdmin) {
 				surv.setAuthority(Authority.ROLE_ADMIN);
 			}
-			else if(hasAcbAdmin && hasAcbStaff){
+			else if(hasAcbAdmin && hasAcbStaff) {
 				surv.setAuthority(Authority.ROLE_ACB_STAFF);
 			}
-			else if(hasAcbAdmin){
+			else if(hasAcbAdmin) {
 				surv.setAuthority(Authority.ROLE_ACB_ADMIN);
 			}
-			else if(hasAcbStaff){
+			else if(hasAcbStaff) {
 				surv.setAuthority(Authority.ROLE_ACB_STAFF);
 			}
 		}

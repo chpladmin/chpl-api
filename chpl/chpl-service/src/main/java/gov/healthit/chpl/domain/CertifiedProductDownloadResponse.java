@@ -21,7 +21,7 @@ public class CertifiedProductDownloadResponse implements Serializable {
 	@XmlElement(name = "listing")
 	private List<CertifiedProductSearchDetails> listings;
 
-	public CertifiedProductDownloadResponse(){
+	public CertifiedProductDownloadResponse() {
 		listings = new ArrayList<CertifiedProductSearchDetails>();
 	}
 

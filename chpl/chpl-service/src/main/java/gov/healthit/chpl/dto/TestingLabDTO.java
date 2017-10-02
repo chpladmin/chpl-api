@@ -18,9 +18,9 @@ public class TestingLabDTO implements Serializable {
 	private String website;
 	private String accredidationNumber;
 
-	public TestingLabDTO(){}
+	public TestingLabDTO() {}
 
-	public TestingLabDTO(TestingLabEntity entity){
+	public TestingLabDTO(TestingLabEntity entity) {
 		this.id = entity.getId();
 		this.testingLabCode = entity.getTestingLabCode();
 		if(entity.getAddress() != null) {

@@ -15,9 +15,9 @@ public class PracticeTypeDTO implements Serializable {
 	private Long lastModifiedUser;
 	private String name;
 
-	public PracticeTypeDTO(){}
+	public PracticeTypeDTO() {}
 
-	public PracticeTypeDTO(PracticeTypeEntity entity){
+	public PracticeTypeDTO(PracticeTypeEntity entity) {
 
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();

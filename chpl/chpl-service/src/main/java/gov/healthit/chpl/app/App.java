@@ -14,7 +14,7 @@ public abstract class App {
 
 	protected abstract void initiateSpringBeans(AbstractApplicationContext context) throws IOException;
 
-	protected void setLocalContext() throws Exception{
+	protected void setLocalContext() throws Exception {
 		LocalContext ctx = LocalContextFactory.createLocalContext(getProperties().getProperty("dbDriverClass"));
 		ctx.addDataSource(getProperties().getProperty("dataSourceName"),getProperties().getProperty("dataSourceConnection"),
 				getProperties().getProperty("dataSourceUsername"), getProperties().getProperty("dataSourcePassword"));

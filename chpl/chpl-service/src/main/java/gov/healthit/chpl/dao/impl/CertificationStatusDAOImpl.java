@@ -30,7 +30,7 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 
 		CertificationStatusDTO dto = null;
 		CertificationStatusEntity entity = getEntityById(id);
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertificationStatusDTO(entity);
 		}
 		return dto;
@@ -57,11 +57,11 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 		query.setParameter("entityid", id);
 		List<CertificationStatusEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate status id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -76,7 +76,7 @@ public class CertificationStatusDAOImpl extends BaseDAOImpl implements Certifica
 		query.setParameter("name", name);
 		List<CertificationStatusEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

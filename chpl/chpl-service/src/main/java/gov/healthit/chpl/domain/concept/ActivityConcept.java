@@ -22,7 +22,7 @@ public enum ActivityConcept implements Serializable {
 	private final Long id;
 	private final String name;
 
-	private ActivityConcept(Long id, String name){
+	private ActivityConcept(Long id, String name) {
 		this.id = id;
 		this.name = name;
 	}

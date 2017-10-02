@@ -29,10 +29,10 @@ public class ProductDTO implements Serializable {
 	private Statuses statuses;
 	private List<ProductOwnerDTO> ownerHistory;
 
-	public ProductDTO(){
+	public ProductDTO() {
 		this.ownerHistory = new ArrayList<ProductOwnerDTO>();
 	}
-	public ProductDTO(ProductEntity entity){
+	public ProductDTO(ProductEntity entity) {
 		this();
 
 		this.id = entity.getId();
@@ -63,7 +63,7 @@ public class ProductDTO implements Serializable {
 			}
 		}
 
-		if(entity.getProductCertificationStatusesEntity() != null){
+		if(entity.getProductCertificationStatusesEntity() != null) {
 			this.statuses = new Statuses(entity.getProductCertificationStatusesEntity().getActive(),
 					entity.getProductCertificationStatusesEntity().getRetired(),
 					entity.getProductCertificationStatusesEntity().getWithdrawnByDeveloper(),
@@ -134,7 +134,7 @@ public class ProductDTO implements Serializable {
 	public void setDeveloperName(String developerName) {
 		this.developerName = developerName;
 	}
-	public Statuses getStatuses(){
+	public Statuses getStatuses() {
 		return statuses;
 	}
 	public void setStatuses(Statuses statuses) {

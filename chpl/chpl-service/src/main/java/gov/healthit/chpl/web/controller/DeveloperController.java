@@ -56,7 +56,7 @@ public class DeveloperController {
 	@ApiOperation(value="List all developers in the system.", notes="")
 	@RequestMapping(value="", method = RequestMethod.GET, produces="application/json; charset = utf-8")
 	public @ResponseBody DeveloperResults getDevelopers(
-			@RequestParam(value = "showDeleted", required = false, defaultValue="false") boolean showDeleted){
+			@RequestParam(value = "showDeleted", required = false, defaultValue="false") boolean showDeleted) {
 		List<DeveloperDTO> developerList = null;
 		if(showDeleted) {
 			developerList = developerManager.getAllIncludingDeleted();
@@ -79,7 +79,7 @@ public class DeveloperController {
 
 	@ApiOperation(value="Get information about a specific developer.",
 			notes="")
-	@RequestMapping(value="/{developerId}", method = RequestMethod.GET,
+	@RequestMapping(value="/ {developerId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId) throws EntityRetrievalException {
 		DeveloperDTO developer = developerManager.getById(developerId);
@@ -259,7 +259,7 @@ public class DeveloperController {
 			while(iter.hasNext()) {
 				if(prev == null) {
 					prev = iter.next();
-				} else if(curr == null){
+				} else if(curr == null) {
 					curr = iter.next();
 				} else {
 					prev = curr;

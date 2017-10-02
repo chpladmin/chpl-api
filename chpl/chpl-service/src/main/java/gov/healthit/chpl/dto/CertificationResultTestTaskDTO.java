@@ -11,11 +11,11 @@ public class CertificationResultTestTaskDTO implements Serializable {
 	private Long testTaskId;
 	private TestTaskDTO testTask;
 
-	public CertificationResultTestTaskDTO(){
+	public CertificationResultTestTaskDTO() {
 		this.testTask = new TestTaskDTO();
 	}
 
-	public CertificationResultTestTaskDTO(CertificationResultTestTaskEntity entity){
+	public CertificationResultTestTaskDTO(CertificationResultTestTaskEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();

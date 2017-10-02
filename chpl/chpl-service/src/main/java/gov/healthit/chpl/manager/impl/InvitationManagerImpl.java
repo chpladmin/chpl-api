@@ -349,7 +349,7 @@ public class InvitationManagerImpl implements InvitationManager {
 			}
 
 			@Override
-			public Object getCredentials(){
+			public Object getCredentials() {
 				return null;
 			}
 
@@ -359,7 +359,7 @@ public class InvitationManagerImpl implements InvitationManager {
 			}
 
 			@Override
-			public Object getPrincipal(){
+			public Object getPrincipal() {
 				return getName();
 			}
 
@@ -369,7 +369,7 @@ public class InvitationManagerImpl implements InvitationManager {
 			}
 
 			@Override
-			public boolean isAuthenticated(){
+			public boolean isAuthenticated() {
 				return true;
 			}
 
@@ -377,7 +377,7 @@ public class InvitationManagerImpl implements InvitationManager {
 			public void setAuthenticated(boolean arg0) throws IllegalArgumentException {}
 
 			@Override
-			public String getName(){
+			public String getName() {
 				return "admin";
 			}
 

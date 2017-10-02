@@ -22,7 +22,7 @@ public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDA
 		EducationTypeDTO dto = null;
 		EducationTypeEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new EducationTypeDTO(entity);
 		}
 		return dto;
@@ -67,7 +67,7 @@ public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDA
 		Query query = entityManager.createQuery( "from EducationTypeEntity where (NOT deleted = true) and (UPPER(name) = :name)", EducationTypeEntity.class);
 		query.setParameter("name", name.toUpperCase());
 		List<EducationTypeEntity> result = query.getResultList();
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -82,11 +82,11 @@ public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDA
 		query.setParameter("entityid", id);
 		List<EducationTypeEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate education type id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

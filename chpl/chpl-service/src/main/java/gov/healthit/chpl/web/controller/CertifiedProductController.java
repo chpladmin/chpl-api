@@ -129,7 +129,7 @@ public class CertifiedProductController {
 
 	@ApiOperation(value="Get all details for a specified certified product.",
 			notes="Returns all information in the CHPL related to the specified certified product.")
-	@RequestMapping(value="/{certifiedProductId}/details", method = RequestMethod.GET,
+	@RequestMapping(value="/ {certifiedProductId}/details", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 		CertifiedProductSearchDetails certifiedProduct =
@@ -144,7 +144,7 @@ public class CertifiedProductController {
 
 	@ApiOperation(value="Get the ICS family tree for the specified certified product.",
 			notes="Returns all member of the family tree conected to the specified certified product.")
-	@RequestMapping(value="/{certifiedProductId}/ics_relationships", method = RequestMethod.GET,
+	@RequestMapping(value="/ {certifiedProductId}/ics_relationships", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(@PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 		List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
@@ -271,7 +271,7 @@ public class CertifiedProductController {
 
 	@ApiOperation(value="List a specific pending certified product.",
 			notes="")
-	@RequestMapping(value="/pending/{pcpId}", method = RequestMethod.GET,
+	@RequestMapping(value="/pending/ {pcpId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(@PathVariable("pcpId") Long pcpId)
 			throws EntityRetrievalException, EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
@@ -283,14 +283,14 @@ public class CertifiedProductController {
 	@ApiOperation(value="Reject a pending certified product.",
 			notes="Essentially deletes a pending certified product. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
 					+ " and administrative authority on the ACB is required.")
-	@RequestMapping(value="/pending/{pcpId}/reject", method = RequestMethod.POST,
+	@RequestMapping(value="/pending/ {pcpId}/reject", method = RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long id)
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException {
 		List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
 		pcpManager.deletePendingCertifiedProduct(acbs, id);
-		return "{\"success\" : true }";
+		return " {\"success\" : true }";
 	}
 
 	@ApiOperation(value="Reject several pending certified products.",
@@ -319,7 +319,7 @@ public class CertifiedProductController {
 		if(possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
 			throw possibleExceptions;
 		}
-		return "{\"success\" : true }";
+		return " {\"success\" : true }";
 	}
 
 	@ApiOperation(value="Confirm a pending certified product.",

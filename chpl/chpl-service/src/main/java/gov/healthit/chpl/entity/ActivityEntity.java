@@ -119,7 +119,7 @@ public class ActivityEntity {
 	public void setActivityObjectConceptId(Long activityObjectClassId) {
 
 		for (ActivityConcept concept : ActivityConcept.values()) {
-			if(concept.getId().equals(activityObjectClassId)){
+			if(concept.getId().equals(activityObjectClassId)) {
 				this.concept = concept;
 				break;
 			}
@@ -129,10 +129,10 @@ public class ActivityEntity {
 
 	public ActivityConcept getConcept() {
 
-		if (this.concept == null){
+		if (this.concept == null) {
 
 			for (ActivityConcept concept : ActivityConcept.values()) {
-				if(concept.getId().equals(this.getActivityObjectConceptId())){
+				if(concept.getId().equals(this.getActivityObjectConceptId())) {
 					this.concept = concept;
 					break;
 				}

@@ -20,7 +20,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 		MacraMeasureDTO dto = null;
 		MacraMeasureEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new MacraMeasureDTO(entity);
 		}
 		return dto;
@@ -99,7 +99,7 @@ public class MacraMeasureDAOImpl extends BaseDAOImpl implements MacraMeasureDAO 
 		query.setParameter("entityid", id);
 		List<MacraMeasureEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 		return entity;

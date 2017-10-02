@@ -7,49 +7,49 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class CertifiedProductSearchResult implements Serializable {
 	private static final long serialVersionUID = -2547390525592841034L;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected Long id;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String chplProductNumber;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String edition;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String atl;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String acb;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String acbCertificationId;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String practiceType;
 
-	@JsonView({ SearchViews.Default.class})
+	@JsonView( { SearchViews.Default.class})
 	protected String developer;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String product;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String version;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected Long certificationDate;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected String certificationStatus;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected Long surveillanceCount;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected Long openNonconformityCount;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	protected Long closedNonconformityCount;
 
 	protected Long decertificationDate;

@@ -23,9 +23,9 @@ public class ActivityDTO implements Serializable {
 	private Boolean deleted;
 	private UserDTO user;
 
-	public ActivityDTO(){}
+	public ActivityDTO() {}
 
-	public ActivityDTO(ActivityEntity entity){
+	public ActivityDTO(ActivityEntity entity) {
 
 		this.id = entity.getId();
 		this.description = entity.getDescription();

@@ -19,8 +19,8 @@ public class CertificationEditionDTO implements Serializable {
 	private String year;
 	private Boolean retired;
 
-	public CertificationEditionDTO(){}
-	public CertificationEditionDTO(CertificationEditionEntity entity){
+	public CertificationEditionDTO() {}
+	public CertificationEditionDTO(CertificationEditionEntity entity) {
 
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();
@@ -31,7 +31,7 @@ public class CertificationEditionDTO implements Serializable {
 		this.retired = entity.getRetired();
 		Set<CertificationCriterionEntity> certCriterionEntities = entity.getCertificationCriterions();
 		if(certCriterionEntities != null && certCriterionEntities.size() > 0) {
-			for (CertificationCriterionEntity certCriterion : certCriterionEntities){
+			for (CertificationCriterionEntity certCriterion : certCriterionEntities) {
 				CertificationCriterionDTO ccDto = new CertificationCriterionDTO(certCriterion);
 				this.certificationCriterions.add(ccDto);
 			}
@@ -54,7 +54,7 @@ public class CertificationEditionDTO implements Serializable {
 	public void addCertificationCriterion(CertificationCriterionDTO certificationCriterion) {
 		this.certificationCriterions.add(certificationCriterion);
 	}
-	public void removeCertificationCriterion(CertificationCriterionDTO certificationCriterion){
+	public void removeCertificationCriterion(CertificationCriterionDTO certificationCriterion) {
 		this.certificationCriterions.remove(certificationCriterion);
 	}
 	public Date getCreationDate() {

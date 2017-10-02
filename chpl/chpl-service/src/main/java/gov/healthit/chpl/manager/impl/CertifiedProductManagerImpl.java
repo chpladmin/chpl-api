@@ -227,7 +227,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				if(existing != null) {
 					exists = true;
 				}
-			} catch(final EntityRetrievalException ex){
+			} catch(final EntityRetrievalException ex) {
 				LOGGER.error("Could not look up " + id, ex);
 			}
 		}
@@ -311,27 +311,27 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		queue.put(certifiedProductId, false);
 
 		// while queue contains elements that need processing
-		while(queue.containsValue(false)){
-			for(Entry<Long,Boolean> cp: queue.entrySet()){
+		while(queue.containsValue(false)) {
+			for(Entry<Long,Boolean> cp: queue.entrySet()) {
 				Boolean isProcessed = cp.getValue();
 				Long cpId = cp.getKey();
-				if(!isProcessed){
+				if(!isProcessed) {
 					IcsFamilyTreeNode node = searchDao.getICSFamilyTree(cpId);
 					// add family to array that will be used to add to processing array
 					familyTree.add(node);
 					// done processing node - set processed to true
-					for(CertifiedProduct certProd : node.getChildren()){
+					for(CertifiedProduct certProd : node.getChildren()) {
 						toAdd.add(certProd.getId());
 					}
-					for(CertifiedProduct certProd : node.getParents()){
+					for(CertifiedProduct certProd : node.getParents()) {
 						toAdd.add(certProd.getId());
 					}
 					queue.put(cpId, true);
 				}
 			}
 			// add elements from toAdd array to queue if they are not already there
-			for(Long id: toAdd){
-				if(!queue.containsKey(id)){
+			for(Long id: toAdd) {
+				if(!queue.containsKey(id)) {
 					queue.put(id, false);
 				}
 			}
@@ -848,7 +848,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 								if(!StringUtils.isEmpty(cert.getCertificationId())) {
 									certDto.setCriterionId(cert.getCertificationId());
 									cqmResultToCreate.getCriteria().add(certDto);
-								} else if(!StringUtils.isEmpty(cert.getCertificationCriteriaNumber())){
+								} else if(!StringUtils.isEmpty(cert.getCertificationCriteriaNumber())) {
 									CertificationCriterionDTO critDto = certCriterionDao.getByName(cert.getCertificationCriteriaNumber());
 									if(critDto != null) {
 										certDto.setCriterionId(critDto.getId());
@@ -943,7 +943,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
-	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class,
+	@Transactional(rollbackFor= {EntityRetrievalException.class, EntityCreationException.class,
 			JsonProcessingException.class, AccessDeniedException.class, InvalidArgumentsException.class})
 	@CacheEvict(value = {CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
 			CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.SEARCH,
@@ -1010,7 +1010,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 
 		CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
 		CertifiedProductDTO result = cpDao.update(dtoToUpdate);
-		if(updatedListing != null){
+		if(updatedListing != null) {
 			updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
 			updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
 			updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
@@ -1721,50 +1721,50 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		List<MeaningfulUseUser> errors = new ArrayList<MeaningfulUseUser>();
 		List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
 
-		for(MeaningfulUseUser muu : meaningfulUseUserSet){
-			if(StringUtils.isEmpty(muu.getError())){
-				try{
+		for(MeaningfulUseUser muu : meaningfulUseUserSet) {
+			if(StringUtils.isEmpty(muu.getError())) {
+				try {
 					// If bad input, add error for this MeaningfulUseUser and continue
-					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
+					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())) {
 						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber() + "\".");
 					}
-					else if(muu.getNumberOfUsers() == null){
+					else if(muu.getNumberOfUsers() == null) {
 						muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers() + "\".");
 					}
-					else{
+					else {
 						CertifiedProductDTO dto = new CertifiedProductDTO();
 						// check if 2014 edition CHPL Product Number exists
-						if(cpDao.getByChplNumber(muu.getProductNumber()) != null){
+						if(cpDao.getByChplNumber(muu.getProductNumber()) != null) {
 							dto.setChplProductNumber(muu.getProductNumber());
 							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
 						}
 						// check if 2015 edition CHPL Product Number exists
-						else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null){
+						else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null) {
 							dto.setChplProductNumber(muu.getProductNumber());
 							dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
 						}
 						// If neither exist, add error
-						else{
+						else {
 							throw new EntityRetrievalException();
 						}
 
-						try{
+						try {
 							CertifiedProductDTO returnDto = cpDao.updateMeaningfulUseUsers(dto);
 							muu.setCertifiedProductId(returnDto.getId());
 							results.add(muu);
-						} catch (final EntityRetrievalException e){
+						} catch (final EntityRetrievalException e) {
 							muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
 									+ "The provided \"chpl_product_number\" does not exist.");
 							errors.add(muu);
 						}
 					}
-				} catch (Exception e){
+				} catch (Exception e) {
 					muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
 							+ "The provided \"chpl_product_number\" does not exist.");
 					errors.add(muu);
 				}
 			}
-			else{
+			else {
 				errors.add(muu);
 			}
 		}

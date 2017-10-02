@@ -85,7 +85,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			//validate that these pieces match up with data
 			String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
 			if(StringUtils.isEmpty(productCode) ||
-				!productCode.matches("^[a-zA-Z0-9_]{"+CertifiedProductDTO.PRODUCT_CODE_LENGTH+"}$")) {
+				!productCode.matches("^[a-zA-Z0-9_] {"+CertifiedProductDTO.PRODUCT_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
@@ -100,7 +100,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			//validate that these pieces match up with data
 			String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
 			if(StringUtils.isEmpty(versionCode) ||
-				!versionCode.matches("^[a-zA-Z0-9_]{"+CertifiedProductDTO.VERSION_CODE_LENGTH+"}$")) {
+				!versionCode.matches("^[a-zA-Z0-9_] {"+CertifiedProductDTO.VERSION_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
@@ -114,7 +114,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			//validate that these pieces match up with data
 			String icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
 			if(StringUtils.isEmpty(icsCode) ||
-				!icsCode.matches("^[0-9]{"+CertifiedProductDTO.ICS_CODE_LENGTH+"}$")) {
+				!icsCode.matches("^[0-9] {"+CertifiedProductDTO.ICS_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
@@ -142,7 +142,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			//validate that these pieces match up with data
 			String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 			if(StringUtils.isEmpty(certifiedDateCode) ||
-				!certifiedDateCode.matches("^[0-9]{"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
+				!certifiedDateCode.matches("^[0-9] {"+CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH+"}$")) {
 				return false;
 			}
 		}
@@ -234,12 +234,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 								(mapping.getTransparencyAttestation() != null && !mapping.getTransparencyAttestation().equals(product.getTransparencyAttestation()))) {
 								product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 							}
-						} else if(mapping == null && !StringUtils.isEmpty(product.getTransparencyAttestation())){
+						} else if(mapping == null && !StringUtils.isEmpty(product.getTransparencyAttestation())) {
 							product.getWarningMessages().add("The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
 						}
 					}
 				}
-			} else if(!developerCode.matches("X+")){
+			} else if(!developerCode.matches("X+")) {
 				DeveloperDTO developerByCode = developerDao.getByCode(developerCode);
 				if(developerByCode == null) {
 					product.getErrorMessages().add("The developer code " + developerCode + " does not match any developer in the system. New developers should use the code 'XXXX'.");
@@ -421,20 +421,20 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 
-			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
-				if(foundPrivacyAndSecurityFramework == null){
+				if(foundPrivacyAndSecurityFramework == null) {
 					product.getErrorMessages().add("Certification " + cert.getNumber() +
 							" contains Privacy and Security Framework value '" +
 							formattedPrivacyAndSecurityFramework + "' which must match one of " +
 							PrivacyAndSecurityFrameworkConcept.getFormattedValues());
 				}
 			}
-			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
-				if(foundPrivacyAndSecurityFramework == null){
+				if(foundPrivacyAndSecurityFramework == null) {
 					product.getErrorMessages().add("Certification " + cert.getNumber() +
 							" contains Privacy and Security Framework value '" +
 							formattedPrivacyAndSecurityFramework + "' which must match one of " +
@@ -663,10 +663,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 				}
 			}
 
-			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())){
+			if(!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
 				String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
 				PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept.getValue(formattedPrivacyAndSecurityFramework);
-				if(foundPrivacyAndSecurityFramework == null){
+				if(foundPrivacyAndSecurityFramework == null) {
 					product.getErrorMessages().add("Certification " + cert.getNumber() +
 							" contains Privacy and Security Framework value '" +
 							formattedPrivacyAndSecurityFramework + "' which must match one of " +

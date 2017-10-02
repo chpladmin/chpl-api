@@ -40,7 +40,7 @@ public class Statistics implements Serializable {
 	private Long totalOpenNonconformities;
 	private Long totalClosedNonconformities;
 
-	public Statistics(){}
+	public Statistics() {}
 
 	public Long getTotalDevelopers() {
 		return totalDevelopers;

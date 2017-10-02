@@ -21,8 +21,8 @@ public class CertificationCriterionDTO implements Serializable {
 	private Boolean requiresSed;
 	private String title;
 
-	public CertificationCriterionDTO(){}
-	public CertificationCriterionDTO(CertificationCriterionEntity entity){
+	public CertificationCriterionDTO() {}
+	public CertificationCriterionDTO(CertificationCriterionEntity entity) {
 
 		this.id = entity.getId();
 		this.automatedMeasureCapable = entity.isAutomatedMeasureCapable();

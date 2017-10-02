@@ -29,7 +29,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 	@Override
 	public UcdProcessDTO create(UcdProcessDTO dto) throws EntityCreationException {
 		UcdProcessEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -91,7 +91,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 		UcdProcessDTO dto = null;
 		UcdProcessEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new UcdProcessDTO(entity);
 		}
 		return dto;
@@ -103,7 +103,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 		UcdProcessDTO dto = null;
 		List<UcdProcessEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new UcdProcessDTO(entities.get(0));
 		}
 		return dto;
@@ -148,7 +148,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 		query.setParameter("entityid", id);
 		List<UcdProcessEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

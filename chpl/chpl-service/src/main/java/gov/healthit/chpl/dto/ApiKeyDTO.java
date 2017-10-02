@@ -16,9 +16,9 @@ public class ApiKeyDTO implements Serializable {
 	private Long lastModifiedUser;
 	private Boolean deleted;
 
-	public ApiKeyDTO(){}
+	public ApiKeyDTO() {}
 
-	public ApiKeyDTO(ApiKeyEntity entity){
+	public ApiKeyDTO(ApiKeyEntity entity) {
 
 		this.id = entity.getId();
 		this.apiKey = entity.getApiKey();

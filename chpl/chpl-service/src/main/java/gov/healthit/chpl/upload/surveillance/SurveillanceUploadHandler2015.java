@@ -114,7 +114,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				} else {
 					LOGGER.error("Could not find chpl product with unique id '" + chplId + "'.");
 				}
-			} catch(final EntityRetrievalException ex){
+			} catch(final EntityRetrievalException ex) {
 				LOGGER.error("Exception looking up " + chplId, ex);
 			}
 		}

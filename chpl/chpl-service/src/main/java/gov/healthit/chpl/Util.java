@@ -33,7 +33,7 @@ public class Util {
     }
 
     public static String coerceToCriterionNumberFormat(String input) {
-		String formatRegex = "^\\d{3}\\.\\d{3}\\s{1}\\([a-z]{1}\\)(\\([0-9]{1,2}\\))?$";
+		String formatRegex = "^\\d {3}\\.\\d {3}\\s {1}\\([a-z] {1}\\)(\\([0-9] {1,2}\\))?$";
 		if(input.matches(formatRegex)) {
 			LOGGER.debug("\tMatches required format. Not changing input.");
 			return input;

@@ -17,9 +17,9 @@ public class Announcement implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 
-	public Announcement(){}
+	public Announcement() {}
 
-	public Announcement(AnnouncementDTO dto){
+	public Announcement(AnnouncementDTO dto) {
 		this.id = dto.getId();
 		this.title = dto.getTitle();
 		this.text = dto.getText();

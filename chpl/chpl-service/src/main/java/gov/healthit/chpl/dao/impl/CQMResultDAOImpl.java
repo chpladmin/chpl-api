@@ -25,7 +25,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 
 		CQMResultEntity entity = null;
 		try {
-			if (cqmResult.getId() != null){
+			if (cqmResult.getId() != null) {
 				entity = this.getEntityById(cqmResult.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -120,7 +120,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	}
 
 	@Override
-	public void deleteCriteriaMapping(Long mappingId){
+	public void deleteCriteriaMapping(Long mappingId) {
 		CQMResultCriteriaEntity toDelete = getCqmCriteriaById(mappingId);
 		if(toDelete != null) {
 			toDelete.setDeleted(true);
@@ -132,7 +132,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	}
 
 	@Override
-	public void deleteMappingsForCqmResult(Long cqmResultId){
+	public void deleteMappingsForCqmResult(Long cqmResultId) {
 		Query query = entityManager.createQuery("UPDATE CQMResultCriteriaEntity SET deleted = true WHERE cqm_result_id = :resultid");
 		query.setParameter("resultid", cqmResultId);
 		query.executeUpdate();
@@ -152,7 +152,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	}
 
 	@Override
-	public List<CQMResultDTO> findByCertifiedProductId(Long certifiedProductId){
+	public List<CQMResultDTO> findByCertifiedProductId(Long certifiedProductId) {
 
 		List<CQMResultEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CQMResultDTO> cqmResults = new ArrayList<>();
@@ -171,7 +171,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		CQMResultDTO dto = null;
 		CQMResultEntity entity = getEntityById(cqmResultId);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CQMResultDTO(entity);
 		}
 
@@ -179,12 +179,12 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 	}
 
 	@Override
-	public List<CQMResultCriteriaDTO> getCriteriaForCqmResult(Long cqmResultId){
+	public List<CQMResultCriteriaDTO> getCriteriaForCqmResult(Long cqmResultId) {
 
 		List<CQMResultCriteriaEntity> entities = getCertCriteriaForCqmResult(cqmResultId);
 		List<CQMResultCriteriaDTO> dtos = new ArrayList<CQMResultCriteriaDTO>();
 
-		for (CQMResultCriteriaEntity entity : entities){
+		for (CQMResultCriteriaEntity entity : entities) {
 			CQMResultCriteriaDTO dto = new CQMResultCriteriaDTO(entity);
 			dtos.add(dto);
 		}
@@ -211,11 +211,11 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		query.setParameter("entityid", id);
 		List<CQMResultEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate CQM result id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -245,13 +245,13 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 		query.setParameter("entityid", id);
 		List<CQMResultCriteriaEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 		return entity;
 	}
 
-	private List<CQMResultCriteriaEntity> getCertCriteriaForCqmResult(Long cqmResultId){
+	private List<CQMResultCriteriaEntity> getCertCriteriaForCqmResult(Long cqmResultId) {
 		Query query = entityManager.createQuery( "from CQMResultCriteriaEntity "
 				+ "where (NOT deleted = true) AND (cqm_result_id = :cqmResultId) ",
 				CQMResultCriteriaEntity.class );

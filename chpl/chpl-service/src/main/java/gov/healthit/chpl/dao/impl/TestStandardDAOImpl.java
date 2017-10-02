@@ -33,7 +33,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 	public TestStandardDTO create(TestStandardDTO dto) throws EntityCreationException {
 
 		TestStandardEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -74,7 +74,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		TestStandardDTO dto = null;
 		TestStandardEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new TestStandardDTO(entity);
 		}
 		return dto;
@@ -98,7 +98,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		TestStandardDTO dto = null;
 		List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new TestStandardDTO(entities.get(0));
 		}
 		return dto;
@@ -118,7 +118,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 		query.setParameter("entityid", id);
 		List<TestStandardEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 		return entity;

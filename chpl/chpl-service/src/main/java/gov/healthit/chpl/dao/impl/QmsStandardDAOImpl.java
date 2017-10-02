@@ -31,7 +31,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 	public QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
 
 		QmsStandardEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -88,7 +88,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		QmsStandardDTO dto = null;
 		QmsStandardEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new QmsStandardDTO(entity);
 		}
 		return dto;
@@ -100,7 +100,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		QmsStandardDTO dto = null;
 		List<QmsStandardEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new QmsStandardDTO(entities.get(0));
 		}
 		return dto;
@@ -129,7 +129,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 			result = getByName(name);
 		}
 
-		if(result == null){
+		if(result == null) {
 			QmsStandardDTO toCreate = new QmsStandardDTO();
 			toCreate.setName(name.trim());
 			result = create(toCreate);
@@ -162,7 +162,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 		query.setParameter("entityid", id);
 		List<QmsStandardEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

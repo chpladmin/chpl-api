@@ -153,11 +153,11 @@ public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl 
 		query.setParameter("entityid", id);
 		List<CorrectiveActionPlanCertificationEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate corrective action plan certification id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

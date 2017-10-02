@@ -325,16 +325,16 @@ public class DeveloperManagerImpl extends QuestionableActivityHandlerImpl implem
 
 	@Transactional(readOnly = true)
 	@Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
-	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException{
+	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
 		DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
 
 		dtoList = developerDao.getDecertifiedDevelopers();
 
-		for(DecertifiedDeveloperDTO dto : dtoList){
+		for(DecertifiedDeveloperDTO dto : dtoList) {
 			List<CertificationBody> certifyingBody = new ArrayList<CertificationBody>();
-			for(Long oncacbId : dto.getAcbIdList()){
+			for(Long oncacbId : dto.getAcbIdList()) {
 				CertificationBody cb = new CertificationBody(certificationBodyDao.getById(oncacbId));
 				certifyingBody.add(cb);
 			}

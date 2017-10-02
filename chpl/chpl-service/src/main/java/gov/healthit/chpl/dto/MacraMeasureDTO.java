@@ -18,9 +18,9 @@ public class MacraMeasureDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 
-	public MacraMeasureDTO(){
+	public MacraMeasureDTO() {
 	}
-	public MacraMeasureDTO(MacraMeasureEntity entity){
+	public MacraMeasureDTO(MacraMeasureEntity entity) {
 		this();
 
 		this.id = entity.getId();

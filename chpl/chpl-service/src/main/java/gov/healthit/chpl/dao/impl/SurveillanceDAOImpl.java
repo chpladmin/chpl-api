@@ -488,7 +488,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	@Transactional(readOnly = true)
-	public List<SurveillanceEntity> getAllSurveillance(){
+	public List<SurveillanceEntity> getAllSurveillance() {
 		Query query = entityManager.createQuery(
 				"from SurveillanceEntity where deleted <> true",
 				SurveillanceEntity.class);
@@ -496,7 +496,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	@Transactional(readOnly = true)
-	public List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities(){
+	public List<SurveillanceNonconformityEntity> getAllSurveillanceNonConformities() {
 		Query query = entityManager.createQuery(
 				"from SurveillanceNonconformityEntity where deleted <> true",
 				SurveillanceNonconformityEntity.class);
@@ -733,7 +733,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 				+ "LEFT OUTER JOIN FETCH reqs.nonconformities ncs "
 				+ "LEFT OUTER JOIN FETCH surv.validation "
 				+ "WHERE surv.id = :entityid ";
-		if(!includeDeleted){
+		if(!includeDeleted) {
 			hql+= "AND surv.deleted <> true ";
 		}
 

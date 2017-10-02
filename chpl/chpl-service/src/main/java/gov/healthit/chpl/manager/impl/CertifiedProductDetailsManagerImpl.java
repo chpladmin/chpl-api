@@ -124,7 +124,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 	private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
 	@Autowired
-	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO, MacraMeasureDAO macraDao){
+	public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO, MacraMeasureDAO macraDao) {
 		this.cqmCriterionDAO = cqmCriterionDAO;
 		this.macraDao = macraDao;
 
@@ -252,7 +252,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(dto.getId());
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 
-		for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs){
+		for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs) {
 			CertificationResult result = new CertificationResult(certResult);
 			//override optional boolean values
 			if(!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
@@ -427,7 +427,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		//fill in CQM results, sadly there is different data for NQFs and CMSs
 		List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(dto.getId());
 		List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-		for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs){
+		for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) {
 			boolean existingCms = false;
 			//for a CMS, first check to see if we already have an object with the same CMS id
 			//so we can just add to it's success versions.
@@ -459,7 +459,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 
 		//now add allVersions for CMSs
-		if (!dto.getYear().startsWith("2011")){
+		if (!dto.getYear().startsWith("2011")) {
 			List<CQMCriterion> cqms = getAvailableCQMVersions();
 			for(CQMCriterion cqm : cqms) {
 				boolean cqmExists = false;
@@ -532,12 +532,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		this.cqmCriteria = cqmCriteria;
 	}
 
-	private List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId) throws EntityRetrievalException{
+	private List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId) throws EntityRetrievalException {
 
 		List<CertificationStatusEvent> certEvents = new ArrayList<CertificationStatusEvent>();
 		List<CertificationStatusEventDTO> certStatusDtos = certStatusEventDao.findByCertifiedProductId(certifiedProductId);
 
-		for (CertificationStatusEventDTO certStatusDto : certStatusDtos){
+		for (CertificationStatusEventDTO certStatusDto : certStatusDtos) {
 			CertificationStatusEvent cse = new CertificationStatusEvent();
 			cse.setId(certStatusDto.getId());
 			cse.setEventDate(certStatusDto.getEventDate().getTime());
@@ -560,11 +560,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 	}
 
-	private void loadCQMCriteria(){
+	private void loadCQMCriteria() {
 
 		List<CQMCriterionDTO> dtos = cqmCriterionDAO.findAll();
 
-		for (CQMCriterionDTO dto: dtos){
+		for (CQMCriterionDTO dto: dtos) {
 
 			CQMCriterion criterion = new CQMCriterion();
 
@@ -583,26 +583,26 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 		}
 	}
 
-	private List<CQMCriterion> getAvailableCQMVersions(){
+	private List<CQMCriterion> getAvailableCQMVersions() {
 
 		List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
 
-		for (CQMCriterion criterion : cqmCriteria){
+		for (CQMCriterion criterion : cqmCriteria) {
 
-			if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")){
+			if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
 				criteria.add(criterion);
 			}
 		}
 		return criteria;
 	}
 
-	private List<CQMCriterion> getAvailableNQFVersions(){
+	private List<CQMCriterion> getAvailableNQFVersions() {
 
 		List<CQMCriterion> nqfs = new ArrayList<CQMCriterion>();
 
-		for (CQMCriterion criterion : cqmCriteria){
+		for (CQMCriterion criterion : cqmCriteria) {
 
-			if (StringUtils.isEmpty(criterion.getCmsId())){
+			if (StringUtils.isEmpty(criterion.getCmsId())) {
 				nqfs.add(criterion);
 			}
 		}

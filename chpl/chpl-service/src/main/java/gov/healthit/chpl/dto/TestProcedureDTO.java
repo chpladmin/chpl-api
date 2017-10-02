@@ -9,9 +9,9 @@ public class TestProcedureDTO implements Serializable {
 	private Long id;
 	private String version;
 
-	public TestProcedureDTO(){}
+	public TestProcedureDTO() {}
 
-	public TestProcedureDTO(TestProcedureEntity entity){
+	public TestProcedureDTO(TestProcedureEntity entity) {
 		this.id = entity.getId();
 		this.version = entity.getVersion();
 	}

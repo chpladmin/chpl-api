@@ -31,11 +31,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	@Autowired MessageSource messageSource;
 
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException{
+	public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException {
 
 		CertifiedProductEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -123,7 +123,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException{
+	public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException {
 
 		CertifiedProductEntity entity = getEntityById(dto.getId());
 		entity.setAcbCertificationId(dto.getAcbCertificationId());
@@ -165,13 +165,13 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	@Transactional(readOnly = false)
-	public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO dto) throws EntityRetrievalException, IOException{
-		if(dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null){
+	public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO dto) throws EntityRetrievalException, IOException {
+		if(dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null) {
 			throw new IOException("Must provide a CertifiedProductDTO with a valid CHPL Product Number and meaningfulUseUsers");
 		}
 
 		CertifiedProductEntity cpEntity_legacy = getEntityByChplNumber(dto.getChplProductNumber());
-		if(cpEntity_legacy != null){
+		if(cpEntity_legacy != null) {
 			cpEntity_legacy.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
 			cpEntity_legacy.setLastModifiedDate(new Date());
 			cpEntity_legacy.setLastModifiedUser(Util.getCurrentUser().getId());
@@ -190,7 +190,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	@Transactional(readOnly = false)
-	public void delete(Long productId){
+	public void delete(Long productId) {
 
 		// TODO: How to delete this without leaving orphans
 		Query query = entityManager.createQuery("UPDATE CertifiedProductEntity SET deleted = true WHERE certified_product_id = :productid");
@@ -200,7 +200,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> findAll(){
+	public List<CertifiedProductDetailsDTO> findAll() {
 		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
 				"from CertifiedProductDetailsEntity where (NOT deleted = true) ", CertifiedProductDetailsEntity.class).getResultList();
 
@@ -232,7 +232,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> findWithSurveillance(){
+	public List<CertifiedProductDetailsDTO> findWithSurveillance() {
 
 		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
 				"SELECT DISTINCT cp "
@@ -251,7 +251,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	@Transactional(readOnly = true)
-	public List<CertifiedProductDetailsDTO> findWithInheritance(){
+	public List<CertifiedProductDetailsDTO> findWithInheritance() {
 
 		List<CertifiedProductDetailsEntity> entities = entityManager.createQuery(
 				"SELECT DISTINCT cp "
@@ -268,12 +268,12 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 	}
 
 	@Transactional(readOnly = true)
-	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException{
+	public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException {
 
 		CertifiedProductDTO dto = null;
 		CertifiedProductEntity entity = getEntityById(productId);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertifiedProductDTO(entity);
 		}
 		return dto;
@@ -284,7 +284,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		CertifiedProductDTO dto = null;
 		CertifiedProductEntity entity = getEntityByChplNumber(chplProductNumber);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertifiedProductDTO(entity);
 		}
 		return dto;
@@ -300,7 +300,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		CertifiedProductDetailsEntity entity = getEntityByUniqueIdParts(idParts[0], idParts[1], idParts[2],
 				idParts[3], idParts[4], idParts[5], idParts[6], idParts[7], idParts[8]);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertifiedProductDetailsDTO(entity);
 		}
 		return dto;
@@ -491,11 +491,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
-		} else if (result.size() > 1){
+		} else if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -511,7 +511,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		query.setParameter("chplProductNumber", chplProductNumber);
 		List<CertifiedProductEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -551,7 +551,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
 		List<CertifiedProductDetailsEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

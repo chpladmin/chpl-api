@@ -27,7 +27,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
 @Component("surveillanceWeeklyReportApp")
-public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightReportApp{
+public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightReportApp {
     private SurveillanceOversightAllBrokenRulesCsvPresenter presenter;
 
     public SurveillanceOversightReportWeeklyApp() {
@@ -48,7 +48,7 @@ public class SurveillanceOversightReportWeeklyApp extends SurveillanceOversightR
 		permissions.add(new GrantedPermission("ROLE_ADMIN"));
 		List<RecipientWithSubscriptionsDTO> oncRecipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_WEEKLY_SURVEILLANCE_BROKEN_RULES, null);
  		List<RecipientWithSubscriptionsDTO> allAcbRecipientSubscriptions = oversightApp.getNotificationDAO().getAllNotificationMappingsForType(permissions, NotificationTypeConcept.ONC_ACB_WEEKLY_SURVEILLANCE_BROKEN_RULES, acbs);
- 		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0){
+ 		if(oncRecipientSubscriptions.size() > 0 || allAcbRecipientSubscriptions.size() > 0) {
  			// Get full set of data to send in ONC email
 			List<CertifiedProductSearchDetails> allCertifiedProductDetails = oversightApp.getAllCertifiedProductSearchDetails();
 			CertifiedProductDownloadResponse allCps = new CertifiedProductDownloadResponse();

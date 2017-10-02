@@ -43,7 +43,7 @@ public class CertificationStatusEvent implements Serializable {
 	@XmlTransient
 	private Long lastModifiedDate;
 
-	public CertificationStatusEvent(){}
+	public CertificationStatusEvent() {}
 
 	public Long getId() {
 		return id;

@@ -61,10 +61,10 @@ public class CertifiedProductDetailsDTO implements Serializable {
 	private String transparencyAttestationUrl;
 	private Long numMeaningfulUse;
 
-    public CertifiedProductDetailsDTO(){
+    public CertifiedProductDetailsDTO() {
     }
 
-    public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity){
+    public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity) {
     	this();
 
     	this.id = entity.getId();
@@ -253,10 +253,10 @@ public class CertifiedProductDetailsDTO implements Serializable {
 	public void setPracticeTypeName(String practiceTypeName) {
 		this.practiceTypeName = practiceTypeName;
 	}
-	public Date getCreationDate(){
+	public Date getCreationDate() {
 		return creationDate;
 	}
-	public void setCreationDate(Date creationDate){
+	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 	public Date getCertificationDate() {

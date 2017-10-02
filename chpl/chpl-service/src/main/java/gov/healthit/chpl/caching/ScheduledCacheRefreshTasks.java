@@ -15,8 +15,8 @@ public class ScheduledCacheRefreshTasks {
 	@Autowired private CacheUtil cacheUtil;
 	@Autowired private PreFetchedCaches preFetchedCaches;
 
-    @Scheduled(initialDelayString = "${listingCacheRefreshInitialDelayMillis}",
-    		fixedDelayString = "${listingCacheRefreshDelayMillis}")
+    @Scheduled(initialDelayString = "$ {listingCacheRefreshInitialDelayMillis}",
+    		fixedDelayString = "$ {listingCacheRefreshDelayMillis}")
     public void refreshListingsCache() {
     	LOGGER.info("Refreshing listings cache.");
     	CacheManager manager = cacheUtil.getMyCacheManager();

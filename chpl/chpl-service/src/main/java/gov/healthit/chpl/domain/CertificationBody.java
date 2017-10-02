@@ -59,11 +59,11 @@ public class CertificationBody implements Serializable {
 		this.acbCode = acbCode;
 	}
 
-	public boolean getIsDeleted(){
+	public boolean getIsDeleted() {
 		return isDeleted;
 	}
 
-	public void setIsDeleted(boolean deleted){
+	public void setIsDeleted(boolean deleted) {
 		this.isDeleted = deleted;
 	}
 

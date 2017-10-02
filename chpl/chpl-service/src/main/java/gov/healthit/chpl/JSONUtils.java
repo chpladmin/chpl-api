@@ -14,18 +14,18 @@ public class JSONUtils {
 	private static final ObjectReader reader = mapper.reader();
 	private static final ObjectWriter writer = mapper.writer();
 
-	public static ObjectReader getReader(){
+	public static ObjectReader getReader() {
 		return reader;
 	}
 
-	public static ObjectWriter getWriter(){
+	public static ObjectWriter getWriter() {
 		return writer;
 	}
 
-	public static String toJSON(Object obj) throws JsonProcessingException{
+	public static String toJSON(Object obj) throws JsonProcessingException {
 
 		String json = null;
-		if (obj != null){
+		if (obj != null) {
 			json = getWriter().writeValueAsString(obj);
 		}
 		return json;
@@ -39,7 +39,7 @@ public class JSONUtils {
 
 	}
 
-	public static boolean jsonEquals(String json1, String json2) throws JsonProcessingException, IOException{
+	public static boolean jsonEquals(String json1, String json2) throws JsonProcessingException, IOException {
 
 		Boolean equals;
 

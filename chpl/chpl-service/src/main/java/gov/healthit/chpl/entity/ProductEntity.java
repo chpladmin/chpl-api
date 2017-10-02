@@ -242,7 +242,7 @@ public class ProductEntity implements Serializable {
 	 * Return the value associated with the column: statuses.
 	 * @return A ProductCertificationStatuses object (this.productCertificationStatuses)
 	 */
-	public ProductCertificationStatusesEntity getProductCertificationStatusesEntity(){
+	public ProductCertificationStatusesEntity getProductCertificationStatusesEntity() {
 		return this.productCertificationStatuses;
 	}
 
@@ -250,7 +250,7 @@ public class ProductEntity implements Serializable {
 	 * Set the value related to the column: statuses.
 	 * @param productCertificationStatuses the set of aggregate counts for this product's certification statuses
 	 */
-	public void setProductCertificationStatuses(ProductCertificationStatusesEntity productCertificationStatusesEntity){
+	public void setProductCertificationStatuses(ProductCertificationStatusesEntity productCertificationStatusesEntity) {
 		this.productCertificationStatuses = productCertificationStatusesEntity;
 	}
 

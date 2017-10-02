@@ -25,7 +25,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 
 		ApiKeyEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -41,14 +41,14 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 			entity.setEmail(dto.getEmail());
 			entity.setNameOrganization(dto.getNameOrganization());
 			entity.setCreationDate(dto.getCreationDate());
-			if (dto.getLastModifiedDate() == null){
+			if (dto.getLastModifiedDate() == null) {
 				entity.setLastModifiedDate(new Date());
 			} else {
 				entity.setLastModifiedDate(dto.getLastModifiedDate());
 			}
 
 			entity.setDeleted(dto.getDeleted());
-			if (dto.getLastModifiedUser() == null){
+			if (dto.getLastModifiedUser() == null) {
 				entity.setLastModifiedUser(Util.getCurrentUser().getId());
 			} else {
 				entity.setLastModifiedUser(dto.getLastModifiedUser());
@@ -68,12 +68,12 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		entity.setNameOrganization(dto.getNameOrganization());
 		entity.setCreationDate(dto.getCreationDate());
 		entity.setDeleted(dto.getDeleted());
-		if (dto.getLastModifiedDate() == null){
+		if (dto.getLastModifiedDate() == null) {
 			entity.setLastModifiedDate(new Date());
 		} else {
 			entity.setLastModifiedDate(dto.getLastModifiedDate());
 		}
-		if (dto.getLastModifiedUser() == null){
+		if (dto.getLastModifiedUser() == null) {
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		} else {
 			entity.setLastModifiedUser(dto.getLastModifiedUser());
@@ -112,7 +112,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
@@ -125,7 +125,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getEntityByKey(apiKey);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
@@ -152,7 +152,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getRevokedEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
@@ -165,7 +165,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		ApiKeyDTO dto = null;
 		ApiKeyEntity entity = getRevokedEntityByKey(apiKey);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new ApiKeyDTO(entity);
 		}
 		return dto;
@@ -202,7 +202,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("apikey.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
-		} else if(result.size() > 1){
+		} else if(result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
@@ -241,7 +241,7 @@ public class ApiKeyDAOImpl extends BaseDAOImpl implements ApiKeyDAO {
 		query.setParameter("entityid", entityId);
 		List<ApiKeyEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate api key id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);

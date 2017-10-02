@@ -37,7 +37,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 	@Transactional
 	public JobDTO create(JobDTO dto) throws EntityCreationException {
 		JobEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -216,7 +216,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 
 		JobDTO dto = null;
 		JobEntity entity = getEntityById(id);
-		if (entity != null){
+		if (entity != null) {
 			dto = new JobDTO(entity);
 		}
 		return dto;
@@ -361,7 +361,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				+ "AND (job.id = :entityid) ", JobEntity.class );
 		query.setParameter("entityid", id);
 		List<JobEntity> result = query.getResultList();
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

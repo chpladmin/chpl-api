@@ -15,7 +15,7 @@ public class ContactDTO implements Serializable {
 	private String title;
 	private Date signatureDate;
 
-	public ContactDTO(){}
+	public ContactDTO() {}
 
 	public ContactDTO(ContactEntity entity)
 	{

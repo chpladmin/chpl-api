@@ -11,9 +11,9 @@ public class CertificationResultTestDataDTO implements Serializable {
 	private String version;
 	private String alteration;
 
-	public CertificationResultTestDataDTO(){}
+	public CertificationResultTestDataDTO() {}
 
-	public CertificationResultTestDataDTO(CertificationResultTestDataEntity entity){
+	public CertificationResultTestDataDTO(CertificationResultTestDataEntity entity) {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.version = entity.getTestDataVersion();

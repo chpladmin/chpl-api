@@ -12,11 +12,11 @@ public class Statuses implements Serializable {
 	private Integer suspendedByOnc;
 	private Integer terminatedByOnc;
 
-	public Statuses(){}
+	public Statuses() {}
 
 	public Statuses(Integer active, Integer retired, Integer withdrawnByDeveloper,
 			Integer withdrawnByAcb, Integer suspendedByAcb, Integer suspendedByOnc,
-			Integer terminatdByOnc){
+			Integer terminatdByOnc) {
 		this.active = active;
 		this.retired = retired;
 		this.withdrawnByDeveloper = withdrawnByDeveloper;
@@ -26,43 +26,43 @@ public class Statuses implements Serializable {
 		this.terminatedByOnc = terminatdByOnc;
 	}
 
-	public Integer getActive(){
+	public Integer getActive() {
 		return this.active;
 	}
 
-	public void setActive(Integer active){
+	public void setActive(Integer active) {
 		this.active = active;
 	}
 
-	public Integer getRetired(){
+	public Integer getRetired() {
 		return this.retired;
 	}
 
-	public void setRetired(Integer retired){
+	public void setRetired(Integer retired) {
 		this.retired = retired;
 	}
 
-	public Integer getWithdrawnByDeveloper(){
+	public Integer getWithdrawnByDeveloper() {
 		return this.withdrawnByDeveloper;
 	}
 
-	public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper){
+	public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper) {
 		this.withdrawnByDeveloper = withdrawnByDeveloper;
 	}
 
-	public Integer getWithdrawnByAcb(){
+	public Integer getWithdrawnByAcb() {
 		return this.withdrawnByAcb;
 	}
 
-	public void setWithdrawnByAcb(Integer withdrawnByAcb){
+	public void setWithdrawnByAcb(Integer withdrawnByAcb) {
 		this.withdrawnByAcb = withdrawnByAcb;
 	}
 
-	public Integer getSuspendedByAcb(){
+	public Integer getSuspendedByAcb() {
 		return this.suspendedByAcb;
 	}
 
-	public void setSuspendedByAcb(Integer suspendedByAcb){
+	public void setSuspendedByAcb(Integer suspendedByAcb) {
 		this.suspendedByAcb = suspendedByAcb;
 	}
 

@@ -14,9 +14,9 @@ public class CertificationResultTestToolDTO implements Serializable {
 	private boolean retired;
 	private Boolean deleted;
 
-	public CertificationResultTestToolDTO(){}
+	public CertificationResultTestToolDTO() {}
 
-	public CertificationResultTestToolDTO(CertificationResultTestToolEntity entity){
+	public CertificationResultTestToolDTO(CertificationResultTestToolEntity entity) {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.testToolId = entity.getTestToolId();

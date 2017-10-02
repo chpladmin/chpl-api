@@ -30,7 +30,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 	public TestProcedureDTO create(TestProcedureDTO dto) throws EntityCreationException {
 
 		TestProcedureEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -92,7 +92,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 		TestProcedureDTO dto = null;
 		TestProcedureEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new TestProcedureDTO(entity);
 		}
 		return dto;
@@ -104,7 +104,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 		TestProcedureDTO dto = null;
 		List<TestProcedureEntity> entities = getEntitiesByVersion(versionName);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new TestProcedureDTO(entities.get(0));
 		}
 		return dto;
@@ -149,7 +149,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 		query.setParameter("entityid", id);
 		List<TestProcedureEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

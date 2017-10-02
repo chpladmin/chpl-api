@@ -35,7 +35,7 @@ public class PendingSurveillanceValidationEntity {
 
 	@Column(name = "message_type")
 	@Type(type = "gov.healthit.chpl.entity.PostgresValidationMessageType",
-		parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.ValidationMessageType")} )
+		parameters = {@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.ValidationMessageType")} )
 	private ValidationMessageType messageType;
 
 	@Column(name = "message")

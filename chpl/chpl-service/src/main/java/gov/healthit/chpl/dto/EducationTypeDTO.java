@@ -9,7 +9,7 @@ public class EducationTypeDTO implements Serializable {
 	private Long id;
 	private String name;
 
-	public EducationTypeDTO(){}
+	public EducationTypeDTO() {}
 
 	public EducationTypeDTO(EducationTypeEntity entity)
 	{

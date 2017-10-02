@@ -9,7 +9,7 @@ public class DecertifiedDeveloperResults implements Serializable {
 	private static final long serialVersionUID = 899826444547274174L;
 	private List<DecertifiedDeveloperResult> decertifiedDeveloperResults;
 
-	public DecertifiedDeveloperResults(){}
+	public DecertifiedDeveloperResults() {}
 
 	public List<DecertifiedDeveloperResult> getDecertifiedDeveloperResults() {
 		return decertifiedDeveloperResults;

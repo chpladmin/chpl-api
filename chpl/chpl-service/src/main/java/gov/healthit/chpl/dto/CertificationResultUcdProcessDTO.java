@@ -12,9 +12,9 @@ public class CertificationResultUcdProcessDTO implements Serializable {
 	private String ucdProcessName;
 	private String ucdProcessDetails;
 
-	public CertificationResultUcdProcessDTO(){}
+	public CertificationResultUcdProcessDTO() {}
 
-	public CertificationResultUcdProcessDTO(CertificationResultUcdProcessEntity entity){
+	public CertificationResultUcdProcessDTO(CertificationResultUcdProcessEntity entity) {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.ucdProcessId = entity.getUcdProcessId();

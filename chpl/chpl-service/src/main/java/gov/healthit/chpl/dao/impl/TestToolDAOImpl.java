@@ -31,7 +31,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 			throws EntityCreationException, EntityRetrievalException {
 
 		TestToolEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -97,7 +97,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		TestToolDTO dto = null;
 		TestToolEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new TestToolDTO(entity);
 		}
 		return dto;
@@ -109,7 +109,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		TestToolDTO dto = null;
 		List<TestToolEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new TestToolDTO(entities.get(0));
 		}
 		return dto;
@@ -153,7 +153,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 		Query query = entityManager.createQuery( "from TestToolEntity where (NOT deleted = true) AND (test_tool_id = :entityid) ", TestToolEntity.class );
 		query.setParameter("entityid", id);
 		List<TestToolEntity> result = query.getResultList();
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

@@ -9,7 +9,7 @@ public class DeveloperStatusDTO implements Serializable {
 	private Long id;
 	private String statusName;
 
-	public DeveloperStatusDTO(){
+	public DeveloperStatusDTO() {
 	}
 
 	public DeveloperStatusDTO(DeveloperStatusEntity entity) {

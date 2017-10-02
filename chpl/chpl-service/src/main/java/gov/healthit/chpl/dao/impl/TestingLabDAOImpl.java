@@ -34,7 +34,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 
 		TestingLabEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId(), false);
 			}
 		} catch (final EntityRetrievalException e) {
@@ -118,7 +118,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		}
 
 		if(dto.getDeleted() != null) {
-			if(!dto.getDeleted()){
+			if(!dto.getDeleted()) {
 				Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = false WHERE activity_object_id = :acbid");
 				query2.setParameter("acbid", dto.getId());
 				query2.executeUpdate();
@@ -231,10 +231,10 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 
 	private List<TestingLabEntity> getAllEntities(boolean showDeleted) {
 		List<TestingLabEntity> result = null;
-		if(showDeleted){
+		if(showDeleted) {
 			result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
 					+ "LEFT OUTER JOIN FETCH atl.address ", TestingLabEntity.class).getResultList();
-		}else{
+		}else {
 			result = entityManager.createQuery( "SELECT atl from TestingLabEntity atl "
 					+ "LEFT OUTER JOIN FETCH atl.address "
 					+ "where (NOT atl.deleted = true)", TestingLabEntity.class).getResultList();
@@ -259,7 +259,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		if(result == null || result.size() == 0) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("atl.notFound"), LocaleContextHolder.getLocale()));
 			throw new EntityRetrievalException(msg);
-		} else if (result.size() > 1){
+		} else if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate testing lab id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);

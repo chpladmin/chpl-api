@@ -9,9 +9,9 @@ public class UcdProcessDTO implements Serializable {
 	private Long id;
 	private String name;
 
-	public UcdProcessDTO(){}
+	public UcdProcessDTO() {}
 
-	public UcdProcessDTO(UcdProcessEntity entity){
+	public UcdProcessDTO(UcdProcessEntity entity) {
 		this.id = entity.getId();
 		this.name = entity.getName();
 	}

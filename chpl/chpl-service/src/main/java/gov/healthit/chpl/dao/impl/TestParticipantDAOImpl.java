@@ -30,7 +30,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 	public TestParticipantDTO create(TestParticipantDTO dto) throws EntityCreationException {
 
 		TestParticipantEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -104,7 +104,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 		TestParticipantDTO dto = null;
 		TestParticipantEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new TestParticipantDTO(entity);
 		}
 		return dto;
@@ -157,7 +157,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 		query.setParameter("entityid", id);
 		List<TestParticipantEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

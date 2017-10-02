@@ -109,13 +109,13 @@ public class CQMResultDetails implements Serializable {
 	@XmlElement(name = "criteria")
 	private List<CQMResultCertification> criteria;
 
-	public CQMResultDetails(){
+	public CQMResultDetails() {
 		this.successVersions = new HashSet<String>();
 		this.allVersions = new HashSet<String>();
 		this.criteria = new ArrayList<CQMResultCertification>();
 	}
 
-	public CQMResultDetails(CQMResultDetailsDTO dto){
+	public CQMResultDetails(CQMResultDetailsDTO dto) {
 		this();
 		this.id = dto.getId();
 		this.number = dto.getNumber();

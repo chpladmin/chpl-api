@@ -19,9 +19,9 @@ public class CertificationResultDetailsDTO implements Serializable {
     private String apiDocumentation;
 	private String privacySecurityFramework;
 
-    public CertificationResultDetailsDTO(){}
+    public CertificationResultDetailsDTO() {}
 
-    public CertificationResultDetailsDTO(CertificationResultDetailsEntity entity){
+    public CertificationResultDetailsDTO(CertificationResultDetailsEntity entity) {
 
     	this.id = entity.getId();
     	this.certificationCriterionId = entity.getCertificationCriterionId();

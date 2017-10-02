@@ -11,9 +11,9 @@ public class CertificationResultMacraMeasureDTO implements Serializable {
 	private Long certificationResultId;
 	private MacraMeasureDTO measure;
 
-	public CertificationResultMacraMeasureDTO(){}
+	public CertificationResultMacraMeasureDTO() {}
 
-	public CertificationResultMacraMeasureDTO(CertificationResultG1MacraMeasureEntity entity){
+	public CertificationResultMacraMeasureDTO(CertificationResultG1MacraMeasureEntity entity) {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		if(entity.getMacraMeasure() != null) {
@@ -24,7 +24,7 @@ public class CertificationResultMacraMeasureDTO implements Serializable {
 		}
 	}
 
-	public CertificationResultMacraMeasureDTO(CertificationResultG2MacraMeasureEntity entity){
+	public CertificationResultMacraMeasureDTO(CertificationResultG2MacraMeasureEntity entity) {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		if(entity.getMacraMeasure() != null) {

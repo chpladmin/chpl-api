@@ -39,7 +39,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 
 		ProductEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {

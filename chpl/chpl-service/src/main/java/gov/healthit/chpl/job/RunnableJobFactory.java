@@ -52,7 +52,7 @@ public class RunnableJobFactory {
 	}
 
 	@Lookup
-	public MeaningfulUseUploadJob getMeaningfulUseUploadJob(){
+	public MeaningfulUseUploadJob getMeaningfulUseUploadJob() {
 		//return (MeaningfulUseUploadJob) context.getBean("meaningfulUseUploadJob");
 		//spring will override this method
 		//and create a new instance of MeaningfulUseUploadJob

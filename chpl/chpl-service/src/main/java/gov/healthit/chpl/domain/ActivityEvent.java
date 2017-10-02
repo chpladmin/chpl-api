@@ -20,7 +20,7 @@ public class ActivityEvent implements Serializable {
 	private ActivityConcept concept;
 	private User responsibleUser;
 
-	public ActivityEvent(){}
+	public ActivityEvent() {}
 
 	public Long getId() {
 		return id;

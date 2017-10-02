@@ -6,9 +6,9 @@ public class CertificationIdVerificationBody {
 
 	private List<String> ids;
 
-	public CertificationIdVerificationBody(){}
+	public CertificationIdVerificationBody() {}
 
-	public CertificationIdVerificationBody(List<String> ids){
+	public CertificationIdVerificationBody(List<String> ids) {
 		this.ids = ids;
 	}
 	public List<String> getIds() {

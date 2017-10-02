@@ -9,9 +9,9 @@ public class AccessibilityStandardDTO implements Serializable {
 	private Long id;
 	private String name;
 
-	public AccessibilityStandardDTO(){}
+	public AccessibilityStandardDTO() {}
 
-	public AccessibilityStandardDTO(AccessibilityStandardEntity entity){
+	public AccessibilityStandardDTO(AccessibilityStandardEntity entity) {
 		this.id = entity.getId();
 		this.name = entity.getName();
 	}

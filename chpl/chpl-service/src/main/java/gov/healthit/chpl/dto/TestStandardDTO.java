@@ -12,9 +12,9 @@ public class TestStandardDTO implements Serializable {
 	private Long certificationEditionId;
 	private String year;
 
-	public TestStandardDTO(){}
+	public TestStandardDTO() {}
 
-	public TestStandardDTO(TestStandardEntity entity){
+	public TestStandardDTO(TestStandardEntity entity) {
 		this.id = entity.getId();
 		this.description = entity.getDescription();
 		this.name = entity.getName();

@@ -130,7 +130,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		CertifiedProductDetailsDTO dto = null;
 		CertifiedProductDetailsEntity entity = getEntityById(productId);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertifiedProductDetailsDTO(entity);
 		} else {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"), LocaleContextHolder.getLocale()));
@@ -170,21 +170,21 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		query.setParameter("entityid", entityId);
 
 		List<CertifiedProductDetailsEntity> result = query.getResultList();
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
 		}
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
 		return entity;
 	}
 
-	private Query getQueryForSearchFilters(SearchRequest searchRequest){
+	private Query getQueryForSearchFilters(SearchRequest searchRequest) {
 		Query query = null;
-		if (searchRequest.getCertificationCriteria().isEmpty() && searchRequest.getCqms().isEmpty()){
+		if (searchRequest.getCertificationCriteria().isEmpty() && searchRequest.getCqms().isEmpty()) {
 			query = this.getBasicQuery(searchRequest);
-		} else if (searchRequest.getCertificationCriteria().isEmpty()){
+		} else if (searchRequest.getCertificationCriteria().isEmpty()) {
 			query = this.getCQMOnlyQuery(searchRequest);
 		} else if (searchRequest.getCqms().isEmpty()) {
 			query = this.getCertOnlyQuery(searchRequest);
@@ -195,7 +195,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	}
 
-	private Query getCQMOnlyQuery(SearchRequest searchRequest){
+	private Query getCQMOnlyQuery(SearchRequest searchRequest) {
 		String queryStr = "SELECT "
 				+ "b.certified_product_id_cqms as \"certified_product_id\", "
 				+ COLUMNS_MINUS_CERTIFIED_PRODUCT_ID
@@ -225,7 +225,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 
 		String sortOrder = "ASC ";
-		if (searchRequest.getSortDescending()){
+		if (searchRequest.getSortDescending()) {
 			sortOrder = "DESC ";
 		}
 		queryStr += sortOrder;
@@ -249,7 +249,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 
 
-	private Query getCertOnlyQuery(SearchRequest searchRequest){
+	private Query getCertOnlyQuery(SearchRequest searchRequest) {
 		String queryStr = "SELECT "
 				+ "c.certified_product_id as \"certified_product_id\", "
 				+ COLUMNS_MINUS_CERTIFIED_PRODUCT_ID
@@ -280,7 +280,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 
 		String sortOrder = "ASC ";
-		if (searchRequest.getSortDescending()){
+		if (searchRequest.getSortDescending()) {
 			sortOrder = "DESC ";
 		}
 		queryStr += sortOrder;
@@ -303,7 +303,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	}
 
-	private Query getCertCQMQuery(SearchRequest searchRequest){
+	private Query getCertCQMQuery(SearchRequest searchRequest) {
 		String queryStr = "SELECT "
 				+ "c.cpid as \"certified_product_id\", "
 				+ COLUMNS_MINUS_CERTIFIED_PRODUCT_ID
@@ -342,7 +342,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 
 		String sortOrder = "ASC ";
-		if (searchRequest.getSortDescending()){
+		if (searchRequest.getSortDescending()) {
 			sortOrder = "DESC ";
 		}
 		queryStr += sortOrder;
@@ -368,7 +368,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return query;
 	}
 
-	private Query getBasicQuery(SearchRequest searchRequest){
+	private Query getBasicQuery(SearchRequest searchRequest) {
 		String queryStr = "from CertifiedProductDetailsEntity where (NOT deleted = true)";
 
 		queryStr += buildSearchTermFilter(searchRequest);
@@ -384,7 +384,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		queryStr += " ORDER BY "+columnNameRef.get(searchRequest.getOrderBy())+" ";
 
 		String sortOrder = "ASC ";
-		if (searchRequest.getSortDescending()){
+		if (searchRequest.getSortDescending()) {
 			sortOrder = "DESC ";
 		}
 		queryStr += sortOrder;
@@ -412,7 +412,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		Query query = getCountQueryForSearchFilters(searchRequest);
 
 		Object queryResult = query.getSingleResult();
-		if (queryResult instanceof java.math.BigInteger){
+		if (queryResult instanceof java.math.BigInteger) {
 			java.math.BigInteger bigIntResult = (java.math.BigInteger) queryResult;
 			return bigIntResult.longValue();
 		} else {
@@ -420,15 +420,15 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		}
 	}
 
-	private Query getCountQueryForSearchFilters(SearchRequest searchRequest){
+	private Query getCountQueryForSearchFilters(SearchRequest searchRequest) {
 
 		Query query = null;
 
-		if (searchRequest.getCertificationCriteria().isEmpty() && searchRequest.getCqms().isEmpty()){
+		if (searchRequest.getCertificationCriteria().isEmpty() && searchRequest.getCqms().isEmpty()) {
 
 			query = this.getBasicCountQuery(searchRequest);
 
-		} else if (searchRequest.getCertificationCriteria().isEmpty()){
+		} else if (searchRequest.getCertificationCriteria().isEmpty()) {
 
 			query = this.getCQMOnlyCountQuery(searchRequest);
 
@@ -444,7 +444,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	}
 
-	private Query getCQMOnlyCountQuery(SearchRequest searchRequest){
+	private Query getCQMOnlyCountQuery(SearchRequest searchRequest) {
 		String queryStr = "SELECT "
 				+ "COUNT(*) as \"count\" "
 				+ "FROM "
@@ -489,7 +489,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 
 
-	private Query getCertOnlyCountQuery(SearchRequest searchRequest){
+	private Query getCertOnlyCountQuery(SearchRequest searchRequest) {
 		String queryStr = "SELECT "
 				+ "COUNT(*) as \"count\" "
 				+ "FROM ( "
@@ -536,7 +536,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	}
 
-	private Query getCertCQMCountQuery(SearchRequest searchRequest){
+	private Query getCertCQMCountQuery(SearchRequest searchRequest) {
 		String queryStr = "SELECT COUNT(*) as \"count\" "
 
 				+ "FROM "
@@ -593,7 +593,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		return query;
 	}
 
-	private Query getBasicCountQuery(SearchRequest searchRequest){
+	private Query getBasicCountQuery(SearchRequest searchRequest) {
 		String queryStr = "Select count(e.id) from CertifiedProductDetailsEntity e where (NOT deleted = true)";
 
 		queryStr += buildSearchTermFilter(searchRequest);
@@ -623,7 +623,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	private String buildSearchTermFilter(SearchRequest searchRequest) {
 		String result = "";
-		if (searchRequest.getSearchTerm() != null){
+		if (searchRequest.getSearchTerm() != null) {
 			if(searchRequest.getSearchTerm().toUpperCase().startsWith("CHP-")) {
 				result += " AND UPPER(chpl_product_number) LIKE UPPER(:searchterm) ";
 			} else if(searchRequest.getSearchTerm().split("\\.").length == 9) {
@@ -650,7 +650,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 	}
 
 	private void populateSearchTermParameter(SearchRequest searchRequest, Query query) {
-		if (searchRequest.getSearchTerm() != null){
+		if (searchRequest.getSearchTerm() != null) {
 			if(searchRequest.getSearchTerm().split("\\.").length == 9) {
 				String[] idParts = searchRequest.getSearchTerm().split("\\.");
 				query.setParameter("yearCode", idParts[0]);
@@ -732,28 +732,28 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 
 	private String buildDeveloperFilter(SearchRequest searchRequest) {
 		String result = "";
-		if (searchRequest.getDeveloper() != null){
+		if (searchRequest.getDeveloper() != null) {
 			result +=  " AND (UPPER(vendor_name) LIKE UPPER(:vendorname)) ";
 		}
 		return result;
 	}
 
 	private void populateDeveloperParameter(SearchRequest searchRequest, Query query) {
-		if (searchRequest.getDeveloper() != null){
+		if (searchRequest.getDeveloper() != null) {
 			query.setParameter("vendorname", "%"+searchRequest.getDeveloper()+"%");
 		}
 	}
 
 	private String buildProductFilter(SearchRequest searchRequest) {
 		String result = "";
-		if (searchRequest.getProduct() != null){
+		if (searchRequest.getProduct() != null) {
 			result +=  " AND (UPPER(product_name) LIKE UPPER(:productname)) ";
 		}
 		return result;
 	}
 
 	private void populateProductParameter(SearchRequest searchRequest, Query query) {
-		if (searchRequest.getProduct() != null){
+		if (searchRequest.getProduct() != null) {
 			query.setParameter("productname", "%"+searchRequest.getProduct()+"%");
 		}
 	}

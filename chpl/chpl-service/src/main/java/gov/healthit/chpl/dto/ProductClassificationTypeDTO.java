@@ -15,9 +15,9 @@ public class ProductClassificationTypeDTO implements Serializable {
 	private Long lastModifiedUser;
 	private String name;
 
-	public ProductClassificationTypeDTO(){}
+	public ProductClassificationTypeDTO() {}
 
-	public ProductClassificationTypeDTO(ProductClassificationTypeEntity entity){
+	public ProductClassificationTypeDTO(ProductClassificationTypeEntity entity) {
 
 		this.id = entity.getId();
 		this.creationDate = entity.getCreationDate();

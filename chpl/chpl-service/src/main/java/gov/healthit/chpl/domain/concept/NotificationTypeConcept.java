@@ -14,7 +14,7 @@ public enum NotificationTypeConcept implements Serializable {
 
 	private String name;
 
-	private NotificationTypeConcept(String name){
+	private NotificationTypeConcept(String name) {
 		this.name = name;
 	}
 

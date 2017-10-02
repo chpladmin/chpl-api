@@ -32,7 +32,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 			throws EntityCreationException {
 
 		AccessibilityStandardEntity entity = null;
-		if (dto.getId() != null){
+		if (dto.getId() != null) {
 			entity = this.getEntityById(dto.getId());
 		}
 
@@ -90,7 +90,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 		AccessibilityStandardDTO dto = null;
 		AccessibilityStandardEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new AccessibilityStandardDTO(entity);
 		}
 		return dto;
@@ -102,7 +102,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 		AccessibilityStandardDTO dto = null;
 		List<AccessibilityStandardEntity> entities = getEntitiesByName(name);
 
-		if (entities != null && entities.size() > 0){
+		if (entities != null && entities.size() > 0) {
 			dto = new AccessibilityStandardDTO(entities.get(0));
 		}
 		return dto;
@@ -131,7 +131,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 			result = getByName(name);
 		}
 
-		if(result == null){
+		if(result == null) {
 			AccessibilityStandardDTO toCreate = new AccessibilityStandardDTO();
 			toCreate.setName(name.trim());
 			result = create(toCreate);
@@ -164,7 +164,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 		query.setParameter("entityid", id);
 		List<AccessibilityStandardEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

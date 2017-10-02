@@ -95,7 +95,7 @@ public class CollectionsController {
 						//call the setter method and set to null
 						if(setter != null) {
 							for(CertifiedProductSearchResult searchResult : mutableSearchResults) {
-								setter.invoke(searchResult, new Object[]{ null });
+								setter.invoke(searchResult, new Object[] { null });
 							}
 						} else {
 							LOGGER.error("No method with name " + setterMethodName + " was found for field " + searchResultField.getName() + " and argument type " + searchResultFieldTypeClazz.getName());
@@ -137,7 +137,7 @@ public class CollectionsController {
 
 	private List<Field> getAllInheritedFields(Class clazz, List<Field> fields) {
 	    Class superClazz = clazz.getSuperclass();
-	    if(superClazz != null){
+	    if(superClazz != null) {
 	    	getAllInheritedFields(superClazz, fields);
 	    }
 	    fields.addAll(Arrays.asList(clazz.getDeclaredFields()));

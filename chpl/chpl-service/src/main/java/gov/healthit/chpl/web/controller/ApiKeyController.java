@@ -69,7 +69,7 @@ public class ApiKeyController {
 
 		sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
 
-		return "{\"keyRegistered\" : \""+apiKey+"\" }";
+		return " {\"keyRegistered\" : \""+apiKey+"\" }";
 	}
 
 	@ApiOperation(value="Remove an API key.",
@@ -82,11 +82,11 @@ public class ApiKeyController {
 			@RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
 
 		String keyToRevoke = key.getKey();
-		if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)){
+		if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)) {
 			throw new Exception("A user can not delete their own API key.");
 		}
 		apiKeyManager.deleteKey(keyToRevoke);
-		return "{\"keyRevoked\" : \""+keyToRevoke+"\" }";
+		return " {\"keyRevoked\" : \""+keyToRevoke+"\" }";
 
 	}
 
@@ -99,7 +99,7 @@ public class ApiKeyController {
 		List<ApiKey> keys = new ArrayList<ApiKey>();
 		List<ApiKeyDTO> dtos = apiKeyManager.findAll();
 
-		for (ApiKeyDTO dto : dtos){
+		for (ApiKeyDTO dto : dtos) {
 			ApiKey apiKey = new ApiKey();
 			apiKey.setName(dto.getNameOrganization());
 			apiKey.setEmail(dto.getEmail());
@@ -123,15 +123,15 @@ public class ApiKeyController {
 			@RequestParam(value = "start", required = false) Long startDateMilli,
 			@RequestParam(value = "end", required = false) Long endDateMilli) throws EntityRetrievalException
 	{
-		if (pageNumber == null){
+		if (pageNumber == null) {
 			pageNumber = 0;
 		}
 
-		if (pageSize == null){
+		if (pageSize == null) {
 			pageSize = 100;
 		}
 
-		if (apiKeyFilter != null && apiKeyFilter.isEmpty()){
+		if (apiKeyFilter != null && apiKeyFilter.isEmpty()) {
 			apiKeyFilter = null;
 		}
 
@@ -143,7 +143,7 @@ public class ApiKeyController {
 
 	@ApiOperation(value="View the calls made by a specific API key.",
 			notes="This service is only available to CHPL users with ROLE_ADMIN.")
-	@RequestMapping(value="/activity/{apiKey}", method= RequestMethod.POST,
+	@RequestMapping(value="/activity/ {apiKey}", method= RequestMethod.POST,
 			consumes= MediaType.APPLICATION_JSON_VALUE,
 			produces="application/json; charset = utf-8")
 	public List<ApiKeyActivity> listActivityByKey(
@@ -151,11 +151,11 @@ public class ApiKeyController {
 			@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
 			@RequestParam(value = "pageSize", required = false) Integer pageSize)
 	throws EntityRetrievalException {
-		if (pageNumber == null){
+		if (pageNumber == null) {
 			pageNumber = 0;
 		}
 
-		if (pageSize == null){
+		if (pageSize == null) {
 			pageSize = 100;
 		}
 
@@ -165,7 +165,7 @@ public class ApiKeyController {
 
 	}
 
-	private void sendRegistrationEmail(String email, String orgName, String apiKey) throws AddressException, MessagingException{
+	private void sendRegistrationEmail(String email, String orgName, String apiKey) throws AddressException, MessagingException {
 
 		String subject = "CHPL API Key";
 

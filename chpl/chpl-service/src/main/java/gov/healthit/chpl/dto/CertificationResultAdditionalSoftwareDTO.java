@@ -20,9 +20,9 @@ public class CertificationResultAdditionalSoftwareDTO implements Serializable {
 	private Date creationDate;
 	private Boolean deleted;
 
-	public CertificationResultAdditionalSoftwareDTO(){}
+	public CertificationResultAdditionalSoftwareDTO() {}
 
-	public CertificationResultAdditionalSoftwareDTO(CertificationResultAdditionalSoftwareEntity entity){
+	public CertificationResultAdditionalSoftwareDTO(CertificationResultAdditionalSoftwareEntity entity) {
 		this.id = entity.getId();
 		this.certificationResultId = entity.getCertificationResultId();
 		this.name = entity.getName();

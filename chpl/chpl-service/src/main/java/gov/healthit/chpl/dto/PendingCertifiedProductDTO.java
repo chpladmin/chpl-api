@@ -96,7 +96,7 @@ public class PendingCertifiedProductDTO implements Serializable {
 
 	private Date uploadDate;
 
-	public PendingCertifiedProductDTO(){
+	public PendingCertifiedProductDTO() {
 		this.errorMessages = new HashSet<String>();
 		this.warningMessages = new HashSet<String>();
 		this.icsParents = new ArrayList<CertifiedProductDTO>();
@@ -467,7 +467,7 @@ public class PendingCertifiedProductDTO implements Serializable {
 		}
 	}
 
-	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity){
+	public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
 		this();
 		this.id = entity.getId();
 		this.practiceTypeId = entity.getPracticeTypeId();

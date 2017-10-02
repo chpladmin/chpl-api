@@ -43,7 +43,7 @@ public class AnnouncementManagerImpl extends ApplicationObjectSupport implements
 
 	@Transactional
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
-	public AnnouncementDTO update(AnnouncementDTO announcement) throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
+	public AnnouncementDTO update(AnnouncementDTO announcement) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
 		AnnouncementDTO result = null;
 		AnnouncementDTO toUpdate = announcementDAO.getByIdToUpdate(announcement.getId(), false);

@@ -202,7 +202,7 @@ public class SearchViewController {
 			+ "?certificationEditions = 2011&certificationStatuses = Retired ."
 			+ "Any parameter that can accept multiple things (i.e. certificationStatuses) expects a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
 			+ "Date parameters are required to be in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
-	 @ApiImplicitParams({
+	 @ApiImplicitParams( {
 		    @ApiImplicitParam(name = "searchTerm", value = "CHPL ID, Developer Name, Product Name, ONC-ACB Certification ID", required = false, dataType = "string", paramType = "query"),
 		    @ApiImplicitParam(name = "certificationStatuses", value = "A comma-separated list of certification statuses "
 		    		+ "(ex: \"Active,Retired,Withdrawn by Developer\")). Retired listings are excluded unless requested with this parameter."
@@ -244,7 +244,7 @@ public class SearchViewController {
 				required = false, dataType = "boolean", paramType = "query")
 		  })
 	@RequestMapping(value="/search", method = RequestMethod.GET,
-			produces={"application/json; charset = utf-8", "application/xml"})
+			produces= {"application/json; charset = utf-8", "application/xml"})
 	public @ResponseBody SearchResponse simpleSearch(
 			@RequestParam(value = "searchTerm", required = false, defaultValue="") String searchTerm,
 			@RequestParam(value = "certificationStatuses", required = false, defaultValue="Active,Suspended by ONC,Suspended by ONC-ACB") String certificationStatusesDelimited,
@@ -549,7 +549,7 @@ public class SearchViewController {
 		return certifiedProductSearchManager.search(searchFilters);
 	}
 
-	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})
+	@Secured( {Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})
 	@ApiOperation(value="Get all possible types of jobs that can be created in the system.")
 	@RequestMapping(value="/data/job_types", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
@@ -557,7 +557,7 @@ public class SearchViewController {
 		return searchMenuManager.getJobTypes();
 	}
 
-	@Secured({Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})
+	@Secured( {Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN})
 	@ApiOperation(value="Get all possible types of notifications that a user can sign up for.")
 	@RequestMapping(value="/data/notification_types", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
@@ -816,14 +816,14 @@ public class SearchViewController {
 	}
 
 	@ApiOperation(value="Get all search options in the CHPL",
-			notes="This returns all of the other /data/{something} results in one single response.")
+			notes="This returns all of the other /data/ {something} results in one single response.")
 	@RequestMapping(value="/data/search_options", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody PopulateSearchOptions getPopulateSearchData(
 			@RequestParam(value = "simple", required = false) Boolean simple,
 			@RequestParam(value = "showDeleted", required = false, defaultValue="false") Boolean showDeleted
 			) throws EntityRetrievalException {
-		if (simple == null){
+		if (simple == null) {
 			simple = false;
 		}
 

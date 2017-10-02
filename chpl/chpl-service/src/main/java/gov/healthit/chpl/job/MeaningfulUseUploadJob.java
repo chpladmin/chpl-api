@@ -64,7 +64,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 				try { reader.close(); } catch(Exception ignore) {}
 			} else {
 				CSVRecord heading = null;
-				for(int i = 1; i <= records.size(); i++){
+				for(int i = 1; i <= records.size(); i++) {
 					CSVRecord currRecord = records.get(i-1);
 					MeaningfulUseUser muu = new MeaningfulUseUser();
 
@@ -77,18 +77,18 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 					else {
 						String chplProductNumber = currRecord.get(0).trim();
 						Long numMeaningfulUseUsers = null;
-						try{
+						try {
 							numMeaningfulUseUsers = Long.parseLong(currRecord.get(1).trim());
 							muu.setProductNumber(chplProductNumber);
 							muu.setNumberOfUsers(numMeaningfulUseUsers);
 							muu.setCsvLineNumber(i);
 							// check if product number has already been updated
-							if(uniqueMuusFromFile.contains(muu.getProductNumber())){
+							if(uniqueMuusFromFile.contains(muu.getProductNumber())) {
 								throw new IOException();
 							}
 							muusToUpdate.add(muu);
 							uniqueMuusFromFile.add(muu.getProductNumber());
-						} catch (final NumberFormatException e){
+						} catch (final NumberFormatException e) {
 							muu.setProductNumber(chplProductNumber);
 							muu.setCsvLineNumber(i);
 							String error = "Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_use\" with value \"" + currRecord.get(1).trim() + "\" is invalid. "
@@ -97,13 +97,13 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 							muusToUpdate.add(muu);
 							uniqueMuusFromFile.add(muu.getProductNumber());
 						}
-						catch (final IOException e){
+						catch (final IOException e) {
 							muu.setProductNumber(chplProductNumber);
 							muu.setCsvLineNumber(i);
 							Integer dupLineNumber = null;
 							// get line number with duplicate chpl_product_number
 							for (MeaningfulUseUser entry: muusToUpdate) {
-								if (entry.getProductNumber().equals(muu.getProductNumber())){
+								if (entry.getProductNumber().equals(muu.getProductNumber())) {
 									dupLineNumber = entry.getCsvLineNumber();
 								}
 							}
@@ -130,17 +130,17 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 		}
 
 		//now load everything that was parsed
-		for(MeaningfulUseUser muu : muusToUpdate){
+		for(MeaningfulUseUser muu : muusToUpdate) {
 			if(StringUtils.isEmpty(muu.getError())) {
-				try{
+				try {
 					// If bad input, add error for this MeaningfulUseUser and continue
-					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())){
+					if((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())) {
 						addJobMessage("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber() + "\".");
 					}
-					else if(muu.getNumberOfUsers() == null){
+					else if(muu.getNumberOfUsers() == null) {
 						addJobMessage("Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers() + "\".");
 					}
-					else{
+					else {
 						CertifiedProductDTO dto = new CertifiedProductDTO();
 						// check if 2014 edition CHPL Product Number exists
 						if(cpDao.getByChplNumber(muu.getProductNumber()) != null) {
@@ -157,9 +157,9 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 							throw new EntityRetrievalException();
 						}
 
-						try{
+						try {
 							cpDao.updateMeaningfulUseUsers(dto);
-						} catch (final EntityRetrievalException e){
+						} catch (final EntityRetrievalException e) {
 							addJobMessage("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
 									+ "The provided \"chpl_product_number\" does not exist.");
 						}
@@ -168,7 +168,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 					String msg = "Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
 							+ "The provided \"chpl_product_number\" does not exist.";
 					addJobMessage(msg);
-				} catch (Exception ex){
+				} catch (Exception ex) {
 					String msg = "Line " + muu.getCsvLineNumber() + ": An unexpected error occurred. " + ex.getMessage();
 					LOGGER.error(msg, ex);
 					addJobMessage(msg);

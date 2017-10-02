@@ -20,7 +20,7 @@ public class TestParticipantDTO implements Serializable {
 
 	private String pendingUniqueId;
 
-	public TestParticipantDTO(){}
+	public TestParticipantDTO() {}
 
 	public TestParticipantDTO(TestParticipantEntity entity)
 	{

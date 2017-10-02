@@ -135,7 +135,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		AddressDTO dto = null;
 		AddressEntity ae = this.getEntityById(id);
 
-		if (ae != null){
+		if (ae != null) {
 			dto = new AddressDTO(ae);
 		}
 		return dto;
@@ -189,7 +189,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 		query.setParameter("entityid", id);
 		List<AddressEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate address id in database.");
 		} else if(result.size() == 1) {
 			entity = result.get(0);
@@ -228,7 +228,7 @@ public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
 
 		List<AddressEntity> result = query.getResultList();
 
-		if (result.size() >= 1){
+		if (result.size() >= 1) {
 			entity = result.get(0);
 		}
 

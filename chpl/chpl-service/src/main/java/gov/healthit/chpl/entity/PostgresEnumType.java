@@ -14,7 +14,7 @@ import org.hibernate.usertype.UserType;
 public abstract class PostgresEnumType implements UserType, ParameterizedType {
 	private Class<Enum> enumClass;
 
-	public PostgresEnumType(){
+	public PostgresEnumType() {
 	    super();
 	}
 

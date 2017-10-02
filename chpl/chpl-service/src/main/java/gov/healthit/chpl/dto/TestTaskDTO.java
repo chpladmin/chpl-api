@@ -27,7 +27,7 @@ public class TestTaskDTO implements Serializable {
 	private String pendingUniqueId;
 	private List<TestParticipantDTO> participants;
 
-	public TestTaskDTO(){
+	public TestTaskDTO() {
 		participants = new ArrayList<TestParticipantDTO>();
 	}
 

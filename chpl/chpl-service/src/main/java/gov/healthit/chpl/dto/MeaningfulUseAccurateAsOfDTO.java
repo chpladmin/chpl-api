@@ -16,9 +16,9 @@ public class MeaningfulUseAccurateAsOfDTO implements Serializable {
 	private Date creationDate;
 	private Date lastModifiedDate;
 
-	public MeaningfulUseAccurateAsOfDTO(){};
+	public MeaningfulUseAccurateAsOfDTO() {};
 
-	public MeaningfulUseAccurateAsOfDTO(MeaningfulUseAccurateAsOfEntity muuEntity){
+	public MeaningfulUseAccurateAsOfDTO(MeaningfulUseAccurateAsOfEntity muuEntity) {
 		this.id = muuEntity.getId();
 		this.accurateAsOfDate = muuEntity.getAccurateAsOfDate();
 		this.deleted = muuEntity.getDeleted();
@@ -27,7 +27,7 @@ public class MeaningfulUseAccurateAsOfDTO implements Serializable {
 		this.lastModifiedDate = muuEntity.getLastModifiedDate();
 	};
 
-	public MeaningfulUseAccurateAsOfDTO(MeaningfulUseAccurateAsOf meaningfulUseAccurateAsOf){
+	public MeaningfulUseAccurateAsOfDTO(MeaningfulUseAccurateAsOf meaningfulUseAccurateAsOf) {
 		this.id = meaningfulUseAccurateAsOf.getId();
 		this.accurateAsOfDate = new Date(meaningfulUseAccurateAsOf.getAccurateAsOfDate());
 		this.deleted = meaningfulUseAccurateAsOf.getDeleted();

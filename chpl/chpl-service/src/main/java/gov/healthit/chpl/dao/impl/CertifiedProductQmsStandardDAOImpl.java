@@ -75,7 +75,7 @@ public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements C
 		List<CertifiedProductQmsStandardEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CertifiedProductQmsStandardDTO> dtos = new ArrayList<CertifiedProductQmsStandardDTO>();
 
-		for (CertifiedProductQmsStandardEntity entity : entities){
+		for (CertifiedProductQmsStandardEntity entity : entities) {
 			dtos.add(new CertifiedProductQmsStandardDTO(entity));
 		}
 		return dtos;

@@ -104,14 +104,14 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	public List<ApiKeyActivity> getApiKeyActivity(String keyString) throws EntityRetrievalException {
 
 		ApiKeyDTO apiKey = findKey(keyString);
-		if (apiKey == null){
+		if (apiKey == null) {
 			apiKey = apiKeyDAO.getRevokedKeyByKey(keyString);
 		}
 
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findByKeyId(apiKey.getId());
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 
-		for (ApiKeyActivityDTO dto : activityDTOs){
+		for (ApiKeyActivityDTO dto : activityDTOs) {
 
 			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
 
@@ -136,14 +136,14 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 	throws EntityRetrievalException {
 
 		ApiKeyDTO apiKey = findKey(keyString);
-		if (apiKey == null){
+		if (apiKey == null) {
 			apiKey = apiKeyDAO.getRevokedKeyByKey(keyString);
 		}
 
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findByKeyId(apiKey.getId(), pageNumber, pageSize);
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 
-		for (ApiKeyActivityDTO dto : activityDTOs){
+		for (ApiKeyActivityDTO dto : activityDTOs) {
 
 			ApiKeyActivity apiKeyActivity = new ApiKeyActivity();
 
@@ -174,10 +174,10 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 		List<ApiKeyActivityDTO> activityDTOs = apiKeyActivityDAO.findAll();
 		List<ApiKeyActivity> activity = new ArrayList<ApiKeyActivity>();
 
-		for (ApiKeyActivityDTO dto : activityDTOs){
+		for (ApiKeyActivityDTO dto : activityDTOs) {
 
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
-			if (apiKey == null){
+			if (apiKey == null) {
 				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
 			}
 
@@ -216,9 +216,9 @@ public class ApiKeyManagerImpl implements ApiKeyManager {
 				(apiKeyFilter, pageNumber, pageSize, dateAscending, startDateMilli, endDateMilli);
 		List<ApiKeyActivity> apiKeyActivitiesList = new ArrayList<ApiKeyActivity>();
 
-		for (ApiKeyActivityDTO dto : activityDTOs){
+		for (ApiKeyActivityDTO dto : activityDTOs) {
 			ApiKeyDTO apiKey = findKey(dto.getApiKeyId());
-			if (apiKey == null){
+			if (apiKey == null) {
 				apiKey = apiKeyDAO.getRevokedKeyById(dto.getApiKeyId());
 			}
 

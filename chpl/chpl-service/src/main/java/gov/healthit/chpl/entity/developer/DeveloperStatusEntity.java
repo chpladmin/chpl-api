@@ -26,7 +26,7 @@ public class DeveloperStatusEntity implements Cloneable, Serializable {
 	private Long id;
 
 	@Column(name = "name")
-	@Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")} )
+	@Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType" , parameters = {@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")} )
 	private DeveloperStatusType name;
 
 	@Basic( optional = false )

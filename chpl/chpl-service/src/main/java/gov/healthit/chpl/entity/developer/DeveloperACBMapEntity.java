@@ -44,7 +44,7 @@ public class DeveloperACBMapEntity implements Cloneable, Serializable {
 	private CertificationBodyEntity certificationBody;
 
 	@Column(name = "transparency_attestation")
-	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
+	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters = {@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
 	private AttestationType transparencyAttestation;
 
 	public DeveloperACBMapEntity() {

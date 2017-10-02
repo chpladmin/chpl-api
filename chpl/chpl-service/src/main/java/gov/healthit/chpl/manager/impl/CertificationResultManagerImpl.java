@@ -92,7 +92,7 @@ public class CertificationResultManagerImpl implements
 			+ "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
 			+ "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)"
 			+ ")")
-	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class})
+	@Transactional(rollbackFor= {EntityRetrievalException.class, EntityCreationException.class})
 	public int update(Long acbId, CertifiedProductSearchDetails existingListing,
 			CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
 		throws EntityCreationException, EntityRetrievalException {
@@ -1320,7 +1320,7 @@ public class CertificationResultManagerImpl implements
 	}
 
 	@Override
-	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(Long certificationResultId){
+	public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
 	}
 
@@ -1329,17 +1329,17 @@ public class CertificationResultManagerImpl implements
 		return certResultDAO.getUcdProcessesForCertificationResult(certificationResultId);
 	}
 	@Override
-	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId){
+	public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestStandardsForCertificationResult(certificationResultId);
 	}
 
 	@Override
-	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId){
+	public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestToolsForCertificationResult(certificationResultId);
 	}
 
 	@Override
-	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId){
+	public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId) {
 		return certResultDAO.getTestDataForCertificationResult(certificationResultId);
 	}
 

@@ -9,7 +9,7 @@ public class AgeRangeDTO implements Serializable {
 	private Long id;
 	private String age;
 
-	public AgeRangeDTO(){}
+	public AgeRangeDTO() {}
 
 	public AgeRangeDTO(AgeRangeEntity entity)
 	{

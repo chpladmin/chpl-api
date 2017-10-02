@@ -9,9 +9,9 @@ public class JobMessageDTO implements Serializable {
 	private Long id;
 	private String message;
 
-	public JobMessageDTO(){}
+	public JobMessageDTO() {}
 
-	public JobMessageDTO(JobMessageEntity entity){
+	public JobMessageDTO(JobMessageEntity entity) {
 		this.id = entity.getId();
 		this.message = entity.getMessage();
 	}

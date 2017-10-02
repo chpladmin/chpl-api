@@ -51,7 +51,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		query.setParameter("certifiedProductId", certifiedProductId);
 		List<CertifiedProductBasicSearchResultEntity> searchResult = query.getResultList();
 		CertifiedProductBasicSearchResultEntity result = null;
-		if (searchResult.size() > 0){
+		if (searchResult.size() > 0) {
 			result = searchResult.get(0);
 		}
 		return convertIcs(result);
@@ -169,9 +169,9 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		pv.setVersion(result.getVersion());
 		node.setVersion(pv);
 		ArrayList<CertifiedProduct> childrenList = new ArrayList<CertifiedProduct>();
-		if(result.getChild() != null){
+		if(result.getChild() != null) {
 			String[] children = result.getChild().split("\u263A");
-			for(String child : children){
+			for(String child : children) {
 				String[] childInfo = child.split("\u2639");
 				CertifiedProduct cp = new CertifiedProduct();
 				cp.setChplProductNumber(childInfo[0]);
@@ -181,9 +181,9 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		}
 		node.setChildren(childrenList);
 		ArrayList<CertifiedProduct> parentList = new ArrayList<CertifiedProduct>();
-		if(result.getParent() != null){
+		if(result.getParent() != null) {
 			String[] parents = result.getParent().split("\u263A");
-			for(String parent : parents){
+			for(String parent : parents) {
 				String[] parentInfo = parent.split("\u2639");
 				CertifiedProduct cp = new CertifiedProduct();
 				cp.setChplProductNumber(parentInfo[0]);

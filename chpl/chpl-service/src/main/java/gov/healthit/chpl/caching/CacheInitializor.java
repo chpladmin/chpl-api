@@ -47,7 +47,7 @@ public class CacheInitializor {
 	  @PostConstruct
 	  @Async
 	  public void initialize() throws IOException, EntityRetrievalException, InterruptedException {
-		  if(props == null){
+		  if(props == null) {
 			  InputStream in = CacheInitializor.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
 
 			  if (in == null) {
@@ -73,33 +73,33 @@ public class CacheInitializor {
 			  manager = CacheManager.getInstance();
 
 			  try {
-				if(enableCacheInitializationValue != null && enableCacheInitializationValue.equalsIgnoreCase("true")){
-					if(isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()){
+				if(enableCacheInitializationValue != null && enableCacheInitializationValue.equalsIgnoreCase("true")) {
+					if(isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()) {
 						isInitializeSearchOptionsDone.cancel(true);
 					}
 					isInitializeSearchOptionsDone = asynchronousCacheInitialization.initializeSearchOptions();
 
-					if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()){
+					if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()) {
 						isInitializeCertificationIdsGetAllDone.cancel(true);
 					}
 					isInitializeCertificationIdsGetAllDone = asynchronousCacheInitialization.initializeCertificationIdsGetAll();
 
-					if(isInitializeCertificationIdsGetAllWithProductsDone != null && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()){
+					if(isInitializeCertificationIdsGetAllWithProductsDone != null && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()) {
 						isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
 					}
 					isInitializeCertificationIdsGetAllWithProductsDone = asynchronousCacheInitialization.initializeCertificationIdsGetAllWithProducts();
 
-					if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()){
+					if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()) {
 						isInitializeDecertifiedDevelopers.cancel(true);
 					}
 					isInitializeDecertifiedDevelopers = asynchronousCacheInitialization.initializeDecertifiedDevelopers();
 
-					if(isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()){
+					if(isInitializeBasicSearch != null && !isInitializeBasicSearch.isDone()) {
 						isInitializeBasicSearch.cancel(true);
 					}
 					isInitializeBasicSearch = asynchronousCacheInitialization.initializeBasicSearch();
 
-					if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()){
+					if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()) {
 						isInitializeFindByAcbId.cancel(true);
 					}
 					isInitializeFindByAcbId = asynchronousCacheInitialization.initializeFindByAcbId();
@@ -115,29 +115,29 @@ public class CacheInitializor {
 	@Before("@annotation(ClearAllCaches)")
     public void beforeClearAllCachesMethod() {
 		tClearAllStart = System.currentTimeMillis();
-		if(tClearAllEnd != null){
+		if(tClearAllEnd != null) {
 			  tClearAllElapsedSecs = (tClearAllStart - tClearAllEnd) / 1000.0;
 		  }
 
 		if(tClearAllEnd == null || tClearAllElapsedSecs > clearAllCachesTimeoutSecs) {
 			// Stop initializing caches if running
-			if(isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()){
+			if(isInitializeSearchOptionsDone != null && !isInitializeSearchOptionsDone.isDone()) {
 				isInitializeSearchOptionsDone.cancel(true);
 			}
 
-			if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()){
+			if(isInitializeCertificationIdsGetAllDone != null && !isInitializeCertificationIdsGetAllDone.isDone()) {
 				isInitializeCertificationIdsGetAllDone.cancel(true);
 			}
 
-			if(isInitializeCertificationIdsGetAllWithProductsDone != null && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()){
+			if(isInitializeCertificationIdsGetAllWithProductsDone != null && !isInitializeCertificationIdsGetAllWithProductsDone.isDone()) {
 				isInitializeCertificationIdsGetAllWithProductsDone.cancel(true);
 			}
 
-			if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()){
+			if(isInitializeDecertifiedDevelopers != null && !isInitializeDecertifiedDevelopers.isDone()) {
 				isInitializeDecertifiedDevelopers.cancel(true);
 			}
 
-			if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()){
+			if(isInitializeFindByAcbId != null && !isInitializeFindByAcbId.isDone()) {
 				isInitializeFindByAcbId.cancel(true);
 			}
 

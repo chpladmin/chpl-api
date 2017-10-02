@@ -23,7 +23,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 
 		CertificationStatusEventEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -81,7 +81,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		CertificationStatusEventDTO dto = null;
 		CertificationStatusEventEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertificationStatusEventDTO(entity);
 		}
 		return dto;
@@ -159,11 +159,11 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
 		query.setParameter("entityid", id);
 		List<CertificationStatusEventEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate certification event id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

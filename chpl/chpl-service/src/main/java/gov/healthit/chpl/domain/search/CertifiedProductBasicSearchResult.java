@@ -10,13 +10,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 public class CertifiedProductBasicSearchResult extends CertifiedProductSearchResult {
 	private static final long serialVersionUID = -2547390525592841038L;
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	private List<String> previousDevelopers; //list of previous developer names that owned the product
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	private List<String> criteriaMet; //list of criteria numbers
 
-	@JsonView({SearchViews.Default.class})
+	@JsonView( {SearchViews.Default.class})
 	private List<String> cqmsMet; //list of cmqs that were met (any version)
 
 	private Map<String, String> apiDocumentation; //map of criteria to api documentation url

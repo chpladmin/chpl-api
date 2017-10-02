@@ -22,7 +22,7 @@ public class AgeRangeDAOImpl extends BaseDAOImpl implements AgeRangeDAO {
 		AgeRangeDTO dto = null;
 		AgeRangeEntity entity = getEntityById(id);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new AgeRangeDTO(entity);
 		}
 		return dto;
@@ -67,7 +67,7 @@ public class AgeRangeDAOImpl extends BaseDAOImpl implements AgeRangeDAO {
 		Query query = entityManager.createQuery( "from AgeRangeEntity where (NOT deleted = true) and (UPPER(age) = :age)", AgeRangeEntity.class);
 		query.setParameter("age", name.toUpperCase());
 		List<AgeRangeEntity> result = query.getResultList();
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -82,11 +82,11 @@ public class AgeRangeDAOImpl extends BaseDAOImpl implements AgeRangeDAO {
 		query.setParameter("entityid", id);
 		List<AgeRangeEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate age range id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

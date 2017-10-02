@@ -19,7 +19,7 @@ public class AddressDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 
-	public AddressDTO(){}
+	public AddressDTO() {}
 
 	public AddressDTO(AddressEntity entity)
 	{

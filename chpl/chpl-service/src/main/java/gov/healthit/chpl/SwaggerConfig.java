@@ -40,7 +40,7 @@ public class SwaggerConfig implements EnvironmentAware {
     }
 
     @Bean
-    public Docket customDocket(){
+    public Docket customDocket() {
     	LOGGER.info("get Docket");
        return new Docket(DocumentationType.SWAGGER_2)
     		   .apiInfo(apiInfo())

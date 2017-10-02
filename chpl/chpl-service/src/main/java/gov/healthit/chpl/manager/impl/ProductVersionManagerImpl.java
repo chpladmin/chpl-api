@@ -132,7 +132,7 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
 	}
 
 	@Override
-	@Transactional(rollbackFor={EntityRetrievalException.class, EntityCreationException.class,
+	@Transactional(rollbackFor= {EntityRetrievalException.class, EntityCreationException.class,
 			JsonProcessingException.class, AccessDeniedException.class})
 	@PreAuthorize("hasRole('ROLE_ADMIN')")
 	@CacheEvict(value = {CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS}, allEntries = true)

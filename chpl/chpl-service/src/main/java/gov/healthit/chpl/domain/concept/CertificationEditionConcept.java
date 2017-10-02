@@ -10,7 +10,7 @@ public enum CertificationEditionConcept implements Serializable {
 	private final Long id;
 	private final String year;
 
-	private CertificationEditionConcept(Long id, String year){
+	private CertificationEditionConcept(Long id, String year) {
 		this.id = id;
 		this.year = year;
 	}

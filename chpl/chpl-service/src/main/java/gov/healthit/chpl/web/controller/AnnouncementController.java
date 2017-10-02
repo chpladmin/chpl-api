@@ -51,9 +51,9 @@ public class AnnouncementController {
 			@RequestParam(required = false, defaultValue="false") boolean future) {
 		AnnouncementResults results = new AnnouncementResults();
 		List<AnnouncementDTO> announcements = null;
-		if(!future){
+		if(!future) {
 			announcements = announcementManager.getAll();
-		}else{
+		}else {
 			announcements = announcementManager.getAllCurrentAndFuture();
 		}
 		if(announcements != null) {
@@ -64,7 +64,7 @@ public class AnnouncementController {
 		return results;
 	}
 	@ApiOperation(value="Get a specific announcement.")
-	@RequestMapping(value="/{announcementId}", method = RequestMethod.GET,
+	@RequestMapping(value="/ {announcementId}", method = RequestMethod.GET,
 			produces="application/json; charset = utf-8")
 	public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") Long announcementId)
 		throws EntityRetrievalException {
@@ -82,18 +82,18 @@ public class AnnouncementController {
 		AnnouncementDTO toCreate = new AnnouncementDTO();
 		if(StringUtils.isEmpty(announcementInfo.getTitle())) {
 			throw new InvalidArgumentsException("A title is required for a new announcement");
-		}else{
+		}else {
 			toCreate.setTitle(announcementInfo.getTitle());
 		}
 		toCreate.setText(announcementInfo.getText());
 		if(StringUtils.isEmpty(announcementInfo.getStartDate())) {
 			throw new InvalidArgumentsException("A start date is required for a new announcement");
-		}else{
+		}else {
 			toCreate.setStartDate(announcementInfo.getStartDate());
 		}
 		if(StringUtils.isEmpty(announcementInfo.getEndDate())) {
 			throw new InvalidArgumentsException("An end date is required for a new announcement");
-		}else{
+		}else {
 			toCreate.setEndDate(announcementInfo.getEndDate());
 		}
 
@@ -123,7 +123,7 @@ public class AnnouncementController {
 
 	@ApiOperation(value="Delete an existing announcement.",
 			notes="Only CHPL users with ROLE_ADMIN are able to delete announcements.")
-	@RequestMapping(value="/{announcementId}/delete", method= RequestMethod.POST,
+	@RequestMapping(value="/ {announcementId}/delete", method= RequestMethod.POST,
 			produces="application/json; charset = utf-8")
 	public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId)
 			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
@@ -131,7 +131,7 @@ public class AnnouncementController {
 
 		AnnouncementDTO toDelete = announcementManager.getById(announcementId,false);
 		announcementManager.delete(toDelete);
-		return "{\"deletedAnnouncement\" : true }";
+		return " {\"deletedAnnouncement\" : true }";
 	}
 }
 

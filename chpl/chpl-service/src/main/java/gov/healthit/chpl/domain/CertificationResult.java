@@ -182,7 +182,7 @@ public class CertificationResult implements Serializable {
 	@XmlElement(name = "macraMeasure")
 	private List<MacraMeasure> g2MacraMeasures;
 
-	public CertificationResult(){
+	public CertificationResult() {
 		allowedMacraMeasures = new ArrayList<MacraMeasure>();
 		additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 		testStandards = new ArrayList<CertificationResultTestStandard>();
@@ -345,7 +345,7 @@ public class CertificationResult implements Serializable {
 		this.g2MacraMeasures = g2MacraMeasures;
 	}
 
-	public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework){
+	public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework) {
 		if(StringUtils.isEmpty(privacyAndSecurityFramework)) {
 			return privacyAndSecurityFramework;
 		}

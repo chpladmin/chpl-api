@@ -541,7 +541,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 							product.getErrorMessages().add("No test tool with " + testTool.getName() + " was found for criteria " + cert.getNumber() + ".");
 						}
 						else if(tt.isRetired() && super.icsCodeInteger.intValue() == 0) {
-							if(super.hasIcsConflict){
+							if(super.hasIcsConflict) {
 								product.getWarningMessages().add("Test Tool '" + testTool.getName() + "' can not be used for criteria '" + cert.getNumber()
 								+ "', as it is a retired tool, and this Certified Product does not carry ICS.");
 							}
@@ -970,7 +970,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 						product.getErrorMessages().add("There was no test tool name found for certification " + cert.getNumber() + ".");
 					} else {
 						TestToolDTO tt = super.testToolDao.getByName(testTool.getTestToolName());
-						if(tt == null){
+						if(tt == null) {
 							product.getErrorMessages().add("No test tool with " + testTool.getTestToolName() + " was found for criteria " + cert.getNumber() + ".");
 						}
 						else if(tt.isRetired() && super.icsCodeInteger.intValue() == 0) {

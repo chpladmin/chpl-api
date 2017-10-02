@@ -14,9 +14,9 @@ public class CertifiedProductQmsStandardDTO implements Serializable {
 	private String qmsModification;
 	private String applicableCriteria;
 
-	public CertifiedProductQmsStandardDTO(){}
+	public CertifiedProductQmsStandardDTO() {}
 
-	public CertifiedProductQmsStandardDTO(CertifiedProductQmsStandardEntity entity){
+	public CertifiedProductQmsStandardDTO(CertifiedProductQmsStandardEntity entity) {
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.qmsStandardId = entity.getQmsStandardId();

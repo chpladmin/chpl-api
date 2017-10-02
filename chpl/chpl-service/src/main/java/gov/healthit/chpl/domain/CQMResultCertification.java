@@ -36,11 +36,11 @@ public class CQMResultCertification implements Serializable {
 	@XmlElement(required = false, nillable = true)
 	private String certificationNumber;
 
-	public CQMResultCertification(){
+	public CQMResultCertification() {
 
 	}
 
-	public CQMResultCertification(CQMResultCriteriaDTO dto){
+	public CQMResultCertification(CQMResultCriteriaDTO dto) {
 		this.id = dto.getId();
 		this.certificationId = dto.getCriterionId();
 		if(dto.getCriterion() != null) {

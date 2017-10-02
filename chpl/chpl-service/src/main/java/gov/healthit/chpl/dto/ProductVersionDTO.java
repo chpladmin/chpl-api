@@ -16,9 +16,9 @@ public class ProductVersionDTO implements Serializable {
 	private String productName;
 	private String version;
 
-	public ProductVersionDTO(){}
+	public ProductVersionDTO() {}
 
-	public ProductVersionDTO(ProductVersionEntity entity){
+	public ProductVersionDTO(ProductVersionEntity entity) {
 		if(entity != null) {
 			this.id = entity.getId();
 			this.creationDate = entity.getCreationDate();

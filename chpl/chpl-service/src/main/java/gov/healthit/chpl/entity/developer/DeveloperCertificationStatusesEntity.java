@@ -19,7 +19,7 @@ import javax.persistence.Transient;
  */
 @Entity
 @Table(name = "developer_certification_statuses")
-public class DeveloperCertificationStatusesEntity implements Cloneable, Serializable{
+public class DeveloperCertificationStatusesEntity implements Cloneable, Serializable {
 	/** Serial Version UID. */
 	private static final long serialVersionUID = -1396979002399764864L;
 
@@ -50,7 +50,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	@Column(name = "terminated_by_onc", nullable = false)
 	private Integer terminatedByOnc;
 
-	public DeveloperCertificationStatusesEntity(){
+	public DeveloperCertificationStatusesEntity() {
 
 	}
 
@@ -89,7 +89,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Return the value associated with the column: id.
 	 * @return A Long object (this.id)
 	 */
-	public Long getId(){
+	public Long getId() {
 		return this.id;
 	}
 
@@ -97,7 +97,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Set the value related to the column: id.
 	 * @param id the id value you wish to set
 	 */
-	public void setId(final Long id){
+	public void setId(final Long id) {
 		this.id = id;
 	}
 
@@ -105,7 +105,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Return the value associated with the column: active.
 	 * @return A Integer object (this.active)
 	 */
-	public Integer getActive(){
+	public Integer getActive() {
 		return this.active;
 	}
 
@@ -113,7 +113,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Set the value related to the column: active.
 	 * @param active - the aggregate count of active certification_statuses
 	 */
-	public void setActive(Integer active){
+	public void setActive(Integer active) {
 		this.active = active;
 	}
 
@@ -121,7 +121,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Return the value associated with the column: retired.
 	 * @return A Integer object (this.retired)
 	 */
-	public Integer getRetired(){
+	public Integer getRetired() {
 		return this.retired;
 	}
 
@@ -129,7 +129,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Set the value related to the column: retired.
 	 * @param retired - the aggregate count of retired certification_statuses
 	 */
-	public void setRetired(Integer retired){
+	public void setRetired(Integer retired) {
 		this.retired = retired;
 	}
 
@@ -137,7 +137,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Return the value associated with the column: withdrawnByDeveloper.
 	 * @return A Integer object (this.withdrawnByDeveloper)
 	 */
-	public Integer getWithdrawnByDeveloper(){
+	public Integer getWithdrawnByDeveloper() {
 		return this.withdrawnByDeveloper;
 	}
 
@@ -145,7 +145,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Set the value related to the column: withdrawn.
 	 * @param withdrawnByDeveloper - the aggregate count of withdrawn certification_statuses
 	 */
-	public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper){
+	public void setWithdrawnByDeveloper(Integer withdrawnByDeveloper) {
 		this.withdrawnByDeveloper = withdrawnByDeveloper;
 	}
 
@@ -153,7 +153,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Return the value associated with the column: withdrawnByAcb.
 	 * @return A Integer object (this.withdrawnByAcb)
 	 */
-	public Integer getWithdrawnByAcb(){
+	public Integer getWithdrawnByAcb() {
 		return this.withdrawnByAcb;
 	}
 
@@ -161,7 +161,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Set the value related to the column: withdrawnByAcb.
 	 * @param withdrawnByAcb - the aggregate count of withdrawnByAcb certification_statuses
 	 */
-	public void setWithdrawnByAcb(Integer withdrawnByAcb){
+	public void setWithdrawnByAcb(Integer withdrawnByAcb) {
 		this.withdrawnByAcb = withdrawnByAcb;
 	}
 
@@ -169,7 +169,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Return the value associated with the column: suspendedByAcb.
 	 * @return A Integer object (this.suspendedByAcb)
 	 */
-	public Integer getSuspendedByAcb(){
+	public Integer getSuspendedByAcb() {
 		return this.suspendedByAcb;
 	}
 
@@ -177,7 +177,7 @@ public class DeveloperCertificationStatusesEntity implements Cloneable, Serializ
 	 * Set the value related to the column: suspendedByAcb.
 	 * @param suspendedByAcb - the aggregate count of suspendedByAcb certification_statuses
 	 */
-	public void setSuspendedByAcb(Integer suspendedByAcb){
+	public void setSuspendedByAcb(Integer suspendedByAcb) {
 		this.suspendedByAcb = suspendedByAcb;
 	}
 

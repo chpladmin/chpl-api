@@ -57,7 +57,7 @@ public class CertifiedProductTargetedUserDAOImpl extends BaseDAOImpl
 		List<CertifiedProductTargetedUserEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
 		List<CertifiedProductTargetedUserDTO> dtos = new ArrayList<CertifiedProductTargetedUserDTO>();
 
-		for (CertifiedProductTargetedUserEntity entity : entities){
+		for (CertifiedProductTargetedUserEntity entity : entities) {
 			dtos.add(new CertifiedProductTargetedUserDTO(entity));
 		}
 		return dtos;

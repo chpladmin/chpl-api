@@ -17,16 +17,16 @@ public class CertificationStatusEventDTO implements Serializable {
 	private Date lastModifiedDate;
 	private Long lastModifiedUser;
 
-	public CertificationStatusEventDTO(){}
+	public CertificationStatusEventDTO() {}
 
-	public CertificationStatusEventDTO(CertificationStatusEventEntity entity){
+	public CertificationStatusEventDTO(CertificationStatusEventEntity entity) {
 
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.eventDate = entity.getEventDate();
 		if(entity.getCertificationStatus() != null) {
 			this.status = new CertificationStatusDTO(entity.getCertificationStatus());
-		} else if(entity.getCertificationStatusId() != null){
+		} else if(entity.getCertificationStatusId() != null) {
 			this.status = new CertificationStatusDTO();
 			this.status.setId(entity.getCertificationStatusId());
 		}

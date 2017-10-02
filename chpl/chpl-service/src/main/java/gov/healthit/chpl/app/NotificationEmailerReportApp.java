@@ -34,18 +34,18 @@ public abstract class NotificationEmailerReportApp extends App {
 
 	protected static final Logger LOGGER = LogManager.getLogger(NotificationEmailerReportApp.class);
 
-	public NotificationEmailerReportApp(){
+	public NotificationEmailerReportApp() {
 		timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 	}
 
-	public Map<CertificationBodyDTO, CertifiedProductDownloadResponse> getCertificationDownloadResponse(List<CertifiedProductSearchDetails> allCertifiedProductDetails, List<CertificationBodyDTO> acbs){
+	public Map<CertificationBodyDTO, CertifiedProductDownloadResponse> getCertificationDownloadResponse(List<CertifiedProductSearchDetails> allCertifiedProductDetails, List<CertificationBodyDTO> acbs) {
 		Map<CertificationBodyDTO, CertifiedProductDownloadResponse> certificationDownloadResponse = new HashMap<CertificationBodyDTO, CertifiedProductDownloadResponse>();
 
-		for(CertificationBodyDTO cbDTO : acbs){
+		for(CertificationBodyDTO cbDTO : acbs) {
 			CertifiedProductDownloadResponse cpDlResponse = new CertifiedProductDownloadResponse();
 			List<CertifiedProductSearchDetails> acbCpSearchDetails = new ArrayList<CertifiedProductSearchDetails>();
-			for(CertifiedProductSearchDetails cpDetail : allCertifiedProductDetails){
-				if(cpDetail.getCertifyingBody().get("code").toString().equalsIgnoreCase(cbDTO.getAcbCode())){
+			for(CertifiedProductSearchDetails cpDetail : allCertifiedProductDetails) {
+				if(cpDetail.getCertifyingBody().get("code").toString().equalsIgnoreCase(cbDTO.getAcbCode())) {
 					acbCpSearchDetails.add(cpDetail);
 				}
 			}

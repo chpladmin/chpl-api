@@ -17,9 +17,9 @@ public class CertificationBodyDTO implements Serializable {
 	private String website;
 	private AddressDTO address;
 
-	public CertificationBodyDTO(){}
+	public CertificationBodyDTO() {}
 
-	public CertificationBodyDTO(CertificationBodyEntity entity){
+	public CertificationBodyDTO(CertificationBodyEntity entity) {
 		this.id = entity.getId();
 		this.acbCode = entity.getAcbCode();
 		this.deleted = entity.getDeleted();

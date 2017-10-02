@@ -23,10 +23,10 @@ public class CQMCriterionDTO implements Serializable {
 	private String title;
 	private Boolean retired;
 
-	public CQMCriterionDTO(){
+	public CQMCriterionDTO() {
 	}
 
-	public CQMCriterionDTO(CQMCriterionEntity entity){
+	public CQMCriterionDTO(CQMCriterionEntity entity) {
 		this();
 		this.cmsId = entity.getCmsId();
 		this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();

@@ -27,7 +27,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 
 		CertificationCriterionEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -119,7 +119,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		CertificationCriterionDTO dto = null;
 		CertificationCriterionEntity entity = getEntityById(criterionId);
 
-		if (entity != null){
+		if (entity != null) {
 			dto = new CertificationCriterionDTO(entity);
 		}
 		return dto;
@@ -148,7 +148,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		List<CertificationCriterionEntity> results = query.getResultList();
 
 		CertificationCriterionEntity entity = null;
-		if (results.size() > 0){
+		if (results.size() > 0) {
 			entity = results.get(0);
 		}
 		CertificationCriterionDTO result = null;
@@ -201,7 +201,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 
 		CertificationCriterionEntity entity = null;
 
-		if (id != null){
+		if (id != null) {
 
 			Query query = entityManager.createQuery( "SELECT cce "
 					+ "FROM CertificationCriterionEntity cce "
@@ -210,11 +210,11 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 			query.setParameter("entityid", id);
 			List<CertificationCriterionEntity> result = query.getResultList();
 
-			if (result.size() > 1){
+			if (result.size() > 1) {
 				throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
 			}
 
-			if (result.size() > 0){
+			if (result.size() > 0) {
 				entity = result.get(0);
 			}
 		}
@@ -233,7 +233,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 		query.setParameter("name", name);
 		List<CertificationCriterionEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

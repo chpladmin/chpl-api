@@ -67,7 +67,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     }
 
 	@Bean
-	public MappingJackson2HttpMessageConverter jsonConverter(){
+	public MappingJackson2HttpMessageConverter jsonConverter() {
 		MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
 		bean.setPrefixJson(false);
 		List<MediaType> mediaTypes = new ArrayList<MediaType>();
@@ -77,7 +77,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 
 	@Bean
-	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
+	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
 		LOGGER.info("get LocalEntityManagerFactoryBean");
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
 		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
@@ -85,7 +85,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 
 	@Bean
-	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
+	public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
 		LOGGER.info("get JpaTransactionManager");
 		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
@@ -93,13 +93,13 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 
 	@Bean
-	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
+	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
 		LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 
 	@Bean(name="multipartResolver")
-	public CommonsMultipartResolver getResolver() throws IOException{
+	public CommonsMultipartResolver getResolver() throws IOException {
 		LOGGER.info("get CommonsMultipartResolver");
 	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 
@@ -149,7 +149,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 
 	@Bean
-	public ReloadableResourceBundleMessageSource messageSource(){
+	public ReloadableResourceBundleMessageSource messageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
 		messageSource.setBasename("classpath:/errors");
 		messageSource.setDefaultEncoding("UTF-8");
@@ -157,7 +157,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 
 	@Bean
-	public CookieLocaleResolver localeResolver(){
+	public CookieLocaleResolver localeResolver() {
 		CookieLocaleResolver localeResolver = new CookieLocaleResolver();
 		localeResolver.setDefaultLocale(Locale.ENGLISH);
 		localeResolver.setCookieName("my-locale-cookie");
@@ -166,7 +166,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 
 	@Bean
-	public LocaleChangeInterceptor localeInterceptor(){
+	public LocaleChangeInterceptor localeInterceptor() {
 		LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
 		interceptor.setParamName("lang");
 		return interceptor;
@@ -178,7 +178,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	}
 
 	@Bean
-	public InternalResourceViewResolver viewResolver(){
+	public InternalResourceViewResolver viewResolver() {
 		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 		viewResolver.setViewClass(JstlView.class);
 		viewResolver.setPrefix("/webapp/WEB-INF/jsp/");

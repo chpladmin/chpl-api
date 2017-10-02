@@ -196,9 +196,9 @@ public class CQMCriterionEntity {
 		this.retired = retired;
 	}
 
-	public String getCqmVersion(){
+	public String getCqmVersion() {
 
-		if (this.cqmVersion != null){
+		if (this.cqmVersion != null) {
 			return this.cqmVersion.getVersion();
 		} else {
 			return null;

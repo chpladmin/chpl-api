@@ -19,9 +19,9 @@ public class AnnouncementDTO implements Serializable {
 	private Long lastModifiedUser;
 
 
-	public AnnouncementDTO(){}
+	public AnnouncementDTO() {}
 
-	public AnnouncementDTO(AnnouncementEntity entity){
+	public AnnouncementDTO(AnnouncementEntity entity) {
 		this.id = entity.getId();
 		this.title = entity.getTitle();
 		this.text = entity.getText();

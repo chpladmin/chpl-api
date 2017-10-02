@@ -93,7 +93,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		List<Object[]> results = query.getResultList();
 		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
-		for(Object[] obj : results){
+		for(Object[] obj : results) {
 			CertifiedBodyStatistics cbStat = new CertifiedBodyStatistics();
 			cbStat.setName(obj[0].toString());
 			cbStat.setYear(Integer.valueOf(obj[1].toString()));
@@ -118,7 +118,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
 		query.setParameter("creationEndDate", dateRange.getEndDate());
 		List<Object[]> results = query.getResultList();
 		List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
-		for(Object[] obj : results){
+		for(Object[] obj : results) {
 			CertifiedBodyStatistics stat = new CertifiedBodyStatistics();
 			stat.setName(obj[0].toString());
 			stat.setYear(Integer.valueOf(obj[1].toString()));

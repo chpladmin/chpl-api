@@ -14,11 +14,11 @@ public class SearchResponse implements Serializable {
 	private Integer pageNumber;
 	private List<CertifiedProductSearchResult> results;
 
-	public SearchResponse(){
+	public SearchResponse() {
 		results = new ArrayList<CertifiedProductSearchResult>();
 	}
 
-	public SearchResponse(Integer recordCount, List<CertifiedProductSearchResult> results){
+	public SearchResponse(Integer recordCount, List<CertifiedProductSearchResult> results) {
 		this.recordCount = recordCount;
 		this.results = results;
 	}
@@ -26,7 +26,7 @@ public class SearchResponse implements Serializable {
 	public SearchResponse(Integer recordCount,
 			List<CertifiedProductSearchResult> results,
 			Integer pageSize,
-			Integer pageNumber){
+			Integer pageNumber) {
 		this.recordCount = recordCount;
 		this.results = results;
 		this.pageSize = pageSize;

@@ -23,7 +23,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 
 		ProductClassificationTypeEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -86,7 +86,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 
 		ProductClassificationTypeDTO dto = null;
 		ProductClassificationTypeEntity entity = getEntityById(id);
-		if (entity != null){
+		if (entity != null) {
 			dto = new ProductClassificationTypeDTO(entity);
 		}
 		return dto;
@@ -130,11 +130,11 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 		query.setParameter("entityid", id);
 		List<ProductClassificationTypeEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate product version id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 
@@ -149,7 +149,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
 		query.setParameter("name", name);
 		List<ProductClassificationTypeEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 

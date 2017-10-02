@@ -13,9 +13,9 @@ public class DecertifiedDeveloperDTO implements Serializable {
 	private Date decertificationDate;
 	private Long numMeaningfulUse;
 
-	public DecertifiedDeveloperDTO(){}
+	public DecertifiedDeveloperDTO() {}
 
-	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbIdList, String developerStatus, Date decertificationDate, Long numMeaningfulUse){
+	public DecertifiedDeveloperDTO(Long developerId, List<Long> acbIdList, String developerStatus, Date decertificationDate, Long numMeaningfulUse) {
 		this.setDeveloperId(developerId);
 		this.acbIdList = acbIdList;
 		this.developerStatus = developerStatus;
@@ -36,21 +36,21 @@ public class DecertifiedDeveloperDTO implements Serializable {
 	}
 
 	public void setNumMeaningfulUse(Long numMeaningfulUse) {
-		if(this.numMeaningfulUse == null){
+		if(this.numMeaningfulUse == null) {
 			this.numMeaningfulUse = numMeaningfulUse;
 		}
-		else{
-			if(numMeaningfulUse != null){
+		else {
+			if(numMeaningfulUse != null) {
 				this.numMeaningfulUse += numMeaningfulUse;
 			}
 		}
 	}
 
-	public void addAcb(Long acbId){
-		if(this.acbIdList != null){
+	public void addAcb(Long acbId) {
+		if(this.acbIdList != null) {
 			this.acbIdList.add(acbId);
 		}
-		else{
+		else {
 			this.acbIdList = new ArrayList<Long>();
 			this.acbIdList.add(acbId);
 		}
@@ -64,11 +64,11 @@ public class DecertifiedDeveloperDTO implements Serializable {
 		this.developerId = developerId;
 	}
 
-	public List<Long> getAcbIdList(){
+	public List<Long> getAcbIdList() {
 		return this.acbIdList;
 	}
 
-	public void setAcbList(List<Long> acbIdList){
+	public void setAcbList(List<Long> acbIdList) {
 		this.acbIdList = acbIdList;
 	}
 

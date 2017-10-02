@@ -11,9 +11,9 @@ public class CertifiedProductTargetedUserDTO implements Serializable {
 	private Long targetedUserId;
 	private String targetedUserName;
 
-	public CertifiedProductTargetedUserDTO(){}
+	public CertifiedProductTargetedUserDTO() {}
 
-	public CertifiedProductTargetedUserDTO(CertifiedProductTargetedUserEntity entity){
+	public CertifiedProductTargetedUserDTO(CertifiedProductTargetedUserEntity entity) {
 		this.id = entity.getId();
 		this.certifiedProductId = entity.getCertifiedProductId();
 		this.targetedUserId = entity.getTargetedUserId();

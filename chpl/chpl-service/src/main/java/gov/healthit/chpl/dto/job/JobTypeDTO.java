@@ -11,9 +11,9 @@ public class JobTypeDTO implements Serializable {
 	private String description;
 	private String successMessage;
 
-	public JobTypeDTO(){}
+	public JobTypeDTO() {}
 
-	public JobTypeDTO(JobTypeEntity entity){
+	public JobTypeDTO(JobTypeEntity entity) {
 		this.id = entity.getId();
 		this.name = entity.getName();
 		this.description = entity.getDescription();

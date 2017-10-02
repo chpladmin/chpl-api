@@ -33,7 +33,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	public CertificationBodyDTO create(CertificationBodyDTO dto) throws EntityRetrievalException, EntityCreationException {
 		CertificationBodyEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId(), false);
 			}
 		} catch (final EntityRetrievalException e) {
@@ -84,7 +84,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 
 	@Transactional
-	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException{
+	public CertificationBodyDTO update(CertificationBodyDTO dto) throws EntityRetrievalException {
 
 		CertificationBodyEntity entity = getEntityById(dto.getId(), true);
 		if(entity == null) {
@@ -113,7 +113,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		}
 
 		if(dto.getDeleted() != null) {
-			if(!dto.getDeleted()){
+			if(!dto.getDeleted()) {
 				Query query2 = entityManager.createQuery("UPDATE ActivityEntity SET deleted = false WHERE activity_object_id = :acbid");
 				query2.setParameter("acbid", dto.getId());
 				query2.executeUpdate();
@@ -137,7 +137,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 	}
 
 	@Transactional
-	public void delete(Long acbId){
+	public void delete(Long acbId) {
 
 		// TODO: How to delete this without leaving orphans
 
@@ -151,7 +151,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
 	}
 
-	public List<CertificationBodyDTO> findAll(boolean showDeleted){
+	public List<CertificationBodyDTO> findAll(boolean showDeleted) {
 
 		List<CertificationBodyEntity> entities = getAllEntities(showDeleted);
 		List<CertificationBodyDTO> acbs = new ArrayList<>();
@@ -164,7 +164,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
 	}
 
-	public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException{
+	public CertificationBodyDTO getById(Long acbId) throws EntityRetrievalException {
 		CertificationBodyEntity entity = getEntityById(acbId, false);
 
 		CertificationBodyDTO dto = null;
@@ -175,7 +175,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
 	}
 
-	public CertificationBodyDTO getById(Long acbId, boolean includeDeleted) throws EntityRetrievalException{
+	public CertificationBodyDTO getById(Long acbId, boolean includeDeleted) throws EntityRetrievalException {
 		CertificationBodyEntity entity = getEntityById(acbId, includeDeleted);
 
 		CertificationBodyDTO dto = null;
@@ -226,9 +226,9 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 
 		List<CertificationBodyEntity> result;
 
-		if(showDeleted){
+		if(showDeleted) {
 			result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address", CertificationBodyEntity.class).getResultList();
-		}else{
+		}else {
 			result = entityManager.createQuery( "SELECT acb from CertificationBodyEntity acb LEFT OUTER JOIN FETCH acb.address where (NOT acb.deleted = true)", CertificationBodyEntity.class).getResultList();
 		}
 		return result;

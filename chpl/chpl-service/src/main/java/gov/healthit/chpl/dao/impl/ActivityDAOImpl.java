@@ -27,7 +27,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
 		ActivityEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(false, dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -58,7 +58,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
 		}
 		ActivityDTO result = null;
-		if (entity != null){
+		if (entity != null) {
 			result = new ActivityDTO(entity);
 		}
 		return result;
@@ -78,7 +78,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		entity.setActivityObjectId(dto.getActivityObjectId());
 		entity.setCreationDate(new Date());
 		entity.setLastModifiedDate(new Date());
-		if (dto.getLastModifiedUser() == null){
+		if (dto.getLastModifiedUser() == null) {
 			entity.setLastModifiedUser(Util.getCurrentUser().getId());
 		} else {
 			entity.setLastModifiedUser(dto.getLastModifiedUser());
@@ -88,7 +88,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		update(entity);
 
 		ActivityDTO result = null;
-		if (entity != null){
+		if (entity != null) {
 			result = new ActivityDTO(entity);
 		}
 		return result;
@@ -109,7 +109,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
 		ActivityEntity entity = getEntityById(false, id);
 		ActivityDTO dto = null;
-		if (entity != null){
+		if (entity != null) {
 			dto = new ActivityDTO(entity);
 		}
 		return dto;
@@ -120,7 +120,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
 		ActivityEntity entity = getEntityById(showDeleted, id);
 		ActivityDTO dto = null;
-		if (entity != null){
+		if (entity != null) {
 			dto = new ActivityDTO(entity);
 		}
 		return dto;
@@ -232,7 +232,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 
 	@Override
-	public Map<Long, List<ActivityDTO> > findAllByUser(){
+	public Map<Long, List<ActivityDTO> > findAllByUser() {
 
 		Map<Long, List<ActivityDTO> > activityByUser = new HashMap<Long, List<ActivityDTO> >();
 
@@ -243,7 +243,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			ActivityDTO result = new ActivityDTO(entity);
 			Long userId = result.getLastModifiedUser();
 			if(userId != null) {
-				if( activityByUser.containsKey(userId)){
+				if( activityByUser.containsKey(userId)) {
 					activityByUser.get(userId).add(result);
 				} else {
 					List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
@@ -256,7 +256,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 	}
 
 	@Override
-	public Map<Long, List<ActivityDTO> > findAllByUserInDateRange(Date startDate, Date endDate){
+	public Map<Long, List<ActivityDTO> > findAllByUserInDateRange(Date startDate, Date endDate) {
 
 		Map<Long, List<ActivityDTO> > activityByUser = new HashMap<Long, List<ActivityDTO> >();
 
@@ -267,7 +267,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			ActivityDTO result = new ActivityDTO(entity);
 			Long userId = result.getLastModifiedUser();
 			if(userId != null) {
-				if( activityByUser.containsKey(userId)){
+				if( activityByUser.containsKey(userId)) {
 					activityByUser.get(userId).add(result);
 				} else {
 					List<ActivityDTO> activity = new ArrayList<ActivityDTO>();
@@ -308,11 +308,11 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 		query.setParameter("entityid", id);
 		List<ActivityEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 		return entity;

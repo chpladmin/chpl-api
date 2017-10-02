@@ -24,7 +24,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
 
 		ActivityConceptEntity entity = null;
 		try {
-			if (dto.getId() != null){
+			if (dto.getId() != null) {
 				entity = this.getEntityById(dto.getId());
 			}
 		} catch (final EntityRetrievalException e) {
@@ -48,7 +48,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
 
 		}
 		ActivityConceptDTO result = null;
-		if (entity != null){
+		if (entity != null) {
 			result = new ActivityConceptDTO(entity);
 		}
 		return result;
@@ -69,7 +69,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
 		update(entity);
 
 		ActivityConceptDTO result = null;
-		if (entity != null){
+		if (entity != null) {
 			result = new ActivityConceptDTO(entity);
 		}
 		return result;
@@ -90,7 +90,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
 
 		ActivityConceptEntity entity = getEntityById(id);
 		ActivityConceptDTO dto = null;
-		if (entity != null){
+		if (entity != null) {
 			dto = new ActivityConceptDTO(entity);
 		}
 		return dto;
@@ -134,11 +134,11 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
 		query.setParameter("entityid", id);
 		List<ActivityConceptEntity> result = query.getResultList();
 
-		if (result.size() > 1){
+		if (result.size() > 1) {
 			throw new EntityRetrievalException("Data error. Duplicate criterion id in database.");
 		}
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 		return entity;
@@ -151,7 +151,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
 		query.setParameter("name", name);
 		List<ActivityConceptEntity> result = query.getResultList();
 
-		if (result.size() > 0){
+		if (result.size() > 0) {
 			entity = result.get(0);
 		}
 		return entity;
