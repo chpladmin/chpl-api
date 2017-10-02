@@ -26,7 +26,7 @@ public class ActivityEvent implements Serializable {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
