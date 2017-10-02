@@ -68,9 +68,8 @@ public class TestingLabEntity implements Serializable {
 	 */
 	public TestingLabEntity(Long id) {
 		this.id = id;
-	} 
+	}
 
- 
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/
@@ -78,7 +77,6 @@ public class TestingLabEntity implements Serializable {
 	public Class<?> getClassType() {
 		return TestingLabEntity.class;
 	}
- 
 
 	 /**
 	 * Return the value associated with the column: creationDate.

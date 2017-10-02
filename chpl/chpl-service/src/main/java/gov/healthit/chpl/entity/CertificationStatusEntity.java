@@ -51,7 +51,7 @@ public class CertificationStatusEntity {
 	 */
 	public CertificationStatusEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set

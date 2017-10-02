@@ -144,7 +144,7 @@ public class CertifiedProductEntity {
 	 */
 	public CertifiedProductEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set

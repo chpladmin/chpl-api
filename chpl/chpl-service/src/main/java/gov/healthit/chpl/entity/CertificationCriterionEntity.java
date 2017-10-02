@@ -92,7 +92,7 @@ public class CertificationCriterionEntity implements Serializable {
 	 */
 	public CertificationCriterionEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set
@@ -109,7 +109,6 @@ public class CertificationCriterionEntity implements Serializable {
 	public Class<?> getClassType() {
 		return CertificationCriterionEntity.class;
 	}
- 
 
 	 /**
 	 * Return the value associated with the column: automatedMeasureCapable.

@@ -63,9 +63,8 @@ public class CertificationIdProductMapEntity implements Serializable {
 	 */
 	public CertificationIdProductMapEntity(Long id) {
 		this.id = id;
-	} 
+	}
 
- 
 	/** Return the type of this class. Useful for when dealing with proxies.
 	* @return Defining class.
 	*/
@@ -73,7 +72,6 @@ public class CertificationIdProductMapEntity implements Serializable {
 	public Class<?> getClassType() {
 		return CertificationIdProductMapEntity.class;
 	}
- 
 
 	 /**
 	 * Return the value associated with the column: creationDate.

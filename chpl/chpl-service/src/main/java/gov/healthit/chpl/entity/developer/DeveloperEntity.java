@@ -94,7 +94,7 @@ public class DeveloperEntity implements Cloneable, Serializable {
 	 */
 	public DeveloperEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set

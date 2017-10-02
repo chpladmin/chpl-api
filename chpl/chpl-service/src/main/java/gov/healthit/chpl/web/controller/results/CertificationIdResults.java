@@ -100,6 +100,4 @@ public class CertificationIdResults implements Serializable {
 	public void setMetCounts(Map<String, Integer> metCounts) {
 		this.metCounts = metCounts;
 	}
-	
-
 }

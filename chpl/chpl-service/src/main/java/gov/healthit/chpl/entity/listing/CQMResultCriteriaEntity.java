@@ -58,7 +58,7 @@ public class CQMResultCriteriaEntity implements Serializable {
 	
 	public CQMResultCriteriaEntity() {
 		// Default constructor
-	} 
+	}
 
 	 /**
 	 * Return the value associated with the column: creationDate.

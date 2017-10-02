@@ -71,7 +71,7 @@ public class CertificationEditionEntity implements Serializable {
 	 */
 	public CertificationEditionEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set
@@ -87,7 +87,6 @@ public class CertificationEditionEntity implements Serializable {
 	public Class<?> getClassType() {
 		return CertificationEditionEntity.class;
 	}
- 
 
 	 /**
 	 * Return the value associated with the column: certificationCriterion.

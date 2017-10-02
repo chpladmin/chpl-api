@@ -220,7 +220,7 @@ public class PendingCertifiedProductEntity {
 		qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
 		targetedUsers = new HashSet<PendingCertifiedProductTargetedUserEntity>();
 		accessibilityStandards = new HashSet<PendingCertifiedProductAccessibilityStandardEntity>();
-	} 
+	}
 
 	public PendingCertifiedProductEntity(Long id) {
 		this();

@@ -62,7 +62,7 @@ public class ProductClassificationTypeEntity implements Serializable {
 	 */
 	public ProductClassificationTypeEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set

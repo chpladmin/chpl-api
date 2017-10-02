@@ -93,7 +93,7 @@ public class CertificationResultEntity  implements Serializable {
 	 */
 	public CertificationResultEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set

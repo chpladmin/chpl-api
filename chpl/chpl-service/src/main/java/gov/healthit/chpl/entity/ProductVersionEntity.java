@@ -71,7 +71,7 @@ public class ProductVersionEntity implements Cloneable, Serializable {
 	 */
 	public ProductVersionEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set

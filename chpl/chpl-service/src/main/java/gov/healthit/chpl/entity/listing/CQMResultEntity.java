@@ -63,7 +63,7 @@ public class CQMResultEntity implements Serializable {
 	 */
 	public CQMResultEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set

@@ -71,7 +71,7 @@ public class CertificationIdEntity implements Serializable {
 	 */
 	public CertificationIdEntity(Long id) {
 		this.id = id;
-	} 
+	}
 
  
 	/** Return the type of this class. Useful for when dealing with proxies.
@@ -81,7 +81,6 @@ public class CertificationIdEntity implements Serializable {
 	public Class<?> getClassType() {
 		return CertificationIdEntity.class;
 	}
- 
 
 	 /**
 	 * Return the value associated with the column: creationDate.

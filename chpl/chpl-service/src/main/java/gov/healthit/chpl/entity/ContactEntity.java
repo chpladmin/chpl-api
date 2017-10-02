@@ -73,7 +73,7 @@ public class ContactEntity implements Cloneable, Serializable {
 	 */
 	public ContactEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set
@@ -81,7 +81,6 @@ public class ContactEntity implements Cloneable, Serializable {
 	public ContactEntity(Long id) {
 		this.id = id;
 	}
- 
 
 	public Date getCreationDate() {
 		return this.creationDate;

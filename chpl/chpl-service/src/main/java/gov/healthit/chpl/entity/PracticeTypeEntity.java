@@ -64,7 +64,7 @@ public class PracticeTypeEntity implements Serializable {
 	 */
 	public PracticeTypeEntity() {
 		// Default constructor
-	} 
+	}
 
 	/** Constructor taking a given ID.
 	 * @param id to set
