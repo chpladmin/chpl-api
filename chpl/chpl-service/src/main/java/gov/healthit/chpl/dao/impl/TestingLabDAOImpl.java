@@ -25,7 +25,7 @@ import gov.healthit.chpl.entity.TestingLabEntity;
 @Repository("testingLabDAO")
 public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 
-	private static final Logger logger = LogManager.getLogger(TestingLabDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestingLabDAOImpl.class);
 	@Autowired AddressDAO addressDao;
 
 	@Override
@@ -37,7 +37,7 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId(), false);
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 
@@ -98,8 +98,8 @@ public class TestingLabDAOImpl extends BaseDAOImpl implements TestingLabDAO {
 		{
 			try {
 				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
-			} catch(EntityCreationException ex) {
-				logger.error("Could not create new address in the database.", ex);
+			} catch(final EntityCreationException ex) {
+				LOGGER.error("Could not create new address in the database.", ex);
 				entity.setAddress(null);
 			}
 		} else {

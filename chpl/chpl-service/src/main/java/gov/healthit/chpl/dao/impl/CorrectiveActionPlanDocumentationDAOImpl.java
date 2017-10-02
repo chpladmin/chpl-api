@@ -31,7 +31,7 @@ public class CorrectiveActionPlanDocumentationDAOImpl extends BaseDAOImpl implem
 			if(toCreate.getId() != null) {
 				entity = getEntityById(toCreate.getId());
 			}
-		} catch(EntityRetrievalException e) {
+		} catch(final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

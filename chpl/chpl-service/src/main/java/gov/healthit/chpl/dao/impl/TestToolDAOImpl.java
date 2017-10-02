@@ -23,7 +23,7 @@ import gov.healthit.chpl.entity.TestToolEntity;
 
 @Repository("testToolDAO")
 public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
-	private static final Logger logger = LogManager.getLogger(TestToolDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestToolDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -52,7 +52,7 @@ public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTool"), LocaleContextHolder.getLocale()),
 						dto.getName());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new TestToolDTO(entity);

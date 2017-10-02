@@ -36,7 +36,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/collections")
 public class CollectionsController {
-	private static final Logger logger = LogManager.getLogger(CollectionsController.class);
+	private static final Logger LOGGER = LogManager.getLogger(CollectionsController.class);
 	@Autowired private CertifiedProductSearchManager certifiedProductSearchManager;
 	@Autowired private DeveloperManager developerManager;
 
@@ -98,16 +98,16 @@ public class CollectionsController {
 								setter.invoke(searchResult, new Object[]{ null });
 							}
 						} else {
-							logger.error("No method with name " + setterMethodName + " was found for field " + searchResultField.getName() + " and argument type " + searchResultFieldTypeClazz.getName());
+							LOGGER.error("No method with name " + setterMethodName + " was found for field " + searchResultField.getName() + " and argument type " + searchResultFieldTypeClazz.getName());
 						}
-					} catch(NoSuchMethodException ex) {
-						logger.error("No method with name " + setterMethodName + " was found for field " + searchResultField.getName() + " and argument type " + searchResultFieldTypeClazz.getName(), ex);
-					} catch(InvocationTargetException ex) {
-						logger.error("exception invoking method " + setterMethodName, ex);
-					} catch(IllegalArgumentException ex) {
-						logger.error("bad arguments to method " + setterMethodName, ex);
-					} catch(IllegalAccessException ex) {
-						logger.error("Cannot access method " + setterMethodName, ex);
+					} catch(final NoSuchMethodException ex) {
+						LOGGER.error("No method with name " + setterMethodName + " was found for field " + searchResultField.getName() + " and argument type " + searchResultFieldTypeClazz.getName(), ex);
+					} catch(final InvocationTargetException ex) {
+						LOGGER.error("exception invoking method " + setterMethodName, ex);
+					} catch(final IllegalArgumentException ex) {
+						LOGGER.error("bad arguments to method " + setterMethodName, ex);
+					} catch(final IllegalAccessException ex) {
+						LOGGER.error("Cannot access method " + setterMethodName, ex);
 					}
 				}
 			}

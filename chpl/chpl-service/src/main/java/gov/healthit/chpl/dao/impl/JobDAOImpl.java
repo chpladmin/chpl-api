@@ -30,7 +30,7 @@ import gov.healthit.chpl.entity.job.JobTypeEntity;
 
 @Repository("jobDAO")
 public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
-	private static final Logger logger = LogManager.getLogger(JobDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(JobDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -74,7 +74,7 @@ public class JobDAOImpl extends BaseDAOImpl implements JobDAO {
 				entityManager.flush();
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("job.couldNotCreate"), LocaleContextHolder.getLocale()));
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new JobDTO(entity);

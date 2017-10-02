@@ -14,7 +14,7 @@ import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 public abstract class SurveillanceOversightReportApp extends NotificationEmailerReportApp {
-	private static final Logger logger = LogManager.getLogger(SurveillanceOversightReportApp.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceOversightReportApp.class);
 
 	 protected static final String TRIGGER_DESCRIPTIONS = "<h4>Description of Surveillance Rules</h4>" +
         "<ol>" +
@@ -38,8 +38,8 @@ public abstract class SurveillanceOversightReportApp extends NotificationEmailer
 			try {
 				CertifiedProductSearchDetails product = this.getCpdManager().getCertifiedProductDetails(currProduct.getId());
 				allCertifiedProductDetails.add(product);
-			} catch(EntityRetrievalException ex) {
-				logger.error("Could not find certified product details for certified product with id = " + currProduct.getId());
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Could not find certified product details for certified product with id = " + currProduct.getId());
 			}
 		}
 		return allCertifiedProductDetails;

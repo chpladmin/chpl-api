@@ -64,7 +64,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 @Component("certifiedProductHandler2015")
 public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 
-	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler2015.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2015.class);
 	//we will ignore g1 and g2 macra measures for (g)(7) criteria for now
 	//they shouldn't be there but it's hard for users to change the spreadsheet
 	protected static final String G1_CRITERIA_TO_IGNORE = "170.315 (g)(7)";
@@ -421,7 +421,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 		try {
 			Date certificationDate = dateFormatter.parse(dateStr);
 			pendingCertifiedProduct.setCertificationDate(certificationDate);
-		} catch(ParseException ex) {
+		} catch(final ParseException ex) {
 			pendingCertifiedProduct.setCertificationDate(null);
 		}
 
@@ -463,7 +463,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			AddressEntity addressEntity = null;
 			try {
 				addressEntity = addressDao.getEntityById(foundAddress.getId());
-			} catch(EntityRetrievalException ex) {
+			} catch(final EntityRetrievalException ex) {
 				addressEntity = null;
 			}
 			pendingCertifiedProduct.setDeveloperAddress(addressEntity);
@@ -509,8 +509,8 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			try {
 				Date sedTestingEndDate = dateFormatter.parse(sedTestingEnd);
 				pendingCertifiedProduct.setSedTestingEnd(sedTestingEndDate);
-			} catch(ParseException ex) {
-				logger.error("Could not parse " + sedTestingEnd, ex);
+			} catch(final ParseException ex) {
+				LOGGER.error("Could not parse " + sedTestingEnd, ex);
 				pendingCertifiedProduct.getErrorMessages().add("Product " + pendingCertifiedProduct.getUniqueId() + " has an invalid sed testing end date '" + sedTestingEnd + "'.");
 			}
 		}
@@ -577,27 +577,27 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			participant.setGender(record.get(colIndex++).trim());
 			String ageStr = record.get(colIndex++).trim();
 			if(StringUtils.isEmpty(ageStr)) {
-                logger.error("Age range is empty.");
+                LOGGER.error("Age range is empty.");
 			} else {
                 participant.setUserEnteredAge(ageStr);
                 AgeRangeDTO ageDto = ageDao.getByName(ageStr);
                 if(ageDto != null) {
                     participant.setAgeRangeId(ageDto.getId());
                 } else {
-                    logger.error("Age range '" + ageStr + "' does not match any of the allowed values.");
+                    LOGGER.error("Age range '" + ageStr + "' does not match any of the allowed values.");
                 }
             }
 
 			String educationLevel = record.get(colIndex++).trim();
 			if(StringUtils.isEmpty(educationLevel)) {
-				logger.error("Education level is empty.");
+				LOGGER.error("Education level is empty.");
 			} else {
                 participant.setUserEnteredEducation(educationLevel);
                 EducationTypeDTO educationDto = educationDao.getByName(educationLevel);
                 if(educationDto != null) {
                     participant.setEducationTypeId(educationDto.getId());
                 } else {
-                    logger.error("Education level '" + educationLevel + "' does not match any of the allowed options.");
+                    LOGGER.error("Education level '" + educationLevel + "' does not match any of the allowed options.");
                 }
             }
 			participant.setOccupation(record.get(colIndex++).trim());
@@ -606,7 +606,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				Integer profExperience = Math.round(new Float(profExperienceStr));
 				participant.setProfessionalExperienceMonths(profExperience);
 			}catch(Exception ex) {
-				logger.error("Could not parse " + profExperienceStr + " into an integer.");
+				LOGGER.error("Could not parse " + profExperienceStr + " into an integer.");
 			}
 
 			String computerExperienceStr = record.get(colIndex++).trim();
@@ -614,7 +614,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				Integer computerExperience = Math.round(new Float(computerExperienceStr));
 				participant.setComputerExperienceMonths(computerExperience);
 			}catch(Exception ex) {
-				logger.error("Could not parse " + computerExperienceStr + " into an integer.");
+				LOGGER.error("Could not parse " + computerExperienceStr + " into an integer.");
 			}
 
 			String productExperienceStr = record.get(colIndex++).trim();
@@ -622,7 +622,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 				Integer productExperience = Math.round(new Float(productExperienceStr));
 				participant.setProductExperienceMonths(productExperience);
 			}catch(Exception ex) {
-				logger.error("Could not parse " + productExperienceStr + " into an integer.");
+				LOGGER.error("Could not parse " + productExperienceStr + " into an integer.");
 			}
 
 			participant.setAssistiveTechnologyNeeds(record.get(colIndex).trim());
@@ -644,70 +644,70 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			Float successAvg = new Float(successAvgStr);
 			task.setTaskSuccessAverage(successAvg);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + successAvgStr + " to a Float.");
+			LOGGER.error("Cannot convert " + successAvgStr + " to a Float.");
 		}
 		String successStddevStr = record.get(colIndex++).trim();
 		try {
 			Float successStddev = new Float(successStddevStr);
 			task.setTaskSuccessStddev(successStddev);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + successStddevStr + " to a Float.");
+			LOGGER.error("Cannot convert " + successStddevStr + " to a Float.");
 		}
 		String taskPathDeviationObsStr = record.get(colIndex++).trim();
 		try {
 			Integer taskPathDeviationObs = Math.round(new Float(taskPathDeviationObsStr));
 			task.setTaskPathDeviationObserved(taskPathDeviationObs);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskPathDeviationObsStr + " to a Integer.");
+			LOGGER.error("Cannot convert " + taskPathDeviationObsStr + " to a Integer.");
 		}
 		String taskPathDeviationOptStr = record.get(colIndex++).trim();
 		try {
 			Integer taskPathDeviationOpt = Math.round(new Float(taskPathDeviationOptStr));
 			task.setTaskPathDeviationOptimal(taskPathDeviationOpt);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskPathDeviationOptStr + " to a Integer.");
+			LOGGER.error("Cannot convert " + taskPathDeviationOptStr + " to a Integer.");
 		}
 		String taskTimeAvgStr = record.get(colIndex++).trim();
 		try {
 			Integer taskTimeAvg = Math.round(new Float(taskTimeAvgStr));
 			task.setTaskTimeAvg(new Long(taskTimeAvg));
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskTimeAvgStr + " to a Integer.");
+			LOGGER.error("Cannot convert " + taskTimeAvgStr + " to a Integer.");
 		}
 		String taskTimeStddevStr = record.get(colIndex++).trim();
 		try {
 			Integer taskTimeStddev = Math.round(new Float(taskTimeStddevStr));
 			task.setTaskTimeStddev(taskTimeStddev);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskTimeStddevStr + " to a Integer.");
+			LOGGER.error("Cannot convert " + taskTimeStddevStr + " to a Integer.");
 		}
 		String taskTimeDeviationAvgStr = record.get(colIndex++).trim();
 		try {
 			Integer taskTimeDeviationAvg = Math.round(new Float(taskTimeDeviationAvgStr));
 			task.setTaskTimeDeviationObservedAvg(taskTimeDeviationAvg);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskTimeDeviationAvgStr + " to a Integer.");
+			LOGGER.error("Cannot convert " + taskTimeDeviationAvgStr + " to a Integer.");
 		}
 		String taskTimeDeviationOptimalAvgStr = record.get(colIndex++).trim();
 		try {
 			Integer taskTimeDeviationOptimalAvg = Math.round(new Float(taskTimeDeviationOptimalAvgStr));
 			task.setTaskTimeDeviationOptimalAvg(taskTimeDeviationOptimalAvg);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskTimeDeviationOptimalAvgStr + " to a Integer.");
+			LOGGER.error("Cannot convert " + taskTimeDeviationOptimalAvgStr + " to a Integer.");
 		}
 		String taskErrorsAvgStr = record.get(colIndex++).trim();
 		try {
 			Float taskErrorsAvg = new Float(taskErrorsAvgStr);
 			task.setTaskErrors(taskErrorsAvg);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskErrorsAvgStr + " to a Float.");
+			LOGGER.error("Cannot convert " + taskErrorsAvgStr + " to a Float.");
 		}
 		String taskErrorsStddevStr = record.get(colIndex++).trim();
 		try {
 			Float taskErrorsStddev = new Float(taskErrorsStddevStr);
 			task.setTaskErrorsStddev(taskErrorsStddev);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskErrorsStddevStr + " to a Float.");
+			LOGGER.error("Cannot convert " + taskErrorsStddevStr + " to a Float.");
 		}
 		task.setTaskRatingScale(record.get(colIndex++).trim());
 		String taskRatingStr = record.get(colIndex++).trim();
@@ -715,7 +715,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			Float taskRating = new Float(taskRatingStr);
 			task.setTaskRating(taskRating);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskRatingStr + " to a Float.");
+			LOGGER.error("Cannot convert " + taskRatingStr + " to a Float.");
 		}
 
 		String taskRatingStddevStr = record.get(colIndex++).trim();
@@ -723,7 +723,7 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 			Float taskRatingStddev = new Float(taskRatingStddevStr);
 			task.setTaskRatingStddev(taskRatingStddev);
 		} catch(Exception ex) {
-			logger.error("Cannot convert " + taskRatingStddevStr + " to a Float.");
+			LOGGER.error("Cannot convert " + taskRatingStddevStr + " to a Float.");
 		}
 		this.tasks.add(task);
 	}
@@ -838,12 +838,12 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						break;
 					default:
 						pendingCertifiedProduct.getErrorMessages().add("Invalid column title " + colTitle + " at index " + currIndex);
-						logger.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
+						LOGGER.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
 						currIndex++;
 					}
 				}
 			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
+		} catch(final InvalidArgumentsException ex) { LOGGER.error(ex.getMessage()); }
 		return cert;
 	}
 
@@ -897,8 +897,8 @@ public class CertifiedProductHandler2015 extends CertifiedProductHandler {
 						if(cpd != null) {
 							asEntity.setCertifiedProductId(cpd.getId());
 						}
-					} catch(EntityRetrievalException ex) {
-						logger.error(ex.getMessage(), ex);
+					} catch(final EntityRetrievalException ex) {
+						LOGGER.error(ex.getMessage(), ex);
 					}
 				}
 				asEntity.setGrouping(row.get(cpSourceColumn+1).toString().trim());

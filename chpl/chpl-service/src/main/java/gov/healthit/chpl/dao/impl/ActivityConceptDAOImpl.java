@@ -27,7 +27,7 @@ public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConce
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

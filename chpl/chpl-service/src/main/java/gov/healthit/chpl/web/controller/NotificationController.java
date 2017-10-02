@@ -37,7 +37,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/notifications")
 public class NotificationController {
 
-	private static final Logger logger = LogManager.getLogger(NotificationController.class);
+	private static final Logger LOGGER = LogManager.getLogger(NotificationController.class);
 
 	@Autowired NotificationManager notificationManager;
 	@Autowired MessageSource messageSource;
@@ -193,7 +193,7 @@ public class NotificationController {
 		throws EntityRetrievalException, InvalidArgumentsException {
 		try {
 			notificationManager.deleteRecipient(recipientId);
-		} catch(EntityNotFoundException ex) {
+		} catch(final EntityNotFoundException ex) {
 			throw new InvalidArgumentsException(ex.getMessage());
 		}
 	}

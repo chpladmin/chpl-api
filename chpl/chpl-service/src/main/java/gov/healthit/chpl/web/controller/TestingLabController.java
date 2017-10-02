@@ -57,7 +57,7 @@ public class TestingLabController {
 	@Autowired TestingLabManager atlManager;
 	@Autowired UserManager userManager;
 
-	private static final Logger logger = LogManager.getLogger(TestingLabController.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestingLabController.class);
 
 	@ApiOperation(value="List all testing labs (ATLs).",
 			notes="Setting the 'editable' parameter to true will return all ATLs that the logged in user has edit permissions on."

@@ -25,7 +25,7 @@ import gov.healthit.chpl.manager.NotificationManager;
 
 @Service
 public class NotificationManagerImpl implements NotificationManager {
-	private static final Logger logger = LogManager.getLogger(NotificationManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(NotificationManagerImpl.class);
 
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired NotificationDAO notificationDao;
@@ -36,11 +36,11 @@ public class NotificationManagerImpl implements NotificationManager {
 		RecipientDTO result = null;
 		if(toCreate != null && !StringUtils.isBlank(toCreate.getEmailAddress())) {
 			String email = toCreate.getEmailAddress().trim();
-			logger.debug("Looking for existing recipient with email address " + email);
+			LOGGER.debug("Looking for existing recipient with email address " + email);
 			RecipientDTO existingRecip = null;
 			try {
 				existingRecip = notificationDao.findRecipientByEmail(email);
-			} catch(EntityRetrievalException ignore) {}
+			} catch(final EntityRetrievalException ignore) {}
 			if(existingRecip != null) {
 				throw new EntityCreationException("Recipient with email " + email.trim() + " already exists.");
 			} else {
@@ -64,7 +64,7 @@ public class NotificationManagerImpl implements NotificationManager {
 		if(recipient != null && recipient.getId() == null
 			&& !StringUtils.isBlank(recipient.getEmailAddress())) {
 			String email = recipient.getEmailAddress().trim();
-			logger.debug("Looking for existing recipient with email address " + email);
+			LOGGER.debug("Looking for existing recipient with email address " + email);
 			recipient = notificationDao.findRecipientByEmail(email);
 		}
 
@@ -93,7 +93,7 @@ public class NotificationManagerImpl implements NotificationManager {
 		RecipientDTO recip = null;
 		try {
 			recip = notificationDao.findRecipientByEmail(email);
-		} catch(EntityRetrievalException ignore) {}
+		} catch(final EntityRetrievalException ignore) {}
 		return (recip == null ? false : true);
 	}
 

@@ -70,7 +70,7 @@ public class UserManagementController {
 	@Autowired private SendMailUtil sendMailService;
 	@Autowired private Environment env;
 
-	private static final Logger logger = LogManager.getLogger(UserManagementController.class);
+	private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
 	private static final long VALID_INVITATION_LENGTH = 3L*24L*60L*60L*1000L;
 	private static final long VALID_CONFIRMATION_LENGTH = 30L*24L*60L*60L*1000L;
 
@@ -314,8 +314,8 @@ public class UserManagementController {
 		if(grantRoleObj.getRole().equals("ROLE_ADMIN")) {
 			try {
 				userManager.grantAdmin(user.getSubjectName());
-			} catch(AccessDeniedException adEx) {
-				logger.error("User " + Util.getUsername() + " does not have access to grant ROLE_ADMIN");
+			} catch(final AccessDeniedException adEx) {
+				LOGGER.error("User " + Util.getUsername() + " does not have access to grant ROLE_ADMIN");
 				throw adEx;
 			}
 		} else {
@@ -348,8 +348,8 @@ public class UserManagementController {
 		if(grantRoleObj.getRole().equals(Authority.ROLE_ADMIN)) {
 			try {
 				userManager.removeAdmin(user.getSubjectName());
-			} catch(AccessDeniedException adEx) {
-				logger.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
+			} catch(final AccessDeniedException adEx) {
+				LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
 			}
 		} else if(grantRoleObj.getRole().equals(Authority.ROLE_ACB_ADMIN)) {
 			try {
@@ -360,8 +360,8 @@ public class UserManagementController {
 				for(CertificationBodyDTO acb : acbs) {
 					acbManager.deletePermission(acb, new PrincipalSid(user.getSubjectName()), BasePermission.ADMINISTRATION);
 				}
-			} catch(AccessDeniedException adEx) {
-				logger.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
+			} catch(final AccessDeniedException adEx) {
+				LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
 			}
 		} else {
 			userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());

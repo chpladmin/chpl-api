@@ -44,7 +44,7 @@ import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFa
 
 @Service
 public class ProductManagerImpl extends QuestionableActivityHandlerImpl implements ProductManager {
-	private static final Logger logger = LogManager.getLogger(ProductManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(ProductManagerImpl.class);
 
 	@Autowired private Environment env;
 	@Autowired private MessageSource messageSource;
@@ -100,11 +100,11 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The product " + dto.getName()+ " cannot be created since the status of developer " + dev.getName() + " cannot be determined.";
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 			String msg = "The product " + dto.getName()+ " cannot be created since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		}
 
@@ -134,11 +134,11 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The product " + dto.getName()+ " cannot be updated since the status of developer " + dev.getName() + " cannot be determined.";
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 			String msg = "The product " + dto.getName()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		}
 
@@ -173,11 +173,11 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 			DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 			if(currDevStatus == null || currDevStatus.getStatus() == null) {
 				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the status of developer " + dev.getName() + " cannot be determined.";
-				logger.error(msg);
+				LOGGER.error(msg);
 				throw new EntityCreationException(msg);
 			} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 				String msg = "The product " + beforeProduct.getName()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-				logger.error(msg);
+				LOGGER.error(msg);
 				throw new EntityCreationException(msg);
 			}
 		}
@@ -281,7 +281,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
 		String message = "";
 		if(!(src instanceof ProductDTO)) {
-			logger.error("Cannot use object of type " + src.getClass());
+			LOGGER.error("Cannot use object of type " + src.getClass());
 		} else {
 			ProductDTO original = (ProductDTO) src;
 			message = "<p>Activity was detected on product " + original.getName() + ".</p>"
@@ -295,7 +295,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
 		boolean isQuestionable = false;
 
 		if(!(src instanceof ProductDTO && dest instanceof ProductDTO)) {
-			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type ProductDTO.");
+			LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type ProductDTO.");
 		} else {
 			ProductDTO original = (ProductDTO) src;
 			ProductDTO changed = (ProductDTO) dest;

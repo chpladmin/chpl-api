@@ -48,7 +48,7 @@ public class CertificationIdLookupResults implements Serializable {
                 if (null != dto.getProductAdditionalSoftware()) {
                     this.additionalSoftware = URLEncoder.encode(dto.getProductAdditionalSoftware(), "UTF-8");
                 }
-            } catch (UnsupportedEncodingException ex) {
+            } catch (final UnsupportedEncodingException ex) {
                 // Do nothing
             }
 		}

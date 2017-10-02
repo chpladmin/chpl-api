@@ -26,7 +26,7 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 @Repository(value="certificationBodyDAO")
 public class CertificationBodyDAOImpl extends BaseDAOImpl implements CertificationBodyDAO {
 
-	private static final Logger logger = LogManager.getLogger(CertificationBodyDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertificationBodyDAOImpl.class);
 	@Autowired AddressDAO addressDao;
 
 	@Transactional
@@ -36,7 +36,7 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId(), false);
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 
@@ -95,8 +95,8 @@ public class CertificationBodyDAOImpl extends BaseDAOImpl implements Certificati
 		{
 			try {
 				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
-			} catch(EntityCreationException ex) {
-				logger.error("Could not create new address in the database.", ex);
+			} catch(final EntityCreationException ex) {
+				LOGGER.error("Could not create new address in the database.", ex);
 				entity.setAddress(null);
 			}
 		} else {

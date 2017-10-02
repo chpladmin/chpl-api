@@ -25,7 +25,7 @@ import gov.healthit.chpl.entity.TestStandardEntity;
 
 @Repository("testStandardDAO")
 public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO {
-	private static final Logger logger = LogManager.getLogger(TestStandardDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestStandardDAOImpl.class);
 	@Autowired MessageSource messageSource;
 	@Autowired CertificationEditionDAO editionDao;
 
@@ -62,7 +62,7 @@ public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO 
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestStandard"), LocaleContextHolder.getLocale()),
 						dto.getName());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new TestStandardDTO(entity);

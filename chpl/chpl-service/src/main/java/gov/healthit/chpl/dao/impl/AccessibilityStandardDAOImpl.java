@@ -24,7 +24,7 @@ import gov.healthit.chpl.entity.AccessibilityStandardEntity;
 
 @Repository("accessibilityStandardDAO")
 public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements AccessibilityStandardDAO {
-	private static final Logger logger = LogManager.getLogger(AccessibilityStandardDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(AccessibilityStandardDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -49,7 +49,7 @@ public class AccessibilityStandardDAOImpl extends BaseDAOImpl implements Accessi
 				create(entity);
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badAccessibilityStandard"), LocaleContextHolder.getLocale()), dto.getName());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new AccessibilityStandardDTO(entity);

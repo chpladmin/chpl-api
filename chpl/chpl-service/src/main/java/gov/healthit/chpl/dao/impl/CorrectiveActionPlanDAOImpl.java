@@ -26,7 +26,7 @@ public class CorrectiveActionPlanDAOImpl extends BaseDAOImpl implements Correcti
 			if(toCreate.getId() != null) {
 				entity = getEntityById(toCreate.getId());
 			}
-		} catch(EntityRetrievalException e) {
+		} catch(final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

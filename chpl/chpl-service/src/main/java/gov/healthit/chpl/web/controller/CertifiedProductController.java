@@ -75,7 +75,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/certified_products")
 public class CertifiedProductController {
 
-	private static final Logger logger = LogManager.getLogger(CertifiedProductController.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
 
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
 	@Autowired CertifiedProductDetailsManager cpdManager;
@@ -202,7 +202,7 @@ public class CertifiedProductController {
 				if(isDup) {
 					updatedListing.getErrorMessages().add("The CHPL Product Number has changed. The new CHPL Product Number " + updatedListing.getChplProductNumber() + " must be unique among all other certified products but one already exists with the same ID. Edit a part of the CHPL product number (e.g. the version code) to make it unique.");
 				}
-			} catch(EntityRetrievalException ex) {}
+			} catch(final EntityRetrievalException ex) {}
 		}
 
 		if(updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
@@ -250,8 +250,8 @@ public class CertifiedProductController {
 				try {
 					List<PendingCertifiedProductDTO> pendingCpsByAcb = pcpManager.getPendingCertifiedProductsByAcb(acb.getId());
 					allProductDtos.addAll(pendingCpsByAcb);
-				} catch (AccessDeniedException denied) {
-					logger.warn("Access denied to pending certified products for acb " + acb.getName() + " and user "
+				} catch (final AccessDeniedException denied) {
+					LOGGER.warn("Access denied to pending certified products for acb " + acb.getName() + " and user "
 							+ Util.getUsername());
 				}
 			}
@@ -311,7 +311,7 @@ public class CertifiedProductController {
 		for(Long id : idList.getIds()) {
 			try {
 				pcpManager.deletePendingCertifiedProduct(acbs, id);
-			} catch(ObjectMissingValidationException ex) {
+			} catch(final ObjectMissingValidationException ex) {
 				possibleExceptions.getExceptions().add(ex);
 			}
 		}
@@ -437,7 +437,7 @@ public class CertifiedProductController {
 										PendingCertifiedProductEntity pendingCp = handler.handle();
 										cpsToAdd.add(pendingCp);
 									}
-									catch(InvalidArgumentsException ex) {
+									catch(final InvalidArgumentsException ex) {
 										handlerErrors.add(ex.getMessage());
 									}
 								}
@@ -458,7 +458,7 @@ public class CertifiedProductController {
 						PendingCertifiedProductEntity pendingCp = handler.handle();
 						cpsToAdd.add(pendingCp);
 					}
-					catch(InvalidArgumentsException ex) {
+					catch(final InvalidArgumentsException ex) {
 						handlerErrors.add(ex.getMessage());
 					}
 				}
@@ -482,18 +482,18 @@ public class CertifiedProductController {
 						PendingCertifiedProductDTO pendingCpDto = pcpManager.createOrReplace(cpToAdd.getCertificationBodyId(), cpToAdd);
 						PendingCertifiedProductDetails details = new PendingCertifiedProductDetails(pendingCpDto);
 						uploadedProducts.add(details);
-					} catch(EntityCreationException ex) {
+					} catch(final EntityCreationException ex) {
 						String error = "Error creating pending certified product " + cpToAdd.getUniqueId() +
 								". Error was: " + ex.getMessage();
-						logger.error(error);
+						LOGGER.error(error);
 						throw new ValidationException(error);
-					} catch(EntityRetrievalException ex) {
-						logger.error("Error retreiving pending certified product.", ex);
+					} catch(final EntityRetrievalException ex) {
+						LOGGER.error("Error retreiving pending certified product.", ex);
 					}
 				}
 			}
-		} catch(IOException ioEx) {
-			logger.error("Could not get input stream for uploaded file " + file.getName());
+		} catch(final IOException ioEx) {
+			LOGGER.error("Could not get input stream for uploaded file " + file.getName());
 			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}

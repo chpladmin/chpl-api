@@ -54,7 +54,7 @@ import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationExcepti
 
 @Service
 public class PendingCertifiedProductManagerImpl implements PendingCertifiedProductManager {
-	private static final Logger logger = LogManager.getLogger(PendingCertifiedProductManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductManagerImpl.class);
 
 	@Autowired private CertificationResultRules certRules;
 	@Autowired CertifiedProductUploadHandlerFactory uploadHandlerFactory;
@@ -226,7 +226,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 				} else {
 					alreadyDeletedEx.setContact(null);
 				}
-			} catch(UserRetrievalException ex) {
+			} catch(final UserRetrievalException ex) {
 				alreadyDeletedEx.setContact(null);
 			}
 

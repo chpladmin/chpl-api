@@ -51,7 +51,7 @@ import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 
 @Repository(value="certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {
-	private static final Logger logger = LogManager.getLogger(CertificationResultDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertificationResultDAOImpl.class);
 
 	@Autowired TestParticipantDAO participantDao;
 	@Autowired TestTaskDAO testTaskDao;
@@ -64,7 +64,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			if (result.getId() != null){
 				entity = this.getEntityById(result.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 
@@ -93,7 +93,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 				entityManager.flush();
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"), LocaleContextHolder.getLocale()), result.getCertificationCriterionId(), ex.getMessage());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 		}
@@ -125,7 +125,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 			entityManager.flush();
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"), LocaleContextHolder.getLocale()), toUpdate.getCertificationCriterionId(), ex.getMessage());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityRetrievalException(msg);
 		}
 		return new CertificationResultDTO(entity);
@@ -276,7 +276,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()),
 					dto.getUcdProcessName());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityCreationException(msg);
 		}
 
@@ -309,7 +309,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()),
 					dto.getUcdProcessName());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityRetrievalException(msg);
 		}
 	}
@@ -383,7 +383,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"), LocaleContextHolder.getLocale()),
 					(StringUtils.isEmpty(dto.getName()) ? dto.getCertifiedProductNumber() : dto.getName()));
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityCreationException(msg);
 		}
 
@@ -422,7 +422,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"), LocaleContextHolder.getLocale()),
 					(StringUtils.isEmpty(toUpdate.getName()) ? toUpdate.getCertifiedProductNumber() : toUpdate.getName()));
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityRetrievalException(msg);
 		}
 		return new CertificationResultAdditionalSoftwareDTO(curr);
@@ -590,7 +590,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTool"), LocaleContextHolder.getLocale()),
 					dto.getTestToolName());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityCreationException(msg);
 		}
 
@@ -836,7 +836,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"), LocaleContextHolder.getLocale()),
 					dto.getVersion());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityCreationException(msg);
 		}
 
@@ -869,7 +869,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"), LocaleContextHolder.getLocale()),
 					dto.getVersion());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityRetrievalException(msg);
 		}
 	}

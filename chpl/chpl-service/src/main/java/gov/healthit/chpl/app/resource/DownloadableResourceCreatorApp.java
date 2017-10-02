@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public abstract class DownloadableResourceCreatorApp extends App {
-	private static final Logger logger = LogManager.getLogger(DownloadableResourceCreatorApp.class);
+	private static final Logger LOGGER = LogManager.getLogger(DownloadableResourceCreatorApp.class);
 
 	protected SimpleDateFormat timestampFormat;
 	protected CertifiedProductDetailsManager cpdManager;
@@ -47,14 +47,14 @@ public abstract class DownloadableResourceCreatorApp extends App {
 		CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
 		for(CertifiedProductDetailsDTO currListing : listings) {
 			try {
-				logger.info("Getting details for listing ID " + currListing.getId());
+				LOGGER.info("Getting details for listing ID " + currListing.getId());
 				Date start = new Date();
 				CertifiedProductSearchDetails product = getCpdManager().getCertifiedProductDetails(currListing.getId());
 				Date end = new Date();
-				logger.info("Got details for listing ID " + currListing.getId() + " in " + (end.getTime() - start.getTime())/1000 + " seconds");
+				LOGGER.info("Got details for listing ID " + currListing.getId() + " in " + (end.getTime() - start.getTime())/1000 + " seconds");
 				results.getListings().add(product);
-			} catch(EntityRetrievalException ex) {
-				logger.error("Could not get details for certified product " + currListing.getId());
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Could not get details for certified product " + currListing.getId());
 			}
 		}
 		writeToFile(downloadFolder, results);

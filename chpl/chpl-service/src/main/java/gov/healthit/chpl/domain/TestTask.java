@@ -29,7 +29,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 public class TestTask implements Serializable {
 	private static final long serialVersionUID = -3761135258451736516L;
 
-	private static final Logger logger = LogManager.getLogger(TestTask.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestTask.class);
 
 	/**
 	 * Test task internal ID
@@ -318,8 +318,8 @@ public class TestTask implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	taskPathDeviationObserved = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	        	logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	        	LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }
@@ -332,8 +332,8 @@ public class TestTask implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	taskPathDeviationOptimal = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	        	logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	        	LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }
@@ -346,8 +346,8 @@ public class TestTask implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	taskTimeAvg = new Long(Math.round(new Float(value)));
-	        } catch (NumberFormatException e) {
-	        	logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	        	LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }
@@ -360,8 +360,8 @@ public class TestTask implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	taskTimeStddev = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	        	logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	        	LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }
@@ -374,8 +374,8 @@ public class TestTask implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	taskTimeDeviationObservedAvg = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	        	logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	        	LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }
@@ -388,8 +388,8 @@ public class TestTask implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 			try {
 	        	taskTimeDeviationOptimalAvg = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	        	logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	        	LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }

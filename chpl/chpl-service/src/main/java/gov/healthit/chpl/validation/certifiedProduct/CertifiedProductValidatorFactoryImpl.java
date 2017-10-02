@@ -12,7 +12,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 @Service
 public class CertifiedProductValidatorFactoryImpl implements CertifiedProductValidatorFactory {
 
-	private static final Logger logger = LogManager.getLogger(CertifiedProductValidatorFactoryImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductValidatorFactoryImpl.class);
 
 	private static final String PRACTICE_TYPE_AMBULATORY = "AMBULATORY";
 	private static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
@@ -36,7 +36,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 					return ambulatoryComplete2014Validator;
 				} else {
 					product.getErrorMessages().add("Cannot determine if the 2014 Ambulatory product is Modular or Complete so it cannot be validated.");
-					logger.error("Cannot find validator for 2014, ambulatory, and classification '" + product.getProductClassificationName() + "'.");
+					LOGGER.error("Cannot find validator for 2014, ambulatory, and classification '" + product.getProductClassificationName() + "'.");
 				}
 			} else if(product.getPracticeType().equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
 				if(product.getProductClassificationName().equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
@@ -45,16 +45,16 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 					return inpatientComplete2014Validator;
 				} else {
 					product.getErrorMessages().add("Cannot determine if the 2014 Inpatient product is Modular or Complete so it cannot be validated.");
-					logger.error("Cannot find validator for 2014, inpatient, and classification '" + product.getProductClassificationName() + "'.");
+					LOGGER.error("Cannot find validator for 2014, inpatient, and classification '" + product.getProductClassificationName() + "'.");
 				}
 			} else {
 				product.getErrorMessages().add("This 2014 product is neither Ambulatory nor Inpatient so it cannot be validated.");
-				logger.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
+				LOGGER.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
 			}
 		} else if(product.getCertificationEdition().equals("2015")) {
 			return cp2015Validator;
 		} else {
-			logger.error("Cannot find validator for certificatoin edition '" + product.getCertificationEdition() + "'.");
+			LOGGER.error("Cannot find validator for certificatoin edition '" + product.getCertificationEdition() + "'.");
 			return allowedValidator;
 		}
 		return null;
@@ -69,7 +69,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 
 			if(StringUtils.isEmpty(practiceTypeName) || StringUtils.isEmpty(productClassificationName)) {
 				product.getErrorMessages().add("Cannot determine if this product is Ambulatory or Inpatient so it cannot be validated.");
-				logger.error("Cannot validate a product that doesn't have practice type and/or classification specified.");
+				LOGGER.error("Cannot validate a product that doesn't have practice type and/or classification specified.");
 				return null;
 			}
 
@@ -80,7 +80,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 					return ambulatoryComplete2014Validator;
 				} else {
 					product.getErrorMessages().add("Cannot determine if the 2014 Ambulatory product is Modular or Complete so it cannot be validated.");
-					logger.error("Cannot find validator for 2014, ambulatory, and classification '" + productClassificationName + "'.");
+					LOGGER.error("Cannot find validator for 2014, ambulatory, and classification '" + productClassificationName + "'.");
 				}
 			} else if(practiceTypeName.equalsIgnoreCase(PRACTICE_TYPE_INPATIENT)) {
 				if(productClassificationName.equalsIgnoreCase(PRODUCT_CLASSIFICATION_MODULAR)) {
@@ -89,11 +89,11 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 					return inpatientComplete2014Validator;
 				} else {
 					product.getErrorMessages().add("Cannot determine if the 2014 Inpatient product is Modular or Complete so it cannot be validated.");
-					logger.error("Cannot find validator for 2014, inpatient, and classification '" + productClassificationName + "'.");
+					LOGGER.error("Cannot find validator for 2014, inpatient, and classification '" + productClassificationName + "'.");
 				}
 			} else {
 				product.getErrorMessages().add("This 2014 product is not Inpatient or Ambulatory so it cannot be validated.");
-				logger.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
+				LOGGER.error("Cannot find validator for practice type '" + product.getPracticeType() + "'");
 			}
 		} else if(productCertificationEdition != null && productCertificationEdition.equals("2015")) {
 			return cp2015Validator;

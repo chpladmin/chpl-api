@@ -22,7 +22,7 @@ import net.sf.ehcache.CacheManager;
 @Component
 @Aspect
 public class CacheInitializor {
-	private static final Logger logger = LogManager.getLogger(CacheInitializor.class);
+	private static final Logger LOGGER = LogManager.getLogger(CacheInitializor.class);
 	private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
 	private static Integer initializeTimeoutSecs;
 	private static Integer clearAllCachesTimeoutSecs;
@@ -141,7 +141,7 @@ public class CacheInitializor {
 				isInitializeFindByAcbId.cancel(true);
 			}
 
-			logger.info("Clearing all caches before @ClearAllCaches method execution.");
+			LOGGER.info("Clearing all caches before @ClearAllCaches method execution.");
 			manager.clearAll();
 		}
 		tClearAllEnd = System.currentTimeMillis();

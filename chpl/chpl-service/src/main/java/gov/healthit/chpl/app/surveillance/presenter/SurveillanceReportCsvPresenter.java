@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
 
 @Component("surveillanceReportCsvPresenter")
 public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
-	private static final Logger logger = LogManager.getLogger(SurveillanceReportCsvPresenter.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceReportCsvPresenter.class);
 
 	protected List<String> generateHeaderValues() {
 		List<String> result = new ArrayList<String>();

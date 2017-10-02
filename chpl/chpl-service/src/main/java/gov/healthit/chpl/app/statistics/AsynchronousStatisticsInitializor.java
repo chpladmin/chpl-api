@@ -20,13 +20,13 @@ import gov.healthit.chpl.domain.statistics.Statistics;
 @Repository("asynchronousStatisticsInitializor")
 @EnableAsync
 public class AsynchronousStatisticsInitializor {
-	private static final Logger logger = LogManager.getLogger(AsynchronousStatisticsInitializor.class);
+	private static final Logger LOGGER = LogManager.getLogger(AsynchronousStatisticsInitializor.class);
 	@Autowired private AsynchronousStatistics asyncStats;
 
 	@Transactional
 	@Async
 	public Future<Statistics> getStatistics(DateRange dateRange, Boolean includeActiveStatistics) throws InterruptedException, ExecutionException{
-		logger.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
+		LOGGER.info("Getting statistics for start date " + dateRange.getStartDate() + " end date " + dateRange.getEndDate());
 		Statistics stats = new Statistics();
 		stats.setDateRange(dateRange);
 		Future<Long> totalActive2014Listings = null;

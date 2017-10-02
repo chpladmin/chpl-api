@@ -22,7 +22,7 @@ import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Component
 public class AsynchronousCacheInitialization {
-	private static final Logger logger = LogManager.getLogger(AsynchronousCacheInitialization.class);
+	private static final Logger LOGGER = LogManager.getLogger(AsynchronousCacheInitialization.class);
 
 	@Autowired private CertificationIdManager certificationIdManager;
 	@Autowired private SearchMenuManager searchMenuManager;
@@ -33,7 +33,7 @@ public class AsynchronousCacheInitialization {
 	@Async
 	@Transactional
 	public Future<Boolean> initializeSearchOptions() throws EntityRetrievalException{
-		logger.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
+		LOGGER.info("Starting cache initialization for SearchViewController.getPopulateSearchData()");
 		searchMenuManager.getCertBodyNames(true);
 		searchMenuManager.getEditionNames(false);
 		searchMenuManager.getEditionNames(true);
@@ -46,56 +46,56 @@ public class AsynchronousCacheInitialization {
 		searchMenuManager.getCQMCriterionNumbers(true);
 		searchMenuManager.getCertificationCriterionNumbers(false);
 		searchMenuManager.getCertificationCriterionNumbers(true);
-		logger.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
+		LOGGER.info("Finished cache initialization for SearchViewController.getPopulateSearchData()");
 		return new AsyncResult<>(true);
 	}
 
 	@Async
 	@Transactional
 	public Future<Boolean> initializeBasicSearch() throws IOException, EntityRetrievalException, InterruptedException {
-		logger.info("Starting cache initialization for CertifiedProductSearchManager.search()");
+		LOGGER.info("Starting cache initialization for CertifiedProductSearchManager.search()");
 		certifiedProductSearchManager.search();
-		logger.info("Finished cache initialization for CertifiedProductSearchManager.search()");
+		LOGGER.info("Finished cache initialization for CertifiedProductSearchManager.search()");
 		return new AsyncResult<>(true);
 	}
 
 	@Async
 	@Transactional
 	public Future<Boolean> initializeCertificationIdsGetAll() throws IOException, EntityRetrievalException, InterruptedException {
-		logger.info("Starting cache initialization for CertificationIdManager.getAll()");
+		LOGGER.info("Starting cache initialization for CertificationIdManager.getAll()");
 		certificationIdManager.getAll();
-		logger.info("Finished cache initialization for CertificationIdManager.getAll()");
+		LOGGER.info("Finished cache initialization for CertificationIdManager.getAll()");
 		return new AsyncResult<>(true);
 	}
 
 	@Async
 	@Transactional
 	public Future<Boolean> initializeCertificationIdsGetAllWithProducts() throws IOException, EntityRetrievalException, InterruptedException {
-		logger.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
+		LOGGER.info("Starting cache initialization for CertificationIdManager.getAllWithProducts()");
 		certificationIdManager.getAllWithProducts();
-		logger.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
+		LOGGER.info("Finished cache initialization for CertificationIdManager.getAllWithProducts()");
 		return new AsyncResult<>(true);
 	}
 
 	@Async
 	@Transactional
 	public Future<Boolean> initializeDecertifiedDevelopers() throws IOException, EntityRetrievalException, InterruptedException {
-		logger.info("Starting cache initialization for DeveloperManager.getDecertifiedDevelopers()");
+		LOGGER.info("Starting cache initialization for DeveloperManager.getDecertifiedDevelopers()");
 		certificationIdManager.getAllWithProducts();
-		logger.info("Finished cache initialization for DeveloperManager.getDecertifiedDevelopers()");
+		LOGGER.info("Finished cache initialization for DeveloperManager.getDecertifiedDevelopers()");
 		return new AsyncResult<>(true);
 	}
 
 	@Async
 	@Transactional
 	public Future<Boolean> initializeFindByAcbId() throws IOException, EntityRetrievalException, InterruptedException {
-		logger.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
+		LOGGER.info("Starting cache initialization for PendingCertifiedProductDAO.findByAcbId()");
 		List<CertificationBodyDTO> cbs = certificationBodyDAO.findAll(false);
 		for(CertificationBodyDTO dto : cbs){
 			pendingCertifiedProductDAO.findByAcbId(dto.getId());
 		}
 
-		logger.info("Finished cache initialization for PendingCertifiedProductDAO.findByAcbId()");
+		LOGGER.info("Finished cache initialization for PendingCertifiedProductDAO.findByAcbId()");
 		return new AsyncResult<>(true);
 	}
 

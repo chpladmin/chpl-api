@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 
 @Component("invalidInheritanceCsvPresenter")
 public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter {
-	private static final Logger logger = LogManager.getLogger(InvalidInheritanceCsvPresenter.class);
+	private static final Logger LOGGER = LogManager.getLogger(InvalidInheritanceCsvPresenter.class);
 	private Properties props;
 	private ListingGraphDAO inheritanceDao;
 	private MessageSource messageSource;
@@ -96,7 +96,7 @@ public class InvalidInheritanceCsvPresenter extends CertifiedProductCsvPresenter
 				}
 			}
 		} catch(Exception ex) {
-			logger.error("Could not compare ICS value " + icsCodePart + " to inherits boolean value", ex);
+			LOGGER.error("Could not compare ICS value " + icsCodePart + " to inherits boolean value", ex);
 		}
 		return null;
 	}

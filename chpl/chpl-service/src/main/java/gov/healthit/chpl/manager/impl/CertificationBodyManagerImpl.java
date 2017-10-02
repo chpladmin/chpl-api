@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.security.access.prepost.PostFilter;
@@ -44,6 +46,7 @@ import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 
 @Service("certificationBodyManager")
 public class CertificationBodyManagerImpl extends ApplicationObjectSupport implements CertificationBodyManager {
+	private static final Logger LOGGER = LogManager.getLogger(CertificationBodyManagerImpl.class);
 
 	@Autowired
 	private CertificationBodyDAO certificationBodyDAO;
@@ -86,7 +89,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		addPermission(result, Util.getCurrentUser().getId(),
 				BasePermission.ADMINISTRATION);
 
-		logger.debug("Created acb " + result
+		LOGGER.debug("Created acb " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
 
 		String activityMsg = "Created Certification Body "+result.getName();
@@ -254,7 +257,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		try {
 			acl = (MutableAcl) mutableAclService.readAclById(oid);
 		}
-		catch (NotFoundException nfe) {
+		catch (final NotFoundException nfe) {
 			acl = mutableAclService.createAcl(oid);
 		}
 
@@ -265,11 +268,11 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
 		Sid recipient = new PrincipalSid(user.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
-			logger.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
+			LOGGER.debug("User " + recipient + " already has permission on the ACB " + acb.getName());
 		} else {
 			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
 			mutableAclService.updateAcl(acl);
-			logger.debug("Added permission " + permission + " for Sid " + recipient
+			LOGGER.debug("Added permission " + permission + " for Sid " + recipient
 					+ " acb " + acb);
 		}
 	}
@@ -294,7 +297,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 			}
 			mutableAclService.updateAcl(acl);
 		}
-		logger.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
+		LOGGER.debug("Deleted acb " + acb + " ACL permission " + permission + " for recipient " + recipient);
 	}
 
 	@Transactional
@@ -318,7 +321,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 		}
 
 		mutableAclService.updateAcl(acl);
-		logger.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
+		LOGGER.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")

@@ -46,7 +46,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
 
 @Repository("surveillanceDAO")
 public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO {
-	private static final Logger logger = LogManager.getLogger(SurveillanceDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceDAOImpl.class);
 
 	@Autowired CertificationCriterionDAO criterionDao;
 	@Autowired UserPermissionDAO userPermissionDao;
@@ -357,7 +357,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	public void deleteSurveillance(Surveillance surv) throws EntityRetrievalException {
-		logger.debug("Looking for surveillance with id " + surv.getId() + " to delete.");
+		LOGGER.debug("Looking for surveillance with id " + surv.getId() + " to delete.");
 		SurveillanceEntity toDelete = fetchSurveillanceById(surv.getId());
 		if(toDelete.getSurveilledRequirements() != null) {
 			for(SurveillanceRequirementEntity reqToDelete : toDelete.getSurveilledRequirements()) {
@@ -447,7 +447,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	public SurveillanceType findSurveillanceType(String type) {
-		logger.debug("Searchig for surveillance type '" + type + "'.");
+		LOGGER.debug("Searchig for surveillance type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
 			return null;
 		}
@@ -460,7 +460,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		SurveillanceTypeEntity resultEntity = null;
 		if(matches != null && matches.size() > 0) {
 			resultEntity = matches.get(0);
-			logger.debug("Found surveillance type '" + type + "' having id '" + resultEntity.getId() + "'.");
+			LOGGER.debug("Found surveillance type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 
 		SurveillanceType result = convert(resultEntity);
@@ -468,7 +468,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	public SurveillanceType findSurveillanceType(Long id) {
-		logger.debug("Searchig for surveillance type with id '" + id + "'.");
+		LOGGER.debug("Searchig for surveillance type with id '" + id + "'.");
 		if(id == null) {
 			return null;
 		}
@@ -518,7 +518,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
 	@Cacheable("findSurveillanceRequirementType")
 	public SurveillanceRequirementType findSurveillanceRequirementType(String type) {
-		logger.debug("Searching for surveillance requirement type '" + type + "'.");
+		LOGGER.debug("Searching for surveillance requirement type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
 			return null;
 		}
@@ -531,7 +531,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		SurveillanceRequirementTypeEntity resultEntity = null;
 		if(matches != null && matches.size() > 0) {
 			resultEntity = matches.get(0);
-			logger.debug("Found surveillance requirement type '" + type + "' having id '" + resultEntity.getId() + "'.");
+			LOGGER.debug("Found surveillance requirement type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 
 		SurveillanceRequirementType result = convert(resultEntity);
@@ -539,7 +539,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	public SurveillanceRequirementType findSurveillanceRequirementType(Long id) {
-		logger.debug("Searching for surveillance requirement type by id '" + id + "'.");
+		LOGGER.debug("Searching for surveillance requirement type by id '" + id + "'.");
 		if(id == null) {
 			return null;
 		}
@@ -573,7 +573,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
 	@Cacheable("findSurveillanceResultType")
 	public SurveillanceResultType findSurveillanceResultType(String type) {
-		logger.debug("Searching for surveillance result type '" + type + "'.");
+		LOGGER.debug("Searching for surveillance result type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
 			return null;
 		}
@@ -586,7 +586,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		SurveillanceResultTypeEntity resultEntity = null;
 		if(matches != null && matches.size() > 0) {
 			resultEntity = matches.get(0);
-			logger.debug("Found surveillance result type '" + type + "' having id '" + resultEntity.getId() + "'.");
+			LOGGER.debug("Found surveillance result type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 
 		SurveillanceResultType result = convert(resultEntity);
@@ -594,7 +594,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	public SurveillanceResultType findSurveillanceResultType(Long id) {
-		logger.debug("Searching for surveillance result type by id '" + id + "'.");
+		LOGGER.debug("Searching for surveillance result type by id '" + id + "'.");
 		if(id == null) {
 			return null;
 		}
@@ -628,7 +628,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 
 	@Cacheable("findSurveillanceNonconformityStatusType")
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(String type) {
-		logger.debug("Searching for nonconformity status type '" + type + "'.");
+		LOGGER.debug("Searching for nonconformity status type '" + type + "'.");
 		if(StringUtils.isEmpty(type)) {
 			return null;
 		}
@@ -641,7 +641,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 		NonconformityStatusEntity resultEntity = null;
 		if(matches != null && matches.size() > 0) {
 			resultEntity = matches.get(0);
-			logger.debug("Found nonconformity status type '" + type + "' having id '" + resultEntity.getId() + "'.");
+			LOGGER.debug("Found nonconformity status type '" + type + "' having id '" + resultEntity.getId() + "'.");
 		}
 
 		SurveillanceNonconformityStatus result = convert(resultEntity);
@@ -649,7 +649,7 @@ public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO 
 	}
 
 	public SurveillanceNonconformityStatus findSurveillanceNonconformityStatusType(Long id) {
-		logger.debug("Searching for nonconformity status type by id '" + id + "'.");
+		LOGGER.debug("Searching for nonconformity status type by id '" + id + "'.");
 		if(id == null) {
 			return null;
 		}

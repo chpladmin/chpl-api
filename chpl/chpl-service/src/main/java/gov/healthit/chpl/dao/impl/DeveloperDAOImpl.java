@@ -42,7 +42,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 @Repository("developerDAO")
 public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 
-	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(DeveloperDAOImpl.class);
 	private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
 	@Autowired AddressDAO addressDao;
 	@Autowired ContactDAO contactDao;
@@ -56,7 +56,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 
@@ -140,12 +140,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 							entityManager.flush();
 						} else {
 							String msg = "Could not find status with name " + providedDeveloperStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
-							logger.error(msg);
+							LOGGER.error(msg);
 							throw new EntityCreationException(msg);
 						}
 					} else {
 						String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer " + entity.getName();
-						logger.error(msg);
+						LOGGER.error(msg);
 						throw new EntityCreationException(msg);
 					}
 				}
@@ -183,8 +183,8 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		{
 			try {
 				entity.setAddress(addressDao.mergeAddress(dto.getAddress()));
-			} catch(EntityCreationException ex) {
-				logger.error("Could not create new address in the database.", ex);
+			} catch(final EntityCreationException ex) {
+				LOGGER.error("Could not create new address in the database.", ex);
 				entity.setAddress(null);
 			}
 		} else {
@@ -240,7 +240,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		//check to make sure at least 1 status event was passed in, we can't delete them all
 		if(dto.getStatusEvents() == null || dto.getStatusEvents().size() == 0) {
 			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer " + entity.getName();
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		}
 
@@ -289,7 +289,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 					entityManager.flush();
 				} else {
 					String msg = "Could not find status with name " + providedDeveloperStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer " + entity.getName();
-					logger.error(msg);
+					LOGGER.error(msg);
 					throw new EntityCreationException(msg);
 				}
 			}
@@ -317,12 +317,12 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				entityManager.flush();
 			} else {
 				String msg = "Could not find status with name " + newStatusEvent.getStatus().getStatusName() + "; cannot insert this status history entry for developer with id " + newStatusEvent.getDeveloperId();
-				logger.error(msg);
+				LOGGER.error(msg);
 				throw new EntityCreationException(msg);
 			}
 		} else {
 			String msg = "Developer Status name and date must be provided but at least one was not found; cannot insert this status history for developer with id " + newStatusEvent.getDeveloperId();
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		}
 	}
@@ -504,30 +504,30 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
 		//populate dtoList from result
 		for(CertifiedProductDetailsEntity e : result){
-			logger.debug("CertifiedProductDetailsEntity: " + e.getDeveloperId() + " " + e.getCertificationBodyId() + " " + e.getMeaningfulUseUsers());
+			LOGGER.debug("CertifiedProductDetailsEntity: " + e.getDeveloperId() + " " + e.getCertificationBodyId() + " " + e.getMeaningfulUseUsers());
 			Boolean dtoIsInList = false;
 			if(dtoList.size() > 0){
 				for(DecertifiedDeveloperDTO dto : dtoList){
-					logger.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperId() + " " + dto.getAcbIdList() + " " + dto.getNumMeaningfulUse());
+					LOGGER.debug("DeveloperDecertifiedDTO: " + dto.getDeveloperId() + " " + dto.getAcbIdList() + " " + dto.getNumMeaningfulUse());
 					// if developer already exists, update it to include ACB and aggregate numMeaningfulUse
 					if(dto.getDeveloperId().equals(e.getDeveloperId())){
-						logger.debug(dto.getDeveloperId() + " == " + e.getDeveloperId());
+						LOGGER.debug(dto.getDeveloperId() + " == " + e.getDeveloperId());
 						// If this developer is not associated with the ACB, add the ACB
 						if(!dto.getAcbIdList().contains(e.getCertificationBodyId())){
-							logger.debug("dto does not contain " + e.getCertificationBodyName());
+							LOGGER.debug("dto does not contain " + e.getCertificationBodyName());
 							dto.addAcb(e.getCertificationBodyId());
-							logger.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == " + dto.getDeveloperId());
+							LOGGER.debug("added acb " + e.getCertificationBodyId() + " to dto with dev id == " + dto.getDeveloperId());
 							dto.setDeveloperStatus(e.getDeveloperStatusName());
-							logger.debug("set dto dev status to " + e.getDeveloperStatusName());
+							LOGGER.debug("set dto dev status to " + e.getDeveloperStatusName());
 							dto.setDecertificationDate(e.getDeveloperStatusDate());
-							logger.debug("set dev decert date to " + e.getDeveloperStatusDate());
+							LOGGER.debug("set dev decert date to " + e.getDeveloperStatusDate());
 							if(dto.getNumMeaningfulUse() != null){
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
-								logger.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
+								LOGGER.debug("adding numMeaningfulUse to dto with value " + e.getMeaningfulUseUsers());
 							}
 							else{
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
-								logger.debug("set dto numMeaningfulUse to value " + e.getMeaningfulUseUsers());
+								LOGGER.debug("set dto numMeaningfulUse to value " + e.getMeaningfulUseUsers());
 							}
 							dtoIsInList = true;
 							break;
@@ -536,7 +536,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 						else{
 							if(e.getMeaningfulUseUsers() != null){
 								dto.setNumMeaningfulUse(e.getMeaningfulUseUsers());
-								logger.debug("adding to dto's numMeaningfulUse with value " + e.getMeaningfulUseUsers());
+								LOGGER.debug("adding to dto's numMeaningfulUse with value " + e.getMeaningfulUseUsers());
 							}
 							dtoIsInList = true;
 							break;
@@ -549,7 +549,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 				acbList.add(e.getCertificationBodyId());
 				DecertifiedDeveloperDTO newDto = new DecertifiedDeveloperDTO(e.getDeveloperId(), acbList, e.getDeveloperStatusName(), e.getDeveloperStatusDate(), e.getMeaningfulUseUsers());
 				dtoList.add(newDto);
-				logger.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
+				LOGGER.debug("adding newDto to list with values: " + e.getMeaningfulUseUsers());
 			}
 		}
 
@@ -680,7 +680,7 @@ public class DeveloperDAOImpl extends BaseDAOImpl implements DeveloperDAO {
 		DeveloperStatusDAOImpl statusDaoImpl = (DeveloperStatusDAOImpl) statusDao;
 		List<DeveloperStatusEntity> statuses = statusDaoImpl.getEntitiesByName(statusName);
 		if(statuses == null || statuses.size() == 0) {
-			logger.error("Could not find the " + statusName + " status");
+			LOGGER.error("Could not find the " + statusName + " status");
 			return null;
 		}
 		return statuses.get(0);

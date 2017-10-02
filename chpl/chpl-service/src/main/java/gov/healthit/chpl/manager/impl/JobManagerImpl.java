@@ -27,7 +27,7 @@ import gov.healthit.chpl.manager.JobManager;
 
 @Service
 public class JobManagerImpl extends ApplicationObjectSupport implements JobManager {
-	private static final Logger logger = LogManager.getLogger(JobManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(JobManagerImpl.class);
 	private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
 
 	@Autowired private Environment env;
@@ -63,8 +63,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 		Integer completedJobThresholdDays = 0;
 		try {
 			completedJobThresholdDays = Integer.parseInt(completedJobThresholdDaysStr);
-		} catch(NumberFormatException ex) {
-			logger.error("Could not format " + completedJobThresholdDaysStr + " as an integer. Defaulting to 0 instead.");
+		} catch(final NumberFormatException ex) {
+			LOGGER.error("Could not format " + completedJobThresholdDaysStr + " as an integer. Defaulting to 0 instead.");
 		}
 		Long earliestCompletedJobMillis = System.currentTimeMillis() - (completedJobThresholdDays * MILLIS_PER_DAY);
 
@@ -98,8 +98,8 @@ public class JobManagerImpl extends ApplicationObjectSupport implements JobManag
 		RunnableJob runnableJob = null;
 		try {
 			runnableJob = jobFactory.getRunnableJob(job);
-		} catch(NoJobTypeException ex) {
-			logger.error("No runnable job for job type " + job.getJobType().getName() + " found.");
+		} catch(final NoJobTypeException ex) {
+			LOGGER.error("No runnable job for job type " + job.getJobType().getName() + " found.");
 		}
 
 		if(runnableJob == null) {

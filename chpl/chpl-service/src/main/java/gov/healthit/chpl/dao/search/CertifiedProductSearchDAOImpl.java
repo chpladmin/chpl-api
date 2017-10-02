@@ -23,7 +23,7 @@ import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDAOImpl.class);
 
 	@Override
 	public Long getListingIdByUniqueChplNumber(String chplProductNumber) {
@@ -59,7 +59,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 
 	@Override
 	public List<CertifiedProductFlatSearchResult> getAllCertifiedProducts() {
-		logger.info("Starting basic search query.");
+		LOGGER.info("Starting basic search query.");
 		Query query = entityManager.createQuery("SELECT cps "
 				+ "FROM CertifiedProductBasicSearchResultEntity cps "
 				, CertifiedProductBasicSearchResultEntity.class);
@@ -67,7 +67,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 		Date startDate = new Date();
 		List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
 		Date endDate = new Date();
-		logger.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
+		LOGGER.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
 		return convert(results);
 	}
 

@@ -37,7 +37,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 
 @Component("surveillanceValidator")
 public class SurveillanceValidator implements MessageSourceAware {
-	private static final Logger logger = LogManager.getLogger(SurveillanceValidator.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceValidator.class);
 
 	private static final String CRITERION_REQUIREMENT_TYPE = "Certified Capability";
 	private static final String TRANSPARENCY_REQUIREMENT_TYPE = "Transparency or Disclosure Requirement";
@@ -74,7 +74,7 @@ public class SurveillanceValidator implements MessageSourceAware {
 					} else {
 						surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.productIdNotFound"), LocaleContextHolder.getLocale()), chplId));
 					}
-				} catch(EntityRetrievalException ex) {
+				} catch(final EntityRetrievalException ex) {
 					surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.productDetailsRetrievalException"), LocaleContextHolder.getLocale()), chplId));
 				}
 			} else {
@@ -85,14 +85,14 @@ public class SurveillanceValidator implements MessageSourceAware {
 					} else {
 						surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.productUniqueIdNotFound"), LocaleContextHolder.getLocale()), chplId));
 					}
-				} catch(EntityRetrievalException ex){
+				} catch(final EntityRetrievalException ex){
 					surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.productDetailsRetrievalException"), LocaleContextHolder.getLocale()), chplId));
 				}
 			}
 		} else if(surv.getCertifiedProduct().getId() != null) {
 			try {
 				cpDetails = cpDao.getDetailsById(surv.getCertifiedProduct().getId());
-			} catch(EntityRetrievalException ex) {
+			} catch(final EntityRetrievalException ex) {
 				surv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.detailsNotFoundForCertifiedProduct"), LocaleContextHolder.getLocale()), surv.getCertifiedProduct().getId()));
 			}
 			surv.setCertifiedProduct(new CertifiedProduct(cpDetails));
@@ -147,8 +147,8 @@ public class SurveillanceValidator implements MessageSourceAware {
 		if(surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
 			try {
 				certResults = certResultDetailsDao.getCertificationResultDetailsByCertifiedProductId(surv.getCertifiedProduct().getId());
-			} catch(EntityRetrievalException ex) {
-				logger.error("Could not find cert results for certified product " + surv.getCertifiedProduct().getId(), ex);
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Could not find cert results for certified product " + surv.getCertifiedProduct().getId(), ex);
 			}
 		}
 

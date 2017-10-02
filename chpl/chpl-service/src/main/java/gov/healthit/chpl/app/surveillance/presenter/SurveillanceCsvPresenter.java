@@ -30,7 +30,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  */
 @Component("surveillanceCsvPresenter")
 public class SurveillanceCsvPresenter {
-	private static final Logger logger = LogManager.getLogger(SurveillanceCsvPresenter.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
 	protected Properties props;
 	protected DateTimeFormatter dateFormatter;
 
@@ -56,8 +56,8 @@ public class SurveillanceCsvPresenter {
 					}
 				}
 			}
-		} catch(IOException ex) {
-			logger.error("Could not write file " + file.getName(), ex);
+		} catch(final IOException ex) {
+			LOGGER.error("Could not write file " + file.getName(), ex);
 		} finally {
 			try {
 				writer.flush();

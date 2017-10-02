@@ -24,7 +24,7 @@ import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 
 @Repository("testTaskDao")
 public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
-	private static final Logger logger = LogManager.getLogger(TestTaskDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestTaskDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -61,7 +61,7 @@ public class TestTaskDAOImpl extends BaseDAOImpl implements TestTaskDAO {
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTask"), LocaleContextHolder.getLocale()),
 						dto.getDescription());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 		}

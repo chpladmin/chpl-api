@@ -27,7 +27,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 @Repository(value="certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Transactional(readOnly = false)
@@ -38,7 +38,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 
@@ -115,7 +115,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 				create(entity);
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"), LocaleContextHolder.getLocale()), dto.getChplProductNumber(), ex.getMessage());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new CertifiedProductDTO(entity);
@@ -158,7 +158,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 		}
 		catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"), LocaleContextHolder.getLocale()), dto.getChplProductNumber(), ex.getMessage());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityRetrievalException(msg);
 		}
 		return new CertifiedProductDTO(entity);

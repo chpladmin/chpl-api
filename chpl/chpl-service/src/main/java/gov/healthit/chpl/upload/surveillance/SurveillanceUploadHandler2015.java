@@ -31,7 +31,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("surveillanceUploadHandler2015")
 public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler {
-	private static final Logger logger = LogManager.getLogger(SurveillanceUploadHandler2015.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceUploadHandler2015.class);
 
 	private static final String DATE_FORMAT = "yyyyMMdd";
 	private static final String FIRST_ROW_REGEX = "^NEW|UPDATE$";
@@ -98,13 +98,13 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 					if(chplProductDetails != null) {
 						surv.setCertifiedProduct(new CertifiedProduct(chplProductDetails));
 					} else {
-						logger.error("Found chpl product with product id '" + chplId + "' but could not find certified product with id '" + chplProduct.getId() + "'.");
+						LOGGER.error("Found chpl product with product id '" + chplId + "' but could not find certified product with id '" + chplProduct.getId() + "'.");
 					}
 				} else {
-					logger.error("Could not find chpl product with product id '" + chplId + "'.");
+					LOGGER.error("Could not find chpl product with product id '" + chplId + "'.");
 				}
-			} catch(EntityRetrievalException ex) {
-				logger.error("Exception looking up CHPL product details for '" + chplId + "'.");
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Exception looking up CHPL product details for '" + chplId + "'.");
 			}
 		} else {
 			try {
@@ -112,10 +112,10 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				if(chplProductDetails != null) {
 					surv.setCertifiedProduct(new CertifiedProduct(chplProductDetails));
 				} else {
-					logger.error("Could not find chpl product with unique id '" + chplId + "'.");
+					LOGGER.error("Could not find chpl product with unique id '" + chplId + "'.");
 				}
-			} catch(EntityRetrievalException ex){
-				logger.error("Exception looking up " + chplId, ex);
+			} catch(final EntityRetrievalException ex){
+				LOGGER.error("Exception looking up " + chplId, ex);
 			}
 		}
 
@@ -127,13 +127,13 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 		//find the surveillance id in case this is an update
 		String survFriendlyId = record.get(colIndex++).trim();
 		if(isUpdate && StringUtils.isEmpty(survFriendlyId)) {
-			logger.error("Surveillance UPDATE specified but no surveillance ID was found");
+			LOGGER.error("Surveillance UPDATE specified but no surveillance ID was found");
 			surv.getErrorMessages().add("No surveillance ID was specified for surveillance update on certified product " + chplId);
 			return;
 		} else if (isUpdate &&
 				survDao.getSurveillanceByCertifiedProductAndFriendlyId(
 						surv.getCertifiedProduct().getId(), survFriendlyId) == null) {
-			logger.error("Could not find existing surveillance for update with certified product id " +
+			LOGGER.error("Could not find existing surveillance for update with certified product id " +
 					surv.getCertifiedProduct().getId() + " and friendly id " + survFriendlyId);
 			surv.getErrorMessages().add("No surveillance exists for certified product " +
 					surv.getCertifiedProduct().getChplProductNumber() + " and surveillance id " + survFriendlyId);
@@ -147,8 +147,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			try {
 				Date beginDate = dateFormatter.parse(beginDateStr);
 				surv.setStartDate(beginDate);
-			} catch(ParseException pex) {
-				logger.error("Could not parse begin date '" + beginDateStr + "'.");
+			} catch(final ParseException pex) {
+				LOGGER.error("Could not parse begin date '" + beginDateStr + "'.");
 			}
 		}
 
@@ -158,8 +158,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			try {
 				Date endDate = dateFormatter.parse(endDateStr);
 				surv.setEndDate(endDate);
-			} catch(ParseException pex) {
-				logger.error("Could not parse end date '" + endDateStr + "'.");
+			} catch(final ParseException pex) {
+				LOGGER.error("Could not parse end date '" + endDateStr + "'.");
 			}
 		}
 
@@ -178,7 +178,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				Integer randomizedSitesUsed = Integer.parseInt(randomizedSitesUsedStr);
 				surv.setRandomizedSitesUsed(randomizedSitesUsed);
 			} catch(Exception ex) {
-				logger.error("Could not parse '" + randomizedSitesUsedStr + "' as an integer.");
+				LOGGER.error("Could not parse '" + randomizedSitesUsedStr + "' as an integer.");
 			}
 		}
 	}
@@ -253,8 +253,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			try {
 				Date determinationDate = dateFormatter.parse(determinationDateStr);
 				nc.setDateOfDetermination(determinationDate);
-			} catch(ParseException pex) {
-				logger.error("Could not parse determination date '" + determinationDateStr + "'.");
+			} catch(final ParseException pex) {
+				LOGGER.error("Could not parse determination date '" + determinationDateStr + "'.");
 			}
 		}
 
@@ -264,8 +264,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			try {
 				Date capApprovalDate = dateFormatter.parse(capApprovalDateStr);
 				nc.setCapApprovalDate(capApprovalDate);
-			} catch(ParseException pex) {
-				logger.error("Could not parse CAP approval date '" + capApprovalDateStr + "'.");
+			} catch(final ParseException pex) {
+				LOGGER.error("Could not parse CAP approval date '" + capApprovalDateStr + "'.");
 			}
 		}
 
@@ -275,8 +275,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			try {
 				Date actionBeginDate = dateFormatter.parse(actionBeginDateStr);
 				nc.setCapStartDate(actionBeginDate);
-			} catch(ParseException pex) {
-				logger.error("Could not parse action begin date '" + actionBeginDateStr + "'.");
+			} catch(final ParseException pex) {
+				LOGGER.error("Could not parse action begin date '" + actionBeginDateStr + "'.");
 			}
 		}
 
@@ -286,8 +286,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			try {
 				Date mustCompleteDate = dateFormatter.parse(mustCompleteDateStr);
 				nc.setCapMustCompleteDate(mustCompleteDate);
-			} catch(ParseException pex) {
-				logger.error("Could not parse must complete date '" + mustCompleteDateStr + "'.");
+			} catch(final ParseException pex) {
+				LOGGER.error("Could not parse must complete date '" + mustCompleteDateStr + "'.");
 			}
 		}
 
@@ -297,8 +297,8 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 			try {
 				Date wasCompleteDate = dateFormatter.parse(wasCompleteDateStr);
 				nc.setCapEndDate(wasCompleteDate);
-			} catch(ParseException pex) {
-				logger.error("Could not parse was complete date '" + wasCompleteDateStr + "'.");
+			} catch(final ParseException pex) {
+				LOGGER.error("Could not parse was complete date '" + wasCompleteDateStr + "'.");
 			}
 		}
 
@@ -317,7 +317,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				Integer sitesPassed = Integer.parseInt(sitesPassedStr);
 				nc.setSitesPassed(sitesPassed);
 			} catch(Exception ex) {
-				logger.error("Could not parse '" + sitesPassedStr + "' as an integer.");
+				LOGGER.error("Could not parse '" + sitesPassedStr + "' as an integer.");
 			}
 		}
 
@@ -328,7 +328,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
 				Integer totalSitesUsed = Integer.parseInt(totalSitesUsedStr);
 				nc.setTotalSites(totalSitesUsed);
 			} catch(Exception ex) {
-				logger.error("Could not parse '" + totalSitesUsedStr + "' as an integer.");
+				LOGGER.error("Could not parse '" + totalSitesUsedStr + "' as an integer.");
 			}
 		}
 

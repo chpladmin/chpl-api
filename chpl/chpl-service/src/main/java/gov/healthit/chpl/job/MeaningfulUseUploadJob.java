@@ -28,16 +28,16 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 @Component
 @Scope("prototype") //tells spring to make a new instance of this class every time it is needed
 public class MeaningfulUseUploadJob extends RunnableJob {
-	private static final Logger logger = LogManager.getLogger(MeaningfulUseUploadJob.class);
+	private static final Logger LOGGER = LogManager.getLogger(MeaningfulUseUploadJob.class);
 
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired CertifiedProductDAO cpDao;
 
 	public MeaningfulUseUploadJob() {
-		logger.debug("Created new MUUJob");
+		LOGGER.debug("Created new MUUJob");
 	}
 	public MeaningfulUseUploadJob(JobDTO job) {
-		logger.debug("Created new MUUJob");
+		LOGGER.debug("Created new MUUJob");
 		this.job = job;
 	}
 
@@ -57,7 +57,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 			List<CSVRecord> records = parser.getRecords();
 			if(records.size() <= 1) {
 				String msg = "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.";
-				logger.error(msg);
+				LOGGER.error(msg);
 				addJobMessage(msg);
 				updateStatus(100, JobStatusType.Error);
 				try { parser.close(); } catch(Exception ignore) {}
@@ -88,7 +88,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 							}
 							muusToUpdate.add(muu);
 							uniqueMuusFromFile.add(muu.getProductNumber());
-						} catch (NumberFormatException e){
+						} catch (final NumberFormatException e){
 							muu.setProductNumber(chplProductNumber);
 							muu.setCsvLineNumber(i);
 							String error = "Line " + muu.getCsvLineNumber() + ": Field \"num_meaningful_use\" with value \"" + currRecord.get(1).trim() + "\" is invalid. "
@@ -97,7 +97,7 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 							muusToUpdate.add(muu);
 							uniqueMuusFromFile.add(muu.getProductNumber());
 						}
-						catch (IOException e){
+						catch (final IOException e){
 							muu.setProductNumber(chplProductNumber);
 							muu.setCsvLineNumber(i);
 							Integer dupLineNumber = null;
@@ -120,9 +120,9 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 			//finished parsing the file which is pretty quick, say that's 10% of the job done
 			jobPercentComplete = 10;
 			updateStatus(jobPercentComplete, JobStatusType.In_Progress);
-		} catch(IOException ioEx) {
+		} catch(final IOException ioEx) {
 			String msg = "Could not get input stream for job data string for job with ID " + job.getId();
-			logger.error(msg);
+			LOGGER.error(msg);
 			addJobMessage(msg);
 			updateStatus(100, JobStatusType.Error);
 			try { parser.close(); } catch(Exception ignore) {}
@@ -159,18 +159,18 @@ public class MeaningfulUseUploadJob extends RunnableJob {
 
 						try{
 							cpDao.updateMeaningfulUseUsers(dto);
-						} catch (EntityRetrievalException e){
+						} catch (final EntityRetrievalException e){
 							addJobMessage("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
 									+ "The provided \"chpl_product_number\" does not exist.");
 						}
 					}
-				} catch(EntityRetrievalException ex) {
+				} catch(final EntityRetrievalException ex) {
 					String msg = "Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""+ muu.getProductNumber() + "\" is invalid. "
 							+ "The provided \"chpl_product_number\" does not exist.";
 					addJobMessage(msg);
 				} catch (Exception ex){
 					String msg = "Line " + muu.getCsvLineNumber() + ": An unexpected error occurred. " + ex.getMessage();
-					logger.error(msg, ex);
+					LOGGER.error(msg, ex);
 					addJobMessage(msg);
 
 				}

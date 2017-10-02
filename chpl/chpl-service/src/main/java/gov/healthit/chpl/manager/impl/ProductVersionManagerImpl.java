@@ -35,7 +35,7 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
 public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl implements ProductVersionManager {
-	private static final Logger logger = LogManager.getLogger(ProductVersionManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(ProductVersionManagerImpl.class);
 	@Autowired private ProductVersionDAO dao;
 	@Autowired private DeveloperDAO devDao;
 	@Autowired private ProductDAO prodDao;
@@ -87,11 +87,11 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
 		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The version " + dto.getVersion()+ " cannot be created since the status of developer " + dev.getName() + " cannot be determined.";
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 			String msg = "The version " + dto.getVersion()+ " cannot be created since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		}
 
@@ -115,11 +115,11 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
 		DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 		if(currDevStatus == null || currDevStatus.getStatus() == null) {
 			String msg = "The version " + before.getVersion()+ " cannot be updated since the status of developer " + dev.getName() + " cannot be determined.";
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 			String msg = "The version " + before.getVersion()+ " cannot be updated since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new EntityCreationException(msg);
 		}
 
@@ -154,11 +154,11 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
 			DeveloperStatusEventDTO currDevStatus = dev.getStatus();
 			if(currDevStatus == null || currDevStatus.getStatus() == null) {
 				String msg = "The version " + version.getVersion()+ " cannot be merged since the status of developer " + dev.getName() + " cannot be determined.";
-				logger.error(msg);
+				LOGGER.error(msg);
 				throw new EntityCreationException(msg);
 			} else if(!currDevStatus.getStatus().getStatusName().equals(DeveloperStatusType.Active.toString())) {
 				String msg = "The version " + version.getVersion()+ " cannot be merged since the developer " + dev.getName() + " has a status of " + currDevStatus.getStatus().getStatusName();
-				logger.error(msg);
+				LOGGER.error(msg);
 				throw new EntityCreationException(msg);
 			}
 		}
@@ -187,7 +187,7 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
 	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
 		String message = "";
 		if(!(src instanceof ProductVersionDTO)) {
-			logger.error("Cannot use object of type " + src.getClass());
+			LOGGER.error("Cannot use object of type " + src.getClass());
 		} else {
 			ProductVersionDTO original = (ProductVersionDTO) src;
 			message = "<p>Activity was detected on version " + original.getVersion() + ".</p>"
@@ -201,7 +201,7 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
 		boolean isQuestionable = false;
 
 		if(!(src instanceof ProductVersionDTO && dest instanceof ProductVersionDTO)) {
-			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type ProductVersionDTO.");
+			LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type ProductVersionDTO.");
 		} else {
 			ProductVersionDTO original = (ProductVersionDTO) src;
 			ProductVersionDTO changed = (ProductVersionDTO) dest;

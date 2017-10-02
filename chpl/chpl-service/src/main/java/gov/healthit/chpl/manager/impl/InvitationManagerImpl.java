@@ -63,7 +63,7 @@ public class InvitationManagerImpl implements InvitationManager {
 	@Autowired private CertificationBodyManager acbManager;
 	@Autowired private TestingLabManager atlManager;
 
-	private static final Logger logger = LogManager.getLogger(InvitationManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(InvitationManagerImpl.class);
 
 	@Override
 	@Transactional
@@ -315,10 +315,10 @@ public class InvitationManagerImpl implements InvitationManager {
 					} else {
 						userManager.grantRole(user.getName(), userPermission.getAuthority());
 					}
-				} catch(UserPermissionRetrievalException ex) {
-					logger.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), ex);
-				} catch(UserManagementException mex) {
-					logger.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), mex);
+				} catch(final UserPermissionRetrievalException ex) {
+					LOGGER.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), ex);
+				} catch(final UserManagementException mex) {
+					LOGGER.error("Could not add role " + userPermission.getAuthority() + " for user " + user.getName(), mex);
 				}
 			}
 		}

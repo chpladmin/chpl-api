@@ -18,7 +18,7 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.manager.QuestionableActivityHandler;
 
 public abstract class QuestionableActivityHandlerImpl implements QuestionableActivityHandler {
-	private static final Logger logger = LogManager.getLogger(QuestionableActivityHandlerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityHandlerImpl.class);
 
 	@Autowired protected NotificationDAO notificationDao;
 	@Autowired protected SendMailUtil sendMailService;
@@ -51,11 +51,11 @@ public abstract class QuestionableActivityHandlerImpl implements QuestionableAct
 
 			try {
 				sendMailService.sendEmail(null, emailAddrs, subject, htmlMessage);
-			} catch(MessagingException me) {
-				logger.error("Could not send questionable activity email", me);
+			} catch(final MessagingException me) {
+				LOGGER.error("Could not send questionable activity email", me);
 			}
 		} else {
-			logger.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
+			LOGGER.warn("No recipients were found for notification type " + NotificationTypeConcept.QUESTIONABLE_ACTIVITY.getName());
 		}
 	}
 }

@@ -57,7 +57,7 @@ public class AppConfig {
 		if(props == null) {
 			try {
 				loadProperties();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -70,7 +70,7 @@ public class AppConfig {
 		if (props == null){
 			try {
 				loadProperties();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}

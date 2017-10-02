@@ -35,7 +35,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 @Repository(value = "certifiedProductSearchResultDAO")
 public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 		CertifiedProductSearchResultDAO {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductSearchResultDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchResultDAOImpl.class);
 
 	static final Map<String, String> columnNameRef = new HashMap<String, String>();
 	static {
@@ -134,7 +134,7 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 			dto = new CertifiedProductDetailsDTO(entity);
 		} else {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.notFound"), LocaleContextHolder.getLocale()));
-			logger.error("Error retreiving listing with ID " + productId + ": " + msg);
+			LOGGER.error("Error retreiving listing with ID " + productId + ": " + msg);
 			throw new EntityRetrievalException(msg);
 		}
 		return dto;
@@ -694,8 +694,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				beginningOfDay.set(Calendar.SECOND, 0);
 				beginningOfDay.set(Calendar.MILLISECOND, 0);
 				query.setParameter("certificationDateStart", beginningOfDay.getTime());
-			} catch(ParseException ex) {
-				logger.error("Could not parse " + searchRequest.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+			} catch(final ParseException ex) {
+				LOGGER.error("Could not parse " + searchRequest.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
 			}
 		}
 		if(!StringUtils.isEmpty(searchRequest.getCertificationDateEnd())) {
@@ -709,8 +709,8 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements
 				endOfDay.set(Calendar.SECOND, 59);
 				endOfDay.set(Calendar.MILLISECOND, 999);
 				query.setParameter("certificationDateEnd", endOfDay.getTime());
-			} catch(ParseException ex) {
-				logger.error("Could not parse " + searchRequest.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+			} catch(final ParseException ex) {
+				LOGGER.error("Could not parse " + searchRequest.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
 			}
 		}
 		return result;

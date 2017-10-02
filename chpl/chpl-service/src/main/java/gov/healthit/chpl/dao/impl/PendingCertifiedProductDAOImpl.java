@@ -46,7 +46,7 @@ import gov.healthit.chpl.entity.PendingTestTaskEntity;
 
 @Repository(value="pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements PendingCertifiedProductDAO {
-	private static final Logger logger = LogManager.getLogger(PendingCertifiedProductDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(PendingCertifiedProductDAOImpl.class);
 	@Autowired MessageSource messageSource;
 	@Autowired ContactDAO contactDao;
 
@@ -62,7 +62,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 				entityManager.persist(toCreate);
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badListingData"), LocaleContextHolder.getLocale()), toCreate.getUniqueId(), ex.getMessage());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 
@@ -76,7 +76,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 					entityManager.persist(qmsStandard);
 				} catch(Exception ex) {
 					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"), LocaleContextHolder.getLocale()), qmsStandard.getName());
-					logger.error(msg, ex);
+					LOGGER.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
 			}
@@ -91,7 +91,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 					entityManager.persist(accStandard);
 				} catch(Exception ex) {
 					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badAccessibilityStandard"), LocaleContextHolder.getLocale()), accStandard.getName());
-					logger.error(msg, ex);
+					LOGGER.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
 			}
@@ -106,7 +106,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 					entityManager.persist(targetedUser);
 				} catch(Exception ex) {
 					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"), LocaleContextHolder.getLocale()), targetedUser.getName());
-					logger.error(msg, ex);
+					LOGGER.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
 			}
@@ -121,7 +121,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 					entityManager.persist(criterion);
 				} catch(Exception ex) {
 					String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCriteriaData"), LocaleContextHolder.getLocale()), criterion.getMappedCriterion().getNumber(), ex.getMessage());
-					logger.error(msg, ex);
+					LOGGER.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
 
@@ -137,7 +137,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()),
 									ucd.getUcdProcessName());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -155,7 +155,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestStandard"), LocaleContextHolder.getLocale()),
 									tsEntity.getTestStandardName());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -172,7 +172,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestFunctionality"), LocaleContextHolder.getLocale()),
 									tfEntity.getTestFunctionalityNumber());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -190,7 +190,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badAdditionalSoftware"), LocaleContextHolder.getLocale()),
 										(StringUtils.isEmpty(asEntity.getSoftwareName()) ? asEntity.getChplId() : asEntity.getSoftwareName()));
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -208,7 +208,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestProcedure"), LocaleContextHolder.getLocale()),
 									tpEntity.getTestProcedureVersion());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -226,7 +226,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestData"), LocaleContextHolder.getLocale()),
 									tdEntity.getVersion());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -244,7 +244,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTool"), LocaleContextHolder.getLocale()),
 									ttEntity.getTestToolName());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -262,7 +262,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badG1MacraMeasure"), LocaleContextHolder.getLocale()),
 									mmEntity.getEnteredValue());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -280,7 +280,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 						} catch(Exception ex) {
 							String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badG2MacraMeasure"), LocaleContextHolder.getLocale()),
 									mmEntity.getEnteredValue());
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}
@@ -300,7 +300,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 								} catch(Exception ex) {
 									String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestTask"), LocaleContextHolder.getLocale()),
 											testTask.getUniqueId());
-									logger.error(msg, ex);
+									LOGGER.error(msg, ex);
 									throw new EntityCreationException(msg);
 								}
 							}
@@ -327,7 +327,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 										} catch(Exception ex) {
 											String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestParticipant"), LocaleContextHolder.getLocale()),
 													partEntity.getUniqueId());
-											logger.error(msg, ex);
+											LOGGER.error(msg, ex);
 											throw new EntityCreationException(msg);
 										}
 									}
@@ -359,7 +359,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 					entityManager.persist(cqm);
 				} catch(Exception ex) {
 					String msg = "Could not process CQM '" + cqm.getMappedCriterion().getTitle() + "'. ";
-					logger.error(msg, ex);
+					LOGGER.error(msg, ex);
 					throw new EntityCreationException(msg);
 				}
 
@@ -374,7 +374,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
 							entityManager.persist(cert);
 						} catch(Exception ex) {
 							String msg = "Could not process CQM Criteria '" + cert.getCertificationCriteria().getNumber() + "'. ";
-							logger.error(msg, ex);
+							LOGGER.error(msg, ex);
 							throw new EntityCreationException(msg);
 						}
 					}

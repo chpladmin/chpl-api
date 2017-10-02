@@ -21,7 +21,7 @@ import gov.healthit.chpl.entity.ContactEntity;
 
 @Repository("contactDao")
 public class ContactDAOImpl extends BaseDAOImpl implements ContactDAO {
-	private static final Logger logger = LogManager.getLogger(ContactDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(ContactDAOImpl.class);
 
 	@Override
 	public ContactEntity create(ContactDTO dto) throws EntityCreationException, EntityRetrievalException {

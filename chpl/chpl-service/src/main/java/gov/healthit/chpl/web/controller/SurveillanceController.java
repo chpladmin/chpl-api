@@ -77,7 +77,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/surveillance")
 public class SurveillanceController implements MessageSourceAware {
 
-	private static final Logger logger = LogManager.getLogger(SurveillanceController.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
 	private static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
 	private static final String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
 	private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
@@ -111,8 +111,8 @@ public class SurveillanceController implements MessageSourceAware {
 				try {
 					List<Surveillance> survsOnAcb = survManager.getPendingByAcb(acb.getId());
 					pendingSurvs.addAll(survsOnAcb);
-				} catch (AccessDeniedException denied) {
-					logger.warn("Access denied to pending surveillance for acb " + acb.getName() + " and user "
+				} catch (final AccessDeniedException denied) {
+					LOGGER.warn("Access denied to pending surveillance for acb " + acb.getName() + " and user "
 							+ Util.getUsername());
 				}
 			}
@@ -191,10 +191,10 @@ public class SurveillanceController implements MessageSourceAware {
 		CertificationBodyDTO owningAcb = null;
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
-		} catch(AccessDeniedException ex) {
+		} catch(final AccessDeniedException ex) {
 			throw new CertificationBodyAccessException("User does not have permission to add surveillance to a certified product under ACB " + beforeCp.getCertifyingBody().get("name"));
-		} catch(EntityRetrievalException ex) {
-			logger.error("Error looking up ACB associated with surveillance.", ex);
+		} catch(final EntityRetrievalException ex) {
+			LOGGER.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 
@@ -204,8 +204,8 @@ public class SurveillanceController implements MessageSourceAware {
 		try{
 			insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
 			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-		} catch(SurveillanceAuthorityAccessDeniedException ex){
-			logger.error("User lacks authority to delete surveillance");
+		} catch(final SurveillanceAuthorityAccessDeniedException ex){
+			LOGGER.error("User lacks authority to delete surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
 		}
 
@@ -249,7 +249,7 @@ public class SurveillanceController implements MessageSourceAware {
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
-			logger.error("Error looking up ACB associated with surveillance.", ex);
+			LOGGER.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 
@@ -292,7 +292,7 @@ public class SurveillanceController implements MessageSourceAware {
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
-			logger.error("Error looking up ACB associated with surveillance.", ex);
+			LOGGER.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 
@@ -301,11 +301,11 @@ public class SurveillanceController implements MessageSourceAware {
 		try {
 			survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
 			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-		} catch(SurveillanceAuthorityAccessDeniedException ex){
-			logger.error("User lacks authority to update surveillance");
+		} catch(final SurveillanceAuthorityAccessDeniedException ex){
+			LOGGER.error("User lacks authority to update surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
 		} catch(Exception ex) {
-			logger.error("Error updating surveillance with id " + survToUpdate.getId());
+			LOGGER.error("Error updating surveillance with id " + survToUpdate.getId());
 		}
 
 
@@ -344,7 +344,7 @@ public class SurveillanceController implements MessageSourceAware {
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
-			logger.error("Error looking up ACB associated with surveillance.", ex);
+			LOGGER.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 
@@ -354,11 +354,11 @@ public class SurveillanceController implements MessageSourceAware {
 			survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
 			responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 			survManager.handleActivity(survToDelete, null);
-		} catch(SurveillanceAuthorityAccessDeniedException ex){
-			logger.error("User lacks authority to delete surveillance");
+		} catch(final SurveillanceAuthorityAccessDeniedException ex){
+			LOGGER.error("User lacks authority to delete surveillance");
 			throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
 		} catch(Exception ex) {
-			logger.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
+			LOGGER.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
 		}
 
 		CertifiedProductSearchDetails afterCp = cpdetailsManager.getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
@@ -389,7 +389,7 @@ public class SurveillanceController implements MessageSourceAware {
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
-			logger.error("Error looking up ACB associated with surveillance.", ex);
+			LOGGER.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 
@@ -433,7 +433,7 @@ public class SurveillanceController implements MessageSourceAware {
 		for(Long id : idList.getIds()) {
 			try {
 				survManager.deletePendingSurveillance(acbs, id, false);
-			} catch(ObjectMissingValidationException ex) {
+			} catch(final ObjectMissingValidationException ex) {
 				possibleExceptions.getExceptions().add(ex);
 			}
 		}
@@ -468,7 +468,7 @@ public class SurveillanceController implements MessageSourceAware {
 		try {
 			owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 		} catch(Exception ex) {
-			logger.error("Error looking up ACB associated with surveillance.", ex);
+			LOGGER.error("Error looking up ACB associated with surveillance.", ex);
 			throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
 		}
 
@@ -494,7 +494,7 @@ public class SurveillanceController implements MessageSourceAware {
 			try {
 				survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete, true);
 			} catch(Exception ex) {
-				logger.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
+				LOGGER.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
 			}
 
 			try {
@@ -508,7 +508,7 @@ public class SurveillanceController implements MessageSourceAware {
 					responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
 				}
 			} catch(Exception ex) {
-				logger.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
+				LOGGER.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace() + " as part of the replace operation failed", ex);
 			}
 
 
@@ -555,7 +555,7 @@ public class SurveillanceController implements MessageSourceAware {
 				} else {
 					downloadFile = survManager.getDownloadFile("surveillance-with-nonconformities.csv");
 				}
-			} catch(IOException ex) {
+			} catch(final IOException ex) {
 				response.getWriter().append(ex.getMessage());
 				return;
 			}
@@ -567,7 +567,7 @@ public class SurveillanceController implements MessageSourceAware {
 			return;
 		}
 
-		logger.info("Downloading " + downloadFile.getName());
+		LOGGER.info("Downloading " + downloadFile.getName());
 
 		FileInputStream inputStream = new FileInputStream(downloadFile);
 
@@ -651,7 +651,7 @@ public class SurveillanceController implements MessageSourceAware {
 									checkUploadedSurveillanceOwnership(pendingSurv);
 									pendingSurvs.add(pendingSurv);
 								}
-								catch(InvalidArgumentsException ex) {
+								catch(final InvalidArgumentsException ex) {
 									handlerErrors.add(ex.getMessage());
 								}
 							}
@@ -671,7 +671,7 @@ public class SurveillanceController implements MessageSourceAware {
 						checkUploadedSurveillanceOwnership(pendingSurv);
 						pendingSurvs.add(pendingSurv);
 					}
-					catch(InvalidArgumentsException ex) {
+					catch(final InvalidArgumentsException ex) {
 						handlerErrors.add(ex.getMessage());
 					}
 				}
@@ -707,17 +707,17 @@ public class SurveillanceController implements MessageSourceAware {
 						Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
 						Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId, false);
 						uploadedSurveillance.add(uploaded);
-					} catch(AccessDeniedException denied) {
-						logger.error("User " + Util.getCurrentUser().getSubjectName() +
+					} catch(final AccessDeniedException denied) {
+						LOGGER.error("User " + Util.getCurrentUser().getSubjectName() +
 								" does not have access to add surveillance" +
 								(owningCp != null ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'." : "."));
 					} catch(Exception ex) {
-						logger.error("Error adding a new pending surveillance. Please make sure all required fields are present.", ex);
+						LOGGER.error("Error adding a new pending surveillance. Please make sure all required fields are present.", ex);
 					}
 				}
 			}
-		} catch(IOException ioEx) {
-			logger.error("Could not get input stream for uploaded file " + file.getName());
+		} catch(final IOException ioEx) {
+			LOGGER.error("Could not get input stream for uploaded file " + file.getName());
 			throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
 		} finally {
 			 try { parser.close(); } catch(Exception ignore) {}
@@ -737,20 +737,20 @@ public class SurveillanceController implements MessageSourceAware {
 			CertifiedProductDTO surveilledProduct =  null;
 			try {
 				surveilledProduct = cpManager.getById(pendingSurv.getCertifiedProduct().getId());
-			} catch(EntityRetrievalException ex) {
+			} catch(final EntityRetrievalException ex) {
 				pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.certifiedProductIdNotFound"), LocaleContextHolder.getLocale()), pendingSurv.getCertifiedProduct().getId()));
-				logger.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
+				LOGGER.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
 			}
 
 			if(surveilledProduct != null) {
 				try {
 					acbManager.getById(surveilledProduct.getCertificationBodyId());
-				} catch(EntityRetrievalException ex) {
+				} catch(final EntityRetrievalException ex) {
 					pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.certificationBodyIdNotFound"), LocaleContextHolder.getLocale()), surveilledProduct.getCertificationBodyId()));
-					logger.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
-				} catch(AccessDeniedException denied) {
+					LOGGER.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
+				} catch(final AccessDeniedException denied) {
 					pendingSurv.getErrorMessages().add(String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("pendingSurveillance.addSurveillancePermissionDenied"), LocaleContextHolder.getLocale()), pendingSurv.getCertifiedProduct().getChplProductNumber()));
-					logger.error("User " + Util.getCurrentUser().getSubjectName() +
+					LOGGER.error("User " + Util.getCurrentUser().getSubjectName() +
 							" does not have access to the ACB with id " +
 							surveilledProduct.getCertificationBodyId());
 				}

@@ -73,7 +73,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 			if(dup != null) {
 				return false;
 			}
-		} catch(EntityRetrievalException ex) {}
+		} catch(final EntityRetrievalException ex) {}
 		return true;
 	}
 
@@ -247,7 +247,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					product.getErrorMessages().add("The developer code " + developerCode + " is for '" + developerByCode.getName() + "' which does not match the developer name in the upload file '" + product.getDeveloperName() + "'");
 				}
 			}
-		} catch(EntityRetrievalException ex) {
+		} catch(final EntityRetrievalException ex) {
 			product.getErrorMessages().add(ex.getMessage());
 		}
 
@@ -326,7 +326,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 					idDate.getTime() != product.getCertificationDate().getTime()) {
 				product.getErrorMessages().add("The certification date provided in the unique id does not match the certification date in the upload file.");
 			}
-		} catch (ParseException pex) {
+		} catch (final ParseException pex) {
 			product.getErrorMessages().add("Could not parse the certification date part of the product id: " + certifiedDateCode);
 		}
 
@@ -476,7 +476,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 						product.getErrorMessages().add("Could not find developer with id " + product.getDeveloper().getDeveloperId());
 					}
 				}
-			} catch(EntityRetrievalException ex) {
+			} catch(final EntityRetrievalException ex) {
 				product.getErrorMessages().add("Could not find distinct developer with id " + product.getDeveloper().getDeveloperId());
 			}
 

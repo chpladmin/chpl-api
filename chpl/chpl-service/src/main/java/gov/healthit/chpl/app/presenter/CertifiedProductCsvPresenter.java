@@ -21,7 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
-	private static final Logger logger = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
 	private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
 
 	/**
@@ -45,8 +45,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
 					numRows++;
 				}
 			}
-		} catch(IOException ex) {
-			logger.error("Could not write file " + file.getName(), ex);
+		} catch(final IOException ex) {
+			LOGGER.error("Could not write file " + file.getName(), ex);
 		} finally {
 			try {
 				writer.flush();

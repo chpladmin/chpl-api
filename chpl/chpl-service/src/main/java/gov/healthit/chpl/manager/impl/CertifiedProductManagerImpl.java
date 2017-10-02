@@ -145,7 +145,7 @@ import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
 public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl implements CertifiedProductManager {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
 	@Autowired private Environment env;
 
@@ -227,8 +227,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				if(existing != null) {
 					exists = true;
 				}
-			} catch(EntityRetrievalException ex){
-				logger.error("Could not look up " + id, ex);
+			} catch(final EntityRetrievalException ex){
+				LOGGER.error("Could not look up " + id, ex);
 			}
 		}
 		return exists;
@@ -539,7 +539,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				if(asDto.getAccessibilityStandardId() != null) {
 					cpAccStdDao.createCertifiedProductAccessibilityStandard(asDto);
 				} else {
-					logger.error("Could not insert accessibility standard with null id. Name was " + as.getName());
+					LOGGER.error("Could not insert accessibility standard with null id. Name was " + as.getName());
 				}
 			}
 		}
@@ -634,7 +634,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 									funcDto.setCertificationResultId(createdCert.getId());
 									certDao.addTestFunctionalityMapping(funcDto);
 								} else {
-									logger.error("Could not insert test functionality with null id. Number was " + func.getNumber() + " and edition id " + pendingCp.getCertificationEditionId());
+									LOGGER.error("Could not insert test functionality with null id. Number was " + func.getNumber() + " and edition id " + pendingCp.getCertificationEditionId());
 								}
 							}
 						}
@@ -706,7 +706,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 									toolDto.setCertificationResultId(createdCert.getId());
 									certDao.addTestToolMapping(toolDto);
 								} else {
-									logger.error("Could not insert test tool with null id. Name was " + tool.getName());
+									LOGGER.error("Could not insert test tool with null id. Name was " + tool.getName());
 								}
 							}
 						}
@@ -721,7 +721,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 								crMeasure.setCertificationResultId(createdCert.getId());
 								certDao.addG1MacraMeasureMapping(crMeasure);
 							} else {
-								logger.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
+								LOGGER.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
 							}
 						}
 					}
@@ -735,7 +735,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 								crMeasure.setCertificationResultId(createdCert.getId());
 								certDao.addG2MacraMeasureMapping(crMeasure);
 							} else {
-								logger.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
+								LOGGER.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
 							}
 						}
 					}
@@ -854,10 +854,10 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 										certDto.setCriterionId(critDto.getId());
 										cqmResultToCreate.getCriteria().add(certDto);
 									} else {
-										logger.error("Could not find a matching certification criterion for '" + cert.getCertificationCriteriaNumber() + "'.");
+										LOGGER.error("Could not find a matching certification criterion for '" + cert.getCertificationCriteriaNumber() + "'.");
 									}
 								} else {
-									logger.error("Neither certification id or number was specified.");
+									LOGGER.error("Neither certification id or number was specified.");
 								}
 							}
 						}
@@ -961,7 +961,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(certificationStatusId);
 		DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
 		if(cpDeveloper == null) {
-			logger.error("Could not find developer for product version with id " + productVersionId);
+			LOGGER.error("Could not find developer for product version with id " + productVersionId);
 			throw new EntityNotFoundException("No developer could be located for the certified product in the update. Update cannot continue.");
 		}
 		DeveloperStatusDTO newDevStatusDto = null;
@@ -977,7 +977,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 					newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
 				}
 			} else if (!Util.isUserRoleAdmin()) {
-				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + listingId);
+				LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id " + listingId);
 				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");
 			}
 			break;
@@ -988,15 +988,15 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 				if(updateRequest.getBanDeveloper() != null && updateRequest.getBanDeveloper().booleanValue() == true) {
 					newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
 				} else {
-					logger.info("Request was made to update listing status to " + updatedCertificationStatus.getStatus() + " but not ban the developer.");
+					LOGGER.info("Request was made to update listing status to " + updatedCertificationStatus.getStatus() + " but not ban the developer.");
 				}
 			} else if(!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
-				logger.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN and cannot change the status of developer for certified product with id " + listingId);
+				LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN and cannot change the status of developer for certified product with id " + listingId);
 				throw new AccessDeniedException("User does not have admin permission to change " + cpDeveloper.getName() + " status.");
 			}
 			break;
 		default:
-			logger.info("New listing status is " + updatedCertificationStatus.getStatus() + " which does not trigger a developer ban.");
+			LOGGER.info("New listing status is " + updatedCertificationStatus.getStatus() + " which does not trigger a developer ban.");
 			break;
 		}
 		if(newDevStatusDto != null) {
@@ -1752,7 +1752,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 							CertifiedProductDTO returnDto = cpDao.updateMeaningfulUseUsers(dto);
 							muu.setCertifiedProductId(returnDto.getId());
 							results.add(muu);
-						} catch (EntityRetrievalException e){
+						} catch (final EntityRetrievalException e){
 							muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber() + "\" is invalid. "
 									+ "The provided \"chpl_product_number\" does not exist.");
 							errors.add(muu);
@@ -1777,7 +1777,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 	public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
 		String message = "";
 		if(!(src instanceof CertifiedProductSearchDetails)) {
-			logger.error("Cannot use object of type " + src.getClass());
+			LOGGER.error("Cannot use object of type " + src.getClass());
 		} else {
 			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
 			String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
@@ -1799,7 +1799,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 		String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
 
 		if(!(src instanceof CertifiedProductSearchDetails && dest instanceof CertifiedProductSearchDetails)) {
-			logger.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type CertifiedProductSearchDetails.");
+			LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass() + ". Expected both objects to be of type CertifiedProductSearchDetails.");
 		} else {
 			CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
 			CertifiedProductSearchDetails changed = (CertifiedProductSearchDetails) dest;

@@ -8,6 +8,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -21,7 +23,7 @@ import gov.healthit.chpl.dto.ApiKeyDTO;
 import gov.healthit.chpl.manager.ApiKeyManager;
 
 public class APIKeyAuthenticationFilter extends GenericFilterBean {
-
+	private static final Logger LOGGER = LogManager.getLogger(APIKeyAuthenticationFilter.class);
 	private static final String[] ALLOWED_REQUEST_PATHS = {"/api-docs", "/status", "/cache_status"};
 
 	@Autowired
@@ -93,13 +95,13 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
 				} else {
 					try {
 						apiKeyManager.logApiKeyActivity(key, requestPath);
-					} catch (EntityCreationException e) {
+					} catch (final EntityCreationException e) {
 						throw new ServletException(e);
 					}
 					chain.doFilter(req, res); //continue
 				}
-			} catch(EntityRetrievalException ex) {
-				logger.error("Cannot find key for HTTP filter: " + key);
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Cannot find key for HTTP filter: " + key);
 			}
 		}
 	}

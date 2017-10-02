@@ -28,20 +28,20 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
 
-	private static final Logger logger = LogManager.getLogger(SwaggerConfig.class);
+	private static final Logger LOGGER = LogManager.getLogger(SwaggerConfig.class);
 
 	@Autowired ServletContext context;
 	@Autowired private Environment env;
 
 	@Override
     public void setEnvironment(final Environment environment) {
-		logger.info("setEnvironment");
+		LOGGER.info("setEnvironment");
         this.env = environment;
     }
 
     @Bean
     public Docket customDocket(){
-    	logger.info("get Docket");
+    	LOGGER.info("get Docket");
        return new Docket(DocumentationType.SWAGGER_2)
     		   .apiInfo(apiInfo())
     		   .pathProvider(pathProvider())
@@ -51,20 +51,20 @@ public class SwaggerConfig implements EnvironmentAware {
     }
 
     private ApiInfo apiInfo() {
-    	logger.info("get ApiInfo");
+    	LOGGER.info("get ApiInfo");
     	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "13.1.0",
     			"http://terms/of/service.url", "CHPL@ainq.com",
     			"License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
     private PathProvider pathProvider() {
-    	logger.info("get PathProvider");
+    	LOGGER.info("get PathProvider");
     	return new AbsolutePathProvider(context);
     }
 
     @SuppressWarnings("unchecked")
     private Predicate<String> paths() {
-    	logger.info("get Predicate paths");
+    	LOGGER.info("get Predicate paths");
       return or(
     		  regex("/acbs.*"),
     		  regex("/activity.*"),
@@ -100,7 +100,7 @@ public class SwaggerConfig implements EnvironmentAware {
 
     	@Override
     	public String getApplicationBasePath() {
-    		logger.info("get application base path");
+    		LOGGER.info("get application base path");
     		return env.getProperty("basePath");
     	}
     }

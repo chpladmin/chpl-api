@@ -23,7 +23,7 @@ import gov.healthit.chpl.entity.UcdProcessEntity;
 
 @Repository("ucdProcessDAO")
 public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
-	private static final Logger logger = LogManager.getLogger(UcdProcessDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(UcdProcessDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -48,7 +48,7 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"), LocaleContextHolder.getLocale()),
 						dto.getName());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new UcdProcessDTO(entity);

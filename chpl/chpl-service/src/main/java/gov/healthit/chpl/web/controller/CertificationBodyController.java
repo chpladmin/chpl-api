@@ -52,7 +52,7 @@ public class CertificationBodyController {
 	@Autowired CertificationBodyManager acbManager;
 	@Autowired UserManager userManager;
 
-	private static final Logger logger = LogManager.getLogger(CertificationBodyController.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertificationBodyController.class);
 
 	@ApiOperation(value="List all certification bodies (ACBs).",
 			notes="Setting the 'editable' parameter to true will return all ACBs that the logged in user has edit permissions on."

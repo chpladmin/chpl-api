@@ -18,7 +18,7 @@ import gov.healthit.chpl.entity.job.JobStatusType;
 
 @Component
 public class RunnableJob implements Runnable {
-	private static final Logger logger = LogManager.getLogger(RunnableJob.class);
+	private static final Logger LOGGER = LogManager.getLogger(RunnableJob.class);
 
 	@Autowired protected SendMailUtil mailUtils;
 	@Autowired protected JobDAO jobDao;
@@ -48,11 +48,11 @@ public class RunnableJob implements Runnable {
 
 	protected void start() {
 		SecurityContextHolder.getContext().setAuthentication(this.user);
-		logger.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
+		LOGGER.info("Starting " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
 		try {
 			jobDao.markStarted(this.job);
 		} catch(Exception ex) {
-			logger.error("Could not mark the job " + this.job.getId() + " as started.", ex);
+			LOGGER.error("Could not mark the job " + this.job.getId() + " as started.", ex);
 		}
 	}
 
@@ -60,7 +60,7 @@ public class RunnableJob implements Runnable {
 		try {
 			jobDao.updateStatus(this.job, (int)percentComplete, statusType);
 		} catch(Exception ex) {
-			logger.error("Could not update the job status " + this.job.getId() + ". Error was: " + ex.getMessage(), ex);
+			LOGGER.error("Could not update the job status " + this.job.getId() + ". Error was: " + ex.getMessage(), ex);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class RunnableJob implements Runnable {
 		try {
 			jobDao.addJobMessage(this.job, message);
 		} catch(Exception ex) {
-			logger.error("Could not add message " + message + " to job " + this.job.getId() + ". Error was: " + ex.getMessage(), ex);
+			LOGGER.error("Could not add message " + message + " to job " + this.job.getId() + ". Error was: " + ex.getMessage(), ex);
 		}
 	}
 
@@ -83,10 +83,10 @@ public class RunnableJob implements Runnable {
 		this.job = completedJob;
 
 		if(this.job.getUser() == null || StringUtils.isEmpty(this.job.getUser().getEmail())) {
-			logger.fatal("Cannot send email message regarding job ID " + this.job.getId() + " because email address is blank.");
+			LOGGER.fatal("Cannot send email message regarding job ID " + this.job.getId() + " because email address is blank.");
 			return;
 		} else {
-			logger.info("Sending email to " + this.job.getUser().getEmail());
+			LOGGER.info("Sending email to " + this.job.getUser().getEmail());
 		}
 
 		String[] to = {this.job.getUser().getEmail()};
@@ -110,10 +110,10 @@ public class RunnableJob implements Runnable {
 
 		try {
 			mailUtils.sendEmail(to, null, subject, htmlMessage);
-		} catch(MessagingException ex) {
-			logger.error("Error sending email " + ex.getMessage(), ex);
+		} catch(final MessagingException ex) {
+			LOGGER.error("Error sending email " + ex.getMessage(), ex);
 		} finally {
-			logger.info("Completed " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
+			LOGGER.info("Completed " + job.getJobType().getName() + " job for " + job.getUser().getSubjectName());
 			SecurityContextHolder.getContext().setAuthentication(null);
 		}
 	}

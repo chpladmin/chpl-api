@@ -20,18 +20,18 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @Component("surveillanceResourceCreatorApp")
 public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorApp {
-	private static final Logger logger = LogManager.getLogger(SurveillanceResourceCreatorApp.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceResourceCreatorApp.class);
 
 	public SurveillanceResourceCreatorApp() {
 		super();
 	}
 
 	protected List<CertifiedProductDetailsDTO> getRelevantListings() {
-		logger.info("Finding all listings with surveillance");
+		LOGGER.info("Finding all listings with surveillance");
 		Date start = new Date();
 		List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findWithSurveillance();
 		Date end = new Date();
-		logger.info("Found " + listingsForEdition.size() + " listings with surveillance in " + (end.getTime() - start.getTime())/1000 + " seconds");
+		LOGGER.info("Found " + listingsForEdition.size() + " listings with surveillance in " + (end.getTime() - start.getTime())/1000 + " seconds");
 		return listingsForEdition;
 	}
 
@@ -48,11 +48,11 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
         SurveillanceCsvPresenter survCsvPresenter = new SurveillanceCsvPresenter();
         survCsvPresenter.setProps(getProperties());
 
-        logger.info("Writing all surveillance CSV file");
+        LOGGER.info("Writing all surveillance CSV file");
         Date start = new Date();
         survCsvPresenter.presentAsFile(allSurvCsvFile, results);
         Date end = new Date();
-        logger.info("Wrote all surveillance CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
+        LOGGER.info("Wrote all surveillance CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 
         //write out a csv file containing surveillance with nonconformities
         String nonconformityCsvFilename = downloadFolder.getAbsolutePath() + File.separator +
@@ -66,11 +66,11 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
 
         NonconformityCsvPresenter ncCsvPresenter = new NonconformityCsvPresenter();
         ncCsvPresenter.setProps(getProperties());
-        logger.info("Writing nonconformity CSV file");
+        LOGGER.info("Writing nonconformity CSV file");
         start = new Date();
         ncCsvPresenter.presentAsFile(nonconformityCsvFile, results);
         end = new Date();
-        logger.info("Wrote nonconformity CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
+        LOGGER.info("Wrote nonconformity CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 
         //write out a csv file containing surveillance basic report
         String basicReportCsvName = downloadFolder.getAbsolutePath() + File.separator +
@@ -84,11 +84,11 @@ public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorA
 
         SurveillanceReportCsvPresenter basicReportCsvPresenter = new SurveillanceReportCsvPresenter();
         basicReportCsvPresenter.setProps(getProperties());
-        logger.info("Writing basic surveillance report file");
+        LOGGER.info("Writing basic surveillance report file");
         start = new Date();
         basicReportCsvPresenter.presentAsFile(basicReportCsvFile, results);
         end = new Date();
-        logger.info("Wrote basic surveillance report file in " + (end.getTime() - start.getTime())/1000 + " seconds");
+        LOGGER.info("Wrote basic surveillance report file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 	}
 
 	public static void main(String[] args) throws Exception {

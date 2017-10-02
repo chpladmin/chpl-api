@@ -41,7 +41,7 @@ public class CertificationResultRules {
 	public static final String TEST_PARTICIPANT = "participant";
 	public static final String TEST_TASK = "task";
 
-	private static final Logger logger = LogManager.getLogger(CertificationResultRules.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertificationResultRules.class);
 
 	private Map<String, List<CertificationResultOption>> rules = new HashMap<String, List<CertificationResultOption>>();
 
@@ -50,8 +50,8 @@ public class CertificationResultRules {
 		InputStream xmlInput = null;
 		try {
 			xmlInput = cpr.getInputStream();
-		} catch(IOException ioEx) {
-			logger.fatal("Could not load rules file.", ioEx);
+		} catch(final IOException ioEx) {
+			LOGGER.fatal("Could not load rules file.", ioEx);
 			return;
 		}
 
@@ -100,12 +100,12 @@ public class CertificationResultRules {
                 	}
             	}
             }
-        } catch (ParserConfigurationException pce) {
-            logger.error(pce.getMessage(), pce);
-        } catch (SAXException se) {
-            logger.error(se.getMessage(), se);
-        } catch (IOException ioe) {
-            logger.error(ioe.getMessage(), ioe);
+        } catch (final ParserConfigurationException pce) {
+            LOGGER.error(pce.getMessage(), pce);
+        } catch (final SAXException se) {
+            LOGGER.error(se.getMessage(), se);
+        } catch (final IOException ioe) {
+            LOGGER.error(ioe.getMessage(), ioe);
         }
 	}
 

@@ -32,7 +32,7 @@ public abstract class NotificationEmailerReportApp extends App {
 	protected CertificationBodyDAO certificationBodyDAO;
 	protected CertificationEditionDAO editionDAO;
 
-	protected static final Logger logger = LogManager.getLogger(NotificationEmailerReportApp.class);
+	protected static final Logger LOGGER = LogManager.getLogger(NotificationEmailerReportApp.class);
 
 	public NotificationEmailerReportApp(){
 		timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -72,8 +72,8 @@ public abstract class NotificationEmailerReportApp extends App {
 			try {
 				CertifiedProductSearchDetails product = this.getCpdManager().getCertifiedProductDetails(currProduct.getId());
 				allCertifiedProductDetails.add(product);
-			} catch(EntityRetrievalException ex) {
-				logger.error("Could not find certified product details for certified product with id = " + currProduct.getId());
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Could not find certified product details for certified product with id = " + currProduct.getId());
 			}
 		}
 		return allCertifiedProductDetails;

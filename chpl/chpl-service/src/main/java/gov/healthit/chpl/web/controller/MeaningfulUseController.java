@@ -43,7 +43,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/meaningful_use")
 public class MeaningfulUseController {
-	private static final Logger logger = LogManager.getLogger(MeaningfulUseController.class);
+	private static final Logger LOGGER = LogManager.getLogger(MeaningfulUseController.class);
 	private final JobTypeConcept allowedJobType = JobTypeConcept.MUU_UPLOAD;
 	@Autowired CertifiedProductManager cpManager;
 	@Autowired MeaningfulUseManager muManager;
@@ -77,12 +77,12 @@ public class MeaningfulUseController {
 		UserDTO currentUser = null;
 		try {
 			currentUser = userManager.getById(Util.getCurrentUser().getId());
-		} catch(UserRetrievalException ex) {
-			logger.error("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
+		} catch(final UserRetrievalException ex) {
+			LOGGER.error("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
 			return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
 		}
 		if(currentUser == null) {
-			logger.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
+			LOGGER.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
 			return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
 		}
 
@@ -106,9 +106,9 @@ public class MeaningfulUseController {
 				}
 				data.append(line);
 			}
-		} catch(IOException ex) {
+		} catch(final IOException ex) {
 			String msg = "Could not read file: " + ex.getMessage();
-			logger.error(msg);
+			LOGGER.error(msg);
 			throw new ValidationException(msg);
 		}
 
@@ -126,8 +126,8 @@ public class MeaningfulUseController {
 			} else {
 				createdJob = jobManager.getJobById(insertedJob.getId());
 			}
-		} catch(EntityRetrievalException ex) {
-			logger.error("Could not mark job " + createdJob.getId() + " as started.");
+		} catch(final EntityRetrievalException ex) {
+			LOGGER.error("Could not mark job " + createdJob.getId() + " as started.");
 			return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 

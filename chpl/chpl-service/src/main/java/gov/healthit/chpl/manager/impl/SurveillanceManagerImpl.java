@@ -64,7 +64,7 @@ import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationExcepti
 
 @Service
 public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl implements SurveillanceManager {
-	private static final Logger logger = LogManager.getLogger(SurveillanceManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
 	@Autowired private Environment env;
 
 	@Autowired SurveillanceDAO survDao;
@@ -137,8 +137,8 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 
 		try {
 			insertedId = survDao.insertSurveillance(surv);
-		} catch(UserPermissionRetrievalException ex) {
-			logger.error("Error inserting surveillance.", ex);
+		} catch(final UserPermissionRetrievalException ex) {
+			LOGGER.error("Error inserting surveillance.", ex);
 			throw ex;
 		}
 
@@ -167,8 +167,8 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
 		try{
 			dbSurvEntity = survDao.getSurveillanceById(surv.getId());
-		} catch(NullPointerException e){
-			logger.debug("Surveillance id is null");
+		} catch(final NullPointerException e){
+			LOGGER.debug("Surveillance id is null");
 		}
 		Surveillance dbSurv = new Surveillance();
 		dbSurv.setId(dbSurvEntity.getId());
@@ -177,8 +177,8 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		checkSurveillanceAuthority(dbSurv);
 		try {
 			survDao.updateSurveillance(surv);
-		} catch(UserPermissionRetrievalException ex) {
-			logger.error("Error updating surveillance.", ex);
+		} catch(final UserPermissionRetrievalException ex) {
+			LOGGER.error("Error updating surveillance.", ex);
 			throw ex;
 		}
 	}
@@ -241,7 +241,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		try {
 			insertedId = survDao.insertPendingSurveillance(surv);
 		} catch(Exception ex) {
-			logger.error("Error inserting pending surveillance.", ex);
+			LOGGER.error("Error inserting pending surveillance.", ex);
 		}
 
 		return insertedId;
@@ -265,7 +265,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			try {
 				survDao.deletePendingSurveillance(toDelete);
 			} catch(Exception ex) {
-				logger.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
+				LOGGER.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
 			}
 			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
 			if(isConfirmed){
@@ -308,7 +308,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			try {
 				survDao.deletePendingSurveillance(toDelete);
 			} catch(Exception ex) {
-				logger.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
+				LOGGER.error("Error marking pending surveillance with id " + toDelete.getId() + " as deleted.", ex);
 			}
 
 			StringBuilder activityMsg = new StringBuilder().append("Pending surveillance " + toDelete.getId() + " has been ");
@@ -357,7 +357,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 				} else {
 					alreadyDeletedEx.setContact(null);
 				}
-			} catch(UserRetrievalException ex) {
+			} catch(final UserRetrievalException ex) {
 				alreadyDeletedEx.setContact(null);
 			}
 			throw alreadyDeletedEx;
@@ -375,7 +375,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
 		String message = "";
 		if(!(src instanceof Surveillance)) {
-			logger.error("Cannot use object of type " + src.getClass());
+			LOGGER.error("Cannot use object of type " + src.getClass());
 		} else {
 			Surveillance original = (Surveillance) src;
 			message =  "<p>Questionable activity was detected on " + original.getCertifiedProduct().getChplProductNumber() + ". "
@@ -424,8 +424,8 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			try {
 				CertifiedProductDetailsDTO cpDto = cpDao.getDetailsById(cpEntity.getId());
 				surv.setCertifiedProduct(new CertifiedProduct(cpDto));
-			} catch(EntityRetrievalException ex) {
-				logger.error("Could not find details for certified product " + cpEntity.getId());
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Could not find details for certified product " + cpEntity.getId());
 			}
 		} else {
 			CertifiedProduct cp = new CertifiedProduct();
@@ -511,8 +511,8 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			try {
 				CertifiedProductDetailsDTO cpDto = cpDao.getDetailsById(cpEntity.getId());
 				surv.setCertifiedProduct(new CertifiedProduct(cpDto));
-			} catch(EntityRetrievalException ex) {
-				logger.error("Could not find details for certified product " + cpEntity.getId());
+			} catch(final EntityRetrievalException ex) {
+				LOGGER.error("Could not find details for certified product " + cpEntity.getId());
 			}
 		} else {
 			CertifiedProduct cp = new CertifiedProduct();
@@ -614,7 +614,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			if(hasOncAdmin && (hasAcbStaff || hasAcbAdmin)){
 				String errorMsg = "Surveillance cannot be created by user having " + Authority.ROLE_ADMIN + " and "
 						+ Authority.ROLE_ACB_ADMIN + " or " + Authority.ROLE_ACB_STAFF;
-				logger.error(errorMsg);
+				LOGGER.error(errorMsg);
 				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
 			}
 		}
@@ -622,7 +622,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 			// Cannot have surveillance authority as ROLE_ADMIN for user lacking ROLE_ADMIN
 		    if(surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN) && !hasOncAdmin){
 		    	String errorMsg = "User must have authority " + Authority.ROLE_ADMIN;
-				logger.error(errorMsg);
+				LOGGER.error(errorMsg);
 				throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
 			}
 		    // Cannot have surveillance authority as ACB for user lacking ONC and ACB roles
@@ -630,7 +630,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
 		    		|| surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)){
 		    	if(!hasOncAdmin && !hasAcbAdmin && !hasAcbStaff){
 		    		String errorMsg = "User must have ONC or ACB roles for a surveillance authority created by ACB";
-		    		logger.error(errorMsg);
+		    		LOGGER.error(errorMsg);
 		    		throw new SurveillanceAuthorityAccessDeniedException(errorMsg);
 		    	}
 		    }

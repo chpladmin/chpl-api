@@ -146,8 +146,8 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
 				try {
 					CertifiedProductSearchDetails product = this.getCpdManager().getCertifiedProductDetails(currProduct.getId());
 					allCertifiedProductDetails.add(product);
-				} catch(EntityRetrievalException ex) {
-					logger.error("Could not find certified product details for certified product with id = " + currProduct.getId());
+				} catch(final EntityRetrievalException ex) {
+					LOGGER.error("Could not find certified product details for certified product with id = " + currProduct.getId());
 				}
 			}
 		}

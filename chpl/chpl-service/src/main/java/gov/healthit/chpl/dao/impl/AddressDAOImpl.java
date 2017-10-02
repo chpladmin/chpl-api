@@ -21,7 +21,7 @@ import gov.healthit.chpl.entity.AddressEntity;
 
 @Repository("addressDao")
 public class AddressDAOImpl extends BaseDAOImpl implements AddressDAO {
-	private static final Logger logger = LogManager.getLogger(AddressDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(AddressDAOImpl.class);
 
 	@Override
 	public AddressEntity create(AddressDTO dto) throws EntityCreationException, EntityRetrievalException {

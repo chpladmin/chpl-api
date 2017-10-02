@@ -28,7 +28,7 @@ public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {
 			if (cqmResult.getId() != null){
 				entity = this.getEntityById(cqmResult.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

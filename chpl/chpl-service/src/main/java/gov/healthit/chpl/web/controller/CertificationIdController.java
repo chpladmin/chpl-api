@@ -212,7 +212,7 @@ public class CertificationIdController {
 
 			}
 
-		} catch (EntityRetrievalException ex) {
+		} catch (final EntityRetrievalException ex) {
 			throw new CertificationIdException("Unable to lookup Certification ID " + certificationId + ".");
 		}
 
@@ -238,7 +238,7 @@ public class CertificationIdController {
 					results.getResults().add(new CertificationIdVerifyResults.VerifyResult(id, lookupResults.get(id)));
 				}
 
-			} catch (EntityRetrievalException e) {
+			} catch (final EntityRetrievalException e) {
 				throw new CertificationIdException("Unable to verify EHR Certification IDs. Notify system administrator.");
 			}
 
@@ -264,7 +264,7 @@ public class CertificationIdController {
 		List<CertifiedProductDetailsDTO> productDtos = new ArrayList<CertifiedProductDetailsDTO>();
 		try {
 			productDtos = certifiedProductManager.getDetailsByIds(productIdList);
-		} catch (EntityRetrievalException ex) {
+		} catch (final EntityRetrievalException ex) {
 			ex.printStackTrace();
 		}
 
@@ -309,11 +309,11 @@ public class CertificationIdController {
 						results.setEhrCertificationId(idDto.getCertificationId());
 					}
 				}
-			} catch (EntityRetrievalException ex) {
+			} catch (final EntityRetrievalException ex) {
 				throw new CertificationIdException("Unable to retrieve a Certification ID.");
-			} catch (EntityCreationException ex) {
+			} catch (final EntityCreationException ex) {
 				throw new CertificationIdException("Unable to create a new Certification ID.");
-			} catch (JsonProcessingException ex) {
+			} catch (final JsonProcessingException ex) {
 				throw new CertificationIdException("Unable to create a new Certification ID.");
 			}
 		}

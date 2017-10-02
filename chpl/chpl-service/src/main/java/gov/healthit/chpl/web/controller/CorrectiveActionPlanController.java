@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/corrective_action_plan")
 public class CorrectiveActionPlanController {
 
-	private static final Logger logger = LogManager.getLogger(CorrectiveActionPlanController.class);
+	private static final Logger LOGGER = LogManager.getLogger(CorrectiveActionPlanController.class);
 
 	@Autowired CorrectiveActionPlanManager capManager;
 	@Autowired CertifiedProductManager productManager;

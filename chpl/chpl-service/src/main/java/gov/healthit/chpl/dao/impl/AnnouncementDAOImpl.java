@@ -30,7 +30,7 @@ public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO 
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId(), true);
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

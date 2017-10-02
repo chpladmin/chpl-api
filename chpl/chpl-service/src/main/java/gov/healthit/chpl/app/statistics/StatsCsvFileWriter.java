@@ -74,7 +74,7 @@ public class StatsCsvFileWriter {
     			fileWriter.flush();
     			fileWriter.close();
     			csvFilePrinter.close();
-    		} catch (IOException e) {
+    		} catch (final IOException e) {
     			System.out.println("Error while flushing/closing fileWriter/csvPrinter!");
     			e.printStackTrace();
     		}

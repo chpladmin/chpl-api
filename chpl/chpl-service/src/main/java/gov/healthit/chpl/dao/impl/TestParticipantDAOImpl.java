@@ -23,7 +23,7 @@ import gov.healthit.chpl.entity.TestParticipantEntity;
 
 @Repository("testParticipantDAO")
 public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipantDAO {
-	private static final Logger logger = LogManager.getLogger(TestParticipantDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestParticipantDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -54,7 +54,7 @@ public class TestParticipantDAOImpl extends BaseDAOImpl implements TestParticipa
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestParticipant"), LocaleContextHolder.getLocale()),
 						dto.getGender() + ": " + dto.getOccupation());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 		}

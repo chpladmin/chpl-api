@@ -29,7 +29,7 @@ import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
-	private static final Logger logger = LogManager.getLogger(DeveloperDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(DeveloperDAOImpl.class);
 
 	@Autowired private ContactDAO contactDao;
 
@@ -42,7 +42,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 
@@ -364,7 +364,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "where (NOT pe.deleted = true) ",
 				ProductEntity.class).getResultList();
 
-		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
+		LOGGER.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
 
 	}
@@ -392,7 +392,7 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
 				+ "LEFT JOIN FETCH pe.ownerHistory "
 				+ "LEFT JOIN FETCH pe.productVersions ",
 				ProductEntity.class).getResultList();
-		logger.debug("SQL call: List<ProductEntity> getAllEntities()");
+		LOGGER.debug("SQL call: List<ProductEntity> getAllEntities()");
 		return result;
 	}
 

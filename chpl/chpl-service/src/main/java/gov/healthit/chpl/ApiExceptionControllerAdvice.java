@@ -31,70 +31,70 @@ import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @ControllerAdvice
 public class ApiExceptionControllerAdvice {
-	private static final Logger logger = LogManager.getLogger(ApiExceptionControllerAdvice.class);
+	private static final Logger LOGGER = LogManager.getLogger(ApiExceptionControllerAdvice.class);
 
 	@ExceptionHandler(EntityRetrievalException.class)
-	public ResponseEntity<ErrorJSONObject> exception(EntityRetrievalException e) {
-		logger.error(e.getMessage());
+	public ResponseEntity<ErrorJSONObject> exception(final EntityRetrievalException e) {
+		LOGGER.error(e.getMessage());
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(UserRetrievalException.class)
-	public ResponseEntity<ErrorJSONObject> exception(UserRetrievalException e) {
-		logger.error(e.getMessage());
+	public ResponseEntity<ErrorJSONObject> exception(final UserRetrievalException e) {
+		LOGGER.error(e.getMessage());
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.NOT_FOUND);
 	}
 
 	@ExceptionHandler(EntityCreationException.class)
-	public ResponseEntity<ErrorJSONObject> exception(EntityCreationException e) {
-		logger.error(e.getMessage(), e);
+	public ResponseEntity<ErrorJSONObject> exception(final EntityCreationException e) {
+		LOGGER.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(InvalidArgumentsException.class)
-	public ResponseEntity<ErrorJSONObject> exception(InvalidArgumentsException e) {
-		logger.error(e.getMessage(), e);
+	public ResponseEntity<ErrorJSONObject> exception(final InvalidArgumentsException e) {
+		LOGGER.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(TypeMismatchException.class)
-	public ResponseEntity<ErrorJSONObject> typeMismatchException(TypeMismatchException e) {
-		logger.error(e.getMessage(), e);
+	public ResponseEntity<ErrorJSONObject> typeMismatchException(final TypeMismatchException e) {
+		LOGGER.error(e.getMessage(), e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.BAD_REQUEST);
 	}
 
 	@ExceptionHandler(AddressException.class)
-	public ResponseEntity<ErrorJSONObject> exception(AddressException e) {
-		logger.error("Could not send email", e);
+	public ResponseEntity<ErrorJSONObject> exception(final AddressException e) {
+		LOGGER.error("Could not send email", e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(UpdateTestingLabException.class )
-	public ResponseEntity<ErrorJSONObject> exception(UpdateTestingLabException e) {
-		logger.error("Could not update testing lab - access denied.");
+	public ResponseEntity<ErrorJSONObject> exception(final UpdateTestingLabException e) {
+		LOGGER.error("Could not update testing lab - access denied.");
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(SurveillanceAuthorityAccessDeniedException.class )
-	public ResponseEntity<ErrorJSONObject> exception(SurveillanceAuthorityAccessDeniedException e) {
-		logger.error("Could not update surveillance activity - access denied.");
+	public ResponseEntity<ErrorJSONObject> exception(final SurveillanceAuthorityAccessDeniedException e) {
+		LOGGER.error("Could not update surveillance activity - access denied.");
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(UpdateCertifiedBodyException.class )
-	public ResponseEntity<ErrorJSONObject> exception(UpdateCertifiedBodyException e) {
-		logger.error("Could not update ACB - access denied.");
+	public ResponseEntity<ErrorJSONObject> exception(final UpdateCertifiedBodyException e) {
+		LOGGER.error("Could not update ACB - access denied.");
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Access Denied"), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(MessagingException.class)
-	public ResponseEntity<ErrorJSONObject> exception(MessagingException e) {
-		logger.error("Could not send email", e);
+	public ResponseEntity<ErrorJSONObject> exception(final MessagingException e) {
+		LOGGER.error("Could not send email", e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject("Could not send email. " + e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@ExceptionHandler(ValidationException.class)
-	public ResponseEntity<ValidationErrorJSONObject> exception(ValidationException e) {
+	public ResponseEntity<ValidationErrorJSONObject> exception(final ValidationException e) {
 		ValidationErrorJSONObject error = new ValidationErrorJSONObject();
 		error.setErrorMessages(e.getErrorMessages());
 		error.setWarningMessages(e.getWarningMessages());
@@ -102,7 +102,7 @@ public class ApiExceptionControllerAdvice {
 	}
 
 	@ExceptionHandler(ObjectsMissingValidationException.class)
-	public ResponseEntity<ObjectsMissingValidationErrorJSONObject> exception(ObjectsMissingValidationException e) {
+	public ResponseEntity<ObjectsMissingValidationErrorJSONObject> exception(final ObjectsMissingValidationException e) {
 		ObjectsMissingValidationErrorJSONObject errorContainer = new ObjectsMissingValidationErrorJSONObject();
 		if(e.getExceptions() != null) {
 			for(ObjectMissingValidationException currEx : e.getExceptions()) {
@@ -119,7 +119,7 @@ public class ApiExceptionControllerAdvice {
 	}
 
 	@ExceptionHandler(ObjectMissingValidationException.class)
-	public ResponseEntity<ObjectMissingValidationErrorJSONObject> exception(ObjectMissingValidationException e) {
+	public ResponseEntity<ObjectMissingValidationErrorJSONObject> exception(final ObjectMissingValidationException e) {
 		ObjectMissingValidationErrorJSONObject error = new ObjectMissingValidationErrorJSONObject();
 		error.setErrorMessages(e.getErrorMessages());
 		error.setWarningMessages(e.getWarningMessages());
@@ -129,14 +129,14 @@ public class ApiExceptionControllerAdvice {
 	}
 
 	@ExceptionHandler(CertificationBodyAccessException.class)
-	public ResponseEntity<ErrorJSONObject> exception(CertificationBodyAccessException e) {
-		logger.error("Caught ACB access exception.", e);
+	public ResponseEntity<ErrorJSONObject> exception(final CertificationBodyAccessException e) {
+		LOGGER.error("Caught ACB access exception.", e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage() != null ? e.getMessage() : "Unauthorized ACB Access."), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorJSONObject> exception(Exception e) {
-		logger.error("Caught exception.", e);
+		LOGGER.error("Caught exception.", e);
 		return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

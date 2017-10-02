@@ -13,7 +13,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("certifiedProductHandler")
 public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler.class);
 	protected static final String PRACTICE_TYPE_AMBULATORY = "AMBULATORY";
 	protected static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
 	protected static final String FIRST_ROW_INDICATOR = "NEW";
@@ -68,8 +68,8 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
 			if(numValue > 0) {
 				return true;
 			}
-		} catch(NumberFormatException ex) {
-			logger.error("Could not parse " + value + " as an integer");
+		} catch(final NumberFormatException ex) {
+			LOGGER.error("Could not parse " + value + " as an integer");
 		}
 
 		return false;

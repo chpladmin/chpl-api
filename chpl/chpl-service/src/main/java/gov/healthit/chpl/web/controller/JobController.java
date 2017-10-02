@@ -24,7 +24,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/jobs")
 public class JobController {
 
-	private static final Logger logger = LogManager.getLogger(JobController.class);
+	private static final Logger LOGGER = LogManager.getLogger(JobController.class);
 	@Autowired JobManager jobManager;
 	@Autowired UserManager userManager;
 

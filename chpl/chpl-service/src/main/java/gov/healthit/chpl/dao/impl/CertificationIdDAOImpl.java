@@ -68,7 +68,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 			entityManager.persist(entity);
 			try {
 				entity = getEntityByCertificationId(entity.getCertificationId());
-			} catch (EntityRetrievalException e) {
+			} catch (final EntityRetrievalException e) {
 				throw new EntityCreationException("Unable to create Certification ID and Product Map.");
 			}
 			newDto = new CertificationIdDTO(entity);
@@ -99,7 +99,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 		try {
 			if (null != dto.getId())
 				entity = this.getEntityById(dto.getId());
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

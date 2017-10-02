@@ -38,7 +38,7 @@ public class AnnouncementController {
 	@Autowired AnnouncementManager announcementManager;
 	@Autowired UserManager userManager;
 
-	private static final Logger logger = LogManager.getLogger(AnnouncementController.class);
+	private static final Logger LOGGER = LogManager.getLogger(AnnouncementController.class);
 
 	@ApiOperation(value="Get all announcements.",
 			notes="The announcement listing is open to anyone, however announcements may be both public and private and "

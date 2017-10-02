@@ -24,7 +24,7 @@ public abstract class PostgresEnumType implements UserType, ParameterizedType {
 	    String enumClassName = parameters.getProperty("enumClassName");
 	    try {
 	        enumClass = (Class<Enum>) Class.forName(enumClassName);
-	    } catch (ClassNotFoundException e) {
+	    } catch (final ClassNotFoundException e) {
 	        throw new HibernateException("Enum class not found ", e);
 	    }
 

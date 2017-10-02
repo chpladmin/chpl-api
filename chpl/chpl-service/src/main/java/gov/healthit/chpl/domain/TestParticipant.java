@@ -21,7 +21,7 @@ import gov.healthit.chpl.dto.TestParticipantDTO;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class TestParticipant implements Serializable {
 	private static final long serialVersionUID = -3771155258451736516L;
-	private static final Logger logger = LogManager.getLogger(TestParticipant.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestParticipant.class);
 
 	/**
 	 * Participant internal ID
@@ -238,8 +238,8 @@ public class TestParticipant implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	professionalExperienceMonths = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	           logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	           LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }
@@ -252,8 +252,8 @@ public class TestParticipant implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	computerExperienceMonths = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	           logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	           LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }
@@ -266,8 +266,8 @@ public class TestParticipant implements Serializable {
 		if(!StringUtils.isEmpty(value)) {
 	        try {
 	        	productExperienceMonths = Math.round(new Float(value));
-	        } catch (NumberFormatException e) {
-	           logger.error("can't parse " + value + " as a float or integer.");
+	        } catch (final NumberFormatException e) {
+	           LOGGER.error("can't parse " + value + " as a float or integer.");
 	        }
 		}
     }

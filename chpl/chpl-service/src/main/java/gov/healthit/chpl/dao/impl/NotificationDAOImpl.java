@@ -32,7 +32,7 @@ import gov.healthit.chpl.entity.notification.RecipientWithSubscriptionsEntity;
 
 @Repository("notificationDAO")
 public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO {
-	private static final Logger logger = LogManager.getLogger(NotificationDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(NotificationDAOImpl.class);
 
 	public RecipientDTO createRecipientEmailAddress(String emailAddress) {
 		NotificationRecipientEntity entityToAdd = new NotificationRecipientEntity();
@@ -244,7 +244,7 @@ public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO 
 				entityManager.merge(mapping);
 			}
 		} else {
-			logger.error("Could not find notification-recipient mapping with recipient id " + recipient.getId() + ", notification type id " + notificationType.getId() + ", and acb id " + acbId);
+			LOGGER.error("Could not find notification-recipient mapping with recipient id " + recipient.getId() + ", notification type id " + notificationType.getId() + ", and acb id " + acbId);
 		}
 
 		//if the recipient is not signed up for any more notifications

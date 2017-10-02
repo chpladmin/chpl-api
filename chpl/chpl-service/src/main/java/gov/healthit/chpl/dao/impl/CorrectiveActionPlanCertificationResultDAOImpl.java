@@ -35,7 +35,7 @@ public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl 
 			if(toCreate.getId() != null) {
 				entity = getEntityById(toCreate.getId());
 			}
-		} catch(EntityRetrievalException e) {
+		} catch(final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

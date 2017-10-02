@@ -24,7 +24,7 @@ import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 
 @Repository(value="listingGraphDao")
 public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO {
-	private static final Logger logger = LogManager.getLogger(ListingGraphDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(ListingGraphDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException {
@@ -39,7 +39,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
 			entityManager.clear();
 		} catch(Exception ex) {
 			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badIcsRelative"), LocaleContextHolder.getLocale()), toCreate.getParentId(), toCreate.getChildId());
-			logger.error(msg, ex);
+			LOGGER.error(msg, ex);
 			throw new EntityCreationException(msg);
 		}
 		entity = getListingMapEntity(toCreate.getChildId(), toCreate.getParentId());

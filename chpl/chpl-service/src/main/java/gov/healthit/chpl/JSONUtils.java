@@ -48,7 +48,7 @@ public class JSONUtils {
 			JsonNode node2 = getReader().readTree(json2);
 			equals = node1.equals(node2);
 
-		} catch (NullPointerException e) {
+		} catch (final NullPointerException e) {
 			equals = false;
 		}
 		return equals;

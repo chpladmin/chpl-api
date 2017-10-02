@@ -23,7 +23,7 @@ import gov.healthit.chpl.entity.TestProcedureEntity;
 
 @Repository("testProcedureDAO")
 public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDAO {
-	private static final Logger logger = LogManager.getLogger(TestProcedureDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(TestProcedureDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -49,7 +49,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badTestProcedure"), LocaleContextHolder.getLocale()),
 						dto.getVersion());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new TestProcedureDTO(entity);

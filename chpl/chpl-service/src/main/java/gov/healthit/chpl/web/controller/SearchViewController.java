@@ -76,7 +76,7 @@ public class SearchViewController {
 	@Autowired
 	private DeveloperManager developerManager;
 
-	private static final Logger logger = LogManager.getLogger(SearchViewController.class);
+	private static final Logger LOGGER = LogManager.getLogger(SearchViewController.class);
 
 	@ApiOperation(value="Download the entire CHPL as XML.",
 			notes="Once per day, the entire certified product listing is written out to an XML "
@@ -167,7 +167,7 @@ public class SearchViewController {
 			}
 		}
 
-		logger.info("Downloading " + downloadFile.getName());
+		LOGGER.info("Downloading " + downloadFile.getName());
 
 		FileInputStream inputStream = new FileInputStream(downloadFile);
 
@@ -288,7 +288,7 @@ public class SearchViewController {
 							}
 						}
 						if(!found) {
-							logger.error("Could not find certification status with value " + certStatusParam);
+							LOGGER.error("Could not find certification status with value " + certStatusParam);
 							throw new InvalidArgumentsException("Could not find certification status with value " + certStatusParam);
 						} else {
 							certificationStatuses.add(certStatusParam);
@@ -316,7 +316,7 @@ public class SearchViewController {
 							}
 						}
 						if(!found) {
-							logger.error("Could not find certification edition with value " + certEditionParam);
+							LOGGER.error("Could not find certification edition with value " + certEditionParam);
 							throw new InvalidArgumentsException("Could not find certification edition with value " + certEditionParam);
 						} else {
 							certificationEditions.add(certEditionParam);
@@ -345,7 +345,7 @@ public class SearchViewController {
 							}
 						}
 						if(!found) {
-							logger.error("Could not find certification criterion with value " + certCriteriaParam);
+							LOGGER.error("Could not find certification criterion with value " + certCriteriaParam);
 							throw new InvalidArgumentsException("Could not find certification criterion with value " + certCriteriaParam);
 						} else {
 							certificationCriterion.add(certCriteriaParam);
@@ -373,7 +373,7 @@ public class SearchViewController {
 							}
 						}
 						if(!found) {
-							logger.error("Could not find CQM with value " + cqmParam);
+							LOGGER.error("Could not find CQM with value " + cqmParam);
 							throw new InvalidArgumentsException("Could not find CQM with value " + cqmParam);
 						} else {
 							cqms.add(cqmParam.trim());
@@ -401,7 +401,7 @@ public class SearchViewController {
 							}
 						}
 						if(!found) {
-							logger.error("Could not find certification body with value " + certBodyParam);
+							LOGGER.error("Could not find certification body with value " + certBodyParam);
 							throw new InvalidArgumentsException("Could not find certification body with value " + certBodyParam);
 						} else {
 							certBodies.add(certBodyParam);
@@ -425,11 +425,11 @@ public class SearchViewController {
 							if(searchOpt != null) {
 								surveillanceSearchOptions.add(searchOpt);
 							} else {
-								logger.error("No surveillance search option for the string " + surveillanceParam);
+								LOGGER.error("No surveillance search option for the string " + surveillanceParam);
 								throw new InvalidArgumentsException("No surveillance search option matches " + surveillanceParam);
 							}
 						} catch(Exception ex) {
-							logger.error("No surveillance search option for the string " + surveillanceParam, ex);
+							LOGGER.error("No surveillance search option for the string " + surveillanceParam, ex);
 							throw new InvalidArgumentsException("No surveillance search option matches " + surveillanceParam);
 						}
 					}
@@ -473,7 +473,7 @@ public class SearchViewController {
 				}
 
 				if(!found) {
-					logger.error("No practice type exists with name " + practiceType);
+					LOGGER.error("No practice type exists with name " + practiceType);
 					throw new InvalidArgumentsException("No practice type exists with name " + practiceType);
 				} else {
 					searchRequest.setPracticeType(practiceType);
@@ -488,8 +488,8 @@ public class SearchViewController {
 			if(!StringUtils.isEmpty(certificationDateStart)) {
 				try {
 					format.parse(certificationDateStart);
-				} catch(ParseException ex) {
-					logger.error("Could not parse " + certificationDateStart + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+				} catch(final ParseException ex) {
+					LOGGER.error("Could not parse " + certificationDateStart + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
 					throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + certificationDateStart);
 				}
 				searchRequest.setCertificationDateStart(certificationDateStart);
@@ -501,8 +501,8 @@ public class SearchViewController {
 			if(!StringUtils.isEmpty(certificationDateEnd)) {
 				try {
 					format.parse(certificationDateEnd);
-				} catch(ParseException ex) {
-					logger.error("Could not parse " + certificationDateEnd + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+				} catch(final ParseException ex) {
+					LOGGER.error("Could not parse " + certificationDateEnd + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
 					throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + certificationDateEnd);
 				}
 				searchRequest.setCertificationDateEnd(certificationDateEnd);
@@ -532,16 +532,16 @@ public class SearchViewController {
 		if(!StringUtils.isEmpty(searchFilters.getCertificationDateStart())) {
 			try {
 				format.parse(searchFilters.getCertificationDateStart());
-			} catch(ParseException ex) {
-				logger.error("Could not parse " + searchFilters.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+			} catch(final ParseException ex) {
+				LOGGER.error("Could not parse " + searchFilters.getCertificationDateStart() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
 				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + searchFilters.getCertificationDateStart());
 			}
 		}
 		if(!StringUtils.isEmpty(searchFilters.getCertificationDateEnd())) {
 			try {
 				format.parse(searchFilters.getCertificationDateEnd());
-			} catch(ParseException ex) {
-				logger.error("Could not parse " + searchFilters.getCertificationDateEnd() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+			} catch(final ParseException ex) {
+				LOGGER.error("Could not parse " + searchFilters.getCertificationDateEnd() + " as date in the format " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
 				throw new InvalidArgumentsException("Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + searchFilters.getCertificationDateEnd());
 			}
 		}

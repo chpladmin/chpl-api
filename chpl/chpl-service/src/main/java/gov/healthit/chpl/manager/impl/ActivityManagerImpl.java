@@ -41,7 +41,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 
 @Service
 public class ActivityManagerImpl implements ActivityManager {
-	private static final Logger logger = LogManager.getLogger(ActivityManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(ActivityManagerImpl.class);
 
 	@Autowired
 	ActivityDAO activityDAO;
@@ -67,7 +67,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
 		try {
 			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
-		} catch (IOException e){
+		} catch (final IOException e){
 
 		}
 
@@ -108,7 +108,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
 		try {
 			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
-		} catch (IOException e){
+		} catch (final IOException e){
 
 		}
 
@@ -148,7 +148,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
 		try {
 			originalMatchesNew = JSONUtils.jsonEquals(originalDataStr, newDataStr);
-		} catch (IOException e){
+		} catch (final IOException e){
 
 		}
 
@@ -398,8 +398,8 @@ public class ActivityManagerImpl implements ActivityManager {
 					if(dev != null) {
 						((ProductActivityEvent)event).setDeveloper(new Developer(dev));
 					}
-				} catch(EntityRetrievalException ex) {
-					logger.error("Could not get developer with id " + devId);
+				} catch(final EntityRetrievalException ex) {
+					LOGGER.error("Could not get developer with id " + devId);
 				}
 			}
 		}

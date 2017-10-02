@@ -48,7 +48,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/activity")
 public class ActivityController {
-	private static final Logger logger = LogManager.getLogger(ActivityController.class);
+	private static final Logger LOGGER = LogManager.getLogger(ActivityController.class);
 
 	@Autowired Environment env;
 
@@ -75,7 +75,7 @@ public class ActivityController {
 			@RequestParam(value = "showDeleted", required = false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
-			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACBs");
+			LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACBs");
 			throw new AccessDeniedException("Only Admins can see deleted ACB's");
 		}else{
 			if (start == null && end == null){
@@ -108,7 +108,7 @@ public class ActivityController {
 		acbManager.getById(id, showDeleted); //throws 404 if ACB doesn't exist
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
-			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
+			LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
 			throw new AccessDeniedException("Only Admins can see deleted ACB's");
 		} else {
 			if (start == null && end == null){
@@ -188,7 +188,7 @@ public class ActivityController {
 			@RequestParam(value = "showDeleted", required = false, defaultValue="false") boolean showDeleted) throws JsonParseException, IOException, ValidationException{
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
-			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATLs");
+			LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATLs");
 			throw new AccessDeniedException("Only Admins can see deleted ATL's");
 		}else{
 			if (start == null && end == null){
@@ -221,7 +221,7 @@ public class ActivityController {
 		atlManager.getById(id, showDeleted); //throws 404 if bad id
 
 		if(!Util.isUserRoleAdmin() && showDeleted){
-			logger.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
+			LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
 			throw new AccessDeniedException("Only Admins can see deleted ATL's");
 		}else{
 			if (start == null && end == null){
@@ -729,7 +729,7 @@ public class ActivityController {
 			}
 		}
 		if (!hasAdmin){
-			logger.warn("Non-admin user " + Util.getUsername() + " to see user activity");
+			LOGGER.warn("Non-admin user " + Util.getUsername() + " to see user activity");
 			throw new AccessDeniedException("Insufficient permissions to access User activity.");
 		} else {
 			events = getActivityEventsForObject(false, concept, id);
@@ -831,7 +831,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForACBs(boolean showDeleted, Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested ACB activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested ACB activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
@@ -841,7 +841,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForATLs(boolean showDeleted, Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested ATL activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested ATL activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
@@ -851,7 +851,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForCertifications(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested certification activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested certification activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION;
@@ -862,7 +862,7 @@ public class ActivityController {
 
 
 	private List<ActivityEvent> getActivityEventsForCertifiedProducts(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested certified product activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested certified product activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -872,7 +872,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested pending certified product activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested pending certified product activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
@@ -882,7 +882,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForProducts(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested product activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested product activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
@@ -892,7 +892,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForUsers(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested user activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested user activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
@@ -902,7 +902,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForDevelopers(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested developer activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested developer activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER;
@@ -912,7 +912,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForVersions(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested version activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested version activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
@@ -922,7 +922,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForApiKeys(Date startDate, Date endDate) throws JsonParseException, IOException {
-		logger.info("User " + Util.getUsername() + " requested API key activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested API key activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_API_KEY;
@@ -932,7 +932,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForACBs(boolean showDeleted) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all ACB activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all ACB activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
@@ -942,7 +942,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForATLs(boolean showDeleted) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all ATL activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all ATL activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
@@ -952,7 +952,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForCertifications() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all certification activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all certification activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION;
@@ -963,7 +963,7 @@ public class ActivityController {
 
 
 	private List<ActivityEvent> getActivityEventsForCertifiedProducts() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all certified product activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all certified product activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -973,7 +973,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all pending certified product activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all pending certified product activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
@@ -983,7 +983,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForProducts() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all product activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all product activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
@@ -993,7 +993,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForUsers() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all user activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all user activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
@@ -1003,7 +1003,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForDevelopers() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all developer activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all developer activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER;
@@ -1013,7 +1013,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForVersions() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all version activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all version activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_VERSION;
@@ -1023,7 +1023,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForApiKeys() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all API key activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all API key activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_API_KEY;
@@ -1033,7 +1033,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForAnnouncements() throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all announcement activity");
+		LOGGER.info("User " + Util.getUsername() + " requested all announcement activity");
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
@@ -1043,7 +1043,7 @@ public class ActivityController {
 	}
 
 	private List<ActivityEvent> getActivityEventsForAnnouncements(Date startDate, Date endDate) throws JsonParseException, IOException{
-		logger.info("User " + Util.getUsername() + " requested all announcement activity between " + startDate + " and " + endDate);
+		LOGGER.info("User " + Util.getUsername() + " requested all announcement activity between " + startDate + " and " + endDate);
 
 		List<ActivityEvent> events = null;
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;

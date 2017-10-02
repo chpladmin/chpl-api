@@ -54,7 +54,7 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"})
 public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
-	private static final Logger logger = LogManager.getLogger(CHPLConfig.class);
+	private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
 
 	@Autowired private ApiKeyManager apiKeyManager;
 
@@ -62,7 +62,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 
 	@Override
     public void setEnvironment(final Environment environment) {
-		logger.info("setEnvironment");
+		LOGGER.info("setEnvironment");
         this.env = environment;
     }
 
@@ -78,7 +78,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 
 	@Bean
 	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
-		logger.info("get LocalEntityManagerFactoryBean");
+		LOGGER.info("get LocalEntityManagerFactoryBean");
 		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
 		bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
 		return bean;
@@ -86,7 +86,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 
 	@Bean
 	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
-		logger.info("get JpaTransactionManager");
+		LOGGER.info("get JpaTransactionManager");
 		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
 		bean.setEntityManagerFactory(entityManagerFactory().getObject());
 		return bean;
@@ -94,13 +94,13 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 
 	@Bean
 	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
-		logger.info("get PersistenceAnnotationBeanPostProcessor");
+		LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
 		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
 	}
 
 	@Bean(name="multipartResolver")
 	public CommonsMultipartResolver getResolver() throws IOException{
-		logger.info("get CommonsMultipartResolver");
+		LOGGER.info("get CommonsMultipartResolver");
 	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 
 	        //Set the maximum allowed size (in bytes) for each individual file.
@@ -114,7 +114,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	@Bean
 	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
 	{
-		logger.info("get APIKeyAuthenticationFilter");
+		LOGGER.info("get APIKeyAuthenticationFilter");
 		return new APIKeyAuthenticationFilter(apiKeyManager);
 	}
 
@@ -129,19 +129,19 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
 	@Bean
 	public Marshaller marshaller()
 	{
-		logger.info("get Marshaller");
+		LOGGER.info("get Marshaller");
 		return new CastorMarshaller();
 	}
 
 	@Bean
 	public CacheManager cacheManager() {
-		logger.info("get CacheManager");
+		LOGGER.info("get CacheManager");
 		return new EhCacheCacheManager(ehCacheCacheManager().getObject());
 	}
 
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheCacheManager() {
-		logger.info("get EhCacheManagerFactoryBean");
+		LOGGER.info("get EhCacheManagerFactoryBean");
 		EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
 		cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
 		cmfb.setShared(true);

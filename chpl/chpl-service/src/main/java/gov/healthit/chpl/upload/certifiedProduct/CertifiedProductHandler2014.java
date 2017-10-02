@@ -49,7 +49,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 @Component("certifiedProductHandler2014")
 public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 
-	private static final Logger logger = LogManager.getLogger(CertifiedProductHandler2014.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2014.class);
 
 	public PendingCertifiedProductEntity handle() {
 		PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
@@ -369,7 +369,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 		try {
 			Date certificationDate = dateFormatter.parse(dateStr);
 			pendingCertifiedProduct.setCertificationDate(certificationDate);
-		} catch(ParseException ex) {
+		} catch(final ParseException ex) {
 			pendingCertifiedProduct.setCertificationDate(null);
 		}
 
@@ -411,7 +411,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 			AddressEntity addressEntity = null;
 			try {
 				addressEntity = addressDao.getEntityById(foundAddress.getId());
-			} catch(EntityRetrievalException ex) {
+			} catch(final EntityRetrievalException ex) {
 				addressEntity = null;
 			}
 			pendingCertifiedProduct.setDeveloperAddress(addressEntity);
@@ -569,12 +569,12 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						break;
 					default:
 						pendingCertifiedProduct.getErrorMessages().add("Invalid column title " + colTitle + " at index " + currIndex);
-						logger.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
+						LOGGER.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
 						currIndex++;
 					}
 				}
 			}
-		} catch(InvalidArgumentsException ex) { logger.error(ex.getMessage()); }
+		} catch(final InvalidArgumentsException ex) { LOGGER.error(ex.getMessage()); }
 		return cert;
 	}
 
@@ -628,8 +628,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 						if(cpd != null) {
 							asEntity.setCertifiedProductId(cpd.getId());
 						}
-					} catch(EntityRetrievalException ex) {
-						logger.error(ex.getMessage(), ex);
+					} catch(final EntityRetrievalException ex) {
+						LOGGER.error(ex.getMessage(), ex);
 					}
 				}
 				cert.getAdditionalSoftware().add(asEntity);

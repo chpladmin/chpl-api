@@ -82,7 +82,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
-	private static final Logger logger = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
 
 	@Autowired
 	private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;

@@ -69,7 +69,7 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 @Service
 public class CertificationResultManagerImpl implements
 		CertificationResultManager {
-	private static final Logger logger = LogManager.getLogger(CertificationResultManagerImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertificationResultManagerImpl.class);
 	private static final String G1_MEASURE = "G1";
 	private static final String G2_MEASURE = "G2";
 
@@ -686,7 +686,7 @@ public class CertificationResultManagerImpl implements
 				if(updatedItem.getTestToolId() == null && !StringUtils.isEmpty(updatedItem.getTestToolName())) {
 					TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
 					if(foundTool == null) {
-						logger.error("Could not find test tool " + updatedItem.getTestToolName() +
+						LOGGER.error("Could not find test tool " + updatedItem.getTestToolName() +
 								"; will not be adding this as a test tool to certification result id " +
 								certResult.getId() + ", criteria " + certResult.getNumber());
 					} else {
@@ -942,7 +942,7 @@ public class CertificationResultManagerImpl implements
 				if(updatedItem.getTestFunctionalityId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
 					TestFunctionalityDTO foundFunc = testFunctionalityDAO.getByNumberAndEdition(updatedItem.getName(), new Long(editionIdString));
 					if(foundFunc == null) {
-						logger.error("Could not find test functionality " + updatedItem.getName() +
+						LOGGER.error("Could not find test functionality " + updatedItem.getName() +
 								" for certifiation edition id " + editionIdString +
 								"; will not be adding this as a test functionality to listing id " + listing.getId() +
 								", criteria " + certResult.getNumber());
@@ -1300,7 +1300,7 @@ public class CertificationResultManagerImpl implements
 			if(age != null) {
 				result.setAgeRangeId(age.getId());
 			} else {
-				logger.error("Could not find matching age range for " + domain.getAgeRange());
+				LOGGER.error("Could not find matching age range for " + domain.getAgeRange());
 			}
 		} else if(domain.getAgeRangeId() != null) {
 			result.setAgeRangeId(domain.getAgeRangeId());
@@ -1311,7 +1311,7 @@ public class CertificationResultManagerImpl implements
 			if(educ != null) {
 				result.setEducationTypeId(educ.getId());
 			} else {
-				logger.error("Could not find matching education level " + domain.getEducationTypeName());
+				LOGGER.error("Could not find matching education level " + domain.getEducationTypeName());
 			}
 		} else if(domain.getEducationTypeId() != null) {
 			result.setEducationTypeId(domain.getEducationTypeId());

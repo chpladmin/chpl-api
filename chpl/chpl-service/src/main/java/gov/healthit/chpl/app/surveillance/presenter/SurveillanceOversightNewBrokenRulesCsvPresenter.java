@@ -24,7 +24,7 @@ import gov.healthit.chpl.domain.SurveillanceOversightRule;
  */
 @Component("surveillanceOversightNewBrokenRulesCsvPresenter")
 public class SurveillanceOversightNewBrokenRulesCsvPresenter extends SurveillanceOversightAllBrokenRulesCsvPresenter {
-	private static final Logger logger = LogManager.getLogger(SurveillanceOversightNewBrokenRulesCsvPresenter.class);
+	private static final Logger LOGGER = LogManager.getLogger(SurveillanceOversightNewBrokenRulesCsvPresenter.class);
 
 	private Map<SurveillanceOversightRule, Integer> newBrokenRulesCounts;
 

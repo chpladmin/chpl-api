@@ -24,7 +24,7 @@ import gov.healthit.chpl.entity.QmsStandardEntity;
 
 @Repository("qmsStandardDao")
 public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
-	private static final Logger logger = LogManager.getLogger(QmsStandardDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(QmsStandardDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -48,7 +48,7 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
 				create(entity);
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"), LocaleContextHolder.getLocale()), dto.getName());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new QmsStandardDTO(entity);

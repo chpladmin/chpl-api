@@ -30,7 +30,7 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 			if (dto.getId() != null){
 				entity = this.getEntityById(false, dto.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

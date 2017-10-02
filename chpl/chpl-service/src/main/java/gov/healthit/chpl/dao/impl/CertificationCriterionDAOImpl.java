@@ -20,7 +20,7 @@ import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 @Repository("certificationCriterionDAO")
 public class CertificationCriterionDAOImpl extends BaseDAOImpl implements CertificationCriterionDAO {
-	private static final Logger logger = LogManager.getLogger(CertificationCriterionDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(CertificationCriterionDAOImpl.class);
 
 	@Override
 	public CertificationCriterionDTO create(CertificationCriterionDTO dto) throws EntityCreationException, EntityRetrievalException {
@@ -30,7 +30,7 @@ public class CertificationCriterionDAOImpl extends BaseDAOImpl implements Certif
 			if (dto.getId() != null){
 				entity = this.getEntityById(dto.getId());
 			}
-		} catch (EntityRetrievalException e) {
+		} catch (final EntityRetrievalException e) {
 			throw new EntityCreationException(e);
 		}
 

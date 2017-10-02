@@ -10,7 +10,7 @@ import net.sf.ehcache.CacheManager;
 
 @Component
 public class ScheduledCacheRefreshTasks {
-	private static final Logger logger = LogManager.getLogger(ScheduledCacheRefreshTasks.class);
+	private static final Logger LOGGER = LogManager.getLogger(ScheduledCacheRefreshTasks.class);
 
 	@Autowired private CacheUtil cacheUtil;
 	@Autowired private PreFetchedCaches preFetchedCaches;
@@ -18,7 +18,7 @@ public class ScheduledCacheRefreshTasks {
     @Scheduled(initialDelayString = "${listingCacheRefreshInitialDelayMillis}",
     		fixedDelayString = "${listingCacheRefreshDelayMillis}")
     public void refreshListingsCache() {
-    	logger.info("Refreshing listings cache.");
+    	LOGGER.info("Refreshing listings cache.");
     	CacheManager manager = cacheUtil.getMyCacheManager();
 		preFetchedCaches.loadPreFetchedBasicSearch();
 		CacheReplacer.replaceCache(manager.getCache(CacheNames.COLLECTIONS_LISTINGS), manager.getCache(CacheNames.COLLECTIONS_PREFETCHED_LISTINGS));

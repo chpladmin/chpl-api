@@ -39,7 +39,7 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 @Component("summaryStatistics")
 public class SummaryStatistics {
 	private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-	private static final Logger logger = LogManager.getLogger(SummaryStatistics.class);
+	private static final Logger LOGGER = LogManager.getLogger(SummaryStatistics.class);
 	private static Date startDate;
 	private static Date endDate;
 	private static Integer numDaysInPeriod;
@@ -71,17 +71,17 @@ public class SummaryStatistics {
 		 calendarCounter.setTime(startDate);
 		 calendarCounter.add(Calendar.DATE, numDaysInPeriod);
 		 while(endDate.compareTo(calendarCounter.getTime()) >= 0){
-			 logger.info("Getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
+			 LOGGER.info("Getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
 			 DateRange csvRange = new DateRange(startDate, new Date(calendarCounter.getTimeInMillis()));
 			 Statistics historyStat = new Statistics();
 			 historyStat.setDateRange(csvRange);
 			 Future<Statistics> futureEmailCsvStats = summaryStats.asynchronousStatisticsInitializor.getStatistics(csvRange, false);
 			 historyStat = futureEmailCsvStats.get();
 			 csvStats.add(historyStat);
-			 logger.info("Finished getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
+			 LOGGER.info("Finished getting csvRecord for start date " + startDate.toString() + " end date " + calendarCounter.getTime().toString());
 			 calendarCounter.add(Calendar.DATE, numDaysInPeriod);
 		 }
-		 logger.info("Finished getting statistics");
+		 LOGGER.info("Finished getting statistics");
 		 StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 		 List<File> files = new ArrayList<File>();
 		 File csvFile = new File(props.getProperty("downloadFolderPath") + File.separator + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
@@ -97,13 +97,13 @@ public class SummaryStatistics {
 			 for(int i = 0; i < recipients.size(); i++) {
 				 RecipientWithSubscriptionsDTO recip = recipients.get(i);
 				 emailAddrs[i] = recip.getEmail();
-				 logger.info("Sending email to " + recip.getEmail());
+				 LOGGER.info("Sending email to " + recip.getEmail());
 			 }
 			 SendMailUtil mailUtil = new SendMailUtil();
 			 mailUtil.sendEmail(null, emailAddrs, props.getProperty("summaryEmailSubject").toString(), htmlMessage, files, props);
 		 }
 
-		 logger.info("Completed SummaryStatistics execution.");
+		 LOGGER.info("Completed SummaryStatistics execution.");
 		 context.close();
 	}
 
@@ -124,7 +124,7 @@ public class SummaryStatistics {
 				endDate = isoFormat.parse(args[1]);
 				numDaysInPeriod = 7;
 			}
-			catch(ParseException e){
+			catch(final ParseException e){
 				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
 			}
 			break;
@@ -134,11 +134,11 @@ public class SummaryStatistics {
 				endDate = isoFormat.parse(args[1]);
 				numDaysInPeriod = Integer.parseInt(args[2]);
 			}
-			catch(ParseException e){
+			catch(final ParseException e){
 				throw new ParseException("Please enter startDate and endDate command-line arguments in the format of yyyy-MM-dd", e.getErrorOffset());
 			}
-			catch(NumberFormatException e){
-				logger.info("Third command line argument could not be parsed to integer. " + e.getMessage());
+			catch(final NumberFormatException e){
+				LOGGER.info("Third command line argument could not be parsed to integer. " + e.getMessage());
 				numDaysInPeriod = 7;
 			}
 			break;
@@ -152,7 +152,7 @@ public class SummaryStatistics {
 	 * @param context
 	 */
 	private void initializeSpringClasses(AbstractApplicationContext context){
-		 logger.info(context.getClassLoader());
+		 LOGGER.info(context.getClassLoader());
 		 setAsynchronousStatisticsInitializor((AsynchronousStatisticsInitializor)context.getBean("asynchronousStatisticsInitializor"));
 		 setNotificationDao((NotificationDAO)context.getBean("notificationDAO"));
 
@@ -374,7 +374,7 @@ public class SummaryStatistics {
 		 emailMessage.append("<h4>Total # of NCs -  " + stats.getTotalNonConformities() + "</h4>");
 		 emailMessage.append("<ul><li>Open NCs - " + stats.getTotalOpenNonconformities() + "</li>");
 		 emailMessage.append("<li>Closed NCs - " + stats.getTotalClosedNonconformities() + "</li></ul>");
-		 logger.info(emailMessage.toString());
+		 LOGGER.info(emailMessage.toString());
 		 return emailMessage.toString();
 	}
 

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.support.ApplicationObjectSupport;
@@ -45,6 +47,7 @@ import gov.healthit.chpl.manager.TestingLabManager;
 
 @Service
 public class TestingLabManagerImpl extends ApplicationObjectSupport implements TestingLabManager {
+	private static final Logger LOGGER = LogManager.getLogger(TestingLabManagerImpl.class);
 
 	@Autowired CertificationBodyDAO certificationBodyDao;
 	@Autowired
@@ -84,7 +87,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		addPermission(result, Util.getCurrentUser().getId(),
 				BasePermission.ADMINISTRATION);
 
-		logger.debug("Created testing lab " + result
+		LOGGER.debug("Created testing lab " + result
 					+ " and granted admin permission to recipient " + gov.healthit.chpl.auth.Util.getUsername());
 
 		String activityMsg = "Created Testing Lab "+result.getName();
@@ -247,7 +250,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		try {
 			acl = (MutableAcl) mutableAclService.readAclById(oid);
 		}
-		catch (NotFoundException nfe) {
+		catch (final NotFoundException nfe) {
 			acl = mutableAclService.createAcl(oid);
 		}
 
@@ -258,11 +261,11 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
 		Sid recipient = new PrincipalSid(user.getSubjectName());
 		if(permissionExists(acl, recipient, permission)) {
-			logger.debug("User " + recipient + " already has permission on the testing lab " + atl.getName());
+			LOGGER.debug("User " + recipient + " already has permission on the testing lab " + atl.getName());
 		} else {
 			acl.insertAce(acl.getEntries().size(), permission, recipient, true);
 			mutableAclService.updateAcl(acl);
-			logger.debug("Added permission " + permission + " for Sid " + recipient
+			LOGGER.debug("Added permission " + permission + " for Sid " + recipient
 					+ " testing lab " + atl.getName());
 		}
 	}
@@ -287,7 +290,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 			}
 			mutableAclService.updateAcl(acl);
 		}
-		logger.debug("Deleted testing lab " + atl.getName() + " ACL permission " + permission + " for recipient " + recipient);
+		LOGGER.debug("Deleted testing lab " + atl.getName() + " ACL permission " + permission + " for recipient " + recipient);
 	}
 
 	@Transactional
@@ -311,7 +314,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 		}
 
 		mutableAclService.updateAcl(acl);
-		logger.debug("Deleted all testing lab " + atl.getName() + " ACL permissions for recipient " + recipient);
+		LOGGER.debug("Deleted all testing lab " + atl.getName() + " ACL permissions for recipient " + recipient);
 	}
 
 	@PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ATL_ADMIN')")

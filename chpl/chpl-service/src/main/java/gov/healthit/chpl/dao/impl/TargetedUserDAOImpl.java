@@ -24,7 +24,7 @@ import gov.healthit.chpl.entity.TargetedUserEntity;
 
 @Repository("targetedUserDao")
 public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO {
-	private static final Logger logger = LogManager.getLogger(TargetedUserDAOImpl.class);
+	private static final Logger LOGGER = LogManager.getLogger(TargetedUserDAOImpl.class);
 	@Autowired MessageSource messageSource;
 
 	@Override
@@ -49,7 +49,7 @@ public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO 
 				create(entity);
 			} catch(Exception ex) {
 				String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"), LocaleContextHolder.getLocale()), dto.getName());
-				logger.error(msg, ex);
+				LOGGER.error(msg, ex);
 				throw new EntityCreationException(msg);
 			}
 			return new TargetedUserDTO(entity);

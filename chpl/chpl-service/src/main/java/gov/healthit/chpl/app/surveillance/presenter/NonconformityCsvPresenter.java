@@ -24,7 +24,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirement;
  */
 @Component("surveillanceNonconformityCsvPresenter")
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
-	private static final Logger logger = LogManager.getLogger(NonconformityCsvPresenter.class);
+	private static final Logger LOGGER = LogManager.getLogger(NonconformityCsvPresenter.class);
 
 	@Override
 	public void presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
@@ -67,8 +67,8 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 					}
 				}
 			}
-		} catch(IOException ex) {
-			logger.error("Could not write file " + file.getName(), ex);
+		} catch(final IOException ex) {
+			LOGGER.error("Could not write file " + file.getName(), ex);
 		} finally {
 			try {
 				writer.flush();

@@ -21,7 +21,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @Component("listingsByEditionResourceCreatorApp")
 public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCreatorApp {
-	private static final Logger logger = LogManager.getLogger(ListingsByEditionResourceCreatorApp.class);
+	private static final Logger LOGGER = LogManager.getLogger(ListingsByEditionResourceCreatorApp.class);
 
 	private String edition;
 
@@ -35,11 +35,11 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 	}
 
 	protected List<CertifiedProductDetailsDTO> getRelevantListings() {
-		logger.info("Finding all listings for edition " + getEdition() + ".");
+		LOGGER.info("Finding all listings for edition " + getEdition() + ".");
 		Date start = new Date();
 		List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findByEdition(getEdition());
 		Date end = new Date();
-		logger.info("Found the " + listingsForEdition.size() + " listings from " + getEdition() + " in " + (end.getTime() - start.getTime())/1000 + " seconds");
+		LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + getEdition() + " in " + (end.getTime() - start.getTime())/1000 + " seconds");
 		return listingsForEdition;
 	}
 
@@ -55,11 +55,11 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 			xmlFile.delete();
 		}
 		CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-		logger.info("Writing " + getEdition() + " XML file");
+		LOGGER.info("Writing " + getEdition() + " XML file");
 		Date start = new Date();
 		xmlPresenter.presentAsFile(xmlFile, results);
 		Date end = new Date();
-		logger.info("Wrote " + getEdition() + " XML file in " + (end.getTime() - start.getTime())/1000 + " seconds");
+		LOGGER.info("Wrote " + getEdition() + " XML file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 
 		//present as csv
 		String csvFilename = downloadFolder.getAbsolutePath() + File.separator +
@@ -79,11 +79,11 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 		List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(getEdition());
 		csvPresenter.setApplicableCriteria(criteria);
 
-		logger.info("Writing " + getEdition() + " CSV file");
+		LOGGER.info("Writing " + getEdition() + " CSV file");
 		start = new Date();
 		csvPresenter.presentAsFile(csvFile, results);
 		end = new Date();
-		logger.info("Wrote " + getEdition() + " CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
+		LOGGER.info("Wrote " + getEdition() + " CSV file in " + (end.getTime() - start.getTime())/1000 + " seconds");
 	}
 
 	public String getEdition() {
@@ -96,7 +96,7 @@ public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCre
 
 	public static void main(String[] args) throws Exception {
 		if(args == null || args.length < 1) {
-			logger.error("ListingsByEditionResourceCreatorApp HELP: \n"
+			LOGGER.error("ListingsByEditionResourceCreatorApp HELP: \n"
 					+ "\tListingsByEditionResourceCreatorApp 2014\n"
 					+ "\tListingsByEditionResourceCreatorApp expects an argument that is the edition (2011, 2014, or 2015)");
 			return;
