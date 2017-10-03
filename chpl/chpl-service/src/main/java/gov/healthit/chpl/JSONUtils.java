@@ -8,11 +8,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-public class JSONUtils {
+public final class JSONUtils {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final ObjectReader READER = MAPPER.reader();
     private static final ObjectWriter WRITER = MAPPER.writer();
+
+    private JSONUtils() {
+
+    }
 
     public static ObjectReader getReader() {
         return READER;
@@ -22,7 +26,7 @@ public class JSONUtils {
         return WRITER;
     }
 
-    public static String toJSON(Object obj) throws JsonProcessingException {
+    public static String toJSON(final Object obj) throws JsonProcessingException {
 
         String json = null;
         if (obj != null) {
@@ -31,7 +35,8 @@ public class JSONUtils {
         return json;
     }
 
-    public static <T> T fromJSON(String json, Class<T> type) throws JsonProcessingException, IOException {
+    public static <T> T fromJSON(final String json, final Class<T> type)
+            throws JsonProcessingException, IOException {
 
         JsonNode node = getReader().readTree(json);
         T obj = getReader().treeToValue(node, type);
@@ -39,7 +44,8 @@ public class JSONUtils {
 
     }
 
-    public static boolean jsonEquals(String json1, String json2) throws JsonProcessingException, IOException {
+    public static boolean jsonEquals(final String json1, final String json2)
+            throws JsonProcessingException, IOException {
 
         Boolean equals;
 
