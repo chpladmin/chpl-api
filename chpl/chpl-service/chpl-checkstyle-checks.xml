@@ -143,7 +143,9 @@
         <module name="AvoidInlineConditionals" />
         <module name="EmptyStatement" />
         <module name="EqualsHashCode" />
-        <module name="HiddenField" />
+        <module name="HiddenField">
+            <property name="ignoreSetter" value="true" />
+        </module>
         <module name="IllegalInstantiation" />
         <module name="InnerAssignment" />
         <module name="MagicNumber" />
