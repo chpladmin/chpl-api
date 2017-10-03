@@ -199,7 +199,7 @@ public class UserManagementController {
             jwtToken = authenticator.getJWT(updatedUser);
         }
 
-        String jwtJSON = " {\"token\": \"" + jwtToken + "\"}";
+        String jwtJSON = "{\"token\": \"" + jwtToken + "\"}";
         return jwtJSON;
     }
 
@@ -307,7 +307,7 @@ public class UserManagementController {
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, toDelete.getId(), activityDescription,
                 toDelete, null);
 
-        return " {\"deletedUser\" : true }";
+        return "{\"deletedUser\" : true}";
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
@@ -343,7 +343,7 @@ public class UserManagementController {
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user,
                 updated);
 
-        return " {\"roleAdded\" : true }";
+        return "{\"roleAdded\" : true}";
 
     }
 
@@ -395,7 +395,7 @@ public class UserManagementController {
                 updated);
 
         isSuccess = String.valueOf(true);
-        return " {\"roleRemoved\" : " + isSuccess + " }";
+        return "{\"roleRemoved\" : " + isSuccess + "}";
 
     }
 

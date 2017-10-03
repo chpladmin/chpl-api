@@ -316,7 +316,7 @@ public class CertifiedProductController {
             AccessDeniedException, ObjectMissingValidationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.deletePendingCertifiedProduct(acbs, id);
-        return " {\"success\" : true }";
+        return "{\"success\" : true}";
     }
 
     @ApiOperation(value = "Reject several pending certified products.",
@@ -344,7 +344,7 @@ public class CertifiedProductController {
         if (possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
             throw possibleExceptions;
         }
-        return " {\"success\" : true }";
+        return "{\"success\" : true}";
     }
 
     @ApiOperation(value = "Confirm a pending certified product.",

@@ -328,7 +328,7 @@ public class CorrectiveActionPlanController {
                 "Documentation was added to a corrective action plan for certified product "
                         + cpSearchDetails.getChplProductNumber(),
                 before, after);
-        return " {\"success\": \"true\"}";
+        return "{\"success\": \"true\"}";
     }
 
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods. <br/>Create a new corrective action plan.",
@@ -443,7 +443,7 @@ public class CorrectiveActionPlanController {
                         + " was deleted.",
                 before, null);
 
-        return " {\"deleted\" : true }";
+        return "{\"deleted\" : true}";
     }
 
     @ApiOperation(
@@ -486,7 +486,7 @@ public class CorrectiveActionPlanController {
                         + cpSearchDetails.getChplProductNumber(),
                 before, after);
 
-        return " {\"deleted\" : true }";
+        return "{\"deleted\" : true}";
     }
 
     private List<String> validateCAP(CorrectiveActionPlanDetails cap) {

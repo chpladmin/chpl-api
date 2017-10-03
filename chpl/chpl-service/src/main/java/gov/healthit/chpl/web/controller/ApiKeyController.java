@@ -71,7 +71,7 @@ public class ApiKeyController {
 
         sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
 
-        return " {\"keyRegistered\" : \"" + apiKey + "\" }";
+        return "{\"keyRegistered\" : \"" + apiKey + "\"}";
     }
 
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
@@ -85,7 +85,7 @@ public class ApiKeyController {
             throw new Exception("A user can not delete their own API key.");
         }
         apiKeyManager.deleteKey(keyToRevoke);
-        return " {\"keyRevoked\" : \"" + keyToRevoke + "\" }";
+        return "{\"keyRevoked\" : \"" + keyToRevoke + "\"}";
 
     }
 

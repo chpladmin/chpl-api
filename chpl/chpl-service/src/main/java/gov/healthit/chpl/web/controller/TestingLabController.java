@@ -175,7 +175,7 @@ public class TestingLabController {
 
         TestingLabDTO toDelete = atlManager.getById(atlId);
         atlManager.delete(toDelete);
-        return " {\"deletedAtl\" : true }";
+        return "{\"deletedAtl\" : true}";
 
     }
 
@@ -189,7 +189,7 @@ public class TestingLabController {
 
         TestingLabDTO toResurrect = atlManager.getById(atlId, true);
         atlManager.undelete(toResurrect);
-        return " {\"resurrectedAtl\" : true }";
+        return "{\"resurrectedAtl\" : true}";
 
     }
 
@@ -219,14 +219,14 @@ public class TestingLabController {
 
         Permission permission = ChplPermission.toPermission(updateRequest.getAuthority());
         atlManager.addPermission(atl, updateRequest.getUserId(), permission);
-        return " {\"userAdded\" : true }";
+        return "{\"userAdded\" : true}";
     }
 
     @ApiOperation(value = "Remove user permissions from an ATL.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL_ADMIN and have administrative authority on the "
                     + " specified ATL. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ATL.")
-    @RequestMapping(value = " {atlId}/remove_user/ {userId}", method = RequestMethod.POST,
+    @RequestMapping(value = "{atlId}/remove_user/ {userId}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable Long atlId, @PathVariable Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
@@ -241,7 +241,7 @@ public class TestingLabController {
         // delete all permissions on that atl
         atlManager.deleteAllPermissionsOnAtl(atl, new PrincipalSid(user.getSubjectName()));
 
-        return " {\"userDeleted\" : true }";
+        return "{\"userDeleted\" : true}";
     }
 
     @ApiOperation(value = "List users with permissions on a specified ATL.",

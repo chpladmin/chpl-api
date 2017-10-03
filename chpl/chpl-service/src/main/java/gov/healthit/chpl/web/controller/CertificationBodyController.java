@@ -165,7 +165,7 @@ public class CertificationBodyController {
 
         CertificationBodyDTO toDelete = acbManager.getById(acbId);
         acbManager.delete(toDelete);
-        return " {\"deletedAcb\" : true }";
+        return "{\"deletedAcb\" : true}";
     }
 
     @ApiOperation(value = "Restore a deleted ACB.",
@@ -178,7 +178,7 @@ public class CertificationBodyController {
 
         CertificationBodyDTO toResurrect = acbManager.getById(acbId, true);
         acbManager.undelete(toResurrect);
-        return " {\"resurrectedAcb\" : true }";
+        return "{\"resurrectedAcb\" : true}";
     }
 
     @ApiOperation(value = "Add a user to an ACB.",
@@ -207,14 +207,14 @@ public class CertificationBodyController {
 
         Permission permission = ChplPermission.toPermission(updateRequest.getAuthority());
         acbManager.addPermission(acb, updateRequest.getUserId(), permission);
-        return " {\"userAdded\" : true }";
+        return "{\"userAdded\" : true}";
     }
 
     @ApiOperation(value = "Remove user permissions from an ACB.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the "
                     + " specified ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ACB.")
-    @RequestMapping(value = " {acbId}/remove_user/ {userId}", method = RequestMethod.POST,
+    @RequestMapping(value = "{acbId}/remove_user/ {userId}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable Long acbId, @PathVariable Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
@@ -229,7 +229,7 @@ public class CertificationBodyController {
         // delete all permissions on that acb
         acbManager.deleteAllPermissionsOnAcb(acb, new PrincipalSid(user.getSubjectName()));
 
-        return " {\"userDeleted\" : true }";
+        return "{\"userDeleted\" : true}";
     }
 
     @ApiOperation(value = "List users with permissions on a specified ACB.",

@@ -130,6 +130,6 @@ public class AnnouncementController {
 
         AnnouncementDTO toDelete = announcementManager.getById(announcementId, false);
         announcementManager.delete(toDelete);
-        return " {\"deletedAnnouncement\" : true }";
+        return "{\"deletedAnnouncement\" : true}";
     }
 }

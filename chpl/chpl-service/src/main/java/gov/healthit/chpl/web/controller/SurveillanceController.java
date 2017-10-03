@@ -269,7 +269,7 @@ public class SurveillanceController implements MessageSourceAware {
                 beforeCp.getId(), "Documentation " + toInsert.getFileName()
                         + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
-        return " {\"success\": \"true\"}";
+        return "{\"success\": \"true\"}";
     }
 
     @ApiOperation(value = "Update a surveillance activity for a certified product.",
@@ -374,7 +374,7 @@ public class SurveillanceController implements MessageSourceAware {
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
 
-        return new ResponseEntity<String>(" {\"success\" : true }", responseHeaders, HttpStatus.OK);
+        return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }
 
     @ApiOperation(value = "Remove documentation from a nonconformity.",
@@ -412,7 +412,7 @@ public class SurveillanceController implements MessageSourceAware {
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(),
                 "A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp);
-        return " {\"success\": \"true\"}";
+        return "{\"success\": \"true\"}";
     }
 
     @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
@@ -423,7 +423,7 @@ public class SurveillanceController implements MessageSourceAware {
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         survManager.deletePendingSurveillance(acbs, id, false);
-        return " {\"success\" : true }";
+        return "{\"success\" : true}";
     }
 
     @ApiOperation(value = "Reject several pending surveillance.",
@@ -451,7 +451,7 @@ public class SurveillanceController implements MessageSourceAware {
         if (possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
             throw possibleExceptions;
         }
-        return " {\"success\" : true }";
+        return "{\"success\" : true}";
     }
 
     @ApiOperation(value = "Confirm a pending surveillance activity.",
