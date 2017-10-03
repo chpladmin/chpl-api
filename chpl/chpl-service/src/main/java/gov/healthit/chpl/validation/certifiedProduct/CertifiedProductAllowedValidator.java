@@ -33,7 +33,7 @@ public class CertifiedProductAllowedValidator implements CertifiedProductValidat
             // validate that these pieces match up with data
             String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
             if (StringUtils.isEmpty(productCode)
-                    || !productCode.matches("^[a-zA-Z0-9_] {" + CertifiedProductDTO.PRODUCT_CODE_LENGTH + "}$")) {
+                    || !productCode.matches("^[a-zA-Z0-9_]{" + CertifiedProductDTO.PRODUCT_CODE_LENGTH + "}$")) {
                 return false;
             }
         }
@@ -48,7 +48,7 @@ public class CertifiedProductAllowedValidator implements CertifiedProductValidat
             // validate that these pieces match up with data
             String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
             if (StringUtils.isEmpty(versionCode)
-                    || !versionCode.matches("^[a-zA-Z0-9_] {" + CertifiedProductDTO.VERSION_CODE_LENGTH + "}$")) {
+                    || !versionCode.matches("^[a-zA-Z0-9_]{" + CertifiedProductDTO.VERSION_CODE_LENGTH + "}$")) {
                 return false;
             }
         }
@@ -62,7 +62,7 @@ public class CertifiedProductAllowedValidator implements CertifiedProductValidat
             // validate that these pieces match up with data
             String icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
             if (StringUtils.isEmpty(icsCode)
-                    || !icsCode.matches("^[0-9] {" + CertifiedProductDTO.ICS_CODE_LENGTH + "}$")) {
+                    || !icsCode.matches("^[0-9]{" + CertifiedProductDTO.ICS_CODE_LENGTH + "}$")) {
                 return false;
             }
         }
@@ -89,7 +89,7 @@ public class CertifiedProductAllowedValidator implements CertifiedProductValidat
             // validate that these pieces match up with data
             String icsCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
             if (StringUtils.isEmpty(icsCode)
-                    || !icsCode.matches("^[0-9] {" + CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH + "}$")) {
+                    || !icsCode.matches("^[0-9]{" + CertifiedProductDTO.CERTIFIED_DATE_CODE_LENGTH + "}$")) {
                 return false;
             }
         }
