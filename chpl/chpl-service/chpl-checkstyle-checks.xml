@@ -64,12 +64,22 @@
         <!-- Checks for Javadoc comments. -->
         <!-- See http://checkstyle.sf.net/config_javadoc.html -->
         <module name="JavadocMethod">
+            <property name="severity" value="warning"/>
             <property name="scope" value="public" />
             <property name="allowMissingPropertyJavadoc" value="true" />
         </module>
-        <module name="JavadocType" />
-        <module name="JavadocVariable" />
-        <module name="JavadocStyle" />
+        <module name="JavadocType">
+            <property name="severity" value="warning"/>
+            <property name="scope" value="public" />
+        </module>
+        <module name="JavadocVariable">
+            <property name="severity" value="warning"/>
+            <property name="scope" value="public" />
+        </module>
+        <module name="JavadocStyle">
+            <property name="severity" value="warning"/>
+            <property name="scope" value="public" />
+        </module>
 
         <!-- Checks for Naming Conventions. -->
         <!-- See http://checkstyle.sf.net/config_naming.html -->

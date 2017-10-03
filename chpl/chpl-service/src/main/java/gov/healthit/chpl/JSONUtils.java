@@ -10,16 +10,16 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class JSONUtils {
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final ObjectReader reader = mapper.reader();
-    private static final ObjectWriter writer = mapper.writer();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectReader READER = MAPPER.reader();
+    private static final ObjectWriter WRITER = MAPPER.writer();
 
     public static ObjectReader getReader() {
-        return reader;
+        return READER;
     }
 
     public static ObjectWriter getWriter() {
-        return writer;
+        return WRITER;
     }
 
     public static String toJSON(Object obj) throws JsonProcessingException {
