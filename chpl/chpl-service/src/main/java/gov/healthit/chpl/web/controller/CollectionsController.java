@@ -44,7 +44,7 @@ public class CollectionsController {
 
     @ApiOperation(value = "Get basic data about all certified products in the system.", notes = "")
     @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody String getAllCertifiedProducts(
             @RequestParam(value = "fields", required = false) String delimitedFieldNames)
             throws JsonProcessingException {
@@ -142,7 +142,7 @@ public class CollectionsController {
 
     @ApiOperation(value = "Get a list of all developers with transparency attestation URLs" + "and ACB attestations.",
             notes = "")
-    @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperTransparency> getDeveloperCollection() {
         List<DeveloperTransparency> developerResults = developerManager.getDeveloperCollection();
         return developerResults;

@@ -50,7 +50,7 @@ public class ApiKeyController {
                     + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
                     + " named 'api_key'.")
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
             AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
@@ -76,7 +76,7 @@ public class ApiKeyController {
 
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/revoke", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String revoke(@RequestBody ApiKey key, @RequestHeader(value = "API-Key", required = false) String userApiKey,
             @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
 
@@ -91,7 +91,7 @@ public class ApiKeyController {
 
     @ApiOperation(value = "List all API keys that have been created.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKey> listKeys() {
 
         List<ApiKey> keys = new ArrayList<ApiKey>();
@@ -111,7 +111,7 @@ public class ApiKeyController {
     @ApiOperation(value = "View the calls made per API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivity(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @RequestParam(value = "filter", required = false) String apiKeyFilter,
@@ -139,7 +139,7 @@ public class ApiKeyController {
     @ApiOperation(value = "View the calls made by a specific API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity/ {apiKey}", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset = utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") String apiKey,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {

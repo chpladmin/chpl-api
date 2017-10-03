@@ -46,7 +46,7 @@ public class NotificationController {
 
     @ApiOperation(
             value = "Get the list of all recipients and their associated subscriptions that are applicable to the currently logged in user")
-    @RequestMapping(value = "/recipients", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/recipients", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody NotificationRecipientResults getAllRecipientsWithSubscriptions() {
         List<RecipientWithSubscriptionsDTO> foundSubs = notificationManager.getAll();
 
@@ -63,7 +63,7 @@ public class NotificationController {
 
     @ApiOperation(value = "Update the email address and associated subscriptions of the recipient specified.")
     @RequestMapping(value = "/recipients/ {recipientId}/update", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Recipient updateRecipient(@PathVariable("recipientId") Long recipientId,
             @RequestBody Recipient updatedRecipient) throws InvalidArgumentsException, EntityRetrievalException {
         if (recipientId.longValue() != updatedRecipient.getId().longValue()) {
@@ -148,7 +148,7 @@ public class NotificationController {
     @ApiOperation(
             value = "Creates a new recipient with any subscriptions included in the request body. At least 1 subscription is required.")
     @RequestMapping(value = "/recipients/create", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Recipient createRecipient(@RequestBody Recipient recipientToAdd)
             throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException {
         if (recipientToAdd.getSubscriptions() == null || recipientToAdd.getSubscriptions().size() == 0) {
@@ -202,7 +202,7 @@ public class NotificationController {
 
     @ApiOperation(value = "Remove subscription(s) for a recipient.")
     @RequestMapping(value = "/recipients/ {recipientId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody void deleteRecipient(@PathVariable("recipientId") Long recipientId)
             throws EntityRetrievalException, InvalidArgumentsException {
         try {

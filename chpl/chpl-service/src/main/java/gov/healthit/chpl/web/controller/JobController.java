@@ -32,7 +32,7 @@ public class JobController {
 
     @ApiOperation(value = "Get the list of all jobs currently running in the system and those"
             + "that have completed within a configurable amount of time (usually a short window like the last 7 days).")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody JobResults getAllJobs() {
         List<JobDTO> jobDtos = jobManager.getAllJobs();
 

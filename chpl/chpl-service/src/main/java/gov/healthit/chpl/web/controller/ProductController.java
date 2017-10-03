@@ -56,7 +56,7 @@ public class ProductController {
 
     @ApiOperation(value = "List all products",
             notes = "Either list all products or optionally just all products belonging to a specific developer.")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) Long developerId) {
 
         List<ProductDTO> productList = null;
@@ -81,7 +81,7 @@ public class ProductController {
     }
 
     @ApiOperation(value = "Get information about a specific product.", notes = "")
-    @RequestMapping(value = "/ {productId}", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/ {productId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody Product getProductById(@PathVariable("productId") Long productId)
             throws EntityRetrievalException {
         ProductDTO product = productManager.getById(productId);
@@ -95,7 +95,7 @@ public class ProductController {
 
     @ApiOperation(value = "Get all listings owned by the specified product.", notes = "")
     @RequestMapping(value = "/ {productId}/listings", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") Long productId)
             throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(productId);
@@ -115,7 +115,7 @@ public class ProductController {
                     + " old products are then deleted. "
                     + " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(@RequestBody(required = true) UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException {
@@ -214,7 +214,7 @@ public class ProductController {
             value = "Split a product - some versions stay with the existing product and some versions are moved to a new product.",
             notes = "The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
     @RequestMapping(value = "/ {productId}/split", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset = utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") Long productId,
             @RequestBody(required = true) SplitProductsRequest splitRequest) throws EntityCreationException,
             EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {

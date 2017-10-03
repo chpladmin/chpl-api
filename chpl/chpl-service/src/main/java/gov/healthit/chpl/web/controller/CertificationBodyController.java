@@ -59,7 +59,7 @@ public class CertificationBodyController {
             notes = "Setting the 'editable' parameter to true will return all ACBs that the logged in user has edit permissions on."
                     + "Setting 'showDeleted' to true will include even those ACBs that have been deleted. The logged in user must have ROLE_ADMIN "
                     + "to see deleted ACBs. The default behavior of this service is to list all of the ACBs in the system that are not deleted.")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") boolean editable,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
@@ -87,7 +87,7 @@ public class CertificationBodyController {
     @ApiOperation(value = "Get details about a specific certification body (ACB).",
             notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " for the ACB with the provided ID.")
-    @RequestMapping(value = "/ {acbId}", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/ {acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") Long acbId)
             throws EntityRetrievalException {
         CertificationBodyDTO acb = acbManager.getById(acbId);
@@ -97,7 +97,7 @@ public class CertificationBodyController {
 
     @ApiOperation(value = "Create a new ACB.", notes = "The logged in user must have ROLE_ADMIN to create a new ACB.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException,
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
         CertificationBodyDTO toCreate = new CertificationBodyDTO();
@@ -128,7 +128,7 @@ public class CertificationBodyController {
             notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN "
                     + " to update an existing ACB.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         CertificationBodyDTO toUpdate = new CertificationBodyDTO();
@@ -159,7 +159,7 @@ public class CertificationBodyController {
 
     @ApiOperation(value = "Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/ {acbId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String deleteAcb(@PathVariable("acbId") Long acbId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
@@ -172,7 +172,7 @@ public class CertificationBodyController {
             notes = "ACBs are unique in the CHPL in that they can be restored after a delete."
                     + " The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/ {acbId}/undelete", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String undeleteAcb(@PathVariable("acbId") Long acbId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
@@ -189,7 +189,7 @@ public class CertificationBodyController {
                     + " equivalent of assigning the ROLE_ACB_ADMIN role. Please view /users/grant_role "
                     + " request for more information on that.")
     @RequestMapping(value = "/add_user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String addUserToAcb(@RequestBody UpdateUserAndAcbRequest updateRequest)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -215,7 +215,7 @@ public class CertificationBodyController {
                     + " specified ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ACB.")
     @RequestMapping(value = " {acbId}/remove_user/ {userId}", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset = utf-8")
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable Long acbId, @PathVariable Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {
 
@@ -236,7 +236,7 @@ public class CertificationBodyController {
             notes = "The logged in user must have ROLE_ADMIN or have administrative or read authority on the "
                     + " specified ACB.")
     @RequestMapping(value = "/ {acbId}/users", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody PermittedUserResults getUsers(@PathVariable("acbId") Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
         CertificationBodyDTO acb = acbManager.getById(acbId);

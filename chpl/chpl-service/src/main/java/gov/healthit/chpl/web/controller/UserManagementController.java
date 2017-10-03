@@ -89,7 +89,7 @@ public class UserManagementController {
                     + "confirms that their email address is valid. The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
             MessagingException, JsonProcessingException, EntityCreationException {
@@ -138,7 +138,7 @@ public class UserManagementController {
                     + "the credentials they selected. " + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/confirm", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public User confirmUser(@RequestBody String hash) throws InvalidArgumentsException, UserRetrievalException,
             EntityRetrievalException, MessagingException, JsonProcessingException, EntityCreationException {
         InvitationDTO invitation = invitationManager.getByConfirmationHash(hash);
@@ -162,7 +162,7 @@ public class UserManagementController {
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/authorize", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
         if (StringUtils.isEmpty(credentials.getHash())) {
@@ -211,7 +211,7 @@ public class UserManagementController {
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public UserInvitation inviteUser(@RequestBody UserInvitation invitation)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
             UserPermissionRetrievalException, AddressException, MessagingException {
@@ -260,7 +260,7 @@ public class UserManagementController {
 
     @ApiOperation(value = "Modify user information.", notes = "")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException {
@@ -283,7 +283,7 @@ public class UserManagementController {
             notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
                     + "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/ {userId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String deleteUser(@PathVariable("userId") Long userId)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
             JsonProcessingException, EntityCreationException, EntityRetrievalException {
@@ -314,7 +314,7 @@ public class UserManagementController {
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
                     + "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/grant_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
             UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException {
@@ -351,7 +351,7 @@ public class UserManagementController {
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
                     + "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/revoke_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
             UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException {
@@ -400,7 +400,7 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "View users of the system.", notes = "Only ROLE_ADMIN will be able to see all users.")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody UserListJSONObject getUsers() {
 
         List<UserDTO> userList = userManager.getAll();
@@ -427,7 +427,7 @@ public class UserManagementController {
             notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB_ADMIN.")
     @RequestMapping(value = "/ {userName}/details", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody UserInfoJSONObject getUser(@PathVariable("userName") String userName)
             throws UserRetrievalException {
 

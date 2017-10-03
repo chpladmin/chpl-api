@@ -277,7 +277,7 @@ public class SearchViewController {
                     required = false, dataType = "boolean", paramType = "query")
     })
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
-            "application/json; charset = utf-8", "application/xml"
+            "application/json; charset=utf-8", "application/xml"
     })
     public @ResponseBody SearchResponse simpleSearch(
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
@@ -574,7 +574,7 @@ public class SearchViewController {
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchResponse advancedSearch(@RequestBody SearchRequest searchFilters)
             throws InvalidArgumentsException {
         // check date params for format
@@ -611,7 +611,7 @@ public class SearchViewController {
     })
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getJobTypes() {
         return searchMenuManager.getJobTypes();
     }
@@ -621,7 +621,7 @@ public class SearchViewController {
     })
     @ApiOperation(value = "Get all possible types of notifications that a user can sign up for.")
     @RequestMapping(value = "/data/notification_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<NotificationType> getNotificationTypes() {
         return searchMenuManager.getNotificationTypes();
     }
@@ -629,7 +629,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible classifications in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/classification_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getClassificationNames() {
         return searchMenuManager.getClassificationNames();
     }
@@ -637,7 +637,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible certificaiton editions in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_editions", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getEditionNames() {
         return searchMenuManager.getEditionNames(false);
     }
@@ -645,7 +645,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible certification statuses in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_statuses", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getCertificationStatuses() {
         return searchMenuManager.getCertificationStatuses();
     }
@@ -653,7 +653,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible practice types in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/practice_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
         return searchMenuManager.getPracticeTypeNames();
     }
@@ -661,7 +661,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible product names in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/products", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
         return searchMenuManager.getProductNames();
     }
@@ -669,7 +669,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible developer names in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/developers", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
         return searchMenuManager.getDeveloperNames();
     }
@@ -677,7 +677,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible ACBs in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/certification_bodies", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody Set<KeyValueModel> getCertBodyNames() {
         return searchMenuManager.getCertBodyNames(false);
     }
@@ -685,7 +685,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible education types in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/education_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getEducationTypes() {
         Set<KeyValueModel> data = searchMenuManager.getEducationTypes();
         SearchOption result = new SearchOption();
@@ -697,7 +697,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test participant age ranges in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/age_ranges", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getAgeRanges() {
         Set<KeyValueModel> data = searchMenuManager.getAgeRanges();
         SearchOption result = new SearchOption();
@@ -709,7 +709,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test functionality options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_functionality", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestFunctionality() {
         Set<TestFunctionality> data = searchMenuManager.getTestFunctionality();
         SearchOption result = new SearchOption();
@@ -721,7 +721,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test tool options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_tools", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestTools() {
         Set<KeyValueModel> data = searchMenuManager.getTestTools();
         SearchOption result = new SearchOption();
@@ -733,7 +733,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible test standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_standards", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTestStandards() {
         Set<TestStandard> data = searchMenuManager.getTestStandards();
         SearchOption result = new SearchOption();
@@ -745,7 +745,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible qms standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/qms_standards", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getQmsStandards() {
         Set<KeyValueModel> data = searchMenuManager.getQmsStandards();
         SearchOption result = new SearchOption();
@@ -757,7 +757,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible targeted user options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/targeted_users", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getTargetedUsers() {
         Set<KeyValueModel> data = searchMenuManager.getTargetedUesrs();
         SearchOption result = new SearchOption();
@@ -769,7 +769,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible UCD process options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/ucd_processes", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getUcdProcesses() {
         Set<KeyValueModel> data = searchMenuManager.getUcdProcesses();
         SearchOption result = new SearchOption();
@@ -781,7 +781,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible accessibility standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/accessibility_standards", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getAccessibilityStandards() {
         Set<KeyValueModel> data = searchMenuManager.getAccessibilityStandards();
         SearchOption result = new SearchOption();
@@ -793,7 +793,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all possible macra measure options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/macra_measures", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getMacraMeasures() {
         Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getMacraMeasures();
         SearchOption result = new SearchOption();
@@ -804,7 +804,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible developer status options in the CHPL")
     @RequestMapping(value = "/data/developer_statuses", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getDeveloperStatuses() {
         Set<KeyValueModel> data = searchMenuManager.getDeveloperStatuses();
         SearchOption result = new SearchOption();
@@ -815,7 +815,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getSurveillanceTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceTypes();
         SearchOption result = new SearchOption();
@@ -826,7 +826,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance result type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_result_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getSurveillanceResultTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceResultTypes();
         SearchOption result = new SearchOption();
@@ -837,7 +837,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance requirement type options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirement_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
         Set<KeyValueModel> data = searchMenuManager.getSurveillanceRequirementTypes();
         SearchOption result = new SearchOption();
@@ -848,7 +848,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible surveillance requirement options in the CHPL")
     @RequestMapping(value = "/data/surveillance_requirements", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
         SurveillanceRequirementOptions data = searchMenuManager.getSurveillanceRequirementOptions();
         return data;
@@ -856,7 +856,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible nonconformity status type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_status_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getNonconformityStatusTypes() {
         Set<KeyValueModel> data = searchMenuManager.getNonconformityStatusTypes();
         SearchOption result = new SearchOption();
@@ -867,7 +867,7 @@ public class SearchViewController {
 
     @ApiOperation(value = "Get all possible nonconformity type options in the CHPL")
     @RequestMapping(value = "/data/nonconformity_types", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SearchOption getNonconformityTypeOptions() {
         Set<KeyValueModel> data = searchMenuManager.getNonconformityTypeOptions();
         SearchOption result = new SearchOption();
@@ -879,7 +879,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all search options in the CHPL",
             notes = "This returns all of the other /data/ {something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody PopulateSearchOptions getPopulateSearchData(
             @RequestParam(value = "simple", required = false) Boolean simple,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") Boolean showDeleted)
@@ -905,7 +905,7 @@ public class SearchViewController {
     @ApiOperation(value = "Get all developer decertifications in the CHPL",
             notes = "This returns all decertified developers.")
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
         DecertifiedDeveloperResults ddr = developerManager.getDecertifiedDevelopers();
         return ddr;

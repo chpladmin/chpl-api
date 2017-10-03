@@ -107,7 +107,7 @@ public class CertifiedProductController {
                     + " certified products that the logged in user has permission to edit as "
                     + " determined by ACB roles and authorities. Not all information about "
                     + " every certified product is returned. Call the /details service for more information.")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
             @RequestParam(required = false) Long versionId,
             @RequestParam(required = false, defaultValue = "false") boolean editable) throws EntityRetrievalException {
@@ -140,7 +140,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/ {certifiedProductId}/details", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
@@ -155,7 +155,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
             notes = "Returns all member of the family tree conected to the specified certified product.")
     @RequestMapping(value = "/ {certifiedProductId}/ics_relationships", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
@@ -169,7 +169,7 @@ public class CertifiedProductController {
                     + " authority on the ACB that certified the product. If a different ACB is passed in"
                     + " as part of the request, an ownership change will take place and the logged in "
                     + " user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest) throws EntityCreationException,
             EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, ValidationException {
@@ -265,7 +265,7 @@ public class CertifiedProductController {
     @ApiOperation(value = "List pending certified products.",
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and approved by an appropriate ACB administrator.")
-    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         List<PendingCertifiedProductDTO> allProductDtos = new ArrayList<PendingCertifiedProductDTO>();
@@ -297,7 +297,7 @@ public class CertifiedProductController {
 
     @ApiOperation(value = "List a specific pending certified product.", notes = "")
     @RequestMapping(value = "/pending/ {pcpId}", method = RequestMethod.GET,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
             @PathVariable("pcpId") Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
@@ -310,7 +310,7 @@ public class CertifiedProductController {
             notes = "Essentially deletes a pending certified product. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/ {pcpId}/reject", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
@@ -323,7 +323,7 @@ public class CertifiedProductController {
             notes = "Marks a list of pending certified products as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
@@ -355,7 +355,7 @@ public class CertifiedProductController {
                     + " product will be removed. ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
@@ -392,7 +392,7 @@ public class CertifiedProductController {
             notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
                     + " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
     @RequestMapping(value = "/meaningful_use_users/upload", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     @Deprecated
     public @ResponseBody ResponseEntity<Job> uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file)
             throws EntityCreationException, EntityRetrievalException, ValidationException,
@@ -404,7 +404,7 @@ public class CertifiedProductController {
             notes = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB(s) specified in the file.")
-    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (file.isEmpty()) {

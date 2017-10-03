@@ -103,7 +103,7 @@ public class SurveillanceController implements MessageSourceAware {
     private SurveillanceValidator survValidator;
 
     @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
-    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
@@ -171,7 +171,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "request body. The surveillance passed into this request will first be validated "
                     + " to check for errors. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB associated with the certified product is required.")
-    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> createSurveillance(
             @RequestBody(required = true) Surveillance survToInsert) throws ValidationException,
             EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
@@ -232,7 +232,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/ {surveillanceId}/nonconformity/ {nonconformityId}/document/create",
-            method = RequestMethod.POST, produces = "application/json; charset = utf-8")
+            method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
             @PathVariable("nonconformityId") Long nonconformityId, @RequestParam("file") MultipartFile file)
             throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
@@ -277,7 +277,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "in the system. The surveillance passed into this request will first be validated "
                     + " to check for errors. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB associated with the certified product is required.")
-    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> updateSurveillance(
             @RequestBody(required = true) Surveillance survToUpdate)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
@@ -330,7 +330,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "in the system. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/ {surveillanceId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
             @PathVariable(value = "surveillanceId") Long surveillanceId)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
@@ -381,7 +381,7 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/ {surveillanceId}/document/ {docId}/delete", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public String deleteNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
             @PathVariable("docId") Long docId) throws JsonProcessingException, EntityCreationException,
             EntityRetrievalException, InvalidArgumentsException {
@@ -417,7 +417,7 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
     @RequestMapping(value = "/pending/ {pendingSurvId}/reject", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
@@ -430,7 +430,7 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "Marks a list of pending surveillance as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB for each pending surveillance is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody String deletePendingSurveillance(@RequestBody IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
@@ -465,7 +465,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
-            produces = "application/json; charset = utf-8")
+            produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
             @RequestBody(required = true) Surveillance survToInsert)
             throws ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException,
@@ -616,7 +616,7 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
                     + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB(s) responsible for the product(s) in the file.")
-    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset = utf-8")
+    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (file.isEmpty()) {
