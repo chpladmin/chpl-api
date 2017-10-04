@@ -33,7 +33,7 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProductUploadHandler {

@@ -1,42 +1,37 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
-@Table(name = "pending_certified_product_targeted_user")
-public class PendingCertifiedProductTargetedUserEntity {
+@Table(name = "pending_certification_result_test_data")
+public class PendingCertificationResultTestDataEntity {
+
+    @Transient
+    private boolean hasAlteration;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "pending_certified_product_targeted_user_id", nullable = false)
+    @Column(name = "pending_certification_result_test_data_id", nullable = false)
     private Long id;
 
-    @Basic(optional = true)
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false,
-            updatable = false)
-    private PendingCertifiedProductEntity mappedProduct;
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long pendingCertificationResultId;
 
-    @Column(name = "pending_certified_product_id")
-    private Long pendingCertifiedProductId;
+    @Column(name = "version")
+    private String version;
 
-    @Column(name = "targeted_user_id")
-    private Long targetedUserId;
-
-    @Column(name = "targeted_user_name")
-    private String name;
+    @Column(name = "alteration")
+    private String alteration;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -60,14 +55,6 @@ public class PendingCertifiedProductTargetedUserEntity {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 
     public Date getLastModifiedDate() {
@@ -102,28 +89,35 @@ public class PendingCertifiedProductTargetedUserEntity {
         this.deleted = deleted;
     }
 
-    public PendingCertifiedProductEntity getMappedProduct() {
-        return mappedProduct;
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
     }
 
-    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
-        this.mappedProduct = mappedProduct;
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
-    public Long getPendingCertifiedProductId() {
-        return pendingCertifiedProductId;
+    public String getVersion() {
+        return version;
     }
 
-    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
-        this.pendingCertifiedProductId = pendingCertifiedProductId;
+    public void setVersion(final String version) {
+        this.version = version;
     }
 
-    public Long getTargetedUserId() {
-        return targetedUserId;
+    public String getAlteration() {
+        return alteration;
     }
 
-    public void setTargetedUserId(final Long targetedUserId) {
-        this.targetedUserId = targetedUserId;
+    public void setAlteration(final String alteration) {
+        this.alteration = alteration;
     }
 
+    public boolean isHasAlteration() {
+        return hasAlteration;
+    }
+
+    public void setHasAlteration(final boolean hasAlteration) {
+        this.hasAlteration = hasAlteration;
+    }
 }

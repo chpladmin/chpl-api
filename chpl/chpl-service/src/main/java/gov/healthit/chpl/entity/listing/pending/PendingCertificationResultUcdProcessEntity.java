@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -11,26 +11,26 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certification_result_test_tool")
-public class PendingCertificationResultTestToolEntity {
+@Table(name = "pending_certification_result_ucd_process")
+public class PendingCertificationResultUcdProcessEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_test_tool_id", nullable = false)
+    @Column(name = "pending_certification_result_ucd_process_id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
     @Column(name = "pending_certification_result_id", nullable = false)
     private Long pendingCertificationResultId;
 
-    @Column(name = "test_tool_id")
-    private Long testToolId;
+    @Column(name = "ucd_process_id")
+    private Long ucdProcessId;
 
-    @Column(name = "test_tool_name")
-    private String testToolName;
+    @Column(name = "ucd_process_name")
+    private String ucdProcessName;
 
-    @Column(name = "test_tool_version")
-    private String testToolVersion;
+    @Column(name = "ucd_process_details")
+    private String ucdProcessDetails;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -96,27 +96,28 @@ public class PendingCertificationResultTestToolEntity {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
-    public Long getTestToolId() {
-        return testToolId;
+    public Long getUcdProcessId() {
+        return ucdProcessId;
     }
 
-    public void setTestToolId(final Long testToolId) {
-        this.testToolId = testToolId;
+    public void setUcdProcessId(final Long ucdProcessId) {
+        this.ucdProcessId = ucdProcessId;
     }
 
-    public String getTestToolName() {
-        return testToolName;
+    public String getUcdProcessDetails() {
+        return ucdProcessDetails;
     }
 
-    public void setTestToolName(final String testToolName) {
-        this.testToolName = testToolName;
+    public void setUcdProcessDetails(final String ucdProcessDetails) {
+        this.ucdProcessDetails = ucdProcessDetails;
     }
 
-    public String getTestToolVersion() {
-        return testToolVersion;
+    public String getUcdProcessName() {
+        return ucdProcessName;
     }
 
-    public void setTestToolVersion(final String testToolVersion) {
-        this.testToolVersion = testToolVersion;
+    public void setUcdProcessName(final String ucdProcessName) {
+        this.ucdProcessName = ucdProcessName;
     }
+
 }

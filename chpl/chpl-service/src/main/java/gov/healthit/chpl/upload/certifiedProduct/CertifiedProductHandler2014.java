@@ -33,17 +33,17 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
-import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("certifiedProductHandler2014")

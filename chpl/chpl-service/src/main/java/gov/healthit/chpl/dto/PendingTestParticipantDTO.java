@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.PendingTestParticipantEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 
 public class PendingTestParticipantDTO implements Serializable {
     private static final long serialVersionUID = -1972103510475701834L;

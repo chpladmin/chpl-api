@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -14,13 +14,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certified_product_qms_standard")
-public class PendingCertifiedProductQmsStandardEntity {
+@Table(name = "pending_certified_product_accessibility_standard")
+public class PendingCertifiedProductAccessibilityStandardEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "pending_certified_product_qms_standard_id", nullable = false)
+    @Column(name = "pending_certified_product_accessibility_standard_id", nullable = false)
     private Long id;
 
     @Basic(optional = true)
@@ -32,17 +32,11 @@ public class PendingCertifiedProductQmsStandardEntity {
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
 
-    @Column(name = "qms_standard_id")
-    private Long qmsStandardId;
+    @Column(name = "accessibility_standard_id")
+    private Long accessibilityStandardId;
 
-    @Column(name = "qms_standard_name")
+    @Column(name = "accessibility_standard_name")
     private String name;
-
-    @Column(name = "modification")
-    private String modification;
-
-    @Column(name = "applicable_criteria")
-    private String applicableCriteria;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -68,36 +62,12 @@ public class PendingCertifiedProductQmsStandardEntity {
         this.id = id;
     }
 
-    public Long getQmsStandardId() {
-        return qmsStandardId;
-    }
-
-    public void setQmsStandardId(final Long qmsStandardId) {
-        this.qmsStandardId = qmsStandardId;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public String getModification() {
-        return modification;
-    }
-
-    public void setModification(final String modification) {
-        this.modification = modification;
-    }
-
-    public String getApplicableCriteria() {
-        return applicableCriteria;
-    }
-
-    public void setApplicableCriteria(final String applicableCriteria) {
-        this.applicableCriteria = applicableCriteria;
     }
 
     public Date getLastModifiedDate() {
@@ -148,4 +118,11 @@ public class PendingCertifiedProductQmsStandardEntity {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
+    public Long getAccessibilityStandardId() {
+        return accessibilityStandardId;
+    }
+
+    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
+        this.accessibilityStandardId = accessibilityStandardId;
+    }
 }

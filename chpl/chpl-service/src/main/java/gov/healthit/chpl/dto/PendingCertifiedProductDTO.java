@@ -21,6 +21,12 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
@@ -28,12 +34,6 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.entity.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
-import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 public class PendingCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 8778880570983282001L;

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +20,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
+
+import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.AttestationType;
 
 /**
  * Object mapping for hibernate-handled table: certified_product. A product that

@@ -7,8 +7,8 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("certifiedProductHandler")

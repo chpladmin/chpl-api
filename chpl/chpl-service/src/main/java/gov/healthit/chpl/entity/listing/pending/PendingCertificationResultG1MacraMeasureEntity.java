@@ -1,8 +1,6 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -12,39 +10,35 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.MacraMeasureEntity;
+
 @Entity
-@Table(name = "pending_certification_result_test_task")
-public class PendingCertificationResultTestTaskEntity {
+@Table(name = "pending_certification_result_g1_macra")
+public class PendingCertificationResultG1MacraMeasureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_test_task_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Basic(optional = false)
     @Column(name = "pending_certification_result_id", nullable = false)
     private Long pendingCertificationResultId;
 
-    @Basic(optional = false)
-    @Column(name = "pending_test_task_id", nullable = false)
-    private Long pendingTestTaskId;
+    @Column(name = "macra_id")
+    private Long macraId;
 
-    @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "pending_test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private PendingTestTaskEntity testTask;
+    @JoinColumn(name = "macra_id", insertable = false, updatable = false)
+    private MacraMeasureEntity macraMeasure;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultTestTaskId")
-    @Basic(optional = false)
-    @Column(name = "pending_certification_result_test_task_id", nullable = false)
-    private Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<PendingCertificationResultTestTaskParticipantEntity>();
+    @Column(name = "macra_value")
+    private String enteredValue;;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = false)
@@ -52,7 +46,7 @@ public class PendingCertificationResultTestTaskEntity {
     private Long lastModifiedUser;
 
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
     @Basic(optional = false)
@@ -107,27 +101,27 @@ public class PendingCertificationResultTestTaskEntity {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
-    public Long getPendingTestTaskId() {
-        return pendingTestTaskId;
+    public Long getMacraId() {
+        return macraId;
     }
 
-    public void setPendingTestTaskId(final Long pendingTestTaskId) {
-        this.pendingTestTaskId = pendingTestTaskId;
+    public void setMacraId(final Long macraId) {
+        this.macraId = macraId;
     }
 
-    public PendingTestTaskEntity getTestTask() {
-        return testTask;
+    public MacraMeasureEntity getMacraMeasure() {
+        return macraMeasure;
     }
 
-    public void setTestTask(final PendingTestTaskEntity testTask) {
-        this.testTask = testTask;
+    public void setMacraMeasure(final MacraMeasureEntity macraMeasure) {
+        this.macraMeasure = macraMeasure;
     }
 
-    public Set<PendingCertificationResultTestTaskParticipantEntity> getTestParticipants() {
-        return testParticipants;
+    public String getEnteredValue() {
+        return enteredValue;
     }
 
-    public void setTestParticipants(final Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants) {
-        this.testParticipants = testParticipants;
+    public void setEnteredValue(final String enteredValue) {
+        this.enteredValue = enteredValue;
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 
 import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 public interface CertifiedProductUploadHandler {

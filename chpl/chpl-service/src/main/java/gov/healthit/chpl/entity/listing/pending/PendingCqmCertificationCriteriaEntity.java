@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -13,30 +13,30 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
+
 @Entity
-@Table(name = "pending_certified_product_accessibility_standard")
-public class PendingCertifiedProductAccessibilityStandardEntity {
+@Table(name = "pending_cqm_certification_criteria")
+public class PendingCqmCertificationCriteriaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "pending_certified_product_accessibility_standard_id", nullable = false)
+    @Column(name = "pending_cqm_certification_criteria_id", nullable = false)
     private Long id;
+
+    @Basic(optional = false)
+    @Column(name = "pending_cqm_criterion_id", nullable = false)
+    private Long pendingCqmId;
+
+    @Basic(optional = false)
+    @Column(name = "certification_criterion_id", nullable = false)
+    private Long certificationId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false,
+    @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false,
             updatable = false)
-    private PendingCertifiedProductEntity mappedProduct;
-
-    @Column(name = "pending_certified_product_id")
-    private Long pendingCertifiedProductId;
-
-    @Column(name = "accessibility_standard_id")
-    private Long accessibilityStandardId;
-
-    @Column(name = "accessibility_standard_name")
-    private String name;
+    private CertificationCriterionEntity certificationCriteria;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -60,14 +60,6 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 
     public Date getLastModifiedDate() {
@@ -102,27 +94,27 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
         this.deleted = deleted;
     }
 
-    public PendingCertifiedProductEntity getMappedProduct() {
-        return mappedProduct;
+    public Long getPendingCqmId() {
+        return pendingCqmId;
     }
 
-    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
-        this.mappedProduct = mappedProduct;
+    public void setPendingCqmId(final Long pendingCqmId) {
+        this.pendingCqmId = pendingCqmId;
     }
 
-    public Long getPendingCertifiedProductId() {
-        return pendingCertifiedProductId;
+    public Long getCertificationId() {
+        return certificationId;
     }
 
-    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
-        this.pendingCertifiedProductId = pendingCertifiedProductId;
+    public void setCertificationId(final Long certificationId) {
+        this.certificationId = certificationId;
     }
 
-    public Long getAccessibilityStandardId() {
-        return accessibilityStandardId;
+    public CertificationCriterionEntity getCertificationCriteria() {
+        return certificationCriteria;
     }
 
-    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
-        this.accessibilityStandardId = accessibilityStandardId;
+    public void setCertificationCriteria(final CertificationCriterionEntity certificationCriteria) {
+        this.certificationCriteria = certificationCriteria;
     }
 }
