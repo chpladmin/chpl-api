@@ -28,6 +28,7 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
@@ -565,6 +566,61 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
 
+        //make sure the ICS boolean and presence of parents match
+        if (product.getIcs() != null) {
+            if(product.getIcs().booleanValue() == true && 
+                    (product.getIcsParents() == null || product.getIcsParents().size() == 0)) {
+                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                                                    new DefaultMessageSourceResolvable("listing.icsTrueAndNoParentsFound"),
+                                                    LocaleContextHolder.getLocale())));
+            } else if(product.getIcs().booleanValue() == false && product.getIcsParents() != null && 
+                    product.getIcsParents().size() > 0) {
+                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.icsFalseAndParentsFound"),
+                        LocaleContextHolder.getLocale())));
+            }
+        } else {
+            product.getErrorMessages().add(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("listing.missingIcs"),
+                    LocaleContextHolder.getLocale())));
+        }
+        
+        //if parents exist make sure they are valid
+        if(product.getIcsParents() != null && product.getIcsParents().size() > 0) {
+            // parents are non-empty - check inheritance rules
+            // certification edition must be the same as this listings
+            List<Long> parentIds = new ArrayList<Long>();
+            for (CertifiedProductDTO potentialParent : product.getIcsParents()) {
+                if(potentialParent.getId() == null) {
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.icsUniqueIdNotFound"),
+                            LocaleContextHolder.getLocale()), potentialParent.getChplProductNumber()));
+                } else if(potentialParent.getId().toString().equals(product.getId().toString())) {
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.icsSelfInheritance"),
+                            LocaleContextHolder.getLocale())));
+                }
+                parentIds.add(potentialParent.getId());
+            }
+            List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+            for (CertificationEditionDTO parentEdition : parentEditions) {
+                if (!product.getCertificationEdition().equals(parentEdition.getYear())) {
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.icsEditionMismatch"),
+                            LocaleContextHolder.getLocale()), parentEdition.getYear()));
+                }
+            }
+
+            // this listing's ICS code must be greater than the max of
+            // parent ICS codes
+            Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
+            if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
+                product.getErrorMessages().add(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.icsNotLargestCode"),
+                        LocaleContextHolder.getLocale()), icsCodeInteger, largestIcs));
+            }
+        }
+        
         if (product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
             product.getErrorMessages().add("QMS Standards are required.");
         } else {
@@ -1142,7 +1198,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
         super.validateDemographics(product);
 
         if (product.getIcs() == null || product.getIcs().getInherits() == null) {
-            product.getErrorMessages().add("ICS is required.");
+            product.getErrorMessages().add(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("listing.missingIcs"),
+                    LocaleContextHolder.getLocale())));
         } else if (product.getIcs().getInherits().equals(Boolean.TRUE) && icsCodeInteger.intValue() > 0) {
             // if ICS is nonzero, warn about providing parents
             if (product.getIcs() == null || product.getIcs().getParents() == null
@@ -1155,8 +1213,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 List<Long> parentIds = new ArrayList<Long>();
                 for (CertifiedProduct potentialParent : product.getIcs().getParents()) {
                     if (potentialParent.getId().toString().equals(product.getId().toString())) {
-                        product.getErrorMessages().add(
-                                "A parent listing was found with the same ID as this listing. A listing cannot inherit from itself.");
+                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable("listing.icsSelfInheritance"),
+                                LocaleContextHolder.getLocale())));
                     }
                     parentIds.add(potentialParent.getId());
                 }
@@ -1164,9 +1223,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 for (CertificationEditionDTO parentEdition : parentEditions) {
                     if (!product.getCertificationEdition().get("id").toString()
                             .equals(parentEdition.getId().toString())) {
-                        product.getErrorMessages()
-                                .add("A parent was found with certification edition '" + parentEdition.getYear()
-                                        + "'. Parent certification edition must match that of this listing.");
+                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable("listing.icsEditionMismatch"),
+                                LocaleContextHolder.getLocale()), parentEdition.getYear()));
                     }
                 }
 
@@ -1174,10 +1233,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 // parent ICS codes
                 Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
                 if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
-                    product.getErrorMessages()
-                            .add("The ICS Code for this listing was given as '" + icsCodeInteger
-                                    + "' but it was expected to be one more than the " + "largest inherited ICS code '"
-                                    + largestIcs + "'.");
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.icsNotLargestCode"),
+                            LocaleContextHolder.getLocale()), icsCodeInteger, largestIcs));
                 }
             }
         }

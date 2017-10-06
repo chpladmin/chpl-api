@@ -37,6 +37,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTo
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCertificationCriteriaEntity;
@@ -117,6 +118,23 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
                 String msg = String
                         .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"),
                                 LocaleContextHolder.getLocale()), targetedUser.getName());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+        }
+        
+        for (PendingCertifiedProductParentListingEntity parentListing : toCreate.getParentListings()) {
+            parentListing.setPendingCertifiedProductId(toCreate.getId());
+            parentListing.setLastModifiedDate(new Date());
+            parentListing.setLastModifiedUser(Util.getCurrentUser().getId());
+            parentListing.setCreationDate(new Date());
+            parentListing.setDeleted(false);
+            try {
+                entityManager.persist(parentListing);
+            } catch (Exception ex) {
+                String msg = String
+                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badIcsParentSave"),
+                                LocaleContextHolder.getLocale()), parentListing.getParentListingUniqueId());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }

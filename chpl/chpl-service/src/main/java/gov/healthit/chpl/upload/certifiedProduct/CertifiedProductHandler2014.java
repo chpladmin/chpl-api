@@ -1,8 +1,6 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
@@ -13,25 +11,13 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.dto.AddressDTO;
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.ContactDTO;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.PracticeTypeDTO;
-import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
-import gov.healthit.chpl.entity.AddressEntity;
-import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
@@ -44,13 +30,42 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdPro
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
+import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
+import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2014;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("certifiedProductHandler2014")
 public class CertifiedProductHandler2014 extends CertifiedProductHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2014.class);
-
+    private TemplateColumnIndexMap templateColumnIndexMap;
+    private String[] criteriaNames = {
+            "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)",
+            "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(9)", "170.314 (a)(10)",
+            "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)",
+            "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)",
+            "170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)(A)",
+            "170.314 (b)(5)(B)", "170.314 (b)(6)", "170.314 (b)(7)", "170.314 (b)(8)", "170.314 (b)(9)",
+            "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)", "170.314 (d)(1)", "170.314 (d)(2)",
+            "170.314 (d)(3)", "170.314 (d)(4)", "170.314 (d)(5)", "170.314 (d)(6)", "170.314 (d)(7)",
+            "170.314 (d)(8)", "170.314 (d)(9)", "170.314 (e)(1)", "170.314 (e)(2)", "170.314 (e)(3)",
+            "170.314 (f)(1)", "170.314 (f)(2)", "170.314 (f)(3)", "170.314 (f)(4)", "170.314 (f)(5)",
+            "170.314 (f)(6)", "170.314 (f)(7)", "170.314 (g)(1)", "170.314 (g)(2)", "170.314 (g)(3)",
+            "170.314 (g)(4)", "170.314 (h)(1)",  "170.314 (h)(2)", "170.314 (h)(3)"
+    };
+    
+    public CertifiedProductHandler2014() {
+        templateColumnIndexMap = new TemplateColumnIndexMap2014();
+    }
+    
+    public TemplateColumnIndexMap getColumnIndexMap() {
+         return templateColumnIndexMap;
+    }
+    
+    public String[] getCriteriaNames() {
+        return this.criteriaNames;
+    }
+    
     public PendingCertifiedProductEntity handle() {
         PendingCertifiedProductEntity pendingCertifiedProduct = new PendingCertifiedProductEntity();
         pendingCertifiedProduct.setStatus(getDefaultStatusId());
@@ -79,7 +94,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
                     .add(pendingCertifiedProduct.getUniqueId() + " has 'true' in the QMS column but no QMS was found.");
         }
 
-        // parse CQMs starts at index 28
+        // parse CQMs
         for (CSVRecord record : getRecord()) {
             String statusStr = record.get(1);
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
@@ -88,7 +103,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
             }
         }
 
-        // parse criteria starts at index 30
+        // parse criteria
         CSVRecord firstRow = null;
         for (int i = 0; i < getRecord().size() && firstRow == null; i++) {
             CSVRecord currRecord = getRecord().get(i);
@@ -97,429 +112,49 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
                 firstRow = currRecord;
             }
         }
-
         if (firstRow != null) {
-            int criteriaBeginIndex = 30;
-            int criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(5)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(8)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(9)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(10)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(11)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(12)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(13)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(14)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(15)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(16)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(17)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(18)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(19)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (a)(20)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(5)(A)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(5)(B)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(8)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (b)(9)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (c)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (c)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (c)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(5)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(8)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (d)(9)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (e)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (e)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (e)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (f)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (f)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (f)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (f)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (f)(5)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (f)(6)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (f)(7)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (g)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (g)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (g)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (g)(4)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (h)(1)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (h)(2)", firstRow, criteriaBeginIndex, criteriaEndIndex));
-            criteriaBeginIndex = criteriaEndIndex + 1;
-            criteriaEndIndex = getCriteriaEndIndex(criteriaBeginIndex);
-            pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                    "170.314 (h)(3)", firstRow, criteriaBeginIndex, criteriaEndIndex));
+            int criteriaBeginIndex = templateColumnIndexMap.getCriteriaStartIndex();
+            for(int i = 0; i < getCriteriaNames().length; i++) {
+                String criteriaName = getCriteriaNames()[i];
+                int criteriaEndIndex = templateColumnIndexMap.getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+                pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
+                        criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
+                criteriaBeginIndex = criteriaEndIndex + 1;
+            }
         }
 
         return pendingCertifiedProduct;
     }
 
     private void parseCertifiedProductDetails(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = 0;
-
-        String uniqueId = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setUniqueId(uniqueId);
-
-        String recordStatus = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setRecordStatus(recordStatus);
-
-        // practice type
-        String practiceType = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setPracticeType(practiceType);
-        PracticeTypeDTO foundPracticeType = practiceTypeDao.getByName(practiceType);
-        if (foundPracticeType != null) {
-            pendingCertifiedProduct.setPracticeTypeId(foundPracticeType.getId());
-        }
-
-        // developer, product, version
-        String developer = record.get(colIndex++).trim();
-        String product = record.get(colIndex++).trim();
-        String productVersion = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setDeveloperName(developer);
-        pendingCertifiedProduct.setProductName(product);
-        pendingCertifiedProduct.setProductVersion(productVersion);
-
-        DeveloperDTO foundDeveloper = developerDao.getByName(developer);
-        if (foundDeveloper != null) {
-            pendingCertifiedProduct.setDeveloperId(foundDeveloper.getId());
-
-            // product
-            ProductDTO foundProduct = productDao.getByDeveloperAndName(foundDeveloper.getId(), product);
-            if (foundProduct != null) {
-                pendingCertifiedProduct.setProductId(foundProduct.getId());
-
-                // version
-                ProductVersionDTO foundVersion = versionDao.getByProductAndVersion(foundProduct.getId(),
-                        productVersion);
-                if (foundVersion != null) {
-                    pendingCertifiedProduct.setProductVersionId(foundVersion.getId());
-                }
-            }
-        }
-
-        // certification year
-        String certificaitonYear = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
-        if (!pendingCertifiedProduct.getCertificationEdition().equals("2014")) {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add("Expecting certification year 2014 but found '"
-                            + pendingCertifiedProduct.getCertificationEdition() + "' for product "
-                            + pendingCertifiedProduct.getUniqueId());
-        }
-        CertificationEditionDTO foundEdition = editionDao.getByYear(certificaitonYear);
-        if (foundEdition != null) {
-            pendingCertifiedProduct.setCertificationEditionId(new Long(foundEdition.getId()));
-        }
-
-        // acb certification id
-        pendingCertifiedProduct.setAcbCertificationId(record.get(colIndex++).trim());
-
-        // certification body
-        String acbName = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setCertificationBodyName(acbName);
-        CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
-        if (foundAcb != null) {
-            pendingCertifiedProduct.setCertificationBodyId(foundAcb.getId());
-        } else {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add("No certification body with name " + acbName + " could be found.");
-        }
-
-        // testing lab
-        String atlName = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setTestingLabName(atlName);
-        TestingLabDTO foundAtl = atlDao.getByName(atlName);
-        if (foundAtl != null) {
-            pendingCertifiedProduct.setTestingLabId(foundAtl.getId());
-        }
-
-        // product classification
-        String classification = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setProductClassificationName(classification);
-        ProductClassificationTypeDTO foundClassification = classificationDao.getByName(classification);
-        if (foundClassification != null) {
-            pendingCertifiedProduct.setProductClassificationId(foundClassification.getId());
-        }
-
-        // certification date
-        String dateStr = record.get(colIndex++).trim();
-        try {
-            Date certificationDate = dateFormatter.parse(dateStr);
-            pendingCertifiedProduct.setCertificationDate(certificationDate);
-        } catch (final ParseException ex) {
-            pendingCertifiedProduct.setCertificationDate(null);
-        }
-
-        // developer address info
-        String developerStreetAddress = record.get(colIndex++).trim();
-        String developerState = record.get(colIndex++).trim();
-        String developerCity = record.get(colIndex++).trim();
-        String developerZipcode = record.get(colIndex++).trim();
-        String developerWebsite = record.get(colIndex++).trim();
-        String developerEmail = record.get(colIndex++).trim();
-        String developerPhone = record.get(colIndex++).trim();
-        String developerContactName = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setDeveloperStreetAddress(developerStreetAddress);
-        pendingCertifiedProduct.setDeveloperCity(developerCity);
-        pendingCertifiedProduct.setDeveloperState(developerState);
-        pendingCertifiedProduct.setDeveloperZipCode(developerZipcode);
-        pendingCertifiedProduct.setDeveloperWebsite(developerWebsite);
-        pendingCertifiedProduct.setDeveloperEmail(developerEmail);
-        pendingCertifiedProduct.setDeveloperPhoneNumber(developerPhone);
-        pendingCertifiedProduct.setDeveloperContactName(developerContactName);
-
-        // look for contact in db
-        ContactDTO contactToFind = new ContactDTO();
-        contactToFind.setLastName(developerContactName);
-        contactToFind.setEmail(developerEmail);
-        contactToFind.setPhoneNumber(developerPhone);
-        ContactDTO foundContact = contactDao.getByValues(contactToFind);
-        if (foundContact != null) {
-            pendingCertifiedProduct.setDeveloperContactId(foundContact.getId());
-        }
-
-        AddressDTO toFind = new AddressDTO();
-        toFind.setStreetLineOne(developerStreetAddress);
-        toFind.setCity(developerCity);
-        toFind.setState(developerState);
-        toFind.setZipcode(developerZipcode);
-        AddressDTO foundAddress = addressDao.getByValues(toFind);
-        if (foundAddress != null) {
-            AddressEntity addressEntity = null;
-            try {
-                addressEntity = addressDao.getEntityById(foundAddress.getId());
-            } catch (final EntityRetrievalException ex) {
-                addressEntity = null;
-            }
-            pendingCertifiedProduct.setDeveloperAddress(addressEntity);
-        }
-
-        // report file location
-        pendingCertifiedProduct.setReportFileLocation(record.get(colIndex++).trim());
-
-        // sed report link
-        pendingCertifiedProduct.setSedReportFileLocation(record.get(colIndex++).trim());
-
-        String hasQmsStr = record.get(colIndex++);
-        Boolean hasQms = asBoolean(hasQmsStr);
-        if (hasQms != null) {
-            pendingCertifiedProduct.setHasQms(hasQms.booleanValue());
-        }
-
-        // qms standards
-        colIndex++;
-        // qms modification
-        colIndex++;
-
-        String hasIcsStr = record.get(colIndex++).trim();
-        pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
-
-        // (k)(1) url
-        pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(colIndex++).trim());
-
-        // (k)(2) attestation status
-        String k2AttestationStr = record.get(colIndex++).trim();
-        if (!StringUtils.isEmpty(k2AttestationStr)) {
-            if ("0".equals(k2AttestationStr.trim())) {
-                pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Negative);
-            } else if ("1".equals(k2AttestationStr.trim())) {
-                pendingCertifiedProduct.setTransparencyAttestation(AttestationType.Affirmative);
-            } else if ("2".equals(k2AttestationStr.trim())) {
-                pendingCertifiedProduct.setTransparencyAttestation(AttestationType.NA);
-            }
-        } else {
-            pendingCertifiedProduct.setTransparencyAttestation(null);
-        }
+        parseUniqueId(pendingCertifiedProduct, record);
+        parseRecordStatus(pendingCertifiedProduct, record);
+        parsePracticeType(pendingCertifiedProduct, record);
+        parseDeveloperProductVersion(pendingCertifiedProduct, record);
+        parseDeveloperAddress(pendingCertifiedProduct, record);
+        parseEdition("2014", pendingCertifiedProduct, record);
+        parseAcbCertificationId(pendingCertifiedProduct, record);
+        parseAcb(pendingCertifiedProduct, record);
+        parseAtl(pendingCertifiedProduct, record);
+        parseProductClassification(pendingCertifiedProduct, record);
+        parseCertificationDate(pendingCertifiedProduct, record);        
+        parseSed(pendingCertifiedProduct, record);
+        parseHasQms(pendingCertifiedProduct, record);
+        parseHasIcs(pendingCertifiedProduct, record);
+        parseTransparencyAttestation(pendingCertifiedProduct, record);
     }
 
+    @Override
+    protected void parseSed(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
+        int sedIndex = getColumnIndexMap().getSedStartIndex();
+        // report file location
+        pendingCertifiedProduct.setReportFileLocation(record.get(sedIndex++).trim());
+        // sed report link
+        pendingCertifiedProduct.setSedReportFileLocation(record.get(sedIndex).trim());
+    }
+    
     private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = 23;
+        int colIndex = templateColumnIndexMap.getQmsStartIndex()+1;
         if (!StringUtils.isEmpty(record.get(colIndex))) {
             String qmsStandardName = record.get(colIndex++).trim();
             QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName);
@@ -537,8 +172,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
     }
 
     private void parseCqms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int cqmNameIndex = 28;
-        int cqmVersionIndex = 29;
+        int cqmNameIndex = templateColumnIndexMap.getCqmStartIndex();
+        int cqmVersionIndex = cqmNameIndex+1;
 
         String cqmName = record.get(cqmNameIndex).trim();
         String cqmVersions = record.get(cqmVersionIndex).trim();
@@ -550,24 +185,6 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
                 pendingCertifiedProduct.getCqmCriterion().add(entity);
             }
         }
-    }
-
-    private int getCriteriaEndIndex(int beginIndex) {
-        int criteriaBeginIndex = beginIndex;
-        int criteriaEndIndex = criteriaBeginIndex + 1;
-        String colTitle = getHeading().get(criteriaBeginIndex).toString();
-        if (colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
-            colTitle = getHeading().get(criteriaEndIndex).toString();
-            while (criteriaEndIndex <= getLastDataIndex() && !colTitle.startsWith(CRITERIA_COL_HEADING_BEGIN)) {
-                criteriaEndIndex++;
-                if (criteriaEndIndex <= getLastDataIndex()) {
-                    colTitle = getHeading().get(criteriaEndIndex).toString();
-                }
-            }
-        } else {
-            return -1;
-        }
-        return criteriaEndIndex - 1;
     }
 
     private PendingCertificationResultEntity parseCriteria(PendingCertifiedProductEntity pendingCertifiedProduct,

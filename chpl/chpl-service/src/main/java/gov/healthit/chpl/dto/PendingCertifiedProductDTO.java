@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
@@ -248,7 +249,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 this.accessibilityStandards.add(asDto);
             }
         }
-
+        
         List<CertificationResult> certificationResults = details.getCertificationResults();
         for (CertificationResult crResult : certificationResults) {
             PendingCertificationResultDTO certDto = new PendingCertificationResultDTO();
@@ -536,6 +537,16 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
+        Set<PendingCertifiedProductParentListingEntity> parents = entity.getParentListings();
+        if(parents != null && parents.size() > 0) {
+            for(PendingCertifiedProductParentListingEntity parent : parents) {
+                CertifiedProductDTO listing = new CertifiedProductDTO();
+                listing.setId(parent.getParentListingId());
+                listing.setChplProductNumber(parent.getParentListingUniqueId());;
+                this.icsParents.add(listing);
+            }
+        }
+        
         Set<PendingCertificationResultEntity> criterionEntities = entity.getCertificationCriterion();
         if (criterionEntities != null && criterionEntities.size() > 0) {
             for (PendingCertificationResultEntity crEntity : criterionEntities) {

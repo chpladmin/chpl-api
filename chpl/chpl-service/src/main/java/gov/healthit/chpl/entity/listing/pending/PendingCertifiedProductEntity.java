@@ -199,6 +199,11 @@ public class PendingCertifiedProductEntity {
     @Column(name = "pending_certified_product_id", nullable = false)
     private Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_id", nullable = false)
+    private Set<PendingCertifiedProductParentListingEntity> parentListings;
+    
     @Transient
     private boolean hasQms;
 
@@ -643,5 +648,13 @@ public class PendingCertifiedProductEntity {
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
         this.sedTestingEnd = sedTestingEnd;
+    }
+
+    public Set<PendingCertifiedProductParentListingEntity> getParentListings() {
+        return parentListings;
+    }
+
+    public void setParentListings(Set<PendingCertifiedProductParentListingEntity> parentListings) {
+        this.parentListings = parentListings;
     }
 }
