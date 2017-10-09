@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
@@ -144,7 +143,6 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
         parseTransparencyAttestation(pendingCertifiedProduct, record);
     }
 
-    @Override
     protected void parseSed(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
         int sedIndex = getColumnIndexMap().getSedStartIndex();
         // report file location
@@ -407,17 +405,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
             }
         }
     }
-
-    public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
-        List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
-        for (CQMCriterion criterion : allCqms) {
-            if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
-                criteria.add(criterion);
-            }
-        }
-        return criteria;
-    }
-
+    
     /**
      * look up a CQM CMS criteria by number and version. throw an error if we
      * can't find it

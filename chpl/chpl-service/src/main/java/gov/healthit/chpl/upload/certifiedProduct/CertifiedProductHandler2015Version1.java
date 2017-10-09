@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -217,7 +216,6 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         pendingCertifiedProduct.setAccessibilityCertified(asBoolean(isAccessibilityCertified));
     }
     
-    @Override
     protected void parseSed(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
         int sedIndex = getColumnIndexMap().getSedStartIndex();
         pendingCertifiedProduct.setSedReportFileLocation(record.get(sedIndex++).trim());
@@ -794,16 +792,6 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 }
             }
         }
-    }
-
-    public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
-        List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
-        for (CQMCriterion criterion : allCqms) {
-            if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
-                criteria.add(criterion);
-            }
-        }
-        return criteria;
     }
 
     /**

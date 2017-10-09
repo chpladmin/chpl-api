@@ -1,9 +1,14 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -23,8 +28,10 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
     private UploadTemplateVersionDAO templateVersionDao;
     @Autowired
     private CertifiedProductHandler2014 handler2014;
+    @Qualifier("certifiedProductHandler2015Version1")
     @Autowired
     private CertifiedProductHandler2015Version1 handler2015Version1;
+    @Qualifier("certifiedProductHandler2015Version2")
     @Autowired
     private CertifiedProductHandler2015Version2 handler2015Version2;
 
@@ -34,7 +41,36 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
     @Override
     public CertifiedProductUploadHandler getHandler(CSVRecord heading, List<CSVRecord> cpRecords)
             throws InvalidArgumentsException {
-        if (heading == null || StringUtils.isEmpty(heading.toString())) {
+        if(heading == null) {
+            String msg = String
+                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
+                            LocaleContextHolder.getLocale()), "null");
+            throw new InvalidArgumentsException(msg);
+        }
+        
+        //write out heading record as csv string
+        //trim each value
+        List<String> trimmedHeaderVals = new ArrayList<String>(heading.size());
+        for(int i = 0; i < heading.size(); i++) {
+            String headerVal = heading.get(i).trim();
+            trimmedHeaderVals.add(headerVal);
+        }
+        
+        StringBuffer buf = new StringBuffer();
+        CSVPrinter writer = null;
+        try {
+            writer = new CSVPrinter(buf, CSVFormat.EXCEL.withRecordSeparator(""));
+            writer.printRecord(trimmedHeaderVals);
+        } catch(IOException ex) {
+            String msg = String
+                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
+                            LocaleContextHolder.getLocale()), "a bad header value");
+            throw new InvalidArgumentsException(msg);
+        } finally {
+            try { writer.close(); } catch(Exception ignore) {}
+        }
+        String trimmedHeadingStr = buf.toString();
+        if (trimmedHeadingStr == null || StringUtils.isEmpty(heading.toString())) {
             String msg = String
                     .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
                             LocaleContextHolder.getLocale()), "an empty string");
@@ -43,13 +79,12 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
 
         CertifiedProductUploadHandler handler = null;
         UploadTemplateVersionDTO templateVersion = null;
-        String csvHeading = heading.toString().trim();
 
         // look at the header row as a CSV string and match it to one of the
         // header values that we have in the db.
         List<UploadTemplateVersionDTO> templateVersions = templateVersionDao.findAll();
         for (UploadTemplateVersionDTO currVersion : templateVersions) {
-            if (currVersion.getHeaderCsv().equalsIgnoreCase(csvHeading)) {
+            if (currVersion.getHeaderCsv().equalsIgnoreCase(trimmedHeadingStr)) {
                 templateVersion = currVersion;
             }
         }
@@ -58,7 +93,7 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
         if (templateVersion == null) {
             String msg = String
                     .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.badHeader"),
-                            LocaleContextHolder.getLocale()), csvHeading);
+                            LocaleContextHolder.getLocale()), trimmedHeadingStr);
             throw new InvalidArgumentsException(msg);
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2014_VERSION_1.getName())) {
             handler = handler2014;

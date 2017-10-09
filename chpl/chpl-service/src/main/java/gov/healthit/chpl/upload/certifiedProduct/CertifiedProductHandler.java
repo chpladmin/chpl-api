@@ -1,7 +1,9 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
@@ -23,9 +26,11 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.AttestationType;
+import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
@@ -242,8 +247,16 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
     
-    //SED is very different between editions; leaving it up to the concrete classes to parse
-    protected abstract void parseSed(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record);
+    public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
+        List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
+        for (CQMCriterion criterion : allCqms) {
+            if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
+                criteria.add(criterion);
+            }
+        }
+        return criteria;
+    }
+    
     
     /**
      * look up the certification criteria by name and throw an error if we can't
