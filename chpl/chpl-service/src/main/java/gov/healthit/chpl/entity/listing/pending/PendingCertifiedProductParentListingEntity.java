@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Entity
 @Table(name = "pending_certified_product_parent_listing")
@@ -38,7 +39,7 @@ public class PendingCertifiedProductParentListingEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_certified_product_id", unique = true, nullable = true, insertable = false,
             updatable = false)
-    private CertifiedProductEntity parentListing;
+    private CertifiedProductBasicSearchResultEntity parentListing;
 
     @Column(name = "parent_certified_product_id")
     private Long parentListingId;
@@ -86,11 +87,11 @@ public class PendingCertifiedProductParentListingEntity {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
-    public CertifiedProductEntity getParentListing() {
+    public CertifiedProductBasicSearchResultEntity getParentListing() {
         return parentListing;
     }
 
-    public void setParentListing(final CertifiedProductEntity parentListing) {
+    public void setParentListing(final CertifiedProductBasicSearchResultEntity parentListing) {
         this.parentListing = parentListing;
     }
 

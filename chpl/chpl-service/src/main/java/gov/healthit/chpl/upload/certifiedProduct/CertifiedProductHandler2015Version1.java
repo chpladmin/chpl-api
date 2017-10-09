@@ -82,12 +82,13 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
     public CertifiedProductHandler2015Version1() {
         templateColumnIndexMap = new TemplateColumnIndexMap2015Version1();
-    }
+     }
+     
+     public TemplateColumnIndexMap getColumnIndexMap() {
+          return templateColumnIndexMap;
+     }
     
-    public TemplateColumnIndexMap getColumnIndexMap() {
-        return templateColumnIndexMap;
-    }
-    
+    @Override
     public String[] getCriteriaNames() {
         return this.criteriaNames;
     }
@@ -101,7 +102,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         // get the first row of the certified product
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex());
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex());
             if (!StringUtils.isEmpty(statusStr) && FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
                 parseCertifiedProductDetails(record, pendingCertifiedProduct);
             }
@@ -113,7 +114,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         
         // get the targeted users for the certified product
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex());
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex());
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseTargetedUsers(record, pendingCertifiedProduct);
@@ -122,7 +123,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         // get the QMS's for the certified product
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex());
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex());
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseQms(record, pendingCertifiedProduct);
@@ -131,7 +132,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         // get the accessibility standards for the certified product
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex());
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex());
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseAccessibilityStandards(record, pendingCertifiedProduct);
@@ -149,7 +150,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         // parse CQMs
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex());
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex());
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseCqms(record, pendingCertifiedProduct);
@@ -158,7 +159,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         // test participant
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex());
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex());
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseTestParticipants(record, pendingCertifiedProduct);
@@ -167,7 +168,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
         // tasks
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex()).trim();
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex()).trim();
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseTestTasks(record, pendingCertifiedProduct);
@@ -178,16 +179,16 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         CSVRecord firstRow = null;
         for (int i = 0; i < getRecord().size() && firstRow == null; i++) {
             CSVRecord currRecord = getRecord().get(i);
-            String statusStr = currRecord.get(templateColumnIndexMap.getRecordStatusIndex()).trim();
+            String statusStr = currRecord.get(getColumnIndexMap().getRecordStatusIndex()).trim();
             if (!StringUtils.isEmpty(statusStr) && FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)) {
                 firstRow = currRecord;
             }
         }
         if (firstRow != null) {
-            int criteriaBeginIndex = templateColumnIndexMap.getCriteriaStartIndex();
+            int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
             for(int i = 0; i < getCriteriaNames().length; i++) {
                 String criteriaName = getCriteriaNames()[i];
-                int criteriaEndIndex = templateColumnIndexMap.getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+                int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
                 pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
                         criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
                 criteriaBeginIndex = criteriaEndIndex + 1;
@@ -212,7 +213,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         parseTransparencyAttestation(pendingCertifiedProduct, record);
         
         // accessibility certified
-        String isAccessibilityCertified = record.get(templateColumnIndexMap.getAccessibilityCertifiedIndex()).trim();
+        String isAccessibilityCertified = record.get(getColumnIndexMap().getAccessibilityCertifiedIndex()).trim();
         pendingCertifiedProduct.setAccessibilityCertified(asBoolean(isAccessibilityCertified));
     }
     
@@ -234,7 +235,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
     }
     
     protected int parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = templateColumnIndexMap.getQmsStartIndex();
+        int colIndex = getColumnIndexMap().getQmsStartIndex();
         if (!StringUtils.isEmpty(record.get(colIndex))) {
             String qmsStandardName = record.get(colIndex++).trim();
             QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName);
@@ -251,11 +252,11 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             }
             pendingCertifiedProduct.getQmsStandards().add(qmsEntity);
         }
-        return (templateColumnIndexMap.getQmsEndIndex() - templateColumnIndexMap.getQmsStartIndex()) + 1;
+        return (getColumnIndexMap().getQmsEndIndex() - getColumnIndexMap().getQmsStartIndex()) + 1;
     }
 
     protected int parseTargetedUsers(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = templateColumnIndexMap.getTargetedUserStartIndex();
+        int colIndex = getColumnIndexMap().getTargetedUserStartIndex();
         if (!StringUtils.isEmpty(record.get(colIndex))) {
             String targetedUserName = record.get(colIndex).trim();
             TargetedUserDTO targetedUser = tuDao.getByName(targetedUserName);
@@ -268,11 +269,11 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             }
             pendingCertifiedProduct.getTargetedUsers().add(tuEntity);
         }
-        return (templateColumnIndexMap.getTargetedUserEndIndex() - templateColumnIndexMap.getTargetedUserStartIndex()) + 1;
+        return (getColumnIndexMap().getTargetedUserEndIndex() - getColumnIndexMap().getTargetedUserStartIndex()) + 1;
     }
 
     protected int parseAccessibilityStandards(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = templateColumnIndexMap.getAccessibilityStandardIndex();
+        int colIndex = getColumnIndexMap().getAccessibilityStandardIndex();
         if (!StringUtils.isEmpty(record.get(colIndex))) {
             String accessibilityStandardName = record.get(colIndex).trim();
             AccessibilityStandardDTO std = stdDao.getByName(accessibilityStandardName);
@@ -290,7 +291,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
 
     protected int parseTestParticipants(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProductEntity)
             throws InvalidArgumentsException {
-        int colIndex = templateColumnIndexMap.getTestParticipantStartIndex();
+        int colIndex = getColumnIndexMap().getTestParticipantStartIndex();
         if (!StringUtils.isEmpty(record.get(colIndex))) {
             PendingTestParticipantEntity participant = new PendingTestParticipantEntity();
             participant.setUniqueId(record.get(colIndex++).trim());
@@ -348,11 +349,11 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             participant.setAssistiveTechnologyNeeds(record.get(colIndex).trim());
             this.participants.add(participant);
         }
-        return (templateColumnIndexMap.getTestParticipantEndIndex() - templateColumnIndexMap.getTestParticipantStartIndex()) + 1;
+        return (getColumnIndexMap().getTestParticipantEndIndex() - getColumnIndexMap().getTestParticipantStartIndex()) + 1;
     }
 
     protected int parseTestTasks(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProductEntity) {
-        int colIndex = templateColumnIndexMap.getTestTaskStartIndex();
+        int colIndex = getColumnIndexMap().getTestTaskStartIndex();
         if (StringUtils.isEmpty(record.get(colIndex))) {
             return 0;
         }
@@ -447,11 +448,11 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             LOGGER.error("Cannot convert " + taskRatingStddevStr + " to a Float.");
         }
         this.tasks.add(task);
-        return (templateColumnIndexMap.getTestTaskEndIndex() - templateColumnIndexMap.getTestTaskStartIndex()) + 1;
+        return (getColumnIndexMap().getTestTaskEndIndex() - getColumnIndexMap().getTestTaskStartIndex()) + 1;
     }
 
     protected int parseCqms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = templateColumnIndexMap.getCqmStartIndex();
+        int colIndex = getColumnIndexMap().getCqmStartIndex();
         
         String cqmName = record.get(colIndex++).trim();
         String cqmVersions = record.get(colIndex++).trim();
@@ -464,7 +465,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 pendingCertifiedProduct.getCqmCriterion().add(entity);
             }
         }
-        return (templateColumnIndexMap.getCqmEndIndex() - templateColumnIndexMap.getCqmStartIndex()) + 1;
+        return (getColumnIndexMap().getCqmEndIndex() - getColumnIndexMap().getCqmStartIndex()) + 1;
     }
 
     protected PendingCertificationResultEntity parseCriteria(PendingCertifiedProductEntity pendingCertifiedProduct,

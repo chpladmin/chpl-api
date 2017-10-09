@@ -54,7 +54,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
     };
     
     public CertifiedProductHandler2014() {
-        templateColumnIndexMap = new TemplateColumnIndexMap2014();
+       templateColumnIndexMap = new TemplateColumnIndexMap2014();
     }
     
     public TemplateColumnIndexMap getColumnIndexMap() {
@@ -112,10 +112,10 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
             }
         }
         if (firstRow != null) {
-            int criteriaBeginIndex = templateColumnIndexMap.getCriteriaStartIndex();
+            int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
             for(int i = 0; i < getCriteriaNames().length; i++) {
                 String criteriaName = getCriteriaNames()[i];
-                int criteriaEndIndex = templateColumnIndexMap.getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+                int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
                 pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
                         criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
                 criteriaBeginIndex = criteriaEndIndex + 1;
@@ -152,7 +152,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
     }
     
     private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = templateColumnIndexMap.getQmsStartIndex()+1;
+        int colIndex = getColumnIndexMap().getQmsStartIndex()+1;
         if (!StringUtils.isEmpty(record.get(colIndex))) {
             String qmsStandardName = record.get(colIndex++).trim();
             QmsStandardDTO qmsStandard = qmsDao.getByName(qmsStandardName);
@@ -170,7 +170,7 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
     }
 
     private void parseCqms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int cqmNameIndex = templateColumnIndexMap.getCqmStartIndex();
+        int cqmNameIndex = getColumnIndexMap().getCqmStartIndex();
         int cqmVersionIndex = cqmNameIndex+1;
 
         String cqmName = record.get(cqmNameIndex).trim();

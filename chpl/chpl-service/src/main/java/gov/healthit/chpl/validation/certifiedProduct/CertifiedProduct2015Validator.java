@@ -29,6 +29,7 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
@@ -590,7 +591,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
             // parents are non-empty - check inheritance rules
             // certification edition must be the same as this listings
             List<Long> parentIds = new ArrayList<Long>();
-            for (CertifiedProductDTO potentialParent : product.getIcsParents()) {
+            for (CertifiedProductDetailsDTO potentialParent : product.getIcsParents()) {
                 if(potentialParent.getId() == null) {
                     product.getErrorMessages().add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.icsUniqueIdNotFound"),

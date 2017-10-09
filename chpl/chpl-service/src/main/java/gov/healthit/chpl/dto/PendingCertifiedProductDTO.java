@@ -86,8 +86,8 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String transparencyAttestation;
     private String transparencyAttestationUrl;
 
-    private List<CertifiedProductDTO> icsParents;
-    private List<CertifiedProductDTO> icsChildren;
+    private List<CertifiedProductDetailsDTO> icsParents;
+    private List<CertifiedProductDetailsDTO> icsChildren;
     private List<PendingCertificationResultDTO> certificationCriterion;
     private List<PendingCqmCriterionDTO> cqmCriterion;
     private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
@@ -99,8 +99,8 @@ public class PendingCertifiedProductDTO implements Serializable {
     public PendingCertifiedProductDTO() {
         this.errorMessages = new HashSet<String>();
         this.warningMessages = new HashSet<String>();
-        this.icsParents = new ArrayList<CertifiedProductDTO>();
-        this.icsChildren = new ArrayList<CertifiedProductDTO>();
+        this.icsParents = new ArrayList<CertifiedProductDetailsDTO>();
+        this.icsChildren = new ArrayList<CertifiedProductDetailsDTO>();
         this.certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
         this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
         this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
@@ -205,14 +205,14 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getIcs() != null) {
             if (details.getIcs().getParents() != null && details.getIcs().getParents().size() > 0) {
                 for (CertifiedProduct parent : details.getIcs().getParents()) {
-                    CertifiedProductDTO parentCp = new CertifiedProductDTO();
+                    CertifiedProductDetailsDTO parentCp = new CertifiedProductDetailsDTO();
                     parentCp.setChplProductNumber(parent.getChplProductNumber());
                     this.icsParents.add(parentCp);
                 }
             }
             if (details.getIcs().getChildren() != null && details.getIcs().getChildren().size() > 0) {
                 for (CertifiedProduct child : details.getIcs().getChildren()) {
-                    CertifiedProductDTO childCp = new CertifiedProductDTO();
+                    CertifiedProductDetailsDTO childCp = new CertifiedProductDetailsDTO();
                     childCp.setChplProductNumber(child.getChplProductNumber());
                     this.icsChildren.add(childCp);
                 }
@@ -540,9 +540,13 @@ public class PendingCertifiedProductDTO implements Serializable {
         Set<PendingCertifiedProductParentListingEntity> parents = entity.getParentListings();
         if(parents != null && parents.size() > 0) {
             for(PendingCertifiedProductParentListingEntity parent : parents) {
-                CertifiedProductDTO listing = new CertifiedProductDTO();
+                CertifiedProductDetailsDTO listing = new CertifiedProductDetailsDTO();
                 listing.setId(parent.getParentListingId());
-                listing.setChplProductNumber(parent.getParentListingUniqueId());;
+                if(parent.getParentListing() != null) {
+                    listing.setChplProductNumber(parent.getParentListing().getChplProductNumber());
+                    listing.setCertificationDate(parent.getParentListing().getCertificationDate());
+                    listing.setYear(parent.getParentListing().getEdition());
+                }
                 this.icsParents.add(listing);
             }
         }
@@ -954,19 +958,19 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.lastModifiedUser = lastModifiedUser;
     }
 
-    public List<CertifiedProductDTO> getIcsParents() {
+    public List<CertifiedProductDetailsDTO> getIcsParents() {
         return icsParents;
     }
 
-    public void setIcsParents(final List<CertifiedProductDTO> icsParents) {
+    public void setIcsParents(final List<CertifiedProductDetailsDTO> icsParents) {
         this.icsParents = icsParents;
     }
 
-    public List<CertifiedProductDTO> getIcsChildren() {
+    public List<CertifiedProductDetailsDTO> getIcsChildren() {
         return icsChildren;
     }
 
-    public void setIcsChildren(final List<CertifiedProductDTO> icsChildren) {
+    public void setIcsChildren(final List<CertifiedProductDetailsDTO> icsChildren) {
         this.icsChildren = icsChildren;
     }
 }

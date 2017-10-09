@@ -30,6 +30,7 @@ public class CertifiedProductHandler2015Version2 extends CertifiedProductHandler
         templateColumnIndexMap = new TemplateColumnIndexMap2015Version2();
     }
     
+    @Override
     public TemplateColumnIndexMap getColumnIndexMap() {
         return templateColumnIndexMap;
     }
@@ -39,7 +40,7 @@ public class CertifiedProductHandler2015Version2 extends CertifiedProductHandler
         
         //get the ics parent listings for the certified product
         for (CSVRecord record : getRecord()) {
-            String statusStr = record.get(templateColumnIndexMap.getRecordStatusIndex());
+            String statusStr = record.get(getColumnIndexMap().getRecordStatusIndex());
             if (!StringUtils.isEmpty(statusStr) && (FIRST_ROW_INDICATOR.equalsIgnoreCase(statusStr)
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseIcsFamily(record, pendingCertifiedProduct);
@@ -50,7 +51,7 @@ public class CertifiedProductHandler2015Version2 extends CertifiedProductHandler
     }
     
     protected int parseIcsFamily(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
-        int colIndex = templateColumnIndexMap.getIcsStartIndex();
+        int colIndex = getColumnIndexMap().getIcsStartIndex();
         colIndex++; //ics boolean comes first; ics family second
         
         if (!StringUtils.isEmpty(record.get(colIndex))) {
