@@ -22,6 +22,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
@@ -338,6 +339,19 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         List<CertifiedProductDTO> dtoResults = new ArrayList<CertifiedProductDTO>(results.size());
         for (CertifiedProductEntity result : results) {
             dtoResults.add(new CertifiedProductDTO(result));
+        }
+        return dtoResults;
+    }
+    
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getDetailsByCriteria(Long certificationCriteriaId) throws EntityRetrievalException {
+        Query query = entityManager.createQuery("FROM CertifiedProductDetailsEntity deets LEFT OUTER JOIN CertificationResultDetailsEntity crd ON deets.id = crd.certifiedProductId");
+        query.setParameter("ccId", certificationCriteriaId);
+        List<CertifiedProductDetailsEntity> results = query.getResultList();
+        
+        List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>(results.size());
+        for (CertifiedProductDetailsEntity result : results) {
+            dtoResults.add(new CertifiedProductDetailsDTO(result));
         }
         return dtoResults;
     }

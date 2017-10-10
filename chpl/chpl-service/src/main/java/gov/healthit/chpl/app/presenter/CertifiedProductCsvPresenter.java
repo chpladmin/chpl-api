@@ -83,6 +83,39 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         }
         return result;
     }
+    
+    protected List<String> generateHeaderValuesSED() {
+        List<String> result = new ArrayList<String>();
+        result.add("Unique CHPL ID");
+        result.add("Developer");
+        result.add("Certification Edition");
+        result.add("Product");
+        result.add("Version");
+        result.add("Certification Criteria");
+        result.add("Task Description");
+        result.add("Rating Scale");
+        result.add("Task Rating");
+        result.add("Task Rating - Standard Deviation");
+        result.add("Task Time Mean (s)");
+        result.add("Task Time - Standard Deviation (s)");
+        result.add("Task Time Deviation - Observed (s)");
+        result.add("Task Time Deviation - Optimal (s)");
+        result.add("Task Success");
+        result.add("Task Success - Standard Deviation (%)");
+        result.add("Task Errors - Mean (%)");
+        result.add("Task Errors - Standard Deviation (%)");
+        result.add("Task Path Deviation - Observed (# of Steps)");
+        result.add("Task Path Deviation - Optimal (# of Steps)");
+        result.add("Occupation");
+        result.add("Education Type");
+        result.add("Product Experience (Months)");
+        result.add("Professional Experience (Months)");
+        result.add("Computer Experience (Months)");
+        result.add("Age (Years)");
+        result.add("Gender");
+        result.add("Assistive Technology Needs");
+        return result;
+    }
 
     protected List<String> generateRowValue(CertifiedProductSearchDetails data) {
         List<String> result = new ArrayList<String>();
@@ -98,6 +131,32 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         result.add(data.getDeveloper().getName());
         result.add(data.getProduct().getName());
         result.add(data.getVersion().getVersion());
+        result.add(data.getCountSurveillance().toString());
+        result.add((data.getCountOpenNonconformities() + data.getCountClosedNonconformities()) + "");
+        result.add(data.getCountOpenNonconformities().toString());
+        List<String> criteria = generateCriteriaValues(data);
+        result.addAll(criteria);
+        return result;
+    }
+    
+    protected List<String> generateRowValueSED(CertifiedProductSearchDetails data) {
+        List<String> result = new ArrayList<String>();
+        result.add(data.getChplProductNumber());
+        result.add(data.getDeveloper().getName());
+        result.add(data.getProduct().getName());
+        result.add(data.getVersion().getVersion());
+        result.add(data.getCertificationResults().get(0).getNumber());
+        result.add(data.getCertificationResults().get(0).getTitle());
+        result.add(data.get);
+        LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.getCertificationDate()),
+                ZoneId.systemDefault());
+        result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
+        result.add(data.getCertificationStatus().get("name").toString());
+        result.add(data.getCertifyingBody().get("name").toString());
+        result.add(data.getOtherAcb());
+        
+        
+        
         result.add(data.getCountSurveillance().toString());
         result.add((data.getCountOpenNonconformities() + data.getCountClosedNonconformities()) + "");
         result.add(data.getCountOpenNonconformities().toString());

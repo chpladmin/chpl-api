@@ -12,6 +12,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 
 import gov.healthit.chpl.app.App;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
@@ -26,6 +27,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
     protected CertifiedProductDetailsManager cpdManager;
     protected CertifiedProductDAO certifiedProductDao;
     protected CertificationCriterionDAO criteriaDao;
+    protected CertificationResultDAO certificationResultDao;
 
     public DownloadableResourceCreatorApp() {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -35,9 +37,10 @@ public abstract class DownloadableResourceCreatorApp extends App {
         this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
         this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
         this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
+        this.setCertificationResultDao((CertificationResultDAO) context.getBean("certificationResultDAO"));
     }
 
-    protected abstract List<CertifiedProductDetailsDTO> getRelevantListings();
+    protected abstract List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException;
 
     protected abstract void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results)
             throws IOException;
@@ -94,4 +97,13 @@ public abstract class DownloadableResourceCreatorApp extends App {
     public void setCriteriaDao(final CertificationCriterionDAO criteriaDao) {
         this.criteriaDao = criteriaDao;
     }
+
+	public CertificationResultDAO getCertificationResultDao() {
+		return certificationResultDao;
+	}
+
+	public void setCertificationResultDao(
+			CertificationResultDAO certificationResultDao) {
+		this.certificationResultDao = certificationResultDao;
+	}
 }

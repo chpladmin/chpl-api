@@ -26,7 +26,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         }
         return dtos;
     }
-
+    
     private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId)
             throws EntityRetrievalException {
 

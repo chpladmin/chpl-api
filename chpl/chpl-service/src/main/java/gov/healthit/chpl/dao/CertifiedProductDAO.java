@@ -34,6 +34,8 @@ public interface CertifiedProductDAO {
     CertifiedProductDTO getByChplNumber(String chplProductNumber);
 
     CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
+    
+    List<CertifiedProductDetailsDTO> getDetailsByCriteria(Long certificationCriteriaId) throws EntityRetrievalException;
 
     List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
 
