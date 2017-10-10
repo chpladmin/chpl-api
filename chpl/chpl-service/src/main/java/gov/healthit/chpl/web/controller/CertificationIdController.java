@@ -118,7 +118,7 @@ public class CertificationIdController {
     // **********************************************************************************************************
     // getCertificationId
     //
-    // Mapping: / {certificationId}
+    // Mapping: /{certificationId}
     // Params: Boolean includeCriteria
     // Params: Boolean includeCqms
     //
@@ -130,14 +130,14 @@ public class CertificationIdController {
     // **********************************************************************************************************
     @ApiOperation(value = "Get information about a specific EHR Certification ID.",
             notes = "Retrieves detailed information about a specific EHR Certification ID including the list of products that make it up.")
-    @RequestMapping(value = "/ {certificationId}", method = RequestMethod.GET, produces = {
+    @RequestMapping(value = "/{certificationId}", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
     public @ResponseBody CertificationIdLookupResults getCertificationId(
             @PathVariable("certificationId") String certificationId,
             @RequestParam(required = false, defaultValue = "false") Boolean includeCriteria,
             @RequestParam(required = false, defaultValue = "false") Boolean includeCqms)
-            throws InvalidArgumentsException, CertificationIdException {
+            throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
         return this.findCertificationIdByCertificationId(certificationId, includeCriteria, includeCqms);
     }
 
@@ -184,7 +184,8 @@ public class CertificationIdController {
     //
     // **********************************************************************************************************
     private CertificationIdLookupResults findCertificationIdByCertificationId(String certificationId,
-            Boolean includeCriteria, Boolean includeCqms) throws InvalidArgumentsException, CertificationIdException {
+            Boolean includeCriteria, Boolean includeCqms) 
+                    throws InvalidArgumentsException, EntityRetrievalException, CertificationIdException {
         CertificationIdLookupResults results = new CertificationIdLookupResults();
         try {
             // Lookup the Cert ID
@@ -233,7 +234,7 @@ public class CertificationIdController {
             }
 
         } catch (final EntityRetrievalException ex) {
-            throw new CertificationIdException("Unable to lookup Certification ID " + certificationId + ".");
+            throw new EntityRetrievalException("Unable to lookup Certification ID " + certificationId + ".");
         }
 
         return results;

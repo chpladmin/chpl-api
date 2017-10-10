@@ -66,7 +66,7 @@ public class AnnouncementController {
     }
 
     @ApiOperation(value = "Get a specific announcement.")
-    @RequestMapping(value = "/ {announcementId}", method = RequestMethod.GET,
+    @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") Long announcementId)
             throws EntityRetrievalException {
@@ -123,7 +123,7 @@ public class AnnouncementController {
 
     @ApiOperation(value = "Delete an existing announcement.",
             notes = "Only CHPL users with ROLE_ADMIN are able to delete announcements.")
-    @RequestMapping(value = "/ {announcementId}/delete", method = RequestMethod.POST,
+    @RequestMapping(value = "/{announcementId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {

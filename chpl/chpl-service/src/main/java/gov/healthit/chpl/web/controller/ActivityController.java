@@ -112,7 +112,7 @@ public class ActivityController {
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
                     + "do so if the certification body specified in the path has been deleted. ")
-    @RequestMapping(value = "/acbs/ {id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
@@ -167,7 +167,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific announcement",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return all activity for the specified announcement across all dates.")
-    @RequestMapping(value = "/announcements/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/announcements/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -226,7 +226,7 @@ public class ActivityController {
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
                     + "do so if the testing lab specified in the path has been deleted. ")
-    @RequestMapping(value = "/atls/ {id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForATLById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
@@ -304,7 +304,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific certified product",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified certified product across all dates.")
-    @RequestMapping(value = "/certified_products/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/certified_products/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -354,7 +354,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific certification",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified certification across all dates.")
-    @RequestMapping(value = "/certifications/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/certifications/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -404,7 +404,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific pending certified product",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified pending certified product across all dates.")
-    @RequestMapping(value = "/pending_certified_products/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -454,7 +454,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific product",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified product across all dates.")
-    @RequestMapping(value = "/products/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/products/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -503,7 +503,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific version",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified version across all dates.")
-    @RequestMapping(value = "/versions/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/versions/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForVersions(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -552,7 +552,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data about a specific CHPL user account",
             notes = "API users can optionally specify to only get activity a certain number of days into the past with the 'lastNDays' parameter. "
                     + "The default behavior is to return activity for the specified CHPL user across all dates.")
-    @RequestMapping(value = "/users/ {id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
@@ -600,7 +600,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific developer",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified developer across all dates.")
-    @RequestMapping(value = "/developers/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForDeveloperById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -653,7 +653,7 @@ public class ActivityController {
             notes = "The authenticated user calling this method must have ROLE_ADMIN. "
                     + "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return the specified user's activity across all dates.")
-    @RequestMapping(value = "/user_activities/ {id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end)
