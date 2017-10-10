@@ -140,7 +140,7 @@ public class ApiExceptionControllerAdvice {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorJSONObject> exception(Exception e) {
+    public ResponseEntity<ErrorJSONObject> exception(final Exception e) {
         LOGGER.error("Caught exception.", e);
         return new ResponseEntity<ErrorJSONObject>(new ErrorJSONObject(e.getMessage()),
                 HttpStatus.INTERNAL_SERVER_ERROR);
