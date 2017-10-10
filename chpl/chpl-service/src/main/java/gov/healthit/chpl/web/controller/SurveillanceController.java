@@ -127,7 +127,7 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Download nonconformity supporting documentation.",
             notes = "Download a specific file that was previously uploaded to a surveillance nonconformity.")
-    @RequestMapping(value = "/document/ {documentId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
     public void streamDocumentContents(@PathVariable("documentId") Long documentId, HttpServletResponse response)
             throws EntityRetrievalException, IOException {
         SurveillanceNonconformityDocument doc = survManager.getDocumentById(documentId, true);
@@ -231,7 +231,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + " documentation to an existing nonconformity. The logged in user uploading the file "
                     + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
                     + " authority on the associated ACB.")
-    @RequestMapping(value = "/ {surveillanceId}/nonconformity/ {nonconformityId}/document/create",
+    @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document/create",
             method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
             @PathVariable("nonconformityId") Long nonconformityId, @RequestParam("file") MultipartFile file)
@@ -329,7 +329,7 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "Deletes an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB associated with the certified product is required.")
-    @RequestMapping(value = "/ {surveillanceId}/delete", method = RequestMethod.POST,
+    @RequestMapping(value = "/{surveillanceId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
             @PathVariable(value = "surveillanceId") Long surveillanceId)
@@ -380,7 +380,7 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Remove documentation from a nonconformity.",
             notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
                     + " authority on the associated ACB.")
-    @RequestMapping(value = "/ {surveillanceId}/document/ {docId}/delete", method = RequestMethod.POST,
+    @RequestMapping(value = "/{surveillanceId}/document/{docId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public String deleteNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
             @PathVariable("docId") Long docId) throws JsonProcessingException, EntityCreationException,
@@ -416,7 +416,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
-    @RequestMapping(value = "/pending/ {pendingSurvId}/reject", method = RequestMethod.POST,
+    @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,

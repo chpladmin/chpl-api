@@ -884,7 +884,7 @@ public class SearchViewController {
     }
 
     @ApiOperation(value = "Get all search options in the CHPL",
-            notes = "This returns all of the other /data/ {something} results in one single response.")
+            notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody PopulateSearchOptions getPopulateSearchData(

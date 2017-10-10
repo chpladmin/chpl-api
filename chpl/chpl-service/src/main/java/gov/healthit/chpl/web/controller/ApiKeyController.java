@@ -138,7 +138,7 @@ public class ApiKeyController {
 
     @ApiOperation(value = "View the calls made by a specific API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/activity/ {apiKey}", method = RequestMethod.POST,
+    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") String apiKey,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,

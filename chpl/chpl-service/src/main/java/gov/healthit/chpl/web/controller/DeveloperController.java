@@ -80,7 +80,7 @@ public class DeveloperController {
     }
 
     @ApiOperation(value = "Get information about a specific developer.", notes = "")
-    @RequestMapping(value = "/ {developerId}", method = RequestMethod.GET,
+    @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
             throws EntityRetrievalException {
