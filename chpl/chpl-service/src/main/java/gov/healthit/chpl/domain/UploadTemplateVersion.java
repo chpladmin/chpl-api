@@ -8,7 +8,6 @@ public class UploadTemplateVersion implements Serializable {
     private static final long serialVersionUID = -6175366628840736413L;
     private Long id;
     private String name;
-    private String description;
     private boolean deprecated;
     private long availableAsOf;
 
@@ -18,7 +17,6 @@ public class UploadTemplateVersion implements Serializable {
     public UploadTemplateVersion(UploadTemplateVersionDTO dto) {
         this.id = dto.getId();
         this.name = dto.getName();
-        this.description = dto.getDescription();
         this.deprecated = dto.getDeprecated();
         this.availableAsOf = dto.getAvailableAsOf().getTime();
     }
@@ -37,14 +35,6 @@ public class UploadTemplateVersion implements Serializable {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
     }
 
     public boolean isDeprecated() {

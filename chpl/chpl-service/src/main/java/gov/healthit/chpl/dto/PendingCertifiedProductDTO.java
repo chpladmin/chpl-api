@@ -542,6 +542,7 @@ public class PendingCertifiedProductDTO implements Serializable {
             for(PendingCertifiedProductParentListingEntity parent : parents) {
                 CertifiedProductDetailsDTO listing = new CertifiedProductDetailsDTO();
                 listing.setId(parent.getParentListingId());
+                listing.setChplProductNumber(parent.getParentListingUniqueId());
                 if(parent.getParentListing() != null) {
                     listing.setChplProductNumber(parent.getParentListing().getChplProductNumber());
                     listing.setCertificationDate(parent.getParentListing().getCertificationDate());

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
@@ -20,8 +21,8 @@ public interface CertifiedProductUploadHandler {
     public CSVRecord getHeading();
 
     public void setHeading(final CSVRecord heading);
-
-    public int getLastDataIndex();
-
-    public void setLastDataIndex(final int lastDataIndex);
+    
+    public UploadTemplateVersionDTO getUploadTemplateVersion();
+    
+    public void setUploadTemplateVersion(UploadTemplateVersionDTO template);
 }

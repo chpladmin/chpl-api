@@ -405,7 +405,7 @@ public class CertifiedProductController {
                     + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file)
+    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
@@ -415,7 +415,7 @@ public class CertifiedProductController {
                 && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
             throw new ValidationException("File must be a CSV document.");
         }
-
+        HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
 
         BufferedReader reader = null;
@@ -464,6 +464,10 @@ public class CertifiedProductController {
                                     try {
                                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                                 rows);
+                                        if(handler.getUploadTemplateVersion() != null && 
+                                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+                                        }
                                         PendingCertifiedProductEntity pendingCp = handler.handle();
                                         cpsToAdd.add(pendingCp);
                                     } catch (final InvalidArgumentsException ex) {
@@ -484,6 +488,10 @@ public class CertifiedProductController {
                 if (i == records.size() - 1 && !rows.isEmpty()) {
                     try {
                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+                        if(handler.getUploadTemplateVersion() != null && 
+                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+                        }
                         PendingCertifiedProductEntity pendingCp = handler.handle();
                         cpsToAdd.add(pendingCp);
                     } catch (final InvalidArgumentsException ex) {
@@ -535,8 +543,9 @@ public class CertifiedProductController {
             }
         }
 
+        
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
         results.getPendingCertifiedProducts().addAll(uploadedProducts);
-        return results;
+        return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
     }
 }

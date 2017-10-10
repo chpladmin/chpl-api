@@ -49,7 +49,7 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
         }
         
         //write out heading record as csv string
-        //trim each value
+        //trim each column value
         List<String> trimmedHeaderVals = new ArrayList<String>(heading.size());
         for(int i = 0; i < heading.size(); i++) {
             String headerVal = heading.get(i).trim();
@@ -59,6 +59,9 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
         StringBuffer buf = new StringBuffer();
         CSVPrinter writer = null;
         try {
+            //adding a blank char as the record separator prevents an \r\n char 
+            //from getting appended to the end of the string (\r\n at the end 
+            //would not match any of the options in the db)
             writer = new CSVPrinter(buf, CSVFormat.EXCEL.withRecordSeparator(""));
             writer.printRecord(trimmedHeaderVals);
         } catch(IOException ex) {
@@ -103,18 +106,9 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
             handler = handler2015Version2;
         }
 
-        int lastDataIndex = -1;
-        for (int i = 0; i < heading.size() && lastDataIndex < 0; i++) {
-            String headingValue = heading.get(i);
-            if (StringUtils.isEmpty(headingValue)) {
-                lastDataIndex = i - 1;
-            } else if (i == heading.size() - 1) {
-                lastDataIndex = i;
-            }
-        }
         handler.setRecord(cpRecords);
         handler.setHeading(heading);
-        handler.setLastDataIndex(lastDataIndex);
+        handler.setUploadTemplateVersion(templateVersion);
         return handler;
     }
 }

@@ -9,7 +9,6 @@ public class UploadTemplateVersionDTO implements Serializable {
     private static final long serialVersionUID = -7841449230766088264L;
     private Long id;
     private String name;
-    private String description;
     private Date availableAsOf;
     private Boolean deprecated;
     private String headerCsv;
@@ -20,7 +19,6 @@ public class UploadTemplateVersionDTO implements Serializable {
     public UploadTemplateVersionDTO(UploadTemplateVersionEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
-        this.description = entity.getDescription();
         this.availableAsOf = entity.getAvailableAsOfDate();
         this.deprecated = entity.getDeprecated();
         this.headerCsv = entity.getHeaderCsv();
@@ -40,14 +38,6 @@ public class UploadTemplateVersionDTO implements Serializable {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
     }
 
     public Date getAvailableAsOf() {

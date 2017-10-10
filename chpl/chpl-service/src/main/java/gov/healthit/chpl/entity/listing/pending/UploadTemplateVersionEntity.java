@@ -23,9 +23,6 @@ public class UploadTemplateVersionEntity {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-
     @Column(name = "available_as_of_date", nullable = false)
     private Date availableAsOfDate;
 
@@ -97,14 +94,6 @@ public class UploadTemplateVersionEntity {
 
     public void setName(final String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
     }
 
     public Date getAvailableAsOfDate() {
