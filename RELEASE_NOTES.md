@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 14.0.0
+_10 October 2017_
 
 ### Backwards compatibility breaking features
 * Remove /certified_product_details?productId= call
