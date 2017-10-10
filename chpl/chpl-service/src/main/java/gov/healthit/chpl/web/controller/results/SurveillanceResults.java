@@ -7,19 +7,19 @@ import java.util.List;
 import gov.healthit.chpl.domain.Surveillance;
 
 public class SurveillanceResults implements Serializable {
-	private static final long serialVersionUID = 6767406136348327093L;
-	private List<Surveillance> pendingSurveillance;
+    private static final long serialVersionUID = 6767406136348327093L;
+    private List<Surveillance> pendingSurveillance;
 
-	public SurveillanceResults() {
-		pendingSurveillance = new ArrayList<Surveillance>();
-	}
+    public SurveillanceResults() {
+        pendingSurveillance = new ArrayList<Surveillance>();
+    }
 
-	public List<Surveillance> getPendingSurveillance() {
-		return pendingSurveillance;
-	}
+    public List<Surveillance> getPendingSurveillance() {
+        return pendingSurveillance;
+    }
 
-	public void setPendingSurveillance(List<Surveillance> pendingSurveillance) {
-		this.pendingSurveillance = pendingSurveillance;
-	}
+    public void setPendingSurveillance(final List<Surveillance> pendingSurveillance) {
+        this.pendingSurveillance = pendingSurveillance;
+    }
 
 }

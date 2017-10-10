@@ -34,6 +34,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -52,6 +53,8 @@ import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.search.BasicSearchResponse;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -1079,4 +1082,28 @@ public class CertifiedProductControllerTest {
 		assertNotNull(cpDetails);
 	}
 	
+	/** 
+	 * Given the CHPL is accepting search requests
+	 * When I call the REST API's /
+	 * Then the controller method's getCertifiedProductDetails returns CertifiedProductSearchDetails containing numMeaningfulUse
+	 * @throws EntityRetrievalException 
+	 */
+	@Transactional
+	@Test
+	public void test_getCertifiedProductDetails_resultReturnsNumMeaningfulUse() throws EntityRetrievalException {
+		Long cpId = 6L;
+		
+		CertifiedProductSearchDetails resp = certifiedProductController.getCertifiedProductById(cpId);
+		assertTrue("Response should contain results but is null", resp != null);
+		assertTrue("Response should contain certified product with numMeaningfulUse == 12 but contains numMeaningfulUse of " + resp.getNumMeaningfulUse(),
+				resp.getNumMeaningfulUse() == 12);
+	}
+	
+
+	
+	@Transactional
+	@Test(expected = EntityRetrievalException.class)
+	public void getMissingCertifiedProductDetailsById() throws EntityRetrievalException, EntityCreationException, IOException {
+		certifiedProductController.getCertifiedProductById(65732843893L);
+	}
 }

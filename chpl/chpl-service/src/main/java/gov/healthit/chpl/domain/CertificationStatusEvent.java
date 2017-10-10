@@ -11,78 +11,86 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationStatusEvent implements Serializable {
-	private static final long serialVersionUID = -2498656549844148886L;
-	
-	/**
-	 * Internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
-	
-	/**
-	 * The date on which a change of certification status occurred.
-	 */
-	@XmlElement(required = true)
-	private Long eventDate;
-	
-	/**
-	 * Internal certification status ID.
-	 */
-	@XmlElement(required = true)
-	private Long certificationStatusId;
-	
-	/**
-	 * Certification status name.
-	 */
-	@XmlElement(required = true)
-	private String certificationStatusName;
+    private static final long serialVersionUID = -2498656549844148886L;
 
-	@XmlTransient
-	private Long lastModifiedUser;
-	
-	@XmlTransient
-	private Long lastModifiedDate;
-	
-	public CertificationStatusEvent(){}
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public Long getEventDate() {
-		return eventDate;
-	}
-	public void setEventDate(Long eventDate) {
-		this.eventDate = eventDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
-	public Long getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Long lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    /**
+     * Internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	public Long getCertificationStatusId() {
-		return certificationStatusId;
-	}
+    /**
+     * The date on which a change of certification status occurred.
+     */
+    @XmlElement(required = true)
+    private Long eventDate;
 
-	public void setCertificationStatusId(Long certificationStatusId) {
-		this.certificationStatusId = certificationStatusId;
-	}
+    /**
+     * Internal certification status ID.
+     */
+    @XmlElement(required = true)
+    private Long certificationStatusId;
 
-	public String getCertificationStatusName() {
-		return certificationStatusName;
-	}
+    /**
+     * Certification status name.
+     */
+    @XmlElement(required = true)
+    private String certificationStatusName;
 
-	public void setCertificationStatusName(String certificationStatusName) {
-		this.certificationStatusName = certificationStatusName;
-	}
+    @XmlTransient
+    private Long lastModifiedUser;
+
+    @XmlTransient
+    private Long lastModifiedDate;
+
+    public CertificationStatusEvent() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Long getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(final Long eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Long lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getCertificationStatusId() {
+        return certificationStatusId;
+    }
+
+    public void setCertificationStatusId(final Long certificationStatusId) {
+        this.certificationStatusId = certificationStatusId;
+    }
+
+    public String getCertificationStatusName() {
+        return certificationStatusName;
+    }
+
+    public void setCertificationStatusName(final String certificationStatusName) {
+        this.certificationStatusName = certificationStatusName;
+    }
 }

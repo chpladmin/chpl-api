@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity;
 
-
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -17,112 +16,113 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pending_certified_product_accessibility_standard")
 public class PendingCertifiedProductAccessibilityStandardEntity {
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "pending_certified_product_accessibility_standard_id", nullable = false  )
-	private Long id;
-    
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true, insertable = false, updatable = false)
-	private PendingCertifiedProductEntity mappedProduct;
-	
-	@Column(name="pending_certified_product_id")
-	private Long pendingCertifiedProductId;
-	
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_accessibility_standard_id", nullable = false)
+    private Long id;
+
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false,
+            updatable = false)
+    private PendingCertifiedProductEntity mappedProduct;
+
+    @Column(name = "pending_certified_product_id")
+    private Long pendingCertifiedProductId;
+
     @Column(name = "accessibility_standard_id")
     private Long accessibilityStandardId;
-    
+
     @Column(name = "accessibility_standard_name")
     private String name;
-    
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column(name = "deleted", nullable = false  )
-	private Boolean deleted;
 
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public String getName() {
-		return name;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public PendingCertifiedProductEntity getMappedProduct() {
-		return mappedProduct;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setMappedProduct(PendingCertifiedProductEntity mappedProduct) {
-		this.mappedProduct = mappedProduct;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public Long getPendingCertifiedProductId() {
-		return pendingCertifiedProductId;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
-		this.pendingCertifiedProductId = pendingCertifiedProductId;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public Long getAccessibilityStandardId() {
-		return accessibilityStandardId;
-	}
+    public PendingCertifiedProductEntity getMappedProduct() {
+        return mappedProduct;
+    }
 
-	public void setAccessibilityStandardId(Long accessibilityStandardId) {
-		this.accessibilityStandardId = accessibilityStandardId;
-	}
+    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
+        this.mappedProduct = mappedProduct;
+    }
+
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
+    }
+
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
+
+    public Long getAccessibilityStandardId() {
+        return accessibilityStandardId;
+    }
+
+    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
+        this.accessibilityStandardId = accessibilityStandardId;
+    }
 }

@@ -27,81 +27,58 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @PropertySource("classpath:environment.properties")
 @EnableSwagger2
 public class SwaggerConfig implements EnvironmentAware {
-	
-	private static final Logger logger = LogManager.getLogger(SwaggerConfig.class);
 
-	@Autowired ServletContext context;
-	@Autowired private Environment env;
+    private static final Logger LOGGER = LogManager.getLogger(SwaggerConfig.class);
 
-	@Override
+    @Autowired
+    ServletContext context;
+    @Autowired
+    private Environment env;
+
+    @Override
     public void setEnvironment(final Environment environment) {
-		logger.info("setEnvironment");
+        LOGGER.info("setEnvironment");
         this.env = environment;
     }
 
     @Bean
-    public Docket customDocket(){
-    	logger.info("get Docket");
-       return new Docket(DocumentationType.SWAGGER_2)
-    		   .apiInfo(apiInfo())
-    		   .pathProvider(pathProvider())
-               .select()
-               .paths(this.paths())
-               .build();
+    public Docket customDocket() {
+        LOGGER.info("get Docket");
+        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).pathProvider(pathProvider()).select()
+                .paths(this.paths()).build();
     }
 
     private ApiInfo apiInfo() {
-    	logger.info("get ApiInfo");
-    	return new ApiInfo("CHPL", "Certified Health IT Product Listing", "13.1.0",
-    			"http://terms/of/service.url", "CHPL@ainq.com",
-    			"License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
+        LOGGER.info("get ApiInfo");
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "14.0.0", "http://terms/of/service.url",
+                "CHPL@ainq.com", "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
     private PathProvider pathProvider() {
-    	logger.info("get PathProvider");
-    	return new AbsolutePathProvider(context);
+        LOGGER.info("get PathProvider");
+        return new AbsolutePathProvider(context);
     }
 
     @SuppressWarnings("unchecked")
     private Predicate<String> paths() {
-    	logger.info("get Predicate paths");
-      return or(
-    		  regex("/acbs.*"),
-    		  regex("/activity.*"),
-    		  regex("/announcements.*"),
-    		  regex("/atls.*"),
-    		  regex("/auth.*"),
-    		  regex("/certification_ids.*"),
-    		  regex("/certified_products.*"),
-    		  regex("/certified_product_details.*"),
-    		  regex("/collections.*"),
-    		  regex("/corrective_action_plan.*"),
-    		  regex("/data/.*"),
-    		  regex("/download.*"),
-    		  regex("/jobs.*"),
-    		  regex("/key.*"),
-    		  regex("/notifications.*"),    		  
-    		  regex("/products.*"),
-    		  regex("/search.*"),
-    		  regex("/surveillance.*"),
-    		  regex("/status"),
-    		  regex("/cache_status"),
-    		  regex("/users.*"),
-    		  regex("/developers.*"),
-    		  regex("/versions.*"),
-    		  regex("/decertifications/.*")
-    		 );
+        LOGGER.info("get Predicate paths");
+        return or(regex("/acbs.*"), regex("/activity.*"), regex("/announcements.*"), regex("/atls.*"), regex("/auth.*"),
+                regex("/certification_ids.*"), regex("/certified_products.*"), regex("/certified_product_details.*"),
+                regex("/collections.*"), regex("/corrective_action_plan.*"), regex("/data/.*"), regex("/download.*"),
+                regex("/jobs.*"), regex("/key.*"), regex("/notifications.*"), regex("/products.*"), regex("/search.*"),
+                regex("/surveillance.*"), regex("/status"), regex("/cache_status"), regex("/users.*"),
+                regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"));
     }
 
     private class AbsolutePathProvider extends RelativePathProvider {
-    	public AbsolutePathProvider(ServletContext context) {
-    		super(context);
-    	}
+        public AbsolutePathProvider(ServletContext context) {
+            super(context);
+        }
 
-    	@Override
-    	public String getApplicationBasePath() {
-    		logger.info("get application base path");
-    		return env.getProperty("basePath");
-    	}
+        @Override
+        public String getApplicationBasePath() {
+            LOGGER.info("get application base path");
+            return env.getProperty("basePath");
+        }
     }
 }

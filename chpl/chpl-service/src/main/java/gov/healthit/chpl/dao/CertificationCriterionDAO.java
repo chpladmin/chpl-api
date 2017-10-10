@@ -6,19 +6,27 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
 public interface CertificationCriterionDAO {
-	
-	public CertificationCriterionDTO create(CertificationCriterionDTO result) throws EntityCreationException, EntityRetrievalException;
 
-	public CertificationCriterionDTO update(CertificationCriterionDTO result) throws EntityRetrievalException, EntityCreationException;
-	
-	public void delete(Long criterionId);
-	
-	public List<CertificationCriterionDTO> findAll();
-	public List<CertificationCriterionDTO> findByCertificationEditionYear(String year);
-	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
-	public CertificationCriterionDTO getByName(String criterionName);
-	public CertificationCriterionDTO getByNameAndYear(String criterionName, String year);
-	public CertificationCriterionEntity getEntityByName(String name);
-	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException;
-	
+    CertificationCriterionDTO create(CertificationCriterionDTO result)
+            throws EntityCreationException, EntityRetrievalException;
+
+    CertificationCriterionDTO update(CertificationCriterionDTO result)
+            throws EntityRetrievalException, EntityCreationException;
+
+    void delete(Long criterionId);
+
+    List<CertificationCriterionDTO> findAll();
+
+    List<CertificationCriterionDTO> findByCertificationEditionYear(String year);
+
+    CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
+
+    CertificationCriterionDTO getByName(String criterionName);
+
+    CertificationCriterionDTO getByNameAndYear(String criterionName, String year);
+
+    CertificationCriterionEntity getEntityByName(String name);
+
+    CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException;
+
 }

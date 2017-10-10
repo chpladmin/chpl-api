@@ -17,109 +17,115 @@ import javax.persistence.Table;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
 
-
 @Entity
 @Table(name = "test_tool")
 public class TestToolEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic(optional = false)
-	@JoinColumn(name = "test_tool_id")
-	@Column(name = "test_tool_id")
-	private Long id;
-	
-	@Column(name = "name")
-	private String name;
-	
-	@Column(name = "description")
-	private String description;
 
-	@Column(name = "retired")
-	private Boolean retired;
-	
-	@Basic(optional = true)
-	@OneToMany(targetEntity = CertificationResultTestToolEntity.class, fetch = FetchType.LAZY)
-	private List<CertificationResultTestTool> certificationResultTestTool;
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @JoinColumn(name = "test_tool_id")
+    @Column(name = "test_tool_id")
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "name")
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    @Column(name = "description")
+    private String description;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Column(name = "retired")
+    private Boolean retired;
 
-	public String getDescription() {
-		return description;
-	}
+    @Basic(optional = true)
+    @OneToMany(targetEntity = CertificationResultTestToolEntity.class, fetch = FetchType.LAZY)
+    private List<CertificationResultTestTool> certificationResultTestTool;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	protected Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	protected Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	protected Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	protected Long lastModifiedUser;
-	
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Boolean getRetired() {
-		return retired;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public List<CertificationResultTestTool> getCertificationResultTestTool() {
-		return certificationResultTestTool;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public void setCertificationResultTestTool(List<CertificationResultTestTool> certificationResultTestTool) {
-		this.certificationResultTestTool = certificationResultTestTool;
-	}
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    protected Date creationDate;
+
+    @Basic(optional = false)
+    @Column(nullable = false)
+    protected Boolean deleted;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    protected Date lastModifiedDate;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    protected Long lastModifiedUser;
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Boolean getRetired() {
+        return retired;
+    }
+
+    public void setRetired(final Boolean retired) {
+        this.retired = retired;
+    }
+
+    public List<CertificationResultTestTool> getCertificationResultTestTool() {
+        return certificationResultTestTool;
+    }
+
+    public void setCertificationResultTestTool(final List<CertificationResultTestTool> certificationResultTestTool) {
+        this.certificationResultTestTool = certificationResultTestTool;
+    }
 }

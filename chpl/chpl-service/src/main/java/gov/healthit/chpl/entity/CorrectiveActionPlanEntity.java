@@ -12,206 +12,206 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="corrective_action_plan")
+@Table(name = "corrective_action_plan")
 public class CorrectiveActionPlanEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "corrective_action_plan_id", nullable = false  )
-	private Long id;
-	
-	@Basic( optional = false )
-	@Column(name="certified_product_id")
-	private Long certifiedProductId;
 
-	@Basic( optional = false )
-	@Column(name="surveillance_start")
-	private Date surveillanceStartDate;
-	
-	@Column(name="surveillance_end")
-	private Date surveillanceEndDate;
-	
-	@Basic( optional = false )
-	@Column(name = "surveillance_result")
-	private Boolean surveillanceResult;
-	
-	@Basic( optional = false )
-	@Column(name = "noncompliance_determination_date")
-	private Date nonComplianceDeterminationDate;
-	
-	@Column(name = "approval_date")
-	private Date approvalDate;
-	
-	@Column(name = "start_date")
-	private Date startDate;
-	
-	@Column(name = "completion_date_required")
-	private Date requiredCompletionDate;
-	
-	@Column(name = "completion_date_actual")
-	private Date actualCompletionDate;
-	
-	@Column(name = "summary")
-	private String summary;
-	
-	@Column(name = "developer_explanation")
-	private String developerExplanation;
-	
-	@Column(name = "resolution")
-	private String resolution;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@NotNull()
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@NotNull()
-	@Column( nullable = false  )
-	private Boolean deleted;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "corrective_action_plan_id", nullable = false)
+    private Long id;
 
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "surveillance_start")
+    private Date surveillanceStartDate;
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
+    @Column(name = "surveillance_end")
+    private Date surveillanceEndDate;
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+    @Basic(optional = false)
+    @Column(name = "surveillance_result")
+    private Boolean surveillanceResult;
 
-	public Date getApprovalDate() {
-		return approvalDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "noncompliance_determination_date")
+    private Date nonComplianceDeterminationDate;
 
-	public void setApprovalDate(Date approvalDate) {
-		this.approvalDate = approvalDate;
-	}
-	
-	public Date getActualCompletionDate() {
-		return actualCompletionDate;
-	}
+    @Column(name = "approval_date")
+    private Date approvalDate;
 
-	public void setActualCompletionDate(Date actualCompletionDate) {
-		this.actualCompletionDate = actualCompletionDate;
-	}
-	
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Column(name = "start_date")
+    private Date startDate;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Column(name = "completion_date_required")
+    private Date requiredCompletionDate;
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Column(name = "completion_date_actual")
+    private Date actualCompletionDate;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Column(name = "summary")
+    private String summary;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Column(name = "developer_explanation")
+    private String developerExplanation;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Column(name = "resolution")
+    private String resolution;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Date getSurveillanceStartDate() {
-		return surveillanceStartDate;
-	}
+    @Basic(optional = false)
+    @NotNull()
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setSurveillanceStartDate(Date surveillanceStartDate) {
-		this.surveillanceStartDate = surveillanceStartDate;
-	}
+    @Basic(optional = false)
+    @NotNull()
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	public Date getSurveillanceEndDate() {
-		return surveillanceEndDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setSurveillanceEndDate(Date surveillanceEndDate) {
-		this.surveillanceEndDate = surveillanceEndDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Boolean getSurveillanceResult() {
-		return surveillanceResult;
-	}
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	public void setSurveillanceResult(Boolean surveillanceResult) {
-		this.surveillanceResult = surveillanceResult;
-	}
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	public Date getNonComplianceDeterminationDate() {
-		return nonComplianceDeterminationDate;
-	}
+    public Date getApprovalDate() {
+        return approvalDate;
+    }
 
-	public void setNonComplianceDeterminationDate(Date nonComplianceDeterminationDate) {
-		this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
-	}
+    public void setApprovalDate(final Date approvalDate) {
+        this.approvalDate = approvalDate;
+    }
 
-	public Date getStartDate() {
-		return startDate;
-	}
+    public Date getActualCompletionDate() {
+        return actualCompletionDate;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public void setActualCompletionDate(final Date actualCompletionDate) {
+        this.actualCompletionDate = actualCompletionDate;
+    }
 
-	public Date getRequiredCompletionDate() {
-		return requiredCompletionDate;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setRequiredCompletionDate(Date requiredCompletionDate) {
-		this.requiredCompletionDate = requiredCompletionDate;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getSummary() {
-		return summary;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public String getDeveloperExplanation() {
-		return developerExplanation;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setDeveloperExplanation(String developerExplanation) {
-		this.developerExplanation = developerExplanation;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public String getResolution() {
-		return resolution;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getSurveillanceStartDate() {
+        return surveillanceStartDate;
+    }
+
+    public void setSurveillanceStartDate(final Date surveillanceStartDate) {
+        this.surveillanceStartDate = surveillanceStartDate;
+    }
+
+    public Date getSurveillanceEndDate() {
+        return surveillanceEndDate;
+    }
+
+    public void setSurveillanceEndDate(final Date surveillanceEndDate) {
+        this.surveillanceEndDate = surveillanceEndDate;
+    }
+
+    public Boolean getSurveillanceResult() {
+        return surveillanceResult;
+    }
+
+    public void setSurveillanceResult(final Boolean surveillanceResult) {
+        this.surveillanceResult = surveillanceResult;
+    }
+
+    public Date getNonComplianceDeterminationDate() {
+        return nonComplianceDeterminationDate;
+    }
+
+    public void setNonComplianceDeterminationDate(final Date nonComplianceDeterminationDate) {
+        this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(final Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getRequiredCompletionDate() {
+        return requiredCompletionDate;
+    }
+
+    public void setRequiredCompletionDate(final Date requiredCompletionDate) {
+        this.requiredCompletionDate = requiredCompletionDate;
+    }
+
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(final String summary) {
+        this.summary = summary;
+    }
+
+    public String getDeveloperExplanation() {
+        return developerExplanation;
+    }
+
+    public void setDeveloperExplanation(final String developerExplanation) {
+        this.developerExplanation = developerExplanation;
+    }
+
+    public String getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(final String resolution) {
+        this.resolution = resolution;
+    }
 }

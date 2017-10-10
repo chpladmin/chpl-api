@@ -8,142 +8,142 @@ import gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity;
 import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 public class PendingCqmCriterionDTO implements Serializable {
-	private static final long serialVersionUID = -5341402809549146966L;
-	private Long id;
-	private Long cqmCriterionId;
-	private Long pendingCertifiedProductId;
-	private boolean meetsCriteria;
-	
-	private String cqmNumber;
-	private String title;
-	private String cmsId;
-	private String nqfNumber;
-	private String version; //only valid for CMS
-	private Long typeId;
-	private String domain;
-	
-	private List<PendingCqmCertificationCriterionDTO> certifications;
-	
-	public PendingCqmCriterionDTO() {
-		certifications = new ArrayList<PendingCqmCertificationCriterionDTO>();
-	} 
-	
-	public PendingCqmCriterionDTO(PendingCqmCriterionEntity entity) {
-		this();
-		this.setId(entity.getId());
-		this.setCqmCriterionId(entity.getMappedCriterion().getId());
-		this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
-		this.setMeetsCriteria(entity.getMeetsCriteria().booleanValue());
-		
-		this.setCqmNumber(entity.getMappedCriterion().getNumber());
-		this.setTitle(entity.getMappedCriterion().getTitle());
-		this.setCmsId(entity.getMappedCriterion().getCmsId());
-		this.setNqfNumber(entity.getMappedCriterion().getNqfNumber());
-		this.setVersion(entity.getMappedCriterion().getCqmVersion());
-		this.setTypeId(entity.getMappedCriterion().getCqmCriterionTypeId());
-		this.setDomain(entity.getMappedCriterion().getCqmDomain());
-		
-		if(entity.getCertifications() != null && entity.getCertifications().size() > 0) {
-			for(PendingCqmCertificationCriteriaEntity certEntity : entity.getCertifications()) {
-				PendingCqmCertificationCriterionDTO cert = new PendingCqmCertificationCriterionDTO(certEntity);
-				this.certifications.add(cert);
-			}
-		}
-	}
+    private static final long serialVersionUID = -5341402809549146966L;
+    private Long id;
+    private Long cqmCriterionId;
+    private Long pendingCertifiedProductId;
+    private boolean meetsCriteria;
 
-	public Long getId() {
-		return id;
-	}
+    private String cqmNumber;
+    private String title;
+    private String cmsId;
+    private String nqfNumber;
+    private String version; // only valid for CMS
+    private Long typeId;
+    private String domain;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    private List<PendingCqmCertificationCriterionDTO> certifications;
 
-	public Long getCqmCriterionId() {
-		return cqmCriterionId;
-	}
+    public PendingCqmCriterionDTO() {
+        certifications = new ArrayList<PendingCqmCertificationCriterionDTO>();
+    }
 
-	public void setCqmCriterionId(Long cqmCriterionId) {
-		this.cqmCriterionId = cqmCriterionId;
-	}
+    public PendingCqmCriterionDTO(PendingCqmCriterionEntity entity) {
+        this();
+        this.setId(entity.getId());
+        this.setCqmCriterionId(entity.getMappedCriterion().getId());
+        this.setPendingCertifiedProductId(entity.getPendingCertifiedProductId());
+        this.setMeetsCriteria(entity.getMeetsCriteria().booleanValue());
 
-	public Long getPendingCertifiedProductId() {
-		return pendingCertifiedProductId;
-	}
+        this.setCqmNumber(entity.getMappedCriterion().getNumber());
+        this.setTitle(entity.getMappedCriterion().getTitle());
+        this.setCmsId(entity.getMappedCriterion().getCmsId());
+        this.setNqfNumber(entity.getMappedCriterion().getNqfNumber());
+        this.setVersion(entity.getMappedCriterion().getCqmVersion());
+        this.setTypeId(entity.getMappedCriterion().getCqmCriterionTypeId());
+        this.setDomain(entity.getMappedCriterion().getCqmDomain());
 
-	public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
-		this.pendingCertifiedProductId = pendingCertifiedProductId;
-	}
+        if (entity.getCertifications() != null && entity.getCertifications().size() > 0) {
+            for (PendingCqmCertificationCriteriaEntity certEntity : entity.getCertifications()) {
+                PendingCqmCertificationCriterionDTO cert = new PendingCqmCertificationCriterionDTO(certEntity);
+                this.certifications.add(cert);
+            }
+        }
+    }
 
-	public boolean isMeetsCriteria() {
-		return meetsCriteria;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setMeetsCriteria(boolean meetsCriteria) {
-		this.meetsCriteria = meetsCriteria;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getCqmNumber() {
-		return cqmNumber;
-	}
+    public Long getCqmCriterionId() {
+        return cqmCriterionId;
+    }
 
-	public void setCqmNumber(String cqmNumber) {
-		this.cqmNumber = cqmNumber;
-	}
+    public void setCqmCriterionId(final Long cqmCriterionId) {
+        this.cqmCriterionId = cqmCriterionId;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
 
-	public String getCmsId() {
-		return cmsId;
-	}
+    public boolean isMeetsCriteria() {
+        return meetsCriteria;
+    }
 
-	public void setCmsId(String cmsId) {
-		this.cmsId = cmsId;
-	}
+    public void setMeetsCriteria(final boolean meetsCriteria) {
+        this.meetsCriteria = meetsCriteria;
+    }
 
-	public String getNqfNumber() {
-		return nqfNumber;
-	}
+    public String getCqmNumber() {
+        return cqmNumber;
+    }
 
-	public void setNqfNumber(String nqfNumber) {
-		this.nqfNumber = nqfNumber;
-	}
+    public void setCqmNumber(final String cqmNumber) {
+        this.cqmNumber = cqmNumber;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public void setTitle(final String title) {
+        this.title = title;
+    }
 
-	public Long getTypeId() {
-		return typeId;
-	}
+    public String getCmsId() {
+        return cmsId;
+    }
 
-	public void setTypeId(Long typeId) {
-		this.typeId = typeId;
-	}
+    public void setCmsId(final String cmsId) {
+        this.cmsId = cmsId;
+    }
 
-	public String getDomain() {
-		return domain;
-	}
+    public String getNqfNumber() {
+        return nqfNumber;
+    }
 
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
+    public void setNqfNumber(final String nqfNumber) {
+        this.nqfNumber = nqfNumber;
+    }
 
-	public List<PendingCqmCertificationCriterionDTO> getCertifications() {
-		return certifications;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public void setCertifications(List<PendingCqmCertificationCriterionDTO> certifications) {
-		this.certifications = certifications;
-	}
+    public void setVersion(final String version) {
+        this.version = version;
+    }
+
+    public Long getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(final Long typeId) {
+        this.typeId = typeId;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(final String domain) {
+        this.domain = domain;
+    }
+
+    public List<PendingCqmCertificationCriterionDTO> getCertifications() {
+        return certifications;
+    }
+
+    public void setCertifications(final List<PendingCqmCertificationCriterionDTO> certifications) {
+        this.certifications = certifications;
+    }
 }

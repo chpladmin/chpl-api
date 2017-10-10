@@ -10,35 +10,36 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class SurveillanceResultType implements Serializable {
-	private static final long serialVersionUID = 120064764043803388L;
-	
-	/**
-	 * Surveillance result type internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
-	
-	/**
-	 * Surveillance result type name. Nonconformity or No Nonconformity
-	 */
-	@XmlElement(required = true)
-	private String name;
-	
-	public SurveillanceResultType() {}
+    private static final long serialVersionUID = 120064764043803388L;
 
-	public Long getId() {
-		return id;
-	}
+    /**
+     * Surveillance result type internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * Surveillance result type name. Nonconformity or No Nonconformity
+     */
+    @XmlElement(required = true)
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    public SurveillanceResultType() {
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
 }

@@ -5,12 +5,16 @@ import java.util.List;
 import gov.healthit.chpl.dto.TestToolDTO;
 
 public interface TestToolDAO {
-	
-	public TestToolDTO create(TestToolDTO dto) throws EntityCreationException, EntityRetrievalException;	
-	public TestToolDTO update(TestToolDTO dto) throws EntityRetrievalException;
-	public void delete(Long id) throws EntityRetrievalException;
-	
-	public List<TestToolDTO> findAll();
-	public TestToolDTO getById(Long id);
-	public TestToolDTO getByName(String name );
+
+    TestToolDTO create(TestToolDTO dto) throws EntityCreationException, EntityRetrievalException;
+
+    TestToolDTO update(TestToolDTO dto) throws EntityRetrievalException;
+
+    void delete(Long id) throws EntityRetrievalException;
+
+    List<TestToolDTO> findAll();
+
+    TestToolDTO getById(Long id);
+
+    TestToolDTO getByName(String name);
 }

@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectsMissingValidationException extends Exception {
-	private static final long serialVersionUID = -6542978782655873229L;
-	
-	private List<ObjectMissingValidationException> exceptions;
+    private static final long serialVersionUID = -6542978782655873229L;
 
-	public ObjectsMissingValidationException() {
-		super();
-		exceptions = new ArrayList<ObjectMissingValidationException>();
-	}
+    private List<ObjectMissingValidationException> exceptions;
 
-	public List<ObjectMissingValidationException> getExceptions() {
-		return exceptions;
-	}
+    public ObjectsMissingValidationException() {
+        super();
+        exceptions = new ArrayList<ObjectMissingValidationException>();
+    }
 
-	public void setExceptions(List<ObjectMissingValidationException> exceptions) {
-		this.exceptions = exceptions;
-	}
+    public List<ObjectMissingValidationException> getExceptions() {
+        return exceptions;
+    }
+
+    public void setExceptions(final List<ObjectMissingValidationException> exceptions) {
+        this.exceptions = exceptions;
+    }
 
 }

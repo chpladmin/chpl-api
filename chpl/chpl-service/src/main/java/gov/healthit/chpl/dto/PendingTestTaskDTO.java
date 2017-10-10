@@ -5,171 +5,172 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.PendingTestTaskEntity;
 
 public class PendingTestTaskDTO implements Serializable {
-	private static final long serialVersionUID = -2500801204225408178L;
-	private Long id;
-	private String uniqueId;
-	private String description;
-	private Float taskSuccessAverage;
-	private Float taskSuccessStddev;
-	private Integer taskPathDeviationObserved;
-	private Integer taskPathDeviationOptimal;
-	private Long taskTimeAvg;
-	private Integer taskTimeStddev;
-	private Integer taskTimeDeviationObservedAvg;
-	private Integer taskTimeDeviationOptimalAvg;
-	private Float taskErrors;
-	private Float taskErrorsStddev;
-	private String taskRatingScale;
-	private Float taskRating;
-	private Float taskRatingStddev;
-	
-	public PendingTestTaskDTO() {
-	}
-	
-	public PendingTestTaskDTO(PendingTestTaskEntity entity) {
-		this();
-		this.setId(entity.getId());
-		this.uniqueId = entity.getUniqueId();
-		this.description = entity.getDescription();
-		this.taskSuccessAverage = entity.getTaskSuccessAverage();
-		this.taskSuccessStddev = entity.getTaskSuccessStddev();
-		this.taskPathDeviationObserved = entity.getTaskPathDeviationObserved();
-		this.taskPathDeviationOptimal = entity.getTaskPathDeviationOptimal();
-		this.taskTimeAvg = entity.getTaskTimeAvg();
-		this.taskTimeStddev = entity.getTaskTimeStddev();
-		this.taskTimeDeviationObservedAvg = entity.getTaskTimeDeviationObservedAvg();
-		this.taskTimeDeviationOptimalAvg = entity.getTaskTimeDeviationOptimalAvg();
-		this.taskErrors = entity.getTaskErrors();
-		this.taskErrorsStddev = entity.getTaskErrorsStddev();
-		this.taskRatingScale = entity.getTaskRatingScale();
-		this.taskRating = entity.getTaskRating();
-		this.taskRatingStddev = entity.getTaskRatingStddev();
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    private static final long serialVersionUID = -2500801204225408178L;
+    private Long id;
+    private String uniqueId;
+    private String description;
+    private Float taskSuccessAverage;
+    private Float taskSuccessStddev;
+    private Integer taskPathDeviationObserved;
+    private Integer taskPathDeviationOptimal;
+    private Long taskTimeAvg;
+    private Integer taskTimeStddev;
+    private Integer taskTimeDeviationObservedAvg;
+    private Integer taskTimeDeviationOptimalAvg;
+    private Float taskErrors;
+    private Float taskErrorsStddev;
+    private String taskRatingScale;
+    private Float taskRating;
+    private Float taskRatingStddev;
 
-	public String getUniqueId() {
-		return uniqueId;
-	}
+    public PendingTestTaskDTO() {
+    }
 
-	public void setUniqueId(String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
+    public PendingTestTaskDTO(PendingTestTaskEntity entity) {
+        this();
+        this.setId(entity.getId());
+        this.uniqueId = entity.getUniqueId();
+        this.description = entity.getDescription();
+        this.taskSuccessAverage = entity.getTaskSuccessAverage();
+        this.taskSuccessStddev = entity.getTaskSuccessStddev();
+        this.taskPathDeviationObserved = entity.getTaskPathDeviationObserved();
+        this.taskPathDeviationOptimal = entity.getTaskPathDeviationOptimal();
+        this.taskTimeAvg = entity.getTaskTimeAvg();
+        this.taskTimeStddev = entity.getTaskTimeStddev();
+        this.taskTimeDeviationObservedAvg = entity.getTaskTimeDeviationObservedAvg();
+        this.taskTimeDeviationOptimalAvg = entity.getTaskTimeDeviationOptimalAvg();
+        this.taskErrors = entity.getTaskErrors();
+        this.taskErrorsStddev = entity.getTaskErrorsStddev();
+        this.taskRatingScale = entity.getTaskRatingScale();
+        this.taskRating = entity.getTaskRating();
+        this.taskRatingStddev = entity.getTaskRatingStddev();
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Float getTaskSuccessAverage() {
-		return taskSuccessAverage;
-	}
+    public String getUniqueId() {
+        return uniqueId;
+    }
 
-	public void setTaskSuccessAverage(Float taskSuccessAverage) {
-		this.taskSuccessAverage = taskSuccessAverage;
-	}
+    public void setUniqueId(final String uniqueId) {
+        this.uniqueId = uniqueId;
+    }
 
-	public Float getTaskSuccessStddev() {
-		return taskSuccessStddev;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setTaskSuccessStddev(Float taskSuccessStddev) {
-		this.taskSuccessStddev = taskSuccessStddev;
-	}
+    public void setDescription(final String description) {
+        this.description = description;
+    }
 
-	public Integer getTaskPathDeviationObserved() {
-		return taskPathDeviationObserved;
-	}
+    public Float getTaskSuccessAverage() {
+        return taskSuccessAverage;
+    }
 
-	public void setTaskPathDeviationObserved(Integer taskPathDeviationObserved) {
-		this.taskPathDeviationObserved = taskPathDeviationObserved;
-	}
+    public void setTaskSuccessAverage(final Float taskSuccessAverage) {
+        this.taskSuccessAverage = taskSuccessAverage;
+    }
 
-	public Integer getTaskPathDeviationOptimal() {
-		return taskPathDeviationOptimal;
-	}
+    public Float getTaskSuccessStddev() {
+        return taskSuccessStddev;
+    }
 
-	public void setTaskPathDeviationOptimal(Integer taskPathDeviationOptimal) {
-		this.taskPathDeviationOptimal = taskPathDeviationOptimal;
-	}
+    public void setTaskSuccessStddev(final Float taskSuccessStddev) {
+        this.taskSuccessStddev = taskSuccessStddev;
+    }
 
-	public Long getTaskTimeAvg() {
-		return taskTimeAvg;
-	}
+    public Integer getTaskPathDeviationObserved() {
+        return taskPathDeviationObserved;
+    }
 
-	public void setTaskTimeAvg(Long taskTimeAvg) {
-		this.taskTimeAvg = taskTimeAvg;
-	}
+    public void setTaskPathDeviationObserved(final Integer taskPathDeviationObserved) {
+        this.taskPathDeviationObserved = taskPathDeviationObserved;
+    }
 
-	public Integer getTaskTimeStddev() {
-		return taskTimeStddev;
-	}
+    public Integer getTaskPathDeviationOptimal() {
+        return taskPathDeviationOptimal;
+    }
 
-	public void setTaskTimeStddev(Integer taskTimeStddev) {
-		this.taskTimeStddev = taskTimeStddev;
-	}
+    public void setTaskPathDeviationOptimal(final Integer taskPathDeviationOptimal) {
+        this.taskPathDeviationOptimal = taskPathDeviationOptimal;
+    }
 
-	public Integer getTaskTimeDeviationObservedAvg() {
-		return taskTimeDeviationObservedAvg;
-	}
+    public Long getTaskTimeAvg() {
+        return taskTimeAvg;
+    }
 
-	public void setTaskTimeDeviationObservedAvg(Integer taskTimeDeviationObservedAvg) {
-		this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
-	}
+    public void setTaskTimeAvg(final Long taskTimeAvg) {
+        this.taskTimeAvg = taskTimeAvg;
+    }
 
-	public Integer getTaskTimeDeviationOptimalAvg() {
-		return taskTimeDeviationOptimalAvg;
-	}
+    public Integer getTaskTimeStddev() {
+        return taskTimeStddev;
+    }
 
-	public void setTaskTimeDeviationOptimalAvg(Integer taskTimeDeviationOptimalAvg) {
-		this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
-	}
+    public void setTaskTimeStddev(final Integer taskTimeStddev) {
+        this.taskTimeStddev = taskTimeStddev;
+    }
 
-	public Float getTaskErrors() {
-		return taskErrors;
-	}
+    public Integer getTaskTimeDeviationObservedAvg() {
+        return taskTimeDeviationObservedAvg;
+    }
 
-	public void setTaskErrors(Float taskErrors) {
-		this.taskErrors = taskErrors;
-	}
+    public void setTaskTimeDeviationObservedAvg(final Integer taskTimeDeviationObservedAvg) {
+        this.taskTimeDeviationObservedAvg = taskTimeDeviationObservedAvg;
+    }
 
-	public Float getTaskErrorsStddev() {
-		return taskErrorsStddev;
-	}
+    public Integer getTaskTimeDeviationOptimalAvg() {
+        return taskTimeDeviationOptimalAvg;
+    }
 
-	public void setTaskErrorsStddev(Float taskErrorsStddev) {
-		this.taskErrorsStddev = taskErrorsStddev;
-	}
+    public void setTaskTimeDeviationOptimalAvg(final Integer taskTimeDeviationOptimalAvg) {
+        this.taskTimeDeviationOptimalAvg = taskTimeDeviationOptimalAvg;
+    }
 
-	public String getTaskRatingScale() {
-		return taskRatingScale;
-	}
+    public Float getTaskErrors() {
+        return taskErrors;
+    }
 
-	public void setTaskRatingScale(String taskRatingScale) {
-		this.taskRatingScale = taskRatingScale;
-	}
+    public void setTaskErrors(final Float taskErrors) {
+        this.taskErrors = taskErrors;
+    }
 
-	public Float getTaskRating() {
-		return taskRating;
-	}
+    public Float getTaskErrorsStddev() {
+        return taskErrorsStddev;
+    }
 
-	public void setTaskRating(Float taskRating) {
-		this.taskRating = taskRating;
-	}
+    public void setTaskErrorsStddev(final Float taskErrorsStddev) {
+        this.taskErrorsStddev = taskErrorsStddev;
+    }
 
-	public Float getTaskRatingStddev() {
-		return taskRatingStddev;
-	}
+    public String getTaskRatingScale() {
+        return taskRatingScale;
+    }
 
-	public void setTaskRatingStddev(Float taskRatingStddev) {
-		this.taskRatingStddev = taskRatingStddev;
-	}
+    public void setTaskRatingScale(final String taskRatingScale) {
+        this.taskRatingScale = taskRatingScale;
+    }
+
+    public Float getTaskRating() {
+        return taskRating;
+    }
+
+    public void setTaskRating(final Float taskRating) {
+        this.taskRating = taskRating;
+    }
+
+    public Float getTaskRatingStddev() {
+        return taskRatingStddev;
+    }
+
+    public void setTaskRatingStddev(final Float taskRatingStddev) {
+        this.taskRatingStddev = taskRatingStddev;
+    }
 }

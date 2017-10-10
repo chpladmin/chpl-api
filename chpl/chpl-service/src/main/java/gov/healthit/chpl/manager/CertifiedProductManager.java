@@ -19,29 +19,45 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
+
 public interface CertifiedProductManager extends QuestionableActivityHandler {
 
-	public CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
-	public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException;
-	public boolean chplIdExists(String id) throws EntityRetrievalException;
-	public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
-	public List<CertifiedProductDetailsDTO> getAll();
-	public List<CertifiedProductDetailsDTO> getAllWithEditPermission();
-	public List<CertifiedProductDetailsDTO> getByProduct(Long productId);
-	public List<CertifiedProductDetailsDTO> getByVersion(Long versionId);
-	public List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId);
-	
-	public CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public CertifiedProductDTO update(Long acbId, 
-			ListingUpdateRequest updateRequest, CertifiedProductSearchDetails existingListing) 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException, InvalidArgumentsException;
-	public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing) 
-			throws EntityNotFoundException;
-	public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
-	
-	public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp) 
-			throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException;
-	public CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException;
+    CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
+
+    CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException;
+
+    boolean chplIdExists(String id) throws EntityRetrievalException;
+
+    List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> ids) throws EntityRetrievalException;
+
+    List<CertifiedProductDetailsDTO> getAll();
+
+    List<CertifiedProductDetailsDTO> getAllWithEditPermission();
+
+    List<CertifiedProductDetailsDTO> getByProduct(Long productId) throws EntityRetrievalException;
+
+    List<CertifiedProductDetailsDTO> getByVersion(Long versionId) throws EntityRetrievalException;
+
+    List<CertifiedProductDetailsDTO> getByVersionWithEditPermission(Long versionId)
+            throws EntityRetrievalException;
+
+    CertifiedProductDTO changeOwnership(Long certifiedProductId, Long acbId)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+
+    CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
+            CertifiedProductSearchDetails existingListing) throws EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, InvalidArgumentsException;
+
+    void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
+            throws EntityNotFoundException;
+
+    MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
+            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
+
+    CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+
+    List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException;
+
+    CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException;
 }

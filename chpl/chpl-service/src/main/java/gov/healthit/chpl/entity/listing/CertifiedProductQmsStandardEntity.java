@@ -15,124 +15,130 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.QmsStandardEntity;
 
-
 @Entity
 @Table(name = "certified_product_qms_standard")
 public class CertifiedProductQmsStandardEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column(name = "certified_product_qms_standard_id")
-	private Long id;
-	
-	@Basic( optional = false )
-	@Column( name = "certified_product_id", nullable = false  )
-	private Long certifiedProductId;
 
-	@Basic( optional = false )
-	@Column( name = "qms_standard_id", nullable = false  )
-	private Long qmsStandardId;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "qms_standard_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private QmsStandardEntity qmsStandard;
-	
-	@Basic( optional = false )
-	@Column( name = "modification", nullable = false  )
-	private String modification;
-	
-	@Basic( optional = false )
-	@Column( name = "applicable_criteria", nullable = false  )
-	private String applicableCriteria;
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "certified_product_qms_standard_id")
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "certified_product_id", nullable = false)
+    private Long certifiedProductId;
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
+    @Basic(optional = false)
+    @Column(name = "qms_standard_id", nullable = false)
+    private Long qmsStandardId;
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "qms_standard_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private QmsStandardEntity qmsStandard;
 
-	public Long getQmsStandardId() {
-		return qmsStandardId;
-	}
+    @Basic(optional = false)
+    @Column(name = "modification", nullable = false)
+    private String modification;
 
-	public void setQmsStandardId(Long qmsStandardId) {
-		this.qmsStandardId = qmsStandardId;
-	}
+    @Basic(optional = false)
+    @Column(name = "applicable_criteria", nullable = false)
+    private String applicableCriteria;
 
-	public QmsStandardEntity getQmsStandard() {
-		return qmsStandard;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setQmsStandard(QmsStandardEntity qmsStandard) {
-		this.qmsStandard = qmsStandard;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getModification() {
-		return modification;
-	}
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	public void setModification(String modification) {
-		this.modification = modification;
-	}
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	public String getApplicableCriteria() {
-		return applicableCriteria;
-	}
+    public Long getQmsStandardId() {
+        return qmsStandardId;
+    }
 
-	public void setApplicableCriteria(String applicableCriteria) {
-		this.applicableCriteria = applicableCriteria;
-	}
+    public void setQmsStandardId(final Long qmsStandardId) {
+        this.qmsStandardId = qmsStandardId;
+    }
 
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	protected Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	protected Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	protected Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	protected Long lastModifiedUser;
-	
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public QmsStandardEntity getQmsStandard() {
+        return qmsStandard;
+    }
+
+    public void setQmsStandard(final QmsStandardEntity qmsStandard) {
+        this.qmsStandard = qmsStandard;
+    }
+
+    public String getModification() {
+        return modification;
+    }
+
+    public void setModification(final String modification) {
+        this.modification = modification;
+    }
+
+    public String getApplicableCriteria() {
+        return applicableCriteria;
+    }
+
+    public void setApplicableCriteria(final String applicableCriteria) {
+        this.applicableCriteria = applicableCriteria;
+    }
+
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    protected Date creationDate;
+
+    @Basic(optional = false)
+    @Column(nullable = false)
+    protected Boolean deleted;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    protected Date lastModifiedDate;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    protected Long lastModifiedUser;
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 }

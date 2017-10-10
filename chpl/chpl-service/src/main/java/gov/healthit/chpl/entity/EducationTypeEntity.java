@@ -13,85 +13,84 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="education_type")
+@Table(name = "education_type")
 public class EducationTypeEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "education_type_id", nullable = false )
-	private Long id;
-	
-	@Basic( optional = false )
-	@Size(min=1)
-	@Column(name="name")
-	private String name;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@NotNull()
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@NotNull()
-	@Column( nullable = false  )
-	private Boolean deleted;
-	
-	
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId(Long long1) {
-		this.id = long1;
-	}
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "education_type_id", nullable = false)
+    private Long id;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Size(min = 1)
+    @Column(name = "name")
+    private String name;
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @NotNull()
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @NotNull()
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setId(final Long long1) {
+        this.id = long1;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
 }

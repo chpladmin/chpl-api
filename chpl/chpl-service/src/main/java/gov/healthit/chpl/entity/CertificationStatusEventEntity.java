@@ -13,113 +13,112 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "certification_status_event")
 public class CertificationStatusEventEntity implements Cloneable, Serializable {
 
-	/** Serial Version UID. */
-	private static final long serialVersionUID = 4174889617079658144L;
+    /** Serial Version UID. */
+    private static final long serialVersionUID = 4174889617079658144L;
 
-    @Id 
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "certification_status_event_id")
-	private Long id;
-	
-	@Column(name = "certified_product_id")
-	private Long certifiedProductId;
-	
-	@Column( name = "event_date")
-	private Date eventDate;
-	
-	@Column(name = "certification_status_id")
-	private Long certificationStatusId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_status_id", insertable = false, updatable = false)
-	private CertificationStatusEntity certificationStatus;
-	
-	@Column( name = "deleted")
-	private Boolean deleted;
+    @Column(name = "certification_status_event_id")
+    private Long id;
 
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "last_modified_date", insertable=false, updatable=false  )
-	private Date lastModifiedDate;
-	
-	@Column( name = "creation_date", insertable=false, updatable=false)
-	private Date creationDate;
-	
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
+    @Column(name = "event_date")
+    private Date eventDate;
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+    @Column(name = "certification_status_id")
+    private Long certificationStatusId;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_status_id", insertable = false, updatable = false)
+    private CertificationStatusEntity certificationStatus;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public Date getEventDate() {
-		return eventDate;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setEventDate(Date eventDate) {
-		this.eventDate = eventDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public Long getCertificationStatusId() {
-		return certificationStatusId;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public void setCertificationStatusId(Long certificationStatusId) {
-		this.certificationStatusId = certificationStatusId;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public CertificationStatusEntity getCertificationStatus() {
-		return certificationStatus;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public void setCertificationStatus(CertificationStatusEntity certificationStatus) {
-		this.certificationStatus = certificationStatus;
-	}
+    public Date getEventDate() {
+        return eventDate;
+    }
+
+    public void setEventDate(final Date eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getCertificationStatusId() {
+        return certificationStatusId;
+    }
+
+    public void setCertificationStatusId(final Long certificationStatusId) {
+        this.certificationStatusId = certificationStatusId;
+    }
+
+    public CertificationStatusEntity getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(final CertificationStatusEntity certificationStatus) {
+        this.certificationStatus = certificationStatus;
+    }
 }

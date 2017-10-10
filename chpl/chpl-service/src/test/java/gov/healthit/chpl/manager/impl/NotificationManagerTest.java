@@ -107,7 +107,7 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createNotificationAsAdminUser() throws EntityCreationException {
+	public void createNotificationAsAdminUser() throws EntityCreationException, EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<RecipientWithSubscriptionsDTO> origRecipMappings = notificationManager.getAll();
 
@@ -146,7 +146,7 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void createNotificationAsAdminUserForExistingRegistrant() {
+	public void createNotificationAsAdminUserForExistingRegistrant() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		List<RecipientWithSubscriptionsDTO> origRecipMappings = notificationManager.getAll();
 
@@ -342,7 +342,7 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void getNotificationsForUserAsAdminUser() {
+	public void getNotificationsForUserAsAdminUser() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long recipId = -1L;
 		RecipientWithSubscriptionsDTO notification = notificationManager.getAllForRecipient(recipId);
@@ -360,7 +360,7 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void getNotificationsForUserWithAcbSubscriptionsAsAcbUser() {
+	public void getNotificationsForUserWithAcbSubscriptionsAsAcbUser() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(acbUser);
 		Long recipId = -2L;
 		RecipientWithSubscriptionsDTO notification = notificationManager.getAllForRecipient(recipId);
@@ -369,20 +369,19 @@ public class NotificationManagerTest extends TestCase {
 		assertEquals(2, notification.getSubscriptions().size());
 	}
 	
-	@Test
+	@Test(expected = EntityRetrievalException.class)
 	@Transactional
 	@Rollback(true)
-	public void getNotificationsForUserWithoutAcbSubscriptionsAsAcbUser() {
+	public void getNotificationsForUserWithoutAcbSubscriptionsAsAcbUser() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(acbUser);
 		Long recipId = -1L;
-		RecipientWithSubscriptionsDTO notification = notificationManager.getAllForRecipient(recipId);
-		assertNull(notification);
+		notificationManager.getAllForRecipient(recipId);
 	}
 	
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void updateRecipientEmailAddress() {
+	public void updateRecipientEmailAddress() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		List<RecipientWithSubscriptionsDTO> allRecipients = notificationManager.getAll();
@@ -399,7 +398,7 @@ public class NotificationManagerTest extends TestCase {
 	@Test
 	@Transactional
 	@Rollback(true)
-	public void deleteNotificationAsAdminUser() {
+	public void deleteNotificationAsAdminUser() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 		//get the one to delete

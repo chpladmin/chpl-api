@@ -3,30 +3,31 @@ package gov.healthit.chpl.dto.notification;
 import gov.healthit.chpl.entity.notification.NotificationRecipientEntity;
 
 public class RecipientDTO {
-	private Long id;
-	private String emailAddress;
-	
-	public RecipientDTO() {}
-	
-	public RecipientDTO(NotificationRecipientEntity entity) {
-		this.id = entity.getId();
-		this.emailAddress = entity.getEmail();
-	}
+    private Long id;
+    private String emailAddress;
 
-	public Long getId() {
-		return id;
-	}
+    public RecipientDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public RecipientDTO(NotificationRecipientEntity entity) {
+        this.id = entity.getId();
+        this.emailAddress = entity.getEmail();
+    }
 
-	public String getEmailAddress() {
-		return emailAddress;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setEmailAddress(String emailAddress) {
-		this.emailAddress = emailAddress;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(final String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
 
 }

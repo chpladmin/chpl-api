@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SedUpdateRequest {
-	private List<TestTask> testTasks;
-	
-	public SedUpdateRequest() {
-		this.testTasks = new ArrayList<TestTask>();
-	}
+    private List<TestTask> testTasks;
 
-	public List<TestTask> getTestTasks() {
-		return testTasks;
-	}
+    public SedUpdateRequest() {
+        this.testTasks = new ArrayList<TestTask>();
+    }
 
-	public void setTestTasks(List<TestTask> testTasks) {
-		this.testTasks = testTasks;
-	}
+    public List<TestTask> getTestTasks() {
+        return testTasks;
+    }
+
+    public void setTestTasks(final List<TestTask> testTasks) {
+        this.testTasks = testTasks;
+    }
 }

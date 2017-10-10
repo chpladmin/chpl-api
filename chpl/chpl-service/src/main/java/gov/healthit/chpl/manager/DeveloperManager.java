@@ -11,12 +11,22 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 public interface DeveloperManager {
-	public List<DeveloperDTO> getAll();
-	public List<DeveloperDTO> getAllIncludingDeleted();
-	public DeveloperDTO getById(Long id) throws EntityRetrievalException;
-	public List<DeveloperTransparency> getDeveloperCollection();
-	public DeveloperDTO update(DeveloperDTO developer) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public DeveloperDTO create(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
-	public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate) throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
-	public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException;
+    List<DeveloperDTO> getAll();
+
+    List<DeveloperDTO> getAllIncludingDeleted();
+
+    DeveloperDTO getById(Long id) throws EntityRetrievalException;
+
+    List<DeveloperTransparency> getDeveloperCollection();
+
+    DeveloperDTO update(DeveloperDTO developer)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+
+    DeveloperDTO create(DeveloperDTO dto)
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+
+    DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+
+    DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException;
 }

@@ -13,68 +13,69 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProductVersion implements Serializable {
-	private static final long serialVersionUID = -447822739573816090L;
-	
-	/**
-	 * Product version internal ID
-	 */
-	@XmlElement(required = true)
-	private Long versionId;
-	
-	/**
-	 * Version name (i.e. "1.0")
-	 */
-	@XmlElement(required = true)
-	private String version;
-	
-	/**
-	 * Details/description of the product version.
-	 */
-	@XmlElement(required = false, nillable=true)
-	private String details;
-	
-	@XmlTransient
-	private String lastModifiedDate;
-	
-	public ProductVersion() {}
-	
-	public ProductVersion(ProductVersionDTO dto) {
-		this.versionId = dto.getId();
-		this.version = dto.getVersion();
-		if(dto.getLastModifiedDate() != null) {
-			this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
-		}
-	}
+    private static final long serialVersionUID = -447822739573816090L;
 
-	public Long getVersionId() {
-		return versionId;
-	}
+    /**
+     * Product version internal ID
+     */
+    @XmlElement(required = true)
+    private Long versionId;
 
-	public void setVersionId(Long versionId) {
-		this.versionId = versionId;
-	}
+    /**
+     * Version name (i.e. "1.0")
+     */
+    @XmlElement(required = true)
+    private String version;
 
-	public String getVersion() {
-		return version;
-	}
+    /**
+     * Details/description of the product version.
+     */
+    @XmlElement(required = false, nillable = true)
+    private String details;
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    @XmlTransient
+    private String lastModifiedDate;
 
-	public String getDetails() {
-		return details;
-	}
+    public ProductVersion() {
+    }
 
-	public void setDetails(String details) {
-		this.details = details;
-	}
+    public ProductVersion(ProductVersionDTO dto) {
+        this.versionId = dto.getId();
+        this.version = dto.getVersion();
+        if (dto.getLastModifiedDate() != null) {
+            this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
+        }
+    }
 
-	public String getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Long getVersionId() {
+        return versionId;
+    }
 
-	public void setLastModifiedDate(String lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setVersionId(final Long versionId) {
+        this.versionId = versionId;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(final String version) {
+        this.version = version;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(final String details) {
+        this.details = details;
+    }
+
+    public String getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final String lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 }

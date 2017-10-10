@@ -12,112 +12,111 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "listing_to_listing_map")
 public class ListingToListingMapEntity {
-	private static final long serialVersionUID = -2928065796550375579L;
-	
-    @Id 
+    private static final long serialVersionUID = -2928065796550375579L;
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "listing_to_listing_map_id", nullable = false  )
-	private Long id;
-        
-    @Column( name = "parent_listing_id", nullable = false  )
-	private Long parentId;
-    
+    @Column(name = "listing_to_listing_map_id", nullable = false)
+    private Long id;
+
+    @Column(name = "parent_listing_id", nullable = false)
+    private Long parentId;
+
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "parent_listing_id", insertable = false, updatable = false)
+    @JoinColumn(name = "parent_listing_id", insertable = false, updatable = false)
     private CertifiedProductDetailsEntity parent;
-    
-    @Column( name = "child_listing_id", nullable = false  )
-	private Long childId;
-    
+
+    @Column(name = "child_listing_id", nullable = false)
+    private Long childId;
+
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name = "child_listing_id", insertable = false, updatable = false)
+    @JoinColumn(name = "child_listing_id", insertable = false, updatable = false)
     private CertifiedProductDetailsEntity child;
-   
-	@Column( name = "deleted")
-	private Boolean deleted;
-	
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
-	
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public Long getParentId() {
-		return parentId;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public void setParentId(Long parentId) {
-		this.parentId = parentId;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public CertifiedProductDetailsEntity getParent() {
-		return parent;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public void setParent(CertifiedProductDetailsEntity parent) {
-		this.parent = parent;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getChildId() {
-		return childId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setChildId(Long childId) {
-		this.childId = childId;
-	}
+    public Long getParentId() {
+        return parentId;
+    }
 
-	public CertifiedProductDetailsEntity getChild() {
-		return child;
-	}
+    public void setParentId(final Long parentId) {
+        this.parentId = parentId;
+    }
 
-	public void setChild(CertifiedProductDetailsEntity child) {
-		this.child = child;
-	}
+    public CertifiedProductDetailsEntity getParent() {
+        return parent;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setParent(final CertifiedProductDetailsEntity parent) {
+        this.parent = parent;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Long getChildId() {
+        return childId;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public void setChildId(final Long childId) {
+        this.childId = childId;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public CertifiedProductDetailsEntity getChild() {
+        return child;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public void setChild(final CertifiedProductDetailsEntity child) {
+        this.child = child;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 }

@@ -5,53 +5,54 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity;
 
 public class PendingCqmCertificationCriterionDTO implements Serializable {
-	private static final long serialVersionUID = -7807505277545563984L;
-	private Long id;
-	private Long cqmId;
-	private Long certificationId;
-	private String certificationCriteriaNumber;
-	
-	public PendingCqmCertificationCriterionDTO() {} 
-	
-	public PendingCqmCertificationCriterionDTO(PendingCqmCertificationCriteriaEntity entity) {
-		this.id = entity.getId();
-		this.cqmId = entity.getPendingCqmId();
-		this.certificationId = entity.getCertificationId();
-		if(entity.getCertificationCriteria() != null) {
-			this.certificationCriteriaNumber = entity.getCertificationCriteria().getNumber();
-		}
-	}
+    private static final long serialVersionUID = -7807505277545563984L;
+    private Long id;
+    private Long cqmId;
+    private Long certificationId;
+    private String certificationCriteriaNumber;
 
-	public Long getId() {
-		return id;
-	}
+    public PendingCqmCertificationCriterionDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public PendingCqmCertificationCriterionDTO(PendingCqmCertificationCriteriaEntity entity) {
+        this.id = entity.getId();
+        this.cqmId = entity.getPendingCqmId();
+        this.certificationId = entity.getCertificationId();
+        if (entity.getCertificationCriteria() != null) {
+            this.certificationCriteriaNumber = entity.getCertificationCriteria().getNumber();
+        }
+    }
 
-	public Long getCqmId() {
-		return cqmId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCqmId(Long cqmId) {
-		this.cqmId = cqmId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getCertificationId() {
-		return certificationId;
-	}
+    public Long getCqmId() {
+        return cqmId;
+    }
 
-	public void setCertificationId(Long certificationId) {
-		this.certificationId = certificationId;
-	}
+    public void setCqmId(final Long cqmId) {
+        this.cqmId = cqmId;
+    }
 
-	public String getCertificationCriteriaNumber() {
-		return certificationCriteriaNumber;
-	}
+    public Long getCertificationId() {
+        return certificationId;
+    }
 
-	public void setCertificationCriteriaNumber(String certificationCriteriaNumber) {
-		this.certificationCriteriaNumber = certificationCriteriaNumber;
-	}
+    public void setCertificationId(final Long certificationId) {
+        this.certificationId = certificationId;
+    }
+
+    public String getCertificationCriteriaNumber() {
+        return certificationCriteriaNumber;
+    }
+
+    public void setCertificationCriteriaNumber(final String certificationCriteriaNumber) {
+        this.certificationCriteriaNumber = certificationCriteriaNumber;
+    }
 
 }

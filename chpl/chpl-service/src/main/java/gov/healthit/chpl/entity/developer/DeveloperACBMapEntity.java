@@ -19,120 +19,129 @@ import org.hibernate.annotations.Type;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
-
 @Entity
 @Table(name = "acb_vendor_map")
 public class DeveloperACBMapEntity implements Cloneable, Serializable {
 
-	private static final long serialVersionUID = 555395798107190947L;
+    private static final long serialVersionUID = 555395798107190947L;
 
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column(name = "acb_vendor_map_id")
-	private Long id;
-	
-	@Column(name = "vendor_id")
-	private Long developerId;
-	
-	@Column(name = "certification_body_id")
-	private Long certificationBodyId;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_body_id", unique=true, nullable = true, insertable = false, updatable = false)
-	private CertificationBodyEntity certificationBody;
-	
-	@Column(name = "transparency_attestation")
-	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
-	private AttestationType transparencyAttestation;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "acb_vendor_map_id")
+    private Long id;
 
-	public DeveloperACBMapEntity() {
-		// Default constructor
-	}
+    @Column(name = "vendor_id")
+    private Long developerId;
 
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "certification_body_id")
+    private Long certificationBodyId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_body_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private CertificationBodyEntity certificationBody;
 
-	public Long getDeveloperId() {
-		return developerId;
-	}
+    @Column(name = "transparency_attestation")
+    @Type(type = "gov.healthit.chpl.entity.PostgresAttestationType", parameters = {
+            @org.hibernate.annotations.Parameter(name = "enumClassName",
+                    value = "gov.healthit.chpl.entity.AttestationType")
+    })
+    private AttestationType transparencyAttestation;
 
-	public void getDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	}
+    public DeveloperACBMapEntity() {
+        // Default constructor
+    }
 
-	public Long getCertificationBodyId() {
-		return certificationBodyId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertificationBodyId(Long certificationBodyId) {
-		this.certificationBodyId = certificationBodyId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public AttestationType getTransparencyAttestation() {
-		return transparencyAttestation;
-	}
+    public Long getDeveloperId() {
+        return developerId;
+    }
 
-	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
-		this.transparencyAttestation = transparencyAttestation;
-	}
+    public void getDeveloperId(Long developerId) {
+        this.developerId = developerId;
+    }
 
-	public void setDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	} 
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	protected Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	protected Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	protected Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	protected Long lastModifiedUser;
-	
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public Long getCertificationBodyId() {
+        return certificationBodyId;
+    }
 
-	public CertificationBodyEntity getCertificationBody() {
-		return certificationBody;
-	}
+    public void setCertificationBodyId(final Long certificationBodyId) {
+        this.certificationBodyId = certificationBodyId;
+    }
 
-	public void setCertificationBody(CertificationBodyEntity certificationBody) {
-		this.certificationBody = certificationBody;
-	}
+    public AttestationType getTransparencyAttestation() {
+        return transparencyAttestation;
+    }
+
+    public void setTransparencyAttestation(final AttestationType transparencyAttestation) {
+        this.transparencyAttestation = transparencyAttestation;
+    }
+
+    public void setDeveloperId(final Long developerId) {
+        this.developerId = developerId;
+    }
+
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    protected Date creationDate;
+
+    @Basic(optional = false)
+    @Column(nullable = false)
+    protected Boolean deleted;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    protected Date lastModifiedDate;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    protected Long lastModifiedUser;
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public CertificationBodyEntity getCertificationBody() {
+        return certificationBody;
+    }
+
+    public void setCertificationBody(final CertificationBodyEntity certificationBody) {
+        this.certificationBody = certificationBody;
+    }
 }

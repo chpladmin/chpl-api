@@ -15,113 +15,112 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-
 @Entity
 @Immutable
 @Table(name = "notification_type")
 public class NotificationTypeEntity {
-	
-	@Id 
-	@Column(name = "id")
-	private Long id;
-	
-	@Column(name = "name")
-	private String name;
-	
-	@Column(name = "description")
-	private String description;
-	
-	@Column(name = "requires_acb")
-	private Boolean requiresAcb;
-	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "notificationTypeId"  )
-	@Basic( optional = false )
-	@Column( name = "notification_type_id", nullable = false  )
-	@Where(clause="deleted <> 'true'")
-	private Set<NotificationPermissionEntity> permissions = new HashSet<NotificationPermissionEntity>();
-	
-	@Column( name = "deleted")
-	private Boolean deleted;
-	
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
-	
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Id
+    @Column(name = "id")
+    private Long id;
 
-	public String getName() {
-		return name;
-	}
+    @Column(name = "name")
+    private String name;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Column(name = "description")
+    private String description;
 
-	public String getDescription() {
-		return description;
-	}
+    @Column(name = "requires_acb")
+    private Boolean requiresAcb;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "notificationTypeId")
+    @Basic(optional = false)
+    @Column(name = "notification_type_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<NotificationPermissionEntity> permissions = new HashSet<NotificationPermissionEntity>();
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public Set<NotificationPermissionEntity> getPermissions() {
-		return permissions;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setPermissions(Set<NotificationPermissionEntity> permissions) {
-		this.permissions = permissions;
-	}
+    public void setDescription(final String description) {
+        this.description = description;
+    }
 
-	public Boolean getRequiresAcb() {
-		return requiresAcb;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setRequiresAcb(Boolean requiresAcb) {
-		this.requiresAcb = requiresAcb;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Set<NotificationPermissionEntity> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(final Set<NotificationPermissionEntity> permissions) {
+        this.permissions = permissions;
+    }
+
+    public Boolean getRequiresAcb() {
+        return requiresAcb;
+    }
+
+    public void setRequiresAcb(final Boolean requiresAcb) {
+        this.requiresAcb = requiresAcb;
+    }
 
 }

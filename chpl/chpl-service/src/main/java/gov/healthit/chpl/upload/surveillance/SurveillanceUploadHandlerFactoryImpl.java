@@ -11,35 +11,39 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Service
 public class SurveillanceUploadHandlerFactoryImpl implements SurveillanceUploadHandlerFactory {
-	public static int NUM_FIELDS_2015 = 23;
-	
-	@Autowired private SurveillanceUploadHandler handler2015;
-	
-	private SurveillanceUploadHandlerFactoryImpl() {}
-	
-	@Override
-	public SurveillanceUploadHandler getHandler(CSVRecord heading, List<CSVRecord> survRecords) throws InvalidArgumentsException {
-		SurveillanceUploadHandler handler = null;
-		
-		int lastDataIndex = -1;
-		for(int i = 0; i < heading.size() && lastDataIndex < 0; i++) {
-			String headingValue = heading.get(i);
-			if(StringUtils.isEmpty(headingValue)) {
-				lastDataIndex = i-1;
-			} else if(i == heading.size()-1) {
-				lastDataIndex = i;
-			}
-		}
-		
-		if((lastDataIndex+1) == NUM_FIELDS_2015) {
-			handler = handler2015;
-		} else {
-			throw new InvalidArgumentsException("Expected " + NUM_FIELDS_2015 + " fields in the record but found " + (lastDataIndex+1));
-		}
-		
-		handler.setRecord(survRecords);
-		handler.setHeading(heading);
-		handler.setLastDataIndex(lastDataIndex);
-		return handler;
-	}
+    public static int NUM_FIELDS_2015 = 23;
+
+    @Autowired
+    private SurveillanceUploadHandler handler2015;
+
+    private SurveillanceUploadHandlerFactoryImpl() {
+    }
+
+    @Override
+    public SurveillanceUploadHandler getHandler(CSVRecord heading, List<CSVRecord> survRecords)
+            throws InvalidArgumentsException {
+        SurveillanceUploadHandler handler = null;
+
+        int lastDataIndex = -1;
+        for (int i = 0; i < heading.size() && lastDataIndex < 0; i++) {
+            String headingValue = heading.get(i);
+            if (StringUtils.isEmpty(headingValue)) {
+                lastDataIndex = i - 1;
+            } else if (i == heading.size() - 1) {
+                lastDataIndex = i;
+            }
+        }
+
+        if ((lastDataIndex + 1) == NUM_FIELDS_2015) {
+            handler = handler2015;
+        } else {
+            throw new InvalidArgumentsException(
+                    "Expected " + NUM_FIELDS_2015 + " fields in the record but found " + (lastDataIndex + 1));
+        }
+
+        handler.setRecord(survRecords);
+        handler.setHeading(heading);
+        handler.setLastDataIndex(lastDataIndex);
+        return handler;
+    }
 }

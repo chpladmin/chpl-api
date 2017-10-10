@@ -5,53 +5,53 @@ import java.util.Date;
 import gov.healthit.chpl.domain.Contact;
 
 public class ObjectMissingValidationException extends ValidationException {
-	private static final long serialVersionUID = -6542978782670873229L;
-	
-	private String objectId;
-	private Contact contact;
-	private Date startDate;
-	private Date endDate;
+    private static final long serialVersionUID = -6542978782670873229L;
 
-	public ObjectMissingValidationException() {
-		super();
-	}
-	
-	public ObjectMissingValidationException(String message, Contact contact, String objectId) { 
-		super(); 
-		errorMessages.add(message);
-		setContact(contact);
-		this.objectId = objectId;
-	}
+    private String objectId;
+    private Contact contact;
+    private Date startDate;
+    private Date endDate;
 
-	public Contact getContact() {
-		return contact;
-	}
+    public ObjectMissingValidationException() {
+        super();
+    }
 
-	public void setContact(Contact contact) {
-		this.contact = contact;
-	}
+    public ObjectMissingValidationException(String message, Contact contact, String objectId) {
+        super();
+        errorMessages.add(message);
+        setContact(contact);
+        this.objectId = objectId;
+    }
 
-	public String getObjectId() {
-		return objectId;
-	}
+    public Contact getContact() {
+        return contact;
+    }
 
-	public void setObjectId(String objectId) {
-		this.objectId = objectId;
-	}
+    public void setContact(final Contact contact) {
+        this.contact = contact;
+    }
 
-	public Date getStartDate() {
-		return startDate;
-	}
+    public String getObjectId() {
+        return objectId;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public void setObjectId(final String objectId) {
+        this.objectId = objectId;
+    }
 
-	public Date getEndDate() {
-		return endDate;
-	}
+    public Date getStartDate() {
+        return startDate;
+    }
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
+    public void setStartDate(final Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(final Date endDate) {
+        this.endDate = endDate;
+    }
 }

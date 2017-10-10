@@ -11,114 +11,113 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_certification_result_ucd_process")
+@Table(name = "pending_certification_result_ucd_process")
 public class PendingCertificationResultUcdProcessEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_ucd_process_id", nullable = false  )
-	private Long id;
 
-	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pending_certification_result_ucd_process_id", nullable = false)
+    private Long id;
 
-	@Column(name = "ucd_process_id")
-	private Long ucdProcessId;
-	
-	@Column(name = "ucd_process_name")
-	private String ucdProcessName;
-	
-	@Column(name = "ucd_process_details")
-	private String ucdProcessDetails;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long pendingCertificationResultId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "ucd_process_id")
+    private Long ucdProcessId;
 
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Column(name = "ucd_process_name")
+    private String ucdProcessName;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Column(name = "ucd_process_details")
+    private String ucdProcessDetails;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Long getUcdProcessId() {
-		return ucdProcessId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setUcdProcessId(Long ucdProcessId) {
-		this.ucdProcessId = ucdProcessId;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public String getUcdProcessDetails() {
-		return ucdProcessDetails;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setUcdProcessDetails(String ucdProcessDetails) {
-		this.ucdProcessDetails = ucdProcessDetails;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getUcdProcessName() {
-		return ucdProcessName;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setUcdProcessName(String ucdProcessName) {
-		this.ucdProcessName = ucdProcessName;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
+
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
+
+    public Long getUcdProcessId() {
+        return ucdProcessId;
+    }
+
+    public void setUcdProcessId(final Long ucdProcessId) {
+        this.ucdProcessId = ucdProcessId;
+    }
+
+    public String getUcdProcessDetails() {
+        return ucdProcessDetails;
+    }
+
+    public void setUcdProcessDetails(final String ucdProcessDetails) {
+        this.ucdProcessDetails = ucdProcessDetails;
+    }
+
+    public String getUcdProcessName() {
+        return ucdProcessName;
+    }
+
+    public void setUcdProcessName(final String ucdProcessName) {
+        this.ucdProcessName = ucdProcessName;
+    }
 
 }

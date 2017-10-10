@@ -11,94 +11,93 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="openchpl.api_key_activity")
+@Table(name = "openchpl.api_key_activity")
 public class ApiKeyActivityEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "api_key_activity_id", nullable = false )
-	private Long id;
-	
-	@Basic(optional=false)
-	@Column(name = "api_key_id")
-	private Long apiKeyId;
-	
-	@Basic(optional=false)
-	@Column(name = "api_call_path" )
-	private String apiCallPath;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false )
-	private Boolean deleted;
 
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "api_key_activity_id", nullable = false)
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "api_key_id")
+    private Long apiKeyId;
 
-	public Long getApiKeyId() {
-		return apiKeyId;
-	}
+    @Basic(optional = false)
+    @Column(name = "api_call_path")
+    private String apiCallPath;
 
-	public void setApiKeyId(Long apiKeyId) {
-		this.apiKeyId = apiKeyId;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public String getApiCallPath() {
-		return apiCallPath;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setApiCallPath(String apiCallPath) {
-		this.apiCallPath = apiCallPath;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public Long getApiKeyId() {
+        return apiKeyId;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public void setApiKeyId(final Long apiKeyId) {
+        this.apiKeyId = apiKeyId;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public String getApiCallPath() {
+        return apiCallPath;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setApiCallPath(final String apiCallPath) {
+        this.apiCallPath = apiCallPath;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
 }

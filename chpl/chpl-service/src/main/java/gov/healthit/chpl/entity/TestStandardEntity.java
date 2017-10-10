@@ -13,104 +13,110 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "test_standard")
 public class TestStandardEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column(name = "test_standard_id")
-	private Long id;
-	
-	@Column( name = "number", nullable = false  )
-	private String name;
-	
-	@Column( name = "name", nullable = false  )
-	private String description;
-	
-	@Column(name = "certification_edition_id")
-	private Long certificationEditionId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
-	private CertificationEditionEntity certificationEdition;
-	
-	@Column( name="deleted", nullable = false  )
-	protected Boolean deleted;
 
-	@Column( name = "last_modified_user", nullable = false )
-	protected Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "test_standard_id")
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "number", nullable = false)
+    private String name;
 
-	public String getDescription() {
-		return description;
-	}
+    @Column(name = "name", nullable = false)
+    private String description;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Column(name = "certification_edition_id")
+    private Long certificationEditionId;
 
-	public String getName() {
-		return name;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
+    private CertificationEditionEntity certificationEdition;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Column(name = "deleted", nullable = false)
+    protected Boolean deleted;
 
-	public Long getCertificationEditionId() {
-		return certificationEditionId;
-	}
+    @Column(name = "last_modified_user", nullable = false)
+    protected Long lastModifiedUser;
 
-	public void setCertificationEditionId(Long certificationEditionId) {
-		this.certificationEditionId = certificationEditionId;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public CertificationEditionEntity getCertificationEdition() {
-		return certificationEdition;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public void setCertificationEdition(CertificationEditionEntity certificationEdition) {
-		this.certificationEdition = certificationEdition;
-	}
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public Long getCertificationEditionId() {
+        return certificationEditionId;
+    }
+
+    public void setCertificationEditionId(final Long certificationEditionId) {
+        this.certificationEditionId = certificationEditionId;
+    }
+
+    public CertificationEditionEntity getCertificationEdition() {
+        return certificationEdition;
+    }
+
+    public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
+        this.certificationEdition = certificationEdition;
+    }
 }

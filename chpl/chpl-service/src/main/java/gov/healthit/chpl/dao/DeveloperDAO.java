@@ -10,24 +10,37 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 
 public interface DeveloperDAO {
 
-	public DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException;
-	public DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
+    DeveloperDTO create(DeveloperDTO dto) throws EntityCreationException, EntityRetrievalException;
 
-	public DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException;
-	public void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException;	
-	public void delete(Long id) throws EntityRetrievalException;
+    DeveloperACBMapDTO createTransparencyMapping(DeveloperACBMapDTO dto);
 
-	public List<DeveloperDTO> findAll();
-	public List<DeveloperDTO> findAllIncludingDeleted();
+    DeveloperDTO update(DeveloperDTO dto) throws EntityRetrievalException, EntityCreationException;
 
-	public DeveloperDTO getById(Long id) throws EntityRetrievalException;
-	public DeveloperDTO getByName(String name);
-	public DeveloperDTO getByCode(String code);
-	public DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException;
-	public DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
-	public void deleteTransparencyMapping(Long vendorId, Long acbId);
-	public DeveloperACBMapDTO getTransparencyMapping(Long vendorId, Long acbId);
-	public List<DeveloperTransparency> getAllDevelopersWithTransparencies();
-	public List<DeveloperACBMapDTO> getAllTransparencyMappings();
-	public List<DecertifiedDeveloperDTO> getDecertifiedDevelopers();
+    void updateStatus(DeveloperStatusEventDTO newStatusHistory) throws EntityCreationException;
+
+    void delete(Long id) throws EntityRetrievalException;
+
+    List<DeveloperDTO> findAll();
+
+    List<DeveloperDTO> findAllIncludingDeleted();
+
+    DeveloperDTO getById(Long id) throws EntityRetrievalException;
+
+    DeveloperDTO getByName(String name);
+
+    DeveloperDTO getByCode(String code);
+
+    DeveloperDTO getByVersion(Long productVersionId) throws EntityRetrievalException;
+
+    DeveloperACBMapDTO updateTransparencyMapping(DeveloperACBMapDTO dto);
+
+    void deleteTransparencyMapping(Long vendorId, Long acbId);
+
+    DeveloperACBMapDTO getTransparencyMapping(Long vendorId, Long acbId);
+
+    List<DeveloperTransparency> getAllDevelopersWithTransparencies();
+
+    List<DeveloperACBMapDTO> getAllTransparencyMappings();
+
+    List<DecertifiedDeveloperDTO> getDecertifiedDevelopers();
 }

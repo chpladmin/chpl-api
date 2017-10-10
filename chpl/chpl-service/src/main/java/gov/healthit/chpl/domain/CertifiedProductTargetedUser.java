@@ -12,78 +12,77 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 
 /**
- * The targeted users of a Health IT Module, as identified by the developer.
- * For example, "Ambulatory pediatricians"
- * 
+ * The targeted users of a Health IT Module, as identified by the developer. For
+ * example, "Ambulatory pediatricians"
+ *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductTargetedUser implements Serializable {
-	private static final long serialVersionUID = -2078691100124619582L;
-	
-	/**
-	 * Targeted user to listing mapping internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
-	
-	/**
-	 * Targeted user internal ID
-	 */
-	@XmlElement(required = true)
-	private Long targetedUserId;
-	
-	/**
-	 * Targeted user name
-	 */
-	@XmlElement(required = true)
-	private String targetedUserName;
+    private static final long serialVersionUID = -2078691100124619582L;
 
-	public CertifiedProductTargetedUser() {
-		super();
-	}
-	
-	public CertifiedProductTargetedUser(CertifiedProductTargetedUserDTO dto) {
-		this.id = dto.getId();
-		this.targetedUserId = dto.getTargetedUserId();
-		this.targetedUserName = dto.getTargetedUserName();
-	}
-	
-	public boolean matches(CertifiedProductTargetedUser other) {
-		boolean result = false;
-		if(this.getTargetedUserId() != null && other.getTargetedUserId() != null && 
-				this.getTargetedUserId().longValue() == other.getTargetedUserId().longValue()) {
-			result = true;
-		} else if(!StringUtils.isEmpty(this.getTargetedUserName()) && 
-				!StringUtils.isEmpty(other.getTargetedUserName()) &&
-				this.getTargetedUserName().equals(other.getTargetedUserName())) {
-			result = true;
-		}	
-		return result;
-	}
-	
-	public Long getId() {
-		return id;
-	}
+    /**
+     * Targeted user to listing mapping internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * Targeted user internal ID
+     */
+    @XmlElement(required = true)
+    private Long targetedUserId;
 
-	public Long getTargetedUserId() {
-		return targetedUserId;
-	}
+    /**
+     * Targeted user name
+     */
+    @XmlElement(required = true)
+    private String targetedUserName;
 
-	public void setTargetedUserId(Long targetedUserId) {
-		this.targetedUserId = targetedUserId;
-	}
+    public CertifiedProductTargetedUser() {
+        super();
+    }
 
-	public String getTargetedUserName() {
-		return targetedUserName;
-	}
+    public CertifiedProductTargetedUser(CertifiedProductTargetedUserDTO dto) {
+        this.id = dto.getId();
+        this.targetedUserId = dto.getTargetedUserId();
+        this.targetedUserName = dto.getTargetedUserName();
+    }
 
-	public void setTargetedUserName(String targetedUserName) {
-		this.targetedUserName = targetedUserName;
-	}
+    public boolean matches(CertifiedProductTargetedUser other) {
+        boolean result = false;
+        if (this.getTargetedUserId() != null && other.getTargetedUserId() != null
+                && this.getTargetedUserId().longValue() == other.getTargetedUserId().longValue()) {
+            result = true;
+        } else if (!StringUtils.isEmpty(this.getTargetedUserName()) && !StringUtils.isEmpty(other.getTargetedUserName())
+                && this.getTargetedUserName().equals(other.getTargetedUserName())) {
+            result = true;
+        }
+        return result;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Long getTargetedUserId() {
+        return targetedUserId;
+    }
+
+    public void setTargetedUserId(final Long targetedUserId) {
+        this.targetedUserId = targetedUserId;
+    }
+
+    public String getTargetedUserName() {
+        return targetedUserName;
+    }
+
+    public void setTargetedUserName(final String targetedUserName) {
+        this.targetedUserName = targetedUserName;
+    }
 
 }

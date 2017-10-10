@@ -6,41 +6,42 @@ import gov.healthit.chpl.entity.job.JobStatusEntity;
 import gov.healthit.chpl.entity.job.JobStatusType;
 
 public class JobStatusDTO implements Serializable {
-	private static final long serialVersionUID = -7845596230766438264L;
-	private Long id;
-	private JobStatusType status;
-	private Integer percentComplete;
-	
-	public JobStatusDTO(){}
-	
-	public JobStatusDTO(JobStatusEntity entity){		
-		this.id = entity.getId();
-		this.status = entity.getStatus();
-		this.percentComplete = entity.getPercentComplete();
-	}
+    private static final long serialVersionUID = -7845596230766438264L;
+    private Long id;
+    private JobStatusType status;
+    private Integer percentComplete;
 
-	public Long getId() {
-		return id;
-	}
+    public JobStatusDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public JobStatusDTO(JobStatusEntity entity) {
+        this.id = entity.getId();
+        this.status = entity.getStatus();
+        this.percentComplete = entity.getPercentComplete();
+    }
 
-	public JobStatusType getStatus() {
-		return status;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setStatus(JobStatusType status) {
-		this.status = status;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Integer getPercentComplete() {
-		return percentComplete;
-	}
+    public JobStatusType getStatus() {
+        return status;
+    }
 
-	public void setPercentComplete(Integer percentComplete) {
-		this.percentComplete = percentComplete;
-	}
+    public void setStatus(final JobStatusType status) {
+        this.status = status;
+    }
+
+    public Integer getPercentComplete() {
+        return percentComplete;
+    }
+
+    public void setPercentComplete(final Integer percentComplete) {
+        this.percentComplete = percentComplete;
+    }
 
 }

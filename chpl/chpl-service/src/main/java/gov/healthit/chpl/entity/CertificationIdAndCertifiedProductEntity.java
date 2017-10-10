@@ -12,181 +12,181 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "ehr_certification_ids_and_products")
 public class CertificationIdAndCertifiedProductEntity implements Serializable {
-	private static final long serialVersionUID = -1L;
-	
-	@Id
-	@Basic( optional = false )
+    private static final long serialVersionUID = -1L;
+
+    @Id
+    @Basic(optional = false)
     @Column(name = "id")
     private Long id;
-	
-	@Basic( optional = false )
-	@Column( name = "ehr_certification_id", nullable = false  )
-	private Long ehrCertificationId;
-    
-	@Basic( optional = false )
-	@Column( name = "ehr_certification_id_text", length = 255, nullable = false)
-	private String certificationId;
-	
-	@Basic( optional = false )
-	@Column( name = "ehr_certification_id_creation_date", nullable = false )
-	private Date creationDate;
-    
-	@Column(name = "certified_product_id")
-	private Long certifiedProductId;
-	
-	@Column(name = "chpl_product_number")
-	private String legacyChplNumber;
-	
-	@Column(name = "year")
-	private String certificationYear;
-	
-	@Column(name = "testing_lab_code")
-	private String atlCode;
-	
-	@Column(name = "certification_body_code")
-	private String acbCode;
-	
-	@Column(name = "vendor_code")
-	private String developerCode;
-	
-	@Column(name = "product_code")
-	private String productCode;
-	
-	@Column(name = "version_code")
-	private String versionCode;
-	
-	@Column(name = "ics_code")
-	private String icsCode;
-	
-	@Column(name = "additional_software_code")
-	private String additionalSoftwareCode;
-	
-	@Column(name = "certified_date_code")
-	private String certifiedDateCode;
 
-	public CertificationIdAndCertifiedProductEntity() {
-	}
+    @Basic(optional = false)
+    @Column(name = "ehr_certification_id", nullable = false)
+    private Long ehrCertificationId;
 
-	public Date getCreationDate() {
-		return this.creationDate;
-		
-	}
-	
-	public void setCreationDate(final Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "ehr_certification_id_text", length = 255, nullable = false)
+    private String certificationId;
 
-	public Long getId() {
-		return this.id;
-		
-	}
+    @Basic(optional = false)
+    @Column(name = "ehr_certification_id_creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setId(final Long id) {
-		this.id = id;
-	}
+    @Column(name = "certified_product_id")
+    private Long certifiedProductId;
 
-	public Long getEhrCertificationId() {
-		return ehrCertificationId;
-	}
+    @Column(name = "chpl_product_number")
+    private String legacyChplNumber;
 
-	public void setEhrCertificationId(Long ehrCertificationId) {
-		this.ehrCertificationId = ehrCertificationId;
-	}
+    @Column(name = "year")
+    private String certificationYear;
 
-	public String getCertificationId() {
-		return certificationId;
-	}
+    @Column(name = "testing_lab_code")
+    private String atlCode;
 
-	public void setCertificationId(String certificationId) {
-		this.certificationId = certificationId;
-	}
+    @Column(name = "certification_body_code")
+    private String acbCode;
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
+    @Column(name = "vendor_code")
+    private String developerCode;
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+    @Column(name = "product_code")
+    private String productCode;
 
-	public String getLegacyChplNumber() {
-		return legacyChplNumber;
-	}
+    @Column(name = "version_code")
+    private String versionCode;
 
-	public void setLegacyChplNumber(String legacyChplNumber) {
-		this.legacyChplNumber = legacyChplNumber;
-	}
+    @Column(name = "ics_code")
+    private String icsCode;
 
-	public String getCertificationYear() {
-		return certificationYear;
-	}
+    @Column(name = "additional_software_code")
+    private String additionalSoftwareCode;
 
-	public void setCertificationYear(String certificationYear) {
-		this.certificationYear = certificationYear;
-	}
+    @Column(name = "certified_date_code")
+    private String certifiedDateCode;
 
-	public String getAtlCode() {
-		return atlCode;
-	}
+    public CertificationIdAndCertifiedProductEntity() {
+    }
 
-	public void setAtlCode(String atlCode) {
-		this.atlCode = atlCode;
-	}
+    public Date getCreationDate() {
+        return this.creationDate;
 
-	public String getAcbCode() {
-		return acbCode;
-	}
+    }
 
-	public void setAcbCode(String acbCode) {
-		this.acbCode = acbCode;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getDeveloperCode() {
-		return developerCode;
-	}
+    public Long getId() {
+        return this.id;
 
-	public void setDeveloperCode(String developerCode) {
-		this.developerCode = developerCode;
-	}
+    }
 
-	public String getProductCode() {
-		return productCode;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setProductCode(String productCode) {
-		this.productCode = productCode;
-	}
+    public Long getEhrCertificationId() {
+        return ehrCertificationId;
+    }
 
-	public String getVersionCode() {
-		return versionCode;
-	}
+    public void setEhrCertificationId(final Long ehrCertificationId) {
+        this.ehrCertificationId = ehrCertificationId;
+    }
 
-	public void setVersionCode(String versionCode) {
-		this.versionCode = versionCode;
-	}
+    public String getCertificationId() {
+        return certificationId;
+    }
 
-	public String getIcsCode() {
-		return icsCode;
-	}
+    public void setCertificationId(final String certificationId) {
+        this.certificationId = certificationId;
+    }
 
-	public void setIcsCode(String icsCode) {
-		this.icsCode = icsCode;
-	}
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	public String getAdditionalSoftwareCode() {
-		return additionalSoftwareCode;
-	}
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	public void setAdditionalSoftwareCode(String additionalSoftwareCode) {
-		this.additionalSoftwareCode = additionalSoftwareCode;
-	}
+    public String getLegacyChplNumber() {
+        return legacyChplNumber;
+    }
 
-	public String getCertifiedDateCode() {
-		return certifiedDateCode;
-	}
+    public void setLegacyChplNumber(final String legacyChplNumber) {
+        this.legacyChplNumber = legacyChplNumber;
+    }
 
-	public void setCertifiedDateCode(String certifiedDateCode) {
-		this.certifiedDateCode = certifiedDateCode;
-	}
+    public String getCertificationYear() {
+        return certificationYear;
+    }
+
+    public void setCertificationYear(final String certificationYear) {
+        this.certificationYear = certificationYear;
+    }
+
+    public String getAtlCode() {
+        return atlCode;
+    }
+
+    public void setAtlCode(final String atlCode) {
+        this.atlCode = atlCode;
+    }
+
+    public String getAcbCode() {
+        return acbCode;
+    }
+
+    public void setAcbCode(final String acbCode) {
+        this.acbCode = acbCode;
+    }
+
+    public String getDeveloperCode() {
+        return developerCode;
+    }
+
+    public void setDeveloperCode(final String developerCode) {
+        this.developerCode = developerCode;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(final String productCode) {
+        this.productCode = productCode;
+    }
+
+    public String getVersionCode() {
+        return versionCode;
+    }
+
+    public void setVersionCode(final String versionCode) {
+        this.versionCode = versionCode;
+    }
+
+    public String getIcsCode() {
+        return icsCode;
+    }
+
+    public void setIcsCode(final String icsCode) {
+        this.icsCode = icsCode;
+    }
+
+    public String getAdditionalSoftwareCode() {
+        return additionalSoftwareCode;
+    }
+
+    public void setAdditionalSoftwareCode(final String additionalSoftwareCode) {
+        this.additionalSoftwareCode = additionalSoftwareCode;
+    }
+
+    public String getCertifiedDateCode() {
+        return certifiedDateCode;
+    }
+
+    public void setCertifiedDateCode(final String certifiedDateCode) {
+        this.certifiedDateCode = certifiedDateCode;
+    }
 
 }

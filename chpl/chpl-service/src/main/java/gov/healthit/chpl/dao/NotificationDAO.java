@@ -14,17 +14,30 @@ import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
 public interface NotificationDAO {
-	public RecipientDTO createRecipientEmailAddress(String emailAddress);
-	public NotificationTypeRecipientMapDTO createNotificationMapping(RecipientDTO recipient, NotificationTypeDTO type, CertificationBodyDTO acb);
-	public boolean hasNotificationType(NotificationTypeDTO type, Set<GrantedPermission> permissions);
-	public List<NotificationTypeDTO> getAllNotificationTypes(Set<GrantedPermission> permissions);
-	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappings(Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
-	public List<RecipientWithSubscriptionsDTO> getAllNotificationMappingsForType(Set<GrantedPermission> permissions, 
-			NotificationTypeConcept notificationType, List<CertificationBodyDTO> acbs);
-	public RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(
-			Long recipientId, Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs);
-	public RecipientDTO findRecipientByEmail(String email);
-	public RecipientDTO getRecipientById(Long id);
-	public RecipientDTO updateRecipient(RecipientDTO updatedRecipient) throws EntityNotFoundException;
-	public void deleteNotificationMapping(RecipientDTO recipient, NotificationTypeDTO notificationType, CertificationBodyDTO acb);
+    RecipientDTO createRecipientEmailAddress(String emailAddress);
+
+    NotificationTypeRecipientMapDTO createNotificationMapping(RecipientDTO recipient, NotificationTypeDTO type,
+            CertificationBodyDTO acb);
+
+    boolean hasNotificationType(NotificationTypeDTO type, Set<GrantedPermission> permissions);
+
+    List<NotificationTypeDTO> getAllNotificationTypes(Set<GrantedPermission> permissions);
+
+    List<RecipientWithSubscriptionsDTO> getAllNotificationMappings(Set<GrantedPermission> permissions,
+            List<CertificationBodyDTO> acbs);
+
+    List<RecipientWithSubscriptionsDTO> getAllNotificationMappingsForType(Set<GrantedPermission> permissions,
+            NotificationTypeConcept notificationType, List<CertificationBodyDTO> acbs);
+
+    RecipientWithSubscriptionsDTO getAllNotificationMappingsForRecipient(Long recipientId,
+            Set<GrantedPermission> permissions, List<CertificationBodyDTO> acbs) throws EntityRetrievalException;
+
+    RecipientDTO findRecipientByEmail(String email) throws EntityRetrievalException;
+
+    RecipientDTO getRecipientById(Long id) throws EntityRetrievalException;
+
+    RecipientDTO updateRecipient(RecipientDTO updatedRecipient) throws EntityNotFoundException;
+
+    void deleteNotificationMapping(RecipientDTO recipient, NotificationTypeDTO notificationType,
+            CertificationBodyDTO acb);
 }

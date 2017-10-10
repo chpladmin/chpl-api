@@ -5,52 +5,53 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.TestFunctionalityEntity;
 
 public class TestFunctionalityDTO implements Serializable {
-	private static final long serialVersionUID = -4607291382443032361L;
-	private Long id;
-	private String name;
-	private String number;
-	private String year;
-	
-	public TestFunctionalityDTO(){}
-	
-	public TestFunctionalityDTO(TestFunctionalityEntity entity){		
-		this.id = entity.getId();
-		this.name = entity.getName();
-		this.number = entity.getNumber();
-		if(entity.getCertificationEdition() != null) {
-			this.year = entity.getCertificationEdition().getYear();
-		}
-	}
+    private static final long serialVersionUID = -4607291382443032361L;
+    private Long id;
+    private String name;
+    private String number;
+    private String year;
 
-	public Long getId() {
-		return id;
-	}
+    public TestFunctionalityDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public TestFunctionalityDTO(TestFunctionalityEntity entity) {
+        this.id = entity.getId();
+        this.name = entity.getName();
+        this.number = entity.getNumber();
+        if (entity.getCertificationEdition() != null) {
+            this.year = entity.getCertificationEdition().getYear();
+        }
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getNumber() {
-		return number;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setNumber(String number) {
-		this.number = number;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public String getYear() {
-		return year;
-	}
+    public String getNumber() {
+        return number;
+    }
 
-	public void setYear(String year) {
-		this.year = year;
-	}
+    public void setNumber(final String number) {
+        this.number = number;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(final String year) {
+        this.year = year;
+    }
 }

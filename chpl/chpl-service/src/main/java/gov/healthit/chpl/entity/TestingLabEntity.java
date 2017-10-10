@@ -18,208 +18,223 @@ import javax.persistence.Transient;
 @Entity
 @Table(name = "testing_lab")
 public class TestingLabEntity implements Serializable {
-	private static final long serialVersionUID = -5332080900089062553L;
+    private static final long serialVersionUID = -5332080900089062553L;
 
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "testing_lab_id", nullable = false  )
-	private Long id;
-	
-	@Column(name = "testing_lab_code")
-	private String testingLabCode;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "address_id", unique=true, nullable = true)
-	private AddressEntity address;
-	
-	@Column(name = "name")
-	private String name;
-	
-	@Column(name = "accredidation_number")
-	private String accredidationNumber;
-	
-	@Column(name = "website")
-	private String website;
-    
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column(name = "deleted", nullable = false  )
-	private Boolean deleted;
-    
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	public TestingLabEntity() {
-		// Default constructor
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "testing_lab_id", nullable = false)
+    private Long id;
 
-	/** Constructor taking a given ID.
-	 * @param id to set
-	 */
-	public TestingLabEntity(Long id) {
-		this.id = id;
-	} 
+    @Column(name = "testing_lab_code")
+    private String testingLabCode;
 
- 
-	/** Return the type of this class. Useful for when dealing with proxies.
-	* @return Defining class.
-	*/
-	@Transient
-	public Class<?> getClassType() {
-		return TestingLabEntity.class;
-	}
- 
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", unique = true, nullable = true)
+    private AddressEntity address;
 
-	 /**
-	 * Return the value associated with the column: creationDate.
-	 * @return A Date object (this.creationDate)
-	 */
-	public Date getCreationDate() {
-		return this.creationDate;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: creationDate.
-	 * @param creationDate the creationDate value you wish to set
-	 */
-	public void setCreationDate(final Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Column(name = "name")
+    private String name;
 
-	 /**
-	 * Return the value associated with the column: deleted.
-	 * @return A Boolean object (this.deleted)
-	 */
-	public Boolean isDeleted() {
-		return this.deleted;
-		
-	}
-	
+    @Column(name = "accredidation_number")
+    private String accredidationNumber;
 
-  
-	 /**  
-	 * Set the value related to the column: deleted.
-	 * @param deleted the deleted value you wish to set
-	 */
-	public void setDeleted(final Boolean deleted) {
-		this.deleted = deleted;
-	}
+    @Column(name = "website")
+    private String website;
 
-	 /**
-	 * Return the value associated with the column: id.
-	 * @return A Long object (this.id)
-	 */
-	public Long getId() {
-		return this.id;
-		
-	}
-	
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-  
-	 /**  
-	 * Set the value related to the column: id.
-	 * @param id the id value you wish to set
-	 */
-	public void setId(final Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	 /**
-	 * Return the value associated with the column: lastModifiedDate.
-	 * @return A Date object (this.lastModifiedDate)
-	 */
-	public Date getLastModifiedDate() {
-		return this.lastModifiedDate;
-	}
-	
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-  
-	 /**  
-	 * Set the value related to the column: lastModifiedDate.
-	 * @param lastModifiedDate the lastModifiedDate value you wish to set
-	 */
-	public void setLastModifiedDate(final Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	 /**
-	 * Return the value associated with the column: lastModifiedUser.
-	 * @return A Long object (this.lastModifiedUser)
-	 */
-	public Long getLastModifiedUser() {
-		return this.lastModifiedUser;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: lastModifiedUser.
-	 * @param lastModifiedUser the lastModifiedUser value you wish to set
-	 */
-	public void setLastModifiedUser(final Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public TestingLabEntity() {
+        // Default constructor
+    }
 
-	 /**
-	 * Return the value associated with the column: name.
-	 * @return A String object (this.name)
-	 */
-	public String getName() {
-		return this.name;
-		
-	}
-	
-	 /**  
-	 * Set the value related to the column: name.
-	 * @param name the name value you wish to set
-	 */
-	public void setName(final String name) {
-		this.name = name;
-	}
+    /**
+     * Constructor taking a given ID.
+     * 
+     * @param id
+     *            to set
+     */
+    public TestingLabEntity(Long id) {
+        this.id = id;
+    }
 
-	public String getTestingLabCode() {
-		return testingLabCode;
-	}
+    /**
+     * Return the type of this class. Useful for when dealing with proxies.
+     * 
+     * @return Defining class.
+     */
+    @Transient
+    public Class<?> getClassType() {
+        return TestingLabEntity.class;
+    }
 
-	public void setTestingLabCode(String testingLabCode) {
-		this.testingLabCode = testingLabCode;
-	}
+    /**
+     * Return the value associated with the column: creationDate.
+     * 
+     * @return A Date object (this.creationDate)
+     */
+    public Date getCreationDate() {
+        return this.creationDate;
 
-	public AddressEntity getAddress() {
-		return address;
-	}
+    }
 
-	public void setAddress(AddressEntity address) {
-		this.address = address;
-	}
+    /**
+     * Set the value related to the column: creationDate.
+     * 
+     * @param creationDate
+     *            the creationDate value you wish to set
+     */
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getAccredidationNumber() {
-		return accredidationNumber;
-	}
+    /**
+     * Return the value associated with the column: deleted.
+     * 
+     * @return A Boolean object (this.deleted)
+     */
+    public Boolean isDeleted() {
+        return this.deleted;
 
-	public void setAccredidationNumber(String accredidationNumber) {
-		this.accredidationNumber = accredidationNumber;
-	}
+    }
 
-	public String getWebsite() {
-		return website;
-	}
+    /**
+     * Set the value related to the column: deleted.
+     * 
+     * @param deleted
+     *            the deleted value you wish to set
+     */
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public void setWebsite(String website) {
-		this.website = website;
-	}
+    /**
+     * Return the value associated with the column: id.
+     * 
+     * @return A Long object (this.id)
+     */
+    public Long getId() {
+        return this.id;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    }
+
+    /**
+     * Set the value related to the column: id.
+     * 
+     * @param id
+     *            the id value you wish to set
+     */
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    /**
+     * Return the value associated with the column: lastModifiedDate.
+     * 
+     * @return A Date object (this.lastModifiedDate)
+     */
+    public Date getLastModifiedDate() {
+        return this.lastModifiedDate;
+    }
+
+    /**
+     * Set the value related to the column: lastModifiedDate.
+     * 
+     * @param lastModifiedDate
+     *            the lastModifiedDate value you wish to set
+     */
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    /**
+     * Return the value associated with the column: lastModifiedUser.
+     * 
+     * @return A Long object (this.lastModifiedUser)
+     */
+    public Long getLastModifiedUser() {
+        return this.lastModifiedUser;
+
+    }
+
+    /**
+     * Set the value related to the column: lastModifiedUser.
+     * 
+     * @param lastModifiedUser
+     *            the lastModifiedUser value you wish to set
+     */
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    /**
+     * Return the value associated with the column: name.
+     * 
+     * @return A String object (this.name)
+     */
+    public String getName() {
+        return this.name;
+
+    }
+
+    /**
+     * Set the value related to the column: name.
+     * 
+     * @param name
+     *            the name value you wish to set
+     */
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public String getTestingLabCode() {
+        return testingLabCode;
+    }
+
+    public void setTestingLabCode(final String testingLabCode) {
+        this.testingLabCode = testingLabCode;
+    }
+
+    public AddressEntity getAddress() {
+        return address;
+    }
+
+    public void setAddress(final AddressEntity address) {
+        this.address = address;
+    }
+
+    public String getAccredidationNumber() {
+        return accredidationNumber;
+    }
+
+    public void setAccredidationNumber(final String accredidationNumber) {
+        this.accredidationNumber = accredidationNumber;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(final String website) {
+        this.website = website;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
 }

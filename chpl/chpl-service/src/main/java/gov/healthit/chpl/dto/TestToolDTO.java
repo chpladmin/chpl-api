@@ -5,50 +5,51 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.TestToolEntity;
 
 public class TestToolDTO implements Serializable {
-	private static final long serialVersionUID = 5106769538846598991L;
-	private Long id;
-	private String name;
-	private String description;
-	private boolean retired;
-	
-	public TestToolDTO(){}
-	
-	public TestToolDTO(TestToolEntity entity){		
-		this.id = entity.getId();
-		this.name = entity.getName();
-		this.description = entity.getDescription();
-		this.retired = entity.getRetired();
-	}
+    private static final long serialVersionUID = 5106769538846598991L;
+    private Long id;
+    private String name;
+    private String description;
+    private boolean retired;
 
-	public Long getId() {
-		return id;
-	}
+    public TestToolDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public TestToolDTO(TestToolEntity entity) {
+        this.id = entity.getId();
+        this.name = entity.getName();
+        this.description = entity.getDescription();
+        this.retired = entity.getRetired();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public boolean isRetired() {
-		return retired;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setRetired(boolean retired) {
-		this.retired = retired;
-	}
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    public boolean isRetired() {
+        return retired;
+    }
+
+    public void setRetired(final boolean retired) {
+        this.retired = retired;
+    }
 }

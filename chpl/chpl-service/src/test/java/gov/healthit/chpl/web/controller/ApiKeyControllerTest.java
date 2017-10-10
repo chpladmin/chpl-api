@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.junit.BeforeClass;
@@ -32,6 +33,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.manager.impl.ApiKeyTestHelper;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -171,6 +173,14 @@ public class ApiKeyControllerTest {
 						activityPage0.getId(), activityPage1.getId());
 			}
 		}
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetApiKeyActivityByBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		apiKeyController.listActivityByKey("BADKEY", 0, 10);
 	}
 	
 }

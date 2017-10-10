@@ -15,101 +15,106 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.TargetedUserEntity;
 
-
 @Entity
 @Table(name = "certified_product_targeted_user")
 public class CertifiedProductTargetedUserEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column(name = "certified_product_targeted_user_id")
-	private Long id;
-	
-	@Basic( optional = false )
-	@Column( name = "certified_product_id", nullable = false  )
-	private Long certifiedProductId;
 
-	@Basic( optional = false )
-	@Column( name = "targeted_user_id", nullable = false  )
-	private Long targetedUserId;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "targeted_user_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private TargetedUserEntity targetedUser;
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "certified_product_targeted_user_id")
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "certified_product_id", nullable = false)
+    private Long certifiedProductId;
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
+    @Basic(optional = false)
+    @Column(name = "targeted_user_id", nullable = false)
+    private Long targetedUserId;
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "targeted_user_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private TargetedUserEntity targetedUser;
 
+    public Long getId() {
+        return id;
+    }
 
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	protected Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	protected Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	protected Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	protected Long lastModifiedUser;
-	
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getTargetedUserId() {
-		return targetedUserId;
-	}
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	public void setTargetedUserId(Long targetedUserId) {
-		this.targetedUserId = targetedUserId;
-	}
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	public TargetedUserEntity getTargetedUser() {
-		return targetedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    protected Date creationDate;
 
-	public void setTargetedUser(TargetedUserEntity targetedUser) {
-		this.targetedUser = targetedUser;
-	}
+    @Basic(optional = false)
+    @Column(nullable = false)
+    protected Boolean deleted;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    protected Date lastModifiedDate;
+
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    protected Long lastModifiedUser;
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getTargetedUserId() {
+        return targetedUserId;
+    }
+
+    public void setTargetedUserId(final Long targetedUserId) {
+        this.targetedUserId = targetedUserId;
+    }
+
+    public TargetedUserEntity getTargetedUser() {
+        return targetedUser;
+    }
+
+    public void setTargetedUser(final TargetedUserEntity targetedUser) {
+        this.targetedUser = targetedUser;
+    }
 }

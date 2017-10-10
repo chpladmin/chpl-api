@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager;
 
-
 import java.util.List;
 
 import org.springframework.security.acls.model.Permission;
@@ -15,30 +14,38 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 
-
 public interface CertificationBodyManager {
-	
-	public void addPermission(CertificationBodyDTO acb, Long userId, Permission permission) throws UserRetrievalException;
-	
-	public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
-	public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
-	public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
-	
-	public CertificationBodyDTO create(CertificationBodyDTO acb) throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
-	
-	
-	public CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
-	
-	public void undelete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
 
-	public void delete(CertificationBodyDTO acb) throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
-	
-	
-	public List<CertificationBodyDTO> getAllForUser(boolean showDeleted);
-	public List<CertificationBodyDTO> getAll(boolean showDeleted);
+    void addPermission(CertificationBodyDTO acb, Long userId, Permission permission)
+            throws UserRetrievalException;
 
-	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-	public CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
-	public List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
-	public List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
+    void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission);
+
+    void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient);
+
+    void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException;
+
+    CertificationBodyDTO create(CertificationBodyDTO acb)
+            throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException;
+
+    CertificationBodyDTO update(CertificationBodyDTO acb) throws EntityRetrievalException,
+            JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException;
+
+    void undelete(CertificationBodyDTO acb)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException;
+
+    void delete(CertificationBodyDTO acb)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException;
+
+    List<CertificationBodyDTO> getAllForUser(boolean showDeleted);
+
+    List<CertificationBodyDTO> getAll(boolean showDeleted);
+
+    CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
+
+    CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+
+    List<UserDTO> getAllUsersOnAcb(CertificationBodyDTO acb);
+
+    List<Permission> getPermissionsForUser(CertificationBodyDTO acb, Sid recipient);
 }

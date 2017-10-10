@@ -5,89 +5,91 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
 
 public class PendingCertificationResultAdditionalSoftwareDTO implements Serializable {
-	private static final long serialVersionUID = 13724871794367054L;
-	private Long id;
-	private Long pendingCertificationResultId;
-	private Long certifiedProductId;
-	private String chplId;
-	private String name;
-	private String version;
-	private String justification;
-	private String grouping;
-	
-	public PendingCertificationResultAdditionalSoftwareDTO() {}
-	
-	public PendingCertificationResultAdditionalSoftwareDTO(PendingCertificationResultAdditionalSoftwareEntity entity) {
-		this.setId(entity.getId());
-		this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
-		this.setCertifiedProductId(entity.getCertifiedProductId());
-		this.setChplId(entity.getChplId());
-		this.setName(entity.getSoftwareName());
-		this.setVersion(entity.getSoftwareVersion());
-		this.setJustification(entity.getJustification());
-		this.setGrouping(entity.getGrouping());
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    private static final long serialVersionUID = 13724871794367054L;
+    private Long id;
+    private Long pendingCertificationResultId;
+    private Long certifiedProductId;
+    private String chplId;
+    private String name;
+    private String version;
+    private String justification;
+    private String grouping;
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public PendingCertificationResultAdditionalSoftwareDTO() {
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public PendingCertificationResultAdditionalSoftwareDTO(PendingCertificationResultAdditionalSoftwareEntity entity) {
+        this.setId(entity.getId());
+        this.setPendingCertificationResultId(entity.getPendingCertificationResultId());
+        this.setCertifiedProductId(entity.getCertifiedProductId());
+        this.setChplId(entity.getChplId());
+        this.setName(entity.getSoftwareName());
+        this.setVersion(entity.getSoftwareVersion());
+        this.setJustification(entity.getJustification());
+        this.setGrouping(entity.getGrouping());
+    }
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getChplId() {
-		return chplId;
-	}
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
 
-	public void setChplId(String chplId) {
-		this.chplId = chplId;
-	}
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	public String getVersion() {
-		return version;
-	}
+    public String getChplId() {
+        return chplId;
+    }
 
-	public void setVersion(String version) {
-		this.version = version;
-	}
+    public void setChplId(final String chplId) {
+        this.chplId = chplId;
+    }
 
-	public String getJustification() {
-		return justification;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setJustification(String justification) {
-		this.justification = justification;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public String getGrouping() {
-		return grouping;
-	}
+    public String getVersion() {
+        return version;
+    }
 
-	public void setGrouping(String grouping) {
-		this.grouping = grouping;
-	}
+    public void setVersion(final String version) {
+        this.version = version;
+    }
+
+    public String getJustification() {
+        return justification;
+    }
+
+    public void setJustification(final String justification) {
+        this.justification = justification;
+    }
+
+    public String getGrouping() {
+        return grouping;
+    }
+
+    public void setGrouping(final String grouping) {
+        this.grouping = grouping;
+    }
 }

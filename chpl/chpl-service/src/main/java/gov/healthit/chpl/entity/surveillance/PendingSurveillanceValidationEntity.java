@@ -16,112 +16,113 @@ import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.entity.ValidationMessageType;
 
-
 @Entity
 @Table(name = "pending_surveillance_validation")
 public class PendingSurveillanceValidationEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long id;
-	
-	@Column(name = "pending_surveillance_id")
-	private Long pendingSurveillanceId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_surveillance_id", insertable = false, updatable = false)
-	private PendingSurveillanceEntity pendingSurveillance;
-	
-	@Column(name = "message_type")
-	@Type(type = "gov.healthit.chpl.entity.PostgresValidationMessageType", 
-		parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.ValidationMessageType")} )
-	private ValidationMessageType messageType;
-	
-	@Column(name = "message")
-	private String message;
-	
-	@Column(name = "deleted")
-	private Boolean deleted;
-	
-	@Column(name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column(name = "creation_date", insertable = false, updatable = false)
-	private Date creationDate;
-	
-	@Column(name = "last_modified_date", insertable = false, updatable = false)
-	private Date lastModifiedDate;
-	
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-	public Long getPendingSurveillanceId() {
-		return pendingSurveillanceId;
-	}
+    @Column(name = "pending_surveillance_id")
+    private Long pendingSurveillanceId;
 
-	public void setPendingSurveillanceId(Long pendingSurveillanceId) {
-		this.pendingSurveillanceId = pendingSurveillanceId;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "pending_surveillance_id", insertable = false, updatable = false)
+    private PendingSurveillanceEntity pendingSurveillance;
 
-	public PendingSurveillanceEntity getPendingSurveillance() {
-		return pendingSurveillance;
-	}
+    @Column(name = "message_type")
+    @Type(type = "gov.healthit.chpl.entity.PostgresValidationMessageType", parameters = {
+            @org.hibernate.annotations.Parameter(name = "enumClassName",
+                    value = "gov.healthit.chpl.entity.ValidationMessageType")
+    })
+    private ValidationMessageType messageType;
 
-	public void setPendingSurveillance(PendingSurveillanceEntity pendingSurveillance) {
-		this.pendingSurveillance = pendingSurveillance;
-	}
+    @Column(name = "message")
+    private String message;
 
-	public ValidationMessageType getMessageType() {
-		return messageType;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public void setMessageType(ValidationMessageType messageType) {
-		this.messageType = messageType;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public String getMessage() {
-		return message;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public Long getPendingSurveillanceId() {
+        return pendingSurveillanceId;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setPendingSurveillanceId(final Long pendingSurveillanceId) {
+        this.pendingSurveillanceId = pendingSurveillanceId;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public PendingSurveillanceEntity getPendingSurveillance() {
+        return pendingSurveillance;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setPendingSurveillance(final PendingSurveillanceEntity pendingSurveillance) {
+        this.pendingSurveillance = pendingSurveillance;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public ValidationMessageType getMessageType() {
+        return messageType;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setMessageType(final ValidationMessageType messageType) {
+        this.messageType = messageType;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(final String message) {
+        this.message = message;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 }

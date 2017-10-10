@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import javax.persistence.Query;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,403 +30,423 @@ import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 @Repository("certificationIdDAO")
 public class CertificationIdDAOImpl extends BaseDAOImpl implements CertificationIdDAO {
 
-	// Note that in the ALPHA string the characters O and I have been removed. This is to
-	// prevent confusion of characters. So characters that may appear to be I/1 or O/0 will
-	// always be numeric 1 and 0.
-	//
-	// The number of possible combinations of IDs within a specific certification year is 10^34.
-	public static String CERT_ID_CHARS_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-	public static String CERT_ID_CHARS_NUMERIC = "0123456789";
-	public static String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
-	public static int CERT_ID_LENGTH = 15;
-	private static long MODIFIED_USER_ID = -4L;
-	
-	private static int ENCODED_RADIX = 36;			// The radix base for values within the Key
-	private static int ENCODED_PADDED_LENGTH = 8;	// The number if digits for each value in the Key
+    // Note that in the ALPHA string the characters O and I have been removed.
+    // This is to
+    // prevent confusion of characters. So characters that may appear to be I/1
+    // or O/0 will
+    // always be numeric 1 and 0.
+    //
+    // The number of possible combinations of IDs within a specific
+    // certification year is 10^34.
+    public static String CERT_ID_CHARS_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    public static String CERT_ID_CHARS_NUMERIC = "0123456789";
+    public static String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
+    public static int CERT_ID_LENGTH = 15;
+    private static long MODIFIED_USER_ID = -4L;
 
-	@Override
-	@Transactional
-	public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
-		CertificationIdEntity entity = null;
-		CertificationIdDTO newDto = null;
-			
-		if (null != entity) {
-			throw new EntityCreationException("An entity with this Certification ID already exists.");
-		} else {
-				
-			// Create a new EHR Certification ID record
-			entity = new CertificationIdEntity();
-			entity.setCertificationId(this.generateCertificationIdString(year));
-			entity.setYear(year);
-			entity.setKey(this.encodeCollectionKey(productIds));
-			entity.setLastModifiedDate(new Date());
-			entity.setCreationDate(new Date());
-			entity.setLastModifiedUser(MODIFIED_USER_ID);
-			entity.setPracticeTypeId(null);
+    private static int ENCODED_RADIX = 36; // The radix base for values within
+                                           // the Key
+    private static int ENCODED_PADDED_LENGTH = 8; // The number if digits for
+                                                  // each value in the Key
 
-			// Store the map entities
-			entityManager.persist(entity);
-			try {
-				entity = getEntityByCertificationId(entity.getCertificationId());
-			} catch (EntityRetrievalException e) {
-				throw new EntityCreationException("Unable to create Certification ID and Product Map.");
-			}
-			newDto = new CertificationIdDTO(entity);
+    @Override
+    @Transactional
+    public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
+        CertificationIdEntity entity = null;
+        CertificationIdDTO newDto = null;
 
-			// Create map records
-			for (Long prodId : productIds) {
-				CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
-				mapEntity.setCertifiedProductId(prodId);
-				mapEntity.setCertificationIdId(newDto.getId());
-				mapEntity.setLastModifiedDate(new Date());
-				mapEntity.setCreationDate(new Date());
-				mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
-				entityManager.persist(mapEntity);
-			}
+        if (null != entity) {
+            throw new EntityCreationException("An entity with this Certification ID already exists.");
+        } else {
 
-			// Store the map entities
-			entityManager.flush();
-		}
-		
-		return newDto;
-	}
-	
-	@Override
-	@Transactional
-	public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
-		
-		CertificationIdEntity entity = null;
-		try {
-			if (null != dto.getId()) 
-				entity = this.getEntityById(dto.getId());
-		} catch (EntityRetrievalException e) {
-			throw new EntityCreationException(e);
-		}
-		
-		if (entity != null) {
-			throw new EntityCreationException("An entity with this record ID or Certification ID already exists.");
-		} else {
-			
-			entity = new CertificationIdEntity();
-			entity.setCertificationId(dto.getCertificationId());
-			entity.setYear(dto.getYear());
-			entity.setPracticeTypeId(dto.getPracticeTypeId());
-			
-			if(dto.getLastModifiedUser() != null) {
-				entity.setLastModifiedUser(dto.getLastModifiedUser());
-			} else {
-				entity.setLastModifiedUser(Util.getCurrentUser().getId());
-			}		
-			
-			if(dto.getLastModifiedDate() != null) {
-				entity.setLastModifiedDate(dto.getLastModifiedDate());
-			} else {
-				entity.setLastModifiedDate(new Date());
-			}
-			
-			if(dto.getCreationDate() != null) {
-				entity.setCreationDate(dto.getCreationDate());
-			} else {
-				entity.setCreationDate(new Date());
-			}
+            // Create a new EHR Certification ID record
+            entity = new CertificationIdEntity();
+            entity.setCertificationId(this.generateCertificationIdString(year));
+            entity.setYear(year);
+            entity.setKey(this.encodeCollectionKey(productIds));
+            entity.setLastModifiedDate(new Date());
+            entity.setCreationDate(new Date());
+            entity.setLastModifiedUser(MODIFIED_USER_ID);
+            entity.setPracticeTypeId(null);
 
-			create(entity);
-			return new CertificationIdDTO(entity);
-		}
-		
-	}
+            // Store the map entities
+            entityManager.persist(entity);
+            try {
+                entity = getEntityByCertificationId(entity.getCertificationId());
+            } catch (final EntityRetrievalException e) {
+                throw new EntityCreationException("Unable to create Certification ID and Product Map.");
+            }
+            newDto = new CertificationIdDTO(entity);
 
-	@Override
-	public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
-		List<String> results = new ArrayList<String>();
-		if ((null != productIds) && (productIds.size() > 0)) {
-			Query query = entityManager.createQuery( "SELECT number FROM CertificationResultDetailsEntity WHERE success = TRUE AND deleted = FALSE AND certified_product_id IN :productIds GROUP BY number",
-						String.class);
-			query.setParameter("productIds", productIds);
-			results = query.getResultList();
-		}
-		return results;
-	}
-	
-	@Override
-	public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
-		List<CQMMetDTO> dtos = new ArrayList<CQMMetDTO>();
-		if ((null != productIds) && (productIds.size() > 0)) {
-			Query query = entityManager.createQuery( "SELECT new gov.healthit.chpl.dto.CQMMetDTO(crde.cmsId, crde.version, crde.domain) FROM CQMResultDetailsEntity AS crde"
-					+ " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :productIds "
-					+ " AND crde.cmsId IS NOT NULL"
-					+ " GROUP BY crde.cmsId, crde.version, crde.domain");
-			query.setParameter("productIds", productIds);
-			dtos = query.getResultList();
-		}
-		
-		return dtos;
-	}
-	
-	@Override
-	public List<CertificationIdDTO> findAll() {
-		
-		List<CertificationIdEntity> entities = getAllEntities();
-		List<CertificationIdDTO> dtos = new ArrayList<>();
-		
-		for (CertificationIdEntity entity : entities) {
-			CertificationIdDTO dto = new CertificationIdDTO(entity);
-			dtos.add(dto);
-		}
-		return dtos;
-	}
+            // Create map records
+            for (Long prodId : productIds) {
+                CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
+                mapEntity.setCertifiedProductId(prodId);
+                mapEntity.setCertificationIdId(newDto.getId());
+                mapEntity.setLastModifiedDate(new Date());
+                mapEntity.setCreationDate(new Date());
+                mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
+                entityManager.persist(mapEntity);
+            }
 
-	@Override
-	public CertificationIdDTO getById(Long id) throws EntityRetrievalException {
-		
-		CertificationIdEntity entity = getEntityById(id);
-		if(entity == null) { 
-			return null;
-		}
-		CertificationIdDTO dto = new CertificationIdDTO(entity);
-		return dto;
-		
-	}
+            // Store the map entities
+            entityManager.flush();
+        }
 
-	@Override
-	public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
-		
-		CertificationIdEntity entity = getEntityByCertificationId(certificationId);
-		if(entity == null) { 
-			return null;
-		}
-		CertificationIdDTO dto = new CertificationIdDTO(entity);
-		return dto;
-		
-	}
+        return newDto;
+    }
 
-	@Override
-	public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts() {
-		List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
-		
-		List<CertificationIdAndCertifiedProductDTO> results = new ArrayList<CertificationIdAndCertifiedProductDTO>();
-		for(CertificationIdAndCertifiedProductEntity entity : entities) {
-			CertificationIdAndCertifiedProductDTO dto = new CertificationIdAndCertifiedProductDTO(entity);
-			results.add(dto);
-		}
-		return results;
-	}
-	
-	@Override
-	public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+    @Override
+    @Transactional
+    public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
 
-		Query query = entityManager.createQuery( "select certifiedProductId from CertificationIdProductMapEntity where certificationIdId = :id ", Long.class );
-		query.setParameter("id", id);
-		List<Long> queryResult = query.getResultList();
-		return queryResult;	
-		
-	}
-	
-	@Override
-	public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
-		
-		CertificationIdEntity entity = getEntityByProductIds(productIds, year);
-		if (entity == null) {
-			return null;
-		}
-		CertificationIdDTO dto = new CertificationIdDTO(entity);
-		return dto;
-		
-	}
-	
-	@Override
-	public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
-		Map<String, Boolean> results = new HashMap<String, Boolean>();
+        CertificationIdEntity entity = null;
+        try {
+            if (null != dto.getId())
+                entity = this.getEntityById(dto.getId());
+        } catch (final EntityRetrievalException e) {
+            throw new EntityCreationException(e);
+        }
 
-		Query query = entityManager.createQuery( "from CertificationIdEntity where certification_id IN :certids ", CertificationIdEntity.class );
-		query.setParameter("certids", certificationIds);
-		List<CertificationIdEntity> queryResult = query.getResultList();
+        if (entity != null) {
+            throw new EntityCreationException("An entity with this record ID or Certification ID already exists.");
+        } else {
 
-		// Get the IDs that were found...
-		for (CertificationIdEntity entity : queryResult) {
-			results.put(entity.getCertificationId(), true);
-		}
-		
-		// then merge in the IDs that where not found.
-		for (String certId : certificationIds) {
-			if (null == results.get(certId)) {
-				results.put(certId, false);
-			}
-		}
-		
-		return results;
-	}
-	
-	private void create(CertificationIdEntity entity) {
-		
-		entityManager.persist(entity);
-		entityManager.flush();
-	}
-	
-	private List<CertificationIdEntity> getAllEntities() {
-		
-		List<CertificationIdEntity> result = entityManager.createQuery( "from CertificationIdEntity ", CertificationIdEntity.class).getResultList();
-		return result;
-		
-	}
-	
-	private CertificationIdEntity getEntityById(Long id) throws EntityRetrievalException {
-		
-		CertificationIdEntity entity = null;
-			
-		Query query = entityManager.createQuery( "from CertificationIdEntity where (ehr_certification_id_id = :entityid) ", CertificationIdEntity.class );
-		query.setParameter("entityid", id);
-		List<CertificationIdEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate certificationId id in database.");
-		} else if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
-		return entity;
-	}
+            entity = new CertificationIdEntity();
+            entity.setCertificationId(dto.getCertificationId());
+            entity.setYear(dto.getYear());
+            entity.setPracticeTypeId(dto.getPracticeTypeId());
 
-	private CertificationIdEntity getEntityByCertificationId(String certificationId) throws EntityRetrievalException {
-		
-		CertificationIdEntity entity = null;
-			
-		Query query = entityManager.createQuery( "from CertificationIdEntity where (certification_id = :certid) ", CertificationIdEntity.class );
-		query.setParameter("certid", certificationId);
-		List<CertificationIdEntity> result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
-		} else if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
-		return entity;
-	}
-	
-	private CertificationIdEntity getEntityByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
+            if (dto.getLastModifiedUser() != null) {
+                entity.setLastModifiedUser(dto.getLastModifiedUser());
+            } else {
+                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            }
 
-		CertificationIdEntity entity = null;
+            if (dto.getLastModifiedDate() != null) {
+                entity.setLastModifiedDate(dto.getLastModifiedDate());
+            } else {
+                entity.setLastModifiedDate(new Date());
+            }
 
-		// Lookup the EHR Certification ID record by:
-		// 1. Looking up all CertificationIDs that are associated with the products.
-		// 2. Reduce the set by removing records that contain products other than those specified.
-		// 3. Make sure the number of products for the CertID matches the number of products specified,
-		//		this filters out CertIDs that only contain a subset of those products specified.
-		List<CertificationIdEntity> result = new ArrayList<CertificationIdEntity>();
-		Query query = entityManager.createQuery(
-				
-			"from CertificationIdEntity " +
-			"where ehr_certification_id_id in (" +
-			
-				"select mpx.certificationIdId " +
-				"from CertificationIdProductMapEntity as mpx " +
-				"where mpx.certifiedProductId in :productIds " +
-				"and mpx.certificationIdId not in ( " +
-					"select mpa.certificationIdId " +
-					"from CertificationIdProductMapEntity as mpa " +
-					"where mpa.certificationIdId in ( " +
-						"select mpy.certificationIdId " +
-						"from CertificationIdProductMapEntity as mpy " +
-						"where mpy.certifiedProductId in :productIds " +
-						"group by mpy.certificationIdId " +
-					") " +
-					"and mpa.certifiedProductId not in :productIds " +
-					"group by mpa.certificationIdId " +
-				") " +
-				"group by mpx.certificationIdId " +
-				"having count(mpx.certificationIdId) = :productCount " +
-				
-			") " +
-			"and year = :year",
-			CertificationIdEntity.class
-		);
-		
-		query.setParameter("productIds", productIds);
-		query.setParameter("productCount", new Long(productIds.size()));
-		query.setParameter("year", year);
-		result = query.getResultList();
-		
-		if (result.size() > 1){
-			throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
-		} else if(result.size() == 1) {
-			entity = result.get(0);
-		}
-		
-		return entity;
-	}
+            if (dto.getCreationDate() != null) {
+                entity.setCreationDate(dto.getCreationDate());
+            } else {
+                entity.setCreationDate(new Date());
+            }
+
+            create(entity);
+            return new CertificationIdDTO(entity);
+        }
+
+    }
+
+    @Override
+    public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
+        List<String> results = new ArrayList<String>();
+        if ((null != productIds) && (productIds.size() > 0)) {
+            Query query = entityManager.createQuery(
+                    "SELECT number FROM CertificationResultDetailsEntity WHERE success = TRUE AND deleted = FALSE AND certified_product_id IN :productIds GROUP BY number",
+                    String.class);
+            query.setParameter("productIds", productIds);
+            results = query.getResultList();
+        }
+        return results;
+    }
+
+    @Override
+    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
+        List<CQMMetDTO> dtos = new ArrayList<CQMMetDTO>();
+        if ((null != productIds) && (productIds.size() > 0)) {
+            Query query = entityManager.createQuery(
+                    "SELECT new gov.healthit.chpl.dto.CQMMetDTO(crde.cmsId, crde.version, crde.domain) FROM CQMResultDetailsEntity AS crde"
+                            + " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :productIds "
+                            + " AND crde.cmsId IS NOT NULL" + " GROUP BY crde.cmsId, crde.version, crde.domain");
+            query.setParameter("productIds", productIds);
+            dtos = query.getResultList();
+        }
+
+        return dtos;
+    }
+
+    @Override
+    public List<CertificationIdDTO> findAll() {
+
+        List<CertificationIdEntity> entities = getAllEntities();
+        List<CertificationIdDTO> dtos = new ArrayList<>();
+
+        for (CertificationIdEntity entity : entities) {
+            CertificationIdDTO dto = new CertificationIdDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
+    @Override
+    public CertificationIdDTO getById(Long id) throws EntityRetrievalException {
+
+        CertificationIdEntity entity = getEntityById(id);
+        if (entity == null) {
+            return null;
+        }
+        CertificationIdDTO dto = new CertificationIdDTO(entity);
+        return dto;
+
+    }
+
+    @Override
+    public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
+
+        CertificationIdEntity entity = getEntityByCertificationId(certificationId);
+        if (entity == null) {
+            return null;
+        }
+        CertificationIdDTO dto = new CertificationIdDTO(entity);
+        return dto;
+
+    }
+
+    @Override
+    public List<CertificationIdAndCertifiedProductDTO> getAllCertificationIdsWithProducts() {
+        List<CertificationIdAndCertifiedProductEntity> entities = getAllCertificationIdsWithProductsEntities();
+
+        List<CertificationIdAndCertifiedProductDTO> results = new ArrayList<CertificationIdAndCertifiedProductDTO>();
+        for (CertificationIdAndCertifiedProductEntity entity : entities) {
+            CertificationIdAndCertifiedProductDTO dto = new CertificationIdAndCertifiedProductDTO(entity);
+            results.add(dto);
+        }
+        return results;
+    }
+
+    @Override
+    public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+
+        Query query = entityManager.createQuery(
+                "select certifiedProductId from CertificationIdProductMapEntity where certificationIdId = :id ",
+                Long.class);
+        query.setParameter("id", id);
+        List<Long> queryResult = query.getResultList();
+        return queryResult;
+
+    }
+
+    @Override
+    public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
+
+        CertificationIdEntity entity = getEntityByProductIds(productIds, year);
+        if (entity == null) {
+            return null;
+        }
+        CertificationIdDTO dto = new CertificationIdDTO(entity);
+        return dto;
+
+    }
+
+    @Override
+    public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
+        Map<String, Boolean> results = new HashMap<String, Boolean>();
+
+        Query query = entityManager.createQuery("from CertificationIdEntity where certification_id IN :certids ",
+                CertificationIdEntity.class);
+        query.setParameter("certids", certificationIds);
+        List<CertificationIdEntity> queryResult = query.getResultList();
+
+        // Get the IDs that were found...
+        for (CertificationIdEntity entity : queryResult) {
+            results.put(entity.getCertificationId(), true);
+        }
+
+        // then merge in the IDs that where not found.
+        for (String certId : certificationIds) {
+            if (null == results.get(certId)) {
+                results.put(certId, false);
+            }
+        }
+
+        return results;
+    }
+
+    private void create(CertificationIdEntity entity) {
+
+        entityManager.persist(entity);
+        entityManager.flush();
+    }
+
+    private List<CertificationIdEntity> getAllEntities() {
+
+        List<CertificationIdEntity> result = entityManager
+                .createQuery("from CertificationIdEntity ", CertificationIdEntity.class).getResultList();
+        return result;
+
+    }
+
+    private CertificationIdEntity getEntityById(Long id) throws EntityRetrievalException {
+
+        CertificationIdEntity entity = null;
+
+        Query query = entityManager.createQuery(
+                "from CertificationIdEntity where (ehr_certification_id_id = :entityid) ", CertificationIdEntity.class);
+        query.setParameter("entityid", id);
+        List<CertificationIdEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            String msg = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
+            throw new EntityRetrievalException(msg);
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate certificationId id in database.");
+        } else if (result.size() == 1) {
+            entity = result.get(0);
+        }
+
+        return entity;
+    }
+
+    private CertificationIdEntity getEntityByCertificationId(String certificationId) throws EntityRetrievalException {
+
+        CertificationIdEntity entity = null;
+
+        Query query = entityManager.createQuery("from CertificationIdEntity where (certification_id = :certid) ",
+                CertificationIdEntity.class);
+        query.setParameter("certid", certificationId);
+        List<CertificationIdEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            String msg = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("certificationId.notFound"), LocaleContextHolder.getLocale()));
+            throw new EntityRetrievalException(msg);
+        } else if (result.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
+        } else if (result.size() == 1) {
+            entity = result.get(0);
+        }
+
+        return entity;
+    }
+
+    private CertificationIdEntity getEntityByProductIds(List<Long> productIds, String year)
+            throws EntityRetrievalException {
+
+        CertificationIdEntity entity = null;
+
+        // Lookup the EHR Certification ID record by:
+        // 1. Looking up all CertificationIDs that are associated with the
+        // products.
+        // 2. Reduce the set by removing records that contain products other
+        // than those specified.
+        // 3. Make sure the number of products for the CertID matches the number
+        // of products specified,
+        // this filters out CertIDs that only contain a subset of those products
+        // specified.
+        List<CertificationIdEntity> result = new ArrayList<CertificationIdEntity>();
+        Query query = entityManager.createQuery(
+
+                "from CertificationIdEntity " + "where ehr_certification_id_id in (" +
+
+                        "select mpx.certificationIdId " + "from CertificationIdProductMapEntity as mpx "
+                        + "where mpx.certifiedProductId in :productIds " + "and mpx.certificationIdId not in ( "
+                        + "select mpa.certificationIdId " + "from CertificationIdProductMapEntity as mpa "
+                        + "where mpa.certificationIdId in ( " + "select mpy.certificationIdId "
+                        + "from CertificationIdProductMapEntity as mpy "
+                        + "where mpy.certifiedProductId in :productIds " + "group by mpy.certificationIdId " + ") "
+                        + "and mpa.certifiedProductId not in :productIds " + "group by mpa.certificationIdId " + ") "
+                        + "group by mpx.certificationIdId " + "having count(mpx.certificationIdId) = :productCount " +
+
+                        ") " + "and year = :year",
+                CertificationIdEntity.class);
+
+        query.setParameter("productIds", productIds);
+        query.setParameter("productCount", new Long(productIds.size()));
+        query.setParameter("year", year);
+        result = query.getResultList();
+
+        if (result.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
+        } else if (result.size() == 1) {
+            entity = result.get(0);
+        }
+
+        return entity;
+    }
 
     private static String encodeCollectionKey(List<Long> numbers) {
-        
+
         // Sort the product numbers before we encode them so they are in order
-		Collections.sort(numbers);
-        
+        Collections.sort(numbers);
+
         // Collect encoded version of all numbers.
-		String numbersString = "";
+        String numbersString = "";
         for (Long number : numbers) {
-        	StringBuffer encodedNumber = new StringBuffer(Long.toString(number, ENCODED_RADIX));
-        	while (encodedNumber.length() < ENCODED_PADDED_LENGTH) {
-        		encodedNumber.insert(0, "0");
-        	}
-        	numbersString += encodedNumber;
+            StringBuffer encodedNumber = new StringBuffer(Long.toString(number, ENCODED_RADIX));
+            while (encodedNumber.length() < ENCODED_PADDED_LENGTH) {
+                encodedNumber.insert(0, "0");
+            }
+            numbersString += encodedNumber;
         }
-        
+
         return numbersString.toUpperCase();
     }
-	
-	private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {
-		
-		return entityManager.createQuery("from CertificationIdAndCertifiedProductEntity", CertificationIdAndCertifiedProductEntity.class).getResultList();
-	}
-	
-	private static String generateCertificationIdString(String year) {
-		// Form the EHR Certification ID prefix and edition year identifier.
-		// The identifier begins with the two-digit year followed by an "E" to indicate
-		// an edition year (e.g. "2015") or "H" to indicate a hybrid edition year (e.g. "2014/2015").
-		// To create it we take the last two digits of the year value which would
-		// represent the highest (current) year number...
-		StringBuffer newId = new StringBuffer("00");
-		newId.append(year.substring(year.length() - 2));
-		
-		// ...Decide if it's a hybrid year or not and attach the "E" or "H".
-		if (-1 == year.indexOf("/")) {
-			newId.append("E");
-		} else {
-			newId.append("H");
-		}
-		
-		int suffixLength = (CERT_ID_LENGTH - newId.length());
 
-		// Generate the remainder of the ID
-		int alphaCount = 1;
-		for (int i = 0; i < suffixLength; ++i) {
-			char newChar = CERT_ID_CHARS.charAt(new Random().nextInt(CERT_ID_CHARS.length()));
-			
-			// In order to prevent words from forming within the ID, we do not allow strings of
-			// more than 3 sequential alpha characters. After 3 the next character is forced to
-			// to be numeric.
+    private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {
 
-			// Check if newChar is numeric or alpha
-			if (Pattern.matches("[0-9]", Character.toString(newChar))) {
-				alphaCount = 0;
-			} else {
-				++alphaCount;
-				// If we've already had 3 alpha characters in a row, make the next one numeric
-				if (alphaCount > 3) {
-					newChar = CERT_ID_CHARS_NUMERIC.charAt(new Random().nextInt(CERT_ID_CHARS_NUMERIC.length()));
-					alphaCount = 0;
-				}
-			}
-			
-			// Add newChar to Cert ID string
-			newId.append(newChar);
-		}
+        return entityManager.createQuery("from CertificationIdAndCertifiedProductEntity",
+                CertificationIdAndCertifiedProductEntity.class).getResultList();
+    }
 
-		// Safeguard we have a proper ID
-		if (newId.length() != CERT_ID_LENGTH) {
-			return null;
-		}
+    private static String generateCertificationIdString(String year) {
+        // Form the EHR Certification ID prefix and edition year identifier.
+        // The identifier begins with the two-digit year followed by an "E" to
+        // indicate
+        // an edition year (e.g. "2015") or "H" to indicate a hybrid edition
+        // year (e.g. "2014/2015").
+        // To create it we take the last two digits of the year value which
+        // would
+        // represent the highest (current) year number...
+        StringBuffer newId = new StringBuffer("00");
+        newId.append(year.substring(year.length() - 2));
 
-		return newId.toString();
-	}
+        // ...Decide if it's a hybrid year or not and attach the "E" or "H".
+        if (-1 == year.indexOf("/")) {
+            newId.append("E");
+        } else {
+            newId.append("H");
+        }
+
+        int suffixLength = (CERT_ID_LENGTH - newId.length());
+
+        // Generate the remainder of the ID
+        int alphaCount = 1;
+        for (int i = 0; i < suffixLength; ++i) {
+            char newChar = CERT_ID_CHARS.charAt(new Random().nextInt(CERT_ID_CHARS.length()));
+
+            // In order to prevent words from forming within the ID, we do not
+            // allow strings of
+            // more than 3 sequential alpha characters. After 3 the next
+            // character is forced to
+            // to be numeric.
+
+            // Check if newChar is numeric or alpha
+            if (Pattern.matches("[0-9]", Character.toString(newChar))) {
+                alphaCount = 0;
+            } else {
+                ++alphaCount;
+                // If we've already had 3 alpha characters in a row, make the
+                // next one numeric
+                if (alphaCount > 3) {
+                    newChar = CERT_ID_CHARS_NUMERIC.charAt(new Random().nextInt(CERT_ID_CHARS_NUMERIC.length()));
+                    alphaCount = 0;
+                }
+            }
+
+            // Add newChar to Cert ID string
+            newId.append(newChar);
+        }
+
+        // Safeguard we have a proper ID
+        if (newId.length() != CERT_ID_LENGTH) {
+            return null;
+        }
+
+        return newId.toString();
+    }
 }

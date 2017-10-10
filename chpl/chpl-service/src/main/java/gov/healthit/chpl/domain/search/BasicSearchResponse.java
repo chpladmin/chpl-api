@@ -6,18 +6,21 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonView;
 
 public class BasicSearchResponse implements Serializable {
-	private static final long serialVersionUID = 2569559170265522799L;
+    private static final long serialVersionUID = 2569559170265522799L;
 
-	private List<CertifiedProductFlatSearchResult> results;
-	
-	public BasicSearchResponse() {}
+    private List<CertifiedProductFlatSearchResult> results;
 
-	@JsonView({SearchViews.Default.class})
-	public List<CertifiedProductFlatSearchResult> getResults() {
-		return results;
-	}
+    public BasicSearchResponse() {
+    }
 
-	public void setResults(List<CertifiedProductFlatSearchResult> results) {
-		this.results = results;
-	}
+    @JsonView({
+            SearchViews.Default.class
+    })
+    public List<CertifiedProductFlatSearchResult> getResults() {
+        return results;
+    }
+
+    public void setResults(final List<CertifiedProductFlatSearchResult> results) {
+        this.results = results;
+    }
 }

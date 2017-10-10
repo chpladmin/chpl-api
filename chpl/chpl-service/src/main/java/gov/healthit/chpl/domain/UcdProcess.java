@@ -14,90 +14,93 @@ import org.apache.commons.lang.StringUtils;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 
 /**
- * The user-centered design (UCD) process applied for the corresponding certification criteria
+ * The user-centered design (UCD) process applied for the corresponding
+ * certification criteria
  *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class UcdProcess implements Serializable {
-	private static final long serialVersionUID = 7248865611086710891L;
-	
-	/**
-	 * UCD process to certification result internal mapping ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
-	
-	/**
-	 * The user-centered design (UCD) process applied for the corresponding certification criteria
-	 */
-	@XmlElement(required = true)
-	private String name;
-	
-	/**
-	 * A description of the UCD process used. This variable is applicable 
-	 * for 2014 and 2015 Edition, and a string variable that does not take any restrictions 
-	 * on formatting or values. 
-	 */
-	@XmlElement(required = false, nillable=true)
-	private String details;
+    private static final long serialVersionUID = 7248865611086710891L;
 
-	/**
-	 * The set of criteria within a listing to which this UCD process is applied.
-	 */
-	@XmlElement(required = false, nillable = true)
-	private Set<CertificationCriterion> criteria;
-	
-	public UcdProcess() {
-		super();
-		this.criteria = new HashSet<CertificationCriterion>();
-	}
-	
-	public UcdProcess(CertificationResultUcdProcessDTO dto) {
-		this();
-		this.id = dto.getUcdProcessId();
-		this.name = dto.getUcdProcessName();
-		this.details = dto.getUcdProcessDetails();
-	}
-	
-	public boolean matches(UcdProcess anotherUcd) {
-		boolean result = false;
-		if(this.getId() != null && anotherUcd.getId() != null && 
-				this.getId().longValue() == anotherUcd.getId().longValue()) {
-			result = true;
-		} 
-		return result;
-	}
-	
-	public Long getId() {
-		return id;
-	}
+    /**
+     * UCD process to certification result internal mapping ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * The user-centered design (UCD) process applied for the corresponding
+     * certification criteria
+     */
+    @XmlElement(required = true)
+    private String name;
 
-	public String getName() {
-		return name;
-	}
+    /**
+     * A description of the UCD process used. This variable is applicable for
+     * 2014 and 2015 Edition, and a string variable that does not take any
+     * restrictions on formatting or values.
+     */
+    @XmlElement(required = false, nillable = true)
+    private String details;
 
-	public void setName(String ucdProcessName) {
-		this.name = ucdProcessName;
-	}
+    /**
+     * The set of criteria within a listing to which this UCD process is
+     * applied.
+     */
+    @XmlElement(required = false, nillable = true)
+    private Set<CertificationCriterion> criteria;
 
-	public String getDetails() {
-		return details;
-	}
+    public UcdProcess() {
+        super();
+        this.criteria = new HashSet<CertificationCriterion>();
+    }
 
-	public void setDetails(String ucdProcessDetails) {
-		this.details = ucdProcessDetails;
-	}
+    public UcdProcess(CertificationResultUcdProcessDTO dto) {
+        this();
+        this.id = dto.getUcdProcessId();
+        this.name = dto.getUcdProcessName();
+        this.details = dto.getUcdProcessDetails();
+    }
 
-	public Set<CertificationCriterion> getCriteria() {
-		return criteria;
-	}
+    public boolean matches(UcdProcess anotherUcd) {
+        boolean result = false;
+        if (this.getId() != null && anotherUcd.getId() != null
+                && this.getId().longValue() == anotherUcd.getId().longValue()) {
+            result = true;
+        }
+        return result;
+    }
 
-	public void setCriteria(Set<CertificationCriterion> criteria) {
-		this.criteria = criteria;
-	}
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String ucdProcessName) {
+        this.name = ucdProcessName;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(final String ucdProcessDetails) {
+        this.details = ucdProcessDetails;
+    }
+
+    public Set<CertificationCriterion> getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(final Set<CertificationCriterion> criteria) {
+        this.criteria = criteria;
+    }
 }

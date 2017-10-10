@@ -14,115 +14,121 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 @Entity
 @Table(name = "pending_surveillance_requirement")
 public class PendingSurveillanceRequirementEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long id;
-	
-	@Column(name = "pending_surveillance_id")
-	private Long pendingSurveillanceId;
-	
-	@Column(name = "type_value")
-	private String requirementType;
-	
-	@Column(name = "requirement")
-	private String surveilledRequirement;
-	
-	@Column(name = "result_value")
-	private String result;
-	
-	@Column( name = "deleted")
-	private Boolean deleted;
-	
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
-	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceRequirementId"  )
-	@Basic( optional = false )
-	@Column( name = "pending_surveillance_requirement_id", nullable = false  )
-	private Set<PendingSurveillanceNonconformityEntity> nonconformities = new HashSet<PendingSurveillanceNonconformityEntity>();
-	
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public Long getPendingSurveillanceId() {
-		return pendingSurveillanceId;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-	public void setPendingSurveillanceId(Long pendingSurveillanceId) {
-		this.pendingSurveillanceId = pendingSurveillanceId;
-	}
+    @Column(name = "pending_surveillance_id")
+    private Long pendingSurveillanceId;
 
-	public String getRequirementType() {
-		return requirementType;
-	}
+    @Column(name = "type_value")
+    private String requirementType;
 
-	public void setRequirementType(String requirementType) {
-		this.requirementType = requirementType;
-	}
+    @Column(name = "requirement")
+    private String surveilledRequirement;
 
-	public String getSurveilledRequirement() {
-		return surveilledRequirement;
-	}
+    @Column(name = "result_value")
+    private String result;
 
-	public void setSurveilledRequirement(String surveilledRequirement) {
-		this.surveilledRequirement = surveilledRequirement;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public String getResult() {
-		return result;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public void setResult(String result) {
-		this.result = result;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public Set<PendingSurveillanceNonconformityEntity> getNonconformities() {
-		return nonconformities;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingSurveillanceRequirementId")
+    @Basic(optional = false)
+    @Column(name = "pending_surveillance_requirement_id", nullable = false)
+    private Set<PendingSurveillanceNonconformityEntity> nonconformities = new HashSet<PendingSurveillanceNonconformityEntity>();
 
-	public void setNonconformities(Set<PendingSurveillanceNonconformityEntity> nonconformities) {
-		this.nonconformities = nonconformities;
-	}
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Long getPendingSurveillanceId() {
+        return pendingSurveillanceId;
+    }
+
+    public void setPendingSurveillanceId(final Long pendingSurveillanceId) {
+        this.pendingSurveillanceId = pendingSurveillanceId;
+    }
+
+    public String getRequirementType() {
+        return requirementType;
+    }
+
+    public void setRequirementType(final String requirementType) {
+        this.requirementType = requirementType;
+    }
+
+    public String getSurveilledRequirement() {
+        return surveilledRequirement;
+    }
+
+    public void setSurveilledRequirement(final String surveilledRequirement) {
+        this.surveilledRequirement = surveilledRequirement;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(final String result) {
+        this.result = result;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Set<PendingSurveillanceNonconformityEntity> getNonconformities() {
+        return nonconformities;
+    }
+
+    public void setNonconformities(final Set<PendingSurveillanceNonconformityEntity> nonconformities) {
+        this.nonconformities = nonconformities;
+    }
 }

@@ -5,72 +5,73 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.listing.CertificationResultTestStandardEntity;
 
 public class CertificationResultTestStandardDTO implements Serializable {
-	private static final long serialVersionUID = -1877751077243323497L;
-	private Long id;
-	private Long certificationResultId;
-	private Long testStandardId;
-	private String testStandardDescription;
-	private String testStandardName;
-	private Boolean deleted;
-	
-	public CertificationResultTestStandardDTO(){}
-	
-	public CertificationResultTestStandardDTO(CertificationResultTestStandardEntity entity){		
-		this.id = entity.getId();
-		this.certificationResultId = entity.getCertificationResultId();
-		this.testStandardId = entity.getTestStandardId();
-		if(entity.getTestStandard() != null) {
-			this.testStandardDescription = entity.getTestStandard().getDescription();
-			this.testStandardName = entity.getTestStandard().getName();
-		}
-		this.deleted = entity.getDeleted();
-	}
+    private static final long serialVersionUID = -1877751077243323497L;
+    private Long id;
+    private Long certificationResultId;
+    private Long testStandardId;
+    private String testStandardDescription;
+    private String testStandardName;
+    private Boolean deleted;
 
-	public Long getId() {
-		return id;
-	}
+    public CertificationResultTestStandardDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public CertificationResultTestStandardDTO(CertificationResultTestStandardEntity entity) {
+        this.id = entity.getId();
+        this.certificationResultId = entity.getCertificationResultId();
+        this.testStandardId = entity.getTestStandardId();
+        if (entity.getTestStandard() != null) {
+            this.testStandardDescription = entity.getTestStandard().getDescription();
+            this.testStandardName = entity.getTestStandard().getName();
+        }
+        this.deleted = entity.getDeleted();
+    }
 
-	public Long getCertificationResultId() {
-		return certificationResultId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getCertificationResultId() {
+        return certificationResultId;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setCertificationResultId(final Long certificationResultId) {
+        this.certificationResultId = certificationResultId;
+    }
 
-	public Long getTestStandardId() {
-		return testStandardId;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setTestStandardId(Long testStandardId) {
-		this.testStandardId = testStandardId;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public String getTestStandardDescription() {
-		return testStandardDescription;
-	}
+    public Long getTestStandardId() {
+        return testStandardId;
+    }
 
-	public void setTestStandardDescription(String testStandardDescription) {
-		this.testStandardDescription = testStandardDescription;
-	}
+    public void setTestStandardId(final Long testStandardId) {
+        this.testStandardId = testStandardId;
+    }
 
-	public String getTestStandardName() {
-		return testStandardName;
-	}
+    public String getTestStandardDescription() {
+        return testStandardDescription;
+    }
 
-	public void setTestStandardName(String testStandardName) {
-		this.testStandardName = testStandardName;
-	}
+    public void setTestStandardDescription(final String testStandardDescription) {
+        this.testStandardDescription = testStandardDescription;
+    }
+
+    public String getTestStandardName() {
+        return testStandardName;
+    }
+
+    public void setTestStandardName(final String testStandardName) {
+        this.testStandardName = testStandardName;
+    }
 }

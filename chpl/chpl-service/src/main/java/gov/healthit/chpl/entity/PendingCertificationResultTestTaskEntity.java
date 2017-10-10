@@ -17,119 +17,117 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_certification_result_test_task")
+@Table(name = "pending_certification_result_test_task")
 public class PendingCertificationResultTestTaskEntity {
-		
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_test_task_id", nullable = false  )
-	private Long id;
 
-	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pending_certification_result_test_task_id", nullable = false)
+    private Long id;
 
-	@Basic( optional = false )
-	@Column(name = "pending_test_task_id", nullable = false )	
-	private Long pendingTestTaskId;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_test_task_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private PendingTestTaskEntity testTask;
-	
- 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultTestTaskId"  )
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_test_task_id", nullable = false  )
-	private Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<PendingCertificationResultTestTaskParticipantEntity>();
-	
- 	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long pendingCertificationResultId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_test_task_id", nullable = false)
+    private Long pendingTestTaskId;
 
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "pending_test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private PendingTestTaskEntity testTask;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultTestTaskId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_test_task_id", nullable = false)
+    private Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<PendingCertificationResultTestTaskParticipantEntity>();
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Long getPendingTestTaskId() {
-		return pendingTestTaskId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setPendingTestTaskId(Long pendingTestTaskId) {
-		this.pendingTestTaskId = pendingTestTaskId;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public PendingTestTaskEntity getTestTask() {
-		return testTask;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setTestTask(PendingTestTaskEntity testTask) {
-		this.testTask = testTask;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public Set<PendingCertificationResultTestTaskParticipantEntity> getTestParticipants() {
-		return testParticipants;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setTestParticipants(Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants) {
-		this.testParticipants = testParticipants;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
+
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
+
+    public Long getPendingTestTaskId() {
+        return pendingTestTaskId;
+    }
+
+    public void setPendingTestTaskId(final Long pendingTestTaskId) {
+        this.pendingTestTaskId = pendingTestTaskId;
+    }
+
+    public PendingTestTaskEntity getTestTask() {
+        return testTask;
+    }
+
+    public void setTestTask(final PendingTestTaskEntity testTask) {
+        this.testTask = testTask;
+    }
+
+    public Set<PendingCertificationResultTestTaskParticipantEntity> getTestParticipants() {
+        return testParticipants;
+    }
+
+    public void setTestParticipants(final Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants) {
+        this.testParticipants = testParticipants;
+    }
 }

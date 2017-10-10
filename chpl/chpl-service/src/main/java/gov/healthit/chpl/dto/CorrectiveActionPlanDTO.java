@@ -6,142 +6,142 @@ import java.util.Date;
 import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
 
 public class CorrectiveActionPlanDTO implements Serializable {
-	private static final long serialVersionUID = 489989180361599764L;
-	private Long id;
-	private Long certifiedProductId;
-	private Date surveillanceStartDate;
-	private Date surveillanceEndDate;
-	private Boolean surveillanceResult;
-	private Date nonComplianceDeterminationDate;
-	private Date approvalDate;
-	private Date startDate;
-	private Date requiredCompletionDate;
-	private Date actualCompletionDate;
-	private String summary;
-	private String developerExplanation;
-	private String resolution;
-	
-	public CorrectiveActionPlanDTO() {
-	}
-	
-	public CorrectiveActionPlanDTO(CorrectiveActionPlanEntity entity) {
-		this.id = entity.getId();
-		this.certifiedProductId = entity.getCertifiedProductId();
-		this.surveillanceStartDate = entity.getSurveillanceStartDate();
-		this.surveillanceEndDate = entity.getSurveillanceEndDate();
-		this.surveillanceResult = entity.getSurveillanceResult();
-		this.nonComplianceDeterminationDate = entity.getNonComplianceDeterminationDate();
-		this.approvalDate = entity.getApprovalDate();
-		this.startDate = entity.getStartDate();
-		this.requiredCompletionDate = entity.getRequiredCompletionDate();
-		this.actualCompletionDate = entity.getActualCompletionDate();
-		this.summary = entity.getSummary();
-		this.developerExplanation = entity.getDeveloperExplanation();
-		this.resolution = entity.getResolution();
-	}
+    private static final long serialVersionUID = 489989180361599764L;
+    private Long id;
+    private Long certifiedProductId;
+    private Date surveillanceStartDate;
+    private Date surveillanceEndDate;
+    private Boolean surveillanceResult;
+    private Date nonComplianceDeterminationDate;
+    private Date approvalDate;
+    private Date startDate;
+    private Date requiredCompletionDate;
+    private Date actualCompletionDate;
+    private String summary;
+    private String developerExplanation;
+    private String resolution;
 
-	public Long getId() {
-		return id;
-	}
+    public CorrectiveActionPlanDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public CorrectiveActionPlanDTO(CorrectiveActionPlanEntity entity) {
+        this.id = entity.getId();
+        this.certifiedProductId = entity.getCertifiedProductId();
+        this.surveillanceStartDate = entity.getSurveillanceStartDate();
+        this.surveillanceEndDate = entity.getSurveillanceEndDate();
+        this.surveillanceResult = entity.getSurveillanceResult();
+        this.nonComplianceDeterminationDate = entity.getNonComplianceDeterminationDate();
+        this.approvalDate = entity.getApprovalDate();
+        this.startDate = entity.getStartDate();
+        this.requiredCompletionDate = entity.getRequiredCompletionDate();
+        this.actualCompletionDate = entity.getActualCompletionDate();
+        this.summary = entity.getSummary();
+        this.developerExplanation = entity.getDeveloperExplanation();
+        this.resolution = entity.getResolution();
+    }
 
-	public Long getCertifiedProductId() {
-		return certifiedProductId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertifiedProductId(Long certifiedProductId) {
-		this.certifiedProductId = certifiedProductId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Date getApprovalDate() {
-		return approvalDate;
-	}
+    public Long getCertifiedProductId() {
+        return certifiedProductId;
+    }
 
-	public void setApprovalDate(Date approvalDate) {
-		this.approvalDate = approvalDate;
-	}
+    public void setCertifiedProductId(final Long certifiedProductId) {
+        this.certifiedProductId = certifiedProductId;
+    }
 
-	public Date getSurveillanceStartDate() {
-		return surveillanceStartDate;
-	}
+    public Date getApprovalDate() {
+        return approvalDate;
+    }
 
-	public void setSurveillanceStartDate(Date surveillanceStartDate) {
-		this.surveillanceStartDate = surveillanceStartDate;
-	}
+    public void setApprovalDate(final Date approvalDate) {
+        this.approvalDate = approvalDate;
+    }
 
-	public Date getSurveillanceEndDate() {
-		return surveillanceEndDate;
-	}
+    public Date getSurveillanceStartDate() {
+        return surveillanceStartDate;
+    }
 
-	public void setSurveillanceEndDate(Date surveillanceEndDate) {
-		this.surveillanceEndDate = surveillanceEndDate;
-	}
+    public void setSurveillanceStartDate(final Date surveillanceStartDate) {
+        this.surveillanceStartDate = surveillanceStartDate;
+    }
 
-	public Boolean getSurveillanceResult() {
-		return surveillanceResult;
-	}
+    public Date getSurveillanceEndDate() {
+        return surveillanceEndDate;
+    }
 
-	public void setSurveillanceResult(Boolean surveillanceResult) {
-		this.surveillanceResult = surveillanceResult;
-	}
+    public void setSurveillanceEndDate(final Date surveillanceEndDate) {
+        this.surveillanceEndDate = surveillanceEndDate;
+    }
 
-	public Date getNonComplianceDeterminationDate() {
-		return nonComplianceDeterminationDate;
-	}
+    public Boolean getSurveillanceResult() {
+        return surveillanceResult;
+    }
 
-	public void setNonComplianceDeterminationDate(Date nonComplianceDeterminationDate) {
-		this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
-	}
+    public void setSurveillanceResult(final Boolean surveillanceResult) {
+        this.surveillanceResult = surveillanceResult;
+    }
 
-	public Date getStartDate() {
-		return startDate;
-	}
+    public Date getNonComplianceDeterminationDate() {
+        return nonComplianceDeterminationDate;
+    }
 
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
+    public void setNonComplianceDeterminationDate(final Date nonComplianceDeterminationDate) {
+        this.nonComplianceDeterminationDate = nonComplianceDeterminationDate;
+    }
 
-	public Date getRequiredCompletionDate() {
-		return requiredCompletionDate;
-	}
+    public Date getStartDate() {
+        return startDate;
+    }
 
-	public void setRequiredCompletionDate(Date requiredCompletionDate) {
-		this.requiredCompletionDate = requiredCompletionDate;
-	}
+    public void setStartDate(final Date startDate) {
+        this.startDate = startDate;
+    }
 
-	public Date getActualCompletionDate() {
-		return actualCompletionDate;
-	}
+    public Date getRequiredCompletionDate() {
+        return requiredCompletionDate;
+    }
 
-	public void setActualCompletionDate(Date actualCompletionDate) {
-		this.actualCompletionDate = actualCompletionDate;
-	}
+    public void setRequiredCompletionDate(final Date requiredCompletionDate) {
+        this.requiredCompletionDate = requiredCompletionDate;
+    }
 
-	public String getSummary() {
-		return summary;
-	}
+    public Date getActualCompletionDate() {
+        return actualCompletionDate;
+    }
 
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
+    public void setActualCompletionDate(final Date actualCompletionDate) {
+        this.actualCompletionDate = actualCompletionDate;
+    }
 
-	public String getDeveloperExplanation() {
-		return developerExplanation;
-	}
+    public String getSummary() {
+        return summary;
+    }
 
-	public void setDeveloperExplanation(String developerExplanation) {
-		this.developerExplanation = developerExplanation;
-	}
+    public void setSummary(final String summary) {
+        this.summary = summary;
+    }
 
-	public String getResolution() {
-		return resolution;
-	}
+    public String getDeveloperExplanation() {
+        return developerExplanation;
+    }
 
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
+    public void setDeveloperExplanation(final String developerExplanation) {
+        this.developerExplanation = developerExplanation;
+    }
+
+    public String getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(final String resolution) {
+        this.resolution = resolution;
+    }
 
 }

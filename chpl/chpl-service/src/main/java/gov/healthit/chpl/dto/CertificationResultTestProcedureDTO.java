@@ -5,63 +5,64 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.listing.CertificationResultTestProcedureEntity;
 
 public class CertificationResultTestProcedureDTO implements Serializable {
-	private static final long serialVersionUID = -961853252507290637L;
-	private Long id;
-	private Long certificationResultId;
-	private Long testProcedureId;
-	private String testProcedureVersion;
-	private Boolean deleted;
-	
-	public CertificationResultTestProcedureDTO(){}
-	
-	public CertificationResultTestProcedureDTO(CertificationResultTestProcedureEntity entity){		
-		this.id = entity.getId();
-		this.certificationResultId = entity.getCertificationResultId();
-		this.testProcedureId = entity.getTestProcedureId();
-		if(entity.getTestProcedure() != null) {
-			this.testProcedureVersion = entity.getTestProcedure().getVersion();	
-		}
-		this.deleted = entity.getDeleted();
-	}
+    private static final long serialVersionUID = -961853252507290637L;
+    private Long id;
+    private Long certificationResultId;
+    private Long testProcedureId;
+    private String testProcedureVersion;
+    private Boolean deleted;
 
-	public Long getId() {
-		return id;
-	}
+    public CertificationResultTestProcedureDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public CertificationResultTestProcedureDTO(CertificationResultTestProcedureEntity entity) {
+        this.id = entity.getId();
+        this.certificationResultId = entity.getCertificationResultId();
+        this.testProcedureId = entity.getTestProcedureId();
+        if (entity.getTestProcedure() != null) {
+            this.testProcedureVersion = entity.getTestProcedure().getVersion();
+        }
+        this.deleted = entity.getDeleted();
+    }
 
-	public Long getCertificationResultId() {
-		return certificationResultId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getCertificationResultId() {
+        return certificationResultId;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setCertificationResultId(final Long certificationResultId) {
+        this.certificationResultId = certificationResultId;
+    }
 
-	public Long getTestProcedureId() {
-		return testProcedureId;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setTestProcedureId(Long testProcedureId) {
-		this.testProcedureId = testProcedureId;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public String getTestProcedureVersion() {
-		return testProcedureVersion;
-	}
+    public Long getTestProcedureId() {
+        return testProcedureId;
+    }
 
-	public void setTestProcedureVersion(String testProcedureVersion) {
-		this.testProcedureVersion = testProcedureVersion;
-	}
+    public void setTestProcedureId(final Long testProcedureId) {
+        this.testProcedureId = testProcedureId;
+    }
+
+    public String getTestProcedureVersion() {
+        return testProcedureVersion;
+    }
+
+    public void setTestProcedureVersion(final String testProcedureVersion) {
+        this.testProcedureVersion = testProcedureVersion;
+    }
 
 }

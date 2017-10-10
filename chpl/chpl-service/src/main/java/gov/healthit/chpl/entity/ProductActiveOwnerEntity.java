@@ -16,114 +16,113 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 
-
 @Entity
 @Table(name = "product_active_owner_history_map")
 public class ProductActiveOwnerEntity implements ProductOwnerEntity, Serializable {
-	private static final long serialVersionUID = -8325348768063869639L;
+    private static final long serialVersionUID = -8325348768063869639L;
 
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "id", nullable = false  )
-	private Long id;
-    
-	@Column( name = "vendor_id")
-	private Long developerId;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vendor_id", unique=true, nullable = true, insertable=false, updatable=false)
-	private DeveloperEntity developer;
-	
-	@Column(name = "product_id")
-	private Long productId;
-	
-	@Column(name = "transfer_date")
-	private Date transferDate;
-	
-	@Column( name = "creation_date", nullable = false, insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column(name = "deleted", nullable = false  )
-	private Boolean deleted;
-    
-	@Column( name = "last_modified_date", nullable = false, insertable = false, updatable = false  )
-	private Date lastModifiedDate;
-	
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "vendor_id")
+    private Long developerId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private DeveloperEntity developer;
 
-	public Long getDeveloperId() {
-		return developerId;
-	}
+    @Column(name = "product_id")
+    private Long productId;
 
-	public void setDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	}
+    @Column(name = "transfer_date")
+    private Date transferDate;
 
-	public Long getProductId() {
-		return productId;
-	}
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setProductId(Long productId) {
-		this.productId = productId;
-	}
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public Date getTransferDate() {
-		return transferDate;
-	}
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public void setTransferDate(Date transferDate) {
-		this.transferDate = transferDate;
-	}
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getDeveloperId() {
+        return developerId;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setDeveloperId(final Long developerId) {
+        this.developerId = developerId;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Long getProductId() {
+        return productId;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setProductId(final Long productId) {
+        this.productId = productId;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public Date getTransferDate() {
+        return transferDate;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setTransferDate(final Date transferDate) {
+        this.transferDate = transferDate;
+    }
 
-	public DeveloperEntity getDeveloper() {
-		return developer;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setDeveloper(DeveloperEntity developer) {
-		this.developer = developer;
-	}
-	
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public DeveloperEntity getDeveloper() {
+        return developer;
+    }
+
+    public void setDeveloper(final DeveloperEntity developer) {
+        this.developer = developer;
+    }
+
 }

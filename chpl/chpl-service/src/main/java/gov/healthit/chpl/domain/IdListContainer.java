@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IdListContainer {
-	private List<Long> ids;
-	
-	public IdListContainer() {
-		ids = new ArrayList<Long>();
-	}
+    private List<Long> ids;
 
-	public List<Long> getIds() {
-		return ids;
-	}
+    public IdListContainer() {
+        ids = new ArrayList<Long>();
+    }
 
-	public void setIds(List<Long> ids) {
-		this.ids = ids;
-	}
+    public List<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(final List<Long> ids) {
+        this.ids = ids;
+    }
 }

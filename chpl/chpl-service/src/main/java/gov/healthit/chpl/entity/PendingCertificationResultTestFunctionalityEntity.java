@@ -11,102 +11,101 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_certification_result_test_functionality")
+@Table(name = "pending_certification_result_test_functionality")
 public class PendingCertificationResultTestFunctionalityEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_test_functionality_id", nullable = false  )
-	private Long id;
 
-	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pending_certification_result_test_functionality_id", nullable = false)
+    private Long id;
 
-	@Column(name = "test_functionality_id")
-	private Long testFunctionalityId;
-	
-	@Column(name = "test_functionality_number")
-	private String testFunctionalityNumber;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long pendingCertificationResultId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "test_functionality_id")
+    private Long testFunctionalityId;
 
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Column(name = "test_functionality_number")
+    private String testFunctionalityNumber;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public Long getTestFunctionalityId() {
-		return testFunctionalityId;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public void setTestFunctionalityId(Long testFunctionalityId) {
-		this.testFunctionalityId = testFunctionalityId;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public String getTestFunctionalityNumber() {
-		return testFunctionalityNumber;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public void setTestFunctionalityNumber(String testFunctionalityName) {
-		this.testFunctionalityNumber = testFunctionalityName;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
+
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
+
+    public Long getTestFunctionalityId() {
+        return testFunctionalityId;
+    }
+
+    public void setTestFunctionalityId(final Long testFunctionalityId) {
+        this.testFunctionalityId = testFunctionalityId;
+    }
+
+    public String getTestFunctionalityNumber() {
+        return testFunctionalityNumber;
+    }
+
+    public void setTestFunctionalityNumber(final String testFunctionalityName) {
+        this.testFunctionalityNumber = testFunctionalityName;
+    }
 }

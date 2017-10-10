@@ -5,7 +5,9 @@ import java.util.List;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 
 public interface AgeRangeDAO {
-	public AgeRangeDTO getById(Long id) throws EntityRetrievalException;
-	public List<AgeRangeDTO> getAll();
-	public AgeRangeDTO getByName(String typeName);
+    AgeRangeDTO getById(Long id) throws EntityRetrievalException;
+
+    List<AgeRangeDTO> getAll();
+
+    AgeRangeDTO getByName(String typeName);
 }

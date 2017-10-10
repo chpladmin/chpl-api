@@ -6,53 +6,54 @@ import java.util.Date;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 
 public class DeveloperStatusEventDTO implements Serializable {
-	private static final long serialVersionUID = -2492374479266782228L;
-	
-	private Long id;
-	private Long developerId;
-	private DeveloperStatusDTO status;
-	private Date statusDate;
-	
-	public DeveloperStatusEventDTO(){
-	}
-	
-	public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity){
-		this();
-		this.id = entity.getId();
-		this.developerId = entity.getDeveloperId();
-		this.status = new DeveloperStatusDTO(entity.getDeveloperStatus());
-		this.statusDate = entity.getStatusDate();
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public Long getDeveloperId() {
-		return developerId;
-	}
+    private static final long serialVersionUID = -2492374479266782228L;
 
-	public void setDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	}
+    private Long id;
+    private Long developerId;
+    private DeveloperStatusDTO status;
+    private Date statusDate;
 
-	public Date getStatusDate() {
-		return statusDate;
-	}
+    public DeveloperStatusEventDTO() {
+    }
 
-	public void setStatusDate(Date statusDate) {
-		this.statusDate = statusDate;
-	}
+    public DeveloperStatusEventDTO(DeveloperStatusEventEntity entity) {
+        this();
+        this.id = entity.getId();
+        this.developerId = entity.getDeveloperId();
+        this.status = new DeveloperStatusDTO(entity.getDeveloperStatus());
+        this.statusDate = entity.getStatusDate();
+    }
 
-	public DeveloperStatusDTO getStatus() {
-		return status;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setStatus(DeveloperStatusDTO status) {
-		this.status = status;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Long getDeveloperId() {
+        return developerId;
+    }
+
+    public void setDeveloperId(final Long developerId) {
+        this.developerId = developerId;
+    }
+
+    public Date getStatusDate() {
+        return statusDate;
+    }
+
+    public void setStatusDate(final Date statusDate) {
+        this.statusDate = statusDate;
+    }
+
+    public DeveloperStatusDTO getStatus() {
+        return status;
+    }
+
+    public void setStatus(final DeveloperStatusDTO status) {
+        this.status = status;
+    }
 
 }

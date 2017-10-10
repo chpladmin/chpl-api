@@ -19,28 +19,28 @@ import net.sf.ehcache.CacheManager;
 @Api
 @RestController
 public class StatusController {
-	private static final Logger logger = LogManager.getLogger(StatusController.class);
-	@Autowired private CacheUtil cacheUtil;
+    private static final Logger LOGGER = LogManager.getLogger(StatusController.class);
+    @Autowired
+    private CacheUtil cacheUtil;
 
-	@ApiOperation(value="Check that the rest services are up and running.", 
-			notes="")
-	@RequestMapping(value="/status", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody String getStatus() {
-		logger.warn("/status called");
-		return "{\"status\": \"OK\"}";
-	}
-	
-	@ApiOperation(value = "Check if the basic search cache has completed loading. "
-			+ "{ status: 'OK' } is returned if it's finished and { status: 'INITIALIZING' } is returned if not.",
-			notes="")
-	@RequestMapping(value="/cache_status", method=RequestMethod.GET, produces="application/json; charset=utf-8")
-	public @ResponseBody String getCacheStatus() {
-		CacheManager manager = cacheUtil.getMyCacheManager();
-		Cache basicCache = manager.getCache(CacheNames.COLLECTIONS_LISTINGS);
-		if(basicCache == null || basicCache.getSize() == 0) {
-			return "{\"status\": \"" + CacheStatus.INITIALIZING + "\"}";
-		}
-		return "{\"status\": \"" + CacheStatus.OK + "\"}";
-	}
+    @ApiOperation(value = "Check that the rest services are up and running.", notes = "")
+    @RequestMapping(value = "/status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody String getStatus() {
+        LOGGER.warn("/status called");
+        return "{\"status\": \"OK\"}";
+    }
+
+    @ApiOperation(
+            value = "Check if the basic search cache has completed loading. "
+                    + "{ status: 'OK' } is returned if it's finished and { status: 'INITIALIZING' } is returned if not.",
+            notes = "")
+    @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody String getCacheStatus() {
+        CacheManager manager = cacheUtil.getMyCacheManager();
+        Cache basicCache = manager.getCache(CacheNames.COLLECTIONS_LISTINGS);
+        if (basicCache == null || basicCache.getSize() == 0) {
+            return "{\"status\": \"" + CacheStatus.INITIALIZING + "\"}";
+        }
+        return "{\"status\": \"" + CacheStatus.OK + "\"}";
+    }
 }

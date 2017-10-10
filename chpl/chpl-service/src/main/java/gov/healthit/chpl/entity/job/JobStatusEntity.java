@@ -11,88 +11,90 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
-
 @Entity
 @Table(name = "job_status")
 public class JobStatusEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long id;
-	
-	@Column(name = "name")
-	@Type(type = "gov.healthit.chpl.entity.job.PostgresJobStatusType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.job.JobStatusType")} )
-	private JobStatusType status;
 
-	@Column(name = "percent_complete")
-	private Integer percentComplete;
-	
-	@Column( name = "deleted")
-	private Boolean deleted;
-	
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "name")
+    @Type(type = "gov.healthit.chpl.entity.job.PostgresJobStatusType", parameters = {
+            @org.hibernate.annotations.Parameter(name = "enumClassName",
+                    value = "gov.healthit.chpl.entity.job.JobStatusType")
+    })
+    private JobStatusType status;
 
-	public JobStatusType getStatus() {
-		return status;
-	}
+    @Column(name = "percent_complete")
+    private Integer percentComplete;
 
-	public void setStatus(JobStatusType status) {
-		this.status = status;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public Integer getPercentComplete() {
-		return percentComplete;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public void setPercentComplete(Integer percentComplete) {
-		this.percentComplete = percentComplete;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public JobStatusType getStatus() {
+        return status;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public void setStatus(final JobStatusType status) {
+        this.status = status;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Integer getPercentComplete() {
+        return percentComplete;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public void setPercentComplete(final Integer percentComplete) {
+        this.percentComplete = percentComplete;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 }

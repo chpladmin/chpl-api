@@ -21,30 +21,53 @@ import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 public interface SurveillanceManager extends QuestionableActivityHandler {
-	public File getDownloadFile(String filename) throws IOException;
-	public File getProtectedDownloadFile(String filename) throws IOException;
-	public void validate(Surveillance surveillance);
-	
-	public Long createSurveillance(Long abcId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
-	public Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc);
-	public void updateSurveillance(Long acbId, Surveillance surv) throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
-	public Surveillance getById(Long survId) throws EntityNotFoundException;
-	public Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
-	public List<Surveillance> getByCertifiedProduct(Long cpId);
-	public SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents);
-	public void deleteSurveillance(Long acbId, Surveillance surv) throws SurveillanceAuthorityAccessDeniedException;
-	public void deleteNonconformityDocument(Long acbId, Long documentId);
-	
-	public List<Surveillance> getPendingByAcb(Long acbId);
-	public Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityNotFoundException;
-	public Long createPendingSurveillance(Long acbId, Surveillance surv);
-	public void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed) throws ObjectMissingValidationException, JsonProcessingException, 
-	EntityRetrievalException, EntityCreationException;
-	public void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
-			throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException, EntityCreationException;
-	public boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
-			throws EntityRetrievalException, ObjectMissingValidationException;
-	boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
-			throws EntityRetrievalException, ObjectMissingValidationException;
+    File getDownloadFile(String filename) throws IOException;
+
+    File getProtectedDownloadFile(String filename) throws IOException;
+
+    void validate(Surveillance surveillance);
+
+    Long createSurveillance(Long abcId, Surveillance surv)
+            throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
+
+    Long addDocumentToNonconformity(Long acbId, Long nonconformityId, SurveillanceNonconformityDocument doc)
+            throws EntityRetrievalException;
+
+    void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException,
+            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException;
+
+    Surveillance getById(Long survId) throws EntityRetrievalException;
+
+    Surveillance getByFriendlyIdAndProduct(Long certifiedProductId, String survFriendlyId);
+
+    List<Surveillance> getByCertifiedProduct(Long cpId);
+
+    SurveillanceNonconformityDocument getDocumentById(Long docId, boolean getFileContents)
+            throws EntityRetrievalException;
+
+    void deleteSurveillance(Long acbId, Surveillance surv)
+            throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException;
+
+    void deleteNonconformityDocument(Long acbId, Long documentId) throws EntityRetrievalException;
+
+    List<Surveillance> getPendingByAcb(Long acbId);
+
+    Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
+
+    Long createPendingSurveillance(Long acbId, Surveillance surv);
+
+    void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
+            throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
+            EntityCreationException;
+
+    void deletePendingSurveillance(List<CertificationBodyDTO> userAcbs, Long survId, boolean isConfirmed)
+            throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
+            JsonProcessingException, EntityRetrievalException, EntityCreationException;
+
+    boolean isPendingSurveillanceAvailableForUpdate(Long acbId, Long pendingSurvId)
+            throws EntityRetrievalException, ObjectMissingValidationException;
+
+    boolean isPendingSurveillanceAvailableForUpdate(Long acbId, PendingSurveillanceEntity pendingSurv)
+            throws EntityRetrievalException, ObjectMissingValidationException;
 
 }

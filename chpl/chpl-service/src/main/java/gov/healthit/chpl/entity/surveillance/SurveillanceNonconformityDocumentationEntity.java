@@ -14,121 +14,121 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="surveillance_nonconformity_document")
+@Table(name = "surveillance_nonconformity_document")
 public class SurveillanceNonconformityDocumentationEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "id", nullable = false  )
-	private Long id;
-	
-	@Column(name = "surveillance_nonconformity_id")
-	private Long nonconformityId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "surveillance_nonconformity_id", insertable=false, updatable=false)
-	private SurveillanceNonconformityEntity nonconformityEntity;
-	
-	@Column(name = "filename")
-	private String fileName;
-	
-	@Column(name = "filetype")
-	private String fileType;
-	
-	@Basic(fetch = FetchType.LAZY)
-	@Column(name = "filedata")
-	private byte[] fileData;
-	
-	@Column( name = "creation_date", nullable = false, insertable=false, updatable=false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false, insertable=false, updatable=false  )
-	private Date lastModifiedDate;
-	
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Column( nullable = false  )
-	private Boolean deleted;
 
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "surveillance_nonconformity_id")
+    private Long nonconformityId;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "surveillance_nonconformity_id", insertable = false, updatable = false)
+    private SurveillanceNonconformityEntity nonconformityEntity;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Column(name = "filename")
+    private String fileName;
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Column(name = "filetype")
+    private String fileType;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "filedata")
+    private byte[] fileData;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	public String getFileName() {
-		return fileName;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getFileType() {
-		return fileType;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public byte[]  getFileData() {
-		return fileData;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setFileData(byte[]  fileData) {
-		this.fileData = fileData;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Long getNonconformityId() {
-		return nonconformityId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setNonconformityId(Long nonconformityId) {
-		this.nonconformityId = nonconformityId;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public SurveillanceNonconformityEntity getNonconformityEntity() {
-		return nonconformityEntity;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setNonconformityEntity(SurveillanceNonconformityEntity nonconformityEntity) {
-		this.nonconformityEntity = nonconformityEntity;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(final String fileName) {
+        this.fileName = fileName;
+    }
+
+    public String getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(final String fileType) {
+        this.fileType = fileType;
+    }
+
+    public byte[] getFileData() {
+        return fileData;
+    }
+
+    public void setFileData(final byte[] fileData) {
+        this.fileData = fileData;
+    }
+
+    public Long getNonconformityId() {
+        return nonconformityId;
+    }
+
+    public void setNonconformityId(final Long nonconformityId) {
+        this.nonconformityId = nonconformityId;
+    }
+
+    public SurveillanceNonconformityEntity getNonconformityEntity() {
+        return nonconformityEntity;
+    }
+
+    public void setNonconformityEntity(final SurveillanceNonconformityEntity nonconformityEntity) {
+        this.nonconformityEntity = nonconformityEntity;
+    }
 }

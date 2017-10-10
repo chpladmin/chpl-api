@@ -11,102 +11,101 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_certification_result_test_procedure")
+@Table(name = "pending_certification_result_test_procedure")
 public class PendingCertificationResultTestProcedureEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_test_procedure_id", nullable = false  )
-	private Long id;
 
-	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pending_certification_result_test_procedure_id", nullable = false)
+    private Long id;
 
-	@Column(name = "test_procedure_id")
-	private Long testProcedureId;
-	
-	@Column(name = "test_procedure_version")
-	private String testProcedureVersion;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long pendingCertificationResultId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "test_procedure_id")
+    private Long testProcedureId;
 
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Column(name = "test_procedure_version")
+    private String testProcedureVersion;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public Long getTestProcedureId() {
-		return testProcedureId;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public void setTestProcedureId(Long testProcedureId) {
-		this.testProcedureId = testProcedureId;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public String getTestProcedureVersion() {
-		return testProcedureVersion;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public void setTestProcedureVersion(String testProcedureVersion) {
-		this.testProcedureVersion = testProcedureVersion;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
+
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
+
+    public Long getTestProcedureId() {
+        return testProcedureId;
+    }
+
+    public void setTestProcedureId(final Long testProcedureId) {
+        this.testProcedureId = testProcedureId;
+    }
+
+    public String getTestProcedureVersion() {
+        return testProcedureVersion;
+    }
+
+    public void setTestProcedureVersion(final String testProcedureVersion) {
+        this.testProcedureVersion = testProcedureVersion;
+    }
 }

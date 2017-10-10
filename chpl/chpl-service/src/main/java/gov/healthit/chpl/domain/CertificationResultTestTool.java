@@ -12,108 +12,110 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 
 /**
- * The test tool used to certify the Health IT Module to the corresponding certification criteria
- * Allowable values are based on the NIST 2014 and 2015 Edition Test Tools.
+ * The test tool used to certify the Health IT Module to the corresponding
+ * certification criteria Allowable values are based on the NIST 2014 and 2015
+ * Edition Test Tools.
  *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationResultTestTool implements Serializable {
-	private static final long serialVersionUID = 2785949879671019720L;
-	
-	/**
-	 * Test tool to certification result mapping internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
-	
-	/**
-	 * Test tool internal ID
-	 */
-	@XmlElement(required = true)
-	private Long testToolId;
-	
-	/**
-	 * The test tool used to certify the Health IT Module to the corresponding certification criteria
-	 */
-	@XmlElement(required = true)
-	private String testToolName;
-	
-	/**
-	 * The version of the test tool being used. This variable is applicable for 
-	 * 2014 and 2015 Edition, and a string variable that does not take any restrictions 
-	 * on formatting or values. 
-	 */
-	@XmlElement(required = false, nillable=true)
-	private String testToolVersion;
-	
-	/**
-	 * Whether or not the test tool has been retired.
-	 */
-	@XmlElement(required = false, nillable=true)
-	private boolean retired;
-	
-	public CertificationResultTestTool() {
-		super();
-	}
-	
-	public CertificationResultTestTool(CertificationResultTestToolDTO dto) {
-		this.id = dto.getId();
-		this.testToolId = dto.getTestToolId();
-		this.testToolName = dto.getTestToolName();
-		this.testToolVersion = dto.getTestToolVersion();
-		this.retired = dto.isRetired();
-	}
-	
-	public boolean matches(CertificationResultTestTool anotherTool) {
-		boolean result = false;
-		if(this.getTestToolId() != null && anotherTool.getTestToolId() != null && 
-				this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()) {
-			result = true;
-		} else if(!StringUtils.isEmpty(this.getTestToolName()) && !StringUtils.isEmpty(anotherTool.getTestToolName()) && 
-				this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())) {
-			result = true;
-		}
-		return result;
-	}
-	
-	public Long getId() {
-		return id;
-	}
+    private static final long serialVersionUID = 2785949879671019720L;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    /**
+     * Test tool to certification result mapping internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	public Long getTestToolId() {
-		return testToolId;
-	}
+    /**
+     * Test tool internal ID
+     */
+    @XmlElement(required = true)
+    private Long testToolId;
 
-	public void setTestToolId(Long testToolId) {
-		this.testToolId = testToolId;
-	}
+    /**
+     * The test tool used to certify the Health IT Module to the corresponding
+     * certification criteria
+     */
+    @XmlElement(required = true)
+    private String testToolName;
 
-	public String getTestToolName() {
-		return testToolName;
-	}
+    /**
+     * The version of the test tool being used. This variable is applicable for
+     * 2014 and 2015 Edition, and a string variable that does not take any
+     * restrictions on formatting or values.
+     */
+    @XmlElement(required = false, nillable = true)
+    private String testToolVersion;
 
-	public void setTestToolName(String testToolName) {
-		this.testToolName = testToolName;
-	}
+    /**
+     * Whether or not the test tool has been retired.
+     */
+    @XmlElement(required = false, nillable = true)
+    private boolean retired;
 
-	public String getTestToolVersion() {
-		return testToolVersion;
-	}
+    public CertificationResultTestTool() {
+        super();
+    }
 
-	public void setTestToolVersion(String testToolVersion) {
-		this.testToolVersion = testToolVersion;
-	}
+    public CertificationResultTestTool(CertificationResultTestToolDTO dto) {
+        this.id = dto.getId();
+        this.testToolId = dto.getTestToolId();
+        this.testToolName = dto.getTestToolName();
+        this.testToolVersion = dto.getTestToolVersion();
+        this.retired = dto.isRetired();
+    }
 
-	public boolean isRetired() {
-		return retired;
-	}
+    public boolean matches(CertificationResultTestTool anotherTool) {
+        boolean result = false;
+        if (this.getTestToolId() != null && anotherTool.getTestToolId() != null
+                && this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()) {
+            result = true;
+        } else if (!StringUtils.isEmpty(this.getTestToolName()) && !StringUtils.isEmpty(anotherTool.getTestToolName())
+                && this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())) {
+            result = true;
+        }
+        return result;
+    }
 
-	public void setRetired(boolean retired) {
-		this.retired = retired;
-	}
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Long getTestToolId() {
+        return testToolId;
+    }
+
+    public void setTestToolId(final Long testToolId) {
+        this.testToolId = testToolId;
+    }
+
+    public String getTestToolName() {
+        return testToolName;
+    }
+
+    public void setTestToolName(final String testToolName) {
+        this.testToolName = testToolName;
+    }
+
+    public String getTestToolVersion() {
+        return testToolVersion;
+    }
+
+    public void setTestToolVersion(final String testToolVersion) {
+        this.testToolVersion = testToolVersion;
+    }
+
+    public boolean isRetired() {
+        return retired;
+    }
+
+    public void setRetired(final boolean retired) {
+        this.retired = retired;
+    }
 }

@@ -8,67 +8,67 @@ import gov.healthit.chpl.entity.notification.NotificationPermissionEntity;
 import gov.healthit.chpl.entity.notification.NotificationTypeEntity;
 
 public class NotificationTypeDTO {
-	private Long id;
-	private String name;
-	private String description;
-	private Boolean requiresAcb;
-	private List<UserPermissionDTO> permissions;
-	
-	public NotificationTypeDTO() {
-		permissions = new ArrayList<UserPermissionDTO>();
-	}
-	
-	public NotificationTypeDTO(NotificationTypeEntity entity) {
-		this();
-		this.id = entity.getId();
-		this.name = entity.getName();
-		this.description = entity.getDescription();
-		this.requiresAcb = entity.getRequiresAcb();
-		if(entity.getPermissions() != null && entity.getPermissions().size() > 0) {
-			for(NotificationPermissionEntity notifPerm : entity.getPermissions()) {
-				UserPermissionDTO perm = new UserPermissionDTO(notifPerm.getPermission());
-				this.permissions.add(perm);
-			}
-		} 
-	}
+    private Long id;
+    private String name;
+    private String description;
+    private Boolean requiresAcb;
+    private List<UserPermissionDTO> permissions;
 
-	public Long getId() {
-		return id;
-	}
+    public NotificationTypeDTO() {
+        permissions = new ArrayList<UserPermissionDTO>();
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public NotificationTypeDTO(NotificationTypeEntity entity) {
+        this();
+        this.id = entity.getId();
+        this.name = entity.getName();
+        this.description = entity.getDescription();
+        this.requiresAcb = entity.getRequiresAcb();
+        if (entity.getPermissions() != null && entity.getPermissions().size() > 0) {
+            for (NotificationPermissionEntity notifPerm : entity.getPermissions()) {
+                UserPermissionDTO perm = new UserPermissionDTO(notifPerm.getPermission());
+                this.permissions.add(perm);
+            }
+        }
+    }
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public List<UserPermissionDTO> getPermissions() {
-		return permissions;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setPermissions(List<UserPermissionDTO> permissions) {
-		this.permissions = permissions;
-	}
+    public void setDescription(final String description) {
+        this.description = description;
+    }
 
-	public Boolean getRequiresAcb() {
-		return requiresAcb;
-	}
+    public List<UserPermissionDTO> getPermissions() {
+        return permissions;
+    }
 
-	public void setRequiresAcb(Boolean requiresAcb) {
-		this.requiresAcb = requiresAcb;
-	}
+    public void setPermissions(final List<UserPermissionDTO> permissions) {
+        this.permissions = permissions;
+    }
+
+    public Boolean getRequiresAcb() {
+        return requiresAcb;
+    }
+
+    public void setRequiresAcb(final Boolean requiresAcb) {
+        this.requiresAcb = requiresAcb;
+    }
 }

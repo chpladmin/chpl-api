@@ -5,55 +5,55 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
 
 public class CertificationResultTestTaskDTO implements Serializable {
-	private static final long serialVersionUID = -2963883181763817735L;
-	private Long id;
-	private Long certificationResultId;
-	private Long testTaskId;
-	private TestTaskDTO testTask;
-	
-	public CertificationResultTestTaskDTO(){
-		this.testTask = new TestTaskDTO();
-	}
-	
-	public CertificationResultTestTaskDTO(CertificationResultTestTaskEntity entity){
-		this();
-		this.id = entity.getId();
-		this.certificationResultId = entity.getCertificationResultId();
-		this.testTaskId = entity.getTestTaskId();
-		if(entity.getTestTask() != null) {
-			this.testTask = new TestTaskDTO(entity.getTestTask());
-		}
-	}
+    private static final long serialVersionUID = -2963883181763817735L;
+    private Long id;
+    private Long certificationResultId;
+    private Long testTaskId;
+    private TestTaskDTO testTask;
 
-	public Long getId() {
-		return id;
-	}
+    public CertificationResultTestTaskDTO() {
+        this.testTask = new TestTaskDTO();
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public CertificationResultTestTaskDTO(CertificationResultTestTaskEntity entity) {
+        this();
+        this.id = entity.getId();
+        this.certificationResultId = entity.getCertificationResultId();
+        this.testTaskId = entity.getTestTaskId();
+        if (entity.getTestTask() != null) {
+            this.testTask = new TestTaskDTO(entity.getTestTask());
+        }
+    }
 
-	public Long getCertificationResultId() {
-		return certificationResultId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getTestTaskId() {
-		return testTaskId;
-	}
+    public Long getCertificationResultId() {
+        return certificationResultId;
+    }
 
-	public void setTestTaskId(Long testTaskId) {
-		this.testTaskId = testTaskId;
-	}
+    public void setCertificationResultId(final Long certificationResultId) {
+        this.certificationResultId = certificationResultId;
+    }
 
-	public TestTaskDTO getTestTask() {
-		return testTask;
-	}
+    public Long getTestTaskId() {
+        return testTaskId;
+    }
 
-	public void setTestTask(TestTaskDTO testTask) {
-		this.testTask = testTask;
-	}
+    public void setTestTaskId(final Long testTaskId) {
+        this.testTaskId = testTaskId;
+    }
+
+    public TestTaskDTO getTestTask() {
+        return testTask;
+    }
+
+    public void setTestTask(final TestTaskDTO testTask) {
+        this.testTask = testTask;
+    }
 }

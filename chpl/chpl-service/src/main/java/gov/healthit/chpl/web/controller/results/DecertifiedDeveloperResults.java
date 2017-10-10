@@ -6,17 +6,18 @@ import java.util.List;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 
 public class DecertifiedDeveloperResults implements Serializable {
-	private static final long serialVersionUID = 899826444547274174L;
-	private List<DecertifiedDeveloperResult> decertifiedDeveloperResults;
-	
-	public DecertifiedDeveloperResults(){}
+    private static final long serialVersionUID = 899826444547274174L;
+    private List<DecertifiedDeveloperResult> decertifiedDeveloperResults;
 
-	public List<DecertifiedDeveloperResult> getDecertifiedDeveloperResults() {
-		return decertifiedDeveloperResults;
-	}
+    public DecertifiedDeveloperResults() {
+    }
 
-	public void setDecertifiedDeveloperResults(List<DecertifiedDeveloperResult> decertifiedDeveloperResults) {
-		this.decertifiedDeveloperResults = decertifiedDeveloperResults;
-	};
-	
+    public List<DecertifiedDeveloperResult> getDecertifiedDeveloperResults() {
+        return decertifiedDeveloperResults;
+    }
+
+    public void setDecertifiedDeveloperResults(final List<DecertifiedDeveloperResult> decertifiedDeveloperResults) {
+        this.decertifiedDeveloperResults = decertifiedDeveloperResults;
+    };
+
 }

@@ -5,137 +5,138 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 
 public class TestParticipantDTO implements Serializable {
-	private static final long serialVersionUID = 5294870595258371654L;
-	private Long id;
-	private String gender;
-	private Long educationTypeId;
-	private EducationTypeDTO educationType;
-	private Long ageRangeId;
-	private AgeRangeDTO ageRange;
-	private String occupation;
-	private Integer professionalExperienceMonths;
-	private Integer computerExperienceMonths;
-	private Integer productExperienceMonths;
-	private String assistiveTechnologyNeeds;
-	
-	private String pendingUniqueId;
-	
-	public TestParticipantDTO(){}
-	
-	public TestParticipantDTO(TestParticipantEntity entity)
-	{
-		if(entity != null) {
-			this.id = entity.getId();
-			this.gender = entity.getGender();
-			this.educationTypeId = entity.getEducationTypeId();
-			if(entity.getEducation() != null) {
-				this.educationType = new EducationTypeDTO(entity.getEducation());
-			}
-			this.ageRangeId = entity.getAgeRangeId();
-			if(entity.getAgeRange() != null) {
-				this.ageRange = new AgeRangeDTO(entity.getAgeRange());
-			}
-			this.occupation = entity.getOccupation();
-			this.professionalExperienceMonths = entity.getProfessionalExperienceMonths();
-			this.computerExperienceMonths = entity.getComputerExperienceMonths();
-			this.productExperienceMonths = entity.getProductExperienceMonths();
-			this.assistiveTechnologyNeeds = entity.getAssistiveTechnologyNeeds();
-		}
-	}
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+    private static final long serialVersionUID = 5294870595258371654L;
+    private Long id;
+    private String gender;
+    private Long educationTypeId;
+    private EducationTypeDTO educationType;
+    private Long ageRangeId;
+    private AgeRangeDTO ageRange;
+    private String occupation;
+    private Integer professionalExperienceMonths;
+    private Integer computerExperienceMonths;
+    private Integer productExperienceMonths;
+    private String assistiveTechnologyNeeds;
 
-	public String getGender() {
-		return gender;
-	}
+    private String pendingUniqueId;
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+    public TestParticipantDTO() {
+    }
 
-	public Long getEducationTypeId() {
-		return educationTypeId;
-	}
+    public TestParticipantDTO(TestParticipantEntity entity) {
+        if (entity != null) {
+            this.id = entity.getId();
+            this.gender = entity.getGender();
+            this.educationTypeId = entity.getEducationTypeId();
+            if (entity.getEducation() != null) {
+                this.educationType = new EducationTypeDTO(entity.getEducation());
+            }
+            this.ageRangeId = entity.getAgeRangeId();
+            if (entity.getAgeRange() != null) {
+                this.ageRange = new AgeRangeDTO(entity.getAgeRange());
+            }
+            this.occupation = entity.getOccupation();
+            this.professionalExperienceMonths = entity.getProfessionalExperienceMonths();
+            this.computerExperienceMonths = entity.getComputerExperienceMonths();
+            this.productExperienceMonths = entity.getProductExperienceMonths();
+            this.assistiveTechnologyNeeds = entity.getAssistiveTechnologyNeeds();
+        }
+    }
 
-	public void setEducationTypeId(Long educationTypeId) {
-		this.educationTypeId = educationTypeId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public EducationTypeDTO getEducationType() {
-		return educationType;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setEducationType(EducationTypeDTO educationType) {
-		this.educationType = educationType;
-	}
+    public String getGender() {
+        return gender;
+    }
 
-	public String getOccupation() {
-		return occupation;
-	}
+    public void setGender(final String gender) {
+        this.gender = gender;
+    }
 
-	public void setOccupation(String occupation) {
-		this.occupation = occupation;
-	}
+    public Long getEducationTypeId() {
+        return educationTypeId;
+    }
 
-	public Integer getProfessionalExperienceMonths() {
-		return professionalExperienceMonths;
-	}
+    public void setEducationTypeId(final Long educationTypeId) {
+        this.educationTypeId = educationTypeId;
+    }
 
-	public void setProfessionalExperienceMonths(Integer professionalExperienceMonths) {
-		this.professionalExperienceMonths = professionalExperienceMonths;
-	}
+    public EducationTypeDTO getEducationType() {
+        return educationType;
+    }
 
-	public Integer getComputerExperienceMonths() {
-		return computerExperienceMonths;
-	}
+    public void setEducationType(final EducationTypeDTO educationType) {
+        this.educationType = educationType;
+    }
 
-	public void setComputerExperienceMonths(Integer computerExperienceMonths) {
-		this.computerExperienceMonths = computerExperienceMonths;
-	}
+    public String getOccupation() {
+        return occupation;
+    }
 
-	public Integer getProductExperienceMonths() {
-		return productExperienceMonths;
-	}
+    public void setOccupation(final String occupation) {
+        this.occupation = occupation;
+    }
 
-	public void setProductExperienceMonths(Integer productExperienceMonths) {
-		this.productExperienceMonths = productExperienceMonths;
-	}
+    public Integer getProfessionalExperienceMonths() {
+        return professionalExperienceMonths;
+    }
 
-	public String getAssistiveTechnologyNeeds() {
-		return assistiveTechnologyNeeds;
-	}
+    public void setProfessionalExperienceMonths(final Integer professionalExperienceMonths) {
+        this.professionalExperienceMonths = professionalExperienceMonths;
+    }
 
-	public void setAssistiveTechnologyNeeds(String assistiveTechnologyNeeds) {
-		this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
-	}
+    public Integer getComputerExperienceMonths() {
+        return computerExperienceMonths;
+    }
 
-	public String getPendingUniqueId() {
-		return pendingUniqueId;
-	}
+    public void setComputerExperienceMonths(final Integer computerExperienceMonths) {
+        this.computerExperienceMonths = computerExperienceMonths;
+    }
 
-	public void setPendingUniqueId(String pendingUniqueId) {
-		this.pendingUniqueId = pendingUniqueId;
-	}
+    public Integer getProductExperienceMonths() {
+        return productExperienceMonths;
+    }
 
-	public Long getAgeRangeId() {
-		return ageRangeId;
-	}
+    public void setProductExperienceMonths(final Integer productExperienceMonths) {
+        this.productExperienceMonths = productExperienceMonths;
+    }
 
-	public void setAgeRangeId(Long ageRangeId) {
-		this.ageRangeId = ageRangeId;
-	}
+    public String getAssistiveTechnologyNeeds() {
+        return assistiveTechnologyNeeds;
+    }
 
-	public AgeRangeDTO getAgeRange() {
-		return ageRange;
-	}
+    public void setAssistiveTechnologyNeeds(final String assistiveTechnologyNeeds) {
+        this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
+    }
 
-	public void setAgeRange(AgeRangeDTO ageRange) {
-		this.ageRange = ageRange;
-	}
+    public String getPendingUniqueId() {
+        return pendingUniqueId;
+    }
+
+    public void setPendingUniqueId(final String pendingUniqueId) {
+        this.pendingUniqueId = pendingUniqueId;
+    }
+
+    public Long getAgeRangeId() {
+        return ageRangeId;
+    }
+
+    public void setAgeRangeId(final Long ageRangeId) {
+        this.ageRangeId = ageRangeId;
+    }
+
+    public AgeRangeDTO getAgeRange() {
+        return ageRange;
+    }
+
+    public void setAgeRange(final AgeRangeDTO ageRange) {
+        this.ageRange = ageRange;
+    }
 
 }

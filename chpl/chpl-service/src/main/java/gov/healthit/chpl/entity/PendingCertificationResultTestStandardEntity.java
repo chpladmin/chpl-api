@@ -11,102 +11,101 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_certification_result_test_standard")
+@Table(name = "pending_certification_result_test_standard")
 public class PendingCertificationResultTestStandardEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_test_standard_id", nullable = false  )
-	private Long id;
 
-	@Basic( optional = false )
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pending_certification_result_test_standard_id", nullable = false)
+    private Long id;
 
-	@Column(name = "test_standard_id")
-	private Long testStandardId;
-	
-	@Column(name = "test_standard_number")
-	private String testStandardName;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long pendingCertificationResultId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "test_standard_id")
+    private Long testStandardId;
 
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Column(name = "test_standard_number")
+    private String testStandardName;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public Long getTestStandardId() {
-		return testStandardId;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public void setTestStandardId(Long testStandardId) {
-		this.testStandardId = testStandardId;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public String getTestStandardName() {
-		return testStandardName;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public void setTestStandardName(String testStandardName) {
-		this.testStandardName = testStandardName;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
+
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
+
+    public Long getTestStandardId() {
+        return testStandardId;
+    }
+
+    public void setTestStandardId(final Long testStandardId) {
+        this.testStandardId = testStandardId;
+    }
+
+    public String getTestStandardName() {
+        return testStandardName;
+    }
+
+    public void setTestStandardName(final String testStandardName) {
+        this.testStandardName = testStandardName;
+    }
 }

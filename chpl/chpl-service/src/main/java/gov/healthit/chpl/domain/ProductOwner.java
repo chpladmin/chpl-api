@@ -9,62 +9,62 @@ import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 
-
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ProductOwner implements Serializable {
-	private static final long serialVersionUID = 5678373560374145870L;
-	
-	/**
-	 * Product owner internal ID
-	 */
-	@XmlElement(required = true)
-	private Long id;
-	
-	/**
-	 * Developer that either owns or used to own a given product.
-	 */
-	@XmlElement(required = true)
-	private Developer developer;
-	
-	/**
-	 * Date product owner was transferred to the associated developer. 
-	 * Given in milliseconds since epoch.
-	 */
-	@XmlElement(required = true)
-	private Long transferDate;
-	
-	public ProductOwner() {}
-	
-	public ProductOwner(ProductOwnerDTO dto) {
-		this.id = dto.getId();
-		if(dto.getDeveloper() != null) {
-			this.developer = new Developer(dto.getDeveloper());
-		}
-		this.transferDate = dto.getTransferDate();
-	}
+    private static final long serialVersionUID = 5678373560374145870L;
 
-	public Developer getDeveloper() {
-		return developer;
-	}
+    /**
+     * Product owner internal ID
+     */
+    @XmlElement(required = true)
+    private Long id;
 
-	public void setDeveloper(Developer developer) {
-		this.developer = developer;
-	}
+    /**
+     * Developer that either owns or used to own a given product.
+     */
+    @XmlElement(required = true)
+    private Developer developer;
 
-	public Long getId() {
-		return id;
-	}
+    /**
+     * Date product owner was transferred to the associated developer. Given in
+     * milliseconds since epoch.
+     */
+    @XmlElement(required = true)
+    private Long transferDate;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public ProductOwner() {
+    }
 
-	public Long getTransferDate() {
-		return transferDate;
-	}
+    public ProductOwner(ProductOwnerDTO dto) {
+        this.id = dto.getId();
+        if (dto.getDeveloper() != null) {
+            this.developer = new Developer(dto.getDeveloper());
+        }
+        this.transferDate = dto.getTransferDate();
+    }
 
-	public void setTransferDate(Long transferDate) {
-		this.transferDate = transferDate;
-	}
+    public Developer getDeveloper() {
+        return developer;
+    }
+
+    public void setDeveloper(final Developer developer) {
+        this.developer = developer;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Long getTransferDate() {
+        return transferDate;
+    }
+
+    public void setTransferDate(final Long transferDate) {
+        this.transferDate = transferDate;
+    }
 }

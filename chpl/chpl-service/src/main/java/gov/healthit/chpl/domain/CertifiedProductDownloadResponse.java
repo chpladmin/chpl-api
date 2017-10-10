@@ -15,21 +15,21 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement(namespace = "http://chpl.healthit.gov/listings", name = "results")
 public class CertifiedProductDownloadResponse implements Serializable {
-	private static final long serialVersionUID = -9189179189014761036L;
-	
-	@XmlElementWrapper(name = "listings", nillable = false, required = true)
-	@XmlElement(name = "listing")
-	private List<CertifiedProductSearchDetails> listings;
-	
-	public CertifiedProductDownloadResponse(){
-		listings = new ArrayList<CertifiedProductSearchDetails>();
-	}
+    private static final long serialVersionUID = -9189179189014761036L;
 
-	public List<CertifiedProductSearchDetails> getListings() {
-		return listings;
-	}
+    @XmlElementWrapper(name = "listings", nillable = false, required = true)
+    @XmlElement(name = "listing")
+    private List<CertifiedProductSearchDetails> listings;
 
-	public void setListings(List<CertifiedProductSearchDetails> listings) {
-		this.listings = listings;
-	}
+    public CertifiedProductDownloadResponse() {
+        listings = new ArrayList<CertifiedProductSearchDetails>();
+    }
+
+    public List<CertifiedProductSearchDetails> getListings() {
+        return listings;
+    }
+
+    public void setListings(final List<CertifiedProductSearchDetails> listings) {
+        this.listings = listings;
+    }
 }

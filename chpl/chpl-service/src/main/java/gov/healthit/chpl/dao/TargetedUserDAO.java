@@ -5,13 +5,18 @@ import java.util.List;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 
 public interface TargetedUserDAO {
-	
-	public TargetedUserDTO create(TargetedUserDTO dto) throws EntityCreationException, EntityRetrievalException;	
-	public TargetedUserDTO update(TargetedUserDTO dto) throws EntityRetrievalException;
-	public void delete(Long id) throws EntityRetrievalException;
-	
-	public List<TargetedUserDTO> findAll();
-	public TargetedUserDTO getById(Long id);
-	public TargetedUserDTO getByName(String name);
-	public TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException;
+
+    TargetedUserDTO create(TargetedUserDTO dto) throws EntityCreationException, EntityRetrievalException;
+
+    TargetedUserDTO update(TargetedUserDTO dto) throws EntityRetrievalException;
+
+    void delete(Long id) throws EntityRetrievalException;
+
+    List<TargetedUserDTO> findAll();
+
+    TargetedUserDTO getById(Long id);
+
+    TargetedUserDTO getByName(String name);
+
+    TargetedUserDTO findOrCreate(Long id, String name) throws EntityCreationException;
 }

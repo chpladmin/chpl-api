@@ -11,105 +11,105 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="api_key")
+@Table(name = "api_key")
 public class ApiKeyEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "api_key_id", nullable = false )
-	private Long id;
-	
-	@Basic(optional = false)
-	@Column(name = "api_key")
-	private String apiKey;
-	
-	@Basic(optional = false)
-	@Column(name = "email")
-	private String email;
-	
-	@Basic(optional = false)
-	@Column(name = "name_organization")
-	private String nameOrganization;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false )
-	private Boolean deleted;
 
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "api_key_id", nullable = false)
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "api_key")
+    private String apiKey;
 
-	public String getApiKey() {
-		return apiKey;
-	}
+    @Basic(optional = false)
+    @Column(name = "email")
+    private String email;
 
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
-	}
+    @Basic(optional = false)
+    @Column(name = "name_organization")
+    private String nameOrganization;
 
-	public String getEmail() {
-		return email;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public String getNameOrganization() {
-		return nameOrganization;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setNameOrganization(String nameOrganization) {
-		this.nameOrganization = nameOrganization;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public String getApiKey() {
+        return apiKey;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setApiKey(final String apiKey) {
+        this.apiKey = apiKey;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setEmail(final String email) {
+        this.email = email;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public String getNameOrganization() {
+        return nameOrganization;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	
+    public void setNameOrganization(final String nameOrganization) {
+        this.nameOrganization = nameOrganization;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
 }

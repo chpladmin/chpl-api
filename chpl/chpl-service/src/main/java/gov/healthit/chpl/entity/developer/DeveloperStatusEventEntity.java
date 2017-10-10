@@ -17,119 +17,119 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "vendor_status_history")
 public class DeveloperStatusEventEntity implements Cloneable, Serializable {
-	private static final long serialVersionUID = 1730728043307135377L;
+    private static final long serialVersionUID = 1730728043307135377L;
 
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "vendor_status_history_id", nullable = false  )
-	private Long id;
-	
-	@Column(name = "vendor_id")
-	private Long developerId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vendor_id", insertable = false, updatable = false)
-	private DeveloperEntity developer;
-	
-	@Column(name = "vendor_status_id")
-	private Long developerStatusId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "vendor_status_history_id", nullable = false)
+    private Long id;
 
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "vendor_status_id", insertable = false, updatable = false)
-	private DeveloperStatusEntity developerStatus;
-	
-	@Column(name = "status_date")
-	private Date statusDate;
-	@Column( name = "deleted")
-	private Boolean deleted;
-	
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
+    @Column(name = "vendor_id")
+    private Long developerId;
 
-	public Long getId() {
-		return id;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_id", insertable = false, updatable = false)
+    private DeveloperEntity developer;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "vendor_status_id")
+    private Long developerStatusId;
 
-	public Long getDeveloperId() {
-		return developerId;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_status_id", insertable = false, updatable = false)
+    private DeveloperStatusEntity developerStatus;
 
-	public void setDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	}
+    @Column(name = "status_date")
+    private Date statusDate;
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public DeveloperEntity getDeveloper() {
-		return developer;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public void setDeveloper(DeveloperEntity developer) {
-		this.developer = developer;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public Long getDeveloperStatusId() {
-		return developerStatusId;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public void setDeveloperStatusId(Long developerStatusId) {
-		this.developerStatusId = developerStatusId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public DeveloperStatusEntity getDeveloperStatus() {
-		return developerStatus;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setDeveloperStatus(DeveloperStatusEntity developerStatus) {
-		this.developerStatus = developerStatus;
-	}
+    public Long getDeveloperId() {
+        return developerId;
+    }
 
-	public Date getStatusDate() {
-		return statusDate;
-	}
+    public void setDeveloperId(final Long developerId) {
+        this.developerId = developerId;
+    }
 
-	public void setStatusDate(Date statusDate) {
-		this.statusDate = statusDate;
-	}
+    public DeveloperEntity getDeveloper() {
+        return developer;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public void setDeveloper(final DeveloperEntity developer) {
+        this.developer = developer;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Long getDeveloperStatusId() {
+        return developerStatusId;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setDeveloperStatusId(final Long developerStatusId) {
+        this.developerStatusId = developerStatusId;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public DeveloperStatusEntity getDeveloperStatus() {
+        return developerStatus;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public void setDeveloperStatus(final DeveloperStatusEntity developerStatus) {
+        this.developerStatus = developerStatus;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public Date getStatusDate() {
+        return statusDate;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public void setStatusDate(final Date statusDate) {
+        this.statusDate = statusDate;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 }

@@ -5,85 +5,86 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.listing.CertificationResultTestFunctionalityEntity;
 
 public class CertificationResultTestFunctionalityDTO implements Serializable {
-	private static final long serialVersionUID = 1504901339062574362L;
-	private Long id;
-	private Long certificationResultId;
-	private Long testFunctionalityId;
-	private String testFunctionalityName;
-	private String testFunctionalityNumber;
-	private String testFunctionalityEdition;
-	private Boolean deleted;
-	
-	public CertificationResultTestFunctionalityDTO(){}
-	
-	public CertificationResultTestFunctionalityDTO(CertificationResultTestFunctionalityEntity entity){		
-		this.id = entity.getId();
-		this.certificationResultId = entity.getCertificationResultId();
-		this.testFunctionalityId = entity.getTestFunctionalityId();
-		if(entity.getTestFunctionality() != null) {
-			this.testFunctionalityName = entity.getTestFunctionality().getName();
-			this.testFunctionalityNumber = entity.getTestFunctionality().getNumber();
-			if(entity.getTestFunctionality().getCertificationEdition() != null) {
-				this.testFunctionalityEdition = entity.getTestFunctionality().getCertificationEdition().getYear();
-			}
-		}
-		this.deleted = entity.getDeleted();
-	}
+    private static final long serialVersionUID = 1504901339062574362L;
+    private Long id;
+    private Long certificationResultId;
+    private Long testFunctionalityId;
+    private String testFunctionalityName;
+    private String testFunctionalityNumber;
+    private String testFunctionalityEdition;
+    private Boolean deleted;
 
-	public Long getId() {
-		return id;
-	}
+    public CertificationResultTestFunctionalityDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public CertificationResultTestFunctionalityDTO(CertificationResultTestFunctionalityEntity entity) {
+        this.id = entity.getId();
+        this.certificationResultId = entity.getCertificationResultId();
+        this.testFunctionalityId = entity.getTestFunctionalityId();
+        if (entity.getTestFunctionality() != null) {
+            this.testFunctionalityName = entity.getTestFunctionality().getName();
+            this.testFunctionalityNumber = entity.getTestFunctionality().getNumber();
+            if (entity.getTestFunctionality().getCertificationEdition() != null) {
+                this.testFunctionalityEdition = entity.getTestFunctionality().getCertificationEdition().getYear();
+            }
+        }
+        this.deleted = entity.getDeleted();
+    }
 
-	public Long getCertificationResultId() {
-		return certificationResultId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertificationResultId(Long certificationResultId) {
-		this.certificationResultId = certificationResultId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getCertificationResultId() {
+        return certificationResultId;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setCertificationResultId(final Long certificationResultId) {
+        this.certificationResultId = certificationResultId;
+    }
 
-	public Long getTestFunctionalityId() {
-		return testFunctionalityId;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setTestFunctionalityId(Long testFunctionalityId) {
-		this.testFunctionalityId = testFunctionalityId;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public String getTestFunctionalityName() {
-		return testFunctionalityName;
-	}
+    public Long getTestFunctionalityId() {
+        return testFunctionalityId;
+    }
 
-	public void setTestFunctionalityName(String testFunctionalityName) {
-		this.testFunctionalityName = testFunctionalityName;
-	}
+    public void setTestFunctionalityId(final Long testFunctionalityId) {
+        this.testFunctionalityId = testFunctionalityId;
+    }
 
-	public String getTestFunctionalityNumber() {
-		return testFunctionalityNumber;
-	}
+    public String getTestFunctionalityName() {
+        return testFunctionalityName;
+    }
 
-	public void setTestFunctionalityNumber(String testFunctionalityNumber) {
-		this.testFunctionalityNumber = testFunctionalityNumber;
-	}
+    public void setTestFunctionalityName(final String testFunctionalityName) {
+        this.testFunctionalityName = testFunctionalityName;
+    }
 
-	public String getTestFunctionalityEdition() {
-		return testFunctionalityEdition;
-	}
+    public String getTestFunctionalityNumber() {
+        return testFunctionalityNumber;
+    }
 
-	public void setTestFunctionalityEdition(String testFunctionalityEdition) {
-		this.testFunctionalityEdition = testFunctionalityEdition;
-	}
+    public void setTestFunctionalityNumber(final String testFunctionalityNumber) {
+        this.testFunctionalityNumber = testFunctionalityNumber;
+    }
+
+    public String getTestFunctionalityEdition() {
+        return testFunctionalityEdition;
+    }
+
+    public void setTestFunctionalityEdition(final String testFunctionalityEdition) {
+        this.testFunctionalityEdition = testFunctionalityEdition;
+    }
 
 }

@@ -5,22 +5,22 @@ import java.io.Serializable;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 
 public class SimpleCertificationIdWithProducts extends SimpleCertificationId implements Serializable {
-	private static final long serialVersionUID = -2818214498196264669L;
-	private String products;
-	
-	public SimpleCertificationIdWithProducts() {
-		super();
-	}
-	
-	public SimpleCertificationIdWithProducts(CertificationIdDTO dto) {
-		super(dto);
-	}
+    private static final long serialVersionUID = -2818214498196264669L;
+    private String products;
 
-	public String getProducts() {
-		return products;
-	}
+    public SimpleCertificationIdWithProducts() {
+        super();
+    }
 
-	public void setProducts(String products) {
-		this.products = products;
-	}
+    public SimpleCertificationIdWithProducts(CertificationIdDTO dto) {
+        super(dto);
+    }
+
+    public String getProducts() {
+        return products;
+    }
+
+    public void setProducts(final String products) {
+        this.products = products;
+    }
 }

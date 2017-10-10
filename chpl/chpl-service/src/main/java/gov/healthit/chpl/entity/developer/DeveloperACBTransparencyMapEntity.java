@@ -11,19 +11,19 @@ import org.hibernate.annotations.Type;
 import gov.healthit.chpl.entity.AttestationType;
 
 @Entity
-@Table(name = "acb_developer_transparency_mappings", schema="openchpl")
+@Table(name = "acb_developer_transparency_mappings", schema = "openchpl")
 public class DeveloperACBTransparencyMapEntity {
 
-	@Id
-	@Basic( optional = false )
+    @Id
+    @Basic(optional = false)
     @Column(name = "id")
     private Long id;
 
-	@Column(name = "vendor_id")
-	private Long developerId;
+    @Column(name = "vendor_id")
+    private Long developerId;
 
-	@Column(name = "certification_body_id")
-	private Long certificationBodyId;
+    @Column(name = "certification_body_id")
+    private Long certificationBodyId;
 
     @Column(name = "acb_name")
     private String acbName;
@@ -31,43 +31,46 @@ public class DeveloperACBTransparencyMapEntity {
     @Column(name = "developer_name")
     private String developerName;
 
-	@Column(name = "transparency_attestation")
-	@Type(type = "gov.healthit.chpl.entity.PostgresAttestationType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.AttestationType")} )
-	private AttestationType transparencyAttestation;
+    @Column(name = "transparency_attestation")
+    @Type(type = "gov.healthit.chpl.entity.PostgresAttestationType", parameters = {
+            @org.hibernate.annotations.Parameter(name = "enumClassName",
+                    value = "gov.healthit.chpl.entity.AttestationType")
+    })
+    private AttestationType transparencyAttestation;
 
-	public DeveloperACBTransparencyMapEntity() {
-		// Default constructor
-	}
+    public DeveloperACBTransparencyMapEntity() {
+        // Default constructor
+    }
 
     public Long getId() {
         return id;
     }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getDeveloperId() {
-		return developerId;
-	}
+    public Long getDeveloperId() {
+        return developerId;
+    }
 
-	public void setDeveloperId(Long developerId) {
-		this.developerId = developerId;
-	}
+    public void setDeveloperId(final Long developerId) {
+        this.developerId = developerId;
+    }
 
-	public Long getCertificationBodyId() {
-		return certificationBodyId;
-	}
+    public Long getCertificationBodyId() {
+        return certificationBodyId;
+    }
 
-	public void setCertificationBodyId(Long certificationBodyId) {
-		this.certificationBodyId = certificationBodyId;
-	}
+    public void setCertificationBodyId(final Long certificationBodyId) {
+        this.certificationBodyId = certificationBodyId;
+    }
 
     public String getAcbName() {
         return acbName;
     }
 
-    public void setAcbName(String acbName) {
+    public void setAcbName(final String acbName) {
         this.acbName = acbName;
     }
 
@@ -75,15 +78,15 @@ public class DeveloperACBTransparencyMapEntity {
         return developerName;
     }
 
-    public void setDeveloperName(String developerName) {
+    public void setDeveloperName(final String developerName) {
         this.developerName = developerName;
     }
 
-	public AttestationType getTransparencyAttestation() {
-		return transparencyAttestation;
-	}
+    public AttestationType getTransparencyAttestation() {
+        return transparencyAttestation;
+    }
 
-	public void setTransparencyAttestation(AttestationType transparencyAttestation) {
-		this.transparencyAttestation = transparencyAttestation;
-	}
+    public void setTransparencyAttestation(final AttestationType transparencyAttestation) {
+        this.transparencyAttestation = transparencyAttestation;
+    }
 }

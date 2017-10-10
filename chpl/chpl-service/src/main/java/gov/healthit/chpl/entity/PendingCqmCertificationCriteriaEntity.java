@@ -14,104 +14,105 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_cqm_certification_criteria")
+@Table(name = "pending_cqm_certification_criteria")
 public class PendingCqmCertificationCriteriaEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_cqm_certification_criteria_id", nullable = false  )
-	private Long id;
-	
-	@Basic( optional = false )
-	@Column( name = "pending_cqm_criterion_id", nullable = false  )
-	private Long pendingCqmId;
-	
-	@Basic( optional = false )
-	@Column( name = "certification_criterion_id", nullable = false  )
-	private Long certificationId;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true, insertable=false, updatable= false)
-	private CertificationCriterionEntity certificationCriteria;
 
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pending_cqm_certification_criteria_id", nullable = false)
+    private Long id;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_cqm_criterion_id", nullable = false)
+    private Long pendingCqmId;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "certification_criterion_id", nullable = false)
+    private Long certificationId;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false,
+            updatable = false)
+    private CertificationCriterionEntity certificationCriteria;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Long getPendingCqmId() {
-		return pendingCqmId;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setPendingCqmId(Long pendingCqmId) {
-		this.pendingCqmId = pendingCqmId;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public Long getCertificationId() {
-		return certificationId;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public void setCertificationId(Long certificationId) {
-		this.certificationId = certificationId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public CertificationCriterionEntity getCertificationCriteria() {
-		return certificationCriteria;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public void setCertificationCriteria(CertificationCriterionEntity certificationCriteria) {
-		this.certificationCriteria = certificationCriteria;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getPendingCqmId() {
+        return pendingCqmId;
+    }
+
+    public void setPendingCqmId(final Long pendingCqmId) {
+        this.pendingCqmId = pendingCqmId;
+    }
+
+    public Long getCertificationId() {
+        return certificationId;
+    }
+
+    public void setCertificationId(final Long certificationId) {
+        this.certificationId = certificationId;
+    }
+
+    public CertificationCriterionEntity getCertificationCriteria() {
+        return certificationCriteria;
+    }
+
+    public void setCertificationCriteria(final CertificationCriterionEntity certificationCriteria) {
+        this.certificationCriteria = certificationCriteria;
+    }
 }

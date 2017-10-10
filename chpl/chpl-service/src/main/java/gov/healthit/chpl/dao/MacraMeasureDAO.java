@@ -5,8 +5,11 @@ import java.util.List;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 
 public interface MacraMeasureDAO {
-	public List<MacraMeasureDTO> findAll();
-	public MacraMeasureDTO getById(Long id);
-	public List<MacraMeasureDTO> getByCriteriaNumber(String criteriaNumber);
-	public MacraMeasureDTO getByCriteriaNumberAndValue(String criteriaNumber, String value);
+    List<MacraMeasureDTO> findAll();
+
+    MacraMeasureDTO getById(Long id);
+
+    List<MacraMeasureDTO> getByCriteriaNumber(String criteriaNumber);
+
+    MacraMeasureDTO getByCriteriaNumberAndValue(String criteriaNumber, String value);
 }

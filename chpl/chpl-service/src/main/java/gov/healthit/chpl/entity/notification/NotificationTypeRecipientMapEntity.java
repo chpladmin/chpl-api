@@ -14,135 +14,134 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 
-
 @Entity
 @Table(name = "notification_type_recipient_map")
 public class NotificationTypeRecipientMapEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long id;
-	
-	@Column(name = "recipient_id")
-	private Long recipientId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "recipient_id", insertable = false, updatable = false)
-	private NotificationRecipientEntity recipient;
-	
-	@Column(name = "notification_type_id")
-	private Long notificationTypeId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "notification_type_id", insertable = false, updatable = false)
-	private NotificationTypeEntity notificationType;
-	
-	@Column(name = "acb_id")
-	private Long acbId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "acb_id", insertable = false, updatable = false)
-	private CertificationBodyEntity acb;
-	
-	@Column( name = "deleted")
-	private Boolean deleted;
-	
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
-	
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-	public Long getRecipientId() {
-		return recipientId;
-	}
+    @Column(name = "recipient_id")
+    private Long recipientId;
 
-	public void setRecipientId(Long recipientId) {
-		this.recipientId = recipientId;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipient_id", insertable = false, updatable = false)
+    private NotificationRecipientEntity recipient;
 
-	public NotificationRecipientEntity getRecipient() {
-		return recipient;
-	}
+    @Column(name = "notification_type_id")
+    private Long notificationTypeId;
 
-	public void setRecipient(NotificationRecipientEntity recipient) {
-		this.recipient = recipient;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "notification_type_id", insertable = false, updatable = false)
+    private NotificationTypeEntity notificationType;
 
-	public Long getNotificationTypeId() {
-		return notificationTypeId;
-	}
+    @Column(name = "acb_id")
+    private Long acbId;
 
-	public void setNotificationTypeId(Long notificationTypeId) {
-		this.notificationTypeId = notificationTypeId;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "acb_id", insertable = false, updatable = false)
+    private CertificationBodyEntity acb;
 
-	public NotificationTypeEntity getNotificationType() {
-		return notificationType;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public void setNotificationType(NotificationTypeEntity notificationType) {
-		this.notificationType = notificationType;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public Long getAcbId() {
-		return acbId;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setAcbId(Long acbId) {
-		this.acbId = acbId;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public CertificationBodyEntity getAcb() {
-		return acb;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setAcb(CertificationBodyEntity acb) {
-		this.acb = acb;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getRecipientId() {
+        return recipientId;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setRecipientId(final Long recipientId) {
+        this.recipientId = recipientId;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public NotificationRecipientEntity getRecipient() {
+        return recipient;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setRecipient(final NotificationRecipientEntity recipient) {
+        this.recipient = recipient;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Long getNotificationTypeId() {
+        return notificationTypeId;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setNotificationTypeId(final Long notificationTypeId) {
+        this.notificationTypeId = notificationTypeId;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public NotificationTypeEntity getNotificationType() {
+        return notificationType;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setNotificationType(final NotificationTypeEntity notificationType) {
+        this.notificationType = notificationType;
+    }
+
+    public Long getAcbId() {
+        return acbId;
+    }
+
+    public void setAcbId(final Long acbId) {
+        this.acbId = acbId;
+    }
+
+    public CertificationBodyEntity getAcb() {
+        return acb;
+    }
+
+    public void setAcb(final CertificationBodyEntity acb) {
+        this.acb = acb;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
 }

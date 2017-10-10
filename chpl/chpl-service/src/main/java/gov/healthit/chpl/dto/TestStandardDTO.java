@@ -5,62 +5,63 @@ import java.io.Serializable;
 import gov.healthit.chpl.entity.TestStandardEntity;
 
 public class TestStandardDTO implements Serializable {
-	private static final long serialVersionUID = -7473233688407477963L;
-	private Long id;
-	private String description;
-	private String name;
-	private Long certificationEditionId;
-	private String year;
-	
-	public TestStandardDTO(){}
-	
-	public TestStandardDTO(TestStandardEntity entity){		
-		this.id = entity.getId();
-		this.description = entity.getDescription();
-		this.name = entity.getName();
-		this.certificationEditionId = entity.getCertificationEditionId();
-		if(entity.getCertificationEdition() != null) {
-			this.year = entity.getCertificationEdition().getYear();
-		}
-	}
+    private static final long serialVersionUID = -7473233688407477963L;
+    private Long id;
+    private String description;
+    private String name;
+    private Long certificationEditionId;
+    private String year;
 
-	public Long getId() {
-		return id;
-	}
+    public TestStandardDTO() {
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public TestStandardDTO(TestStandardEntity entity) {
+        this.id = entity.getId();
+        this.description = entity.getDescription();
+        this.name = entity.getName();
+        this.certificationEditionId = entity.getCertificationEditionId();
+        if (entity.getCertificationEdition() != null) {
+            this.year = entity.getCertificationEdition().getYear();
+        }
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDescription(String name) {
-		this.description = name;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setName(String number) {
-		this.name = number;
-	}
+    public void setDescription(final String name) {
+        this.description = name;
+    }
 
-	public String getYear() {
-		return year;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setYear(String year) {
-		this.year = year;
-	}
+    public void setName(final String number) {
+        this.name = number;
+    }
 
-	public Long getCertificationEditionId() {
-		return certificationEditionId;
-	}
+    public String getYear() {
+        return year;
+    }
 
-	public void setCertificationEditionId(Long certificationEditionId) {
-		this.certificationEditionId = certificationEditionId;
-	}
+    public void setYear(final String year) {
+        this.year = year;
+    }
+
+    public Long getCertificationEditionId() {
+        return certificationEditionId;
+    }
+
+    public void setCertificationEditionId(final Long certificationEditionId) {
+        this.certificationEditionId = certificationEditionId;
+    }
 }

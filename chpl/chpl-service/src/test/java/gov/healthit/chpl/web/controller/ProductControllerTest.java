@@ -4,11 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -26,6 +29,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -69,5 +73,21 @@ public class ProductControllerTest {
 		assertNotNull(result.getOwnerHistory());
 		assertEquals(1, result.getOwnerHistory().size());
 		assertEquals(-2, result.getOwnerHistory().get(0).getDeveloper().getDeveloperId().longValue());
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetProductByBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		productController.getProductById(-100L);
+	}
+	
+	@Transactional
+	@Test(expected=EntityRetrievalException.class)
+	public void testGetListingForProductByBadId() 
+		throws EntityRetrievalException, IOException, ValidationException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		productController.getListingsForProduct(-100L);
 	}
 }

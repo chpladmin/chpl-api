@@ -20,163 +20,169 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
-
 @Entity
 @Table(name = "surveillance_requirement")
 public class SurveillanceRequirementEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
-	private Long id;
-	
-	@Column(name = "surveillance_id")
-	private Long surveillanceId;
-	
-	@Column(name = "type_id")
-	private Long surveillanceRequirementTypeId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "type_id", insertable = false, updatable = false)
-	private SurveillanceRequirementTypeEntity surveillanceRequirementType;
-	
-	@Column(name = "certification_criterion_id")
-	private Long certificationCriterionId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
-	private CertificationCriterionEntity certificationCriterionEntity;
-	
-	@Column(name = "requirement")
-	private String surveilledRequirement;
-	
-	@Column(name = "result_id")
-	private Long surveillanceResultTypeId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "result_id", insertable = false, updatable = false)
-	private SurveillanceResultTypeEntity surveillanceResultTypeEntity;
-	
-	@Column( name = "deleted")
-	private Boolean deleted;
-	
-	@Column( name = "last_modified_user")
-	private Long lastModifiedUser;
-	
-	@Column( name = "creation_date", insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Column( name = "last_modified_date", insertable = false, updatable = false )
-	private Date lastModifiedDate;
-	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "surveillanceRequirementId"  )
-	@Basic( optional = false )
-	@Column( name = "surveillance_requirement_id", nullable = false  )
-	@Where(clause="deleted <> 'true'")
-	private Set<SurveillanceNonconformityEntity> nonconformities = new HashSet<SurveillanceNonconformityEntity>();
-	
-	public Long getId() {
-		return id;
-	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public String getSurveilledRequirement() {
-		return surveilledRequirement;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
 
-	public void setSurveilledRequirement(String surveilledRequirement) {
-		this.surveilledRequirement = surveilledRequirement;
-	}
+    @Column(name = "surveillance_id")
+    private Long surveillanceId;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Boolean getDeleted() {
-		return deleted;
-	}
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Column(name = "type_id")
+    private Long surveillanceRequirementTypeId;
 
-	public Long getSurveillanceId() {
-		return surveillanceId;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", insertable = false, updatable = false)
+    private SurveillanceRequirementTypeEntity surveillanceRequirementType;
 
-	public void setSurveillanceId(Long surveillanceId) {
-		this.surveillanceId = surveillanceId;
-	}
+    @Column(name = "certification_criterion_id")
+    private Long certificationCriterionId;
 
-	public Long getSurveillanceRequirementTypeId() {
-		return surveillanceRequirementTypeId;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterionEntity;
 
-	public void setSurveillanceRequirementTypeId(Long surveillanceRequirementTypeId) {
-		this.surveillanceRequirementTypeId = surveillanceRequirementTypeId;
-	}
+    @Column(name = "requirement")
+    private String surveilledRequirement;
 
-	public SurveillanceRequirementTypeEntity getSurveillanceRequirementType() {
-		return surveillanceRequirementType;
-	}
+    @Column(name = "result_id")
+    private Long surveillanceResultTypeId;
 
-	public void setSurveillanceRequirementType(SurveillanceRequirementTypeEntity surveillanceRequirementType) {
-		this.surveillanceRequirementType = surveillanceRequirementType;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "result_id", insertable = false, updatable = false)
+    private SurveillanceResultTypeEntity surveillanceResultTypeEntity;
 
-	public Long getCertificationCriterionId() {
-		return certificationCriterionId;
-	}
+    @Column(name = "deleted")
+    private Boolean deleted;
 
-	public void setCertificationCriterionId(Long certificationCriterionId) {
-		this.certificationCriterionId = certificationCriterionId;
-	}
+    @Column(name = "last_modified_user")
+    private Long lastModifiedUser;
 
-	public CertificationCriterionEntity getCertificationCriterionEntity() {
-		return certificationCriterionEntity;
-	}
+    @Column(name = "creation_date", insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setCertificationCriterionEntity(CertificationCriterionEntity certificationCriterionEntity) {
-		this.certificationCriterionEntity = certificationCriterionEntity;
-	}
+    @Column(name = "last_modified_date", insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public Long getSurveillanceResultTypeId() {
-		return surveillanceResultTypeId;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "surveillanceRequirementId")
+    @Basic(optional = false)
+    @Column(name = "surveillance_requirement_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<SurveillanceNonconformityEntity> nonconformities = new HashSet<SurveillanceNonconformityEntity>();
 
-	public void setSurveillanceResultTypeId(Long surveillanceResultTypeId) {
-		this.surveillanceResultTypeId = surveillanceResultTypeId;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public SurveillanceResultTypeEntity getSurveillanceResultTypeEntity() {
-		return surveillanceResultTypeEntity;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public void setSurveillanceResultTypeEntity(SurveillanceResultTypeEntity surveillanceResultTypeEntity) {
-		this.surveillanceResultTypeEntity = surveillanceResultTypeEntity;
-	}
+    public String getSurveilledRequirement() {
+        return surveilledRequirement;
+    }
 
-	public Set<SurveillanceNonconformityEntity> getNonconformities() {
-		return nonconformities;
-	}
+    public void setSurveilledRequirement(final String surveilledRequirement) {
+        this.surveilledRequirement = surveilledRequirement;
+    }
 
-	public void setNonconformities(Set<SurveillanceNonconformityEntity> nonconformities) {
-		this.nonconformities = nonconformities;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getSurveillanceId() {
+        return surveillanceId;
+    }
+
+    public void setSurveillanceId(final Long surveillanceId) {
+        this.surveillanceId = surveillanceId;
+    }
+
+    public Long getSurveillanceRequirementTypeId() {
+        return surveillanceRequirementTypeId;
+    }
+
+    public void setSurveillanceRequirementTypeId(final Long surveillanceRequirementTypeId) {
+        this.surveillanceRequirementTypeId = surveillanceRequirementTypeId;
+    }
+
+    public SurveillanceRequirementTypeEntity getSurveillanceRequirementType() {
+        return surveillanceRequirementType;
+    }
+
+    public void setSurveillanceRequirementType(final SurveillanceRequirementTypeEntity surveillanceRequirementType) {
+        this.surveillanceRequirementType = surveillanceRequirementType;
+    }
+
+    public Long getCertificationCriterionId() {
+        return certificationCriterionId;
+    }
+
+    public void setCertificationCriterionId(final Long certificationCriterionId) {
+        this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public CertificationCriterionEntity getCertificationCriterionEntity() {
+        return certificationCriterionEntity;
+    }
+
+    public void setCertificationCriterionEntity(final CertificationCriterionEntity certificationCriterionEntity) {
+        this.certificationCriterionEntity = certificationCriterionEntity;
+    }
+
+    public Long getSurveillanceResultTypeId() {
+        return surveillanceResultTypeId;
+    }
+
+    public void setSurveillanceResultTypeId(final Long surveillanceResultTypeId) {
+        this.surveillanceResultTypeId = surveillanceResultTypeId;
+    }
+
+    public SurveillanceResultTypeEntity getSurveillanceResultTypeEntity() {
+        return surveillanceResultTypeEntity;
+    }
+
+    public void setSurveillanceResultTypeEntity(final SurveillanceResultTypeEntity surveillanceResultTypeEntity) {
+        this.surveillanceResultTypeEntity = surveillanceResultTypeEntity;
+    }
+
+    public Set<SurveillanceNonconformityEntity> getNonconformities() {
+        return nonconformities;
+    }
+
+    public void setNonconformities(final Set<SurveillanceNonconformityEntity> nonconformities) {
+        this.nonconformities = nonconformities;
+    }
 }

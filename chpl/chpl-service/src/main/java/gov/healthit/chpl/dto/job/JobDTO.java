@@ -11,113 +11,113 @@ import gov.healthit.chpl.entity.job.JobEntity;
 import gov.healthit.chpl.entity.job.JobMessageEntity;
 
 public class JobDTO implements Serializable {
-	private static final long serialVersionUID = -7841496230766066264L;
-	private Long id;
-	private JobTypeDTO jobType;
-	private UserDTO user;
-	private JobStatusDTO status;
-	private Date startTime;
-	private Date endTime;
-	private String data;
-	private List<JobMessageDTO> messages;
-	
-	public JobDTO(){
-		messages = new ArrayList<JobMessageDTO>();
-	}
-	
-	public JobDTO(JobEntity entity){
-		this();
-		this.id = entity.getId();
-		this.startTime = entity.getStartTime();
-		this.endTime = entity.getEndTime();
-		this.data = entity.getData();
-		
-		if(entity.getJobType() != null) {
-			this.jobType = new JobTypeDTO(entity.getJobType());
-		} else {
-			this.jobType = new JobTypeDTO();
-			this.jobType.setId(entity.getJobTypeId());
-		}
-		
-		if(entity.getUser() != null) {
-			this.user = new UserDTO(entity.getUser());
-		} else {
-			this.user = new UserDTO();
-			this.user.setId(entity.getUserId());
-		}
-		
-		if(entity.getStatus() != null) {
-			this.status = new JobStatusDTO(entity.getStatus());
-		}
-		
-		if(entity.getMessages() != null) {
-			for(JobMessageEntity message : entity.getMessages()) {
-				this.messages.add(new JobMessageDTO(message));
-			}
-		}
-	}
+    private static final long serialVersionUID = -7841496230766066264L;
+    private Long id;
+    private JobTypeDTO jobType;
+    private UserDTO user;
+    private JobStatusDTO status;
+    private Date startTime;
+    private Date endTime;
+    private String data;
+    private List<JobMessageDTO> messages;
 
-	public Long getId() {
-		return id;
-	}
+    public JobDTO() {
+        messages = new ArrayList<JobMessageDTO>();
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public JobDTO(JobEntity entity) {
+        this();
+        this.id = entity.getId();
+        this.startTime = entity.getStartTime();
+        this.endTime = entity.getEndTime();
+        this.data = entity.getData();
 
-	public JobTypeDTO getJobType() {
-		return jobType;
-	}
+        if (entity.getJobType() != null) {
+            this.jobType = new JobTypeDTO(entity.getJobType());
+        } else {
+            this.jobType = new JobTypeDTO();
+            this.jobType.setId(entity.getJobTypeId());
+        }
 
-	public void setJobType(JobTypeDTO jobType) {
-		this.jobType = jobType;
-	}
+        if (entity.getUser() != null) {
+            this.user = new UserDTO(entity.getUser());
+        } else {
+            this.user = new UserDTO();
+            this.user.setId(entity.getUserId());
+        }
 
-	public Date getStartTime() {
-		return startTime;
-	}
+        if (entity.getStatus() != null) {
+            this.status = new JobStatusDTO(entity.getStatus());
+        }
 
-	public void setStartTime(Date startTime) {
-		this.startTime = startTime;
-	}
+        if (entity.getMessages() != null) {
+            for (JobMessageEntity message : entity.getMessages()) {
+                this.messages.add(new JobMessageDTO(message));
+            }
+        }
+    }
 
-	public Date getEndTime() {
-		return endTime;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setEndTime(Date endTime) {
-		this.endTime = endTime;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getData() {
-		return data;
-	}
+    public JobTypeDTO getJobType() {
+        return jobType;
+    }
 
-	public void setData(String data) {
-		this.data = data;
-	}
+    public void setJobType(final JobTypeDTO jobType) {
+        this.jobType = jobType;
+    }
 
-	public JobStatusDTO getStatus() {
-		return status;
-	}
+    public Date getStartTime() {
+        return startTime;
+    }
 
-	public void setStatus(JobStatusDTO status) {
-		this.status = status;
-	}
+    public void setStartTime(final Date startTime) {
+        this.startTime = startTime;
+    }
 
-	public List<JobMessageDTO> getMessages() {
-		return messages;
-	}
+    public Date getEndTime() {
+        return endTime;
+    }
 
-	public void setMessages(List<JobMessageDTO> messages) {
-		this.messages = messages;
-	}
+    public void setEndTime(final Date endTime) {
+        this.endTime = endTime;
+    }
 
-	public UserDTO getUser() {
-		return user;
-	}
+    public String getData() {
+        return data;
+    }
 
-	public void setUser(UserDTO user) {
-		this.user = user;
-	}
+    public void setData(final String data) {
+        this.data = data;
+    }
+
+    public JobStatusDTO getStatus() {
+        return status;
+    }
+
+    public void setStatus(final JobStatusDTO status) {
+        this.status = status;
+    }
+
+    public List<JobMessageDTO> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(final List<JobMessageDTO> messages) {
+        this.messages = messages;
+    }
+
+    public UserDTO getUser() {
+        return user;
+    }
+
+    public void setUser(final UserDTO user) {
+        this.user = user;
+    }
 }

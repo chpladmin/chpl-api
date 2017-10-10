@@ -18,324 +18,324 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Entity
-@Table(name="pending_certification_result")
+@Table(name = "pending_certification_result")
 public class PendingCertificationResultEntity {
-	
-	@Transient 
-	private Boolean hasAdditionalSoftware;
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Long id;
-	
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "certification_criterion_id", unique=true, nullable = true)
-	private CertificationCriterionEntity mappedCriterion;
-	
-	@Basic( optional = false )
-	@Column(name = "pending_certified_product_id", nullable = false )	
-	private Long pendingCertifiedProductId;
 
-	@Column(name = "meets_criteria")
-	private Boolean meetsCriteria;
+    @Transient
+    private Boolean hasAdditionalSoftware;
 
-	@Column(name = "gap")
-	private Boolean gap;
-	
-	@Column(name = "sed")
-	private Boolean sed;
-	
-	@Column(name = "g1_success")
-	private Boolean g1Success;
-	
-	@Column(name = "g2_success")
-	private Boolean g2Success;
-	
-	@Column(name = "api_documentation")
-	private String apiDocumentation;
-	
-	@Column(name = "privacy_security_framework")
-	private String privacySecurityFramework;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long id;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultUcdProcessEntity> ucdProcesses;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultTestStandardEntity> testStandards;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultTestFunctionalityEntity> testFunctionality;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultAdditionalSoftwareEntity> additionalSoftware;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultTestProcedureEntity> testProcedures;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultTestDataEntity> testData;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultTestToolEntity> testTools;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures;
-	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy="pendingCertificationResultId")
-	@Basic( optional = false )
-	@Column( name = "pending_certification_result_id", nullable = false  )
-	private Set<PendingCertificationResultTestTaskEntity> testTasks;
-	
-	public PendingCertificationResultEntity() {
-		ucdProcesses = new HashSet<PendingCertificationResultUcdProcessEntity>();
-		testStandards = new HashSet<PendingCertificationResultTestStandardEntity>();
-		testFunctionality = new HashSet<PendingCertificationResultTestFunctionalityEntity>();
-		additionalSoftware = new HashSet<PendingCertificationResultAdditionalSoftwareEntity>();
-		testProcedures = new HashSet<PendingCertificationResultTestProcedureEntity>();
-		testData = new HashSet<PendingCertificationResultTestDataEntity>();
-		testTools = new HashSet<PendingCertificationResultTestToolEntity>();
-		g1MacraMeasures = new HashSet<PendingCertificationResultG1MacraMeasureEntity>();
-		g2MacraMeasures = new HashSet<PendingCertificationResultG2MacraMeasureEntity>();
-		testTasks = new HashSet<PendingCertificationResultTestTaskEntity>();
-	}
-	
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true)
+    private CertificationCriterionEntity mappedCriterion;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_id", nullable = false)
+    private Long pendingCertifiedProductId;
 
-	public Long getPendingCertifiedProductId() {
-		return pendingCertifiedProductId;
-	}
+    @Column(name = "meets_criteria")
+    private Boolean meetsCriteria;
 
-	public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
-		this.pendingCertifiedProductId = pendingCertifiedProductId;
-	}
+    @Column(name = "gap")
+    private Boolean gap;
 
-	public Boolean getMeetsCriteria() {
-		return meetsCriteria;
-	}
+    @Column(name = "sed")
+    private Boolean sed;
 
-	public void setMeetsCriteria(Boolean meetsCriteria) {
-		this.meetsCriteria = meetsCriteria;
-	}
+    @Column(name = "g1_success")
+    private Boolean g1Success;
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @Column(name = "g2_success")
+    private Boolean g2Success;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Column(name = "api_documentation")
+    private String apiDocumentation;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Column(name = "privacy_security_framework")
+    private String privacySecurityFramework;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultUcdProcessEntity> ucdProcesses;
 
-	public CertificationCriterionEntity getMappedCriterion() {
-		return mappedCriterion;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultTestStandardEntity> testStandards;
 
-	public void setMappedCriterion(CertificationCriterionEntity mappedCriterion) {
-		this.mappedCriterion = mappedCriterion;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultTestFunctionalityEntity> testFunctionality;
 
-	public Boolean getGap() {
-		return gap;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultAdditionalSoftwareEntity> additionalSoftware;
 
-	public void setGap(Boolean gap) {
-		this.gap = gap;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultTestProcedureEntity> testProcedures;
 
-	public Boolean getSed() {
-		return sed;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultTestDataEntity> testData;
 
-	public void setSed(Boolean sed) {
-		this.sed = sed;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultTestToolEntity> testTools;
 
-	public Boolean getG1Success() {
-		return g1Success;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures;
 
-	public void setG1Success(Boolean g1Success) {
-		this.g1Success = g1Success;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures;
 
-	public Boolean getG2Success() {
-		return g2Success;
-	}
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Set<PendingCertificationResultTestTaskEntity> testTasks;
 
-	public void setG2Success(Boolean g2Success) {
-		this.g2Success = g2Success;
-	}
+    public PendingCertificationResultEntity() {
+        ucdProcesses = new HashSet<PendingCertificationResultUcdProcessEntity>();
+        testStandards = new HashSet<PendingCertificationResultTestStandardEntity>();
+        testFunctionality = new HashSet<PendingCertificationResultTestFunctionalityEntity>();
+        additionalSoftware = new HashSet<PendingCertificationResultAdditionalSoftwareEntity>();
+        testProcedures = new HashSet<PendingCertificationResultTestProcedureEntity>();
+        testData = new HashSet<PendingCertificationResultTestDataEntity>();
+        testTools = new HashSet<PendingCertificationResultTestToolEntity>();
+        g1MacraMeasures = new HashSet<PendingCertificationResultG1MacraMeasureEntity>();
+        g2MacraMeasures = new HashSet<PendingCertificationResultG2MacraMeasureEntity>();
+        testTasks = new HashSet<PendingCertificationResultTestTaskEntity>();
+    }
 
-	public Set<PendingCertificationResultTestStandardEntity> getTestStandards() {
-		return testStandards;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setTestStandards(Set<PendingCertificationResultTestStandardEntity> testStandards) {
-		this.testStandards = testStandards;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Set<PendingCertificationResultTestFunctionalityEntity> getTestFunctionality() {
-		return testFunctionality;
-	}
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
+    }
 
-	public void setTestFunctionality(Set<PendingCertificationResultTestFunctionalityEntity> testFunctionality) {
-		this.testFunctionality = testFunctionality;
-	}
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
 
-	public Set<PendingCertificationResultAdditionalSoftwareEntity> getAdditionalSoftware() {
-		return additionalSoftware;
-	}
+    public Boolean getMeetsCriteria() {
+        return meetsCriteria;
+    }
 
-	public void setAdditionalSoftware(Set<PendingCertificationResultAdditionalSoftwareEntity> additionalSoftware) {
-		this.additionalSoftware = additionalSoftware;
-	}
+    public void setMeetsCriteria(final Boolean meetsCriteria) {
+        this.meetsCriteria = meetsCriteria;
+    }
 
-	public Set<PendingCertificationResultTestProcedureEntity> getTestProcedures() {
-		return testProcedures;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setTestProcedures(Set<PendingCertificationResultTestProcedureEntity> testProcedures) {
-		this.testProcedures = testProcedures;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Set<PendingCertificationResultTestDataEntity> getTestData() {
-		return testData;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setTestData(Set<PendingCertificationResultTestDataEntity> testData) {
-		this.testData = testData;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public Set<PendingCertificationResultTestToolEntity> getTestTools() {
-		return testTools;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setTestTools(Set<PendingCertificationResultTestToolEntity> testTools) {
-		this.testTools = testTools;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public Set<PendingCertificationResultUcdProcessEntity> getUcdProcesses() {
-		return ucdProcesses;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setUcdProcesses(Set<PendingCertificationResultUcdProcessEntity> ucdProcesses) {
-		this.ucdProcesses = ucdProcesses;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public Boolean getHasAdditionalSoftware() {
-		return hasAdditionalSoftware;
-	}
+    public CertificationCriterionEntity getMappedCriterion() {
+        return mappedCriterion;
+    }
 
-	public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
-		this.hasAdditionalSoftware = hasAdditionalSoftware;
-	}
-	
-	public Set<PendingCertificationResultTestTaskEntity> getTestTasks() {
-		return testTasks;
-	}
+    public void setMappedCriterion(final CertificationCriterionEntity mappedCriterion) {
+        this.mappedCriterion = mappedCriterion;
+    }
 
-	public void setTestTasks(Set<PendingCertificationResultTestTaskEntity> testTasks) {
-		this.testTasks = testTasks;
-	}
+    public Boolean getGap() {
+        return gap;
+    }
 
-	public String getApiDocumentation() {
-		return apiDocumentation;
-	}
+    public void setGap(final Boolean gap) {
+        this.gap = gap;
+    }
 
-	public void setApiDocumentation(String apiDocumentation) {
-		this.apiDocumentation = apiDocumentation;
-	}
+    public Boolean getSed() {
+        return sed;
+    }
 
-	public String getPrivacySecurityFramework() {
-		return privacySecurityFramework;
-	}
+    public void setSed(final Boolean sed) {
+        this.sed = sed;
+    }
 
-	public void setPrivacySecurityFramework(String privacySecurityFramework) {
-		this.privacySecurityFramework = privacySecurityFramework;
-	}
+    public Boolean getG1Success() {
+        return g1Success;
+    }
 
-	public Set<PendingCertificationResultG1MacraMeasureEntity> getG1MacraMeasures() {
-		return g1MacraMeasures;
-	}
+    public void setG1Success(final Boolean g1Success) {
+        this.g1Success = g1Success;
+    }
 
-	public void setG1MacraMeasures(Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures) {
-		this.g1MacraMeasures = g1MacraMeasures;
-	}
+    public Boolean getG2Success() {
+        return g2Success;
+    }
 
-	public Set<PendingCertificationResultG2MacraMeasureEntity> getG2MacraMeasures() {
-		return g2MacraMeasures;
-	}
+    public void setG2Success(final Boolean g2Success) {
+        this.g2Success = g2Success;
+    }
 
-	public void setG2MacraMeasures(Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures) {
-		this.g2MacraMeasures = g2MacraMeasures;
-	}
+    public Set<PendingCertificationResultTestStandardEntity> getTestStandards() {
+        return testStandards;
+    }
+
+    public void setTestStandards(final Set<PendingCertificationResultTestStandardEntity> testStandards) {
+        this.testStandards = testStandards;
+    }
+
+    public Set<PendingCertificationResultTestFunctionalityEntity> getTestFunctionality() {
+        return testFunctionality;
+    }
+
+    public void setTestFunctionality(final Set<PendingCertificationResultTestFunctionalityEntity> testFunctionality) {
+        this.testFunctionality = testFunctionality;
+    }
+
+    public Set<PendingCertificationResultAdditionalSoftwareEntity> getAdditionalSoftware() {
+        return additionalSoftware;
+    }
+
+    public void setAdditionalSoftware(final Set<PendingCertificationResultAdditionalSoftwareEntity> additionalSoftware) {
+        this.additionalSoftware = additionalSoftware;
+    }
+
+    public Set<PendingCertificationResultTestProcedureEntity> getTestProcedures() {
+        return testProcedures;
+    }
+
+    public void setTestProcedures(final Set<PendingCertificationResultTestProcedureEntity> testProcedures) {
+        this.testProcedures = testProcedures;
+    }
+
+    public Set<PendingCertificationResultTestDataEntity> getTestData() {
+        return testData;
+    }
+
+    public void setTestData(final Set<PendingCertificationResultTestDataEntity> testData) {
+        this.testData = testData;
+    }
+
+    public Set<PendingCertificationResultTestToolEntity> getTestTools() {
+        return testTools;
+    }
+
+    public void setTestTools(final Set<PendingCertificationResultTestToolEntity> testTools) {
+        this.testTools = testTools;
+    }
+
+    public Set<PendingCertificationResultUcdProcessEntity> getUcdProcesses() {
+        return ucdProcesses;
+    }
+
+    public void setUcdProcesses(final Set<PendingCertificationResultUcdProcessEntity> ucdProcesses) {
+        this.ucdProcesses = ucdProcesses;
+    }
+
+    public Boolean getHasAdditionalSoftware() {
+        return hasAdditionalSoftware;
+    }
+
+    public void setHasAdditionalSoftware(final Boolean hasAdditionalSoftware) {
+        this.hasAdditionalSoftware = hasAdditionalSoftware;
+    }
+
+    public Set<PendingCertificationResultTestTaskEntity> getTestTasks() {
+        return testTasks;
+    }
+
+    public void setTestTasks(final Set<PendingCertificationResultTestTaskEntity> testTasks) {
+        this.testTasks = testTasks;
+    }
+
+    public String getApiDocumentation() {
+        return apiDocumentation;
+    }
+
+    public void setApiDocumentation(final String apiDocumentation) {
+        this.apiDocumentation = apiDocumentation;
+    }
+
+    public String getPrivacySecurityFramework() {
+        return privacySecurityFramework;
+    }
+
+    public void setPrivacySecurityFramework(final String privacySecurityFramework) {
+        this.privacySecurityFramework = privacySecurityFramework;
+    }
+
+    public Set<PendingCertificationResultG1MacraMeasureEntity> getG1MacraMeasures() {
+        return g1MacraMeasures;
+    }
+
+    public void setG1MacraMeasures(final Set<PendingCertificationResultG1MacraMeasureEntity> g1MacraMeasures) {
+        this.g1MacraMeasures = g1MacraMeasures;
+    }
+
+    public Set<PendingCertificationResultG2MacraMeasureEntity> getG2MacraMeasures() {
+        return g2MacraMeasures;
+    }
+
+    public void setG2MacraMeasures(final Set<PendingCertificationResultG2MacraMeasureEntity> g2MacraMeasures) {
+        this.g2MacraMeasures = g2MacraMeasures;
+    }
 
 }

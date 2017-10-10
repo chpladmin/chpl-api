@@ -17,81 +17,84 @@ import org.hibernate.annotations.Type;
 @Entity
 @Table(name = "vendor_status")
 public class DeveloperStatusEntity implements Cloneable, Serializable {
-	private static final long serialVersionUID = 1730728043307135377L;
+    private static final long serialVersionUID = 1730728043307135377L;
 
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "vendor_status_id", nullable = false  )
-	private Long id;
-	
-	@Column(name = "name")
-	@Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType" , parameters ={@org.hibernate.annotations.Parameter(name = "enumClassName",value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")} )
-	private DeveloperStatusType name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "vendor_status_id", nullable = false)
+    private Long id;
 
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@NotNull
-	@Column( nullable = false  )
-	private Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@NotNull
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
+    @Column(name = "name")
+    @Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType", parameters = {
+            @org.hibernate.annotations.Parameter(name = "enumClassName",
+                    value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")
+    })
+    private DeveloperStatusType name;
 
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @NotNull
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	public DeveloperStatusType getName() {
-		return name;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setName(DeveloperStatusType name) {
-		this.name = name;
-	}
+    @Basic(optional = false)
+    @NotNull
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public DeveloperStatusType getName() {
+        return name;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setName(final DeveloperStatusType name) {
+        this.name = name;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 }

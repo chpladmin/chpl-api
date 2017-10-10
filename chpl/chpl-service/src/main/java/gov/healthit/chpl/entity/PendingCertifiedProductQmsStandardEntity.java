@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity;
 
-
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -17,136 +16,136 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "pending_certified_product_qms_standard")
 public class PendingCertifiedProductQmsStandardEntity {
-	
-    @Id 
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "pending_certified_product_qms_standard_id", nullable = false  )
-	private Long id;
-    
-	@Basic( optional = true )
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "pending_certified_product_id", unique=true, nullable = true, insertable = false, updatable = false)
-	private PendingCertifiedProductEntity mappedProduct;
-	
-	@Column(name="pending_certified_product_id")
-	private Long pendingCertifiedProductId;
-	
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_qms_standard_id", nullable = false)
+    private Long id;
+
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false,
+            updatable = false)
+    private PendingCertifiedProductEntity mappedProduct;
+
+    @Column(name = "pending_certified_product_id")
+    private Long pendingCertifiedProductId;
+
     @Column(name = "qms_standard_id")
     private Long qmsStandardId;
-    
+
     @Column(name = "qms_standard_name")
     private String name;
-    
+
     @Column(name = "modification")
     private String modification;
-    
+
     @Column(name = "applicable_criteria")
     private String applicableCriteria;
-    
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column(name = "deleted", nullable = false  )
-	private Boolean deleted;
 
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Long getQmsStandardId() {
-		return qmsStandardId;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setQmsStandardId(Long qmsStandardId) {
-		this.qmsStandardId = qmsStandardId;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public String getName() {
-		return name;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getModification() {
-		return modification;
-	}
+    public Long getQmsStandardId() {
+        return qmsStandardId;
+    }
 
-	public void setModification(String modification) {
-		this.modification = modification;
-	}
+    public void setQmsStandardId(final Long qmsStandardId) {
+        this.qmsStandardId = qmsStandardId;
+    }
 
-	public String getApplicableCriteria() {
-		return applicableCriteria;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setApplicableCriteria(String applicableCriteria) {
-		this.applicableCriteria = applicableCriteria;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public String getModification() {
+        return modification;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setModification(final String modification) {
+        this.modification = modification;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public String getApplicableCriteria() {
+        return applicableCriteria;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setApplicableCriteria(final String applicableCriteria) {
+        this.applicableCriteria = applicableCriteria;
+    }
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public PendingCertifiedProductEntity getMappedProduct() {
-		return mappedProduct;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setMappedProduct(PendingCertifiedProductEntity mappedProduct) {
-		this.mappedProduct = mappedProduct;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public Long getPendingCertifiedProductId() {
-		return pendingCertifiedProductId;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
-		this.pendingCertifiedProductId = pendingCertifiedProductId;
-	}
-	
-	
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public PendingCertifiedProductEntity getMappedProduct() {
+        return mappedProduct;
+    }
+
+    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
+        this.mappedProduct = mappedProduct;
+    }
+
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
+    }
+
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
+    }
+
 }

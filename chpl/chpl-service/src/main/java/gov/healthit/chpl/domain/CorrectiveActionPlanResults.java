@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CorrectiveActionPlanResults implements Serializable {
-	private static final long serialVersionUID = 8597873999181093677L;
-	private List<CorrectiveActionPlanDetails> plans;
-	
-	public CorrectiveActionPlanResults() {
-		plans = new ArrayList<CorrectiveActionPlanDetails>();
-	}
+    private static final long serialVersionUID = 8597873999181093677L;
+    private List<CorrectiveActionPlanDetails> plans;
 
-	public List<CorrectiveActionPlanDetails> getPlans() {
-		return plans;
-	}
+    public CorrectiveActionPlanResults() {
+        plans = new ArrayList<CorrectiveActionPlanDetails>();
+    }
 
-	public void setPlans(List<CorrectiveActionPlanDetails> plans) {
-		this.plans = plans;
-	}
+    public List<CorrectiveActionPlanDetails> getPlans() {
+        return plans;
+    }
+
+    public void setPlans(final List<CorrectiveActionPlanDetails> plans) {
+        this.plans = plans;
+    }
 }

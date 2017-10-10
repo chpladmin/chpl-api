@@ -171,17 +171,16 @@ public class TestingLabDaoTest extends TestCase {
 		}
 	}
 	
-	@Test
+	@Test(expected = EntityRetrievalException.class)
 	@Transactional
 	@Rollback
 	public void testDeleteAtl() throws EntityRetrievalException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long deleteId = -1L;
 		atlDao.delete(deleteId);
-		
-		TestingLabDTO deleted = atlDao.getById(deleteId);
-		assertNull(deleted);
 		SecurityContextHolder.getContext().setAuthentication(null);
+
+		atlDao.getById(deleteId);
 	}
 	
 	@Test

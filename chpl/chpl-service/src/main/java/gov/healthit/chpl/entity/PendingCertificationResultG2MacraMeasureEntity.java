@@ -14,113 +14,112 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="pending_certification_result_g2_macra")
+@Table(name = "pending_certification_result_g2_macra")
 public class PendingCertificationResultG2MacraMeasureEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column( name = "id", nullable = false  )
-	private Long id;
 
-	@Column(name = "pending_certification_result_id", nullable = false )	
-	private Long pendingCertificationResultId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-	@Column(name = "macra_id")
-	private Long macraId;
-	
-	@OneToOne(optional = true, fetch = FetchType.LAZY)
-	@JoinColumn(name = "macra_id", insertable = false, updatable = false)
-	private MacraMeasureEntity macraMeasure;
-	
-	@Column(name = "macra_value")
-	private String enteredValue;;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false, insertable = false, updatable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false, insertable = false, updatable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	public Long getId() {
-		return id;
-	}
+    @Column(name = "pending_certification_result_id", nullable = false)
+    private Long pendingCertificationResultId;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Column(name = "macra_id")
+    private Long macraId;
 
-	
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "macra_id", insertable = false, updatable = false)
+    private MacraMeasureEntity macraMeasure;
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    @Column(name = "macra_value")
+    private String enteredValue;;
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
+    private Date lastModifiedDate;
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
+    private Date creationDate;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getPendingCertificationResultId() {
-		return pendingCertificationResultId;
-	}
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
 
-	public void setPendingCertificationResultId(Long pendingCertificationResultId) {
-		this.pendingCertificationResultId = pendingCertificationResultId;
-	}
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
 
-	public Long getMacraId() {
-		return macraId;
-	}
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
 
-	public void setMacraId(Long macraId) {
-		this.macraId = macraId;
-	}
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
 
-	public MacraMeasureEntity getMacraMeasure() {
-		return macraMeasure;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setMacraMeasure(MacraMeasureEntity macraMeasure) {
-		this.macraMeasure = macraMeasure;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getEnteredValue() {
-		return enteredValue;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setEnteredValue(String enteredValue) {
-		this.enteredValue = enteredValue;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Long getPendingCertificationResultId() {
+        return pendingCertificationResultId;
+    }
+
+    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
+        this.pendingCertificationResultId = pendingCertificationResultId;
+    }
+
+    public Long getMacraId() {
+        return macraId;
+    }
+
+    public void setMacraId(final Long macraId) {
+        this.macraId = macraId;
+    }
+
+    public MacraMeasureEntity getMacraMeasure() {
+        return macraMeasure;
+    }
+
+    public void setMacraMeasure(final MacraMeasureEntity macraMeasure) {
+        this.macraMeasure = macraMeasure;
+    }
+
+    public String getEnteredValue() {
+        return enteredValue;
+    }
+
+    public void setEnteredValue(final String enteredValue) {
+        this.enteredValue = enteredValue;
+    }
 }
