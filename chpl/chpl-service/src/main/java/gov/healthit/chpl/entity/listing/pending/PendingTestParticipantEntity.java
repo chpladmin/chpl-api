@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -12,6 +12,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.AgeRangeEntity;
+import gov.healthit.chpl.entity.EducationTypeEntity;
 
 @Entity
 @Table(name = "pending_test_participant")

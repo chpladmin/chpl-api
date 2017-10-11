@@ -5,17 +5,43 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.junit.Test;
 
 public class XmlParsingTest {
 
 	static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
 
+	@Test
+	public void csvWritingTest() {
+	    List<String> vals = new ArrayList<String>();
+	    vals.add("Test_VAL_1");
+	    vals.add("Test_VAL_2");
+	    vals.add("Test_VAL_3");
+	    StringBuffer buf = new StringBuffer();
+        CSVPrinter writer = null;
+        try {
+            writer = new CSVPrinter(buf, CSVFormat.EXCEL);
+            writer.printRecord(vals);
+        } catch(IOException ex) {
+            fail("IOException: " + ex.getMessage());
+        } finally {
+            try { writer.close(); } catch(Exception ignore) {}
+        }
+        String csv = buf.toString();
+        System.out.println(csv);
+        assertTrue(!csv.contains(" "));
+	}
+	
 	@Test
 	public void test() {
 		String id = "14.07.07.1446.ECAS.63.1.1.141113";

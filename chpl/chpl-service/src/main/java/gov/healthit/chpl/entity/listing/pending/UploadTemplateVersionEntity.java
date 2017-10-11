@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -9,29 +9,28 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
-@Table(name = "pending_certification_result_test_data")
-public class PendingCertificationResultTestDataEntity {
-
-    @Transient
-    private boolean hasAlteration;
+@Table(name = "upload_template_version")
+public class UploadTemplateVersionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_test_data_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "pending_certification_result_id", nullable = false)
-    private Long pendingCertificationResultId;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    @Column(name = "version")
-    private String version;
+    @Column(name = "available_as_of_date", nullable = false)
+    private Date availableAsOfDate;
 
-    @Column(name = "alteration")
-    private String alteration;
+    @Column(name = "deprecated", nullable = false)
+    private Boolean deprecated;
+
+    @Column(name = "header_csv", nullable = false)
+    private String headerCsv;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -89,35 +88,35 @@ public class PendingCertificationResultTestDataEntity {
         this.deleted = deleted;
     }
 
-    public Long getPendingCertificationResultId() {
-        return pendingCertificationResultId;
+    public String getName() {
+        return name;
     }
 
-    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
-        this.pendingCertificationResultId = pendingCertificationResultId;
+    public void setName(final String name) {
+        this.name = name;
     }
 
-    public String getVersion() {
-        return version;
+    public Date getAvailableAsOfDate() {
+        return availableAsOfDate;
     }
 
-    public void setVersion(final String version) {
-        this.version = version;
+    public void setAvailableAsOfDate(final Date availableAsOfDate) {
+        this.availableAsOfDate = availableAsOfDate;
     }
 
-    public String getAlteration() {
-        return alteration;
+    public Boolean getDeprecated() {
+        return deprecated;
     }
 
-    public void setAlteration(final String alteration) {
-        this.alteration = alteration;
+    public void setDeprecated(final Boolean deprecated) {
+        this.deprecated = deprecated;
     }
 
-    public boolean isHasAlteration() {
-        return hasAlteration;
+    public String getHeaderCsv() {
+        return headerCsv;
     }
 
-    public void setHasAlteration(final boolean hasAlteration) {
-        this.hasAlteration = hasAlteration;
+    public void setHeaderCsv(final String headerCsv) {
+        this.headerCsv = headerCsv;
     }
 }

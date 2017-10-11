@@ -21,6 +21,13 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.UcdProcess;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
@@ -28,12 +35,6 @@ import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.entity.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
-import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
 
 public class PendingCertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 8778880570983282001L;
@@ -85,8 +86,8 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String transparencyAttestation;
     private String transparencyAttestationUrl;
 
-    private List<CertifiedProductDTO> icsParents;
-    private List<CertifiedProductDTO> icsChildren;
+    private List<CertifiedProductDetailsDTO> icsParents;
+    private List<CertifiedProductDetailsDTO> icsChildren;
     private List<PendingCertificationResultDTO> certificationCriterion;
     private List<PendingCqmCriterionDTO> cqmCriterion;
     private List<PendingCertifiedProductQmsStandardDTO> qmsStandards;
@@ -98,8 +99,8 @@ public class PendingCertifiedProductDTO implements Serializable {
     public PendingCertifiedProductDTO() {
         this.errorMessages = new HashSet<String>();
         this.warningMessages = new HashSet<String>();
-        this.icsParents = new ArrayList<CertifiedProductDTO>();
-        this.icsChildren = new ArrayList<CertifiedProductDTO>();
+        this.icsParents = new ArrayList<CertifiedProductDetailsDTO>();
+        this.icsChildren = new ArrayList<CertifiedProductDetailsDTO>();
         this.certificationCriterion = new ArrayList<PendingCertificationResultDTO>();
         this.cqmCriterion = new ArrayList<PendingCqmCriterionDTO>();
         this.qmsStandards = new ArrayList<PendingCertifiedProductQmsStandardDTO>();
@@ -204,14 +205,14 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (details.getIcs() != null) {
             if (details.getIcs().getParents() != null && details.getIcs().getParents().size() > 0) {
                 for (CertifiedProduct parent : details.getIcs().getParents()) {
-                    CertifiedProductDTO parentCp = new CertifiedProductDTO();
+                    CertifiedProductDetailsDTO parentCp = new CertifiedProductDetailsDTO();
                     parentCp.setChplProductNumber(parent.getChplProductNumber());
                     this.icsParents.add(parentCp);
                 }
             }
             if (details.getIcs().getChildren() != null && details.getIcs().getChildren().size() > 0) {
                 for (CertifiedProduct child : details.getIcs().getChildren()) {
-                    CertifiedProductDTO childCp = new CertifiedProductDTO();
+                    CertifiedProductDetailsDTO childCp = new CertifiedProductDetailsDTO();
                     childCp.setChplProductNumber(child.getChplProductNumber());
                     this.icsChildren.add(childCp);
                 }
@@ -248,7 +249,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 this.accessibilityStandards.add(asDto);
             }
         }
-
+        
         List<CertificationResult> certificationResults = details.getCertificationResults();
         for (CertificationResult crResult : certificationResults) {
             PendingCertificationResultDTO certDto = new PendingCertificationResultDTO();
@@ -536,6 +537,21 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
         }
 
+        Set<PendingCertifiedProductParentListingEntity> parents = entity.getParentListings();
+        if(parents != null && parents.size() > 0) {
+            for(PendingCertifiedProductParentListingEntity parent : parents) {
+                CertifiedProductDetailsDTO listing = new CertifiedProductDetailsDTO();
+                listing.setId(parent.getParentListingId());
+                listing.setChplProductNumber(parent.getParentListingUniqueId());
+                if(parent.getParentListing() != null) {
+                    listing.setChplProductNumber(parent.getParentListing().getChplProductNumber());
+                    listing.setCertificationDate(parent.getParentListing().getCertificationDate());
+                    listing.setYear(parent.getParentListing().getEdition());
+                }
+                this.icsParents.add(listing);
+            }
+        }
+        
         Set<PendingCertificationResultEntity> criterionEntities = entity.getCertificationCriterion();
         if (criterionEntities != null && criterionEntities.size() > 0) {
             for (PendingCertificationResultEntity crEntity : criterionEntities) {
@@ -943,19 +959,19 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.lastModifiedUser = lastModifiedUser;
     }
 
-    public List<CertifiedProductDTO> getIcsParents() {
+    public List<CertifiedProductDetailsDTO> getIcsParents() {
         return icsParents;
     }
 
-    public void setIcsParents(final List<CertifiedProductDTO> icsParents) {
+    public void setIcsParents(final List<CertifiedProductDetailsDTO> icsParents) {
         this.icsParents = icsParents;
     }
 
-    public List<CertifiedProductDTO> getIcsChildren() {
+    public List<CertifiedProductDetailsDTO> getIcsChildren() {
         return icsChildren;
     }
 
-    public void setIcsChildren(final List<CertifiedProductDTO> icsChildren) {
+    public void setIcsChildren(final List<CertifiedProductDetailsDTO> icsChildren) {
         this.icsChildren = icsChildren;
     }
 }

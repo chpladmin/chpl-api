@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -13,14 +13,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
+
 @Entity
-@Table(name = "pending_certified_product_qms_standard")
-public class PendingCertifiedProductQmsStandardEntity {
+@Table(name = "pending_certified_product_parent_listing")
+public class PendingCertifiedProductParentListingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "pending_certified_product_qms_standard_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Basic(optional = true)
@@ -32,17 +35,17 @@ public class PendingCertifiedProductQmsStandardEntity {
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
 
-    @Column(name = "qms_standard_id")
-    private Long qmsStandardId;
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_certified_product_id", unique = true, nullable = true, insertable = false,
+            updatable = false)
+    private CertifiedProductBasicSearchResultEntity parentListing;
 
-    @Column(name = "qms_standard_name")
-    private String name;
-
-    @Column(name = "modification")
-    private String modification;
-
-    @Column(name = "applicable_criteria")
-    private String applicableCriteria;
+    @Column(name = "parent_certified_product_id")
+    private Long parentListingId;
+    
+    @Column(name = "parent_certified_product_unique_id")
+    private String parentListingUniqueId;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -68,36 +71,44 @@ public class PendingCertifiedProductQmsStandardEntity {
         this.id = id;
     }
 
-    public Long getQmsStandardId() {
-        return qmsStandardId;
+    public PendingCertifiedProductEntity getMappedProduct() {
+        return mappedProduct;
     }
 
-    public void setQmsStandardId(final Long qmsStandardId) {
-        this.qmsStandardId = qmsStandardId;
+    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
+        this.mappedProduct = mappedProduct;
     }
 
-    public String getName() {
-        return name;
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
     }
 
-    public void setName(final String name) {
-        this.name = name;
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
-    public String getModification() {
-        return modification;
+    public CertifiedProductBasicSearchResultEntity getParentListing() {
+        return parentListing;
     }
 
-    public void setModification(final String modification) {
-        this.modification = modification;
+    public void setParentListing(final CertifiedProductBasicSearchResultEntity parentListing) {
+        this.parentListing = parentListing;
     }
 
-    public String getApplicableCriteria() {
-        return applicableCriteria;
+    public Long getParentListingId() {
+        return parentListingId;
     }
 
-    public void setApplicableCriteria(final String applicableCriteria) {
-        this.applicableCriteria = applicableCriteria;
+    public void setParentListingId(final Long parentListingId) {
+        this.parentListingId = parentListingId;
+    }
+
+    public String getParentListingUniqueId() {
+        return parentListingUniqueId;
+    }
+
+    public void setParentListingUniqueId(final String parentListingUniqueId) {
+        this.parentListingUniqueId = parentListingUniqueId;
     }
 
     public Date getLastModifiedDate() {
@@ -131,21 +142,4 @@ public class PendingCertifiedProductQmsStandardEntity {
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
-
-    public PendingCertifiedProductEntity getMappedProduct() {
-        return mappedProduct;
-    }
-
-    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
-        this.mappedProduct = mappedProduct;
-    }
-
-    public Long getPendingCertifiedProductId() {
-        return pendingCertifiedProductId;
-    }
-
-    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
-        this.pendingCertifiedProductId = pendingCertifiedProductId;
-    }
-
 }

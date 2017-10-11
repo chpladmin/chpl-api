@@ -256,7 +256,19 @@
 		<persistence strategy="localTempSwap" />
 	</cache>
 	<!-- end /certified_products/pending -->
-	
+
+    <!-- upload template versions -->
+    <cache name="uploadTemplateVersions"
+        maxEntriesLocalHeap="10000"
+        maxEntriesLocalDisk="10000000"
+        eternal="true"
+        diskSpoolBufferSizeMB="20"
+        memoryStoreEvictionPolicy="LFU"
+        transactionalMode="off">
+        <persistence strategy="localTempSwap" />
+    </cache>
+    <!-- end upload template versions -->
+
 	<!--  collections caches -->
 	<cache name="developerCollection"
 		maxEntriesLocalHeap="10000"
