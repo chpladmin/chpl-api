@@ -109,22 +109,14 @@ public class CertifiedProductController {
                     + " every certified product is returned. Call the /details service for more information.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
-            @RequestParam(required = false) Long versionId,
+            @RequestParam(required = true) Long versionId,
             @RequestParam(required = false, defaultValue = "false") boolean editable) throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> certifiedProductList = null;
 
-        if (versionId != null && versionId > 0) {
-            if (editable) {
-                certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
-            } else {
-                certifiedProductList = cpManager.getByVersion(versionId);
-            }
+        if (editable) {
+            certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
         } else {
-            if (editable) {
-                certifiedProductList = cpManager.getAllWithEditPermission();
-            } else {
-                certifiedProductList = cpManager.getAll();
-            }
+            certifiedProductList = cpManager.getByVersion(versionId);
         }
 
         List<CertifiedProduct> products = new ArrayList<CertifiedProduct>();

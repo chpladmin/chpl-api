@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 14.0.1
+_11 October 2017_
+
+### Bug Fixes
+* Do not support /certified_products call without a ?versionId parameter
+
+---
+
 ## Version 14.0.0
 _10 October 2017_
 
