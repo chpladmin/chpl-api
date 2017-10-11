@@ -404,6 +404,16 @@ public class CertifiedProductController {
             notes = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB(s) specified in the file.")
+    @RequestMapping(value = "/upload", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public ResponseEntity<PendingCertifiedProductResults> uploadAsPut(@RequestParam("file") MultipartFile file)
+            throws ValidationException, MaxUploadSizeExceededException {
+        return upload(file);
+    }
+
+    @ApiOperation(value = "Upload a file with certified products",
+            notes = "Accepts a CSV file with very specific fields to create pending certified products. "
+                    + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
