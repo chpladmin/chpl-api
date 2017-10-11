@@ -81,6 +81,7 @@
 		<class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTaskEntity</class>
 		<class>gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity</class>
 		<class>gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity</class>
+        <class>gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity</class>
 		<class>gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity</class>
