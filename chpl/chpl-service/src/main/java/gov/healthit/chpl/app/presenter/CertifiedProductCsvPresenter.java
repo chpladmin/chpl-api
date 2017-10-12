@@ -18,11 +18,19 @@ import org.apache.logging.log4j.Logger;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.SEDRow;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
+import gov.healthit.chpl.dto.TestTaskDTO;
 
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
+    Long id = -1L;
+	int i;
 
     /**
      * Required to setCriteriaNames before calling this function. Returns number
@@ -36,10 +44,44 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         try {
             writer = new FileWriter(file);
             csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+            
             csvPrinter.printRecord(generateHeaderValues());
 
             for (CertifiedProductSearchDetails data : cpList.getListings()) {
                 List<String> rowValue = generateRowValue(data);
+                if (rowValue != null) { // a subclass could return null to skip
+                                        // a row
+                    csvPrinter.printRecord(rowValue);
+                    numRows++;
+                }
+            }
+        } catch (final IOException ex) {
+            LOGGER.error("Could not write file " + file.getName(), ex);
+        } finally {
+            try {
+                writer.flush();
+                writer.close();
+                csvPrinter.flush();
+                csvPrinter.close();
+            } catch (Exception ignore) {
+            }
+        }
+        return numRows;
+    }
+    
+    @Override
+    public int presentAsFileSED(File file, ArrayList<SEDRow> result) {
+        int numRows = 0;
+        FileWriter writer = null;
+        CSVPrinter csvPrinter = null;
+        try {
+            writer = new FileWriter(file);
+            csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+            
+            csvPrinter.printRecord(generateHeaderValuesSED());
+
+            for (SEDRow data : result) {
+                List<String> rowValue = generateRowValueSED(data.getDetails(), data.getCertificationResult(), data.getTestTask(), data.getCriteria());
                 if (rowValue != null) { // a subclass could return null to skip
                                         // a row
                     csvPrinter.printRecord(rowValue);
@@ -88,7 +130,6 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         List<String> result = new ArrayList<String>();
         result.add("Unique CHPL ID");
         result.add("Developer");
-        result.add("Certification Edition");
         result.add("Product");
         result.add("Version");
         result.add("Certification Criteria");
@@ -139,29 +180,40 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         return result;
     }
     
-    protected List<String> generateRowValueSED(CertifiedProductSearchDetails data) {
+    protected List<String> generateRowValueSED(CertifiedProductDetailsDTO details, CertificationResultDTO certificationResult, CertificationResultTestTaskDTO testTask, String criteria) {
+    	if(id != testTask.getId()){
+    		id = testTask.getId();
+    		i = 0;
+    	}
         List<String> result = new ArrayList<String>();
-        result.add(data.getChplProductNumber());
-        result.add(data.getDeveloper().getName());
-        result.add(data.getProduct().getName());
-        result.add(data.getVersion().getVersion());
-        result.add(data.getCertificationResults().get(0).getNumber());
-        result.add(data.getCertificationResults().get(0).getTitle());
-        result.add(data.get);
-        LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.getCertificationDate()),
-                ZoneId.systemDefault());
-        result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
-        result.add(data.getCertificationStatus().get("name").toString());
-        result.add(data.getCertifyingBody().get("name").toString());
-        result.add(data.getOtherAcb());
-        
-        
-        
-        result.add(data.getCountSurveillance().toString());
-        result.add((data.getCountOpenNonconformities() + data.getCountClosedNonconformities()) + "");
-        result.add(data.getCountOpenNonconformities().toString());
-        List<String> criteria = generateCriteriaValues(data);
-        result.addAll(criteria);
+        result.add(details.getChplProductNumber());
+        result.add(details.getDeveloper().getName());
+        result.add(details.getProduct().getName());
+        result.add(details.getVersion().getVersion());
+        result.add(criteria);
+        result.add(testTask.getTestTask().getDescription());
+        result.add(testTask.getTestTask().getTaskRatingScale());
+        result.add(String.valueOf(testTask.getTestTask().getTaskRating()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskRatingStddev()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskTimeAvg()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskTimeStddev()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskTimeDeviationObservedAvg()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskTimeDeviationOptimalAvg()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskSuccessAverage()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskSuccessStddev()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskErrors()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskErrorsStddev()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskPathDeviationObserved()));
+        result.add(String.valueOf(testTask.getTestTask().getTaskPathDeviationOptimal()));
+        result.add(testTask.getTestTask().getParticipants().get(i).getOccupation());
+        result.add(testTask.getTestTask().getParticipants().get(i).getEducationType().getName());
+        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getProductExperienceMonths()));
+        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getProfessionalExperienceMonths()));
+        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getComputerExperienceMonths()));
+        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getAgeRange().getAge()));
+        result.add(testTask.getTestTask().getParticipants().get(i).getGender());
+        result.add(testTask.getTestTask().getParticipants().get(i).getAssistiveTechnologyNeeds());
+        i++;
         return result;
     }
 

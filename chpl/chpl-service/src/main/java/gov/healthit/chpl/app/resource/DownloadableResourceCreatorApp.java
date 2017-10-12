@@ -34,37 +34,13 @@ public abstract class DownloadableResourceCreatorApp extends App {
     }
 
     protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
-        this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
+        //this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
         this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
         this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
         this.setCertificationResultDao((CertificationResultDAO) context.getBean("certificationResultDAO"));
     }
-
-    protected abstract List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException;
-
-    protected abstract void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results)
-            throws IOException;
-
-    protected void runJob(String[] args) throws Exception {
-        File downloadFolder = getDownloadFolder();
-        List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-
-        CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
-        for (CertifiedProductDetailsDTO currListing : listings) {
-            try {
-                LOGGER.info("Getting details for listing ID " + currListing.getId());
-                Date start = new Date();
-                CertifiedProductSearchDetails product = getCpdManager().getCertifiedProductDetails(currListing.getId());
-                Date end = new Date();
-                LOGGER.info("Got details for listing ID " + currListing.getId() + " in "
-                        + (end.getTime() - start.getTime()) / 1000 + " seconds");
-                results.getListings().add(product);
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not get details for certified product " + currListing.getId());
-            }
-        }
-        writeToFile(downloadFolder, results);
-    }
+    
+    protected abstract void runJob(String[] args) throws Exception;
 
     public CertifiedProductDAO getCertifiedProductDao() {
         return certifiedProductDao;

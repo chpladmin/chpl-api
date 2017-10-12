@@ -19,9 +19,11 @@ import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.app.App;
 import gov.healthit.chpl.app.AppConfig;
@@ -37,20 +39,26 @@ import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.SEDRow;
 import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.TestParticipantDTO;
+import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
-
-@Component("SED2015DailyDownloadApp")
-public class G3Sed2015ResourceCreatorApp extends DownloadableResourceCreatorApp{
+import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
+@Transactional
+@Component("G3Sed2015ResourceCreatorApp")
+public class G3Sed2015ResourceCreatorApp extends SEDDownloadableResourceCreatorApp{
 	private static final String CRITERIA_NAME = "170.315 (g)(3)";
     private static final String EDITION = "2015";
     private static final Logger LOGGER = LogManager.getLogger(G3Sed2015ResourceCreatorApp.class);
-
+    int num = 0;
+    
     public G3Sed2015ResourceCreatorApp() {
     	super();
     }
@@ -70,25 +78,34 @@ public class G3Sed2015ResourceCreatorApp extends DownloadableResourceCreatorApp{
         app.runJob(args);
         context.close();
     }
+    
+    
+    protected ArrayList<SEDRow> getRelevantListings() throws EntityRetrievalException {
+    	ArrayList<SEDRow> sedData = new ArrayList<SEDRow>();
+    	CertificationCriterionDTO certCrit = getCriteriaDao().getByNameAndYear(CRITERIA_NAME, EDITION);
+    	List<Long> ids = getCertificationResultDao().getCpIdsByCriterionId(certCrit.getId());
+    	for(Long id : ids){
+    		List<CertificationResultDTO> certificationResultsForId = getCertificationResultDao().findByCertifiedProductIdSED(id);
+    		CertifiedProductDetailsDTO listingDetails = getCertifiedProductDao().getDetailsById(id);
+    		for(int i=0;i<certificationResultsForId.size();i++){
+    			CertificationResultDTO certificationResult = certificationResultsForId.get(i);
+    			String criterionName = getCriteriaDao().getById(certificationResult.getCertificationCriterionId()).getNumber();
+    			List<CertificationResultTestTaskDTO> certificationResultsTestTasks = getCertificationResultDao().getTestTasksForCertificationResult(certificationResult.getId());
+    			for(int j=0;j<certificationResultsTestTasks.size();j++){
+    				SEDRow row = new SEDRow();
+    				row.setDetails(listingDetails);
+    				row.setCriteria(criterionName);
+    				row.setCertificationResult(certificationResult);
+    				row.setTestTask(certificationResultsTestTasks.get(j));
+    				sedData.add(row);
+    			}
+    		}
+    	}
+    	return sedData;
+    }
 
 	@Override
-	protected List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
-		CertificationCriterionDTO certCrit = getCriteriaDao().getByNameAndYear(CRITERIA_NAME, EDITION);
-		List<Long> ids = getCertificationResultDao().getCpIdsByCriterionId(certCrit.getId());
-		ArrayList<CertificationResultDTO> crs = new ArrayList<CertificationResultDTO>();
-		for(Long id : ids){
-			crs.addAll(getCertificationResultDao().findByCertifiedProductId(id));
-		}
-		System.out.println("CP ids: " + cpIds.size());
-		List<CertifiedProductDetailsDTO> listingsForCriteria = getCertifiedProductDao().getDetailsByIds(cpIds);
-		
-		System.out.println(listingsForCriteria.size());
-		return listingsForCriteria;
-	}
-
-	@Override
-	protected void writeToFile(File downloadFolder,
-			CertifiedProductDownloadResponse results) throws IOException {
+	protected void writeToFile(File downloadFolder, ArrayList<SEDRow> results) throws IOException {
 		Date now = new Date();
 		// present as csv
         String csvFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-" + "sed" + "-"
@@ -99,15 +116,11 @@ public class G3Sed2015ResourceCreatorApp extends DownloadableResourceCreatorApp{
         } else {
             csvFile.delete();
         }
-        CertifiedProductCsvPresenter csvPresenter = new CertifiedProductCsvPresenter();;
-
-        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(getEdition());
-        csvPresenter.setApplicableCriteria(criteria);
-
-        LOGGER.info("Writing " + getEdition() + " CSV file");
-        start = new Date();
-        csvPresenter.presentAsFile(csvFile, results);
-        end = new Date();
-        LOGGER.info("Wrote " + getEdition() + " CSV file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
+        CertifiedProductCsvPresenter csvPresenter = new CertifiedProductCsvPresenter();
+        
+        Date start = new Date();
+        int numRows = csvPresenter.presentAsFileSED(csvFile, results);
+        Date end = new Date();
+        LOGGER.info("Wrote " + numRows + " rows to SED detailed data CSV file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
 	}
 }
