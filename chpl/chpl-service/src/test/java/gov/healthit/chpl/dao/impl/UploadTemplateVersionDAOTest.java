@@ -18,9 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
-import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
+import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,55 +33,39 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-public class MacraMeasureDaoTest extends TestCase {
-
-	@Autowired 
-	private MacraMeasureDAO macraDao;
+public class UploadTemplateVersionDAOTest extends TestCase {
+	private static JWTAuthenticatedUser adminUser;
+	
+	@Autowired private UploadTemplateVersionDAO templateDao;;
 	
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
+		
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-	}
-
-	@Test
-	@Transactional
-	public void getAllMeasures() {
-		List<MacraMeasureDTO> results = macraDao.findAll();
-		assertNotNull(results);
-		assertEquals(92, results.size());
+		adminUser = new JWTAuthenticatedUser();
+		adminUser.setFirstName("Administrator");
+		adminUser.setId(-2L);
+		adminUser.setLastName("Administrator");
+		adminUser.setSubjectName("admin");
+		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
 	@Test
 	@Transactional
-	public void getMeasuresForCertificationCriteriaSingleResult() {
-		List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (a)(1)");
-		assertNotNull(results);
-		assertEquals(4, results.size());
+	public void findAll() {
+		List<UploadTemplateVersionDTO> allTemplates = templateDao.findAll();
+		assertNotNull(allTemplates);
+		assertEquals(3, allTemplates.size());
 	}
 	
 	@Test
 	@Transactional
-	public void getMeasuresForCertificationCriteriaMultipleResults() {
-		List<MacraMeasureDTO> results = macraDao.getByCriteriaNumber("170.315 (b)(1)");
-		assertNotNull(results);
-		assertEquals(8, results.size());
-	}
-	
-	@Test
-	@Transactional
-	public void getMeasureForCriteriaAndValue() {
-		MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "RT8 EP Individual");
-		assertNotNull(result);
-		assertEquals("RT8 EP Individual", result.getValue());
-	}
-	
-	@Test
-	@Transactional
-	public void getNoMeasureForCriteriaAndValue() {
-		MacraMeasureDTO result = macraDao.getByCriteriaNumberAndValue("170.315 (b)(1)", "Junk Value");
-		assertNull(result);
+	public void findById() throws EntityRetrievalException {
+		Long id = 1L;
+		UploadTemplateVersionDTO template = templateDao.getById(id);
+		assertNotNull(template);
+		assertEquals(id.longValue(), template.getId().longValue());
 	}
 }

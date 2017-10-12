@@ -10,6 +10,8 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
@@ -207,6 +209,14 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
             }
         }
 
+        List<CertifiedProductDetailsDTO> parentListings = dto.getIcsParents();
+        if(parentListings != null && parentListings.size() > 0) {
+            for(CertifiedProductDetailsDTO parentListing : parentListings) {
+                CertifiedProduct cp = new CertifiedProduct(parentListing);
+                this.getIcs().getParents().add(cp);
+            }
+        }
+        
         List<CertificationResult> certList = new ArrayList<CertificationResult>();
         for (PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
             CertificationCriterion criteria = new CertificationCriterion();

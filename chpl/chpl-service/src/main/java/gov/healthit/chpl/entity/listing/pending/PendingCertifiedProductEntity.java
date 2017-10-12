@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +20,9 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
+
+import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.AttestationType;
 
 /**
  * Object mapping for hibernate-handled table: certified_product. A product that
@@ -196,6 +199,11 @@ public class PendingCertifiedProductEntity {
     @Column(name = "pending_certified_product_id", nullable = false)
     private Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_id", nullable = false)
+    private Set<PendingCertifiedProductParentListingEntity> parentListings;
+    
     @Transient
     private boolean hasQms;
 
@@ -221,6 +229,7 @@ public class PendingCertifiedProductEntity {
         qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
         targetedUsers = new HashSet<PendingCertifiedProductTargetedUserEntity>();
         accessibilityStandards = new HashSet<PendingCertifiedProductAccessibilityStandardEntity>();
+        parentListings = new HashSet<PendingCertifiedProductParentListingEntity>();
     }
 
     public PendingCertifiedProductEntity(Long id) {
@@ -640,5 +649,13 @@ public class PendingCertifiedProductEntity {
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
         this.sedTestingEnd = sedTestingEnd;
+    }
+
+    public Set<PendingCertifiedProductParentListingEntity> getParentListings() {
+        return parentListings;
+    }
+
+    public void setParentListings(Set<PendingCertifiedProductParentListingEntity> parentListings) {
+        this.parentListings = parentListings;
     }
 }

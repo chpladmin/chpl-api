@@ -488,7 +488,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 
         // ics
         if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
-            for (CertifiedProductDTO parentCpDto : pendingCp.getIcsParents()) {
+            for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
                 CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
                 if (cp != null) {
                     ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
@@ -499,7 +499,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             }
         }
         if (pendingCp.getIcsChildren() != null && pendingCp.getIcsChildren().size() > 0) {
-            for (CertifiedProductDTO childCpDto : pendingCp.getIcsChildren()) {
+            for (CertifiedProductDetailsDTO childCpDto : pendingCp.getIcsChildren()) {
                 CertifiedProduct cp = searchDao.getByChplProductNumber(childCpDto.getChplProductNumber());
                 if (cp != null) {
                     ListingToListingMapDTO toAdd = new ListingToListingMapDTO();

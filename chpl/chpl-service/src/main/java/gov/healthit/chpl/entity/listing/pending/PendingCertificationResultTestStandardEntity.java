@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -11,26 +11,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certification_result_ucd_process")
-public class PendingCertificationResultUcdProcessEntity {
+@Table(name = "pending_certification_result_test_standard")
+public class PendingCertificationResultTestStandardEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_ucd_process_id", nullable = false)
+    @Column(name = "pending_certification_result_test_standard_id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
     @Column(name = "pending_certification_result_id", nullable = false)
     private Long pendingCertificationResultId;
 
-    @Column(name = "ucd_process_id")
-    private Long ucdProcessId;
+    @Column(name = "test_standard_id")
+    private Long testStandardId;
 
-    @Column(name = "ucd_process_name")
-    private String ucdProcessName;
-
-    @Column(name = "ucd_process_details")
-    private String ucdProcessDetails;
+    @Column(name = "test_standard_number")
+    private String testStandardName;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -96,28 +93,19 @@ public class PendingCertificationResultUcdProcessEntity {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
-    public Long getUcdProcessId() {
-        return ucdProcessId;
+    public Long getTestStandardId() {
+        return testStandardId;
     }
 
-    public void setUcdProcessId(final Long ucdProcessId) {
-        this.ucdProcessId = ucdProcessId;
+    public void setTestStandardId(final Long testStandardId) {
+        this.testStandardId = testStandardId;
     }
 
-    public String getUcdProcessDetails() {
-        return ucdProcessDetails;
+    public String getTestStandardName() {
+        return testStandardName;
     }
 
-    public void setUcdProcessDetails(final String ucdProcessDetails) {
-        this.ucdProcessDetails = ucdProcessDetails;
+    public void setTestStandardName(final String testStandardName) {
+        this.testStandardName = testStandardName;
     }
-
-    public String getUcdProcessName() {
-        return ucdProcessName;
-    }
-
-    public void setUcdProcessName(final String ucdProcessName) {
-        this.ucdProcessName = ucdProcessName;
-    }
-
 }

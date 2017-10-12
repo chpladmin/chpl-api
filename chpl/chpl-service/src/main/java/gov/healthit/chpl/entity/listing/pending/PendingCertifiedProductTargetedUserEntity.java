@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -14,27 +14,29 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_cqm_certification_criteria")
-public class PendingCqmCertificationCriteriaEntity {
+@Table(name = "pending_certified_product_targeted_user")
+public class PendingCertifiedProductTargetedUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_cqm_certification_criteria_id", nullable = false)
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_targeted_user_id", nullable = false)
     private Long id;
-
-    @Basic(optional = false)
-    @Column(name = "pending_cqm_criterion_id", nullable = false)
-    private Long pendingCqmId;
-
-    @Basic(optional = false)
-    @Column(name = "certification_criterion_id", nullable = false)
-    private Long certificationId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false,
+    @JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false,
             updatable = false)
-    private CertificationCriterionEntity certificationCriteria;
+    private PendingCertifiedProductEntity mappedProduct;
+
+    @Column(name = "pending_certified_product_id")
+    private Long pendingCertifiedProductId;
+
+    @Column(name = "targeted_user_id")
+    private Long targetedUserId;
+
+    @Column(name = "targeted_user_name")
+    private String name;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -58,6 +60,14 @@ public class PendingCqmCertificationCriteriaEntity {
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public Date getLastModifiedDate() {
@@ -92,27 +102,28 @@ public class PendingCqmCertificationCriteriaEntity {
         this.deleted = deleted;
     }
 
-    public Long getPendingCqmId() {
-        return pendingCqmId;
+    public PendingCertifiedProductEntity getMappedProduct() {
+        return mappedProduct;
     }
 
-    public void setPendingCqmId(final Long pendingCqmId) {
-        this.pendingCqmId = pendingCqmId;
+    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
+        this.mappedProduct = mappedProduct;
     }
 
-    public Long getCertificationId() {
-        return certificationId;
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
     }
 
-    public void setCertificationId(final Long certificationId) {
-        this.certificationId = certificationId;
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 
-    public CertificationCriterionEntity getCertificationCriteria() {
-        return certificationCriteria;
+    public Long getTargetedUserId() {
+        return targetedUserId;
     }
 
-    public void setCertificationCriteria(final CertificationCriterionEntity certificationCriteria) {
-        this.certificationCriteria = certificationCriteria;
+    public void setTargetedUserId(final Long targetedUserId) {
+        this.targetedUserId = targetedUserId;
     }
+
 }

@@ -23,26 +23,27 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
-import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultG2MacraMeasureEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestTaskParticipantEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductAccessibilityStandardEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductQmsStandardEntity;
-import gov.healthit.chpl.entity.PendingCertifiedProductTargetedUserEntity;
-import gov.healthit.chpl.entity.PendingCqmCertificationCriteriaEntity;
-import gov.healthit.chpl.entity.PendingCqmCriterionEntity;
-import gov.healthit.chpl.entity.PendingTestParticipantEntity;
-import gov.healthit.chpl.entity.PendingTestTaskEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG2MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTaskEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTaskParticipantEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductAccessibilityStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCqmCertificationCriteriaEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
 
 @Repository(value = "pendingCertifiedProductDAO")
 public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements PendingCertifiedProductDAO {
@@ -117,6 +118,23 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
                 String msg = String
                         .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badTargetedUser"),
                                 LocaleContextHolder.getLocale()), targetedUser.getName());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+        }
+        
+        for (PendingCertifiedProductParentListingEntity parentListing : toCreate.getParentListings()) {
+            parentListing.setPendingCertifiedProductId(toCreate.getId());
+            parentListing.setLastModifiedDate(new Date());
+            parentListing.setLastModifiedUser(Util.getCurrentUser().getId());
+            parentListing.setCreationDate(new Date());
+            parentListing.setDeleted(false);
+            try {
+                entityManager.persist(parentListing);
+            } catch (Exception ex) {
+                String msg = String
+                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badIcsParentSave"),
+                                LocaleContextHolder.getLocale()), parentListing.getParentListingUniqueId());
                 LOGGER.error(msg, ex);
                 throw new EntityCreationException(msg);
             }
