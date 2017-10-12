@@ -16,15 +16,11 @@ import javax.persistence.Query;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.SearchRequest;
@@ -337,7 +333,6 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements 
 
     @Override
     @Transactional
-    @Cacheable(CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS)
     public Long countMultiFilterSearchResults(SearchRequest searchRequest) {
 
         Query query = getCountQueryForSearchFilters(searchRequest);

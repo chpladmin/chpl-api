@@ -379,8 +379,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, CacheNames.SEARCH,
-            CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -1012,8 +1011,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             AccessDeniedException.class, InvalidArgumentsException.class
     })
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
@@ -1800,7 +1798,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.SEARCH
+            CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
             throws EntityCreationException, EntityRetrievalException, IOException {

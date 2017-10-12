@@ -43,7 +43,6 @@ public class CertifiedProductSearchManagerImpl implements CertifiedProductSearch
 
     @Transactional
     @Override
-    @Cacheable(CacheNames.SEARCH)
     public SearchResponse search(SearchRequest searchRequest) {
 
         List<CertifiedProductSearchResult> searchResults = new ArrayList<CertifiedProductSearchResult>();

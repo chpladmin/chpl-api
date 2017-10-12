@@ -96,7 +96,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
     @Transactional(readOnly = false)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
     @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -133,7 +133,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
     @Transactional(readOnly = false)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
     @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -182,7 +182,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
     @Transactional(readOnly = false)
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -239,7 +239,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
     })
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN', 'ROLE_ACB_STAFF')")
     @CacheEvict(value = {
-            CacheNames.PRODUCT_NAMES, CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public ProductDTO split(ProductDTO oldProduct, ProductDTO newProduct, String newProductCode,
             List<ProductVersionDTO> newProductVersions)

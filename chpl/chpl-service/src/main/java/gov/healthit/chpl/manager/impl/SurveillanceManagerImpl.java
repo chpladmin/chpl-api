@@ -11,7 +11,6 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +28,6 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -137,9 +135,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    @CacheEvict(value = {
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
-    }, allEntries = true)
     public Long createSurveillance(Long acbId, Surveillance surv)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         Long insertedId = null;
@@ -171,9 +166,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    @CacheEvict(value = {
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
-    }, allEntries = true)
     public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
@@ -199,9 +191,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    @CacheEvict(value = {
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
-    }, allEntries = true)
     public void deleteSurveillance(Long acbId, Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
