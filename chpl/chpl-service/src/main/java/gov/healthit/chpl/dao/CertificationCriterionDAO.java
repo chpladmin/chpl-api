@@ -1,23 +1,32 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 
-import java.util.List;
-
 public interface CertificationCriterionDAO {
-	
-	public CertificationCriterionDTO create(CertificationCriterionDTO result) throws EntityCreationException, EntityRetrievalException;
 
-	public CertificationCriterionDTO update(CertificationCriterionDTO result) throws EntityRetrievalException, EntityCreationException;
-	
-	public void delete(Long criterionId);
-	
-	public List<CertificationCriterionDTO> findAll();
-	
-	public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
-	public CertificationCriterionDTO getByName(String criterionName);
-	public CertificationCriterionEntity getEntityByName(String name);
-	public CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException;
-	
+    CertificationCriterionDTO create(CertificationCriterionDTO result)
+            throws EntityCreationException, EntityRetrievalException;
+
+    CertificationCriterionDTO update(CertificationCriterionDTO result)
+            throws EntityRetrievalException, EntityCreationException;
+
+    void delete(Long criterionId);
+
+    List<CertificationCriterionDTO> findAll();
+
+    List<CertificationCriterionDTO> findByCertificationEditionYear(String year);
+
+    CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
+
+    CertificationCriterionDTO getByName(String criterionName);
+
+    CertificationCriterionDTO getByNameAndYear(String criterionName, String year);
+
+    CertificationCriterionEntity getEntityByName(String name);
+
+    CertificationCriterionEntity getEntityById(Long id) throws EntityRetrievalException;
+
 }

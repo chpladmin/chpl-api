@@ -13,148 +13,147 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Entity
-@Table(name="address")
+@Table(name = "address")
 public class AddressEntity {
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "address_id", nullable = false )
-	private Long id;
-	
-	@Basic( optional = false )
-	@Size(min=1)
-	@Column(name="street_line_1")
-	private String streetLineOne;
-	
-	@Column(name="street_line_2")
-	private String streetLineTwo;
-	
-	@Basic( optional = false )
-	@Size(min=1)
-	@Column(name = "city")
-	private String city;
-	
-	@Basic( optional = false )
-	@Size(min=1)
-	@Column(name = "state")
-	private String state;
-	
-	@Basic( optional = false )
-	@Size(min=1)
-	@Column(name = "zipcode")
-	private String zipcode;
-	
-	@Basic( optional = false )
-	@Size(min=1)
-	@Column(name = "country")
-	private String country;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@NotNull()
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = false )
-	@NotNull()
-	@Column( nullable = false  )
-	private Boolean deleted;
-	
-	
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId(Long long1) {
-		this.id = long1;
-	}
-	
-	public String getStreetLineOne() {
-		return streetLineOne;
-	}
 
-	public void setStreetLineOne(String streetLineOne) {
-		this.streetLineOne = streetLineOne;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "address_id", nullable = false)
+    private Long id;
 
-	public String getStreetLineTwo() {
-		return streetLineTwo;
-	}
+    @Basic(optional = false)
+    @Size(min = 1)
+    @Column(name = "street_line_1")
+    private String streetLineOne;
 
-	public void setStreetLineTwo(String streetLineTwo) {
-		this.streetLineTwo = streetLineTwo;
-	}
+    @Column(name = "street_line_2")
+    private String streetLineTwo;
 
-	public String getCity() {
-		return city;
-	}
+    @Basic(optional = false)
+    @Size(min = 1)
+    @Column(name = "city")
+    private String city;
 
-	public void setCity(String city) {
-		this.city = city;
-	}
+    @Basic(optional = false)
+    @Size(min = 1)
+    @Column(name = "state")
+    private String state;
 
-	public String getState() {
-		return state;
-	}
+    @Basic(optional = false)
+    @Size(min = 1)
+    @Column(name = "zipcode")
+    private String zipcode;
 
-	public void setState(String state) {
-		this.state = state;
-	}
+    @Basic(optional = false)
+    @Size(min = 1)
+    @Column(name = "country")
+    private String country;
 
-	public String getZipcode() {
-		return zipcode;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setZipcode(String zipcode) {
-		this.zipcode = zipcode;
-	}
-	
-	public String getCountry() {
-		return country;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setCountry(String country) {
-		this.country = country;
-	}
+    @Basic(optional = false)
+    @NotNull()
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @NotNull()
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public void setId(final Long long1) {
+        this.id = long1;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public String getStreetLineOne() {
+        return streetLineOne;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public void setStreetLineOne(final String streetLineOne) {
+        this.streetLineOne = streetLineOne;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public String getStreetLineTwo() {
+        return streetLineTwo;
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    public void setStreetLineTwo(final String streetLineTwo) {
+        this.streetLineTwo = streetLineTwo;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
-	
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(final String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(final String state) {
+        this.state = state;
+    }
+
+    public String getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(final String zipcode) {
+        this.zipcode = zipcode;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(final String country) {
+        this.country = country;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
 }

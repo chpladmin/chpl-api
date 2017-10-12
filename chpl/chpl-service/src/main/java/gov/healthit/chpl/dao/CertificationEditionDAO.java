@@ -1,20 +1,23 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertificationEditionDTO;
-
 import java.util.List;
 
-public interface CertificationEditionDAO {
-	
-	public void create(CertificationEditionDTO dto) throws EntityCreationException, EntityRetrievalException;
+import gov.healthit.chpl.dto.CertificationEditionDTO;
 
-	public void update(CertificationEditionDTO dto) throws EntityRetrievalException;
-	
-	public void delete(Long id);
-	
-	public List<CertificationEditionDTO> findAll();
-	
-	public CertificationEditionDTO getById(Long id) throws EntityRetrievalException;
-	public CertificationEditionDTO getByYear(String year);
-	
+public interface CertificationEditionDAO {
+
+    void create(CertificationEditionDTO dto) throws EntityCreationException, EntityRetrievalException;
+
+    void update(CertificationEditionDTO dto) throws EntityRetrievalException;
+
+    void delete(Long id);
+
+    List<CertificationEditionDTO> findAll();
+
+    List<CertificationEditionDTO> getEditions(List<Long> listingIds);
+
+    CertificationEditionDTO getById(Long id) throws EntityRetrievalException;
+
+    CertificationEditionDTO getByYear(String year);
+
 }

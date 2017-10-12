@@ -16,194 +16,192 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "cqm_criterion", schema = "openchpl")
 public class CQMCriterionEntity {
-	
-	
-	@Basic( optional = true )
-	@Column( name = "cms_id", length = 15  )
-	private String cmsId;
-	
-	@Column(name = "cqm_criterion_type_id", nullable = false )
-	private Long cqmCriterionTypeId;
-	
-	@Basic( optional = true )
-	@Column( name = "cqm_domain", length = 250  )
-	private String cqmDomain;
-	
-	@Basic( optional = true )
-	@Column( name = "cqm_version_id", length = 10)
-	private Long cqmVersionId;
-	
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="cqm_version_id", insertable=false, updatable=false )
-	private CQMVersionEntity cqmVersion;
-	
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( nullable = false  )
-	private Boolean deleted;
-	
-	@Basic( optional = true )
-	@Column( length = 1000  )
-	private String description;
-	
-	@Id 
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "cqm_criterion_id", nullable = false  )
-	private Long id;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false  )
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	@Basic( optional = true )
-	@Column( name = "nqf_number", length = 50  )
-	private String nqfNumber;
-	
-	@Basic( optional = true )
-	@Column( length = 20  )
-	private String number;
-	
-	@Basic( optional = true )
-	@Column( length = 250  )
-	private String title;
 
-	@Basic( optional = false )
-	@Column( name="retired", length = 10  )
-	private Boolean retired;
-	
+    @Basic(optional = true)
+    @Column(name = "cms_id", length = 15)
+    private String cmsId;
 
-	public String getCmsId() {
-		return cmsId;
-	}
+    @Column(name = "cqm_criterion_type_id", nullable = false)
+    private Long cqmCriterionTypeId;
 
-	public void setCmsId(String cmsId) {
-		this.cmsId = cmsId;
-	}
+    @Basic(optional = true)
+    @Column(name = "cqm_domain", length = 250)
+    private String cqmDomain;
 
-	public Long getCqmCriterionTypeId() {
-		return cqmCriterionTypeId;
-	}
+    @Basic(optional = true)
+    @Column(name = "cqm_version_id", length = 10)
+    private Long cqmVersionId;
 
-	public void setCqmCriterionTypeId(Long cqmCriterionTypeId) {
-		this.cqmCriterionTypeId = cqmCriterionTypeId;
-	}
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cqm_version_id", insertable = false, updatable = false)
+    private CQMVersionEntity cqmVersion;
 
-	public String getCqmDomain() {
-		return cqmDomain;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public void setCqmDomain(String cqmDomain) {
-		this.cqmDomain = cqmDomain;
-	}
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private Boolean deleted;
 
-	public Long getCqmVersionId() {
-		return cqmVersionId;
-	}
+    @Basic(optional = true)
+    @Column(length = 1000)
+    private String description;
 
-	public void setCqmVersionId(Long cqmVersion) {
-		this.cqmVersionId = cqmVersion;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "cqm_criterion_id", nullable = false)
+    private Long id;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    @Basic(optional = true)
+    @Column(name = "nqf_number", length = 50)
+    private String nqfNumber;
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    @Basic(optional = true)
+    @Column(length = 20)
+    private String number;
 
-	public String getDescription() {
-		return description;
-	}
+    @Basic(optional = true)
+    @Column(length = 250)
+    private String title;
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    @Basic(optional = false)
+    @Column(name = "retired", length = 10)
+    private Boolean retired;
 
-	public Long getId() {
-		return id;
-	}
+    public String getCmsId() {
+        return cmsId;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setCmsId(final String cmsId) {
+        this.cmsId = cmsId;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Long getCqmCriterionTypeId() {
+        return cqmCriterionTypeId;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setCqmCriterionTypeId(final Long cqmCriterionTypeId) {
+        this.cqmCriterionTypeId = cqmCriterionTypeId;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public String getCqmDomain() {
+        return cqmDomain;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setCqmDomain(final String cqmDomain) {
+        this.cqmDomain = cqmDomain;
+    }
 
-	public String getNqfNumber() {
-		return nqfNumber;
-	}
+    public Long getCqmVersionId() {
+        return cqmVersionId;
+    }
 
-	public void setNqfNumber(String nqfNumber) {
-		this.nqfNumber = nqfNumber;
-	}
+    public void setCqmVersionId(final Long cqmVersion) {
+        this.cqmVersionId = cqmVersion;
+    }
 
-	public String getNumber() {
-		return number;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setNumber(String number) {
-		this.number = number;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	
-	public CQMVersionEntity getCqmVersionEntity() {
-		return cqmVersion;
-	}
-	
-	public Boolean getRetired() {
-		return retired;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
 
-	public void setRetired(Boolean retired) {
-		this.retired = retired;
-	}
-	
-	public String getCqmVersion(){
-		
-		if (this.cqmVersion != null){
-			return this.cqmVersion.getVersion();
-		} else {
-			return null;
-		}
-		
-	}
-	
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getNqfNumber() {
+        return nqfNumber;
+    }
+
+    public void setNqfNumber(final String nqfNumber) {
+        this.nqfNumber = nqfNumber;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(final String number) {
+        this.number = number;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(final String title) {
+        this.title = title;
+    }
+
+    public CQMVersionEntity getCqmVersionEntity() {
+        return cqmVersion;
+    }
+
+    public Boolean getRetired() {
+        return retired;
+    }
+
+    public void setRetired(final Boolean retired) {
+        this.retired = retired;
+    }
+
+    public String getCqmVersion() {
+
+        if (this.cqmVersion != null) {
+            return this.cqmVersion.getVersion();
+        } else {
+            return null;
+        }
+
+    }
+
 }

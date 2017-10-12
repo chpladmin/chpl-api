@@ -1,9 +1,6 @@
 package gov.healthit.chpl.auth.entity;
 import java.util.List;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.auth.user.User;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +13,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.user.User;
 
 
 @Entity

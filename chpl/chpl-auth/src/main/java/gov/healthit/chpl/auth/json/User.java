@@ -10,6 +10,7 @@ public class User {
 	private String email;
 	private String phoneNumber;
 	private String title;
+	private Boolean complianceTermsAccepted;
 	private Boolean accountLocked;
 	private Boolean accountEnabled;
 	private String hash;
@@ -25,6 +26,7 @@ public class User {
 		this.setTitle(dto.getTitle());
 		this.setAccountLocked(dto.isAccountLocked());
 		this.setAccountEnabled(dto.isAccountEnabled());
+		this.setComplianceTermsAccepted(dto.getComplianceSignatureDate() == null ? false : true);
 	}
 	
 	public Long getUserId() {
@@ -86,5 +88,11 @@ public class User {
 	}
 	public void setHash(String hash) {
 		this.hash = hash;
+	}
+	public Boolean getComplianceTermsAccepted() {
+		return complianceTermsAccepted;
+	}
+	public void setComplianceTermsAccepted(Boolean complianceTermsAccepted) {
+		this.complianceTermsAccepted = complianceTermsAccepted;
 	}
 }

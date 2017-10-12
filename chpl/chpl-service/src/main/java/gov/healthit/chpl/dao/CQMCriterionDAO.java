@@ -1,26 +1,31 @@
 package gov.healthit.chpl.dao;
 
+import java.util.List;
+
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 
-import java.util.List;
-
 public interface CQMCriterionDAO {
-	
-	public CQMCriterionDTO create(CQMCriterionDTO criterion) throws EntityCreationException, EntityRetrievalException;
-	
-	public void update(CQMCriterionDTO criterion) throws EntityRetrievalException, EntityCreationException;
-	
-	public void delete(Long criterionId);
-	
-	public List<CQMCriterionDTO> findAll();
-	
-	public CQMCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
-	public CQMCriterionDTO getCMSByNumber(String number);
-	public CQMCriterionDTO getNQFByNumber(String number);
-	public CQMCriterionDTO getCMSByNumberAndVersion(String number, String version);
 
-	public CQMCriterionEntity getCMSEntityByNumberAndVersion(String number, String version);
-	public CQMCriterionEntity getCMSEntityByNumber(String number);
-	public CQMCriterionEntity getNQFEntityByNumber(String number);
+    CQMCriterionDTO create(CQMCriterionDTO criterion) throws EntityCreationException, EntityRetrievalException;
+
+    void update(CQMCriterionDTO criterion) throws EntityRetrievalException, EntityCreationException;
+
+    void delete(Long criterionId);
+
+    List<CQMCriterionDTO> findAll();
+
+    CQMCriterionDTO getById(Long criterionId) throws EntityRetrievalException;
+
+    CQMCriterionDTO getCMSByNumber(String number);
+
+    CQMCriterionDTO getNQFByNumber(String number);
+
+    CQMCriterionDTO getCMSByNumberAndVersion(String number, String version);
+
+    CQMCriterionEntity getCMSEntityByNumberAndVersion(String number, String version);
+
+    CQMCriterionEntity getCMSEntityByNumber(String number);
+
+    CQMCriterionEntity getNQFEntityByNumber(String number);
 }

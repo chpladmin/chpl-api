@@ -1,6 +1,21 @@
 package gov.healthit.chpl.auth.dao.impl;
 
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Query;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 import gov.healthit.chpl.auth.BaseDAOImpl;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserContactDAO;
@@ -10,24 +25,9 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.entity.UserContactEntity;
 import gov.healthit.chpl.auth.entity.UserEntity;
-import gov.healthit.chpl.auth.manager.impl.SecuredUserManagerImpl;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.Query;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 
 @Repository(value="userDAO")
 public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
@@ -47,9 +47,7 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		UserEntity userEntity = null;
 		try {
 			userEntity = getEntityByName(user.getSubjectName());
-		} catch (UserRetrievalException e) {
-			throw new UserCreationException(e);
-		}
+		} catch (UserRetrievalException ignore) {}
 		
 		if (userEntity != null) {
 			throw new UserCreationException("user name: "+user.getSubjectName() +" already exists.");
@@ -59,6 +57,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 			
 			userEntity.setFirstName(user.getFirstName());
 			userEntity.setLastName(user.getLastName());
+			userEntity.setComplianceSignature(user.getComplianceSignatureDate());
+			userEntity.setFailedLoginCount(0);
 			userEntity.setAccountEnabled(user.isAccountEnabled());
 			userEntity.setAccountExpired(user.isAccountExpired());
 			userEntity.setAccountLocked(user.isAccountLocked());
@@ -95,6 +95,8 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		userEntity.setFirstName(user.getFirstName());
 		userEntity.setLastName(user.getLastName());
+		userEntity.setComplianceSignature(user.getComplianceSignatureDate());
+		userEntity.setFailedLoginCount(user.getFailedLoginCount());
 		userEntity.getContact().setEmail(user.getEmail());
 		userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
 		userEntity.getContact().setSignatureDate(user.getSignatureDate());
@@ -266,7 +268,10 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		query.setParameter("userid", userId);
 		List<UserEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"), LocaleContextHolder.getLocale()));
+			throw new UserRetrievalException(msg);
+		} else if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user id in database.");
 		}
 		
@@ -278,20 +283,19 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 
 	
 	private UserEntity getEntityByName(String uname) throws UserRetrievalException {
-		
 		UserEntity user = null;
 		
 		Query query = entityManager.createQuery( "from UserEntity where ((NOT deleted = true) AND (user_name = (:uname))) ", UserEntity.class );
 		query.setParameter("uname", uname);
 		List<UserEntity> result = query.getResultList();
 		
-		if (result.size() > 1){
+		if(result == null || result.size() == 0) {
+			String msg = String.format(messageSource.getMessage(new DefaultMessageSourceResolvable("user.notFound"), LocaleContextHolder.getLocale()));
+			throw new UserRetrievalException(msg);
+		} else if (result.size() > 1){
 			throw new UserRetrievalException("Data error. Duplicate user name in database.");
 		} 
 		
-		if(result.size() == 0) {
-			return null;
-		}
 		return result.get(0);
 	}
 
@@ -348,6 +352,26 @@ public class UserDAOImpl extends BaseDAOImpl implements UserDAO {
 		
 		UserEntity userEntity = this.getEntityByName(uname);
 		userEntity.setPassword(encodedPassword);
+		update(userEntity);
+		
+	}
+	
+	@Override
+	@Transactional
+	public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userEntity.setFailedLoginCount(failedLoginCount);
+		update(userEntity);
+		
+	}
+	
+	@Override
+	@Transactional
+	public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException {
+		
+		UserEntity userEntity = this.getEntityByName(uname);
+		userEntity.setAccountLocked(locked);
 		update(userEntity);
 		
 	}

@@ -1,20 +1,21 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-
 import java.util.List;
 
-public interface ProductClassificationTypeDAO {
-	
-	public void create(ProductClassificationTypeDTO dto) throws EntityCreationException, EntityRetrievalException;
+import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 
-	public void update(ProductClassificationTypeDTO dto) throws EntityRetrievalException;
-	
-	public void delete(Long id);
-	
-	public List<ProductClassificationTypeDTO> findAll();
-	
-	public ProductClassificationTypeDTO getById(Long id) throws EntityRetrievalException;
-	public ProductClassificationTypeDTO getByName(String name);
-	
+public interface ProductClassificationTypeDAO {
+
+    void create(ProductClassificationTypeDTO dto) throws EntityCreationException, EntityRetrievalException;
+
+    void update(ProductClassificationTypeDTO dto) throws EntityRetrievalException;
+
+    void delete(Long id);
+
+    List<ProductClassificationTypeDTO> findAll();
+
+    ProductClassificationTypeDTO getById(Long id) throws EntityRetrievalException;
+
+    ProductClassificationTypeDTO getByName(String name);
+
 }

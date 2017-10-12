@@ -1,13 +1,10 @@
 package gov.healthit.chpl.dao.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +14,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CQMResultDetailsDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -34,7 +37,12 @@ public class CQMResultDetailsDaoTest {
 	@Autowired
 	CQMResultDetailsDAO cqmResultDetailsDAO;
 	
+	@Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+	
 	@Test
+	@Transactional
 	public void testGetCQMResultDetailsByCertifiedProductId() throws EntityRetrievalException{
 		
 		List<CQMResultDetailsDTO> dtos = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(1L);

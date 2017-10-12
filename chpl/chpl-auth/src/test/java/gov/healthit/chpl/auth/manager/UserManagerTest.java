@@ -1,13 +1,31 @@
 package gov.healthit.chpl.auth.manager;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import gov.healthit.chpl.auth.Util;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+
 import gov.healthit.chpl.auth.authentication.Authenticator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
 import gov.healthit.chpl.auth.dto.UserDTO;
@@ -23,24 +41,6 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserManagementException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -74,7 +74,7 @@ public class UserManagerTest {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
 	
-	@Test
+	@Test(expected = UserRetrievalException.class)
 	public void testCreateDeleteUser() throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -97,13 +97,11 @@ public class UserManagerTest {
 		assertEquals(toCreate.getSubjectName(), created.getSubjectName());
 		
 		userManager.delete(created);
-		
-		UserDTO deleted = userManager.getById(result.getId());
-		assertNull(deleted);
+		userManager.getById(result.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	@Test
+	@Test(expected = UserRetrievalException.class)
 	public void testCreateDeleteUserByUsername() throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -126,9 +124,7 @@ public class UserManagerTest {
 		assertEquals(toCreate.getSubjectName(), created.getSubjectName());
 		
 		userManager.delete(created.getUsername());
-		
-		UserDTO deleted = userManager.getById(result.getId());
-		assertNull(deleted);
+		userManager.getById(result.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
@@ -166,6 +162,13 @@ public class UserManagerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		UserDTO result = userManager.getById(-2L);
 		assertEquals(result.getSubjectName(), "admin");
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+	
+	@Test(expected=UserRetrievalException.class)
+	public void testGetByIdNotFound() throws UserRetrievalException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		userManager.getById(-6000L);
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	

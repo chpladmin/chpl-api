@@ -1,76 +1,100 @@
 package gov.healthit.chpl.dto;
 
+import java.io.Serializable;
+
 import gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity;
 
-public class CorrectiveActionPlanCertificationResultDTO {
+public class CorrectiveActionPlanCertificationResultDTO implements Serializable {
+    private static final long serialVersionUID = -5246550225480177796L;
+    private Long id;
+    private Long correctiveActionPlanId;
+    private CertificationCriterionDTO certCriterion;
+    private String summary;
+    private String developerExplanation;
+    private String resolution;
+    private Integer numSitesPassed;
+    private Integer numSitesTotal;
 
-	private Long id;
-	private Long correctiveActionPlanId;
-	private CertificationCriterionDTO certCriterion;
-	private String acbSummary;
-	private String developerSummary;
-	private String resolution;
-	
-	public CorrectiveActionPlanCertificationResultDTO() {
-		
-	}
-	
-	public CorrectiveActionPlanCertificationResultDTO(CorrectiveActionPlanCertificationEntity entity) {
-		setId(entity.getId());
-		if(entity.getCorrectiveActionPlan() != null) {
-			setCorrectiveActionPlanId(entity.getCorrectiveActionPlan().getId());
-		}
-		setAcbSummary(entity.getAcbSummary());
-		setDeveloperSummary(entity.getDeveloperSummaryDescription());
-		setResolution(entity.getResolution());
-		setCertCriterion(new CertificationCriterionDTO(entity.getCertificationCriterion()));
-	}
+    public CorrectiveActionPlanCertificationResultDTO() {
 
-	public Long getId() {
-		return id;
-	}
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public CorrectiveActionPlanCertificationResultDTO(CorrectiveActionPlanCertificationEntity entity) {
+        this.id = entity.getId();
+        if (entity.getCorrectiveActionPlan() != null) {
+            setCorrectiveActionPlanId(entity.getCorrectiveActionPlan().getId());
+        }
+        if (entity.getCertificationCriterion() != null) {
+            this.certCriterion = new CertificationCriterionDTO(entity.getCertificationCriterion());
+        }
+        this.summary = entity.getSummary();
+        this.developerExplanation = entity.getDeveloperExplanation();
+        this.resolution = entity.getResolution();
+        this.numSitesPassed = entity.getNumSitesPassed();
+        this.numSitesTotal = entity.getNumSitesTotal();
+    }
 
-	public CertificationCriterionDTO getCertCriterion() {
-		return certCriterion;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setCertCriterion(CertificationCriterionDTO certCriterion) {
-		this.certCriterion = certCriterion;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public String getAcbSummary() {
-		return acbSummary;
-	}
+    public CertificationCriterionDTO getCertCriterion() {
+        return certCriterion;
+    }
 
-	public void setAcbSummary(String acbSummary) {
-		this.acbSummary = acbSummary;
-	}
+    public void setCertCriterion(final CertificationCriterionDTO certCriterion) {
+        this.certCriterion = certCriterion;
+    }
 
-	public String getDeveloperSummary() {
-		return developerSummary;
-	}
+    public Long getCorrectiveActionPlanId() {
+        return correctiveActionPlanId;
+    }
 
-	public void setDeveloperSummary(String developerSummary) {
-		this.developerSummary = developerSummary;
-	}
+    public void setCorrectiveActionPlanId(final Long correctiveActionPlanId) {
+        this.correctiveActionPlanId = correctiveActionPlanId;
+    }
 
-	public String getResolution() {
-		return resolution;
-	}
+    public String getSummary() {
+        return summary;
+    }
 
-	public void setResolution(String resolution) {
-		this.resolution = resolution;
-	}
+    public void setSummary(final String summary) {
+        this.summary = summary;
+    }
 
-	public Long getCorrectiveActionPlanId() {
-		return correctiveActionPlanId;
-	}
+    public String getDeveloperExplanation() {
+        return developerExplanation;
+    }
 
-	public void setCorrectiveActionPlanId(Long correctiveActionPlanId) {
-		this.correctiveActionPlanId = correctiveActionPlanId;
-	}
+    public void setDeveloperExplanation(final String developerExplanation) {
+        this.developerExplanation = developerExplanation;
+    }
+
+    public String getResolution() {
+        return resolution;
+    }
+
+    public void setResolution(final String resolution) {
+        this.resolution = resolution;
+    }
+
+    public Integer getNumSitesPassed() {
+        return numSitesPassed;
+    }
+
+    public void setNumSitesPassed(final Integer numSitesPassed) {
+        this.numSitesPassed = numSitesPassed;
+    }
+
+    public Integer getNumSitesTotal() {
+        return numSitesTotal;
+    }
+
+    public void setNumSitesTotal(final Integer numSitesTotal) {
+        this.numSitesTotal = numSitesTotal;
+    }
 }

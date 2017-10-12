@@ -1,34 +1,35 @@
 package gov.healthit.chpl.domain;
 
-public class ApiKey {
-	
-	private String name;
-	private String email;
-	private String key;
+import java.io.Serializable;
 
-	
-	public String getName() {
-		return name;
-	}
+public class ApiKey implements Serializable {
+    private static final long serialVersionUID = -3412202704187626073L;
+    private String name;
+    private String email;
+    private String key;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setName(final String name) {
+        this.name = name;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public String getKey() {
-		return key;
-	}
+    public void setEmail(final String email) {
+        this.email = email;
+    }
 
-	public void setKey(String key) {
-		this.key = key;
-	}	
-	
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(final String key) {
+        this.key = key;
+    }
+
 }

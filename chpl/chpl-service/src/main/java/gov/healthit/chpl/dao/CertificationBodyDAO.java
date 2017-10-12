@@ -1,20 +1,26 @@
 package gov.healthit.chpl.dao;
 
-import gov.healthit.chpl.dto.CertificationBodyDTO;
-
 import java.util.List;
 
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+
 public interface CertificationBodyDAO {
-	
-	public CertificationBodyDTO create(CertificationBodyDTO acb) throws EntityRetrievalException, EntityCreationException;
 
-	public void delete(Long acbId);
+    CertificationBodyDTO create(CertificationBodyDTO acb)
+            throws EntityRetrievalException, EntityCreationException;
 
-	public List<CertificationBodyDTO> findAll();
+    void delete(Long acbId);
 
-	public CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
-	public CertificationBodyDTO getByName(String name);
+    List<CertificationBodyDTO> findAll(boolean showDeleted);
 
-	public CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
-	
+    CertificationBodyDTO getById(Long id) throws EntityRetrievalException;
+
+    CertificationBodyDTO getById(Long id, boolean includeDeleted) throws EntityRetrievalException;
+
+    CertificationBodyDTO getByName(String name);
+
+    String getMaxCode();
+
+    CertificationBodyDTO update(CertificationBodyDTO contact) throws EntityRetrievalException;
+
 }

@@ -1,10 +1,5 @@
 package gov.healthit.chpl.auth.filter;
 
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.json.ErrorJSONObject;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.user.User;
-
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -14,10 +9,16 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+
+import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.json.ErrorJSONObject;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
+import gov.healthit.chpl.auth.user.User;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
 	
@@ -35,9 +36,12 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 		
 		HttpServletRequest request = (HttpServletRequest) req;
 		
-		String authorizationHeader = request.getHeader("Authorization");
+		String authorization = null;
+		String authorizationFromHeader = request.getHeader("Authorization");
+		String authorizationFromParam = request.getParameter("authorization");
+		authorization = (!StringUtils.isEmpty(authorizationFromHeader) ? authorizationFromHeader : authorizationFromParam);
 		
-		if (authorizationHeader == null){
+		if (authorization == null){
 			chain.doFilter(req, res); //continue
 			SecurityContextHolder.getContext().setAuthentication(null);
 		} else {
@@ -46,7 +50,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 			String jwt = null;
 			
 			try { 
-				jwt = authorizationHeader.split(" ")[1];
+				jwt = authorization.split(" ")[1];
 			} catch (java.lang.ArrayIndexOutOfBoundsException e){
 				
 				ErrorJSONObject errorObj = new ErrorJSONObject("Token must be presented in the form: Bearer token");

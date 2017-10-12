@@ -5,7 +5,6 @@ import java.io.Serializable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.JoinColumn;
 
 @Embeddable
 public class UserPermissionUserMappingPk implements Serializable {

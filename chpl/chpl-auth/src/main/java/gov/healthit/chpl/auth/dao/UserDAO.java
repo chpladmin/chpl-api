@@ -1,14 +1,10 @@
 package gov.healthit.chpl.auth.dao;
+import java.util.List;
+
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserCreationException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-
-
-
-
-import java.util.List;
 
 public interface UserDAO {
 	
@@ -35,7 +31,8 @@ public interface UserDAO {
 	public void removePermission(String uname, String authority) throws UserRetrievalException, UserPermissionRetrievalException;
 	
 	public void updatePassword(String uname, String encodedPassword) throws UserRetrievalException;
-
+	public void updateFailedLoginCount(String uname, int failedLoginCount) throws UserRetrievalException;
+	public void updateAccountLockedStatus(String uname, boolean locked) throws UserRetrievalException;
 	public String getEncodedPassword(UserDTO user) throws UserRetrievalException;
 
 	

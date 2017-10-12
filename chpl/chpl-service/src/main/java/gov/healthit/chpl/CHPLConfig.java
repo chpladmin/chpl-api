@@ -1,120 +1,196 @@
 package gov.healthit.chpl;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-import javax.servlet.MultipartConfigElement;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.multipart.support.StandardServletMultipartResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
+import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
 
-import gov.healthit.chpl.certifiedProduct.upload.CertifiedProductUploadHandlerFactory;
+import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
-
 @Configuration
-@EnableTransactionManagement(proxyTargetClass=true)
+@EnableWebMvc
+@EnableTransactionManagement(proxyTargetClass = true)
 @EnableWebSecurity
-@ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class)})
-public class CHPLConfig {
-	
-	@Autowired
-	private ApiKeyManager apiKeyManager;
-	
-	public static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-	
-	protected Properties props;
-	
-	protected void loadProperties() throws IOException {
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-		
-		if (in == null)
-		{
-			props = null;
-			throw new FileNotFoundException("Environment Properties File not found in class path.");
-		}
-		else
-		{
-			props = new Properties();
-			props.load(in);
-		}
-	}
-	
-	@Bean
-	public Properties properties() {
-		if(props == null) {
-			try {
-				loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return props;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory(){
-		
-		if (props == null){
-			try {
-				loadProperties();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-		bean.setPersistenceUnitName(props.getProperty("persistenceUnitName"));
-		return bean;
-	}
-	 
-	@Bean
-	public org.springframework.orm.jpa.JpaTransactionManager transactionManager(){
-		org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
-		bean.setEntityManagerFactory(entityManagerFactory().getObject());
-		return bean;
-	}
-	
-	@Bean
-	public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor(){
-		return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
-	}
-	
-	@Bean(name="multipartResolver") 
-	public CommonsMultipartResolver getResolver() throws IOException{
-	        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-	         
-	        //Set the maximum allowed size (in bytes) for each individual file.
-	        resolver.setMaxUploadSize(5242880);//5MB
-	         
-	        //You may also set other available properties.
-	         
-	        return resolver;
-	}
-	
-	@Bean
-	public APIKeyAuthenticationFilter apiKeyAuthenticationFilter()
-	{
-		return new APIKeyAuthenticationFilter(apiKeyManager);
-	}
-	
-	@Bean
-	public Marshaller marshaller()
-	{
-		return new CastorMarshaller();
-	}
-	
+@EnableAsync
+@EnableAspectJAutoProxy
+@EnableScheduling
+@PropertySource("classpath:/environment.properties")
+@ComponentScan(basePackages = {
+        "gov.healthit.chpl.**"
+})
+public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
+
+    private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
+
+    @Autowired
+    private ApiKeyManager apiKeyManager;
+
+    @Autowired
+    private Environment env;
+
+    @Override
+    public void setEnvironment(final Environment environment) {
+        LOGGER.info("setEnvironment");
+        this.env = environment;
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter jsonConverter() {
+        MappingJackson2HttpMessageConverter bean = new MappingJackson2HttpMessageConverter();
+        bean.setPrefixJson(false);
+        List<MediaType> mediaTypes = new ArrayList<MediaType>();
+        mediaTypes.add(MediaType.APPLICATION_JSON);
+        bean.setSupportedMediaTypes(mediaTypes);
+        return bean;
+    }
+
+    @Bean
+    public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
+        LOGGER.info("get LocalEntityManagerFactoryBean");
+        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+        bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
+        return bean;
+    }
+
+    @Bean
+    public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
+        LOGGER.info("get JpaTransactionManager");
+        org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
+        bean.setEntityManagerFactory(entityManagerFactory().getObject());
+        return bean;
+    }
+
+    @Bean
+    public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
+        LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
+        return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
+    }
+
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver getResolver() throws IOException {
+        LOGGER.info("get CommonsMultipartResolver");
+        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+
+        // Set the maximum allowed size (in bytes) for each individual file.
+        resolver.setMaxUploadSize(5242880);// 5MB
+
+        // You may also set other available properties.
+
+        return resolver;
+    }
+
+    @Bean
+    public APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
+        LOGGER.info("get APIKeyAuthenticationFilter");
+        return new APIKeyAuthenticationFilter(apiKeyManager);
+    }
+
+    @Bean
+    public TaskExecutor taskExecutor() {
+        ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+        te.setCorePoolSize(10);
+        te.setMaxPoolSize(100);
+        return te;
+    }
+
+    @Bean
+    public Marshaller marshaller() {
+        LOGGER.info("get Marshaller");
+        return new CastorMarshaller();
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        LOGGER.info("get CacheManager");
+        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
+    }
+
+    @Bean
+    public EhCacheManagerFactoryBean ehCacheCacheManager() {
+        LOGGER.info("get EhCacheManagerFactoryBean");
+        EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
+        cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
+        cmfb.setShared(true);
+        return cmfb;
+    }
+
+    @Bean
+    public ReloadableResourceBundleMessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:/errors");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
+
+    @Bean
+    public CookieLocaleResolver localeResolver() {
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        localeResolver.setDefaultLocale(Locale.ENGLISH);
+        localeResolver.setCookieName("my-locale-cookie");
+        localeResolver.setCookieMaxAge(3600);
+        return localeResolver;
+    }
+
+    @Bean
+    public LocaleChangeInterceptor localeInterceptor() {
+        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
+        interceptor.setParamName("lang");
+        return interceptor;
+    }
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(localeInterceptor());
+    }
+
+    @Bean
+    public InternalResourceViewResolver viewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/webapp/WEB-INF/jsp/");
+        viewResolver.setSuffix(".jsp");
+        return viewResolver;
+    }
+
+    @Bean
+    public MeaningfulUseUploadJob meaningfulUseUploadJob() {
+        return new MeaningfulUseUploadJob();
+    }
+
 }

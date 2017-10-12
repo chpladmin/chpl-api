@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain;
 
-public enum PendingCertifiedProductStatus {
-	PENDING(),
-	REJECTED(),
-	ACTIVE();
+import java.io.Serializable;
+
+public enum PendingCertifiedProductStatus implements Serializable {
+    PENDING(), REJECTED(), ACTIVE();
 }

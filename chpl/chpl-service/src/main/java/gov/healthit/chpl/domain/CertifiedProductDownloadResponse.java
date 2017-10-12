@@ -1,24 +1,35 @@
 package gov.healthit.chpl.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
-@XmlRootElement(name = "results")
-public class CertifiedProductDownloadResponse {
-	
-	private List<CertifiedProductDownloadDetails> products;
-	
-	public CertifiedProductDownloadResponse(){
-		products = new ArrayList<CertifiedProductDownloadDetails>();
-	}
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement(namespace = "http://chpl.healthit.gov/listings", name = "results")
+public class CertifiedProductDownloadResponse implements Serializable {
+    private static final long serialVersionUID = -9189179189014761036L;
 
-	public List<CertifiedProductDownloadDetails> getProducts() {
-		return products;
-	}
+    @XmlElementWrapper(name = "listings", nillable = false, required = true)
+    @XmlElement(name = "listing")
+    private List<CertifiedProductSearchDetails> listings;
 
-	public void setProducts(List<CertifiedProductDownloadDetails> products) {
-		this.products = products;
-	}
+    public CertifiedProductDownloadResponse() {
+        listings = new ArrayList<CertifiedProductSearchDetails>();
+    }
+
+    public List<CertifiedProductSearchDetails> getListings() {
+        return listings;
+    }
+
+    public void setListings(final List<CertifiedProductSearchDetails> listings) {
+        this.listings = listings;
+    }
 }

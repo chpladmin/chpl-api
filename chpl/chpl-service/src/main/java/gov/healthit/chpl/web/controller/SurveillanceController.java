@@ -1,12 +1,37 @@
 package gov.healthit.chpl.web.controller;
 
-
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,211 +39,781 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.SurveillanceCertificationResult;
-import gov.healthit.chpl.domain.SurveillanceDetails;
-import gov.healthit.chpl.domain.SurveillanceResults;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.IdListContainer;
+import gov.healthit.chpl.domain.Surveillance;
+import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.SurveillanceCertificationResultDTO;
-import gov.healthit.chpl.dto.SurveillanceDTO;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
+import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
+import gov.healthit.chpl.web.controller.results.SurveillanceResults;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+@Api(value = "surveillance")
 @RestController
 @RequestMapping("/surveillance")
-public class SurveillanceController {
-	
-	private static final Logger logger = LogManager.getLogger(SurveillanceController.class);
+public class SurveillanceController implements MessageSourceAware {
 
-	@Autowired SurveillanceManager surveillanceManager;
-	@Autowired CertifiedProductManager productManager;
-	
-	@RequestMapping(value="/", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody SurveillanceResults getSurveillancesForCertifiedProduct(
-			@RequestParam(value = "certifiedProductId", required=true) Long cpId) throws EntityRetrievalException {
-		List<SurveillanceDetails> surveillances = surveillanceManager.getSurveillanceForCertifiedProductDetails(cpId);
-		
-		SurveillanceResults results = new SurveillanceResults();
-		results.getSurveillances().addAll(surveillances);
-		return results;
-	}
-	
-	@RequestMapping(value="/{surId}", method=RequestMethod.GET,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody SurveillanceDetails getSurveillanceByid(@PathVariable("surId") Long surId) throws EntityRetrievalException {
-		return surveillanceManager.getSurveillanceDetails(surId);
-	}
-	
-	@RequestMapping(value="/update", method=RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody SurveillanceDetails update(@RequestBody(required=true) SurveillanceDetails updateRequest) 
-		throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
-		InvalidArgumentsException {
-		
-		SurveillanceDTO toUpdate = new SurveillanceDTO();
-		toUpdate.setId(updateRequest.getId());
-		toUpdate.setCertifiedProductId(updateRequest.getCertifiedProductId());
-		toUpdate.setStartDate(updateRequest.getStartDate());
-		toUpdate.setEndDate(updateRequest.getEndDate());
-		
-		//update the plan info
-		Long owningAcbId = null;
-		SurveillanceDTO existingSur = surveillanceManager.getSurveillanceById(updateRequest.getId());
-		if(existingSur.getCertifiedProductId() != null) {
-			CertifiedProductDTO certifiedProduct = productManager.getById(existingSur.getCertifiedProductId());
-			if(certifiedProduct != null) {
-				owningAcbId = certifiedProduct.getCertificationBodyId();
-				surveillanceManager.update(owningAcbId, toUpdate);
-			} else {
-				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
-			}
-		} else {
-			throw new InvalidArgumentsException("No certified product id was found for this plan.");
-		}
-		
-		//update data for any certifications that already exist
-		List<SurveillanceCertificationResultDTO> existingCerts = surveillanceManager.getCertificationsForSurveillance(existingSur.getId());
-		for(int i = 0; i < existingCerts.size(); i++) {
-			SurveillanceCertificationResultDTO existingCert = existingCerts.get(i);
-			for(int j = 0; j < updateRequest.getCertifications().size(); j++) {
-				SurveillanceCertificationResult updateCert = updateRequest.getCertifications().get(j);
-				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
-					existingCert.setNumSites(updateCert.getNumSites());
-					existingCert.setPassRate(updateCert.getPassRate());
-					existingCert.setResults(updateCert.getResult());
-					existingCert.setSurveillanceId(updateRequest.getId());
-					surveillanceManager.updateCertification(owningAcbId, existingCert);
-				}
-			}
-		}
-		
-		//remove certifications that aren't there anymore
-		List<SurveillanceCertificationResultDTO> certsToDelete = new ArrayList<SurveillanceCertificationResultDTO>();
-		existingCerts = surveillanceManager.getCertificationsForSurveillance(existingSur.getId());
-		for(int i = 0; i < existingCerts.size(); i++) {
-			SurveillanceCertificationResultDTO existingCert = existingCerts.get(i);
-			boolean foundCert = false;
-			for(int j = 0; j < updateRequest.getCertifications().size(); j++) {
-				SurveillanceCertificationResult updateCert = updateRequest.getCertifications().get(j);
-				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
-					foundCert = true;
-				}
-			}
-			
-			if(!foundCert) {
-				SurveillanceCertificationResultDTO certToDelete = new SurveillanceCertificationResultDTO();
-				certToDelete.setId(existingCert.getId());
-				certToDelete.setSurveillanceId(updateRequest.getId());
-				certsToDelete.add(certToDelete);
-			}
-		}
-		if(certsToDelete.size() > 0) {
-			surveillanceManager.removeCertificationsFromSurveillance(owningAcbId, certsToDelete);
-		}
-		
-		//add certifications that weren't there before
-		List<SurveillanceCertificationResultDTO> certsToAdd = new ArrayList<SurveillanceCertificationResultDTO>();
-		existingCerts = surveillanceManager.getCertificationsForSurveillance(existingSur.getId());
-		for(int i = 0; i < updateRequest.getCertifications().size(); i++) {
-			SurveillanceCertificationResult updateCert = updateRequest.getCertifications().get(i);
-			boolean foundCert = false;
-			for(int j = 0; j < existingCerts.size(); j++) {
-				SurveillanceCertificationResultDTO existingCert = existingCerts.get(j);
-				if(existingCert.getCertCriterion().getNumber().equals(updateCert.getCertificationCriterionNumber())) {
-					foundCert = true;
-				}
-			}
-			
-			if(!foundCert) {
-				SurveillanceCertificationResultDTO certToAdd = new SurveillanceCertificationResultDTO();
-				certToAdd.setNumSites(updateCert.getNumSites());
-				certToAdd.setPassRate(updateCert.getPassRate());
-				certToAdd.setResults(updateCert.getResult());
-				certToAdd.setSurveillanceId(updateRequest.getId());
-				
-				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
-				criterion.setNumber(updateCert.getCertificationCriterionNumber());
-				certToAdd.setCertCriterion(criterion);
-				certsToAdd.add(certToAdd);
-			}
-		}
-		if(certsToAdd.size() > 0) {
-			surveillanceManager.addCertificationsToSurveillance(owningAcbId, updateRequest.getId(), certsToAdd);
-		}
-		//END 
-		
-		return surveillanceManager.getSurveillanceDetails(toUpdate.getId());
-	}
-	
-	@RequestMapping(value="/create", method=RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public @ResponseBody SurveillanceDetails create(@RequestBody(required=true) SurveillanceDetails createRequest) 
-			throws EntityCreationException, EntityRetrievalException, JsonProcessingException,
-			InvalidArgumentsException {
-		SurveillanceDTO toCreate = new SurveillanceDTO();
-		toCreate.setEndDate(createRequest.getEndDate());
-		toCreate.setStartDate(createRequest.getStartDate());
-		toCreate.setCertifiedProductId(createRequest.getCertifiedProductId());
-		
-		Long createdSurId = null;
-		Long acbId = null;
-		
-		//get the acb that owns the product to make sure we have permissions to create it		
-		CertifiedProductDTO certifiedProduct = productManager.getById(toCreate.getCertifiedProductId());
-		if(certifiedProduct != null) {
-			acbId = certifiedProduct.getCertificationBodyId();
-			SurveillanceDetails createdPlan = surveillanceManager.create(acbId, toCreate);
-			createdSurId = createdPlan.getId();
-		} else {
-			throw new InvalidArgumentsException("Could not find the certified product for this surveilllance.");
-		}
-		
-		List<SurveillanceCertificationResultDTO> certsToCreate = new ArrayList<SurveillanceCertificationResultDTO>();
-		if(createRequest.getCertifications() != null && createRequest.getCertifications().size() > 0) {
-			for(SurveillanceCertificationResult cert : createRequest.getCertifications()) {
-				SurveillanceCertificationResultDTO currCertToCreate = new SurveillanceCertificationResultDTO();
-				currCertToCreate.setNumSites(cert.getNumSites());
-				currCertToCreate.setPassRate(cert.getPassRate());
-				currCertToCreate.setResults(cert.getResult());
-				currCertToCreate.setSurveillanceId(createdSurId);
-				
-				CertificationCriterionDTO criterion = new CertificationCriterionDTO();
-				criterion.setId(cert.getCertificationCriterionId());
-				criterion.setNumber(cert.getCertificationCriterionNumber());
-				currCertToCreate.setCertCriterion(criterion);
-				certsToCreate.add(currCertToCreate);
-			}
-		}
-		
-		SurveillanceDetails result = surveillanceManager.addCertificationsToSurveillance(acbId, createdSurId, certsToCreate);
-		return result;
-	}
-	
-	@RequestMapping(value="/{surId}/delete", method= RequestMethod.POST,
-			produces="application/json; charset=utf-8")
-	public String delete(@PathVariable("surId") Long surId) 
-			throws JsonProcessingException, EntityCreationException, EntityRetrievalException,
-				InvalidArgumentsException {
-		
-		//get the acb that owns the product to make sure we have permissions to update it
-		SurveillanceDTO existingPlan = surveillanceManager.getSurveillanceById(surId);
-		if(existingPlan.getCertifiedProductId() != null) {
-			CertifiedProductDTO certifiedProduct = productManager.getById(existingPlan.getCertifiedProductId());
-			if(certifiedProduct != null) {
-				Long acbId = certifiedProduct.getCertificationBodyId();
-				surveillanceManager.delete(acbId, surId);
-			} else {
-				throw new InvalidArgumentsException("Could not find the certified product for this plan.");
-			}
-		} else {
-			throw new InvalidArgumentsException("No certified product id was found for this plan.");
-		}
-		return "{\"deleted\" : true }";
-	}
+    private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
+    private static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
+    private static final String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
+    private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
+    private static final String SUBELEMENT_INDICATOR = "Subelement";
+
+    @Autowired
+    Environment env;
+    @Autowired
+    MessageSource messageSource;
+    @Autowired
+    private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+    @Autowired
+    private SurveillanceManager survManager;
+    @Autowired
+    private CertifiedProductManager cpManager;
+    @Autowired
+    private ActivityManager activityManager;
+    @Autowired
+    private CertifiedProductDetailsManager cpdetailsManager;
+    @Autowired
+    private CertificationBodyManager acbManager;
+    @Autowired
+    private SurveillanceValidator survValidator;
+
+    @ApiOperation(value = "Get the listing of all pending surveillance items that this user has access to.")
+    @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() {
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
+
+        if (acbs != null) {
+            for (CertificationBodyDTO acb : acbs) {
+                try {
+                    List<Surveillance> survsOnAcb = survManager.getPendingByAcb(acb.getId());
+                    pendingSurvs.addAll(survsOnAcb);
+                } catch (final AccessDeniedException denied) {
+                    LOGGER.warn("Access denied to pending surveillance for acb " + acb.getName() + " and user "
+                            + Util.getUsername());
+                }
+            }
+        }
+
+        SurveillanceResults results = new SurveillanceResults();
+        results.setPendingSurveillance(pendingSurvs);
+        return results;
+    }
+
+    @ApiOperation(value = "Download nonconformity supporting documentation.",
+            notes = "Download a specific file that was previously uploaded to a surveillance nonconformity.")
+    @RequestMapping(value = "/document/{documentId}", method = RequestMethod.GET)
+    public void streamDocumentContents(@PathVariable("documentId") Long documentId, HttpServletResponse response)
+            throws EntityRetrievalException, IOException {
+        SurveillanceNonconformityDocument doc = survManager.getDocumentById(documentId, true);
+
+        if (doc != null && doc.getFileContents() != null && doc.getFileContents().length > 0) {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(doc.getFileContents());
+            // get MIME type of the file
+            String mimeType = doc.getFileType();
+            if (mimeType == null) {
+                // set to binary type if MIME mapping not found
+                mimeType = "application/octet-stream";
+            }
+            // set content attributes for the response
+            response.setContentType(mimeType);
+            response.setContentLength((int) doc.getFileContents().length);
+
+            // set headers for the response
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", doc.getFileName());
+            response.setHeader(headerKey, headerValue);
+
+            // get output stream of the response
+            OutputStream outStream = response.getOutputStream();
+
+            byte[] buffer = new byte[1024];
+            int bytesRead = -1;
+
+            // write bytes read from the input stream into the output stream
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+
+            inputStream.close();
+            outStream.close();
+        }
+    }
+
+    @ApiOperation(value = "Create a new surveillance activity for a certified product.",
+            notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
+                    + "in the system and associates them with the certified product indicated in the "
+                    + "request body. The surveillance passed into this request will first be validated "
+                    + " to check for errors. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " and administrative authority on the ACB associated with the certified product is required.")
+    @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public synchronized ResponseEntity<Surveillance> createSurveillance(
+            @RequestBody(required = true) Surveillance survToInsert) throws ValidationException,
+            EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
+            EntityCreationException, JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+        survToInsert.getErrorMessages().clear();
+
+        // validate first. this ensures we have all the info filled in
+        // that we need to continue
+        survManager.validate(survToInsert);
+
+        if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
+            throw new ValidationException(survToInsert.getErrorMessages(), null);
+        }
+
+        // look up the ACB
+        CertifiedProductSearchDetails beforeCp = cpdetailsManager
+                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+        CertificationBodyDTO owningAcb = null;
+        try {
+            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+        } catch (final AccessDeniedException ex) {
+            throw new CertificationBodyAccessException(
+                    "User does not have permission to add surveillance to a certified product under ACB "
+                            + beforeCp.getCertifyingBody().get("name"));
+        } catch (final EntityRetrievalException ex) {
+            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
+            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+        }
+
+        // insert the surveillance
+        HttpHeaders responseHeaders = new HttpHeaders();
+        Long insertedSurv = null;
+        try {
+            insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        } catch (final SurveillanceAuthorityAccessDeniedException ex) {
+            LOGGER.error("User lacks authority to delete surveillance");
+            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
+        }
+
+        if (insertedSurv == null) {
+            throw new EntityCreationException("Error creating new surveillance.");
+        }
+
+        CertifiedProductSearchDetails afterCp = cpdetailsManager
+                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+                "Surveillance was added to certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+
+        // query the inserted surveillance
+        Surveillance result = survManager.getById(insertedSurv);
+        return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Add documentation to an existing nonconformity.",
+            notes = "Upload a file of any kind (current size limit 5MB) as supporting "
+                    + " documentation to an existing nonconformity. The logged in user uploading the file "
+                    + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+                    + " authority on the associated ACB.")
+    @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document/create",
+            method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody String uploadNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
+            @PathVariable("nonconformityId") Long nonconformityId, @RequestParam("file") MultipartFile file)
+            throws InvalidArgumentsException, MaxUploadSizeExceededException, EntityRetrievalException,
+            EntityCreationException, IOException {
+        if (file.isEmpty()) {
+            throw new InvalidArgumentsException("You cannot upload an empty file!");
+        }
+
+        Surveillance surv = survManager.getById(surveillanceId);
+        CertifiedProductSearchDetails beforeCp = cpdetailsManager
+                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+
+        SurveillanceNonconformityDocument toInsert = new SurveillanceNonconformityDocument();
+        toInsert.setFileContents(file.getBytes());
+        toInsert.setFileName(file.getOriginalFilename());
+        toInsert.setFileType(file.getContentType());
+
+        CertificationBodyDTO owningAcb = null;
+        try {
+            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+        } catch (Exception ex) {
+            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
+            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+        }
+
+        Long insertedDocId = survManager.addDocumentToNonconformity(owningAcb.getId(), nonconformityId, toInsert);
+        if (insertedDocId == null) {
+            throw new EntityCreationException("Error adding a document to nonconformity with id " + nonconformityId);
+        }
+
+        CertifiedProductSearchDetails afterCp = cpdetailsManager
+                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT,
+                beforeCp.getId(), "Documentation " + toInsert.getFileName()
+                        + " was added to a nonconformity for certified product " + afterCp.getChplProductNumber(),
+                beforeCp, afterCp);
+        return "{\"success\": \"true\"}";
+    }
+
+    @ApiOperation(value = "Update a surveillance activity for a certified product.",
+            notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
+                    + "in the system. The surveillance passed into this request will first be validated "
+                    + " to check for errors. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " and administrative authority on the ACB associated with the certified product is required.")
+    @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public synchronized ResponseEntity<Surveillance> updateSurveillance(
+            @RequestBody(required = true) Surveillance survToUpdate)
+            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+        survToUpdate.getErrorMessages().clear();
+
+        // validate first. this ensures we have all the info filled in
+        // that we need to continue
+        survManager.validate(survToUpdate);
+
+        if (survToUpdate.getErrorMessages() != null && survToUpdate.getErrorMessages().size() > 0) {
+            throw new ValidationException(survToUpdate.getErrorMessages(), null);
+        }
+
+        // look up the ACB
+        CertifiedProductSearchDetails beforeCp = cpdetailsManager
+                .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
+        CertificationBodyDTO owningAcb = null;
+        try {
+            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+        } catch (Exception ex) {
+            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
+            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+        }
+
+        // update the surveillance
+        HttpHeaders responseHeaders = new HttpHeaders();
+        try {
+            survManager.updateSurveillance(owningAcb.getId(), survToUpdate);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        } catch (final SurveillanceAuthorityAccessDeniedException ex) {
+            LOGGER.error("User lacks authority to update surveillance");
+            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to update surveillance");
+        } catch (Exception ex) {
+            LOGGER.error("Error updating surveillance with id " + survToUpdate.getId());
+        }
+
+        CertifiedProductSearchDetails afterCp = cpdetailsManager
+                .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+                "Surveillance was updated on certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+
+        // query the inserted surveillance
+        Surveillance result = survManager.getById(survToUpdate.getId());
+        return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Delete a surveillance activity for a certified product.",
+            notes = "Deletes an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
+                    + "in the system. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " and administrative authority on the ACB associated with the certified product is required.")
+    @RequestMapping(value = "/{surveillanceId}/delete", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
+            @PathVariable(value = "surveillanceId") Long surveillanceId)
+            throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+            JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+        Surveillance survToDelete = survManager.getById(surveillanceId);
+
+        if (survToDelete == null) {
+            throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+        }
+
+        survValidator.validateSurveillanceAuthority(survToDelete);
+        if (survToDelete.getErrorMessages() != null && survToDelete.getErrorMessages().size() > 0) {
+            throw new ValidationException(survToDelete.getErrorMessages(), null);
+        }
+
+        CertifiedProductSearchDetails beforeCp = cpdetailsManager
+                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+        CertificationBodyDTO owningAcb = null;
+        try {
+            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+        } catch (Exception ex) {
+            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
+            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+        }
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        // delete it
+        try {
+            survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            survManager.handleActivity(survToDelete, null);
+        } catch (final SurveillanceAuthorityAccessDeniedException ex) {
+            LOGGER.error("User lacks authority to delete surveillance");
+            throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");
+        } catch (Exception ex) {
+            LOGGER.error("Error deleting surveillance with id " + survToDelete.getId() + " during an update.");
+        }
+
+        CertifiedProductSearchDetails afterCp = cpdetailsManager
+                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+
+        return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
+    }
+
+    @ApiOperation(value = "Remove documentation from a nonconformity.",
+            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+                    + " authority on the associated ACB.")
+    @RequestMapping(value = "/{surveillanceId}/document/{docId}/delete", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public String deleteNonconformityDocument(@PathVariable("surveillanceId") Long surveillanceId,
+            @PathVariable("docId") Long docId) throws JsonProcessingException, EntityCreationException,
+            EntityRetrievalException, InvalidArgumentsException {
+
+        Surveillance surv = survManager.getById(surveillanceId);
+        if (surv == null) {
+            throw new InvalidArgumentsException("Cannot find surveillance with id " + surveillanceId + " to delete.");
+        }
+
+        CertifiedProductSearchDetails beforeCp = cpdetailsManager
+                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+        CertificationBodyDTO owningAcb = null;
+        try {
+            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+        } catch (Exception ex) {
+            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
+            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+        }
+
+        try {
+            survManager.deleteNonconformityDocument(owningAcb.getId(), docId);
+        } catch (Exception ex) {
+            throw ex;
+        }
+
+        CertifiedProductSearchDetails afterCp = cpdetailsManager
+                .getCertifiedProductDetails(surv.getCertifiedProduct().getId());
+        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, beforeCp.getId(),
+                "A document was removed from a nonconformity for certified product " + afterCp.getChplProductNumber(),
+                beforeCp, afterCp);
+        return "{\"success\": \"true\"}";
+    }
+
+    @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
+    @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") Long id)
+            throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
+            JsonProcessingException, EntityRetrievalException, EntityCreationException {
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        survManager.deletePendingSurveillance(acbs, id, false);
+        return "{\"success\" : true}";
+    }
+
+    @ApiOperation(value = "Reject several pending surveillance.",
+            notes = "Marks a list of pending surveillance as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+                    + " and administrative authority on the ACB for each pending surveillance is required.")
+    @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody String deletePendingSurveillance(@RequestBody IdListContainer idList)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
+        if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
+            throw new InvalidArgumentsException("At least one id must be provided for rejection.");
+        }
+
+        ObjectsMissingValidationException possibleExceptions = new ObjectsMissingValidationException();
+        List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
+        for (Long id : idList.getIds()) {
+            try {
+                survManager.deletePendingSurveillance(acbs, id, false);
+            } catch (final ObjectMissingValidationException ex) {
+                possibleExceptions.getExceptions().add(ex);
+            }
+        }
+
+        if (possibleExceptions.getExceptions() != null && possibleExceptions.getExceptions().size() > 0) {
+            throw possibleExceptions;
+        }
+        return "{\"success\" : true}";
+    }
+
+    @ApiOperation(value = "Confirm a pending surveillance activity.",
+            notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
+                    + "in the system and associates them with the certified product indicated in the "
+                    + "request body. If the surveillance is an update of an existing surveillance activity "
+                    + "as indicated by the 'surveillanceIdToReplace' field, that existing surveillance "
+                    + "activity will be marked as deleted and the surveillance in this request body will "
+                    + "be inserted. The surveillance passed into this request will first be validated "
+                    + " to check for errors and the related pending surveillance will be removed. "
+                    + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " and administrative authority on the ACB associated with the certified product is required.")
+    @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public synchronized ResponseEntity<Surveillance> confirmPendingSurveillance(
+            @RequestBody(required = true) Surveillance survToInsert)
+            throws ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException,
+            UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
+        if (survToInsert == null || survToInsert.getId() == null) {
+            throw new ValidationException("An id must be provided in the request body.");
+        }
+        HttpHeaders responseHeaders = new HttpHeaders();
+        CertifiedProductSearchDetails beforeCp = cpdetailsManager
+                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+        CertificationBodyDTO owningAcb = null;
+        try {
+            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
+        } catch (Exception ex) {
+            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
+            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
+        }
+
+        Long pendingSurvToDelete = survToInsert.getId();
+        if (survManager.isPendingSurveillanceAvailableForUpdate(owningAcb.getId(), pendingSurvToDelete)) {
+            survToInsert.getErrorMessages().clear();
+
+            // validate first. this ensures we have all the info filled in
+            // that we need to continue
+            survManager.validate(survToInsert);
+            if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
+                throw new ValidationException(survToInsert.getErrorMessages(), null);
+            }
+
+            // insert or update the surveillance
+            Long insertedSurv = survManager.createSurveillance(owningAcb.getId(), survToInsert);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            if (insertedSurv == null) {
+                throw new EntityCreationException("Error creating new surveillance.");
+            }
+
+            // delete the pending surveillance item if this one was successfully
+            // inserted
+            try {
+                survManager.deletePendingSurveillance(owningAcb.getId(), pendingSurvToDelete, true);
+            } catch (Exception ex) {
+                LOGGER.error("Error deleting pending surveillance with id " + pendingSurvToDelete, ex);
+            }
+
+            try {
+                // if a surveillance was getting replaced, delete it
+                if (!StringUtils.isEmpty(survToInsert.getSurveillanceIdToReplace())) {
+                    Surveillance survToReplace = survManager.getByFriendlyIdAndProduct(
+                            survToInsert.getCertifiedProduct().getId(), survToInsert.getSurveillanceIdToReplace());
+                    CertifiedProductDTO survToReplaceOwningCp = cpManager
+                            .getById(survToReplace.getCertifiedProduct().getId());
+                    survManager.deleteSurveillance(survToReplaceOwningCp.getCertificationBodyId(), survToReplace);
+                    responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+                    responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+                }
+            } catch (Exception ex) {
+                LOGGER.error("Deleting surveillance with id " + survToInsert.getSurveillanceIdToReplace()
+                        + " as part of the replace operation failed", ex);
+            }
+
+            CertifiedProductSearchDetails afterCp = cpdetailsManager
+                    .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
+                    "Surveillance upload was confirmed for certified product " + afterCp.getChplProductNumber(),
+                    beforeCp, afterCp);
+            // query the inserted surveillance
+            Surveillance result = survManager.getById(insertedSurv);
+            return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
+        }
+        return null;
+    }
+
+    @ApiOperation(value = "Download surveillance as CSV.",
+            notes = "Once per day, all surveillance and nonconformities are written out to CSV "
+                    + "files on the CHPL servers. This method allows any user to download those files.")
+    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "text/csv")
+    public void download(@RequestParam(value = "type", required = false, defaultValue = "") String type,
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        File downloadFile = null;
+        if (isDefinition != null && isDefinition.booleanValue() == true) {
+            String downloadFolderLocation = env.getProperty("downloadFolderPath");
+            File downloadFolder = new File(downloadFolderLocation);
+            String schemaFilename = env.getProperty("schemaSurveillanceName");
+            String absolutePath = downloadFolder.getAbsolutePath() + File.separator + schemaFilename;
+            if (!StringUtils.isEmpty(absolutePath)) {
+                downloadFile = new File(absolutePath);
+                if (!downloadFile.exists()) {
+                    response.getWriter()
+                            .write(String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable("resources.schemaFileNotFound"),
+                                    LocaleContextHolder.getLocale()), absolutePath));
+                    return;
+                }
+            }
+
+        } else {
+            try {
+                if (type.equalsIgnoreCase("all")) {
+                    downloadFile = survManager.getDownloadFile("surveillance-all.csv");
+                } else if (type.equalsIgnoreCase("basic")) {
+                    downloadFile = survManager.getProtectedDownloadFile("surveillance-basic-report.csv");
+                } else {
+                    downloadFile = survManager.getDownloadFile("surveillance-with-nonconformities.csv");
+                }
+            } catch (final IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        }
+
+        if (downloadFile == null) {
+            response.getWriter()
+                    .append(String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("resources.schemaFileGeneralError"),
+                            LocaleContextHolder.getLocale())));
+            return;
+        }
+
+        LOGGER.info("Downloading " + downloadFile.getName());
+
+        FileInputStream inputStream = new FileInputStream(downloadFile);
+
+        // set content attributes for the response
+        response.setContentType("text/csv");
+        response.setContentLength((int) downloadFile.length());
+
+        // set headers for the response
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+        response.setHeader(headerKey, headerValue);
+
+        // get output stream of the response
+        OutputStream outStream = response.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead = -1;
+
+        // write bytes read from the input stream into the output stream
+        while ((bytesRead = inputStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, bytesRead);
+        }
+        inputStream.close();
+        outStream.close();
+    }
+
+    @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
+            notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
+                    + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " and administrative authority on the ACB(s) responsible for the product(s) in the file.")
+    @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public @ResponseBody SurveillanceResults upload(@RequestParam("file") MultipartFile file)
+            throws ValidationException, MaxUploadSizeExceededException {
+        if (file.isEmpty()) {
+            throw new ValidationException("You cannot upload an empty file!");
+        }
+
+        if (!file.getContentType().equalsIgnoreCase("text/csv")
+                && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
+            throw new ValidationException("File must be a CSV document.");
+        }
+
+        List<Surveillance> uploadedSurveillance = new ArrayList<Surveillance>();
+
+        BufferedReader reader = null;
+        CSVParser parser = null;
+        try {
+            reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+            parser = new CSVParser(reader, CSVFormat.EXCEL);
+
+            List<CSVRecord> records = parser.getRecords();
+            if (records.size() <= 1) {
+                throw new ValidationException(
+                        "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
+            }
+
+            Set<String> handlerErrors = new HashSet<String>();
+            List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
+
+            // parse the entire file into groups of records, one group per
+            // surveillance item
+            CSVRecord heading = null;
+            List<CSVRecord> rows = new ArrayList<CSVRecord>();
+            for (int i = 0; i < records.size(); i++) {
+                CSVRecord currRecord = records.get(i);
+
+                if (heading == null && !StringUtils.isEmpty(currRecord.get(1))
+                        && currRecord.get(0).equals(HEADING_CELL_INDICATOR)) {
+                    // have to find the heading first
+                    heading = currRecord;
+                } else if (heading != null) {
+                    if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
+                        String currRecordStatus = currRecord.get(0).trim();
+
+                        if (currRecordStatus.equalsIgnoreCase(NEW_SURVEILLANCE_BEGIN_INDICATOR)
+                                || currRecordStatus.equalsIgnoreCase(UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
+                            // parse the previous recordset because we hit a new
+                            // surveillance item
+                            // if this is the last recordset, we'll handle that
+                            // later
+                            if (rows.size() > 0) {
+                                try {
+                                    SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+                                    Surveillance pendingSurv = handler.handle();
+                                    checkUploadedSurveillanceOwnership(pendingSurv);
+                                    pendingSurvs.add(pendingSurv);
+                                } catch (final InvalidArgumentsException ex) {
+                                    handlerErrors.add(ex.getMessage());
+                                }
+                            }
+                            rows.clear();
+                            rows.add(currRecord);
+                        } else if (currRecordStatus.equalsIgnoreCase(SUBELEMENT_INDICATOR)) {
+                            rows.add(currRecord);
+                        } // ignore blank rows
+                    }
+                }
+
+                // add the last object
+                if (i == records.size() - 1 && !rows.isEmpty()) {
+                    try {
+                        SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+                        Surveillance pendingSurv = handler.handle();
+                        checkUploadedSurveillanceOwnership(pendingSurv);
+                        pendingSurvs.add(pendingSurv);
+                    } catch (final InvalidArgumentsException ex) {
+                        handlerErrors.add(ex.getMessage());
+                    }
+                }
+            }
+            if (heading == null) {
+                handlerErrors.add("Could not find heading row in the uploaded file.");
+            }
+
+            // if we couldn't parse the files (bad format or something), stop
+            // here with the errors
+            if (handlerErrors.size() > 0) {
+                throw new ValidationException(handlerErrors, null);
+            }
+
+            // we parsed the files but maybe some of the data in them has errors
+            // that are too severe to continue putting them in the database
+            Set<String> allErrors = new HashSet<String>();
+            for (Surveillance surv : pendingSurvs) {
+                if (surv.getErrorMessages() != null && surv.getErrorMessages().size() > 0) {
+                    allErrors.addAll(surv.getErrorMessages());
+                }
+            }
+
+            if (allErrors.size() > 0) {
+                throw new ValidationException(allErrors, null);
+            } else {
+                // Certified product is guaranteed to be filled in at this
+                // point.
+                // If it hadn't been found during upload an error would have
+                // been thrown above.
+                for (Surveillance surv : pendingSurvs) {
+                    CertifiedProductDTO owningCp = null;
+                    try {
+                        owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
+                        survValidator.validate(surv);
+                        Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
+                        Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId,
+                                false);
+                        uploadedSurveillance.add(uploaded);
+                    } catch (final AccessDeniedException denied) {
+                        LOGGER.error(
+                                "User " + Util.getCurrentUser().getSubjectName()
+                                        + " does not have access to add surveillance"
+                                        + (owningCp != null
+                                                ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
+                                                : "."));
+                    } catch (Exception ex) {
+                        LOGGER.error(
+                                "Error adding a new pending surveillance. Please make sure all required fields are present.",
+                                ex);
+                    }
+                }
+            }
+        } catch (final IOException ioEx) {
+            LOGGER.error("Could not get input stream for uploaded file " + file.getName());
+            throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
+        } finally {
+            try {
+                parser.close();
+            } catch (Exception ignore) {
+            }
+            try {
+                reader.close();
+            } catch (Exception ignore) {
+            }
+        }
+
+        SurveillanceResults results = new SurveillanceResults();
+        results.getPendingSurveillance().addAll(uploadedSurveillance);
+        return results;
+    }
+
+    private void checkUploadedSurveillanceOwnership(Surveillance pendingSurv) {
+        // perform additional checks if there are no errors in the uploaded
+        // surveillance already
+        if (pendingSurv.getErrorMessages() == null || pendingSurv.getErrorMessages().size() == 0) {
+            // check this pendingSurv to confirm the user has ACB permissions on
+            // the
+            // appropriate ACB for the CHPL ID specified
+            CertifiedProductDTO surveilledProduct = null;
+            try {
+                surveilledProduct = cpManager.getById(pendingSurv.getCertifiedProduct().getId());
+            } catch (final EntityRetrievalException ex) {
+                pendingSurv.getErrorMessages().add(
+                        String.format(
+                                messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "pendingSurveillance.certifiedProductIdNotFound"),
+                                        LocaleContextHolder.getLocale()),
+                                pendingSurv.getCertifiedProduct().getId()));
+                LOGGER.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
+            }
+
+            if (surveilledProduct != null) {
+                try {
+                    acbManager.getById(surveilledProduct.getCertificationBodyId());
+                } catch (final EntityRetrievalException ex) {
+                    pendingSurv.getErrorMessages().add(String.format(
+                            messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "pendingSurveillance.certificationBodyIdNotFound"),
+                                    LocaleContextHolder.getLocale()),
+                            surveilledProduct.getCertificationBodyId()));
+                    LOGGER.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
+                } catch (final AccessDeniedException denied) {
+                    pendingSurv.getErrorMessages()
+                            .add(String.format(
+                                    messageSource.getMessage(
+                                            new DefaultMessageSourceResolvable(
+                                                    "pendingSurveillance.addSurveillancePermissionDenied"),
+                                            LocaleContextHolder.getLocale()),
+                                    pendingSurv.getCertifiedProduct().getChplProductNumber()));
+                    LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
+                            + " does not have access to the ACB with id " + surveilledProduct.getCertificationBodyId());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void setMessageSource(final MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
+
 }

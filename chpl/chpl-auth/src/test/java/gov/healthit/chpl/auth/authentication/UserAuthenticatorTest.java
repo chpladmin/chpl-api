@@ -1,17 +1,15 @@
 package gov.healthit.chpl.auth.authentication;
 
-import static org.junit.Assert.*;
-import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.auth.jwt.JWTCreationException;
-import gov.healthit.chpl.auth.jwt.JWTValidationException;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.auth.user.UserRetrievalException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +23,14 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.jwt.JWTCreationException;
+import gov.healthit.chpl.auth.jwt.JWTValidationException;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.auth.CHPLAuthenticationSecurityTestConfig.class })
@@ -34,6 +40,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class UserAuthenticatorTest {
+	
+	@Autowired private Environment env;
 	
 	@Autowired
 	private Authenticator authenticator;
@@ -108,4 +116,49 @@ public class UserAuthenticatorTest {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
+	@Test
+	public void testLockout() {
+		
+		String maxAttempsEnvStr = env.getProperty("authMaximumLoginAttempts");
+		int maxAttemptsEnv = Integer.parseInt(maxAttempsEnvStr);
+		
+		LoginCredentials badCredentials = new LoginCredentials();
+		badCredentials.setPassword("badPass");
+		badCredentials.setUserName("TESTUSER");
+		UserDTO loggedInUser = null;
+		int numAttempts = 0;
+		
+		while(numAttempts < maxAttemptsEnv) {
+			boolean gotBadCredentialsEx = false;
+			
+			try {
+				loggedInUser = authenticator.getUser(badCredentials);
+			} catch(BadCredentialsException bc) {
+				gotBadCredentialsEx = true;
+			} catch(AccountStatusException as) {
+				fail(as.getMessage());
+			} catch(UserRetrievalException ur) {
+				fail(ur.getMessage());
+			}
+			assertNull(loggedInUser);
+			assertTrue(gotBadCredentialsEx);
+			numAttempts++;
+		}
+		
+		LoginCredentials goodCredentials = new LoginCredentials();
+		goodCredentials.setPassword("test");
+		goodCredentials.setUserName("TESTUSER");
+		boolean gotAccountLocked = false;
+		try {
+			loggedInUser = authenticator.getUser(goodCredentials);
+		} catch(BadCredentialsException bc) {
+			fail(bc.getMessage());
+		} catch(AccountStatusException as) {
+			gotAccountLocked = true;
+		} catch(UserRetrievalException ur) {
+			fail(ur.getMessage());
+		}
+		assertNull(loggedInUser);
+		assertTrue(gotAccountLocked);
+	}
 }

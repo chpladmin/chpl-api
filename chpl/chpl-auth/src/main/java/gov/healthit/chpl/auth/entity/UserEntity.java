@@ -1,7 +1,5 @@
 package gov.healthit.chpl.auth.entity;
 
-import gov.healthit.chpl.auth.dto.UserPermissionDTO;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,14 +15,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 
 
 @Entity
 @Table(name="`user`")
-@SQLDelete(sql = "UPDATE openchpl.\"user\" SET deleted = true WHERE user_id = ?")
-@Where(clause = "NOT deleted")
 public class UserEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -51,6 +46,12 @@ public class UserEntity {
 	
 	@Column(name="account_enabled")
 	private boolean accountEnabled;
+	
+	@Column(name="compliance_signature")
+	private Date complianceSignature;
+	
+	@Column(name="failed_login_count")
+	private int failedLoginCount;
 	
 	@Column(name="last_modified_user")
 	private Long lastModifiedUser;
@@ -226,6 +227,56 @@ public class UserEntity {
 
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
+	}
+
+
+	public Date getComplianceSignature() {
+		return complianceSignature;
+	}
+
+
+	public void setComplianceSignature(Date complianceSignature) {
+		this.complianceSignature = complianceSignature;
+	}
+
+
+	public int getFailedLoginCount() {
+		return failedLoginCount;
+	}
+
+
+	public void setFailedLoginCount(int failedLoginCount) {
+		this.failedLoginCount = failedLoginCount;
+	}
+
+
+	public Set<UserPermissionUserMappingEntity> getPermissionMappings() {
+		return permissionMappings;
+	}
+
+
+	public void setPermissionMappings(Set<UserPermissionUserMappingEntity> permissionMappings) {
+		this.permissionMappings = permissionMappings;
+	}
+
+
+	public boolean isAccountExpired() {
+		return accountExpired;
+	}
+
+
+	public boolean isAccountLocked() {
+		return accountLocked;
+	}
+
+
+	public boolean isCredentialsExpired() {
+		return credentialsExpired;
+	}
+
+
+	public boolean isAccountEnabled() {
+		return accountEnabled;
 	}
 	
 	

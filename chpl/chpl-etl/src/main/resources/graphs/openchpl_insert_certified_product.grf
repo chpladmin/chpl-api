@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Wed Sep 09 09:31:32 EDT 2015" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.331" showComponentDetails="true">
+<Graph author="alarned" created="Wed Apr 22 13:35:14 EDT 2015" guiVersion="4.0.4" id="1429724397662" licenseCode="RegCode" licenseType="Community" modified="Thu Feb 11 07:42:20 EST 2016" modifiedBy="alarned" name="CreateCertifiedProduct" revision="1.332" showComponentDetails="true">
 <Global>
 <Metadata id="CertificationBody_id" previewAttachmentCharset="ISO-8859-1">
 <Record fieldDelimiter="|" name="CertificationBody_id" previewAttachmentCharset="ISO-8859-1" recordDelimiter="\r\n" type="delimited">
@@ -1167,8 +1167,8 @@ $Edition_id != null AND $Version_id != null AND $Certbody_id != null]]></attr>
 <attr name="sqlQuery"><![CDATA[BEGIN;
 LOCK TABLE openchpl.certified_product IN SHARE ROW EXCLUSIVE MODE;
 INSERT INTO openchpl.certified_product 
-	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, acb_certification_id, certification_status_id, report_file_location, other_acb, visible_on_chpl, last_modified_user)
-       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, $Certification_Status_Id, $Test_Report_Url, $Other_ACB, $CHPL_Display, -1
+	(certification_edition_id, product_version_id, certification_body_id, practice_type_id, product_classification_type_id, chpl_product_number, acb_certification_id, certification_status_id, report_file_location, other_acb, visible_on_chpl, product_additional_software, last_modified_user)
+       SELECT $Edition_id, $Version_id, $Certbody_id, $Practice_Setting_id, $Product_Classification_id, $STG_Certification_Certification_ID, $ACB_Certification_ID, $Certification_Status_Id, $Test_Report_Url, $Other_ACB, $CHPL_Display, $Additional_Software, -1
        WHERE NOT EXISTS (
              SELECT 1 FROM openchpl.certified_product WHERE
                     certification_edition_id = $Edition_id AND
@@ -1603,10 +1603,6 @@ LOCK TABLE certification_result IN SHARE ROW EXCLUSIVE MODE;
 
 INSERT INTO certified_product_checksum (certified_product_checksum, stg_certification_certification_id)
 VALUES ($Checksum, $STG_Certification_Certification_ID);
-
-INSERT INTO openchpl.additional_software (certified_product_id, name, version, last_modified_user)
-SELECT $CertifiedProduct_id, $Additional_Software, -1, -1
-WHERE cast ($Additional_Software as varchar(500)) IS NOT NULL;
 
 INSERT INTO openchpl.certification_event (certified_product_id, event_type_id, event_date, last_modified_user)
 SELECT $CertifiedProduct_id, event_type_id, cast ($Certification_Date as date), -1

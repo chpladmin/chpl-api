@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.user;
 
+import java.util.Date;
+
 import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.auth.json.UserCreationJSONObject;
@@ -14,6 +16,8 @@ public abstract class UserConversionHelper {
 			dto.setSubjectName(entity.getSubjectName());
 			dto.setFirstName(entity.getFirstName());
 			dto.setLastName(entity.getLastName());
+			dto.setFailedLoginCount(entity.getFailedLoginCount());
+			dto.setComplianceSignatureDate(entity.getComplianceSignature());
 			dto.setEmail(entity.getContact().getEmail());
 			dto.setPhoneNumber(entity.getContact().getPhoneNumber());
 			dto.setTitle(entity.getContact().getTitle());
@@ -31,6 +35,7 @@ public abstract class UserConversionHelper {
 		dto.setId(null);
 		dto.setSubjectName(info.getUser().getSubjectName());
 		dto.setFirstName(info.getUser().getFirstName());
+		dto.setComplianceSignatureDate(Boolean.TRUE.equals(info.getUser().getComplianceTermsAccepted()) ? new Date() : null);
 		dto.setLastName(info.getUser().getLastName());
 		dto.setEmail(info.getUser().getEmail());
 		dto.setPhoneNumber(info.getUser().getPhoneNumber());
@@ -44,11 +49,10 @@ public abstract class UserConversionHelper {
 	public static UserDTO createDTO(UserCreationJSONObject info){
 		
 		UserDTO dto = new UserDTO();
-		
-		
 		dto.setId(null);
 		dto.setSubjectName(info.getSubjectName());
 		dto.setFirstName(info.getFirstName());
+		dto.setComplianceSignatureDate(Boolean.TRUE.equals(info.getComplianceTermsAccepted()) ? new Date() : null);
 		dto.setLastName(info.getLastName());
 		dto.setEmail(info.getEmail());
 		dto.setPhoneNumber(info.getPhoneNumber());

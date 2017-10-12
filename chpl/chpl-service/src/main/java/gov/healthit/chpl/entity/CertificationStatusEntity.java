@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity;
 
-
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -12,107 +11,111 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-
 @Entity
 @Table(name = "certification_status")
 public class CertificationStatusEntity {
 
-	/** Serial Version UID. */
-	private static final long serialVersionUID = -2928065796550377879L;
-	
-    @Id 
+    /** Serial Version UID. */
+    private static final long serialVersionUID = -2928065796550377879L;
+
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Basic( optional = false )
-	@Column( name = "certification_status_id", nullable = false  )
-	private Long id;
-    
-    @Basic( optional = false) 
-    @Column (name = "certification_status", nullable = false)
+    @Basic(optional = false)
+    @Column(name = "certification_status_id", nullable = false)
+    private Long id;
+
+    @Basic(optional = false)
+    @Column(name = "certification_status", nullable = false)
     private String status;
-    
-	@Basic( optional = false )
-	@Column( name = "creation_date", nullable = false  )
-	private Date creationDate;
-	
-	@Basic( optional = false )
-	@Column( name = "deleted", nullable = false  )
-	private Boolean deleted;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_date", nullable = false)
-	private Date lastModifiedDate;
-	
-	@Basic( optional = false )
-	@Column( name = "last_modified_user", nullable = false  )
-	private Long lastModifiedUser;
-	
-	/**
-	 * Default constructor, mainly for hibernate use.
-	 */
-	public CertificationStatusEntity() {
-		// Default constructor
-	} 
 
-	/** Constructor taking a given ID.
-	 * @param id to set
-	 */
-	public CertificationStatusEntity(Long id) {
-		this.id = id;
-	}
-	
-	/** Return the type of this class. Useful for when dealing with proxies.
-	* @return Defining class.
-	*/
-	@Transient
-	public Class<?> getClassType() {
-		return CertificationStatusEntity.class;
-	}
+    @Basic(optional = false)
+    @Column(name = "creation_date", nullable = false)
+    private Date creationDate;
 
-	public Long getId() {
-		return id;
-	}
+    @Basic(optional = false)
+    @Column(name = "deleted", nullable = false)
+    private Boolean deleted;
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_date", nullable = false)
+    private Date lastModifiedDate;
 
-	public Date getCreationDate() {
-		return creationDate;
-	}
+    @Basic(optional = false)
+    @Column(name = "last_modified_user", nullable = false)
+    private Long lastModifiedUser;
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+    /**
+     * Default constructor, mainly for hibernate use.
+     */
+    public CertificationStatusEntity() {
+        // Default constructor
+    }
 
-	public Boolean getDeleted() {
-		return deleted;
-	}
+    /**
+     * Constructor taking a given ID.
+     * 
+     * @param id
+     *            to set
+     */
+    public CertificationStatusEntity(Long id) {
+        this.id = id;
+    }
 
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
-	}
+    /**
+     * Return the type of this class. Useful for when dealing with proxies.
+     * 
+     * @return Defining class.
+     */
+    @Transient
+    public Class<?> getClassType() {
+        return CertificationStatusEntity.class;
+    }
 
-	public Date getLastModifiedDate() {
-		return lastModifiedDate;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setLastModifiedDate(Date lastModifiedDate) {
-		this.lastModifiedDate = lastModifiedDate;
-	}
+    public void setId(final Long id) {
+        this.id = id;
+    }
 
-	public Long getLastModifiedUser() {
-		return lastModifiedUser;
-	}
+    public Date getCreationDate() {
+        return creationDate;
+    }
 
-	public void setLastModifiedUser(Long lastModifiedUser) {
-		this.lastModifiedUser = lastModifiedUser;
-	}
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public Boolean getDeleted() {
+        return deleted;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void setDeleted(final Boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(final String status) {
+        this.status = status;
+    }
 }
