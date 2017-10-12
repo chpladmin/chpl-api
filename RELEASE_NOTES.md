@@ -8,6 +8,12 @@ _Date TBD_
 
 ---
 
+## Version 14.0.2
+_Date TBD_
+* Do not allow g1 and g2 booleans for 2015 criteria
+
+---
+
 ## Version 14.0.1
 _11 October 2017_
 

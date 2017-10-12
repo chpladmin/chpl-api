@@ -1308,8 +1308,8 @@
 			<standardsTested>false</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -1330,8 +1330,8 @@
 			<standardsTested>false</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -1352,8 +1352,8 @@
 			<standardsTested>false</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -1506,8 +1506,8 @@
 			<standardsTested>false</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -1572,8 +1572,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -1638,8 +1638,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -1660,8 +1660,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -1682,8 +1682,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -2166,8 +2166,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -2188,8 +2188,8 @@
 			<standardsTested>false</standardsTested>
 			<functionalityTested>false</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -2210,8 +2210,8 @@
 			<standardsTested>false</standardsTested>
 			<functionalityTested>false</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -2520,8 +2520,13 @@
 			<apiDocumentation>true</apiDocumentation>
 			<g1Success>false</g1Success>
 			<g2Success>false</g2Success>
+<<<<<<< HEAD
 			<g1Macra>false</g1Macra>
 			<g2Macra>false</g2Macra>
+=======
+			<g1Macra>true</g1Macra>
+			<g2Macra>true</g2Macra>
+>>>>>>> staging
 			<additionalSoftware>true</additionalSoftware>
 			<testTool>false</testTool>
 			<testProcedure>true</testProcedure>
@@ -2540,8 +2545,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>true</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
@@ -2562,8 +2567,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>true</apiDocumentation>
-			<g1Success>true</g1Success>
-			<g2Success>true</g2Success>
+			<g1Success>false</g1Success>
+			<g2Success>false</g2Success>
 			<g1Macra>true</g1Macra>
 			<g2Macra>true</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
