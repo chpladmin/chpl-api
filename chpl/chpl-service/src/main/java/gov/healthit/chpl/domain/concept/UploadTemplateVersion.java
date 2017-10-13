@@ -3,9 +3,9 @@ package gov.healthit.chpl.domain.concept;
 import java.io.Serializable;
 
 public enum UploadTemplateVersion implements Serializable {
-    EDITION_2014_VERSION_1("2014 v1"), 
-    EDITION_2015_VERSION_1("2015 v1"), 
-    EDITION_2015_VERSION_2("2015 v2");
+    EDITION_2014_VERSION_1("New 2014 CHPL Upload Template"), 
+    EDITION_2015_VERSION_1("2015 CHPL Upload Template v10"), 
+    EDITION_2015_VERSION_2("2015 CHPL Upload Template v11");
 
     private String name;
 
