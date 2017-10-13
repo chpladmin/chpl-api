@@ -169,7 +169,7 @@ public class TemplateColumnIndexMap2015Version2 extends TemplateColumnIndexMap {
     
     @Override
     public int getCriteriaEndIndex() {
-        return 860;
+        return 859;
     }
    
 }
