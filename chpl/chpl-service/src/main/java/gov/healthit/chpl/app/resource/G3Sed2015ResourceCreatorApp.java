@@ -108,7 +108,7 @@ public class G3Sed2015ResourceCreatorApp extends SEDDownloadableResourceCreatorA
 	protected void writeToFile(File downloadFolder, ArrayList<SEDRow> results) throws IOException {
 		Date now = new Date();
 		// present as csv
-        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-" + "sed" + "-"
+        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-" + "sed-all-details" + "-"
                 + getTimestampFormat().format(now) + ".csv";
         File csvFile = new File(csvFilename);
         if (!csvFile.exists()) {

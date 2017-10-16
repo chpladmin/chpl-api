@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.SEDRow;
@@ -186,7 +187,8 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
     		i = 0;
     	}
         List<String> result = new ArrayList<String>();
-        result.add(details.getChplProductNumber());
+        CertifiedProduct cp = new CertifiedProduct(details);
+        result.add(cp.getChplProductNumber());
         result.add(details.getDeveloper().getName());
         result.add(details.getProduct().getName());
         result.add(details.getVersion().getVersion());
