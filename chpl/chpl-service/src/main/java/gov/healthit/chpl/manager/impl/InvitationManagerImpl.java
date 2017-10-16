@@ -205,16 +205,23 @@ public class InvitationManagerImpl implements InvitationManager {
         Authentication authenticator = getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
+        // create the user
+        UserDTO newUser = null;
+        
         try {
-            // create the user
-            UserDTO newUser = userManager.getByName(user.getSubjectName());
+            newUser = userManager.getByName(user.getSubjectName());
             if (newUser == null) {
                 newUser = userManager.create(user);
             } else {
                 throw new InvalidArgumentsException(
                         "A user with the name " + user.getSubjectName() + " already exists.");
             }
-
+        } catch(UserRetrievalException ex) {
+            newUser = userManager.create(user);
+        }
+       
+        
+        try {
             handleInvitation(invitation, newUser);
 
             // update invitation entity to change the hashes
