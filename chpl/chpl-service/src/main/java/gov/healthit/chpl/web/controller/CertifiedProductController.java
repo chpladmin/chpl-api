@@ -164,10 +164,10 @@ public class CertifiedProductController {
             notes = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
     public void streamSEDDetailsDocumentContents(HttpServletResponse response) throws EntityRetrievalException, IOException {
-    	Path path = Paths.get("downloadSEDFolderPath");
+    	Path path = Paths.get(env.getProperty("downloadSEDFolderPath"));
     	File downloadFile = new File(path.toUri());
     	byte[] data = Files.readAllBytes(path);
-
+    	
         if (data != null && data.length > 0) {
             ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
             // get MIME type of the file
