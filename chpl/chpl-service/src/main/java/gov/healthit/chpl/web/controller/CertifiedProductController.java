@@ -488,6 +488,10 @@ public class CertifiedProductController {
                         cpsToAdd.add(pendingCp);
                     } catch (final InvalidArgumentsException ex) {
                         handlerErrors.add(ex.getMessage());
+                    } catch (final EntityNotFoundException ex) {
+                        handlerErrors.add(ex.getMessage());
+                    } catch (final Exception ex) {
+                        handlerErrors.add(ex.getMessage());
                     }
                 }
             }
