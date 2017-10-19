@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -103,6 +104,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
     MacraMeasureDAO macraDao;
     @Autowired
     CertifiedProductDetailsManager cpdManager;
+    @Autowired
+    CertifiedProductSearchDAO searchDao;
 
     @Override
     public void validate(PendingCertifiedProductDTO product) {
@@ -583,6 +586,18 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
             // certification edition must be the same as this listings
             List<Long> parentIds = new ArrayList<Long>();
             for (CertifiedProductDetailsDTO potentialParent : product.getIcsParents()) {
+                //the id might be null if the user changed it in the UI 
+                //even though it's a valid CHPL product number
+                if(potentialParent.getId() == null) {
+                    try {
+                        CertifiedProduct found = searchDao.getByChplProductNumber(potentialParent.getChplProductNumber());
+                        if (found != null) {
+                            potentialParent.setId(found.getId());
+                        }
+                    } catch(Exception ignore) { }
+                }
+                
+                //if the ID is still null after trying to look it up, that's a problem
                 if(potentialParent.getId() == null) {
                     product.getErrorMessages().add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.icsUniqueIdNotFound"),
@@ -1199,7 +1214,23 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 // certification edition must be the same as this listings
                 List<Long> parentIds = new ArrayList<Long>();
                 for (CertifiedProduct potentialParent : product.getIcs().getParents()) {
-                    if (potentialParent.getId().toString().equals(product.getId().toString())) {
+                    //the id might be null if the user changed it in the UI 
+                    //even though it's a valid CHPL product number
+                    if(potentialParent.getId() == null) {
+                        try {
+                            CertifiedProduct found = searchDao.getByChplProductNumber(potentialParent.getChplProductNumber());
+                            if (found != null) {
+                                potentialParent.setId(found.getId());
+                            }
+                        } catch(Exception ignore) { }
+                    }
+                    
+                    //if the ID is still null after trying to look it up, that's a problem
+                    if(potentialParent.getId() == null) {
+                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable("listing.icsUniqueIdNotFound"),
+                                LocaleContextHolder.getLocale()), potentialParent.getChplProductNumber()));
+                    } else if (potentialParent.getId().toString().equals(product.getId().toString())) {
                         product.getErrorMessages().add(String.format(messageSource.getMessage(
                                 new DefaultMessageSourceResolvable("listing.icsSelfInheritance"),
                                 LocaleContextHolder.getLocale())));
