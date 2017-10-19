@@ -591,25 +591,29 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     product.getErrorMessages().add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.icsSelfInheritance"),
                             LocaleContextHolder.getLocale())));
+                } else {
+                    parentIds.add(potentialParent.getId());
                 }
-                parentIds.add(potentialParent.getId());
             }
-            List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
-            for (CertificationEditionDTO parentEdition : parentEditions) {
-                if (!product.getCertificationEdition().equals(parentEdition.getYear())) {
+            
+            if(parentIds != null && parentIds.size() > 0) {
+                List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+                for (CertificationEditionDTO parentEdition : parentEditions) {
+                    if (!product.getCertificationEdition().equals(parentEdition.getYear())) {
+                        product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable("listing.icsEditionMismatch"),
+                                LocaleContextHolder.getLocale()), parentEdition.getYear()));
+                    }
+                }
+                
+                // this listing's ICS code must be greater than the max of
+                // parent ICS codes
+                Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
+                if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
                     product.getErrorMessages().add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.icsEditionMismatch"),
-                            LocaleContextHolder.getLocale()), parentEdition.getYear()));
+                            new DefaultMessageSourceResolvable("listing.icsNotLargestCode"),
+                            LocaleContextHolder.getLocale()), icsCodeInteger, largestIcs));
                 }
-            }
-
-            // this listing's ICS code must be greater than the max of
-            // parent ICS codes
-            Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
-            if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
-                product.getErrorMessages().add(String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("listing.icsNotLargestCode"),
-                        LocaleContextHolder.getLocale()), icsCodeInteger, largestIcs));
             }
         }
         
@@ -1199,26 +1203,30 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         product.getErrorMessages().add(String.format(messageSource.getMessage(
                                 new DefaultMessageSourceResolvable("listing.icsSelfInheritance"),
                                 LocaleContextHolder.getLocale())));
+                    } else {
+                        parentIds.add(potentialParent.getId());
                     }
-                    parentIds.add(potentialParent.getId());
                 }
-                List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
-                for (CertificationEditionDTO parentEdition : parentEditions) {
-                    if (!product.getCertificationEdition().get("id").toString()
-                            .equals(parentEdition.getId().toString())) {
+                
+                if(parentIds != null && parentIds.size() > 0) {
+                    List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+                    for (CertificationEditionDTO parentEdition : parentEditions) {
+                        if (!product.getCertificationEdition().get("id").toString()
+                                .equals(parentEdition.getId().toString())) {
+                            product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable("listing.icsEditionMismatch"),
+                                    LocaleContextHolder.getLocale()), parentEdition.getYear()));
+                        }
+                    }
+                    
+                    // this listing's ICS code must be greater than the max of
+                    // parent ICS codes
+                    Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
+                    if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
                         product.getErrorMessages().add(String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable("listing.icsEditionMismatch"),
-                                LocaleContextHolder.getLocale()), parentEdition.getYear()));
+                                new DefaultMessageSourceResolvable("listing.icsNotLargestCode"),
+                                LocaleContextHolder.getLocale()), icsCodeInteger, largestIcs));
                     }
-                }
-
-                // this listing's ICS code must be greater than the max of
-                // parent ICS codes
-                Integer largestIcs = inheritanceDao.getLargestIcs(parentIds);
-                if (largestIcs != null && icsCodeInteger.intValue() != (largestIcs.intValue() + 1)) {
-                    product.getErrorMessages().add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.icsNotLargestCode"),
-                            LocaleContextHolder.getLocale()), icsCodeInteger, largestIcs));
                 }
             }
         }
