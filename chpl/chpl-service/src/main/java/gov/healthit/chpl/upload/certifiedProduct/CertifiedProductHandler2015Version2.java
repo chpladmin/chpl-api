@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,12 +58,17 @@ public class CertifiedProductHandler2015Version2 extends CertifiedProductHandler
         
         if (!StringUtils.isEmpty(record.get(colIndex))) {
             String icsParentUniqueId = record.get(colIndex).trim();
-            CertifiedProduct icsParent = cpSearchDao.getByChplProductNumber(icsParentUniqueId);
             PendingCertifiedProductParentListingEntity icsParentEntity = new PendingCertifiedProductParentListingEntity();
             icsParentEntity.setMappedProduct(pendingCertifiedProduct);
             icsParentEntity.setParentListingUniqueId(icsParentUniqueId);
-            if(icsParent != null) {
-                icsParentEntity.setParentListingId(icsParent.getId());
+            
+            try {
+                CertifiedProduct icsParent = cpSearchDao.getByChplProductNumber(icsParentUniqueId);
+                if(icsParent != null) {
+                    icsParentEntity.setParentListingId(icsParent.getId());
+                }
+            } catch(EntityNotFoundException ex) {
+                LOGGER.info("Listing uploaded with invalid ICS source " + icsParentUniqueId);
             }
             pendingCertifiedProduct.getParentListings().add(icsParentEntity);
         }
