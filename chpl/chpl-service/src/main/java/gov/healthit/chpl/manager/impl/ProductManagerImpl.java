@@ -43,7 +43,7 @@ import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 
 @Service
-public class ProductManagerImpl extends QuestionableActivityHandlerImpl implements ProductManager {
+public class ProductManagerImpl extends QuestionableActivityProvider implements ProductManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductManagerImpl.class);
 
     @Autowired
@@ -325,7 +325,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
         return getById(newProduct.getId());
     }
 
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+    public String getQuestionableActivityObject(Object src, Object dest) {
         String message = "";
         if (!(src instanceof ProductDTO)) {
             LOGGER.error("Cannot use object of type " + src.getClass());

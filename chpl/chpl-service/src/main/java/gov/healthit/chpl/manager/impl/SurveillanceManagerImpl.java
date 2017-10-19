@@ -63,7 +63,7 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 @Service
-public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl implements SurveillanceManager {
+public class SurveillanceManagerImpl extends QuestionableActivityProvider implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
     @Autowired
     private Environment env;
@@ -390,7 +390,7 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
         validator.validate(surveillance);
     }
 
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+    public String getQuestionableActivityObject(Object src, Object dest) {
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
         String message = "";
         if (!(src instanceof Surveillance)) {

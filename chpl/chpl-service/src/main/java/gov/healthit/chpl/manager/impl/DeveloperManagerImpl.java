@@ -44,7 +44,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
-public class DeveloperManagerImpl extends QuestionableActivityHandlerImpl implements DeveloperManager {
+public class DeveloperManagerImpl extends QuestionableActivityProvider implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
 
     @Autowired
@@ -396,7 +396,7 @@ public class DeveloperManagerImpl extends QuestionableActivityHandlerImpl implem
         return ddr;
     }
 
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+    public String getQuestionableActivityObject(Object src, Object dest) {
         String message = "";
         if (!(src instanceof DeveloperDTO)) {
             LOGGER.error("Cannot use object of type " + src.getClass());

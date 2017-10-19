@@ -145,7 +145,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl implements CertifiedProductManager {
+public class CertifiedProductManagerImpl extends QuestionableActivityProvider implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
     @Autowired
@@ -1865,7 +1865,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
         return meaningfulUseUserResults;
     }
 
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+    public String getQuestionableActivityObject(Object src, Object dest) {
         String message = "";
         if (!(src instanceof CertifiedProductSearchDetails)) {
             LOGGER.error("Cannot use object of type " + src.getClass());

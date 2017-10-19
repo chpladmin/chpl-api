@@ -34,7 +34,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
-public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl implements ProductVersionManager {
+public class ProductVersionManagerImpl extends QuestionableActivityProvider implements ProductVersionManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductVersionManagerImpl.class);
     @Autowired
     private ProductVersionDAO dao;
@@ -211,7 +211,7 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
         return createdVersion;
     }
 
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
+    public String getQuestionableActivityObject(Object src, Object dest) {
         String message = "";
         if (!(src instanceof ProductVersionDTO)) {
             LOGGER.error("Cannot use object of type " + src.getClass());
