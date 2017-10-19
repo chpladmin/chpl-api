@@ -20,8 +20,11 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.SEDRow;
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
@@ -30,8 +33,6 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
-    Long id = -1L;
-	int i;
 
     /**
      * Required to setCriteriaNames before calling this function. Returns number
@@ -82,7 +83,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
             csvPrinter.printRecord(generateHeaderValuesSED());
 
             for (SEDRow data : result) {
-                List<String> rowValue = generateRowValueSED(data.getDetails(), data.getCertificationResult(), data.getTestTask(), data.getCriteria());
+                List<String> rowValue = generateRowValueSED(data.getDetails(), data.getCertificationResult(), data.getTestTask(), data.getCriteria(), data.getTestParticipant());
                 if (rowValue != null) { // a subclass could return null to skip
                                         // a row
                     csvPrinter.printRecord(rowValue);
@@ -181,11 +182,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         return result;
     }
     
-    protected List<String> generateRowValueSED(CertifiedProductDetailsDTO details, CertificationResultDTO certificationResult, CertificationResultTestTaskDTO testTask, String criteria) {
-    	if(id != testTask.getId()){
-    		id = testTask.getId();
-    		i = 0;
-    	}
+    protected List<String> generateRowValueSED(CertifiedProductDetailsDTO details, CertificationResultDetailsDTO certificationResult, TestTask testTask, String criteria, TestParticipant testParticiapnt) {
         List<String> result = new ArrayList<String>();
         CertifiedProduct cp = new CertifiedProduct(details);
         result.add(cp.getChplProductNumber());
@@ -193,29 +190,28 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         result.add(details.getProduct().getName());
         result.add(details.getVersion().getVersion());
         result.add(criteria);
-        result.add(testTask.getTestTask().getDescription());
-        result.add(testTask.getTestTask().getTaskRatingScale());
-        result.add(String.valueOf(testTask.getTestTask().getTaskRating()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskRatingStddev()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskTimeAvg()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskTimeStddev()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskTimeDeviationObservedAvg()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskTimeDeviationOptimalAvg()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskSuccessAverage()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskSuccessStddev()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskErrors()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskErrorsStddev()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskPathDeviationObserved()));
-        result.add(String.valueOf(testTask.getTestTask().getTaskPathDeviationOptimal()));
-        result.add(testTask.getTestTask().getParticipants().get(i).getOccupation());
-        result.add(testTask.getTestTask().getParticipants().get(i).getEducationType().getName());
-        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getProductExperienceMonths()));
-        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getProfessionalExperienceMonths()));
-        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getComputerExperienceMonths()));
-        result.add(String.valueOf(testTask.getTestTask().getParticipants().get(i).getAgeRange().getAge()));
-        result.add(testTask.getTestTask().getParticipants().get(i).getGender());
-        result.add(testTask.getTestTask().getParticipants().get(i).getAssistiveTechnologyNeeds());
-        i++;
+        result.add(testTask.getDescription());
+        result.add(testTask.getTaskRatingScale());
+        result.add(String.valueOf(testTask.getTaskRating()));
+        result.add(String.valueOf(testTask.getTaskRatingStddev()));
+        result.add(String.valueOf(testTask.getTaskTimeAvg()));
+        result.add(String.valueOf(testTask.getTaskTimeStddev()));
+        result.add(String.valueOf(testTask.getTaskTimeDeviationObservedAvg()));
+        result.add(String.valueOf(testTask.getTaskTimeDeviationOptimalAvg()));
+        result.add(String.valueOf(testTask.getTaskSuccessAverage()));
+        result.add(String.valueOf(testTask.getTaskSuccessStddev()));
+        result.add(String.valueOf(testTask.getTaskErrors()));
+        result.add(String.valueOf(testTask.getTaskErrorsStddev()));
+        result.add(String.valueOf(testTask.getTaskPathDeviationObserved()));
+        result.add(String.valueOf(testTask.getTaskPathDeviationOptimal()));
+        result.add(testParticiapnt.getOccupation());
+        result.add(testParticiapnt.getEducationTypeName());
+        result.add(String.valueOf(testParticiapnt.getProductExperienceMonths()));
+        result.add(String.valueOf(testParticiapnt.getProfessionalExperienceMonths()));
+        result.add(String.valueOf(testParticiapnt.getComputerExperienceMonths()));
+        result.add(String.valueOf(testParticiapnt.getAgeRange()));
+        result.add(testParticiapnt.getGender());
+        result.add(testParticiapnt.getAssistiveTechnologyNeeds());
         return result;
     }
 

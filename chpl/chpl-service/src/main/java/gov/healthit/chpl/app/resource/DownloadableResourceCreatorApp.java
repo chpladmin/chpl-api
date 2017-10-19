@@ -13,6 +13,7 @@ import org.springframework.context.support.AbstractApplicationContext;
 import gov.healthit.chpl.app.App;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
@@ -28,6 +29,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
     protected CertifiedProductDAO certifiedProductDao;
     protected CertificationCriterionDAO criteriaDao;
     protected CertificationResultDAO certificationResultDao;
+    protected CertificationResultDetailsDAO certificationResultDetailsDAO;
 
     public DownloadableResourceCreatorApp() {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -38,6 +40,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
         this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
         this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
         this.setCertificationResultDao((CertificationResultDAO) context.getBean("certificationResultDAO"));
+        this.setCertificationResultDetailsDao((CertificationResultDetailsDAO) context.getBean("certificationResultDetailsDAO"));
     }
     
     protected abstract void runJob(String[] args) throws Exception;
@@ -81,5 +84,14 @@ public abstract class DownloadableResourceCreatorApp extends App {
 	public void setCertificationResultDao(
 			CertificationResultDAO certificationResultDao) {
 		this.certificationResultDao = certificationResultDao;
+	}
+
+	public CertificationResultDetailsDAO getCertificationResultDetailsDao() {
+		return certificationResultDetailsDAO;
+	}
+
+	public void setCertificationResultDetailsDao(
+			CertificationResultDetailsDAO certificationResultDetailsDAO) {
+		this.certificationResultDetailsDAO = certificationResultDetailsDAO;
 	}
 }
