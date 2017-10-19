@@ -36,6 +36,7 @@ import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
+import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -50,6 +51,7 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTool;
+import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.concept.RequirementTypeEnum;
 import gov.healthit.chpl.domain.notification.NotificationType;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
@@ -72,6 +74,7 @@ import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -116,7 +119,8 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private DeveloperStatusDAO devStatusDao;
     @Autowired
     private SurveillanceDAO survDao;
-
+    @Autowired 
+    private UploadTemplateVersionDAO uploadTemplateDao;
     @Autowired
     private ProductClassificationTypeDAO productClassificationTypeDAO;
 
@@ -483,6 +487,21 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         return results;
     }
 
+    @Transactional
+    @Override
+    @Cacheable(CacheNames.UPLOAD_TEMPLATE_VERSIONS)
+    public Set<UploadTemplateVersion> getUploadTemplateVersions() {
+
+        List<UploadTemplateVersionDTO> dtos = this.uploadTemplateDao.findAll();
+        Set<UploadTemplateVersion> templates = new HashSet<UploadTemplateVersion>();
+
+        for (UploadTemplateVersionDTO dto : dtos) {
+            templates.add(new UploadTemplateVersion(dto));
+        }
+
+        return templates;
+    }
+    
     @Transactional
     @Override
     @Cacheable(CacheNames.MACRA_MEASURES)

@@ -3,6 +3,33 @@
 ## Version TBD
 _Date TBD_
 
+### Minor Features
+* Support multiple upload file templates for 2015 listings. The current template continues to be supported and also one that includes ICS family information, removes g1/g2 information for 170.315(g)(7), adds test tool and test data fields for 170.315 (b)(8), and removes test tool and test data fields for 170.315 (f)(5)
+
+### Bug Fixes
+* Fix issue preventing the creation of new users
+
+---
+
+## Version 14.0.2
+_12 October 2017_
+
+### Bug Fixes
+* Do not allow g1 and g2 booleans for 2015 criteria
+
+---
+
+## Version 14.0.1
+_11 October 2017_
+
+### Bug Fixes
+* Do not support /certified_products call without a ?versionId parameter
+
+---
+
+## Version 14.0.0
+_10 October 2017_
+
 ### Backwards compatibility breaking features
 * Remove /certified_product_details?productId= call
 

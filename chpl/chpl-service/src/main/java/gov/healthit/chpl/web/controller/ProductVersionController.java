@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,15 +37,20 @@ public class ProductVersionController {
 
     @Autowired
     ProductVersionManager pvManager;
-
+    @Autowired
+    ProductManager productManager;
     @Autowired
     CertifiedProductManager cpManager;
 
-    @ApiOperation(value = "List all versions.", notes = "List all versions associated with a specific product.")
+    @ApiOperation(value = "List all versions for a specific product.", notes = "List all versions associated with a specific product.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) Long productId) {
+    public @ResponseBody List<ProductVersion> getVersionsByProduct(@RequestParam(required = true) Long productId) 
+        throws EntityRetrievalException {
+        //make sure the product exists
+        productManager.getById(productId);
+        
+        //get the versions
         List<ProductVersionDTO> versionList = null;
-
         if (productId != null && productId > 0) {
             versionList = pvManager.getByProduct(productId);
         } else {
@@ -62,11 +68,11 @@ public class ProductVersionController {
     }
 
     @ApiOperation(value = "Get information about a specific version.", notes = "")
-    @RequestMapping(value = "/ {versionId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{versionId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId)
             throws EntityRetrievalException {
         ProductVersionDTO version = pvManager.getById(versionId);
-
+        
         ProductVersion result = null;
         if (version != null) {
             result = new ProductVersion(version);

@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -46,8 +45,8 @@ import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
+import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.notification.NotificationType;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -71,9 +70,6 @@ public class SearchViewController {
 
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
-
-    @Autowired
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     @Autowired
     private DeveloperManager developerManager;
@@ -876,8 +872,19 @@ public class SearchViewController {
         return result;
     }
 
+    @ApiOperation(value = "Get all available pending listing upload template versions.")
+    @RequestMapping(value = "/data/upload_template_versions", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody SearchOption getUploadTemplateVersions() {
+        Set<UploadTemplateVersion> data = searchMenuManager.getUploadTemplateVersions();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
     @ApiOperation(value = "Get all search options in the CHPL",
-            notes = "This returns all of the other /data/ {something} results in one single response.")
+            notes = "This returns all of the other /data/{something} results in one single response.")
     @RequestMapping(value = "/data/search_options", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody PopulateSearchOptions getPopulateSearchData(

@@ -1,42 +1,36 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certification_result_g1_macra")
-public class PendingCertificationResultG1MacraMeasureEntity {
+@Table(name = "pending_certification_result_test_procedure")
+public class PendingCertificationResultTestProcedureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "pending_certification_result_test_procedure_id", nullable = false)
     private Long id;
 
+    @Basic(optional = false)
     @Column(name = "pending_certification_result_id", nullable = false)
     private Long pendingCertificationResultId;
 
-    @Column(name = "macra_id")
-    private Long macraId;
+    @Column(name = "test_procedure_id")
+    private Long testProcedureId;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "macra_id", insertable = false, updatable = false)
-    private MacraMeasureEntity macraMeasure;
-
-    @Column(name = "macra_value")
-    private String enteredValue;;
+    @Column(name = "test_procedure_version")
+    private String testProcedureVersion;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
+    @Column(name = "last_modified_date", nullable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = false)
@@ -44,7 +38,7 @@ public class PendingCertificationResultG1MacraMeasureEntity {
     private Long lastModifiedUser;
 
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
+    @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
     @Basic(optional = false)
@@ -99,27 +93,19 @@ public class PendingCertificationResultG1MacraMeasureEntity {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
-    public Long getMacraId() {
-        return macraId;
+    public Long getTestProcedureId() {
+        return testProcedureId;
     }
 
-    public void setMacraId(final Long macraId) {
-        this.macraId = macraId;
+    public void setTestProcedureId(final Long testProcedureId) {
+        this.testProcedureId = testProcedureId;
     }
 
-    public MacraMeasureEntity getMacraMeasure() {
-        return macraMeasure;
+    public String getTestProcedureVersion() {
+        return testProcedureVersion;
     }
 
-    public void setMacraMeasure(final MacraMeasureEntity macraMeasure) {
-        this.macraMeasure = macraMeasure;
-    }
-
-    public String getEnteredValue() {
-        return enteredValue;
-    }
-
-    public void setEnteredValue(final String enteredValue) {
-        this.enteredValue = enteredValue;
+    public void setTestProcedureVersion(final String testProcedureVersion) {
+        this.testProcedureVersion = testProcedureVersion;
     }
 }

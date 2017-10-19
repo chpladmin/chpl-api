@@ -1,33 +1,47 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certification_result_test_standard")
-public class PendingCertificationResultTestStandardEntity {
+@Table(name = "pending_certification_result_test_task")
+public class PendingCertificationResultTestTaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_test_standard_id", nullable = false)
+    @Column(name = "pending_certification_result_test_task_id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
     @Column(name = "pending_certification_result_id", nullable = false)
     private Long pendingCertificationResultId;
 
-    @Column(name = "test_standard_id")
-    private Long testStandardId;
+    @Basic(optional = false)
+    @Column(name = "pending_test_task_id", nullable = false)
+    private Long pendingTestTaskId;
 
-    @Column(name = "test_standard_number")
-    private String testStandardName;
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "pending_test_task_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private PendingTestTaskEntity testTask;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertificationResultTestTaskId")
+    @Basic(optional = false)
+    @Column(name = "pending_certification_result_test_task_id", nullable = false)
+    private Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants = new HashSet<PendingCertificationResultTestTaskParticipantEntity>();
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -93,19 +107,27 @@ public class PendingCertificationResultTestStandardEntity {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
-    public Long getTestStandardId() {
-        return testStandardId;
+    public Long getPendingTestTaskId() {
+        return pendingTestTaskId;
     }
 
-    public void setTestStandardId(final Long testStandardId) {
-        this.testStandardId = testStandardId;
+    public void setPendingTestTaskId(final Long pendingTestTaskId) {
+        this.pendingTestTaskId = pendingTestTaskId;
     }
 
-    public String getTestStandardName() {
-        return testStandardName;
+    public PendingTestTaskEntity getTestTask() {
+        return testTask;
     }
 
-    public void setTestStandardName(final String testStandardName) {
-        this.testStandardName = testStandardName;
+    public void setTestTask(final PendingTestTaskEntity testTask) {
+        this.testTask = testTask;
+    }
+
+    public Set<PendingCertificationResultTestTaskParticipantEntity> getTestParticipants() {
+        return testParticipants;
+    }
+
+    public void setTestParticipants(final Set<PendingCertificationResultTestTaskParticipantEntity> testParticipants) {
+        this.testParticipants = testParticipants;
     }
 }

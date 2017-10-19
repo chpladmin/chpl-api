@@ -282,7 +282,7 @@ public class UserManagementController {
     @ApiOperation(value = "Delete a user.",
             notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
                     + "The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/ {userId}/delete", method = RequestMethod.POST,
+    @RequestMapping(value = "/{userId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public String deleteUser(@PathVariable("userId") Long userId)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
@@ -426,7 +426,7 @@ public class UserManagementController {
     @ApiOperation(value = "View a specific user's details.",
             notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB_ADMIN.")
-    @RequestMapping(value = "/ {userName}/details", method = RequestMethod.GET,
+    @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody UserInfoJSONObject getUser(@PathVariable("userName") String userName)
             throws UserRetrievalException {

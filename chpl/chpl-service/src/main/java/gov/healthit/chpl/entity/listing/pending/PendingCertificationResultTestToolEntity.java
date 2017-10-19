@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing.pending;
 
 import java.util.Date;
 
@@ -11,23 +11,26 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certification_result_test_functionality")
-public class PendingCertificationResultTestFunctionalityEntity {
+@Table(name = "pending_certification_result_test_tool")
+public class PendingCertificationResultTestToolEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_test_functionality_id", nullable = false)
+    @Column(name = "pending_certification_result_test_tool_id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
     @Column(name = "pending_certification_result_id", nullable = false)
     private Long pendingCertificationResultId;
 
-    @Column(name = "test_functionality_id")
-    private Long testFunctionalityId;
+    @Column(name = "test_tool_id")
+    private Long testToolId;
 
-    @Column(name = "test_functionality_number")
-    private String testFunctionalityNumber;
+    @Column(name = "test_tool_name")
+    private String testToolName;
+
+    @Column(name = "test_tool_version")
+    private String testToolVersion;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -93,19 +96,27 @@ public class PendingCertificationResultTestFunctionalityEntity {
         this.pendingCertificationResultId = pendingCertificationResultId;
     }
 
-    public Long getTestFunctionalityId() {
-        return testFunctionalityId;
+    public Long getTestToolId() {
+        return testToolId;
     }
 
-    public void setTestFunctionalityId(final Long testFunctionalityId) {
-        this.testFunctionalityId = testFunctionalityId;
+    public void setTestToolId(final Long testToolId) {
+        this.testToolId = testToolId;
     }
 
-    public String getTestFunctionalityNumber() {
-        return testFunctionalityNumber;
+    public String getTestToolName() {
+        return testToolName;
     }
 
-    public void setTestFunctionalityNumber(final String testFunctionalityName) {
-        this.testFunctionalityNumber = testFunctionalityName;
+    public void setTestToolName(final String testToolName) {
+        this.testToolName = testToolName;
+    }
+
+    public String getTestToolVersion() {
+        return testToolVersion;
+    }
+
+    public void setTestToolVersion(final String testToolVersion) {
+        this.testToolVersion = testToolVersion;
     }
 }

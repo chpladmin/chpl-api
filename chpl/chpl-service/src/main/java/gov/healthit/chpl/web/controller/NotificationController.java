@@ -62,7 +62,7 @@ public class NotificationController {
     }
 
     @ApiOperation(value = "Update the email address and associated subscriptions of the recipient specified.")
-    @RequestMapping(value = "/recipients/ {recipientId}/update", method = RequestMethod.POST,
+    @RequestMapping(value = "/recipients/{recipientId}/update", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Recipient updateRecipient(@PathVariable("recipientId") Long recipientId,
             @RequestBody Recipient updatedRecipient) throws InvalidArgumentsException, EntityRetrievalException {
@@ -201,7 +201,7 @@ public class NotificationController {
     }
 
     @ApiOperation(value = "Remove subscription(s) for a recipient.")
-    @RequestMapping(value = "/recipients/ {recipientId}/delete", method = RequestMethod.POST,
+    @RequestMapping(value = "/recipients/{recipientId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public @ResponseBody void deleteRecipient(@PathVariable("recipientId") Long recipientId)
             throws EntityRetrievalException, InvalidArgumentsException {

@@ -80,9 +80,9 @@ public class CorrectiveActionPlanController {
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods.<br/> Get corrective action plan details.",
             notes = "Get all of the information about a specific corrective action plan. These details "
                     + " include the presence and associated id's of any uploaded supporting "
-                    + " documentation but not the contents of those documents. Use /documentation/ {capDocId} to "
+                    + " documentation but not the contents of those documents. Use /documentation/{capDocId} to "
                     + " view the files.")
-    @RequestMapping(value = "/ {capId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{capId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @Deprecated
     public @ResponseBody CorrectiveActionPlanDetails getCorrectiveActionPlanById(@PathVariable("capId") Long capId)
             throws EntityRetrievalException {
@@ -91,7 +91,7 @@ public class CorrectiveActionPlanController {
 
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods.<br/> Download CAP supporting documentation.",
             notes = "Download a specific file that was previously uploaded to a corrective action plan.")
-    @RequestMapping(value = "/documentation/ {capDocId}", method = RequestMethod.GET)
+    @RequestMapping(value = "/documentation/{capDocId}", method = RequestMethod.GET)
     @Deprecated
     public void getCorrectiveActionPlanDocumentationById(@PathVariable("capDocId") Long capDocId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {
@@ -284,7 +284,7 @@ public class CorrectiveActionPlanController {
                     + " documentation to an existing CAP. The logged in user uploading the file "
                     + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
                     + " authority on the associated ACB.")
-    @RequestMapping(value = "/ {capId}/documentation", method = RequestMethod.POST,
+    @RequestMapping(value = "/{capId}/documentation", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @Deprecated
     public @ResponseBody String upload(@PathVariable("capId") Long correctiveActionPlanId,
@@ -410,7 +410,7 @@ public class CorrectiveActionPlanController {
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods.<br/>Delete a corrective action plan.",
             notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
                     + " authority on the associated ACB.")
-    @RequestMapping(value = "/ {planId}/delete", method = RequestMethod.POST,
+    @RequestMapping(value = "/{planId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @Deprecated
     public String deleteAcb(@PathVariable("planId") Long planId) throws JsonProcessingException,
@@ -450,7 +450,7 @@ public class CorrectiveActionPlanController {
             value = "DEPRECATED. Use surveillance API methods.<br/>Remove documentation from a corrective action plan.",
             notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
                     + " authority on the associated ACB.")
-    @RequestMapping(value = "/documentation/ {docId}/delete", method = RequestMethod.POST,
+    @RequestMapping(value = "/documentation/{docId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     @Deprecated
     public String deleteDocumentationById(@PathVariable("docId") Long docId) throws JsonProcessingException,
