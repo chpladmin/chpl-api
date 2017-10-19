@@ -17,7 +17,7 @@ import gov.healthit.chpl.entity.ProductEntity;
 
 @Entity
 @Table(name = "questionable_activity_product")
-public class QuestionableActivityProductEntity {
+public class QuestionableActivityProductEntity implements QuestionableActivityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

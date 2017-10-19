@@ -17,7 +17,7 @@ import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Entity
 @Table(name = "questionable_activity_listing")
-public class QuestionableActivityListingEntity {
+public class QuestionableActivityListingEntity implements QuestionableActivityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

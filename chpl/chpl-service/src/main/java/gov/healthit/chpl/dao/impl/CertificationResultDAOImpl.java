@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.annotations.Where;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -162,20 +161,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     }
 
     @Override
-    public List<CertificationResultDTO> findAll() {
-
-        List<CertificationResultEntity> entities = getAllEntities();
-        List<CertificationResultDTO> products = new ArrayList<>();
-
-        for (CertificationResultEntity entity : entities) {
-            CertificationResultDTO result = new CertificationResultDTO(entity);
-            products.add(result);
-        }
-        return products;
-
-    }
-
-    @Override
     public CertificationResultDTO getById(Long resultId) throws EntityRetrievalException {
 
         CertificationResultDTO dto = null;
@@ -185,16 +170,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             dto = new CertificationResultDTO(entity);
         }
         return dto;
-    }
-
-    private List<CertificationResultEntity> getAllEntities() {
-
-        List<CertificationResultEntity> result = entityManager
-                .createQuery("from CertificationResultEntity where (NOT deleted = true) ",
-                        CertificationResultEntity.class)
-                .getResultList();
-        return result;
-
     }
 
     private CertificationResultEntity getEntityById(Long id) throws EntityRetrievalException {

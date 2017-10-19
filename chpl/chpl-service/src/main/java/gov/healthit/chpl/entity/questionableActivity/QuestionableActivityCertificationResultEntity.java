@@ -13,11 +13,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
-import gov.healthit.chpl.entity.listing.CertificationResultEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 
 @Entity
 @Table(name = "questionable_activity_certification_result")
-public class QuestionableActivityCertificationResultEntity {
+public class QuestionableActivityCertificationResultEntity implements QuestionableActivityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class QuestionableActivityCertificationResultEntity {
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_result_id", insertable = false, updatable = false)
-    private CertificationResultEntity certResult;
+    private CertificationResultDetailsEntity certResult;
     
     @Column(name = "message")
     private String message;
@@ -159,11 +159,11 @@ public class QuestionableActivityCertificationResultEntity {
         this.certResultId = certResultId;
     }
 
-    public CertificationResultEntity getCertResult() {
+    public CertificationResultDetailsEntity getCertResult() {
         return certResult;
     }
 
-    public void setCertResult(CertificationResultEntity certResult) {
+    public void setCertResult(CertificationResultDetailsEntity certResult) {
         this.certResult = certResult;
     }
 }

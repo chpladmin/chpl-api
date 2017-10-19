@@ -83,7 +83,7 @@ public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {
         super.initiateSpringBeans(context);
         this.setPresenter((InvalidInheritanceCsvPresenter) context.getBean("invalidInheritanceCsvPresenter"));
         this.getPresenter().setProps(getProperties());
-        this.getPresenter().setMessageSource((MessageSource) context.getBean("messageSource"));
+        this.getPresenter().setMessageSource((MessageSource) context.getBean("MessageSource"));
         this.getPresenter().setInheritanceDao((ListingGraphDAO) context.getBean("listingGraphDao"));
     }
 
