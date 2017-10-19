@@ -2,14 +2,15 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
@@ -47,6 +48,8 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDTO;
+import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
@@ -206,6 +209,8 @@ public class SurveillanceManagerImpl extends QuestionableActivityProvider implem
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
         survDao.deleteSurveillance(surv);
+        
+        handleActivity(surv, null);
     }
 
     @Override
@@ -390,20 +395,20 @@ public class SurveillanceManagerImpl extends QuestionableActivityProvider implem
         validator.validate(surveillance);
     }
 
-    public String getQuestionableActivityObject(Object src, Object dest) {
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
-        String message = "";
+    public QuestionableActivityDTO getQuestionableActivityObject(Object src, Object dest) {
+        QuestionableActivityListingDTO activity = null;
         if (!(src instanceof Surveillance)) {
             LOGGER.error("Cannot use object of type " + src.getClass());
         } else {
-            Surveillance original = (Surveillance) src;
-            message = "<p>Questionable activity was detected on "
-                    + original.getCertifiedProduct().getChplProductNumber() + ". "
-                    + "An action was taken related to surveillance " + fmt.format(original.getStartDate()) + ".<p>"
-                    + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports</p>";
+            activity = new QuestionableActivityListingDTO();
+            activity.setActivityDate(new Date());
+            activity.setUserId(Util.getCurrentUser().getId());
+            Surveillance surv = (Surveillance)src;
+            activity.setListingId(surv.getCertifiedProduct().getId());
+            activity.setMessage("TRUE");
+            activity.setTriggerId(1L);
         }
-        return message;
+        return activity;
     }
 
     public boolean isQuestionableActivity(Object src, Object dest) {
