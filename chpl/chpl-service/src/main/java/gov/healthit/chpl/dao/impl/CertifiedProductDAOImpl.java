@@ -1,5 +1,14 @@
 package gov.healthit.chpl.dao.impl;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,16 +24,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
 @Repository(value = "certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
