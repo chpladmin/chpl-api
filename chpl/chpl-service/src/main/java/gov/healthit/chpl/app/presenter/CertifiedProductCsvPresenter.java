@@ -15,20 +15,10 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.app.resource.SEDRow;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationResultDTO;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestTaskDTO;
 
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);

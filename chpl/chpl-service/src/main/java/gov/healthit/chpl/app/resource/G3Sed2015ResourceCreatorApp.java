@@ -116,7 +116,7 @@ public class G3Sed2015ResourceCreatorApp extends SEDDownloadableResourceCreatorA
 
 	@Override
 	protected void writeToFile(File downloadFolder, ArrayList<SEDRow> results) throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-sed-all-details" + ".csv";
+        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-sed-all-details.csv";
         File csvFile = new File(csvFilename);
         if (!csvFile.exists()) {
             csvFile.createNewFile();

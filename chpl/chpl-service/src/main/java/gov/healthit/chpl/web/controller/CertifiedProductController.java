@@ -156,7 +156,7 @@ public class CertifiedProductController {
             notes = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
     public void streamSEDDetailsDocumentContents(HttpServletResponse response) throws EntityRetrievalException, IOException {
-    	Path path = Paths.get(env.getProperty("downloadSEDFolderPath"));
+    	Path path = Paths.get(env.getProperty("downloadFolderPath"), env.getProperty("SEDDownloadName"));
     	File downloadFile = new File(path.toUri());
     	byte[] data = Files.readAllBytes(path);
     	
