@@ -1,5 +1,7 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.app.resource;
 
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;

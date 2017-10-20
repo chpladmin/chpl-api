@@ -342,19 +342,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         }
         return dtoResults;
     }
-    
-    @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByCriteria(Long certificationCriteriaId) throws EntityRetrievalException {
-        Query query = entityManager.createQuery("FROM CertifiedProductDetailsEntity deets LEFT OUTER JOIN CertificationResultDetailsEntity crd ON deets.id = crd.certifiedProductId");
-        query.setParameter("ccId", certificationCriteriaId);
-        List<CertifiedProductDetailsEntity> results = query.getResultList();
-        
-        List<CertifiedProductDetailsDTO> dtoResults = new ArrayList<CertifiedProductDetailsDTO>(results.size());
-        for (CertifiedProductDetailsEntity result : results) {
-            dtoResults.add(new CertifiedProductDetailsDTO(result));
-        }
-        return dtoResults;
-    }
 
     @Transactional(readOnly = true)
     public CertifiedProductDetailsDTO getDetailsById(Long cpId) throws EntityRetrievalException {

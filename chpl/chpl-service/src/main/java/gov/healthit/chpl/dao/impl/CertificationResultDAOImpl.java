@@ -253,18 +253,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         List<CertificationResultEntity> result = query.getResultList();
         return result;
     }
-    
-    @Override
-    public List<CertificationResultDTO> findByCertifiedProductIdSED(Long certifiedProductId) {
-        List<CertificationResultEntity> entities = getEntitiesByCertifiedProductIdSED(certifiedProductId);
-        List<CertificationResultDTO> cqmResults = new ArrayList<>();
-
-        for (CertificationResultEntity entity : entities) {
-            CertificationResultDTO cqmResult = new CertificationResultDTO(entity);
-            cqmResults.add(cqmResult);
-        }
-        return cqmResults;
-    }
 
     private List<CertificationResultEntity> getEntitiesByCertifiedProductIdSED(Long certifiedProductId) {
 

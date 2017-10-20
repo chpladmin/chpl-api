@@ -36,7 +36,7 @@ public abstract class DownloadableResourceCreatorApp extends App {
     }
 
     protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
-        //this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
+        this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
         this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
         this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
         this.setCertificationResultDao((CertificationResultDAO) context.getBean("certificationResultDAO"));

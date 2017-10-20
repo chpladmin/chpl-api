@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,10 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.app.AppConfig;
 import gov.healthit.chpl.app.presenter.CertifiedProductCsvPresenter;
+import gov.healthit.chpl.app.presenter.SEDCsvPresenter;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.SEDRow;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -122,10 +123,10 @@ public class G3Sed2015ResourceCreatorApp extends SEDDownloadableResourceCreatorA
         } else {
             csvFile.delete();
         }
-        CertifiedProductCsvPresenter csvPresenter = new CertifiedProductCsvPresenter();
+        SEDCsvPresenter csvPresenter = new SEDCsvPresenter();
         
         Date start = new Date();
-        int numRows = csvPresenter.presentAsFileSED(csvFile, results);
+        int numRows = csvPresenter.presentAsFile(csvFile, results);
         Date end = new Date();
         LOGGER.info("Wrote " + numRows + " rows to SED detailed data CSV file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
 	}

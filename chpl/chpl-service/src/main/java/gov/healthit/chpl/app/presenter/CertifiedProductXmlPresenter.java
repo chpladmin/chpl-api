@@ -13,8 +13,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import gov.healthit.chpl.app.resource.DownloadableResourceCreatorApp;
+import gov.healthit.chpl.app.resource.SEDRow;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
-import gov.healthit.chpl.domain.SEDRow;
 
 public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
     private static final Logger LOGGER = LogManager.getLogger(DownloadableResourceCreatorApp.class);
@@ -41,11 +41,5 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
         }
         return numRecords;
     }
-
-	@Override
-	public int presentAsFileSED(File file, ArrayList<SEDRow> result) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 }

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.app.resource;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.SEDRow;
 
 import java.io.File;
 import java.io.IOException;

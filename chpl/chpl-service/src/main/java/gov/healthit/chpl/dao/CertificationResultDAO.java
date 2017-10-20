@@ -125,7 +125,4 @@ public interface CertificationResultDAO {
             throws EntityCreationException;
 
     void deleteTestParticipantMapping(Long testTaskId, Long testParticipantId);
-
-	List<CertificationResultDTO> findByCertifiedProductIdSED(
-			Long certifiedProductId);
 }
