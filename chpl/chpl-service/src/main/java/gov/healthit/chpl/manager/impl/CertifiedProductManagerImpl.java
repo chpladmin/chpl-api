@@ -976,10 +976,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityProvider im
                 && listing.getIcs().getParents().size() > 0) {
             for (CertifiedProduct parent : listing.getIcs().getParents()) {
                 if (parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
+                    try {
                     CertifiedProduct found = searchDao.getByChplProductNumber(parent.getChplProductNumber());
-                    if (found != null) {
-                        parent.setId(found.getId());
-                    }
+                        if (found != null) {
+                            parent.setId(found.getId());
+                        }
+                    } catch(Exception ignore) {}
                 } else if (parent.getId() == null) {
                     throw new EntityNotFoundException(
                             "Every ICS parent must have either a CHPL ID or a CHPL Product Number.");
