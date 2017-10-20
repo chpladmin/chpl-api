@@ -81,6 +81,9 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
                         BigDecimal.class);
         query.setParameter("listingIds", listingIds);
         BigDecimal result = (BigDecimal) query.getSingleResult();
+        if(result == null) {
+            return null;
+        }
         return new Integer(result.intValue());
     }
 
