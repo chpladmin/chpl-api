@@ -182,7 +182,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         return result;
     }
     
-    protected List<String> generateRowValueSED(CertifiedProductDetailsDTO details, TestTask testTask, String criteria, TestParticipant testParticiapnt) {
+    protected List<String> generateRowValueSED(CertifiedProductDetailsDTO details, TestTask testTask, String criteria, TestParticipant testParticipant) {
         List<String> result = new ArrayList<String>();
         CertifiedProduct cp = new CertifiedProduct(details);
         result.add(cp.getChplProductNumber());
@@ -204,14 +204,14 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         result.add(String.valueOf(testTask.getTaskErrorsStddev()));
         result.add(String.valueOf(testTask.getTaskPathDeviationObserved()));
         result.add(String.valueOf(testTask.getTaskPathDeviationOptimal()));
-        result.add(testParticiapnt.getOccupation());
-        result.add(testParticiapnt.getEducationTypeName());
-        result.add(String.valueOf(testParticiapnt.getProductExperienceMonths()));
-        result.add(String.valueOf(testParticiapnt.getProfessionalExperienceMonths()));
-        result.add(String.valueOf(testParticiapnt.getComputerExperienceMonths()));
-        result.add(String.valueOf(testParticiapnt.getAgeRange()));
-        result.add(testParticiapnt.getGender());
-        result.add(testParticiapnt.getAssistiveTechnologyNeeds());
+        result.add(testParticipant.getOccupation());
+        result.add(testParticipant.getEducationTypeName());
+        result.add(String.valueOf(testParticipant.getProductExperienceMonths()));
+        result.add(String.valueOf(testParticipant.getProfessionalExperienceMonths()));
+        result.add(String.valueOf(testParticipant.getComputerExperienceMonths()));
+        result.add(String.valueOf(testParticipant.getAgeRange()));
+        result.add(testParticipant.getGender());
+        result.add(testParticipant.getAssistiveTechnologyNeeds());
         return result;
     }
 
