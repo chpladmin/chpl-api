@@ -3,14 +3,12 @@ package gov.healthit.chpl.manager.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
@@ -48,8 +46,6 @@ import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.ValidationMessageType;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
@@ -66,7 +62,7 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 @Service
-public class SurveillanceManagerImpl extends QuestionableActivityProvider implements SurveillanceManager {
+public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
     @Autowired
     private Environment env;
@@ -209,8 +205,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityProvider implem
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
         survDao.deleteSurveillance(surv);
-        
-        handleActivity(surv, null);
     }
 
     @Override
@@ -393,27 +387,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityProvider implem
     @Transactional(readOnly = true)
     public void validate(Surveillance surveillance) {
         validator.validate(surveillance);
-    }
-
-    public QuestionableActivityDTO getQuestionableActivityObject(Object src, Object dest) {
-        QuestionableActivityListingDTO activity = null;
-        if (!(src instanceof Surveillance)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            activity = new QuestionableActivityListingDTO();
-            activity.setActivityDate(new Date());
-            activity.setUserId(Util.getCurrentUser().getId());
-            Surveillance surv = (Surveillance)src;
-            activity.setListingId(surv.getCertifiedProduct().getId());
-            activity.setMessage("TRUE");
-            activity.setTriggerId(1L);
-        }
-        return activity;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        // it's questionable if the surveillance was deleted (dest is null)
-        return src instanceof Surveillance && dest == null;
     }
 
     @Override

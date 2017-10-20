@@ -145,7 +145,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl extends QuestionableActivityProvider implements CertifiedProductManager {
+public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
     @Autowired
@@ -1865,116 +1865,6 @@ public class CertifiedProductManagerImpl extends QuestionableActivityProvider im
         meaningfulUseUserResults.setMeaningfulUseUsers(results);
         meaningfulUseUserResults.setErrors(errors);
         return meaningfulUseUserResults;
-    }
-
-    public String getQuestionableActivityObject(Object src, Object dest) {
-        String message = "";
-        if (!(src instanceof CertifiedProductSearchDetails)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
-            String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-            message = "<p>Activity was detected on certified product " + original.getChplProductNumber();
-            if (activityThresholdDaysStr.equals("0")) {
-                message += ".";
-            } else {
-                message += " more than " + activityThresholdDaysStr + " days after it was certified.";
-            }
-            message += "</p>" + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports/" + original.getId() + " </p>";
-
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        boolean isQuestionable = false;
-        String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-
-        if (!(src instanceof CertifiedProductSearchDetails && dest instanceof CertifiedProductSearchDetails)) {
-            LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass()
-                    + ". Expected both objects to be of type CertifiedProductSearchDetails.");
-        } else {
-            CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
-            CertifiedProductSearchDetails changed = (CertifiedProductSearchDetails) dest;
-
-            if (original.getCertificationEdition().get("name").equals("2011")) {
-                isQuestionable = true;
-            } else {
-                int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-                long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
-                if (original.getCertificationDate() != null && changed.getCertificationDate() != null
-                        && (changed.getLastModifiedDate().longValue()
-                                - original.getCertificationDate().longValue() > activityThresholdMillis)) {
-                    // if they changed something outside of the suspicious
-                    // activity window,
-                    // check if the change was something that should trigger an
-                    // email
-
-                    if (!original.getCertificationStatus().get("id")
-                            .equals(changed.getCertificationStatus().get("id"))) {
-                        isQuestionable = true;
-                    }
-
-                    if ((original.getCqmResults() == null && changed.getCqmResults() != null)
-                            || (original.getCqmResults() != null && changed.getCqmResults() == null)
-                            || (original.getCqmResults().size() != changed.getCqmResults().size())) {
-                        isQuestionable = true;
-                    } else if (original.getCqmResults().size() == changed.getCqmResults().size()) {
-                        for (CQMResultDetails origCqm : original.getCqmResults()) {
-                            for (CQMResultDetails changedCqm : changed.getCqmResults()) {
-                                if (origCqm.getCmsId().equals(changedCqm.getCmsId())) {
-                                    if (origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
-                                        isQuestionable = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if ((original.getCertificationResults() == null && changed.getCertificationResults() != null)
-                            || (original.getCertificationResults() != null && changed.getCertificationResults() == null)
-                            || (original.getCertificationResults().size() != changed.getCertificationResults()
-                                    .size())) {
-                        isQuestionable = true;
-                    } else if (original.getCertificationResults().size() == changed.getCertificationResults().size()) {
-                        for (CertificationResult origCert : original.getCertificationResults()) {
-                            for (CertificationResult changedCert : changed.getCertificationResults()) {
-                                if (origCert.getNumber().equals(changedCert.getNumber())) {
-                                    if (origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
-                                        isQuestionable = true;
-                                    }
-                                    if (origCert.isG1Success() != null || changedCert.isG1Success() != null) {
-                                        if ((origCert.isG1Success() == null && changedCert.isG1Success() != null)
-                                                || (origCert.isG1Success() != null && changedCert.isG1Success() == null)
-                                                || (origCert.isG1Success().booleanValue() != changedCert.isG1Success()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                    if (origCert.isG2Success() != null || changedCert.isG2Success() != null) {
-                                        if ((origCert.isG2Success() == null && changedCert.isG2Success() != null)
-                                                || (origCert.isG2Success() != null && changedCert.isG2Success() == null)
-                                                || (origCert.isG2Success().booleanValue() != changedCert.isG2Success()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                    if (origCert.isGap() != null || changedCert.isGap() != null) {
-                                        if ((origCert.isGap() == null && changedCert.isGap() != null)
-                                                || (origCert.isGap() != null && changedCert.isGap() == null)
-                                                || (origCert.isGap().booleanValue() != changedCert.isGap()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return isQuestionable;
     }
 
     private class QmsStandardPair {
