@@ -20,9 +20,7 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         if (origListing.getCertificationEdition().get("name").equals("2011")) {
               activity = new QuestionableActivityListingDTO();
-              activity.setListingId(origListing.getId());
               activity.setMessage("TRUE");
-              activity.setTriggerId(1L);
         }
         
         return activity;
@@ -35,10 +33,8 @@ public class ListingQuestionableActivityProvider {
         if (!origListing.getCertificationStatus().get("id")
                 .equals(newListing.getCertificationStatus().get("id"))) {
               activity = new QuestionableActivityListingDTO();
-              activity.setListingId(origListing.getId());
               activity.setMessage("From " + origListing.getCertificationStatus().get("name").toString() + 
                       " to " + newListing.getCertificationStatus().get("name").toString());
-              activity.setTriggerId(1L);
         }
         
         return activity;
@@ -185,9 +181,7 @@ public class ListingQuestionableActivityProvider {
                  newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
               
               activity = new QuestionableActivityListingDTO();
-              activity.setListingId(origListing.getId());
               activity.setMessage("TRUE");
-              activity.setTriggerId(1L);
         }
         
         return activity;

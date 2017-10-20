@@ -133,7 +133,7 @@ public class ProductController {
             for (Long productId : productInfo.getProductIds()) {
                 ProductDTO toUpdate = productManager.getById(productId);
                 toUpdate.setDeveloperId(productInfo.newDeveloperId());
-                result = productManager.update(toUpdate, true);
+                result = productManager.update(toUpdate);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             }
         } else {
@@ -195,7 +195,7 @@ public class ProductController {
                         toUpdate.getOwnerHistory().add(prevOwnerDTO);
                     }
                 }
-                result = productManager.update(toUpdate, true);
+                result = productManager.update(toUpdate);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             }
         }

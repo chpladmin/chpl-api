@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,11 +43,8 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
-public class DeveloperManagerImpl extends QuestionableActivityProvider implements DeveloperManager {
+public class DeveloperManagerImpl implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     DeveloperDAO developerDao;
@@ -240,8 +236,6 @@ public class DeveloperManagerImpl extends QuestionableActivityProvider implement
         DeveloperDTO after = getById(developer.getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, after.getId(),
                 "Developer " + developer.getName() + " was updated.", beforeDev, after);
-        handleActivity(beforeDev, after);
-
         return after;
     }
 
@@ -347,7 +341,7 @@ public class DeveloperManagerImpl extends QuestionableActivityProvider implement
             product.getOwnerHistory().add(historyToAdd);
             // reassign those products to the new developer
             product.setDeveloperId(createdDeveloper.getId());
-            productManager.update(product, false);
+            productManager.update(product);
 
         }
         // - mark the passed in developers as deleted
@@ -394,40 +388,6 @@ public class DeveloperManagerImpl extends QuestionableActivityProvider implement
 
         ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
         return ddr;
-    }
-
-    public String getQuestionableActivityObject(Object src, Object dest) {
-        String message = "";
-        if (!(src instanceof DeveloperDTO)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            DeveloperDTO original = (DeveloperDTO) src;
-            message = "<p>Activity was detected on developer " + original.getName() + ".</p>"
-                    + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports</p>";
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        boolean isQuestionable = false;
-
-        if (!(src instanceof DeveloperDTO && dest instanceof DeveloperDTO)) {
-            LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass()
-                    + ". Expected both objects to be of type DeveloperDTO.");
-        } else {
-            DeveloperDTO original = (DeveloperDTO) src;
-            DeveloperDTO changed = (DeveloperDTO) dest;
-
-            if ((original.getName() != null && changed.getName() == null)
-                    || (original.getName() == null && changed.getName() != null)
-                    || !original.getName().equals(changed.getName())) {
-                isQuestionable = true;
-            }
-
-            isQuestionable = isQuestionable || isStatusHistoryUpdated(original, changed);
-        }
-        return isQuestionable;
     }
 
     private boolean isStatusHistoryUpdated(DeveloperDTO original, DeveloperDTO changed) {
