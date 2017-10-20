@@ -10,7 +10,6 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 public class SEDRow {
 	
 	private CertifiedProductDetailsDTO details;
-	private CertificationResultDetailsDTO certificationResult;
 	private TestTask testTask;
 	private String criteria;
 	private TestParticipant testParticipant;
@@ -20,13 +19,6 @@ public class SEDRow {
 	}
 	public void setDetails(CertifiedProductDetailsDTO details) {
 		this.details = details;
-	}
-	public CertificationResultDetailsDTO getCertificationResult() {
-		return certificationResult;
-	}
-	public void setCertificationResult(
-			CertificationResultDetailsDTO certificationResult) {
-		this.certificationResult = certificationResult;
 	}
 	public TestTask getTestTask() {
 		return testTask;

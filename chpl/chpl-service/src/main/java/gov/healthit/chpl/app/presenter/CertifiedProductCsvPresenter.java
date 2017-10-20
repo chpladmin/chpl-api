@@ -83,7 +83,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
             csvPrinter.printRecord(generateHeaderValuesSED());
 
             for (SEDRow data : result) {
-                List<String> rowValue = generateRowValueSED(data.getDetails(), data.getCertificationResult(), data.getTestTask(), data.getCriteria(), data.getTestParticipant());
+                List<String> rowValue = generateRowValueSED(data.getDetails(), data.getTestTask(), data.getCriteria(), data.getTestParticipant());
                 if (rowValue != null) { // a subclass could return null to skip
                                         // a row
                     csvPrinter.printRecord(rowValue);
@@ -182,7 +182,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         return result;
     }
     
-    protected List<String> generateRowValueSED(CertifiedProductDetailsDTO details, CertificationResultDetailsDTO certificationResult, TestTask testTask, String criteria, TestParticipant testParticiapnt) {
+    protected List<String> generateRowValueSED(CertifiedProductDetailsDTO details, TestTask testTask, String criteria, TestParticipant testParticiapnt) {
         List<String> result = new ArrayList<String>();
         CertifiedProduct cp = new CertifiedProduct(details);
         result.add(cp.getChplProductNumber());

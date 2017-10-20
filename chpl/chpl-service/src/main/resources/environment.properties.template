@@ -55,6 +55,9 @@ schemaCsv2014Name=listing2014Schema.csv
 schemaCsv2015Name=listing2015Schema.csv
 schemaSurveillanceName=surveillanceSchema.csv
 
+#all SED Details download folder file path
+downloadSEDFolderPath=C:\\Users\\blindsey\\downloadFiles\\SEDDetails\\chpl-sed-all-details.csv
+
 #chpl-service download jar properties
 dbDriverClass=org.postgresql.Driver
 dataSourceName=java:/comp/env/jdbc/openchpl
