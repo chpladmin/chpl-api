@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @Component("surveillanceResourceCreatorApp")
-public class SurveillanceResourceCreatorApp extends DownloadableResourceCreatorApp {
+public class SurveillanceResourceCreatorApp extends CertifiedProductDownloadableResourceCreatorApp {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceResourceCreatorApp.class);
 
     public SurveillanceResourceCreatorApp() {
