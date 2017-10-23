@@ -208,13 +208,6 @@ public class CertifiedProductDTO implements Serializable {
         this.chplProductNumber = chplProductNumber;
     }
 
-    public String getChplProductNumberForActivity() {
-        if (StringUtils.isEmpty(this.chplProductNumber)) {
-            return "a certified product";
-        }
-        return this.chplProductNumber;
-    }
-
     public Date getCreationDate() {
         return creationDate;
     }

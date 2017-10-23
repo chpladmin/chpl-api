@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
+import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.notification.NotificationType;
 
 public interface SearchMenuManager {
@@ -63,6 +64,8 @@ public interface SearchMenuManager {
     SurveillanceRequirementOptions getSurveillanceRequirementOptions();
 
     Set<KeyValueModel> getNonconformityTypeOptions();
+
+    public Set<UploadTemplateVersion> getUploadTemplateVersions();
 
     Set<CriteriaSpecificDescriptiveModel> getMacraMeasures();
 

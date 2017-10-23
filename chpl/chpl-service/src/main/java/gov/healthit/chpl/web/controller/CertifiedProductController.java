@@ -52,7 +52,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -109,22 +109,14 @@ public class CertifiedProductController {
                     + " every certified product is returned. Call the /details service for more information.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
-            @RequestParam(required = false) Long versionId,
+            @RequestParam(required = true) Long versionId,
             @RequestParam(required = false, defaultValue = "false") boolean editable) throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> certifiedProductList = null;
 
-        if (versionId != null && versionId > 0) {
-            if (editable) {
-                certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
-            } else {
-                certifiedProductList = cpManager.getByVersion(versionId);
-            }
+        if (editable) {
+            certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
         } else {
-            if (editable) {
-                certifiedProductList = cpManager.getAllWithEditPermission();
-            } else {
-                certifiedProductList = cpManager.getAll();
-            }
+            certifiedProductList = cpManager.getByVersion(versionId);
         }
 
         List<CertifiedProduct> products = new ArrayList<CertifiedProduct>();
@@ -379,6 +371,8 @@ public class CertifiedProductController {
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
+            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(),
+                    "Created a certified product", null, result);
 
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -405,7 +399,7 @@ public class CertifiedProductController {
                     + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file)
+    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
@@ -415,7 +409,7 @@ public class CertifiedProductController {
                 && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
             throw new ValidationException("File must be a CSV document.");
         }
-
+        HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
 
         BufferedReader reader = null;
@@ -464,6 +458,10 @@ public class CertifiedProductController {
                                     try {
                                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                                 rows);
+                                        if(handler.getUploadTemplateVersion() != null && 
+                                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+                                        }
                                         PendingCertifiedProductEntity pendingCp = handler.handle();
                                         cpsToAdd.add(pendingCp);
                                     } catch (final InvalidArgumentsException ex) {
@@ -484,9 +482,15 @@ public class CertifiedProductController {
                 if (i == records.size() - 1 && !rows.isEmpty()) {
                     try {
                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+                        if(handler.getUploadTemplateVersion() != null && 
+                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+                        }
                         PendingCertifiedProductEntity pendingCp = handler.handle();
                         cpsToAdd.add(pendingCp);
                     } catch (final InvalidArgumentsException ex) {
+                        handlerErrors.add(ex.getMessage());
+                    } catch (final Exception ex) {
                         handlerErrors.add(ex.getMessage());
                     }
                 }
@@ -535,8 +539,9 @@ public class CertifiedProductController {
             }
         }
 
+        
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
         results.getPendingCertifiedProducts().addAll(uploadedProducts);
-        return results;
+        return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
     }
 }

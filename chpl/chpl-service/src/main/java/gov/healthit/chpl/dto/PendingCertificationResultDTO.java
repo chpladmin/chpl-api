@@ -4,17 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.entity.PendingCertificationResultAdditionalSoftwareEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultG1MacraMeasureEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultG2MacraMeasureEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestDataEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestFunctionalityEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestProcedureEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestStandardEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestTaskEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultTestToolEntity;
-import gov.healthit.chpl.entity.PendingCertificationResultUcdProcessEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG1MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultG2MacraMeasureEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestDataEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestFunctionalityEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestProcedureEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestStandardEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestTaskEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultTestToolEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultUcdProcessEntity;
 
 public class PendingCertificationResultDTO implements Serializable {
     private static final long serialVersionUID = -1026669045107851464L;

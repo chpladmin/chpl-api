@@ -7,10 +7,15 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Util {
+public final class Util {
     private static final Logger LOGGER = LogManager.getLogger(Util.class);
+    private static final int BASE_16 = 16;
 
-    public static String md5(String input) {
+    private Util() {
+
+    }
+
+    public static String md5(final String input) {
         String md5 = null;
         if (null == input) {
             return null;
@@ -24,7 +29,7 @@ public class Util {
             digest.update(input.getBytes(), 0, input.length());
 
             // Converts message digest value in base 16 (hex)
-            md5 = new BigInteger(1, digest.digest()).toString(16);
+            md5 = new BigInteger(1, digest.digest()).toString(BASE_16);
 
         } catch (final NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -32,7 +37,7 @@ public class Util {
         return md5;
     }
 
-    public static String coerceToCriterionNumberFormat(String input) {
+    public static String coerceToCriterionNumberFormat(final String input) {
         String formatRegex = "^\\d {3}\\.\\d {3}\\s {1}\\([a-z] {1}\\)(\\([0-9] {1,2}\\))?$";
         if (input.matches(formatRegex)) {
             LOGGER.debug("\tMatches required format. Not changing input.");

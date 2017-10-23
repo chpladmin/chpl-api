@@ -488,7 +488,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 
         // ics
         if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
-            for (CertifiedProductDTO parentCpDto : pendingCp.getIcsParents()) {
+            for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
                 CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
                 if (cp != null) {
                     ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
@@ -499,7 +499,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             }
         }
         if (pendingCp.getIcsChildren() != null && pendingCp.getIcsChildren().size() > 0) {
-            for (CertifiedProductDTO childCpDto : pendingCp.getIcsChildren()) {
+            for (CertifiedProductDetailsDTO childCpDto : pendingCp.getIcsChildren()) {
                 CertifiedProduct cp = searchDao.getByChplProductNumber(childCpDto.getChplProductNumber());
                 if (cp != null) {
                     ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
@@ -942,11 +942,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
         certEvent.setStatus(activeCertStatus);
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
-
-        CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(),
-                "Created " + newCertifiedProduct.getChplProductNumberForActivity(), null, details);
-
+        
         return newCertifiedProduct;
     }
 
@@ -976,10 +972,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
                 && listing.getIcs().getParents().size() > 0) {
             for (CertifiedProduct parent : listing.getIcs().getParents()) {
                 if (parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
+                    try {
                     CertifiedProduct found = searchDao.getByChplProductNumber(parent.getChplProductNumber());
-                    if (found != null) {
-                        parent.setId(found.getId());
-                    }
+                        if (found != null) {
+                            parent.setId(found.getId());
+                        }
+                    } catch(Exception ignore) {}
                 } else if (parent.getId() == null) {
                     throw new EntityNotFoundException(
                             "Every ICS parent must have either a CHPL ID or a CHPL Product Number.");

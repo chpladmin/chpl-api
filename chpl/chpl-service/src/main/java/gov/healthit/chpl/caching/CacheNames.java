@@ -21,6 +21,7 @@ public class CacheNames {
     public static final String COUNT_MULTI_FILTER_SEARCH_RESULTS = "countMultiFilterSearchResults";
     public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
     public static final String FIND_BY_ACB_ID = "findByAcbId";
+    public static final String UPLOAD_TEMPLATE_VERSIONS = "uploadTemplateVersions";
 
     public static final String COLLECTIONS_DEVELOPERS = "developerCollection";
     public static final String COLLECTIONS_LISTINGS = "listingCollection";
