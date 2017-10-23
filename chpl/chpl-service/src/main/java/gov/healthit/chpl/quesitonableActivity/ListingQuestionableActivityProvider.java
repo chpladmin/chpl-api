@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 
 @Component

@@ -5,14 +5,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 
 @Component
 public class DeveloperQuestionableActivityProvider {
@@ -34,37 +29,122 @@ public class DeveloperQuestionableActivityProvider {
             DeveloperDTO origDeveloper, DeveloperDTO newDeveloper) {
         
         QuestionableActivityDeveloperDTO activity = null;
-        //TODO
+        if(origDeveloper.getStatus() != null && newDeveloper.getStatus() == null) {
+            activity = new QuestionableActivityDeveloperDTO();
+            activity.setMessage("From " + origDeveloper.getStatus().getStatus().getStatusName() + " to null.");
+        } else if(origDeveloper.getStatus() == null && newDeveloper.getStatus() != null) {
+            activity = new QuestionableActivityDeveloperDTO();
+            activity.setMessage("From null to " + newDeveloper.getStatus().getStatus().getStatusName());
+        } else if(origDeveloper.getStatus().getStatus().getId().longValue() != 
+                newDeveloper.getStatus().getStatus().getId().longValue()) {
+            activity = new QuestionableActivityDeveloperDTO();
+            activity.setMessage("From " + origDeveloper.getStatus().getStatus().getStatusName() 
+                    + " to " + newDeveloper.getStatus().getStatus().getStatusName());
+        }
         
         return activity;
     }
     
-    public List<QuestionableActivityDeveloperDTO> checkStatusHistoryChanged(
-            DeveloperDTO origDeveloper, DeveloperDTO newDeveloper) {
+    public List<QuestionableActivityDeveloperDTO> checkStatusHistoryAdded(
+            List<DeveloperStatusEventDTO> origStatuses, List<DeveloperStatusEventDTO> newStatuses) {
         
-        List<QuestionableActivityDeveloperDTO> activities = null;
-        //TODO
-//        if ((original.getStatusEvents() != null && changed.getStatusEvents() == null)
-//                || (original.getStatusEvents() == null && changed.getStatusEvents() != null)
-//                || (original.getStatusEvents().size() != changed.getStatusEvents().size())) {
-//            hasChanged = true;
-//        } else {
-//            // neither status history is null and they have the same size
-//            // history arrays
-//            // so now check for any differences in the values of each
-//            for (DeveloperStatusEventDTO origStatusHistory : original.getStatusEvents()) {
-//                boolean foundMatchInChanged = false;
-//                for (DeveloperStatusEventDTO changedStatusHistory : changed.getStatusEvents()) {
-//                    if (origStatusHistory.getStatus().getId().longValue() == changedStatusHistory.getStatus().getId()
-//                            .longValue()
-//                            && origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate()
-//                                    .getTime()) {
-//                        foundMatchInChanged = true;
-//                    }
-//                }
-//                hasChanged = hasChanged || !foundMatchInChanged;
-//            }
-//        }
-        return activities;
+        List<QuestionableActivityDeveloperDTO> statusAddedActivities = new ArrayList<QuestionableActivityDeveloperDTO>();        
+        if ((origStatuses == null || origStatuses.size() == 0) && 
+                newStatuses != null && newStatuses.size() > 0) {
+            //all the newDeveloper status events are "added"
+            for(DeveloperStatusEventDTO newStatusEvent : newStatuses) {
+                QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
+                activity.setMessage(newStatusEvent.getStatus().getStatusName() + " at " + newStatusEvent.getStatusDate());
+                statusAddedActivities.add(activity);
+            }
+        } else if (origStatuses != null && origStatuses.size() > 0 && 
+                newStatuses != null && newStatuses.size() > 0) {
+            for (DeveloperStatusEventDTO newStatusEvent : newStatuses) {
+                boolean foundStatus = false;
+                for (DeveloperStatusEventDTO origStatusEvent : origStatuses) {
+                    if (origStatusEvent.getId().equals(newStatusEvent.getId()) || 
+                         (origStatusEvent.getStatus().getId().longValue() == newStatusEvent.getStatus().getId().longValue() && 
+                         origStatusEvent.getStatusDate().getTime() == newStatusEvent.getStatusDate().getTime())) {
+                        foundStatus = true;
+                    }
+                }
+                //new dev status history had this item but old did not
+                if(!foundStatus) {
+                    QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
+                    activity.setMessage(newStatusEvent.getStatus().getStatusName() + " at " + newStatusEvent.getStatusDate());
+                    statusAddedActivities.add(activity);
+                }
+            }
+        }
+        return statusAddedActivities;
+    }
+    
+    public List<QuestionableActivityDeveloperDTO> checkStatusHistoryRemoved(
+            List<DeveloperStatusEventDTO> origStatuses, List<DeveloperStatusEventDTO> newStatuses) {
+        
+        List<QuestionableActivityDeveloperDTO> statusAddedActivities = new ArrayList<QuestionableActivityDeveloperDTO>();        
+        if ((origStatuses != null && origStatuses.size() > 0) && 
+                newStatuses == null || newStatuses.size() == 0) {
+            //all the newDeveloper status events are "removed"
+            for(DeveloperStatusEventDTO newStatusEvent : newStatuses) {
+                QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
+                activity.setMessage(newStatusEvent.getStatus().getStatusName() + " at " + newStatusEvent.getStatusDate());
+                statusAddedActivities.add(activity);
+            }
+        } else if (origStatuses != null && origStatuses.size() > 0 && 
+                newStatuses != null && newStatuses.size() > 0) {
+            for (DeveloperStatusEventDTO origStatusEvent : origStatuses) {
+                boolean foundStatus = false;
+                for (DeveloperStatusEventDTO newStatusEvent : newStatuses) {
+                    if (origStatusEvent.getId().equals(newStatusEvent.getId()) || 
+                         (origStatusEvent.getStatus().getId().longValue() == newStatusEvent.getStatus().getId().longValue() && 
+                          origStatusEvent.getStatusDate().getTime() == newStatusEvent.getStatusDate().getTime())) {
+                        foundStatus = true;
+                    }
+                }
+                //orig dev status history had this item but new did not
+                if(!foundStatus) {
+                    QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
+                    activity.setMessage(origStatusEvent.getStatus().getStatusName() + " at " + origStatusEvent.getStatusDate());
+                    statusAddedActivities.add(activity);
+                }
+            }
+        }
+        return statusAddedActivities;
+    }
+    
+    public List<QuestionableActivityDeveloperDTO> checkStatusHistoryItemEdited(
+            List<DeveloperStatusEventDTO> origStatuses, List<DeveloperStatusEventDTO> newStatuses) {
+        
+        List<QuestionableActivityDeveloperDTO> statusEditedActivities = new ArrayList<QuestionableActivityDeveloperDTO>();        
+        if (origStatuses != null && origStatuses.size() > 0 && 
+                newStatuses != null && newStatuses.size() > 0) {
+            for (DeveloperStatusEventDTO origStatusEvent : origStatuses) {
+                boolean statusEdited = false;
+                DeveloperStatusEventDTO matchingNewStatusEvent = null;
+                for (DeveloperStatusEventDTO newStatusEvent : newStatuses) {
+                    if (origStatusEvent.getId().equals(newStatusEvent.getId())) {
+                        matchingNewStatusEvent = newStatusEvent;
+                        //same status id, check if the status name and date are still the same
+                        if(origStatusEvent.getStatusDate().getTime() != newStatusEvent.getStatusDate().getTime()) {
+                            statusEdited = true;
+                        } else if(origStatusEvent.getStatus().getId().longValue() != 
+                                newStatusEvent.getStatus().getId().longValue()) {
+                            statusEdited = true;
+                        }
+                    }
+                }
+                //orig dev status history item was edited
+                if(statusEdited) {
+                    QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
+                    activity.setMessage(origStatusEvent.getStatus().getStatusName() + " at " + 
+                            origStatusEvent.getStatusDate()+ " changed to " + 
+                            matchingNewStatusEvent.getStatus().getStatusName() + " at " + 
+                            matchingNewStatusEvent.getStatusDate());;
+                    statusEditedActivities.add(activity);
+                }
+            }
+        }
+        return statusEditedActivities;
     }
 }

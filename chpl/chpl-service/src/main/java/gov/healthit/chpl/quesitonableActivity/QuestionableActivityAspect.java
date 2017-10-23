@@ -13,7 +13,6 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperD
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
-import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Aspect
@@ -82,32 +80,136 @@ public class QuestionableActivityAspect {
         } else if(originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
             DeveloperDTO origDeveloper = (DeveloperDTO)originalData;
             DeveloperDTO newDeveloper = (DeveloperDTO)newData;
-            QuestionableActivityDeveloperDTO activity = 
-                    developerQuestionableActivityProvider.checkNameUpdated(origDeveloper, newDeveloper);
-            if(activity != null) {
-                createDeveloperActivity(activity, newDeveloper.getId(), activityDate, activityUser, null);
-            }
-            //TODO: status updates
+            checkDeveloperQuestionableActivity(origDeveloper, newDeveloper, activityDate, activityUser);
         } else if(originalData instanceof ProductDTO && newData instanceof ProductDTO) {
             ProductDTO origProduct = (ProductDTO)originalData;
             ProductDTO newProduct = (ProductDTO)newData;
-            QuestionableActivityProductDTO activity = 
-                    productQuestionableActivityProvider.checkNameUpdated(origProduct, newProduct);
-            if(activity != null) {
-                createProductActivity(activity, newProduct.getId(), activityDate, activityUser, null);
-            }
-            //TODO: owner updates
+            checkProductQuestionableActivity(origProduct, newProduct, activityDate, activityUser);
         } else if(originalData instanceof ProductVersionDTO && newData instanceof ProductVersionDTO) {
             ProductVersionDTO origVersion = (ProductVersionDTO)originalData;
             ProductVersionDTO newVersion = (ProductVersionDTO)newData;
-            QuestionableActivityVersionDTO activity = 
-                    versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
-            if(activity != null) {
-                createVersionActivity(activity, origVersion.getId(), activityDate, activityUser, null);
-            }
+            checkVersionQuestionableActivity(origVersion, newVersion, activityDate, activityUser);
         }
     }    
     
+    /**
+     * checks for developer name changes, current status change, or status history change (add remove and edit)
+     * @param origDeveloper
+     * @param newDeveloper
+     * @param activityDate
+     * @param activityUser
+     */
+    private void checkDeveloperQuestionableActivity(DeveloperDTO origDeveloper, DeveloperDTO newDeveloper,
+            Date activityDate, Long activityUser) {
+        QuestionableActivityDeveloperDTO devActivity = null;
+        List<QuestionableActivityDeveloperDTO> devActivities = null;
+        
+        devActivity = developerQuestionableActivityProvider.checkNameUpdated(origDeveloper, newDeveloper);
+        if(devActivity != null) {
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate, activityUser, null);
+        }
+        
+        devActivity = developerQuestionableActivityProvider.checkCurrentStatusChanged(origDeveloper, newDeveloper);
+        if(devActivity != null) {
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate, activityUser, null);
+        }
+        
+        devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
+                origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
+        if(devActivities != null && devActivities.size() > 0) {
+            for(QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, activityUser, null);
+            }
+        }
+        
+        devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
+                origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
+        if(devActivities != null && devActivities.size() > 0) {
+            for(QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, activityUser, null);
+            }
+        }
+        
+        devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
+                origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
+        if(devActivities != null && devActivities.size() > 0) {
+            for(QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
+                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, activityUser, null);
+            }
+        }
+    }
+    
+    /**
+     * checks for product name change, current owner change, owner history change (add remove and edit)
+     * @param origProduct
+     * @param newProduct
+     * @param activityDate
+     * @param activityUser
+     */
+    private void checkProductQuestionableActivity(ProductDTO origProduct, ProductDTO newProduct,
+            Date activityDate, Long activityUser) {
+        QuestionableActivityProductDTO productActivity = null;
+        List<QuestionableActivityProductDTO> productActivities = null;
+        
+        productActivity = productQuestionableActivityProvider.checkNameUpdated(origProduct, newProduct);
+        if(productActivity != null) {
+            createProductActivity(productActivity, newProduct.getId(), activityDate, activityUser, null);
+        }
+        
+        productActivity = productQuestionableActivityProvider.checkCurrentOwnerChanged(origProduct, newProduct);
+        if(productActivity != null) {
+            createProductActivity(productActivity, newProduct.getId(), activityDate, activityUser, null);
+        }
+        
+        productActivities = productQuestionableActivityProvider.checkOwnerHistoryAdded(origProduct.getOwnerHistory(), 
+                newProduct.getOwnerHistory());
+        if(productActivities != null && productActivities.size() > 0) {
+            for(QuestionableActivityProductDTO currProductActivity : productActivities) {
+                createProductActivity(currProductActivity, newProduct.getId(), activityDate, activityUser, null);
+            }
+        }
+        
+        productActivities = productQuestionableActivityProvider.checkOwnerHistoryRemoved(origProduct.getOwnerHistory(), 
+                newProduct.getOwnerHistory());
+        if(productActivities != null && productActivities.size() > 0) {
+            for(QuestionableActivityProductDTO currProductActivity : productActivities) {
+                createProductActivity(currProductActivity, newProduct.getId(), activityDate, activityUser, null);
+            }
+        }
+        
+        productActivities = productQuestionableActivityProvider.checkOwnerHistoryItemEdited(
+                origProduct.getOwnerHistory(), newProduct.getOwnerHistory());
+        if(productActivities != null && productActivities.size() > 0) {
+            for(QuestionableActivityProductDTO currProductActivity : productActivities) {
+                createProductActivity(currProductActivity, newProduct.getId(), activityDate, activityUser, null);
+            }
+        }
+    }
+   
+    /**
+     * checks for version name change
+     * @param origVersion
+     * @param newVersion
+     * @param activityDate
+     * @param activityUser
+     */
+    private void checkVersionQuestionableActivity(ProductVersionDTO origVersion, ProductVersionDTO newVersion,
+            Date activityDate, Long activityUser) {
+        QuestionableActivityVersionDTO activity = 
+                versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
+        if(activity != null) {
+            createVersionActivity(activity, origVersion.getId(), activityDate, activityUser, null);
+        }
+    }
+    
+    /**
+     * checks for various listing changes - add or remove certs and cqms, deleting surveillance, 
+     * editing certification date
+     * @param origListing
+     * @param newListing
+     * @param activityDate
+     * @param activityUser
+     */
     private void checkListingQuestionableActivity(CertifiedProductSearchDetails origListing, 
             CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser) {
         QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(origListing, newListing);
@@ -160,6 +262,14 @@ public class QuestionableActivityAspect {
         }
     }
     
+    /**
+     * checks for changes to listing certification results; g1/g2 boolean changes, macra measures added
+     * or removed for g1/g2, or changes to gap
+     * @param origCertResult
+     * @param newCertResult
+     * @param activityDate
+     * @param activityUser
+     */
     private void checkCertificationResultQuestionableActivity(CertificationResult origCertResult, CertificationResult newCertResult,
             Date activityDate, Long activityUser) {
         QuestionableActivityCertificationResultDTO certActivity = null;
@@ -187,9 +297,7 @@ public class QuestionableActivityAspect {
             certActivities = certResultQuestionableActivityProvider.checkG1MacraMeasuresAdded(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    if(certActivity != null) {
-                        createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
-                    }
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
                 }
             }
         }
@@ -197,9 +305,7 @@ public class QuestionableActivityAspect {
             certActivities = certResultQuestionableActivityProvider.checkG1MacraMeasuresRemoved(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    if(certActivity != null) {
-                        createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
-                    }
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
                 }
             }
         }
@@ -207,9 +313,7 @@ public class QuestionableActivityAspect {
             certActivities = certResultQuestionableActivityProvider.checkG2MacraMeasuresAdded(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    if(certActivity != null) {
-                        createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
-                    }
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
                 }
             }
         }
@@ -217,9 +321,7 @@ public class QuestionableActivityAspect {
             certActivities = certResultQuestionableActivityProvider.checkG2MacraMeasuresRemoved(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    if(certActivity != null) {
-                        createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
-                    }
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
                 }
             }
         }
