@@ -942,11 +942,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         certEvent.setStatus(activeCertStatus);
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
-
-        CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(),
-                "Created " + newCertifiedProduct.getChplProductNumberForActivity(), null, details);
-
+        
         return newCertifiedProduct;
     }
 

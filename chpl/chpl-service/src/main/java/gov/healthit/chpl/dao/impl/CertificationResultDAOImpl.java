@@ -23,6 +23,7 @@ import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultG2MacraMeasureEntity;
@@ -192,6 +194,18 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 
         return entity;
     }
+    
+    public List<Long> getCpIdsByCriterionId(Long criterionId) throws EntityRetrievalException {
+
+        CertificationResultEntity entity = null;
+
+        Query query = entityManager.createQuery(
+                "select certifiedProductId from CertificationResultEntity where (NOT deleted = true) AND (certification_criterion_id = :entityid) AND (success = true)");
+        query.setParameter("entityid", criterionId);
+        List<Long> result = query.getResultList();
+
+        return result;
+    }
 
     @Override
     public List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId) {
@@ -209,6 +223,17 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 
         Query query = entityManager.createQuery(
                 "from CertificationResultEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
+                CertificationResultEntity.class);
+        query.setParameter("entityid", certifiedProductId);
+        List<CertificationResultEntity> result = query.getResultList();
+        return result;
+    }
+
+    private List<CertificationResultEntity> getEntitiesByCertifiedProductIdSED(Long certifiedProductId) {
+
+        Query query = entityManager.createQuery(
+                "from CertificationResultEntity "
+        		+ "where (NOT deleted = true) AND (certified_product_id = :entityid) AND sed = true and success = true ",
                 CertificationResultEntity.class);
         query.setParameter("entityid", certifiedProductId);
         List<CertificationResultEntity> result = query.getResultList();
@@ -1170,6 +1195,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
                 "SELECT tp " + "FROM CertificationResultTestTaskEntity tp " + "LEFT OUTER JOIN FETCH tp.testTask task "
                         + "LEFT OUTER JOIN FETCH task.testParticipants participantMappings "
                         + "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
+                        + "LEFT OUTER JOIN FETCH participant.education education "
+                        + "LEFT OUTER JOIN FETCH participant.ageRange ageRange "
                         + "where (NOT tp.deleted = true) AND (certification_result_id = :certificationResultId) ",
                 CertificationResultTestTaskEntity.class);
         query.setParameter("certificationResultId", certificationResultId);

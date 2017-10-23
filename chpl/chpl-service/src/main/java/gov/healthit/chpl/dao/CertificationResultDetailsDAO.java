@@ -8,5 +8,8 @@ public interface CertificationResultDetailsDAO {
 
     List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductId(
             Long certifiedProductId) throws EntityRetrievalException;
+    
+    public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductIdSED(
+            Long certifiedProductId) throws EntityRetrievalException;
 
 }
