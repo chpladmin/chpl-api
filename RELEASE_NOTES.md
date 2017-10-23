@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 14.1.0
+_23 October 2017_
 
 ### Minor Features
 * Support multiple upload file templates for 2015 listings. The current template continues to be supported and also one that includes ICS family information, removes g1/g2 information for 170.315(g)(7), adds test tool and test data fields for 170.315 (b)(8), and removes test tool and test data fields for 170.315 (f)(5)
