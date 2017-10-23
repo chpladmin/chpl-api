@@ -31,7 +31,7 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
     private CertifiedProductHandler2014Version1 handler2014Version1;
     @Qualifier("certifiedProductHandler2014Version2")
     @Autowired
-    private CertifiedProductHandler2014Version1 handler2014Version2;
+    private CertifiedProductHandler2014Version2 handler2014Version2;
     @Qualifier("certifiedProductHandler2015Version1")
     @Autowired
     private CertifiedProductHandler2015Version1 handler2015Version1;
