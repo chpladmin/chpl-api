@@ -371,6 +371,8 @@ public class CertifiedProductController {
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
+            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(),
+                    "Created a certified product", null, result);
 
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
