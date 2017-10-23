@@ -9,6 +9,7 @@ import javax.persistence.Query;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
@@ -27,11 +28,12 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProduct
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity;
 
-@Repository("testToolDAO")
+@Repository("questionableActivityDao")
 public class QuestionableActivityDAOImpl extends BaseDAOImpl implements QuestionableActivityDAO {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityDAOImpl.class);
     
     @Override
+    @Transactional
     public QuestionableActivityDTO create(QuestionableActivityDTO dto) {
         QuestionableActivityDTO created = null;
         QuestionableActivityEntity toCreate = null;
@@ -68,6 +70,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         toCreate.setLastModifiedUser(Util.getCurrentUser().getId());
         entityManager.persist(toCreate);
         entityManager.flush();
+        entityManager.clear();
         
         if(toCreate instanceof QuestionableActivityVersionEntity) {
             created = new QuestionableActivityVersionDTO((QuestionableActivityVersionEntity)toCreate);
@@ -84,6 +87,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
     }
 
     @Override
+    @Transactional
     public List<QuestionableActivityTriggerDTO> getAllTriggers() {
         Query query = entityManager.createQuery(
                 "SELECT trigger " + 
@@ -97,12 +101,51 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         }
         return results;
     }
+
+    @Override
+    @Transactional
+    public List<QuestionableActivityVersionDTO> findVersionActivityBetweenDates(Date start, Date end) {
+        Query query = entityManager.createQuery(
+                "SELECT activity " + 
+                "FROM QuestionableActivityVersionEntity activity " +
+                "LEFT OUTER JOIN FETCH activity.version " +
+                "LEFT OUTER JOIN FETCH activity.trigger " +
+                "LEFT OUTER JOIN FETCH activity.user activityUser " +
+                "LEFT OUTER JOIN FETCH activityUser.contact " +
+                "WHERE activity.deleted <> true " +
+                "AND activity.activityDate >= :startDate " + 
+                "AND activity.activityDate <= :endDate",
+                QuestionableActivityVersionEntity.class);
+        query.setParameter("startDate", start);
+        query.setParameter("endDate", end);
+        List<QuestionableActivityVersionEntity> queryResults = query.getResultList();
+        List<QuestionableActivityVersionDTO> results = new ArrayList<QuestionableActivityVersionDTO>(queryResults.size());
+        for(QuestionableActivityVersionEntity queryResult : queryResults) {
+            results.add(new QuestionableActivityVersionDTO(queryResult));
+        }
+        return results;
+    }
     
     @Override
-    public List<QuestionableActivityDTO> findBetweenDates(Date start, Date end) {
-        List<QuestionableActivityDTO> result = new ArrayList<QuestionableActivityDTO>();
-        //TODO
-        return result;
-
+    public List<QuestionableActivityProductDTO> findProductActivityBetweenDates(Date start, Date end) {
+        Query query = entityManager.createQuery(
+                "SELECT activity " + 
+                "FROM QuestionableActivityProductEntity activity " +
+                "LEFT OUTER JOIN FETCH activity.product " +
+                "LEFT OUTER JOIN FETCH activity.trigger " +
+                "LEFT OUTER JOIN FETCH activity.user activityUser " +
+                "LEFT OUTER JOIN FETCH activityUser.contact " +
+                "WHERE activity.deleted <> true " +
+                "AND activity.activityDate >= :startDate " + 
+                "AND activity.activityDate <= :endDate",
+                QuestionableActivityProductEntity.class);
+        query.setParameter("startDate", start);
+        query.setParameter("endDate", end);
+        List<QuestionableActivityProductEntity> queryResults = query.getResultList();
+        List<QuestionableActivityProductDTO> results = new ArrayList<QuestionableActivityProductDTO>(queryResults.size());
+        for(QuestionableActivityProductEntity queryResult : queryResults) {
+            results.add(new QuestionableActivityProductDTO(queryResult));
+        }
+        return results;
     }
 }

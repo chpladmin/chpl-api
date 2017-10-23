@@ -3,16 +3,19 @@ package gov.healthit.chpl.quesitonableActivity;
 import java.util.Date;
 import java.util.List;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -20,11 +23,13 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificat
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
+import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 
+@Component
 @Aspect
-public class QuestionableActivityAspect {
+public class QuestionableActivityAspect implements EnvironmentAware {
     @Autowired private Environment env;
     @Autowired private CertificationResultRules certResultRules;
     @Autowired private QuestionableActivityDAO questionableActivityDao;
@@ -34,17 +39,26 @@ public class QuestionableActivityAspect {
     @Autowired private ListingQuestionableActivityProvider listingQuestionableActivityProvider;
     @Autowired private CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider;
 
+    private List<QuestionableActivityTriggerDTO> triggerTypes;
     private long listingActivityThresholdMillis = -1;
+    
     public QuestionableActivityAspect() {
-        // load the different trigger types
+    }
+    
+    @Override
+    public void setEnvironment(final Environment e) {
+        this.env = e;
         String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
         int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
         listingActivityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
+        
+        triggerTypes = questionableActivityDao.getAllTriggers();
     }
     
-    @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..) && "
-            + "args(originalData,newData,..))")
-    public void checkQuestionableActivity(JoinPoint joinPoint, Object originalData, Object newData) {
+    @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
+            + "args(concept,objectId,activityDescription,originalData,newData,..)")
+    public void checkQuestionableActivity(ActivityConcept concept, 
+            Long objectId, String activityDescription, Object originalData, Object newData) {
         if(originalData == null || newData == null || 
                 !originalData.getClass().equals(newData.getClass())) {
             return;
@@ -106,19 +120,22 @@ public class QuestionableActivityAspect {
         
         devActivity = developerQuestionableActivityProvider.checkNameUpdated(origDeveloper, newDeveloper);
         if(devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate, activityUser, null);
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate, 
+                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED);
         }
         
         devActivity = developerQuestionableActivityProvider.checkCurrentStatusChanged(origDeveloper, newDeveloper);
         if(devActivity != null) {
-            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate, activityUser, null);
+            createDeveloperActivity(devActivity, newDeveloper.getId(), activityDate, 
+                    activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
         }
         
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         if(devActivities != null && devActivities.size() > 0) {
             for(QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, activityUser, null);
+                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED);
             }
         }
         
@@ -126,7 +143,8 @@ public class QuestionableActivityAspect {
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         if(devActivities != null && devActivities.size() > 0) {
             for(QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, activityUser, null);
+                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED);
             }
         }
         
@@ -134,7 +152,8 @@ public class QuestionableActivityAspect {
                 origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
         if(devActivities != null && devActivities.size() > 0) {
             for(QuestionableActivityDeveloperDTO currDevActivity : devActivities) {
-                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, activityUser, null);
+                createDeveloperActivity(currDevActivity, newDeveloper.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED);
             }
         }
     }
@@ -153,19 +172,22 @@ public class QuestionableActivityAspect {
         
         productActivity = productQuestionableActivityProvider.checkNameUpdated(origProduct, newProduct);
         if(productActivity != null) {
-            createProductActivity(productActivity, newProduct.getId(), activityDate, activityUser, null);
+            createProductActivity(productActivity, newProduct.getId(), activityDate, 
+                    activityUser, QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED);
         }
         
         productActivity = productQuestionableActivityProvider.checkCurrentOwnerChanged(origProduct, newProduct);
         if(productActivity != null) {
-            createProductActivity(productActivity, newProduct.getId(), activityDate, activityUser, null);
+            createProductActivity(productActivity, newProduct.getId(), activityDate, 
+                    activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
         }
         
         productActivities = productQuestionableActivityProvider.checkOwnerHistoryAdded(origProduct.getOwnerHistory(), 
                 newProduct.getOwnerHistory());
         if(productActivities != null && productActivities.size() > 0) {
             for(QuestionableActivityProductDTO currProductActivity : productActivities) {
-                createProductActivity(currProductActivity, newProduct.getId(), activityDate, activityUser, null);
+                createProductActivity(currProductActivity, newProduct.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED);
             }
         }
         
@@ -173,7 +195,8 @@ public class QuestionableActivityAspect {
                 newProduct.getOwnerHistory());
         if(productActivities != null && productActivities.size() > 0) {
             for(QuestionableActivityProductDTO currProductActivity : productActivities) {
-                createProductActivity(currProductActivity, newProduct.getId(), activityDate, activityUser, null);
+                createProductActivity(currProductActivity, newProduct.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_REMOVED);
             }
         }
         
@@ -181,7 +204,8 @@ public class QuestionableActivityAspect {
                 origProduct.getOwnerHistory(), newProduct.getOwnerHistory());
         if(productActivities != null && productActivities.size() > 0) {
             for(QuestionableActivityProductDTO currProductActivity : productActivities) {
-                createProductActivity(currProductActivity, newProduct.getId(), activityDate, activityUser, null);
+                createProductActivity(currProductActivity, newProduct.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_EDITED);
             }
         }
     }
@@ -198,7 +222,8 @@ public class QuestionableActivityAspect {
         QuestionableActivityVersionDTO activity = 
                 versionQuestionableActivityProvider.checkNameUpdated(origVersion, newVersion);
         if(activity != null) {
-            createVersionActivity(activity, origVersion.getId(), activityDate, activityUser, null);
+            createVersionActivity(activity, origVersion.getId(), activityDate, 
+                    activityUser, QuestionableActivityTriggerConcept.VERSION_NAME_EDITED);
         }
     }
     
@@ -223,39 +248,45 @@ public class QuestionableActivityAspect {
                             - origListing.getCertificationDate().longValue() > listingActivityThresholdMillis)) {
                 activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(origListing, newListing);
                 if(activity != null) {
-                    createListingActivity(activity, origListing.getId(), activityDate, activityUser, null);
+                    createListingActivity(activity, origListing.getId(), activityDate, 
+                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED);
                 }
                 
                 activity = listingQuestionableActivityProvider.checkSurveillanceDeleted(origListing, newListing);
                 if(activity != null) {
-                    createListingActivity(activity, origListing.getId(), activityDate, activityUser, null);
+                    createListingActivity(activity, origListing.getId(), activityDate, 
+                            activityUser, QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED);
                 }
                 
                 List<QuestionableActivityListingDTO> activities = listingQuestionableActivityProvider.checkCqmsAdded(origListing, newListing);
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, activityUser, null);
+                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+                                activityUser, QuestionableActivityTriggerConcept.CQM_ADDED);
                     }
                 }
                 
                 activities = listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, activityUser, null);
+                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+                                activityUser, QuestionableActivityTriggerConcept.CQM_REMOVED);
                     }
                 }
 
                 activities = listingQuestionableActivityProvider.checkCertificationsAdded(origListing, newListing);
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, activityUser, null);
+                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+                                activityUser, QuestionableActivityTriggerConcept.CRITERIA_ADDED);
                     }
                 }
                 
                 activities = listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, activityUser, null);
+                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+                                activityUser, QuestionableActivityTriggerConcept.CRITERIA_REMOVED);
                     }
                 }
             }
@@ -278,26 +309,30 @@ public class QuestionableActivityAspect {
         if(certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G1_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG1SuccessUpdated(origCertResult, newCertResult);
             if(certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activityDate, activityUser, null);
+                createCertificationActivity(certActivity, origCertResult.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED);
             }
         }
         if(certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG2SuccessUpdated(origCertResult, newCertResult);
             if(certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activityDate, activityUser, null);
+                createCertificationActivity(certActivity, origCertResult.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED);
             }
         }
         if(certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.GAP)) {
             certActivity = certResultQuestionableActivityProvider.checkGapUpdated(origCertResult, newCertResult);
             if(certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activityDate, activityUser, null);
+                createCertificationActivity(certActivity, origCertResult.getId(), activityDate, 
+                        activityUser, QuestionableActivityTriggerConcept.GAP_EDITED);
             }
         }
         if(certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G1_MACRA)) {
             certActivities = certResultQuestionableActivityProvider.checkG1MacraMeasuresAdded(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
+                            activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_ADDED);
                 }
             }
         }
@@ -305,7 +340,8 @@ public class QuestionableActivityAspect {
             certActivities = certResultQuestionableActivityProvider.checkG1MacraMeasuresRemoved(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
+                            activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED);
                 }
             }
         }
@@ -313,7 +349,8 @@ public class QuestionableActivityAspect {
             certActivities = certResultQuestionableActivityProvider.checkG2MacraMeasuresAdded(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
+                            activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_ADDED);
                 }
             }
         }
@@ -321,54 +358,70 @@ public class QuestionableActivityAspect {
             certActivities = certResultQuestionableActivityProvider.checkG2MacraMeasuresRemoved(origCertResult, newCertResult);
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
-                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, activityUser, null);
+                    createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
+                            activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED);
                 }
             }
         }
     }
     
     private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId, 
-            Date activityDate, Long activityUser, Long triggerId) {
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         activity.setListingId(listingId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
-        activity.setTriggerId(triggerId);
+        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
+        activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
     }
     
     private void createCertificationActivity(QuestionableActivityCertificationResultDTO activity, Long certResultId, 
-            Date activityDate, Long activityUser, Long triggerId) {
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         activity.setCertResultId(certResultId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
-        activity.setTriggerId(triggerId);
+        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
+        activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
     }
     
     private void createDeveloperActivity(QuestionableActivityDeveloperDTO activity, Long developerId, 
-            Date activityDate, Long activityUser, Long triggerId) {
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         activity.setDeveloperId(developerId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
-        activity.setTriggerId(triggerId);
+        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
+        activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
     }
     
     private void createProductActivity(QuestionableActivityProductDTO activity, Long productId, 
-            Date activityDate, Long activityUser, Long triggerId) {
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         activity.setProductId(productId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
-        activity.setTriggerId(triggerId);
+        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
+        activity.setTriggerId(triggerDto.getId());        
         questionableActivityDao.create(activity);
     }
     
     private void createVersionActivity(QuestionableActivityVersionDTO activity, Long versionId, 
-            Date activityDate, Long activityUser, Long triggerId) {
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
         activity.setVersionId(versionId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
-        activity.setTriggerId(triggerId);
+        QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
+        activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
+    }
+    
+    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
+        QuestionableActivityTriggerDTO result = null;
+        for(QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
+            if(trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
+                result = currTrigger;
+            }
+        }
+        return result;
     }
 }
