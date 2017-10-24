@@ -239,7 +239,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser) {
         QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(origListing, newListing);
         if(activity != null) {
-            createListingActivity(activity, origListing.getId(), activityDate, activityUser, null);
+            createListingActivity(activity, origListing.getId(), activityDate, activityUser, QuestionableActivityTriggerConcept.EDITION_2011_EDITED);
         } else {
             //if it wasn't a 2011 update, check for other changes outside 
             //of the acceptable activity threshold

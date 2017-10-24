@@ -51,7 +51,7 @@ public class QuestionableActivityDeveloperEntity implements QuestionableActivity
     private Long userId;
     
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @JoinColumn(name = "activity_user_id", insertable = false, updatable = false)
     private UserEntity user;
     
     @Column(name = "deleted")

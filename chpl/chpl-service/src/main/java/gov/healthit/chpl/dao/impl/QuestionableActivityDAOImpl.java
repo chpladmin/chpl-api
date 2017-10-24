@@ -149,4 +149,48 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         }
         return results;
     }
+    
+    public List<QuestionableActivityDeveloperDTO> findDeveloperActivityBetweenDates(Date start, Date end) {
+        Query query = entityManager.createQuery(
+                "SELECT activity " + 
+                "FROM QuestionableActivityDeveloperEntity activity " +
+                "LEFT OUTER JOIN FETCH activity.developer " +
+                "LEFT OUTER JOIN FETCH activity.trigger " +
+                "LEFT OUTER JOIN FETCH activity.user activityUser " +
+                "LEFT OUTER JOIN FETCH activityUser.contact " +
+                "WHERE activity.deleted <> true " +
+                "AND activity.activityDate >= :startDate " + 
+                "AND activity.activityDate <= :endDate",
+                QuestionableActivityDeveloperEntity.class);
+        query.setParameter("startDate", start);
+        query.setParameter("endDate", end);
+        List<QuestionableActivityDeveloperEntity> queryResults = query.getResultList();
+        List<QuestionableActivityDeveloperDTO> results = new ArrayList<QuestionableActivityDeveloperDTO>(queryResults.size());
+        for(QuestionableActivityDeveloperEntity queryResult : queryResults) {
+            results.add(new QuestionableActivityDeveloperDTO(queryResult));
+        }
+        return results;
+    }
+    
+    public List<QuestionableActivityListingDTO> findListingActivityBetweenDates(Date start, Date end) {
+        Query query = entityManager.createQuery(
+                "SELECT activity " + 
+                "FROM QuestionableActivityListingEntity activity " +
+                "LEFT OUTER JOIN FETCH activity.listing " +
+                "LEFT OUTER JOIN FETCH activity.trigger " +
+                "LEFT OUTER JOIN FETCH activity.user activityUser " +
+                "LEFT OUTER JOIN FETCH activityUser.contact " +
+                "WHERE activity.deleted <> true " +
+                "AND activity.activityDate >= :startDate " + 
+                "AND activity.activityDate <= :endDate",
+                QuestionableActivityListingEntity.class);
+        query.setParameter("startDate", start);
+        query.setParameter("endDate", end);
+        List<QuestionableActivityListingEntity> queryResults = query.getResultList();
+        List<QuestionableActivityListingDTO> results = new ArrayList<QuestionableActivityListingDTO>(queryResults.size());
+        for(QuestionableActivityListingEntity queryResult : queryResults) {
+            results.add(new QuestionableActivityListingDTO(queryResult));
+        }
+        return results;
+    }
 }

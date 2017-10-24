@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -44,29 +45,38 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         
         List<QuestionableActivityListingDTO> cqmAddedActivities = new ArrayList<QuestionableActivityListingDTO>();
-        if ((origListing.getCqmResults() == null || origListing.getCqmResults().size() == 0) && 
-                newListing.getCqmResults() != null && newListing.getCqmResults().size() > 0) {
-            //all the newListing cqms are "added"
-            for(CQMResultDetails newCqm : newListing.getCqmResults()) {
-                QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setBefore(null);
-                activity.setAfter(newCqm.getCmsId());
-                cqmAddedActivities.add(activity);
-            }
-        } else if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0 && 
+        if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0 && 
                 newListing.getCqmResults() != null && newListing.getCqmResults().size() > 0) {
             //all cqms are in the details so find the same one in the orig and new objects
             //based on cms id and compare the success boolean to see if one was added
             for (CQMResultDetails origCqm : origListing.getCqmResults()) {
                 for (CQMResultDetails newCqm : newListing.getCqmResults()) {
-                    if (origCqm.getCmsId().equals(newCqm.getCmsId())) {
+                    if (StringUtils.isEmpty(newCqm.getCmsId())
+                            && StringUtils.isEmpty(origCqm.getCmsId())
+                            && !StringUtils.isEmpty(newCqm.getNqfNumber())
+                            && !StringUtils.isEmpty(origCqm.getNqfNumber())
+                            && !newCqm.getNqfNumber().equals("N/A") && !origCqm.getNqfNumber().equals("N/A")
+                            && newCqm.getNqfNumber().equals(origCqm.getNqfNumber())) {
+                        // NQF is the same if the NQF numbers are equal
                         if (origCqm.isSuccess() == Boolean.FALSE && newCqm.isSuccess() == Boolean.TRUE) {
                             //orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(null);
-                            activity.setAfter(newCqm.getCmsId());
+                            activity.setAfter(newCqm.getCmsId() != null ? newCqm.getCmsId() : newCqm.getNqfNumber());
                             cqmAddedActivities.add(activity);
                         }
+                        break;
+                    } else if (newCqm.getCmsId() != null && origCqm.getCmsId() != null
+                            && newCqm.getCmsId().equals(origCqm.getCmsId())) {
+                        // CMS is the same if the CMS ID and version is equal
+                        if (origCqm.isSuccess() == Boolean.FALSE && newCqm.isSuccess() == Boolean.TRUE) {
+                            //orig did not have this cqm but new does so it was added
+                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            activity.setBefore(null);
+                            activity.setAfter(newCqm.getCmsId() != null ? newCqm.getCmsId() : newCqm.getNqfNumber());
+                            cqmAddedActivities.add(activity);
+                        }
+                        break;
                     }
                 }
             }
@@ -79,29 +89,38 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         
         List<QuestionableActivityListingDTO> cqmRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
-        if ((newListing.getCqmResults() == null || newListing.getCqmResults().size() == 0) && 
-                origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0) {
-            //all the origListing cqms are "removed"
-            for(CQMResultDetails origCqm : origListing.getCqmResults()) {
-                QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setBefore(origCqm.getCmsId());
-                activity.setAfter(null);
-                cqmRemovedActivities.add(activity);
-            }
-        } else if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0 && 
+        if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0 && 
                 newListing.getCqmResults() != null && newListing.getCqmResults().size() > 0) {
             //all cqms are in the details so find the same one in the orig and new objects
             //based on cms id and compare the success boolean to see if one was removed
             for (CQMResultDetails origCqm : origListing.getCqmResults()) {
                 for (CQMResultDetails newCqm : newListing.getCqmResults()) {
-                    if (origCqm.getCmsId().equals(newCqm.getCmsId())) {
+                    if (StringUtils.isEmpty(newCqm.getCmsId())
+                            && StringUtils.isEmpty(origCqm.getCmsId())
+                            && !StringUtils.isEmpty(newCqm.getNqfNumber())
+                            && !StringUtils.isEmpty(origCqm.getNqfNumber())
+                            && !newCqm.getNqfNumber().equals("N/A") && !origCqm.getNqfNumber().equals("N/A")
+                            && newCqm.getNqfNumber().equals(origCqm.getNqfNumber())) {
+                        // NQF is the same if the NQF numbers are equal
                         if (origCqm.isSuccess() == Boolean.TRUE && newCqm.isSuccess() == Boolean.FALSE) {
                             //orig did have this cqm but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setBefore(origCqm.getCmsId());
+                            activity.setBefore(origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
                             activity.setAfter(null);
                             cqmRemovedActivities.add(activity);
                         }
+                        break;
+                    } else if (newCqm.getCmsId() != null && origCqm.getCmsId() != null
+                            && newCqm.getCmsId().equals(origCqm.getCmsId())) {
+                        // CMS is the same if the CMS ID and version is equal
+                        if (origCqm.isSuccess() == Boolean.FALSE && newCqm.isSuccess() == Boolean.TRUE) {
+                            //orig did not have this cqm but new does so it was added
+                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            activity.setBefore(origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
+                            activity.setAfter(null);
+                            cqmRemovedActivities.add(activity);
+                        }
+                        break;
                     }
                 }
             }
@@ -114,16 +133,7 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         
         List<QuestionableActivityListingDTO> certAddedActivities = new ArrayList<QuestionableActivityListingDTO>();
-        if ((origListing.getCertificationResults() == null || origListing.getCertificationResults().size() == 0) && 
-                newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
-            //all the newListing cert results are "added"
-            for(CertificationResult newCertResult : newListing.getCertificationResults()) {
-                QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setBefore(null);
-                activity.setAfter(newCertResult.getNumber());
-                certAddedActivities.add(activity);
-            }
-        } else if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
+        if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
                 newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
             //all cert results are in the details so find the same one in the orig and new objects
             //based on number and compare the success boolean to see if one was added
@@ -137,6 +147,7 @@ public class ListingQuestionableActivityProvider {
                             activity.setAfter(newCertResult.getNumber());
                             certAddedActivities.add(activity);
                         }
+                        break;
                     }
                 }
             }
@@ -149,16 +160,7 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         
         List<QuestionableActivityListingDTO> certRemovedActivities = new ArrayList<QuestionableActivityListingDTO>();
-        if ((newListing.getCertificationResults() == null || newListing.getCertificationResults().size() == 0) && 
-                origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0) {
-            //all the origListing cert results are "removed"
-            for(CertificationResult origCertResult : origListing.getCertificationResults()) {
-                QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setBefore(origCertResult.getNumber());
-                activity.setAfter(null);
-                certRemovedActivities.add(activity);
-            }
-        } else if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
+        if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
                 newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
             //all cert results are in the details so find the same one in the orig and new objects
             //based on number and compare the success boolean to see if one was removed
@@ -172,6 +174,7 @@ public class ListingQuestionableActivityProvider {
                             activity.setAfter(null);
                             certRemovedActivities.add(activity);
                         }
+                        break;
                     }
                 }
             }
