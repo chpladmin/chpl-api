@@ -465,6 +465,7 @@ public class CertifiedProductController {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
+            	System.out.println("One line");
                 throw new ValidationException(
                         "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
             }
