@@ -19,7 +19,8 @@ public class DeveloperQuestionableActivityProvider {
                 || (origDeveloper.getName() == null && newDeveloper.getName() != null)
                 || !origDeveloper.getName().equals(newDeveloper.getName())) {
             activity = new QuestionableActivityDeveloperDTO();
-            activity.setMessage("From " + origDeveloper.getName() + " to " + newDeveloper.getName());
+            activity.setBefore(origDeveloper.getName());
+            activity.setAfter(newDeveloper.getName());
         }
         
         return activity;
@@ -31,15 +32,17 @@ public class DeveloperQuestionableActivityProvider {
         QuestionableActivityDeveloperDTO activity = null;
         if(origDeveloper.getStatus() != null && newDeveloper.getStatus() == null) {
             activity = new QuestionableActivityDeveloperDTO();
-            activity.setMessage("From " + origDeveloper.getStatus().getStatus().getStatusName() + " to null.");
+            activity.setBefore(origDeveloper.getStatus().getStatus().getStatusName());
+            activity.setAfter(null);
         } else if(origDeveloper.getStatus() == null && newDeveloper.getStatus() != null) {
             activity = new QuestionableActivityDeveloperDTO();
-            activity.setMessage("From null to " + newDeveloper.getStatus().getStatus().getStatusName());
+            activity.setBefore(null);
+            activity.setAfter(newDeveloper.getStatus().getStatus().getStatusName());
         } else if(origDeveloper.getStatus().getStatus().getId().longValue() != 
                 newDeveloper.getStatus().getStatus().getId().longValue()) {
             activity = new QuestionableActivityDeveloperDTO();
-            activity.setMessage("From " + origDeveloper.getStatus().getStatus().getStatusName() 
-                    + " to " + newDeveloper.getStatus().getStatus().getStatusName());
+            activity.setBefore(origDeveloper.getStatus().getStatus().getStatusName());
+            activity.setAfter(newDeveloper.getStatus().getStatus().getStatusName());
         }
         
         return activity;
@@ -51,10 +54,11 @@ public class DeveloperQuestionableActivityProvider {
         List<QuestionableActivityDeveloperDTO> statusAddedActivities = new ArrayList<QuestionableActivityDeveloperDTO>();        
         if ((origStatuses == null || origStatuses.size() == 0) && 
                 newStatuses != null && newStatuses.size() > 0) {
-            //all the newDeveloper status events are "added"
+            //all the new status events are "added"
             for(DeveloperStatusEventDTO newStatusEvent : newStatuses) {
                 QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                activity.setMessage(newStatusEvent.getStatus().getStatusName() + " at " + newStatusEvent.getStatusDate());
+                activity.setBefore(null);
+                activity.setAfter(newStatusEvent.getStatus().getStatusName() + " (" + newStatusEvent.getStatusDate() + ")");
                 statusAddedActivities.add(activity);
             }
         } else if (origStatuses != null && origStatuses.size() > 0 && 
@@ -71,8 +75,8 @@ public class DeveloperQuestionableActivityProvider {
                 //new dev status history had this item but old did not
                 if(!foundStatus) {
                     QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                    activity.setMessage(newStatusEvent.getStatus().getStatusName() + " at " + newStatusEvent.getStatusDate());
-                    statusAddedActivities.add(activity);
+                    activity.setBefore(null);
+                    activity.setAfter(newStatusEvent.getStatus().getStatusName() + " (" + newStatusEvent.getStatusDate() + ")");                    statusAddedActivities.add(activity);
                 }
             }
         }
@@ -85,10 +89,11 @@ public class DeveloperQuestionableActivityProvider {
         List<QuestionableActivityDeveloperDTO> statusAddedActivities = new ArrayList<QuestionableActivityDeveloperDTO>();        
         if ((origStatuses != null && origStatuses.size() > 0) && 
                 newStatuses == null || newStatuses.size() == 0) {
-            //all the newDeveloper status events are "removed"
-            for(DeveloperStatusEventDTO newStatusEvent : newStatuses) {
+            //all the orig status events are "removed"
+            for(DeveloperStatusEventDTO origStatusEvent : origStatuses) {
                 QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                activity.setMessage(newStatusEvent.getStatus().getStatusName() + " at " + newStatusEvent.getStatusDate());
+                activity.setBefore(origStatusEvent.getStatus().getStatusName() + " (" + origStatusEvent.getStatusDate() + ")");
+                activity.setAfter(null);
                 statusAddedActivities.add(activity);
             }
         } else if (origStatuses != null && origStatuses.size() > 0 && 
@@ -105,7 +110,8 @@ public class DeveloperQuestionableActivityProvider {
                 //orig dev status history had this item but new did not
                 if(!foundStatus) {
                     QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                    activity.setMessage(origStatusEvent.getStatus().getStatusName() + " at " + origStatusEvent.getStatusDate());
+                    activity.setBefore(origStatusEvent.getStatus().getStatusName() + " (" + origStatusEvent.getStatusDate() + ")");
+                    activity.setAfter(null);
                     statusAddedActivities.add(activity);
                 }
             }
@@ -137,10 +143,8 @@ public class DeveloperQuestionableActivityProvider {
                 //orig dev status history item was edited
                 if(statusEdited) {
                     QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                    activity.setMessage(origStatusEvent.getStatus().getStatusName() + " at " + 
-                            origStatusEvent.getStatusDate()+ " changed to " + 
-                            matchingNewStatusEvent.getStatus().getStatusName() + " at " + 
-                            matchingNewStatusEvent.getStatusDate());;
+                    activity.setBefore(origStatusEvent.getStatus().getStatusName() + " (" + origStatusEvent.getStatusDate() + ")");
+                    activity.setAfter(matchingNewStatusEvent.getStatus().getStatusName() + " (" + matchingNewStatusEvent.getStatusDate() + ")");
                     statusEditedActivities.add(activity);
                 }
             }

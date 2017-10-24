@@ -20,7 +20,8 @@ public class ProductQuestionableActivityProvider {
                 || (origProduct.getName() == null && newProduct.getName() != null)
                 || !origProduct.getName().equals(newProduct.getName())) {
             activity = new QuestionableActivityProductDTO();
-            activity.setMessage("From " + origProduct.getName() + " to " + newProduct.getName());
+            activity.setBefore(origProduct.getName());
+            activity.setAfter(newProduct.getName());
         }
         
         return activity;
@@ -32,14 +33,16 @@ public class ProductQuestionableActivityProvider {
         QuestionableActivityProductDTO activity = null;
         if(origProduct.getDeveloperId() != null && newProduct.getDeveloperId() == null) {
             activity = new QuestionableActivityProductDTO();
-            activity.setMessage("From " + origProduct.getDeveloperId() + " to null.");
+            activity.setBefore(origProduct.getDeveloperName());
+            activity.setAfter(null);
         } else if(origProduct.getDeveloperId() == null && newProduct.getDeveloperId() != null) {
             activity = new QuestionableActivityProductDTO();
-            activity.setMessage("From null to " + newProduct.getDeveloperId());
+            activity.setBefore(null);
+            activity.setAfter(newProduct.getDeveloperName());
         } else if(origProduct.getDeveloperId().longValue() != newProduct.getDeveloperId().longValue()) {
             activity = new QuestionableActivityProductDTO();
-            activity.setMessage("From " + origProduct.getDeveloperName() 
-                    + " to " + newProduct.getDeveloperName());
+            activity.setBefore(origProduct.getDeveloperName());
+            activity.setAfter(newProduct.getDeveloperName());
         }
         return activity;
     }
@@ -53,7 +56,8 @@ public class ProductQuestionableActivityProvider {
             //all the newOwners are "added"
             for(ProductOwnerDTO newOwner : newOwners) {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                activity.setMessage(newOwner.getDeveloper().getName() + " at " + newOwner.getTransferDate());
+                activity.setBefore(null);
+                activity.setAfter(newOwner.getDeveloper().getName() + " (" + new Date(newOwner.getTransferDate()) + ")");
                 ownerAddedActivities.add(activity);
             }
         } else if (origOwners != null && origOwners.size() > 0 && 
@@ -70,7 +74,8 @@ public class ProductQuestionableActivityProvider {
                 //new owner had this item but old did not
                 if(!foundOwner) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                    activity.setMessage(newOwner.getDeveloper().getName() + " at " + newOwner.getTransferDate());
+                    activity.setBefore(null);
+                    activity.setAfter(newOwner.getDeveloper().getName() + " (" + new Date(newOwner.getTransferDate()) + ")");
                     ownerAddedActivities.add(activity);
                 }
             }
@@ -87,7 +92,8 @@ public class ProductQuestionableActivityProvider {
             //all the origOwners are "removed"
             for(ProductOwnerDTO origOwner : origOwners) {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                activity.setMessage(origOwner.getDeveloper().getName() + " at " + origOwner.getTransferDate());
+                activity.setBefore(origOwner.getDeveloper().getName() + " (" + new Date(origOwner.getTransferDate()) + ")");
+                activity.setAfter(null);
                 ownerRemovedActivities.add(activity);
             }
         } else if (origOwners != null && origOwners.size() > 0 && 
@@ -104,7 +110,8 @@ public class ProductQuestionableActivityProvider {
                 //orig owner had this item but new did not
                 if(!foundOwner) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                    activity.setMessage(origOwner.getDeveloper().getName() + " at " + origOwner.getTransferDate());
+                    activity.setBefore(origOwner.getDeveloper().getName() + " (" + new Date(origOwner.getTransferDate()) + ")");
+                    activity.setAfter(null);
                     ownerRemovedActivities.add(activity);
                 }
             }
@@ -136,10 +143,8 @@ public class ProductQuestionableActivityProvider {
                 //orig owner history item was edited
                 if(ownerEdited) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                    activity.setMessage(origOwner.getDeveloper().getName() + " at " + 
-                            new Date(origOwner.getTransferDate()) + " changed to " + 
-                            matchingNewOwner.getDeveloper().getName() + " at " + 
-                            new Date(matchingNewOwner.getTransferDate()));
+                    activity.setBefore(origOwner.getDeveloper().getName() + " (" + new Date(origOwner.getTransferDate()) + ")");
+                    activity.setAfter(matchingNewOwner.getDeveloper().getName() + " (" + new Date(matchingNewOwner.getTransferDate()) + ")");
                     ownerEditedActivities.add(activity);
                 }
             }

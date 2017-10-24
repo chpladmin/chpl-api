@@ -19,7 +19,8 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         if (origListing.getCertificationEdition().get("name").equals("2011")) {
               activity = new QuestionableActivityListingDTO();
-              activity.setMessage("TRUE");
+              activity.setBefore(null);
+              activity.setAfter(null);
         }
         
         return activity;
@@ -32,8 +33,8 @@ public class ListingQuestionableActivityProvider {
         if (!origListing.getCertificationStatus().get("id")
                 .equals(newListing.getCertificationStatus().get("id"))) {
               activity = new QuestionableActivityListingDTO();
-              activity.setMessage("From " + origListing.getCertificationStatus().get("name").toString() + 
-                      " to " + newListing.getCertificationStatus().get("name").toString());
+              activity.setBefore(origListing.getCertificationStatus().get("name").toString());
+              activity.setAfter(newListing.getCertificationStatus().get("name").toString());
         }
         
         return activity;
@@ -48,7 +49,8 @@ public class ListingQuestionableActivityProvider {
             //all the newListing cqms are "added"
             for(CQMResultDetails newCqm : newListing.getCqmResults()) {
                 QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setMessage(newCqm.getCmsId());
+                activity.setBefore(null);
+                activity.setAfter(newCqm.getCmsId());
                 cqmAddedActivities.add(activity);
             }
         } else if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0 && 
@@ -61,7 +63,8 @@ public class ListingQuestionableActivityProvider {
                         if (origCqm.isSuccess() == Boolean.FALSE && newCqm.isSuccess() == Boolean.TRUE) {
                             //orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setMessage(newCqm.getCmsId());
+                            activity.setBefore(null);
+                            activity.setAfter(newCqm.getCmsId());
                             cqmAddedActivities.add(activity);
                         }
                     }
@@ -81,7 +84,8 @@ public class ListingQuestionableActivityProvider {
             //all the origListing cqms are "removed"
             for(CQMResultDetails origCqm : origListing.getCqmResults()) {
                 QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setMessage(origCqm.getCmsId());
+                activity.setBefore(origCqm.getCmsId());
+                activity.setAfter(null);
                 cqmRemovedActivities.add(activity);
             }
         } else if (origListing.getCqmResults() != null && origListing.getCqmResults().size() > 0 && 
@@ -94,7 +98,8 @@ public class ListingQuestionableActivityProvider {
                         if (origCqm.isSuccess() == Boolean.TRUE && newCqm.isSuccess() == Boolean.FALSE) {
                             //orig did have this cqm but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setMessage(origCqm.getCmsId());
+                            activity.setBefore(origCqm.getCmsId());
+                            activity.setAfter(null);
                             cqmRemovedActivities.add(activity);
                         }
                     }
@@ -114,7 +119,8 @@ public class ListingQuestionableActivityProvider {
             //all the newListing cert results are "added"
             for(CertificationResult newCertResult : newListing.getCertificationResults()) {
                 QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setMessage(newCertResult.getNumber());
+                activity.setBefore(null);
+                activity.setAfter(newCertResult.getNumber());
                 certAddedActivities.add(activity);
             }
         } else if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
@@ -127,7 +133,8 @@ public class ListingQuestionableActivityProvider {
                         if (origCertResult.isSuccess() == Boolean.FALSE && newCertResult.isSuccess() == Boolean.TRUE) {
                             //orig did not have this cert result but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setMessage(newCertResult.getNumber());
+                            activity.setBefore(null);
+                            activity.setAfter(newCertResult.getNumber());
                             certAddedActivities.add(activity);
                         }
                     }
@@ -147,7 +154,8 @@ public class ListingQuestionableActivityProvider {
             //all the origListing cert results are "removed"
             for(CertificationResult origCertResult : origListing.getCertificationResults()) {
                 QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                activity.setMessage(origCertResult.getNumber());
+                activity.setBefore(origCertResult.getNumber());
+                activity.setAfter(null);
                 certRemovedActivities.add(activity);
             }
         } else if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
@@ -160,7 +168,8 @@ public class ListingQuestionableActivityProvider {
                         if (origCertResult.isSuccess() == Boolean.TRUE && newCertResult.isSuccess() == Boolean.FALSE) {
                             //orig did have this cert result but new does not so it was removed
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
-                            activity.setMessage(origCertResult.getNumber());
+                            activity.setBefore(origCertResult.getNumber());
+                            activity.setAfter(null);
                             certRemovedActivities.add(activity);
                         }
                     }
@@ -180,7 +189,9 @@ public class ListingQuestionableActivityProvider {
                  newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
               
               activity = new QuestionableActivityListingDTO();
-              activity.setMessage("TRUE");
+              //TODO: should we find the specific surveillance here? maybe put a count of the number deleted?
+              activity.setBefore(null);
+              activity.setAfter(null);
         }
         
         return activity;

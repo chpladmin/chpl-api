@@ -21,12 +21,14 @@ public class CertificationResultQuestionableActivityProvider {
                  (origCertResult.isG1Success() == Boolean.FALSE && newCertResult.isG1Success() == Boolean.TRUE)) {
                 //g1 success changed to true
                 activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage("TRUE");
+                activity.setBefore(Boolean.FALSE.toString());
+                activity.setAfter(Boolean.TRUE.toString());
             } else if ((origCertResult.isG1Success() != null && newCertResult.isG1Success() == null) || 
                     (origCertResult.isG1Success() == Boolean.TRUE && newCertResult.isG1Success() == Boolean.FALSE)) {
                 //g1 success changed to false
                 activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage("FALSE");
+                activity.setBefore(Boolean.TRUE.toString());
+                activity.setAfter(Boolean.FALSE.toString());
             }
         }
         return activity;
@@ -41,12 +43,14 @@ public class CertificationResultQuestionableActivityProvider {
                  (origCertResult.isG2Success() == Boolean.FALSE && newCertResult.isG2Success() == Boolean.TRUE)) {
                 //g2 success changed to true
                 activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage("TRUE");
+                activity.setBefore(Boolean.FALSE.toString());
+                activity.setAfter(Boolean.TRUE.toString());
             } else if ((origCertResult.isG2Success() != null && newCertResult.isG2Success() == null) || 
                     (origCertResult.isG2Success() == Boolean.TRUE && newCertResult.isG2Success() == Boolean.FALSE)) {
                 //g2 success changed to false
                 activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage("FALSE");
+                activity.setBefore(Boolean.TRUE.toString());
+                activity.setAfter(Boolean.FALSE.toString());
             }
         }
         
@@ -62,12 +66,14 @@ public class CertificationResultQuestionableActivityProvider {
                  (origCertResult.isGap() == Boolean.FALSE && newCertResult.isGap() == Boolean.TRUE)) {
                 //gap changed to true
                 activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage("TRUE");
+                activity.setBefore(Boolean.FALSE.toString());
+                activity.setAfter(Boolean.TRUE.toString());
             } else if ((origCertResult.isGap() != null && newCertResult.isGap() == null) || 
                     (origCertResult.isGap() == Boolean.TRUE && newCertResult.isGap() == Boolean.FALSE)) {
                 //gap changed to false
                 activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage("FALSE");
+                activity.setBefore(Boolean.TRUE.toString());
+                activity.setAfter(Boolean.FALSE.toString());
             }
         }
         return activity;
@@ -82,7 +88,8 @@ public class CertificationResultQuestionableActivityProvider {
             //all the newcert g1 macras are "added"
             for(MacraMeasure newMacra : newCertResult.getG1MacraMeasures()) {
                 QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage(newMacra.getAbbreviation());
+                activity.setBefore(null);
+                activity.setAfter(newMacra.getAbbreviation());
                 addedMacras.add(activity);
             }
         } else if (origCertResult.getG1MacraMeasures() != null && origCertResult.getG1MacraMeasures().size() > 0 && 
@@ -96,7 +103,8 @@ public class CertificationResultQuestionableActivityProvider {
                 }
                 if(!hasMatch) {
                     QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                    activity.setMessage(newMacra.getAbbreviation());
+                    activity.setBefore(null);
+                    activity.setAfter(newMacra.getAbbreviation());
                     addedMacras.add(activity);
                 }
             }
@@ -111,9 +119,10 @@ public class CertificationResultQuestionableActivityProvider {
         if ((newCertResult.getG1MacraMeasures() == null || newCertResult.getG1MacraMeasures().size() == 0) && 
                 origCertResult.getG1MacraMeasures() != null && origCertResult.getG1MacraMeasures().size() > 0) {
             //all the origCert g1 macras are "removed"
-            for(MacraMeasure newMacra : origCertResult.getG1MacraMeasures()) {
+            for(MacraMeasure origMacra : origCertResult.getG1MacraMeasures()) {
                 QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage(newMacra.getAbbreviation());
+                activity.setBefore(origMacra.getAbbreviation());
+                activity.setAfter(null);
                 removedMacras.add(activity);
             }
         } else if (origCertResult.getG1MacraMeasures() != null && origCertResult.getG1MacraMeasures().size() > 0 && 
@@ -127,7 +136,8 @@ public class CertificationResultQuestionableActivityProvider {
                 }
                 if(!hasMatch) {
                     QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                    activity.setMessage(origMacra.getAbbreviation());
+                    activity.setBefore(origMacra.getAbbreviation());
+                    activity.setAfter(null);
                     removedMacras.add(activity);
                 }
             }
@@ -144,7 +154,8 @@ public class CertificationResultQuestionableActivityProvider {
             //all the newCert G2 macras are "added"
             for(MacraMeasure newMacra : newCertResult.getG2MacraMeasures()) {
                 QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage(newMacra.getAbbreviation());
+                activity.setBefore(null);
+                activity.setAfter(newMacra.getAbbreviation());
                 addedMacras.add(activity);
             }
         } else if (origCertResult.getG2MacraMeasures() != null && origCertResult.getG2MacraMeasures().size() > 0 && 
@@ -158,7 +169,8 @@ public class CertificationResultQuestionableActivityProvider {
                 }
                 if(!hasMatch) {
                     QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                    activity.setMessage(newMacra.getAbbreviation());
+                    activity.setBefore(null);
+                    activity.setAfter(newMacra.getAbbreviation());
                     addedMacras.add(activity);
                 }
             }
@@ -173,9 +185,10 @@ public class CertificationResultQuestionableActivityProvider {
         if ((newCertResult.getG2MacraMeasures() == null || newCertResult.getG2MacraMeasures().size() == 0) && 
                 origCertResult.getG2MacraMeasures() != null && origCertResult.getG2MacraMeasures().size() > 0) {
             //all the origCert G2 macras are "removed"
-            for(MacraMeasure newMacra : origCertResult.getG2MacraMeasures()) {
+            for(MacraMeasure origMacra : origCertResult.getG2MacraMeasures()) {
                 QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                activity.setMessage(newMacra.getAbbreviation());
+                activity.setBefore(origMacra.getAbbreviation());
+                activity.setAfter(null);
                 removedMacras.add(activity);
             }
         } else if (origCertResult.getG2MacraMeasures() != null && origCertResult.getG2MacraMeasures().size() > 0 && 
@@ -189,7 +202,8 @@ public class CertificationResultQuestionableActivityProvider {
                 }
                 if(!hasMatch) {
                     QuestionableActivityCertificationResultDTO activity = new QuestionableActivityCertificationResultDTO();
-                    activity.setMessage(origMacra.getAbbreviation());
+                    activity.setBefore(origMacra.getAbbreviation());
+                    activity.setAfter(null);
                     removedMacras.add(activity);
                 }
             }

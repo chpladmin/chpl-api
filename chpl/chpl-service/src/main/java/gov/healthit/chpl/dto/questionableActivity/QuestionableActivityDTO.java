@@ -9,7 +9,8 @@ public abstract class QuestionableActivityDTO {
     private Long id;
     private Long triggerId;
     private QuestionableActivityTriggerDTO trigger;
-    private String message;
+    private String before;
+    private String after;
     private Date activityDate;
     private Long userId;
     private UserDTO user;
@@ -23,7 +24,8 @@ public abstract class QuestionableActivityDTO {
         if(entity.getTrigger() != null) {
             this.trigger = new QuestionableActivityTriggerDTO(entity.getTrigger());
         }
-        this.message = entity.getMessage();
+        this.before = entity.getBefore();
+        this.after = entity.getAfter();
         this.activityDate = entity.getActivityDate();
         this.userId = entity.getUserId();
         if(entity.getUser() != null) {
@@ -55,20 +57,28 @@ public abstract class QuestionableActivityDTO {
         this.trigger = trigger;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public Date getActivityDate() {
         return activityDate;
     }
 
     public void setActivityDate(Date activityDate) {
         this.activityDate = activityDate;
+    }
+
+    public String getBefore() {
+        return before;
+    }
+
+    public void setBefore(String before) {
+        this.before = before;
+    }
+
+    public String getAfter() {
+        return after;
+    }
+
+    public void setAfter(String after) {
+        this.after = after;
     }
 
     public Long getUserId() {

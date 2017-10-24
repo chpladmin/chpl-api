@@ -181,6 +181,8 @@ public class ProductController {
                 // update the developer if an id is supplied
                 if (productInfo.newDeveloperId() != null) {
                     toUpdate.setDeveloperId(productInfo.newDeveloperId());
+                } else {
+                    toUpdate.setDeveloperId(productInfo.getProduct().getOwner().getDeveloperId());
                 }
                 // product could have updated ownership history
                 if (productInfo.getProduct().getOwnerHistory() != null) {

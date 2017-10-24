@@ -12,8 +12,10 @@ public interface QuestionableActivityEntity {
     public void setTriggerId(Long triggerId);
     public QuestionableActivityTriggerEntity getTrigger();
     public void setTrigger(QuestionableActivityTriggerEntity trigger);
-    public String getMessage();
-    public void setMessage(String message);
+    public String getBefore();
+    public void setBefore(String before);
+    public String getAfter();
+    public void setAfter(String after);
     public Date getActivityDate();
     public void setActivityDate(Date activityDate);
     public Long getUserId();

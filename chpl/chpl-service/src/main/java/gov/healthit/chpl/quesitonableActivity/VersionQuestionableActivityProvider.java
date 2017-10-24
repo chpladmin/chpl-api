@@ -15,7 +15,8 @@ public class VersionQuestionableActivityProvider {
                 || (origVersion.getVersion() == null && newVersion.getVersion() != null)
                 || !origVersion.getVersion().equals(newVersion.getVersion())) {
             activity = new QuestionableActivityVersionDTO();
-            activity.setMessage("From " + origVersion.getVersion() + " to " + newVersion.getVersion());
+            activity.setBefore(origVersion.getVersion());
+            activity.setAfter(newVersion.getVersion());
         }
         
         return activity;

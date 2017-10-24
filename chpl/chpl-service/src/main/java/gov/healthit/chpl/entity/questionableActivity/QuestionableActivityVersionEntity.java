@@ -38,8 +38,11 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
     @JoinColumn(name = "version_id", insertable = false, updatable = false)
     private ProductVersionEntity version;
     
-    @Column(name = "message")
-    private String message;
+    @Column(name = "before_data")
+    private String before;
+    
+    @Column(name = "after_data")
+    private String after;
     
     @Column(name = "activity_date")
     private Date activityDate;
@@ -103,14 +106,6 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
         this.version = version;
     }
 
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     public Date getActivityDate() {
         return activityDate;
     }
@@ -165,6 +160,22 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityEn
 
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public String getBefore() {
+        return before;
+    }
+
+    public void setBefore(String before) {
+        this.before = before;
+    }
+
+    public String getAfter() {
+        return after;
+    }
+
+    public void setAfter(String after) {
+        this.after = after;
     }
 }
 

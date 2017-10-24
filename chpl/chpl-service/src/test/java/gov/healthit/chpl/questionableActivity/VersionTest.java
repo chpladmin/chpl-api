@@ -85,9 +85,30 @@ public class VersionTest extends TestCase {
 		assertEquals(1, activities.size());
 		QuestionableActivityVersionDTO activity = activities.get(0);
 		assertEquals(1, activity.getVersionId().longValue());
-		assertEquals("From 1.0.0 to NEW VERSION NAME", activity.getMessage());
+		assertEquals("1.0.0", activity.getBefore());
+		assertEquals("NEW VERSION NAME", activity.getAfter());
 		assertEquals(QuestionableActivityTriggerConcept.VERSION_NAME_EDITED.getName(), activity.getTrigger().getName());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
+	
+	@Test
+    @Transactional
+    @Rollback(true)
+    public void testUpdateNothing() throws 
+        EntityCreationException, EntityRetrievalException, JsonProcessingException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        Date beforeActivity = new Date();      
+        ProductVersionDTO version = versionManager.getById(1L);
+        versionManager.update(version);
+        Date afterActivity = new Date();
+        
+        List<QuestionableActivityVersionDTO> activities = 
+                qaDao.findVersionActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(0, activities.size());
+        
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

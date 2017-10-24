@@ -177,6 +177,27 @@ public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {
                     entityManager.flush();
                 }
             }
+            
+            // Look for entries in the existing ownership history
+            // and a matching entry in the new ownership history to see if 
+            // anything changed (transfer date)
+            for (ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
+                boolean isInUpdate = false;
+                for (int i = 0; i < dto.getOwnerHistory().size() && !isInUpdate; i++) {
+                    ProductOwnerDTO updatedProductPreviousOwner = dto.getOwnerHistory().get(i);
+                    if (existingPrevOwner.getDeveloper() != null && updatedProductPreviousOwner.getDeveloper() != null
+                            && existingPrevOwner.getDeveloper().getId().longValue() == updatedProductPreviousOwner
+                                    .getDeveloper().getId().longValue()) {
+                        
+                        if(existingPrevOwner.getTransferDate().getTime() != 
+                                updatedProductPreviousOwner.getTransferDate().longValue()) {
+                            existingPrevOwner.setTransferDate(new Date(updatedProductPreviousOwner.getTransferDate()));
+                            entityManager.merge(existingPrevOwner);
+                            entityManager.flush();
+                        }
+                    }
+                }
+            }
         }
 
         entityManager.clear();

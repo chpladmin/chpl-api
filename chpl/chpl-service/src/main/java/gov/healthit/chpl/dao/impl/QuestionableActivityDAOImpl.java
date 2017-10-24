@@ -63,7 +63,8 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         }
         
         toCreate.setActivityDate(dto.getActivityDate());
-        toCreate.setMessage(dto.getMessage());
+        toCreate.setBefore(dto.getBefore());
+        toCreate.setAfter(dto.getAfter());
         toCreate.setTriggerId(dto.getTriggerId());
         toCreate.setUserId(dto.getUserId());
         toCreate.setDeleted(false);
