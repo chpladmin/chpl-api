@@ -113,7 +113,7 @@ public class ListingQuestionableActivityProvider {
                     } else if (newCqm.getCmsId() != null && origCqm.getCmsId() != null
                             && newCqm.getCmsId().equals(origCqm.getCmsId())) {
                         // CMS is the same if the CMS ID and version is equal
-                        if (origCqm.isSuccess() == Boolean.FALSE && newCqm.isSuccess() == Boolean.TRUE) {
+                        if (origCqm.isSuccess() == Boolean.TRUE && newCqm.isSuccess() == Boolean.FALSE) {
                             //orig did not have this cqm but new does so it was added
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());

@@ -1,11 +1,10 @@
 package gov.healthit.chpl.questionableActivity;
 
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -33,18 +32,12 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
-import gov.healthit.chpl.dto.DeveloperDTO;
-import gov.healthit.chpl.dto.DeveloperStatusDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -153,7 +146,12 @@ public class ListingTest extends TestCase {
         Date beforeActivity = new Date(); 
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
         CQMResultDetails addedCqm = new CQMResultDetails();
-        addedCqm.setNumber("0012");
+        addedCqm.setId(60L);
+        addedCqm.setCmsId("CMS82");
+        addedCqm.setSuccess(Boolean.TRUE);
+        Set<String> successVersions = new HashSet<String>();
+        successVersions.add("v0");
+        addedCqm.setSuccessVersions(successVersions);
         listing.getCqmResults().add(addedCqm);
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
@@ -161,7 +159,6 @@ public class ListingTest extends TestCase {
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
         
-        //TODO: not correctly getting the cqm update
         List<QuestionableActivityListingDTO> activities = 
                 qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
@@ -169,12 +166,114 @@ public class ListingTest extends TestCase {
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
         assertNull(activity.getBefore());
-        assertEquals("0012", activity.getAfter());
+        assertEquals("CMS82", activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.CQM_ADDED.getName(), activity.getTrigger().getName());
         
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 	
+	@Test
+    @Transactional
+    @Rollback
+    public void testRemoveCqm() throws 
+        EntityCreationException, EntityRetrievalException, 
+        ValidationException, InvalidArgumentsException, JsonProcessingException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        Date beforeActivity = new Date(); 
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for(CQMResultDetails cqm : listing.getCqmResults()) {
+            if(cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
+                cqm.setSuccess(Boolean.FALSE);
+                cqm.setSuccessVersions(null);
+            }
+        }
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+        
+        List<QuestionableActivityListingDTO> activities = 
+                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(1, activity.getListingId().longValue());
+        assertEquals("CMS146", activity.getBefore());
+        assertNull(activity.getAfter());
+        assertEquals(QuestionableActivityTriggerConcept.CQM_REMOVED.getName(), activity.getTrigger().getName());
+        
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+	
+    @Test
+    @Transactional
+    @Rollback
+    public void testAddCriteria() throws EntityCreationException, EntityRetrievalException, ValidationException,
+            InvalidArgumentsException, JsonProcessingException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for (CertificationResult cert : listing.getCertificationResults()) {
+            if (cert.getId().longValue() == 4) {
+                cert.setSuccess(Boolean.TRUE);
+            }
+        }
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities = qaDao.findListingActivityBetweenDates(beforeActivity,
+                afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(1, activity.getListingId().longValue());
+        assertNull(activity.getBefore());
+        assertEquals("170.314 (a)(4)", activity.getAfter());
+        assertEquals(QuestionableActivityTriggerConcept.CRITERIA_ADDED.getName(), activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+    
+    @Test
+    @Transactional
+    @Rollback
+    public void testRemoveCriteria() throws EntityCreationException, EntityRetrievalException, ValidationException,
+            InvalidArgumentsException, JsonProcessingException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        for (CertificationResult cert : listing.getCertificationResults()) {
+            if (cert.getId().longValue() == 1) {
+                cert.setSuccess(Boolean.FALSE);
+            }
+        }
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities = qaDao.findListingActivityBetweenDates(beforeActivity,
+                afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(1, activity.getListingId().longValue());
+        assertEquals("170.314 (a)(1)", activity.getBefore());
+        assertNull(activity.getAfter());
+        assertEquals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName(), activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+	   
 	@Test
     @Transactional
     @Rollback
