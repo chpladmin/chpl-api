@@ -262,12 +262,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                     || (mapping.getTransparencyAttestation() != null
                                             && !mapping.getTransparencyAttestation()
                                                     .equals(product.getTransparencyAttestation()))) {
-                                product.getWarningMessages().add(
-                                        "The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
+                                product.getWarningMessages().add(String.format(
+                                        messageSource.getMessage(new DefaultMessageSourceResolvable("transparencyAttestation.save"),
+                                                LocaleContextHolder.getLocale())));
                             }
                         } else if (mapping == null && !StringUtils.isEmpty(product.getTransparencyAttestation())) {
-                            product.getWarningMessages().add(
-                                    "The transparency attestation for the developer is different in the system than in the upload file. This value will be overwritten by what is in the upload file if you proceed.");
+                            product.getWarningMessages().add(String.format(
+                                    messageSource.getMessage(new DefaultMessageSourceResolvable("transparencyAttestation.save"),
+                                            LocaleContextHolder.getLocale())));
                         }
                     }
                 }
