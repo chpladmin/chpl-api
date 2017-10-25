@@ -5,7 +5,7 @@ _Date TBD_
 
 ### Minor Features
 * Add certified_products/sed_details endpoint that returns the latest SED all Details document
-
+* Change warning message for transparency attestation saving 
 ---
 
 ## Version 14.1.0
