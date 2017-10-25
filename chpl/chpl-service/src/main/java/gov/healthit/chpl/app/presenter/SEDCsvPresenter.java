@@ -67,7 +67,7 @@ public class SEDCsvPresenter {
         result.add("Task Time - Standard Deviation (s)");
         result.add("Task Time Deviation - Observed (s)");
         result.add("Task Time Deviation - Optimal (s)");
-        result.add("Task Success");
+        result.add("Task Success - Mean (%)");
         result.add("Task Success - Standard Deviation (%)");
         result.add("Task Errors - Mean (%)");
         result.add("Task Errors - Standard Deviation (%)");
