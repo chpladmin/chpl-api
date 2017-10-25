@@ -6,6 +6,7 @@ import java.util.Date;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 public class CertifiedProductDetailsDTO implements Serializable {
     private static final long serialVersionUID = 6238278848984479683L;
@@ -168,6 +169,22 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.lastModifiedDate = entity.getLastModifiedDate();
     }
 
+    public CertifiedProductDetailsDTO(CertifiedProductBasicSearchResultEntity searchResultEntity) {
+        this.setId(searchResultEntity.getId());
+        this.setChplProductNumber(searchResultEntity.getChplProductNumber());
+        this.setCertificationBodyName(searchResultEntity.getAcbName());
+        DeveloperDTO developer = new DeveloperDTO();
+        developer.setName(searchResultEntity.getDeveloper());
+        this.setDeveloper(developer);
+        ProductDTO product = new ProductDTO();
+        product.setName(searchResultEntity.getProduct());
+        this.setProduct(product);
+        ProductVersionDTO version = new ProductVersionDTO();
+        version.setVersion(searchResultEntity.getVersion());
+        this.setVersion(version);
+        this.setCertificationStatusName(searchResultEntity.getCertificationStatus());
+    }
+    
     public Long getId() {
         return id;
     }

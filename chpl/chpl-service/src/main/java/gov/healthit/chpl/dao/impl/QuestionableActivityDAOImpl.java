@@ -193,4 +193,28 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         }
         return results;
     }
+    
+    public List<QuestionableActivityCertificationResultDTO> findCertificationResultActivityBetweenDates(Date start, Date end) {
+        Query query = entityManager.createQuery(
+                "SELECT activity " + 
+                "FROM QuestionableActivityCertificationResultEntity activity " +
+                "LEFT OUTER JOIN FETCH activity.certResult certResult " +
+                "LEFT OUTER JOIN FETCH certResult.listing " +
+                "LEFT OUTER JOIN FETCH activity.trigger " +
+                "LEFT OUTER JOIN FETCH activity.user activityUser " +
+                "LEFT OUTER JOIN FETCH activityUser.contact " +
+                "WHERE activity.deleted <> true " +
+                "AND activity.activityDate >= :startDate " + 
+                "AND activity.activityDate <= :endDate",
+                QuestionableActivityCertificationResultEntity.class);
+        query.setParameter("startDate", start);
+        query.setParameter("endDate", end);
+        List<QuestionableActivityCertificationResultEntity> queryResults = query.getResultList();
+        List<QuestionableActivityCertificationResultDTO> results = 
+                new ArrayList<QuestionableActivityCertificationResultDTO>(queryResults.size());
+        for(QuestionableActivityCertificationResultEntity queryResult : queryResults) {
+            results.add(new QuestionableActivityCertificationResultDTO(queryResult));
+        }
+        return results;
+    }
 }

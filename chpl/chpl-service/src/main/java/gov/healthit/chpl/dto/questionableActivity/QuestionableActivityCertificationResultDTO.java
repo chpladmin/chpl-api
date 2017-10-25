@@ -1,12 +1,14 @@
 package gov.healthit.chpl.dto.questionableActivity;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityCertificationResultEntity;
 
 public class QuestionableActivityCertificationResultDTO extends QuestionableActivityDTO {
     private Long certResultId;
     private CertificationResultDetailsDTO certResult;
-    
+    private CertifiedProductDetailsDTO listing;
+
     public QuestionableActivityCertificationResultDTO() {
         super();
     }
@@ -16,6 +18,10 @@ public class QuestionableActivityCertificationResultDTO extends QuestionableActi
         this.certResultId = entity.getCertResultId();
         if(entity.getCertResult() != null) {
             this.certResult = new CertificationResultDetailsDTO(entity.getCertResult());
+            
+            if(entity.getCertResult().getListing() != null) {
+                this.listing = new CertifiedProductDetailsDTO(entity.getCertResult().getListing());
+            }
         }
     }
     
@@ -37,5 +43,13 @@ public class QuestionableActivityCertificationResultDTO extends QuestionableActi
 
     public void setCertResult(CertificationResultDetailsDTO certResult) {
         this.certResult = certResult;
+    }
+
+    public CertifiedProductDetailsDTO getListing() {
+        return listing;
+    }
+
+    public void setListing(CertifiedProductDetailsDTO listing) {
+        this.listing = listing;
     }  
 }

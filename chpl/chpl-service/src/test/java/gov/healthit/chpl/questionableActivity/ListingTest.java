@@ -38,8 +38,10 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.web.controller.SurveillanceController;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
@@ -56,6 +58,7 @@ public class ListingTest extends TestCase {
 	
 	@Autowired private QuestionableActivityDAO qaDao;	
 	@Autowired private CertifiedProductController cpController;
+	@Autowired private SurveillanceController survController;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -278,19 +281,18 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testSurveillanceDeleted() throws 
-        EntityCreationException, EntityRetrievalException, 
+        EntityCreationException, EntityRetrievalException, SurveillanceAuthorityAccessDeniedException,
         ValidationException, InvalidArgumentsException, JsonProcessingException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(10L);
+        assertNotNull(listing.getSurveillance());
+        assertTrue(listing.getSurveillance().size() > 0);
+        Long surveillanceIdToDelete = listing.getSurveillance().get(0).getId();
         listing.getSurveillance().clear();
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
-        updateRequest.setListing(listing);
-        //TODO: this listing isn't valid
-        
-        cpController.updateCertifiedProduct(updateRequest);
+        //TODO: surveillance is not valid!
+        survController.deleteSurveillance(surveillanceIdToDelete);
         Date afterActivity = new Date();
         
         List<QuestionableActivityListingDTO> activities = 
@@ -298,7 +300,7 @@ public class ListingTest extends TestCase {
         assertNotNull(activities);
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(1, activity.getListingId().longValue());
+        assertEquals(10, activity.getListingId().longValue());
         assertNull(activity.getBefore());
         assertNull(activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED.getName(), activity.getTrigger().getName());
