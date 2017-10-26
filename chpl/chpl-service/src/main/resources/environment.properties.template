@@ -27,6 +27,7 @@ summaryEmailPeriodInDays=7
 
 #questionable activity email properties
 questionableActivityReportFilename=questionable-activity.csv
+questionableActivityEmailSubject=Questionable Activity Report
 
 #oversight email properties
 suspendedDaysAllowed=30

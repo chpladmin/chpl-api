@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
@@ -241,8 +242,16 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         if(activity != null) {
             createListingActivity(activity, origListing.getId(), activityDate, activityUser, QuestionableActivityTriggerConcept.EDITION_2011_EDITED);
         } else {
-            //if it wasn't a 2011 update, check for other changes outside 
-            //of the acceptable activity threshold
+            //it wasn't a 2011 update, check for any changes that are questionable
+            //outside of the acceptable activity threshold
+            activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(
+                    CertificationStatusType.WithdrawnByDeveloperUnderReview, origListing, newListing);
+            if(activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED);
+            }
+            
+            //finall check for other changes that are only questionable 
+            //outside of the acceptable activity threshold
             if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null
                     && (newListing.getLastModifiedDate().longValue()
                             - origListing.getCertificationDate().longValue() > listingActivityThresholdMillis)) {

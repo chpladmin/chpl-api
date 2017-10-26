@@ -10,6 +10,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Component
 public class ListingQuestionableActivityProvider {
@@ -33,6 +34,29 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         if (!origListing.getCertificationStatus().get("id")
                 .equals(newListing.getCertificationStatus().get("id"))) {
+              activity = new QuestionableActivityListingDTO();
+              activity.setBefore(origListing.getCertificationStatus().get("name").toString());
+              activity.setAfter(newListing.getCertificationStatus().get("name").toString());
+        }
+        
+        return activity;
+    }
+    
+    /**
+     * questionable only if the certification status has updated
+     * to the supplied updateTo value
+     * @param updateTo
+     * @param origListing
+     * @param newListing
+     * @return
+     */
+    public QuestionableActivityListingDTO checkCertificationStatusUpdated(
+            CertificationStatusType updateTo, CertifiedProductSearchDetails origListing, 
+            CertifiedProductSearchDetails newListing) {
+        
+        QuestionableActivityListingDTO activity = null;
+        if (!origListing.getCertificationStatus().get("name").toString().equals(updateTo.getName()) && 
+            newListing.getCertificationStatus().get("name").toString().equals(updateTo.getName())) {
               activity = new QuestionableActivityListingDTO();
               activity.setBefore(origListing.getCertificationStatus().get("name").toString());
               activity.setAfter(newListing.getCertificationStatus().get("name").toString());
