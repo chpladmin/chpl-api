@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Entity
@@ -36,7 +37,7 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "listing_id", insertable = false, updatable = false)
-    private CertifiedProductBasicSearchResultEntity listing;
+    private CertifiedProductDetailsEntity listing;
     
     @Column(name = "before_data")
     private String before;
@@ -170,11 +171,11 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
         this.listingId = listingId;
     }
 
-    public CertifiedProductBasicSearchResultEntity getListing() {
+    public CertifiedProductDetailsEntity getListing() {
         return listing;
     }
 
-    public void setListing(CertifiedProductBasicSearchResultEntity listing) {
+    public void setListing(CertifiedProductDetailsEntity listing) {
         this.listing = listing;
     }
 }

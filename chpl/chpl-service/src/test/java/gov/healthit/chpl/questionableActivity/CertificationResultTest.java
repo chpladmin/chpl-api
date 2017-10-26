@@ -2,9 +2,7 @@ package gov.healthit.chpl.questionableActivity;
 
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -31,18 +29,14 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
-import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.SurveillanceController;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
@@ -187,4 +181,8 @@ public class CertificationResultTest extends TestCase {
         
         SecurityContextHolder.getContext().setAuthentication(null);
     }
+	
+	//TODO: add test for g1 and g2 macra measures added/removed.
+	//Need a 2015 listing that passes validation that also certifies to 
+	//a criteria that can have g1 and g2 macra measures
 }

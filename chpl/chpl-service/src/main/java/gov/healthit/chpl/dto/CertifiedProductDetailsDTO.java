@@ -168,22 +168,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.countClosedNonconformities = entity.getCountClosedNonconformities();
         this.lastModifiedDate = entity.getLastModifiedDate();
     }
-
-    public CertifiedProductDetailsDTO(CertifiedProductBasicSearchResultEntity searchResultEntity) {
-        this.setId(searchResultEntity.getId());
-        this.setChplProductNumber(searchResultEntity.getChplProductNumber());
-        this.setCertificationBodyName(searchResultEntity.getAcbName());
-        DeveloperDTO developer = new DeveloperDTO();
-        developer.setName(searchResultEntity.getDeveloper());
-        this.setDeveloper(developer);
-        ProductDTO product = new ProductDTO();
-        product.setName(searchResultEntity.getProduct());
-        this.setProduct(product);
-        ProductVersionDTO version = new ProductVersionDTO();
-        version.setVersion(searchResultEntity.getVersion());
-        this.setVersion(version);
-        this.setCertificationStatusName(searchResultEntity.getCertificationStatus());
-    }
     
     public Long getId() {
         return id;

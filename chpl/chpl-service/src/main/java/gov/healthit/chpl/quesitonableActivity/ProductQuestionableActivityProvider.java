@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.Util;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
@@ -57,7 +58,8 @@ public class ProductQuestionableActivityProvider {
             for(ProductOwnerDTO newOwner : newOwners) {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                 activity.setBefore(null);
-                activity.setAfter(newOwner.getDeveloper().getName() + " (" + new Date(newOwner.getTransferDate()) + ")");
+                activity.setAfter(newOwner.getDeveloper().getName() + 
+                        " (" + Util.getTimestampFormatter().format(new Date(newOwner.getTransferDate())) + ")");
                 ownerAddedActivities.add(activity);
             }
         } else if (origOwners != null && origOwners.size() > 0 && 
@@ -75,7 +77,8 @@ public class ProductQuestionableActivityProvider {
                 if(!foundOwner) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                     activity.setBefore(null);
-                    activity.setAfter(newOwner.getDeveloper().getName() + " (" + new Date(newOwner.getTransferDate()) + ")");
+                    activity.setAfter(newOwner.getDeveloper().getName() + 
+                            " (" + Util.getTimestampFormatter().format(new Date(newOwner.getTransferDate())) + ")");
                     ownerAddedActivities.add(activity);
                 }
             }
@@ -92,7 +95,8 @@ public class ProductQuestionableActivityProvider {
             //all the origOwners are "removed"
             for(ProductOwnerDTO origOwner : origOwners) {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                activity.setBefore(origOwner.getDeveloper().getName() + " (" + new Date(origOwner.getTransferDate()) + ")");
+                activity.setBefore(origOwner.getDeveloper().getName() + 
+                        " (" + Util.getTimestampFormatter().format(new Date(origOwner.getTransferDate())) + ")");
                 activity.setAfter(null);
                 ownerRemovedActivities.add(activity);
             }
@@ -110,7 +114,8 @@ public class ProductQuestionableActivityProvider {
                 //orig owner had this item but new did not
                 if(!foundOwner) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                    activity.setBefore(origOwner.getDeveloper().getName() + " (" + new Date(origOwner.getTransferDate()) + ")");
+                    activity.setBefore(origOwner.getDeveloper().getName() + 
+                            " (" + Util.getTimestampFormatter().format(new Date(origOwner.getTransferDate())) + ")");
                     activity.setAfter(null);
                     ownerRemovedActivities.add(activity);
                 }
@@ -143,8 +148,10 @@ public class ProductQuestionableActivityProvider {
                 //orig owner history item was edited
                 if(ownerEdited) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
-                    activity.setBefore(origOwner.getDeveloper().getName() + " (" + new Date(origOwner.getTransferDate()) + ")");
-                    activity.setAfter(matchingNewOwner.getDeveloper().getName() + " (" + new Date(matchingNewOwner.getTransferDate()) + ")");
+                    activity.setBefore(origOwner.getDeveloper().getName() + 
+                            " (" + Util.getTimestampFormatter().format(new Date(origOwner.getTransferDate())) + ")");
+                    activity.setAfter(matchingNewOwner.getDeveloper().getName() + 
+                            " (" + Util.getTimestampFormatter().format(new Date(matchingNewOwner.getTransferDate())) + ")");
                     ownerEditedActivities.add(activity);
                 }
             }

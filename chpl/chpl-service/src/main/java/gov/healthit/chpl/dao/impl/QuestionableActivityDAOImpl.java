@@ -128,6 +128,7 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
     }
     
     @Override
+    @Transactional
     public List<QuestionableActivityProductDTO> findProductActivityBetweenDates(Date start, Date end) {
         Query query = entityManager.createQuery(
                 "SELECT activity " + 
@@ -150,6 +151,8 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         return results;
     }
     
+    @Override
+    @Transactional
     public List<QuestionableActivityDeveloperDTO> findDeveloperActivityBetweenDates(Date start, Date end) {
         Query query = entityManager.createQuery(
                 "SELECT activity " + 
@@ -172,6 +175,8 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         return results;
     }
     
+    @Override
+    @Transactional
     public List<QuestionableActivityListingDTO> findListingActivityBetweenDates(Date start, Date end) {
         Query query = entityManager.createQuery(
                 "SELECT activity " + 
@@ -194,6 +199,8 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
         return results;
     }
     
+    @Override
+    @Transactional
     public List<QuestionableActivityCertificationResultDTO> findCertificationResultActivityBetweenDates(Date start, Date end) {
         Query query = entityManager.createQuery(
                 "SELECT activity " + 

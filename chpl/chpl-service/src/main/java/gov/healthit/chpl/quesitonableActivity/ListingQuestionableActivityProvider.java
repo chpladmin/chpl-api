@@ -192,7 +192,6 @@ public class ListingQuestionableActivityProvider {
                  newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
               
               activity = new QuestionableActivityListingDTO();
-              //TODO: should we find the specific surveillance here? maybe put a count of the number deleted?
               activity.setBefore(null);
               activity.setAfter(null);
         }

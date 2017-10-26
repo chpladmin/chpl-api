@@ -9,8 +9,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
-
 @Entity
 @Table(name = "certification_result_details")
 public class CertificationResultDetailsEntity {
@@ -31,7 +29,7 @@ public class CertificationResultDetailsEntity {
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
-    private CertifiedProductBasicSearchResultEntity listing;
+    private CertifiedProductDetailsEntity listing;
     
     @Column(name = "success")
     private Boolean success;
@@ -156,11 +154,11 @@ public class CertificationResultDetailsEntity {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
-    public CertifiedProductBasicSearchResultEntity getListing() {
+    public CertifiedProductDetailsEntity getListing() {
         return listing;
     }
 
-    public void setListing(CertifiedProductBasicSearchResultEntity listing) {
+    public void setListing(CertifiedProductDetailsEntity listing) {
         this.listing = listing;
     }
 }

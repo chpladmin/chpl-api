@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.Util;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
@@ -58,7 +59,8 @@ public class DeveloperQuestionableActivityProvider {
             for(DeveloperStatusEventDTO newStatusEvent : newStatuses) {
                 QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
                 activity.setBefore(null);
-                activity.setAfter(newStatusEvent.getStatus().getStatusName() + " (" + newStatusEvent.getStatusDate() + ")");
+                activity.setAfter(newStatusEvent.getStatus().getStatusName() + 
+                        " (" + Util.getTimestampFormatter().format(newStatusEvent.getStatusDate()) + ")");
                 statusAddedActivities.add(activity);
             }
         } else if (origStatuses != null && origStatuses.size() > 0 && 
@@ -76,7 +78,9 @@ public class DeveloperQuestionableActivityProvider {
                 if(!foundStatus) {
                     QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
                     activity.setBefore(null);
-                    activity.setAfter(newStatusEvent.getStatus().getStatusName() + " (" + newStatusEvent.getStatusDate() + ")");                    statusAddedActivities.add(activity);
+                    activity.setAfter(newStatusEvent.getStatus().getStatusName() + 
+                            " (" + Util.getTimestampFormatter().format(newStatusEvent.getStatusDate()) + ")");                    
+                    statusAddedActivities.add(activity);
                 }
             }
         }
@@ -92,7 +96,8 @@ public class DeveloperQuestionableActivityProvider {
             //all the orig status events are "removed"
             for(DeveloperStatusEventDTO origStatusEvent : origStatuses) {
                 QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                activity.setBefore(origStatusEvent.getStatus().getStatusName() + " (" + origStatusEvent.getStatusDate() + ")");
+                activity.setBefore(origStatusEvent.getStatus().getStatusName() + 
+                        " (" + Util.getTimestampFormatter().format(origStatusEvent.getStatusDate()) + ")");
                 activity.setAfter(null);
                 statusAddedActivities.add(activity);
             }
@@ -110,7 +115,8 @@ public class DeveloperQuestionableActivityProvider {
                 //orig dev status history had this item but new did not
                 if(!foundStatus) {
                     QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                    activity.setBefore(origStatusEvent.getStatus().getStatusName() + " (" + origStatusEvent.getStatusDate() + ")");
+                    activity.setBefore(origStatusEvent.getStatus().getStatusName() + 
+                            " (" + Util.getTimestampFormatter().format(origStatusEvent.getStatusDate()) + ")");
                     activity.setAfter(null);
                     statusAddedActivities.add(activity);
                 }
@@ -143,8 +149,10 @@ public class DeveloperQuestionableActivityProvider {
                 //orig dev status history item was edited
                 if(statusEdited) {
                     QuestionableActivityDeveloperDTO activity = new QuestionableActivityDeveloperDTO();
-                    activity.setBefore(origStatusEvent.getStatus().getStatusName() + " (" + origStatusEvent.getStatusDate() + ")");
-                    activity.setAfter(matchingNewStatusEvent.getStatus().getStatusName() + " (" + matchingNewStatusEvent.getStatusDate() + ")");
+                    activity.setBefore(origStatusEvent.getStatus().getStatusName() + 
+                            " (" + Util.getTimestampFormatter().format(origStatusEvent.getStatusDate()) + ")");
+                    activity.setAfter(matchingNewStatusEvent.getStatus().getStatusName() + 
+                            " (" + Util.getTimestampFormatter().format(matchingNewStatusEvent.getStatusDate()) + ")");
                     statusEditedActivities.add(activity);
                 }
             }
