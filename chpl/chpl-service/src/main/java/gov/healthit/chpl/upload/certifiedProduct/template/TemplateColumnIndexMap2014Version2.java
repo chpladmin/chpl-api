@@ -1,6 +1,6 @@
 package gov.healthit.chpl.upload.certifiedProduct.template;
 
-public class TemplateColumnIndexMap2014 extends TemplateColumnIndexMap {
+public class TemplateColumnIndexMap2014Version2 extends TemplateColumnIndexMap {
 
     @Override
     public int getUniqueIdIndex() {
@@ -169,7 +169,7 @@ public class TemplateColumnIndexMap2014 extends TemplateColumnIndexMap {
     
     @Override
     public int getCriteriaEndIndex() {
-        return 711;
+        return 712;
     }
    
 }
