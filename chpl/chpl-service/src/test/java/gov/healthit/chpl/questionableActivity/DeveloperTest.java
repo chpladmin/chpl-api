@@ -135,7 +135,7 @@ public class DeveloperTest extends TestCase {
                 numFound++;
                 assertEquals(-1, activity.getDeveloperId().longValue());
                 assertNull(activity.getBefore());
-                assertEquals("Suspended by ONC (2017-10-01 00:00:00.0)", activity.getAfter());
+                assertEquals("Suspended by ONC (20171001_000000)", activity.getAfter());
             }
         }
         assertEquals(2, numFound);
@@ -178,7 +178,7 @@ public class DeveloperTest extends TestCase {
 	                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
 	                numFound++;
 	                assertEquals(-3, activity.getDeveloperId().longValue());
-	                assertEquals("Suspended by ONC (2015-08-21 13:14:00.0)", activity.getBefore());
+	                assertEquals("Suspended by ONC (20150821_131400)", activity.getBefore());
 	                assertNull(activity.getAfter());
 	            }
 	        }

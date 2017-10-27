@@ -47,7 +47,7 @@ public class CQMResultDetailsDaoTest {
 		
 		List<CQMResultDetailsDTO> dtos = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(1L);
 		
-		assertEquals(dtos.size(), 3);
+		assertEquals(4, dtos.size());
 		assertEquals("0001", dtos.get(0).getNqfNumber());
 		assertEquals(dtos.get(0).getSuccess(), false);
 		assertEquals(dtos.get(0).getVersion(), null);
