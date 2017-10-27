@@ -6,8 +6,11 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,9 +28,13 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.Util;
 import gov.healthit.chpl.app.App;
 import gov.healthit.chpl.app.AppConfig;
+import gov.healthit.chpl.auth.SendMailUtil;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
+import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
+import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
@@ -99,7 +106,7 @@ public class QuestionableActivityReportApp extends App {
             //send no activity email
             emailBody = "<p>No questionable activity was found between " + 
                 Util.getDateFormatter().format(startDate) + " and " + 
-                Util.getDateFormatter().format(endDate) + "</p>";
+                Util.getDateFormatter().format(endDate) + ".</p>";
         } else {
             FileWriter writer = null;
             CSVPrinter csvPrinter = null;
@@ -141,26 +148,26 @@ public class QuestionableActivityReportApp extends App {
             emailBody = "<p>" + numQuestionableActivities + " questionable activities were " + 
                     "found between " + 
                     Util.getDateFormatter().format(startDate) + " and " + 
-                    Util.getDateFormatter().format(endDate) + "</p>";
+                    Util.getDateFormatter().format(endDate) + ".</p>";
         }
         
         //look up subscribers and email them
-//        Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-//        permissions.add(new GrantedPermission("ROLE_ADMIN"));
-//        List<RecipientWithSubscriptionsDTO> recipients = notificationDao
-//                .getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
-//        if (recipients != null && recipients.size() > 0) {
-//            String[] emailAddrs = new String[recipients.size()];
-//            for (int i = 0; i < recipients.size(); i++) {
-//                RecipientWithSubscriptionsDTO recip = recipients.get(i);
-//                emailAddrs[i] = recip.getEmail();
-//                LOGGER.info("Sending email to " + recip.getEmail());
-//            }
-//            SendMailUtil mailUtil = new SendMailUtil();
-//            mailUtil.sendEmail(null, emailAddrs, 
-//                    this.getProperties().getProperty("questionableActivityEmailSubject").toString(), 
-//                    emailBody, filesToEmail, this.getProperties());
-//        }
+        Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+        permissions.add(new GrantedPermission("ROLE_ADMIN"));
+        List<RecipientWithSubscriptionsDTO> recipients = notificationDao
+                .getAllNotificationMappingsForType(permissions, NotificationTypeConcept.QUESTIONABLE_ACTIVITY, null);
+        if (recipients != null && recipients.size() > 0) {
+            String[] emailAddrs = new String[recipients.size()];
+            for (int i = 0; i < recipients.size(); i++) {
+                RecipientWithSubscriptionsDTO recip = recipients.get(i);
+                emailAddrs[i] = recip.getEmail();
+                LOGGER.info("Sending email to " + recip.getEmail());
+            }
+            SendMailUtil mailUtil = new SendMailUtil();
+            mailUtil.sendEmail(null, emailAddrs, 
+                    this.getProperties().getProperty("questionableActivityEmailSubject").toString(), 
+                    emailBody, filesToEmail, this.getProperties());
+        }
     }
     
     private List<List<String>> createListingActivityRows() throws IOException {
@@ -681,6 +688,7 @@ public class QuestionableActivityReportApp extends App {
         Date endDate = null;
         try {
            startDate = startEndDateFormat.parse(startDateStr);
+           //defaults to 00:00:00 HMS
         } catch(ParseException ex) {
             LOGGER.error("Could not parse " + startDateStr + " as a date. Please make sure the " 
                     + " start date is in the format yyyy-MM-dd.");
@@ -689,6 +697,14 @@ public class QuestionableActivityReportApp extends App {
         
         try {
             endDate = startEndDateFormat.parse(endDateStr);
+            //got date from args, set time to end of day
+            Calendar endDateCal = new GregorianCalendar();
+            endDateCal.setTime(endDate);
+            endDateCal.set(Calendar.HOUR, 23);
+            endDateCal.set(Calendar.MINUTE, 59);
+            endDateCal.set(Calendar.SECOND, 59);
+            endDateCal.set(Calendar.MILLISECOND, 999);
+            endDate = endDateCal.getTime();
         } catch(ParseException ex) {
             LOGGER.error("Could not parse " + endDateStr + " as a date. Please make sure the " 
                     + " end date is in the format yyyy-MM-dd.");
