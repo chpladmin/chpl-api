@@ -28,8 +28,6 @@ public interface CertificationResultDAO {
 
     void deleteByCertifiedProductId(Long certifiedProductId);
 
-    List<CertificationResultDTO> findAll();
-
     List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId);
 
     CertificationResultDTO getById(Long resultId) throws EntityRetrievalException;

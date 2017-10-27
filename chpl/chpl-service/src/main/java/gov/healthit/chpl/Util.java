@@ -3,6 +3,7 @@ package gov.healthit.chpl;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +11,12 @@ import org.apache.logging.log4j.Logger;
 public final class Util {
     private static final Logger LOGGER = LogManager.getLogger(Util.class);
     private static final int BASE_16 = 16;
-
+    private static final String dateFormat = "yyyy-MM-dd";
+    private static final String timestampFormat = "yyyyMMdd_HHmmss";
+    
+    public static SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
+    public static SimpleDateFormat timestampFormatter = new SimpleDateFormat(timestampFormat);
+    
     private Util() {
 
     }
@@ -35,6 +41,14 @@ public final class Util {
             e.printStackTrace();
         }
         return md5;
+    }
+    
+    public static SimpleDateFormat getDateFormatter() {
+        return Util.dateFormatter;
+    }
+    
+    public static SimpleDateFormat getTimestampFormatter() {
+        return Util.timestampFormatter;
     }
 
     public static String coerceToCriterionNumberFormat(final String input) {

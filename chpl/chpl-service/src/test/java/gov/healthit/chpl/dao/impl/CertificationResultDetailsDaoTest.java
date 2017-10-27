@@ -72,7 +72,7 @@ public class CertificationResultDetailsDaoTest {
 		
 		List<CertificationResultDetailsDTO> dtos = certificationResultDetailsDAO.getCertificationResultDetailsByCertifiedProductId(1L);
 		
-		assertEquals(6, dtos.size());
+		assertEquals(8, dtos.size());
 		Boolean hasNumber = false;
 		for(CertificationResultDetailsDTO dto : dtos){
 			if(dto.getNumber().equalsIgnoreCase("170.314 (a)(1)")){

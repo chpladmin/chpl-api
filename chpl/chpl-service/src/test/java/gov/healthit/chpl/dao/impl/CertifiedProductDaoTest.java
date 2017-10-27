@@ -102,7 +102,7 @@ public class CertifiedProductDaoTest {
 		List<CertifiedProductDetailsDTO> products = null;
 		products = productDao.getDetailsByVersionId(versionId);
 		assertNotNull(products);
-		assertEquals(1, products.size());
+		assertEquals(2, products.size());
 	}
 	
 	@Test

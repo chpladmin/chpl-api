@@ -59,12 +59,13 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
+import gov.healthit.chpl.quesitonableActivity.QuestionableActivityAspect;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)
 @PropertySource("classpath:/environment.test.properties")
 @EnableCaching
-@EnableAspectJAutoProxy(proxyTargetClass=true)
+@EnableAspectJAutoProxy
 @EnableTransactionManagement
 @ComponentScan(basePackages = {"gov.healthit.chpl.**"}, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class),

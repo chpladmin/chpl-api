@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
-public interface CertifiedProductManager extends QuestionableActivityHandler {
+public interface CertifiedProductManager {
 
     CertifiedProductDTO getById(Long id) throws EntityRetrievalException;
 
