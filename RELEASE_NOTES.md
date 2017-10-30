@@ -6,7 +6,8 @@ _Date TBD_
 ### Minor Features
 * Add certified_products/sed_details endpoint that returns the latest SED all Details document
 * Add new version of 2014 upload template that adds a GAP column for 170.314 (b)(5)(B)
-* Change warning message for transparency attestation saving 
+* Change warning message for transparency attestation saving
+* Fix bug that does not upload participants that are same except for participant indentifier
 ---
 
 ## Version 14.1.0
