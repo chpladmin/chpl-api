@@ -57,7 +57,7 @@ public class UploadTemplateVersionDAOTest extends TestCase {
 	public void findAll() {
 		List<UploadTemplateVersionDTO> allTemplates = templateDao.findAll();
 		assertNotNull(allTemplates);
-		assertEquals(3, allTemplates.size());
+		assertEquals(4, allTemplates.size());
 	}
 	
 	@Test
