@@ -7,11 +7,10 @@ _Date TBD_
 * Add certified_products/sed_details endpoint that returns the latest SED all Details document
 * Add new version of 2014 upload template that adds a GAP column for 170.314 (b)(5)(B)
 * Change warning message for transparency attestation saving
+* Re-work handling of questionable activities. Do not send an email each time questionable activity appears, but save it all and send as a weekly report to subscribers instead.
 
 ### Bugs fixed
 * Fix bug where uploaded SED Test Participants with identical demographics are not recognized correctly
-* Change warning message for transparency attestation saving 
-* Re-work handling of questionable activities. Do not send an email each time questionable activity appears, but save it all and send as a weekly report to subscribers instead.
 
 ---
 
