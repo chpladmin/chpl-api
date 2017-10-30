@@ -42,6 +42,12 @@
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CQMResultEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProductEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityDeveloperEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityListingEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityCertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>

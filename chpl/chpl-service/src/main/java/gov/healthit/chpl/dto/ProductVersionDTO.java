@@ -14,6 +14,8 @@ public class ProductVersionDTO implements Serializable {
     private Long lastModifiedUser;
     private Long productId;
     private String productName;
+    private Long developerId;
+    private String developerName;
     private String version;
 
     public ProductVersionDTO() {
@@ -30,6 +32,10 @@ public class ProductVersionDTO implements Serializable {
             if (entity.getProduct() != null) {
                 this.productId = entity.getProduct().getId();
                 this.productName = entity.getProduct().getName();
+                if(entity.getProduct().getDeveloper() != null) {
+                    this.developerId = entity.getProduct().getDeveloper().getId();
+                    this.developerName = entity.getProduct().getDeveloper().getName();
+                }
             }
         }
     }
@@ -96,5 +102,21 @@ public class ProductVersionDTO implements Serializable {
 
     public void setProductName(final String productName) {
         this.productName = productName;
+    }
+
+    public Long getDeveloperId() {
+        return developerId;
+    }
+
+    public void setDeveloperId(Long developerId) {
+        this.developerId = developerId;
+    }
+
+    public String getDeveloperName() {
+        return developerName;
+    }
+
+    public void setDeveloperName(String developerName) {
+        this.developerName = developerName;
     }
 }

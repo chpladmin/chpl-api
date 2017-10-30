@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -1125,7 +1126,7 @@ public class CertifiedProductControllerTest {
 	
 	@Transactional
 	@Test
-	public void test_upLoadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+	public void test_uploadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		MultipartFile file = getUploadFile("2014");
 		ResponseEntity<PendingCertifiedProductResults> response = null;
@@ -1147,6 +1148,7 @@ public class CertifiedProductControllerTest {
 		try {
 			response = certifiedProductController.upload(file);
 		} catch (ValidationException e) {
+		    fail(e.getMessage());
 			e.printStackTrace();
 		}
 		assertNotNull(response);

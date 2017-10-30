@@ -10,6 +10,8 @@ _Date TBD_
 
 ### Bugs fixed
 * Fix bug where uploaded SED Test Participants with identical demographics are not recognized correctly
+* Change warning message for transparency attestation saving 
+* Re-work handling of questionable activities. Do not send an email each time questionable activity appears, but save it all and send as a weekly report to subscribers instead.
 
 ---
 

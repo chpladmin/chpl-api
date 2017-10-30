@@ -2460,6 +2460,6 @@ public class CertifiedProductManagerTest extends TestCase {
 	public void getListingsOwnedByProduct() throws EntityRetrievalException {
 		List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(-1L);
 		assertNotNull(listings);
-		assertEquals(4, listings.size());
+		assertEquals(5, listings.size());
 	}
 }

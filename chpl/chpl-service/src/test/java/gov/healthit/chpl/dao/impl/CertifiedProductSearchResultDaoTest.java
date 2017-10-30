@@ -88,11 +88,11 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test");
 		Long countProducts = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(5, countProducts.intValue());
+		assertEquals(6, countProducts.intValue());
 		
 		searchRequest.setVersion("1.0.0");
 		Long countProductsVersionSpecific = searchResultDAO.countMultiFilterSearchResults(searchRequest);
-		assertEquals(1, countProductsVersionSpecific.intValue());
+		assertEquals(2, countProductsVersionSpecific.intValue());
 	}
 	
 	@Test
@@ -102,7 +102,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(5, products.size());
+		assertEquals(6, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getDeveloper().getName().startsWith("Test Developer 1"));
@@ -117,7 +117,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		searchRequest.setProduct("Test Product 1");
 		List<CertifiedProductDetailsDTO> products = searchResultDAO.search(searchRequest);
-		assertEquals(3, products.size());
+		assertEquals(4, products.size());
 		
 		for (CertifiedProductDetailsDTO dto : products ){
 			assertTrue(dto.getProduct().getName().startsWith("Test Product 1"));
@@ -458,8 +458,8 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 			assertEquals("CHP-024050",product.getChplProductNumber());
 			assertEquals(2, product.getCertificationEditionId().intValue());
 			assertEquals("Test Developer 1", product.getDeveloper().getName());
-			assertEquals(4, product.getCountCertifications().intValue());
-			assertEquals(0, product.getCountCqms().intValue());
+			assertEquals(6, product.getCountCertifications().intValue());
+			assertEquals(1, product.getCountCqms().intValue());
 			
 		} catch (EntityRetrievalException e) {
 			fail("EntityRetrievalException");

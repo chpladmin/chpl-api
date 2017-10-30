@@ -139,7 +139,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCertificationResults() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(6 , detail.getCertificationResults().size());
+		assertEquals(8 , detail.getCertificationResults().size());
 		
 		//check additional software
 		Boolean hasTwoAdditionalSoftware = false;
@@ -214,7 +214,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCountCerts() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(4 , detail.getCountCerts().intValue());
+		assertEquals(6, detail.getCountCerts().intValue());
 	}
 	
 	@Test
@@ -230,7 +230,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 				cqmSuccessCount++;
 			}
 		}
-		assertEquals(0 ,cqmSuccessCount);
+		assertEquals(1 ,cqmSuccessCount);
 		
 		detail = certifiedProductDetailsManager.getCertifiedProductDetails(2L);
 		assertNotNull(detail.getCqmResults());
@@ -265,7 +265,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsCountCQMs() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(0, detail.getCountCqms().intValue());
+		assertEquals(1, detail.getCountCqms().intValue());
 		
 	}
 	
