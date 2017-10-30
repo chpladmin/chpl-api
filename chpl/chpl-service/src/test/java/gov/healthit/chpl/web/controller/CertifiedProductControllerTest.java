@@ -62,6 +62,8 @@ import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -96,6 +98,10 @@ public class CertifiedProductControllerTest {
 	
 	private static JWTAuthenticatedUser adminUser;
 	
+	private static final String UPLOAD_2014 = "2014_error-free_new_Gap_added.csv";
+	
+	private static final String UPLOAD_2015 = "Drummond10252017.csv";
+	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
@@ -107,12 +113,23 @@ public class CertifiedProductControllerTest {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
 	}
 	
-	public MultipartFile getUploadFile(){
+	public MultipartFile getUploadFile(String edition){
 		ClassLoader classLoader = getClass().getClassLoader();
-		File file = new File(classLoader.getResource("2014_error-free_new_Gap_added.csv").getFile());
-		Path filePath = Paths.get(file.getPath());
-		String name = "2014_error-free_new_Gap_added.csv";
-		String originalFileName = "2014_error-free_new_Gap_added.csv";
+		File file = null;
+		Path filePath = null;
+		String name =  null;
+		String originalFileName = null;
+		if(edition.equals("2014")){
+			file = new File(classLoader.getResource(UPLOAD_2014).getFile());
+			filePath = Paths.get(file.getPath());
+			name = UPLOAD_2014;
+			originalFileName = UPLOAD_2014;
+		}else{
+			file = new File(classLoader.getResource(UPLOAD_2015).getFile());
+			filePath = Paths.get(file.getPath());
+			name = UPLOAD_2015;
+			originalFileName = UPLOAD_2015;
+		}
 		String contentType = "text/csv";
 		byte[] content = null;
 		try {
@@ -1111,7 +1128,22 @@ public class CertifiedProductControllerTest {
 	@Test
 	public void test_uploadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		MultipartFile file = getUploadFile();
+		MultipartFile file = getUploadFile("2014");
+		ResponseEntity<PendingCertifiedProductResults> response = null;
+		try {
+			response = certifiedProductController.upload(file);
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		}
+		assertNotNull(response);
+		assertEquals(HttpStatus.OK,response.getStatusCode());
+	}
+	
+	@Transactional
+	@Test
+	public void test_upLoadCertifiedProduct2015UniqueTestParticipant() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MultipartFile file = getUploadFile("2015");
 		ResponseEntity<PendingCertifiedProductResults> response = null;
 		try {
 			response = certifiedProductController.upload(file);
@@ -1120,6 +1152,12 @@ public class CertifiedProductControllerTest {
 			e.printStackTrace();
 		}
 		assertNotNull(response);
+		int testParticipantCount = 0;
+		for(TestTask tt : response.getBody().getPendingCertifiedProducts().get(0).getSed().getTestTasks()){
+			testParticipantCount += tt.getTestParticipants().size();
+
+		}
+		assertEquals(50, testParticipantCount);
 		assertEquals(HttpStatus.OK,response.getStatusCode());
 	}
 	
