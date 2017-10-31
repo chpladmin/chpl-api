@@ -36,42 +36,32 @@ import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityDeveloperDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
+import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
 
 public class QuestionableActivityReportApp extends App {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityReportApp.class);
-    private static final int NUM_REPORT_COLS = 28;
-    private Map<QuestionableActivityTriggerConcept, Integer> triggerColumnIndexMap;
+    private static final int NUM_REPORT_COLS = 11;
+    private static final int ACB_COL = 0;
+    private static final int DEVELOPER_COL = 1;
+    private static final int PRODUCT_COL = 2;
+    private static final int VERSION_COL = 3;
+    private static final int LISTING_COL = 4;
+    private static final int STATUS_COL = 5;
+    private static final int LINK_COL = 6;
+    private static final int ACTIVITY_DATE_COL = 7;
+    private static final int ACTIVITY_USER_COL = 8;
+    private static final int ACTIVITY_TYPE_COL = 9;
+    private static final int ACTIVITY_DESCRIPTION_COL = 10;
     private Date startDate, endDate;
     
     protected QuestionableActivityDAO qaDao;
     protected NotificationDAO notificationDao;
 
     public QuestionableActivityReportApp() {
-        triggerColumnIndexMap = new HashMap<QuestionableActivityTriggerConcept, Integer>();
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.CRITERIA_ADDED, 9);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.CRITERIA_REMOVED, 10);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.CQM_ADDED, 11);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.CQM_REMOVED, 12);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED, 13);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED, 14);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED, 15);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED, 16);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED, 17);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED, 18);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.GAP_EDITED, 19);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED, 20);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.EDITION_2011_EDITED, 21);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED, 22);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED, 23);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED, 24);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED, 25);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED, 26);
-        triggerColumnIndexMap.put(QuestionableActivityTriggerConcept.VERSION_NAME_EDITED, 27);
     }
     
     public QuestionableActivityReportApp(Date startDate, Date endDate) {
@@ -91,6 +81,7 @@ public class QuestionableActivityReportApp extends App {
         
         //generate all of the data rows
         List<List<String>> listingActivityRows = createListingActivityRows();
+        List<List<String>> criteriaActivityRows = createCriteriaActivityRows();
         List<List<String>> developerActivityRows = createDeveloperActivityRows();
         List<List<String>> productActivityRows = createProductActivityRows();
         List<List<String>> versionActivityRows = createVersionActivityRows();
@@ -99,9 +90,10 @@ public class QuestionableActivityReportApp extends App {
         String emailBody = "";
         
         //write out listing, developer, product, and version activities
-        if((listingActivityRows == null || listingActivityRows.size() == 0) && 
+        if((listingActivityRows == null || listingActivityRows.size() == 0) &&
+           (criteriaActivityRows == null || criteriaActivityRows.size() == 0) &&
            (developerActivityRows == null || developerActivityRows.size() == 0) &&
-           (productActivityRows == null || productActivityRows.size() == 0) && 
+           (productActivityRows == null || productActivityRows.size() == 0) &&
            (versionActivityRows == null || versionActivityRows.size() == 0)) {
             //send no activity email
             emailBody = "<p>No questionable activity was found between " + 
@@ -120,6 +112,9 @@ public class QuestionableActivityReportApp extends App {
                 csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
                 csvPrinter.printRecord(headerRows);
                 for (List<String> rowValue : listingActivityRows) {
+                    csvPrinter.printRecord(rowValue);
+                }
+                for (List<String> rowValue : criteriaActivityRows) {
                     csvPrinter.printRecord(rowValue);
                 }
                 for (List<String> rowValue : developerActivityRows) {
@@ -143,12 +138,9 @@ public class QuestionableActivityReportApp extends App {
                 }
             }
             filesToEmail.add(reportFile);
-            int numQuestionableActivities = listingActivityRows.size() + developerActivityRows.size() + 
-                    productActivityRows.size() + versionActivityRows.size();
-            emailBody = "<p>" + numQuestionableActivities + " questionable activities were " + 
-                    "found between " + 
+            emailBody = "<p>A summary of questionable activity found between " + 
                     Util.getDateFormatter().format(startDate) + " and " + 
-                    Util.getDateFormatter().format(endDate) + ".</p>";
+                    Util.getDateFormatter().format(endDate) + " is attached.</p>";
         }
         
         //look up subscribers and email them
@@ -170,245 +162,275 @@ public class QuestionableActivityReportApp extends App {
         }
     }
     
+    private List<List<String>> createCriteriaActivityRows() throws IOException {
+        LOGGER.debug("Getting certification result activity between " + startDate + " and " + endDate);
+        List<QuestionableActivityCertificationResultDTO> certResultActivities = 
+                qaDao.findCertificationResultActivityBetweenDates(startDate, endDate);
+        LOGGER.debug("Found " + certResultActivities.size() + " questionable certification result activities");
+        
+        //create a bucket for each activity timestamp+trigger type
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>> activityByGroup = 
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityCertificationResultDTO>>();
+        for(QuestionableActivityCertificationResultDTO activity : certResultActivities) {
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(
+                    activity.getActivityDate(), activity.getTrigger());
+            
+            if(activityByGroup.get(groupKey) == null) {
+                List<QuestionableActivityCertificationResultDTO> activitiesForGroup = 
+                        new ArrayList<QuestionableActivityCertificationResultDTO>();
+                activitiesForGroup.add(activity);
+                activityByGroup.put(groupKey, activitiesForGroup);
+            } else {
+                List<QuestionableActivityCertificationResultDTO> existingActivitiesForGroup = 
+                        activityByGroup.get(groupKey);
+                existingActivitiesForGroup.add(activity);
+            }
+        }
+        
+        List<List<String>> activityCsvRows = new ArrayList<List<String>>();
+        Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
+        for(ActivityDateTriggerGroup activityGroup : activityGroups) {
+           List<String> currRow = createEmptyRow();
+           currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+           currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
+
+           List<QuestionableActivityCertificationResultDTO> activitiesForGroup = 
+                   activityByGroup.get(activityGroup);
+           for(QuestionableActivityCertificationResultDTO activity : activitiesForGroup) {
+               putCertResultActivityInRow(activity, currRow);
+           }
+           
+           activityCsvRows.add(currRow);
+        }
+        return activityCsvRows;
+    }
+    
     private List<List<String>> createListingActivityRows() throws IOException {
         LOGGER.debug("Getting listing activity between " + startDate + " and " + endDate);
         List<QuestionableActivityListingDTO> listingActivities = 
                 qaDao.findListingActivityBetweenDates(startDate, endDate);
-        LOGGER.debug("Getting certification result activity between " + startDate + " and " + endDate);
-        List<QuestionableActivityCertificationResultDTO> certResultActivities = 
-                qaDao.findCertificationResultActivityBetweenDates(startDate, endDate);
-        
-        //create csv rows for listing and criteria activities (they will go on the same row)
-        //create a bucket for each activity timestamp
-        Map<Date, List<QuestionableActivityDTO>> listingActivityByDate = 
-                new HashMap<Date, List<QuestionableActivityDTO>>();
-        for(QuestionableActivityDTO listingActivity : listingActivities) {
-            if(listingActivityByDate.get(listingActivity.getActivityDate()) == null) {
-                List<QuestionableActivityDTO> activitiesForDate = 
-                        new ArrayList<QuestionableActivityDTO>();
-                activitiesForDate.add(listingActivity);
-                listingActivityByDate.put(listingActivity.getActivityDate(), activitiesForDate);
-            } else {
-                List<QuestionableActivityDTO> existingActivitiesForDate = 
-                        listingActivityByDate.get(listingActivity.getActivityDate());
-                existingActivitiesForDate.add(listingActivity);
-            }
-        }
-        //add cert result activities into the activity date buckets
-        for(QuestionableActivityDTO certResultActivity : certResultActivities) {
-            if(listingActivityByDate.get(certResultActivity.getActivityDate()) == null) {
-                List<QuestionableActivityDTO> activitiesForDate = 
-                        new ArrayList<QuestionableActivityDTO>();
-                activitiesForDate.add(certResultActivity);
-                listingActivityByDate.put(certResultActivity.getActivityDate(), activitiesForDate);
-            } else {
-                List<QuestionableActivityDTO> existingActivitiesForDate = 
-                        listingActivityByDate.get(certResultActivity.getActivityDate());
-                existingActivitiesForDate.add(certResultActivity);
-            }
-        }
-        LOGGER.debug("Found " + listingActivityByDate.keySet().size() + " dates with questionable listing/cert result activity");
-        
-        //For each activity date, multiple activities could have occurred.
-        //For example, a user could change multiple GAP criteria fields, add a criteria, 
-        //and change the certification status of a listing all in one action but that
-        //should appear as one line in our questionable activity file.
-        //Create a list of strings that will eventually represent a row in the 
-        //questionable activity file for this particular activity
-        List<List<String>> listingActivityRows = new ArrayList<List<String>>();
-        Set<Date> activityDates = listingActivityByDate.keySet();
-        for(Date activityDate : activityDates) {
-           List<String> currRow = createEmptyRow();
-           currRow.set(7, Util.timestampFormatter.format(activityDate));
+        LOGGER.debug("Found " + listingActivities.size() + " questionable listing activities");
 
-           List<QuestionableActivityDTO> listingActivityForDate = 
-                   listingActivityByDate.get(activityDate);
-           for(QuestionableActivityDTO activity : listingActivityForDate) {
-               if(activity instanceof QuestionableActivityListingDTO) {
-                   putListingActivityInRow((QuestionableActivityListingDTO)activity, currRow);
-               } else if(activity instanceof QuestionableActivityCertificationResultDTO) {
-                   putCertResultActivityInRow((QuestionableActivityCertificationResultDTO)activity, currRow);
-               }
+        //create a bucket for each activity timestamp+trigger type
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>> activityByGroup = 
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityListingDTO>>();
+        for(QuestionableActivityListingDTO activity : listingActivities) {
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(
+                    activity.getActivityDate(), activity.getTrigger());
+            
+            if(activityByGroup.get(groupKey) == null) {
+                List<QuestionableActivityListingDTO> activitiesForDate = 
+                        new ArrayList<QuestionableActivityListingDTO>();
+                activitiesForDate.add(activity);
+                activityByGroup.put(groupKey, activitiesForDate);
+            } else {
+                List<QuestionableActivityListingDTO> existingActivitiesForDate = 
+                        activityByGroup.get(groupKey);
+                existingActivitiesForDate.add(activity);
+            }
+        }
+        
+        List<List<String>> activityCsvRows = new ArrayList<List<String>>();
+        Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
+        for(ActivityDateTriggerGroup activityGroup : activityGroups) {
+           List<String> currRow = createEmptyRow();
+           currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+           currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
+
+           List<QuestionableActivityListingDTO> activitiesForGroup = 
+                   activityByGroup.get(activityGroup);
+           for(QuestionableActivityListingDTO activity : activitiesForGroup) {
+               putListingActivityInRow(activity, currRow);
            }
            
-           listingActivityRows.add(currRow);
+           activityCsvRows.add(currRow);
         }
-        return listingActivityRows;
+        return activityCsvRows;
     }
     
     private List<List<String>> createDeveloperActivityRows() {
         LOGGER.debug("Getting developer activity between " + startDate + " and " + endDate);
         List<QuestionableActivityDeveloperDTO> developerActivities =
                 qaDao.findDeveloperActivityBetweenDates(startDate, endDate);
-        //create csv rows for developer activities (they will go on the same row)
-        //create a bucket for each activity timestamp
-        Map<Date, List<QuestionableActivityDeveloperDTO>> developerActivityByDate = 
-                new HashMap<Date, List<QuestionableActivityDeveloperDTO>>();
-        for(QuestionableActivityDeveloperDTO developerActivity : developerActivities) {
-            if(developerActivityByDate.get(developerActivity.getActivityDate()) == null) {
+        LOGGER.debug("Found " + developerActivities.size() + " questionable developer activities");
+
+        //create a bucket for each activity timestamp+trigger type
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>> activityByGroup = 
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityDeveloperDTO>>();
+        for(QuestionableActivityDeveloperDTO activity : developerActivities) {
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(
+                    activity.getActivityDate(), activity.getTrigger());
+            
+            if(activityByGroup.get(groupKey) == null) {
                 List<QuestionableActivityDeveloperDTO> activitiesForDate = 
                         new ArrayList<QuestionableActivityDeveloperDTO>();
-                activitiesForDate.add(developerActivity);
-                developerActivityByDate.put(developerActivity.getActivityDate(), activitiesForDate);
+                activitiesForDate.add(activity);
+                activityByGroup.put(groupKey, activitiesForDate);
             } else {
                 List<QuestionableActivityDeveloperDTO> existingActivitiesForDate = 
-                        developerActivityByDate.get(developerActivity.getActivityDate());
-                existingActivitiesForDate.add(developerActivity);
+                        activityByGroup.get(groupKey);
+                existingActivitiesForDate.add(activity);
             }
-        }        
-        LOGGER.debug("Found " + developerActivityByDate.keySet().size() + " dates with questionable developer activity");
-
-        List<List<String>> developerActivityRows = new ArrayList<List<String>>();
-        Set<Date> developerActivityDates = developerActivityByDate.keySet();
-        for(Date activityDate : developerActivityDates) {
-           List<String> currRow = createEmptyRow();
-           currRow.set(7, Util.timestampFormatter.format(activityDate));
-
-           List<QuestionableActivityDeveloperDTO> developerActivityForDate = 
-                   developerActivityByDate.get(activityDate);
-           putDeveloperActivitiesInRow(developerActivityForDate, currRow);
-           developerActivityRows.add(currRow);
         }
         
-        return developerActivityRows;
+        List<List<String>> activityCsvRows = new ArrayList<List<String>>();
+        Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
+        for(ActivityDateTriggerGroup activityGroup : activityGroups) {
+           List<String> currRow = createEmptyRow();
+           currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+           currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
+
+           List<QuestionableActivityDeveloperDTO> activitiesForGroup = 
+                   activityByGroup.get(activityGroup);
+           for(QuestionableActivityDeveloperDTO activity : activitiesForGroup) {
+               putDeveloperActivityInRow(activity, currRow);
+           }
+           
+           activityCsvRows.add(currRow);
+        }
+        return activityCsvRows;
     }
     
     private List<List<String>> createProductActivityRows() {
         LOGGER.debug("Getting product activity between " + startDate + " and " + endDate);
-
         List<QuestionableActivityProductDTO> productActivities = 
                 qaDao.findProductActivityBetweenDates(startDate, endDate);
-        //create csv rows for product activities (they will go on the same row)
-        //create a bucket for each activity timestamp
-        Map<Date, List<QuestionableActivityProductDTO>> productActivityByDate = 
-                new HashMap<Date, List<QuestionableActivityProductDTO>>();
-        for(QuestionableActivityProductDTO productActivity : productActivities) {
-            if(productActivityByDate.get(productActivity.getActivityDate()) == null) {
+        LOGGER.debug("Found " + productActivities.size() + " questionable developer activities");
+
+        //create a bucket for each activity timestamp+trigger type
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>> activityByGroup = 
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityProductDTO>>();
+        for(QuestionableActivityProductDTO activity : productActivities) {
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(
+                    activity.getActivityDate(), activity.getTrigger());
+            
+            if(activityByGroup.get(groupKey) == null) {
                 List<QuestionableActivityProductDTO> activitiesForDate = 
                         new ArrayList<QuestionableActivityProductDTO>();
-                activitiesForDate.add(productActivity);
-                productActivityByDate.put(productActivity.getActivityDate(), activitiesForDate);
+                activitiesForDate.add(activity);
+                activityByGroup.put(groupKey, activitiesForDate);
             } else {
                 List<QuestionableActivityProductDTO> existingActivitiesForDate = 
-                        productActivityByDate.get(productActivity.getActivityDate());
-                existingActivitiesForDate.add(productActivity);
+                        activityByGroup.get(groupKey);
+                existingActivitiesForDate.add(activity);
             }
         }
-        LOGGER.debug("Found " + productActivityByDate.keySet().size() + " dates with questionable product activity");
         
-        List<List<String>> productActivityRows = new ArrayList<List<String>>();
-        Set<Date> productActivityDates = productActivityByDate.keySet();
-        for(Date activityDate : productActivityDates) {
+        List<List<String>> activityCsvRows = new ArrayList<List<String>>();
+        Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
+        for(ActivityDateTriggerGroup activityGroup : activityGroups) {
            List<String> currRow = createEmptyRow();
-           currRow.set(7, Util.timestampFormatter.format(activityDate));
+           currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+           currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-           List<QuestionableActivityProductDTO> productActivityForDate = 
-                   productActivityByDate.get(activityDate);
-           putProductActivitiesInRow(productActivityForDate, currRow);
-           productActivityRows.add(currRow);
+           List<QuestionableActivityProductDTO> activitiesForGroup = 
+                   activityByGroup.get(activityGroup);
+           for(QuestionableActivityProductDTO activity : activitiesForGroup) {
+               putProductActivityInRow(activity, currRow);
+           }
+           
+           activityCsvRows.add(currRow);
         }
-        return productActivityRows;
+        return activityCsvRows;
     }
     
     private List<List<String>> createVersionActivityRows() {
         LOGGER.debug("Getting version activity between " + startDate + " and " + endDate);
         List<QuestionableActivityVersionDTO> versionActivities = 
                 qaDao.findVersionActivityBetweenDates(startDate, endDate);
-        //create csv rows for version activities (they will go on the same row)
-        //create a bucket for each activity timestamp
-        Map<Date, List<QuestionableActivityVersionDTO>> versionActivityByDate = 
-                new HashMap<Date, List<QuestionableActivityVersionDTO>>();
-        for(QuestionableActivityVersionDTO versionActivity : versionActivities) {
-            if(versionActivityByDate.get(versionActivity.getActivityDate()) == null) {
+        LOGGER.debug("Found " + versionActivities.size() + " questionable developer activities");
+
+        //create a bucket for each activity timestamp+trigger type
+        Map<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>> activityByGroup = 
+                new HashMap<ActivityDateTriggerGroup, List<QuestionableActivityVersionDTO>>();
+        for(QuestionableActivityVersionDTO activity : versionActivities) {
+            ActivityDateTriggerGroup groupKey = new ActivityDateTriggerGroup(
+                    activity.getActivityDate(), activity.getTrigger());
+            
+            if(activityByGroup.get(groupKey) == null) {
                 List<QuestionableActivityVersionDTO> activitiesForDate = 
                         new ArrayList<QuestionableActivityVersionDTO>();
-                activitiesForDate.add(versionActivity);
-                versionActivityByDate.put(versionActivity.getActivityDate(), activitiesForDate);
+                activitiesForDate.add(activity);
+                activityByGroup.put(groupKey, activitiesForDate);
             } else {
                 List<QuestionableActivityVersionDTO> existingActivitiesForDate = 
-                        versionActivityByDate.get(versionActivity.getActivityDate());
-                existingActivitiesForDate.add(versionActivity);
+                        activityByGroup.get(groupKey);
+                existingActivitiesForDate.add(activity);
             }
         }
-        LOGGER.debug("Found " + versionActivityByDate.keySet().size() + " dates with questionable version activity");
-
-        List<List<String>> versionActivityRows = new ArrayList<List<String>>();
-        Set<Date> versionActivityDates = versionActivityByDate.keySet();
-        for(Date activityDate : versionActivityDates) {
+        
+        List<List<String>> activityCsvRows = new ArrayList<List<String>>();
+        Set<ActivityDateTriggerGroup> activityGroups = activityByGroup.keySet();
+        for(ActivityDateTriggerGroup activityGroup : activityGroups) {
            List<String> currRow = createEmptyRow();
-           currRow.set(7, Util.timestampFormatter.format(activityDate));
+           currRow.set(ACTIVITY_DATE_COL, Util.timestampFormatter.format(activityGroup.getActivityDate()));
+           currRow.set(ACTIVITY_TYPE_COL, activityGroup.getTrigger().getName());
 
-           List<QuestionableActivityVersionDTO> versionActivityForDate = 
-                   versionActivityByDate.get(activityDate);
-           putVersionActivitiesInRow(versionActivityForDate, currRow);
-           versionActivityRows.add(currRow);
+           List<QuestionableActivityVersionDTO> activitiesForGroup = 
+                   activityByGroup.get(activityGroup);
+           for(QuestionableActivityVersionDTO activity : activitiesForGroup) {
+               putVersionActivityInRow(activity, currRow);
+           }
+           
+           activityCsvRows.add(currRow);
         }
-        return versionActivityRows;
+        return activityCsvRows;
     }
     
     private void putListingActivityInRow(QuestionableActivityListingDTO activity,
         List<String> currRow) throws IOException {
         //fill in info about the listing that will be the same for every
         //activity found in this date bucket
-        currRow.set(0, activity.getListing().getCertificationBodyName());
-        currRow.set(1, activity.getListing().getDeveloper().getName());
-        currRow.set(2, activity.getListing().getProduct().getName());
-        currRow.set(3, activity.getListing().getVersion().getVersion());
-        currRow.set(4, activity.getListing().getChplProductNumber());
-        currRow.set(5, activity.getListing().getCertificationStatusName());
-        currRow.set(6, this.getProperties().getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
-        currRow.set(8, activity.getUser().getSubjectName());
-        
+        currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
+        currRow.set(DEVELOPER_COL, activity.getListing().getDeveloper().getName());
+        currRow.set(PRODUCT_COL, activity.getListing().getProduct().getName());
+        currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
+        currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
+        currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
+        currRow.set(LINK_COL, this.getProperties().getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
+
         if(activity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.CRITERIA_ADDED.getName())) {
-            int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.CRITERIA_ADDED);
-            String currActivityRowValue = currRow.get(index);
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if(!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; "; 
             } 
             currActivityRowValue += activity.getAfter();
-            currRow.set(index, currActivityRowValue);
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if(activity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName())) {
-            int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.CRITERIA_REMOVED);
-            String currActivityRowValue = currRow.get(index);
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if(!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; "; 
             } 
             currActivityRowValue += activity.getBefore();   
-            currRow.set(index, currActivityRowValue);
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if(activity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.CQM_ADDED.getName())) {
-            int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.CQM_ADDED);
-            String currActivityRowValue = currRow.get(index);
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if(!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; "; 
             } 
             currActivityRowValue += activity.getAfter();
-            currRow.set(index, currActivityRowValue);
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if(activity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.CQM_REMOVED.getName())) {
-            int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.CQM_REMOVED);
-            String currActivityRowValue = currRow.get(index);
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
             if(!StringUtils.isEmpty(currActivityRowValue)) {
                 currActivityRowValue += "; "; 
             } 
             currActivityRowValue += activity.getBefore();
-            currRow.set(index, currActivityRowValue);
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         } else if(activity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED.getName())) {
-            currRow.set(
-                    triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED),
-                    "TRUE");
+            currRow.set(ACTIVITY_DESCRIPTION_COL, "TRUE");
         } else if(activity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName())) {
-            currRow.set(
-                    triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.EDITION_2011_EDITED),
-                    "TRUE");
+            currRow.set(ACTIVITY_DESCRIPTION_COL, "TRUE");
         } else if(activity.getTrigger().getName().equals(
                 QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED.getName())) {
-            currRow.set(
-                    triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED),
+            currRow.set(ACTIVITY_DESCRIPTION_COL,
                     "From " + activity.getBefore() + " to " + activity.getAfter());
         }
     }
@@ -417,235 +439,195 @@ public class QuestionableActivityReportApp extends App {
             List<String> currRow) throws IOException {
             //fill in info about the listing that will be the same for every
             //activity found in this date bucket
-            currRow.set(0, activity.getListing().getCertificationBodyName());
-            currRow.set(1, activity.getListing().getDeveloper().getName());
-            currRow.set(2, activity.getListing().getProduct().getName());
-            currRow.set(3, activity.getListing().getVersion().getVersion());
-            currRow.set(4, activity.getListing().getChplProductNumber());
-            currRow.set(5, activity.getListing().getCertificationStatusName());
-            currRow.set(6, this.getProperties().getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
-            currRow.set(8, activity.getUser().getSubjectName());
+            currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
+            currRow.set(DEVELOPER_COL, activity.getListing().getDeveloper().getName());
+            currRow.set(PRODUCT_COL, activity.getListing().getProduct().getName());
+            currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
+            currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
+            currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
+            currRow.set(LINK_COL, this.getProperties().getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
+            currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
             
             if(activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED);
-                String currActivityRowValue = currRow.get(index);
+                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
                 if(!StringUtils.isEmpty(currActivityRowValue)) {
                     currActivityRowValue += "; "; 
                 }
                 currActivityRowValue += activity.getCertResult().getNumber() + ": from " + 
                             activity.getBefore() + " to " + activity.getAfter();
-                currRow.set(index, currActivityRowValue);
+                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
             } else if(activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.G1_MEASURE_ADDED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.G1_MEASURE_ADDED);
-                String currActivityRowValue = currRow.get(index);
+                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
                 if(!StringUtils.isEmpty(currActivityRowValue)) {
                     currActivityRowValue += "; "; 
                 }
                 currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
-                currRow.set(index, currActivityRowValue);
+                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
             } else if(activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED);
-                String currActivityRowValue = currRow.get(index);
+                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
                 if(!StringUtils.isEmpty(currActivityRowValue)) {
                     currActivityRowValue += "; "; 
                 }
                 currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
-                currRow.set(index, currActivityRowValue);
+                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
             } else if(activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED);
-                String currActivityRowValue = currRow.get(index);
+                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
                 if(!StringUtils.isEmpty(currActivityRowValue)) {
                     currActivityRowValue += "; "; 
                 }
                 currActivityRowValue += activity.getCertResult().getNumber() + ": from " + 
                             activity.getBefore() + " to " + activity.getAfter();
-                currRow.set(index, currActivityRowValue);
+                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
             } else if(activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.G2_MEASURE_ADDED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.G2_MEASURE_ADDED);
-                String currActivityRowValue = currRow.get(index);
+                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
                 if(!StringUtils.isEmpty(currActivityRowValue)) {
                     currActivityRowValue += "; "; 
                 }
                 currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
-                currRow.set(index, currActivityRowValue);
+                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
             } else if(activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED);
-                String currActivityRowValue = currRow.get(index);
+                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
                 if(!StringUtils.isEmpty(currActivityRowValue)) {
                     currActivityRowValue += "; "; 
                 }
                 currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
-                currRow.set(index, currActivityRowValue);
+                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
             } else if(activity.getTrigger().getName().equals(
                     QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.GAP_EDITED);
-                String currActivityRowValue = currRow.get(index);
+                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
                 if(!StringUtils.isEmpty(currActivityRowValue)) {
                     currActivityRowValue += "; "; 
                 }
                 currActivityRowValue += activity.getCertResult().getNumber() + " from " + 
                             activity.getBefore() + " to " + activity.getAfter();
-                currRow.set(index, currActivityRowValue);
+                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
             }
         }
     
-    private void putDeveloperActivitiesInRow(List<QuestionableActivityDeveloperDTO> developerActivityForDate,
+    private void putDeveloperActivityInRow(QuestionableActivityDeveloperDTO developerActivity,
             List<String> activityRow) {
-        for(QuestionableActivityDeveloperDTO activity : developerActivityForDate) {
-            activityRow.set(1, activity.getDeveloper().getName());
-            activityRow.set(8, activity.getUser().getSubjectName()); 
-            
-            if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED.getName())) {
-                activityRow.set(
-                        triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED),
-                        "From " + activity.getBefore() + " to " + activity.getAfter());
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "From " + activity.getBefore() + " to " + activity.getAfter();
-                activityRow.set(index, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "Added status " + activity.getAfter();
-                activityRow.set(index, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "Removed status " + activity.getBefore();
-                activityRow.set(index, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "Changed status from " + activity.getBefore() + " to " + activity.getAfter();
-                activityRow.set(index, currActivityRowValue);
+        activityRow.set(DEVELOPER_COL, developerActivity.getDeveloper().getName());
+        activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getSubjectName()); 
+        
+        if(developerActivity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.DEVELOPER_NAME_EDITED.getName())) {
+            activityRow.set(ACTIVITY_DESCRIPTION_COL,
+                    "From " + developerActivity.getBefore() + " to " + developerActivity.getAfter());
+        } else if(developerActivity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_EDITED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
             }
+            currActivityRowValue += "From " + developerActivity.getBefore() + " to " + developerActivity.getAfter();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(developerActivity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += "Added status " + developerActivity.getAfter();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(developerActivity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += "Removed status " + developerActivity.getBefore();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(developerActivity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += "Changed status from " + developerActivity.getBefore() + 
+                    " to " + developerActivity.getAfter();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
     }
     
-    private void putProductActivitiesInRow(List<QuestionableActivityProductDTO> productActivityForDate,
+    private void putProductActivityInRow(QuestionableActivityProductDTO activity,
             List<String> activityRow) {
-        for(QuestionableActivityProductDTO activity : productActivityForDate) {
-            activityRow.set(1, activity.getProduct().getDeveloperName());
-            activityRow.set(2, activity.getProduct().getName());
-            activityRow.set(8, activity.getUser().getSubjectName()); 
-            
-            if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED.getName())) {
-                activityRow.set(
-                        triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED),
-                        "From " + activity.getBefore() + " to " + activity.getAfter());
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "From " + activity.getBefore() + " to " + activity.getAfter();
-                activityRow.set(index, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "Added owner " + activity.getAfter();
-                activityRow.set(index, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "Removed owner " + activity.getBefore();
-                activityRow.set(index, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
-                int index = triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED);
-                String currActivityRowValue = activityRow.get(index);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += "Changed owner from " + activity.getBefore() + " to " + activity.getAfter();
-                activityRow.set(index, currActivityRowValue);
+        activityRow.set(DEVELOPER_COL, activity.getProduct().getDeveloperName());
+        activityRow.set(PRODUCT_COL, activity.getProduct().getName());
+        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName()); 
+        
+        if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED.getName())) {
+            activityRow.set(ACTIVITY_DESCRIPTION_COL,
+                    "From " + activity.getBefore() + " to " + activity.getAfter());
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.PRODUCT_OWNER_EDITED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
             }
+            currActivityRowValue += "From " + activity.getBefore() + " to " + activity.getAfter();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += "Added owner " + activity.getAfter();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += "Removed owner " + activity.getBefore();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED.getName())) {
+            String currActivityRowValue = activityRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += "Changed owner from " + activity.getBefore() + " to " + activity.getAfter();
+            activityRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
     }
     
-    private void putVersionActivitiesInRow(List<QuestionableActivityVersionDTO> versionActivityForDate,
+    private void putVersionActivityInRow(QuestionableActivityVersionDTO activity,
             List<String> activityRow) {
-        for(QuestionableActivityVersionDTO activity : versionActivityForDate) {
-            activityRow.set(1, activity.getVersion().getDeveloperName());
-            activityRow.set(2, activity.getVersion().getProductName());
-            activityRow.set(3, activity.getVersion().getVersion());
-            activityRow.set(8, activity.getUser().getSubjectName()); 
-            
-            if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.VERSION_NAME_EDITED.getName())) {
-                activityRow.set(
-                        triggerColumnIndexMap.get(QuestionableActivityTriggerConcept.VERSION_NAME_EDITED),
-                        "From " + activity.getBefore() + " to " + activity.getAfter());
-            }
+        activityRow.set(DEVELOPER_COL, activity.getVersion().getDeveloperName());
+        activityRow.set(PRODUCT_COL, activity.getVersion().getProductName());
+        activityRow.set(VERSION_COL, activity.getVersion().getVersion());
+        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName()); 
+        
+        if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.VERSION_NAME_EDITED.getName())) {
+            activityRow.set(ACTIVITY_DESCRIPTION_COL,
+                    "From " + activity.getBefore() + " to " + activity.getAfter());
         }
-    }
+}
     
     private List<String> createHeader() {
-        List<String> rows = new ArrayList<String>();
-        rows.add("ACB");
-        rows.add("Developer");
-        rows.add("Product");
-        rows.add("Version");
-        rows.add("CHPL Product Number");
-        rows.add("Current Certification Status");
-        rows.add("Link");
-        rows.add("Activity Timestamp");
-        rows.add("Responsible User");
-        rows.add("Added Certification Criteria");
-        rows.add("Removed Certification Criteria");
-        rows.add("Added CQMs");
-        rows.add("Removed CQMs");
-        rows.add("Edited Measure Successfully Tested for G1");
-        rows.add("Added Measures Successfully Tested for G1");
-        rows.add("Removed Measures Successfully Tested for G1");
-        rows.add("Edited Measure Successfully Tested for G2");
-        rows.add("Added Measures Successfully Tested for G2");
-        rows.add("Removed Measures Successfully Tested for G2");
-        rows.add("Edit GAP Status");
-        rows.add("Deleted Surveillance");
-        rows.add("Edited 2011 Edition");
-        rows.add("Change Certification Status");
-        rows.add("Change Developer Name");
-        rows.add("Change Developer Status Including History");
-        rows.add("Change Product Name");
-        rows.add("Change Product Owner Including History");
-        rows.add("Change Version Name");
-        return rows;
+        List<String> row = new ArrayList<String>();
+        row.add("ACB");
+        row.add("Developer");
+        row.add("Product");
+        row.add("Version");
+        row.add("CHPL Product Number");
+        row.add("Current Certification Status");
+        row.add("Link");
+        row.add("Activity Timestamp");
+        row.add("Responsible User");
+        row.add("Activity Type");
+        row.add("Activity");
+        return row;
     }
     
     private List<String> createEmptyRow() {
@@ -672,6 +654,53 @@ public class QuestionableActivityReportApp extends App {
         this.notificationDao = notificationDao;
     }
 
+    private class ActivityDateTriggerGroup {
+        private Date activityDate;
+        private QuestionableActivityTriggerDTO trigger;
+        
+        public ActivityDateTriggerGroup(Date activityDate, QuestionableActivityTriggerDTO trigger) {
+            this.activityDate = activityDate;
+            this.trigger = trigger;
+        }
+        
+        @Override
+        public boolean equals(Object anotherObject) {
+            if(anotherObject == null) {
+                return false;
+            }
+            if(!(anotherObject instanceof ActivityDateTriggerGroup)) {
+                return false;
+            }
+            ActivityDateTriggerGroup anotherGroup = (ActivityDateTriggerGroup) anotherObject;
+            if(this.activityDate == null || anotherGroup.activityDate == null || 
+                    this.trigger == null || anotherGroup.trigger == null) {
+                return false;
+            } 
+            if(this.activityDate.getTime() == anotherGroup.activityDate.getTime() && 
+                    (this.trigger.getId().longValue() == anotherGroup.trigger.getId().longValue() ||
+                    this.trigger.getName().equals(anotherGroup.trigger.getName()))) {
+                return true;
+            }
+            return false;
+        }
+        
+        @Override
+        public int hashCode() {
+            if(this.activityDate == null || this.trigger == null) {
+                return -1;
+            }
+            return this.activityDate.hashCode() + this.trigger.getName().hashCode();
+        }
+
+        public Date getActivityDate() {
+            return activityDate;
+        }
+
+        public QuestionableActivityTriggerDTO getTrigger() {
+            return trigger;
+        }
+    }
+    
     public static void main(String[] args) throws Exception {
         if (args == null || args.length < 2) {
             LOGGER.error("QuestionableActivityReportApp HELP: \n" 
