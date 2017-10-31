@@ -1,4 +1,4 @@
-package gov.healthit.chpl.quesitonableActivity;
+package gov.healthit.chpl.questionableActivity;
 
 import java.util.ArrayList;
 import java.util.List;
