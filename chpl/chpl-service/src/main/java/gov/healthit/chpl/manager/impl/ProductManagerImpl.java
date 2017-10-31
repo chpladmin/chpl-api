@@ -10,7 +10,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
-import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -43,11 +41,9 @@ import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
 
 @Service
-public class ProductManagerImpl extends QuestionableActivityHandlerImpl implements ProductManager {
+public class ProductManagerImpl implements ProductManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductManagerImpl.class);
 
-    @Autowired
-    private Environment env;
     @Autowired
     private MessageSource messageSource;
     @Autowired
@@ -135,7 +131,7 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
-    public ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity)
+    public ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         ProductDTO beforeDTO = productDao.getById(dto.getId());
@@ -171,9 +167,6 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
         String activityMsg = "Product " + dto.getName() + " was updated.";
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_PRODUCT, result.getId(), activityMsg, beforeDTO,
                 result);
-        if (lookForSuspiciousActivity) {
-            handleActivity(beforeDTO, result);
-        }
         return result;
 
     }
@@ -321,62 +314,6 @@ public class ProductManagerImpl extends QuestionableActivityHandlerImpl implemen
                     afterProduct);
         }
 
-        handleActivity(oldProduct, newProduct);
         return getById(newProduct.getId());
-    }
-
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
-        String message = "";
-        if (!(src instanceof ProductDTO)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            ProductDTO original = (ProductDTO) src;
-            message = "<p>Activity was detected on product " + original.getName() + ".</p>"
-                    + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports</p>";
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        boolean isQuestionable = false;
-
-        if (!(src instanceof ProductDTO && dest instanceof ProductDTO)) {
-            LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass()
-                    + ". Expected both objects to be of type ProductDTO.");
-        } else {
-            ProductDTO original = (ProductDTO) src;
-            ProductDTO changed = (ProductDTO) dest;
-
-            // check name change
-            if ((original.getName() != null && changed.getName() == null)
-                    || (original.getName() == null && changed.getName() != null)
-                    || !original.getName().equals(changed.getName())) {
-                isQuestionable = true;
-            }
-
-            // if there was a different amount of owner history
-            if ((original.getOwnerHistory() != null && changed.getOwnerHistory() == null)
-                    || (original.getOwnerHistory() == null && changed.getOwnerHistory() != null)
-                    || (original.getOwnerHistory().size() != changed.getOwnerHistory().size())) {
-                isQuestionable = true;
-            } else {
-                // the same counts of owner history are there but we should
-                // check the contents
-                for (ProductOwnerDTO originalOwner : original.getOwnerHistory()) {
-                    boolean foundOriginalOwner = false;
-                    for (ProductOwnerDTO changedOwner : changed.getOwnerHistory()) {
-                        if (originalOwner.getDeveloper().getId().longValue() == changedOwner.getDeveloper().getId()
-                                .longValue()) {
-                            foundOriginalOwner = true;
-                        }
-                    }
-                    if (!foundOriginalOwner) {
-                        isQuestionable = true;
-                    }
-                }
-            }
-        }
-        return isQuestionable;
     }
 }

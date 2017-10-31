@@ -206,6 +206,7 @@ public class PendingCertifiedProductDTO implements Serializable {
             if (details.getIcs().getParents() != null && details.getIcs().getParents().size() > 0) {
                 for (CertifiedProduct parent : details.getIcs().getParents()) {
                     CertifiedProductDetailsDTO parentCp = new CertifiedProductDetailsDTO();
+                    parentCp.setId(parent.getId());
                     parentCp.setChplProductNumber(parent.getChplProductNumber());
                     this.icsParents.add(parentCp);
                 }
@@ -213,6 +214,7 @@ public class PendingCertifiedProductDTO implements Serializable {
             if (details.getIcs().getChildren() != null && details.getIcs().getChildren().size() > 0) {
                 for (CertifiedProduct child : details.getIcs().getChildren()) {
                     CertifiedProductDetailsDTO childCp = new CertifiedProductDetailsDTO();
+                    childCp.setId(child.getId());
                     childCp.setChplProductNumber(child.getChplProductNumber());
                     this.icsChildren.add(childCp);
                 }

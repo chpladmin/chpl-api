@@ -26,8 +26,12 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
     private MessageSource messageSource;
     @Autowired
     private UploadTemplateVersionDAO templateVersionDao;
+    @Qualifier("certifiedProductHandler2014Version1")
     @Autowired
-    private CertifiedProductHandler2014 handler2014;
+    private CertifiedProductHandler2014Version1 handler2014Version1;
+    @Qualifier("certifiedProductHandler2014Version2")
+    @Autowired
+    private CertifiedProductHandler2014Version2 handler2014Version2;
     @Qualifier("certifiedProductHandler2015Version1")
     @Autowired
     private CertifiedProductHandler2015Version1 handler2015Version1;
@@ -99,7 +103,9 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
                             LocaleContextHolder.getLocale()), trimmedHeadingStr);
             throw new InvalidArgumentsException(msg);
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2014_VERSION_1.getName())) {
-            handler = handler2014;
+            handler = handler2014Version1;
+        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2014_VERSION_2.getName())) {
+            handler = handler2014Version2;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_1.getName())) {
             handler = handler2015Version1;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_2.getName())) {

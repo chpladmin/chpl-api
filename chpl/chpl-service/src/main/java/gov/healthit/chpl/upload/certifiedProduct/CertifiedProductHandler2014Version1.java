@@ -30,13 +30,13 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
-import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2014;
+import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2014Version1;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
-@Component("certifiedProductHandler2014")
-public class CertifiedProductHandler2014 extends CertifiedProductHandler {
+@Component("certifiedProductHandler2014Version1")
+public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2014.class);
+    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2014Version1.class);
     private TemplateColumnIndexMap templateColumnIndexMap;
     private String[] criteriaNames = {
             "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)",
@@ -53,8 +53,8 @@ public class CertifiedProductHandler2014 extends CertifiedProductHandler {
             "170.314 (g)(4)", "170.314 (h)(1)",  "170.314 (h)(2)", "170.314 (h)(3)"
     };
     
-    public CertifiedProductHandler2014() {
-       templateColumnIndexMap = new TemplateColumnIndexMap2014();
+    public CertifiedProductHandler2014Version1() {
+       templateColumnIndexMap = new TemplateColumnIndexMap2014Version1();
     }
     
     public TemplateColumnIndexMap getColumnIndexMap() {

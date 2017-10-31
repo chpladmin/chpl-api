@@ -553,7 +553,7 @@
 	<certificationResult>
 		<number>170.314 (b)(5)(B)</number>
 		<properties>
-			<gap>false</gap>
+			<gap>true</gap>
 			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
@@ -1963,7 +1963,7 @@
 	<certificationResult>
 		<number>170.315 (d)(3)</number>
 		<properties>
-			<gap>true</gap>
+			<gap>false</gap>
 			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>

@@ -2,7 +2,6 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,7 +60,7 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 @Service
-public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl implements SurveillanceManager {
+public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
     @Autowired
     private Environment env;
@@ -377,27 +376,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional(readOnly = true)
     public void validate(Surveillance surveillance) {
         validator.validate(surveillance);
-    }
-
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
-        String message = "";
-        if (!(src instanceof Surveillance)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            Surveillance original = (Surveillance) src;
-            message = "<p>Questionable activity was detected on "
-                    + original.getCertifiedProduct().getChplProductNumber() + ". "
-                    + "An action was taken related to surveillance " + fmt.format(original.getStartDate()) + ".<p>"
-                    + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports</p>";
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        // it's questionable if the surveillance was deleted (dest is null)
-        return src instanceof Surveillance && dest == null;
     }
 
     @Override

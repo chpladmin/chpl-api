@@ -20,7 +20,7 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
 @Component("listingsByEditionResourceCreatorApp")
-public class ListingsByEditionResourceCreatorApp extends DownloadableResourceCreatorApp {
+public class ListingsByEditionResourceCreatorApp extends CertifiedProductDownloadableResourceCreatorApp {
     private static final Logger LOGGER = LogManager.getLogger(ListingsByEditionResourceCreatorApp.class);
 
     private String edition;

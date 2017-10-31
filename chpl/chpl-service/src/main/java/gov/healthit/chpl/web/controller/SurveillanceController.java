@@ -361,7 +361,6 @@ public class SurveillanceController implements MessageSourceAware {
         try {
             survManager.deleteSurveillance(owningAcb.getId(), survToDelete);
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
-            survManager.handleActivity(survToDelete, null);
         } catch (final SurveillanceAuthorityAccessDeniedException ex) {
             LOGGER.error("User lacks authority to delete surveillance");
             throw new SurveillanceAuthorityAccessDeniedException("User lacks authority to delete surveillance");

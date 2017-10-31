@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 
 @Service
-public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl implements ProductVersionManager {
+public class ProductVersionManagerImpl implements ProductVersionManager {
     private static final Logger LOGGER = LogManager.getLogger(ProductVersionManagerImpl.class);
     @Autowired
     private ProductVersionDAO dao;
@@ -42,8 +41,6 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
     private ProductDAO prodDao;
     @Autowired
     private CertifiedProductDAO cpDao;
-    @Autowired
-    private Environment env;
     @Autowired
     private ActivityManager activityManager;
 
@@ -136,8 +133,6 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
         ProductVersionDTO after = new ProductVersionDTO(result);
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_VERSION, after.getId(),
                 "Product Version " + dto.getVersion() + " updated for product " + dto.getProductId(), before, after);
-        handleActivity(before, after);
-
         return after;
     }
 
@@ -198,37 +193,5 @@ public class ProductVersionManagerImpl extends QuestionableActivityHandlerImpl i
                 beforeVersions, createdVersion);
 
         return createdVersion;
-    }
-
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
-        String message = "";
-        if (!(src instanceof ProductVersionDTO)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            ProductVersionDTO original = (ProductVersionDTO) src;
-            message = "<p>Activity was detected on version " + original.getVersion() + ".</p>"
-                    + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports</p>";
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        boolean isQuestionable = false;
-
-        if (!(src instanceof ProductVersionDTO && dest instanceof ProductVersionDTO)) {
-            LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass()
-                    + ". Expected both objects to be of type ProductVersionDTO.");
-        } else {
-            ProductVersionDTO original = (ProductVersionDTO) src;
-            ProductVersionDTO changed = (ProductVersionDTO) dest;
-
-            if ((original.getVersion() != null && changed.getVersion() == null)
-                    || (original.getVersion() == null && changed.getVersion() != null)
-                    || !original.getVersion().equals(changed.getVersion())) {
-                isQuestionable = true;
-            }
-        }
-        return isQuestionable;
     }
 }

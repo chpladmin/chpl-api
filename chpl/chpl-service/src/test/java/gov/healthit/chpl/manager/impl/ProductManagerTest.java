@@ -234,7 +234,7 @@ public class ProductManagerTest extends TestCase {
 		
 		ProductDTO updated = null;
 		try {
-			updated = productManager.update(toUpdate, false);
+			updated = productManager.update(toUpdate);
 		} catch(Exception ex) {
 			fail(ex.getMessage());
 		}
@@ -262,7 +262,7 @@ public class ProductManagerTest extends TestCase {
 		
 		ProductDTO updated = null;
 		try {
-			updated = productManager.update(toUpdate, false);
+			updated = productManager.update(toUpdate);
 		} catch(Exception ex) {
 			fail(ex.getMessage());
 		}
@@ -286,7 +286,7 @@ public class ProductManagerTest extends TestCase {
 		
 		ProductDTO updated = null;
 		try {
-			updated = productManager.update(toUpdate, false);
+			updated = productManager.update(toUpdate);
 		} catch(Exception ex) {
 			fail(ex.getMessage());
 		}
@@ -317,7 +317,7 @@ public class ProductManagerTest extends TestCase {
 		
 		product.setOwnerHistory(null);
 		try {
-			productManager.update(product, false);
+			productManager.update(product);
 		} catch(Exception ex) {
 			fail("could not update product!");
 			System.out.println(ex.getStackTrace());
@@ -351,7 +351,7 @@ public class ProductManagerTest extends TestCase {
 		product.setName("new product name");
 		boolean failed = false;
 		try {
-			product = productManager.update(product, false);
+			product = productManager.update(product);
 		} catch(EntityCreationException ex) {
 			System.out.println(ex.getMessage());
 			failed = true;
@@ -399,7 +399,7 @@ public class ProductManagerTest extends TestCase {
 		product.setName("new product name");
 		failed = false;
 		try {
-			product = productManager.update(product, false);
+			product = productManager.update(product);
 		} catch(EntityCreationException ex) {
 			System.out.println(ex.getMessage());
 			failed = true;
