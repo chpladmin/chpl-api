@@ -39,14 +39,14 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
 import gov.healthit.chpl.domain.SearchOption;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
-import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.notification.NotificationType;
+import gov.healthit.chpl.domain.search.SearchRequest;
+import gov.healthit.chpl.domain.search.SearchResponse;
+import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -458,11 +458,11 @@ public class SearchViewController {
             if (!StringUtils.isEmpty(surveillanceDelimited)) {
                 String[] surveillanceArr = surveillanceDelimited.split(",");
                 if (surveillanceArr != null && surveillanceArr.length > 0) {
-                    Set<SurveillanceSearchOptions> surveillanceSearchOptions = new HashSet<SurveillanceSearchOptions>();
+                    Set<NonconformitySearchOptions> surveillanceSearchOptions = new HashSet<NonconformitySearchOptions>();
                     for (int i = 0; i < surveillanceArr.length; i++) {
                         String surveillanceParam = surveillanceArr[i].trim();
                         try {
-                            SurveillanceSearchOptions searchOpt = SurveillanceSearchOptions.valueOf(surveillanceParam);
+                            NonconformitySearchOptions searchOpt = NonconformitySearchOptions.valueOf(surveillanceParam);
                             if (searchOpt != null) {
                                 surveillanceSearchOptions.add(searchOpt);
                             } else {

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.domain.search;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,24 +6,26 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
+
 @XmlRootElement(name = "searchResults")
 public class SearchResponse implements Serializable {
     private static final long serialVersionUID = 5130424471766571329L;
     private Integer recordCount;
     private Integer pageSize;
     private Integer pageNumber;
-    private List<CertifiedProductSearchResult> results;
+    private List<CertifiedProductBasicSearchResult> results;
 
     public SearchResponse() {
-        results = new ArrayList<CertifiedProductSearchResult>();
+        results = new ArrayList<CertifiedProductBasicSearchResult>();
     }
 
-    public SearchResponse(Integer recordCount, List<CertifiedProductSearchResult> results) {
+    public SearchResponse(Integer recordCount, List<CertifiedProductBasicSearchResult> results) {
         this.recordCount = recordCount;
         this.results = results;
     }
 
-    public SearchResponse(Integer recordCount, List<CertifiedProductSearchResult> results, Integer pageSize,
+    public SearchResponse(Integer recordCount, List<CertifiedProductBasicSearchResult> results, Integer pageSize,
             Integer pageNumber) {
         this.recordCount = recordCount;
         this.results = results;
@@ -39,11 +41,11 @@ public class SearchResponse implements Serializable {
         this.recordCount = recordCount;
     }
 
-    public List<CertifiedProductSearchResult> getResults() {
+    public List<CertifiedProductBasicSearchResult> getResults() {
         return results;
     }
 
-    public void setResults(final List<CertifiedProductSearchResult> results) {
+    public void setResults(final List<CertifiedProductBasicSearchResult> results) {
         this.results = results;
     }
 

@@ -36,10 +36,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.search.BasicSearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.SearchRequest;
+import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import junit.framework.TestCase;
 

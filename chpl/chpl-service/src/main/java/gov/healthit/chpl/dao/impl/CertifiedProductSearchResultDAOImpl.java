@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SurveillanceSearchOptions;
+import gov.healthit.chpl.domain.search.SearchRequest;
+import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
@@ -766,9 +766,9 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements 
 
         if (searchRequest.getSurveillance() != null && searchRequest.getSurveillance().size() > 0) {
             result += " AND (";
-            Iterator<SurveillanceSearchOptions> opts = searchRequest.getSurveillance().iterator();
+            Iterator<NonconformitySearchOptions> opts = searchRequest.getSurveillance().iterator();
             while (opts.hasNext()) {
-                SurveillanceSearchOptions opt = opts.next();
+                NonconformitySearchOptions opt = opts.next();
                 switch (opt) {
                 case OPEN_SURVEILLANCE:
                     result += " count_open_surveillance_activities > 0 ";

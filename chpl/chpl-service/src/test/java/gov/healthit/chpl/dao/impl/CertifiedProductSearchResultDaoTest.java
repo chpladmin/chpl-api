@@ -36,15 +36,15 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.SearchRequest;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.domain.SurveillanceRequirement;
 import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
-import gov.healthit.chpl.domain.SurveillanceSearchOptions;
 import gov.healthit.chpl.domain.SurveillanceType;
+import gov.healthit.chpl.domain.search.SearchRequest;
+import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import junit.framework.TestCase;
@@ -236,28 +236,28 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(10, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_NONCONFORMITY);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_NONCONFORMITY);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_NONCONFORMITY);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_NONCONFORMITY);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(0, products.size());
 	}
@@ -306,28 +306,28 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(10, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_NONCONFORMITY);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_NONCONFORMITY);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_NONCONFORMITY);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_NONCONFORMITY);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(0, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(0, products.size());
 	}
@@ -397,28 +397,28 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		assertEquals(10, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_NONCONFORMITY);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_NONCONFORMITY);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_NONCONFORMITY);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_NONCONFORMITY);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(2, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(1, products.size());
 		
 		searchRequest = new SearchRequest();
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.CLOSED_SURVEILLANCE);
-		searchRequest.getSurveillance().add(SurveillanceSearchOptions.OPEN_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.CLOSED_SURVEILLANCE);
+		searchRequest.getSurveillance().add(NonconformitySearchOptions.OPEN_SURVEILLANCE);
 		products = searchResultDAO.search(searchRequest);
 		assertEquals(0, products.size());
 	}
@@ -490,7 +490,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		certStatuses.add("Suspended by ONC");
 		certStatuses.add("Terminated by ONC");
 		List<String> cqms = new ArrayList<String>();
-		Set<SurveillanceSearchOptions> survs = new HashSet<SurveillanceSearchOptions>();
+		Set<NonconformitySearchOptions> survs = new HashSet<NonconformitySearchOptions>();
 		 
 		searchFilters.setCertificationBodies(certBodies);
 		searchFilters.setCertificationCriteria(certCriteria);
@@ -560,7 +560,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		certStatuses.add("Suspended by ONC");
 		certStatuses.add("Terminated by ONC");
 		List<String> cqms = new ArrayList<String>();
-		Set<SurveillanceSearchOptions> survs = new HashSet<SurveillanceSearchOptions>();
+		Set<NonconformitySearchOptions> survs = new HashSet<NonconformitySearchOptions>();
 		 
 		searchFilters.setCertificationBodies(certBodies);
 		searchFilters.setCertificationCriteria(certCriteria);
