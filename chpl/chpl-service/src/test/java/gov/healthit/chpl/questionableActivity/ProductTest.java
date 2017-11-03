@@ -149,7 +149,7 @@ public class ProductTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityProductDTO activity = activities.get(0);
         assertEquals(-1, activity.getProductId().longValue());
-        assertEquals("Test Developer 2 (20150920_131400)", activity.getBefore());
+        assertEquals("Test Developer 2 (2015-09-20)", activity.getBefore());
         assertNull(activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_REMOVED.getName(), activity.getTrigger().getName());
         
@@ -182,7 +182,7 @@ public class ProductTest extends TestCase {
         QuestionableActivityProductDTO activity = activities.get(0);
         assertEquals(-1, activity.getProductId().longValue());
         assertNull(null);
-        assertEquals("Test Developer 3 (20140101_000000)", activity.getAfter());
+        assertEquals("Test Developer 3 (2014-01-01)", activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_ADDED.getName(), activity.getTrigger().getName());
         
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -217,8 +217,8 @@ public class ProductTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityProductDTO activity = activities.get(0);
         assertEquals(-1, activity.getProductId().longValue());
-        assertEquals("Test Developer 2 (20150920_131400)", activity.getBefore());
-        assertEquals("Test Developer 2 (20140101_000000)", activity.getAfter());
+        assertEquals("Test Developer 2 (2015-09-20)", activity.getBefore());
+        assertEquals("Test Developer 2 (2014-01-01)", activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.PRODUCT_OWNER_HISTORY_EDITED.getName(), activity.getTrigger().getName());
         
         SecurityContextHolder.getContext().setAuthentication(null);
