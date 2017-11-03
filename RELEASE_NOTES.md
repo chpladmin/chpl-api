@@ -11,6 +11,7 @@ _Date TBD_
 
 ### Bugs fixed
 * Fix bug where uploaded SED Test Participants with identical demographics are not recognized correctly
+* Improve handling for upload files that have blank columns at the end
 
 ---
 
