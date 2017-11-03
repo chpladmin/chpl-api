@@ -2,7 +2,9 @@ package gov.healthit.chpl.upload.certifiedProduct;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -58,6 +60,24 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
         for(int i = 0; i < heading.size(); i++) {
             String headerVal = heading.get(i).trim();
             trimmedHeaderVals.add(headerVal);
+        }
+        
+        //it is common for a bunch of extra blank columns to get put at the end
+        //of an xls/csv file without the user knowing, so delete any that are at the end
+        //use a list iterator to go from the end of the list to tbe beginning
+        //deleting blank columns from the end until we come to the first one that's 
+        //not blank, they we won't delete anymore
+        ListIterator<String> headerValIter = trimmedHeaderVals.listIterator(trimmedHeaderVals.size());
+        boolean foundLastColumnWithText = false;
+        while(headerValIter.hasPrevious()) {
+            String lastItem = headerValIter.previous();
+            if(!foundLastColumnWithText) {
+                if(StringUtils.isEmpty(lastItem)) {
+                    headerValIter.remove();
+                } else {
+                    foundLastColumnWithText = true;
+                }
+            }
         }
         
         StringBuffer buf = new StringBuffer();
