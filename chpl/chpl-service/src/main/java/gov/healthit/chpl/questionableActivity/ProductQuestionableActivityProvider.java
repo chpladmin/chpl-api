@@ -59,7 +59,7 @@ public class ProductQuestionableActivityProvider {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                 activity.setBefore(null);
                 activity.setAfter(newOwner.getDeveloper().getName() + 
-                        " (" + Util.getTimestampFormatter().format(new Date(newOwner.getTransferDate())) + ")");
+                        " (" + Util.getDateFormatter().format(new Date(newOwner.getTransferDate())) + ")");
                 ownerAddedActivities.add(activity);
             }
         } else if (origOwners != null && origOwners.size() > 0 && 
@@ -78,7 +78,7 @@ public class ProductQuestionableActivityProvider {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                     activity.setBefore(null);
                     activity.setAfter(newOwner.getDeveloper().getName() + 
-                            " (" + Util.getTimestampFormatter().format(new Date(newOwner.getTransferDate())) + ")");
+                            " (" + Util.getDateFormatter().format(new Date(newOwner.getTransferDate())) + ")");
                     ownerAddedActivities.add(activity);
                 }
             }
@@ -96,7 +96,7 @@ public class ProductQuestionableActivityProvider {
             for(ProductOwnerDTO origOwner : origOwners) {
                 QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                 activity.setBefore(origOwner.getDeveloper().getName() + 
-                        " (" + Util.getTimestampFormatter().format(new Date(origOwner.getTransferDate())) + ")");
+                        " (" + Util.getDateFormatter().format(new Date(origOwner.getTransferDate())) + ")");
                 activity.setAfter(null);
                 ownerRemovedActivities.add(activity);
             }
@@ -115,7 +115,7 @@ public class ProductQuestionableActivityProvider {
                 if(!foundOwner) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                     activity.setBefore(origOwner.getDeveloper().getName() + 
-                            " (" + Util.getTimestampFormatter().format(new Date(origOwner.getTransferDate())) + ")");
+                            " (" + Util.getDateFormatter().format(new Date(origOwner.getTransferDate())) + ")");
                     activity.setAfter(null);
                     ownerRemovedActivities.add(activity);
                 }
@@ -149,9 +149,9 @@ public class ProductQuestionableActivityProvider {
                 if(ownerEdited) {
                     QuestionableActivityProductDTO activity = new QuestionableActivityProductDTO();
                     activity.setBefore(origOwner.getDeveloper().getName() + 
-                            " (" + Util.getTimestampFormatter().format(new Date(origOwner.getTransferDate())) + ")");
+                            " (" + Util.getDateFormatter().format(new Date(origOwner.getTransferDate())) + ")");
                     activity.setAfter(matchingNewOwner.getDeveloper().getName() + 
-                            " (" + Util.getTimestampFormatter().format(new Date(matchingNewOwner.getTransferDate())) + ")");
+                            " (" + Util.getDateFormatter().format(new Date(matchingNewOwner.getTransferDate())) + ")");
                     ownerEditedActivities.add(activity);
                 }
             }
