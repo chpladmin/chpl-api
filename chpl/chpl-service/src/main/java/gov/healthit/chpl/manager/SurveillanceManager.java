@@ -20,7 +20,7 @@ import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
-public interface SurveillanceManager extends QuestionableActivityHandler {
+public interface SurveillanceManager {
     File getDownloadFile(String filename) throws IOException;
 
     File getProtectedDownloadFile(String filename) throws IOException;

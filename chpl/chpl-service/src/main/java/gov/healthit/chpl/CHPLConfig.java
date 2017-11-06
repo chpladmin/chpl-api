@@ -41,6 +41,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.manager.ApiKeyManager;
+import gov.healthit.chpl.questionableActivity.QuestionableActivityAspect;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
 @Configuration
@@ -83,7 +84,8 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     @Bean
     public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
         LOGGER.info("get LocalEntityManagerFactoryBean");
-        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = 
+                new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
         bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
         return bean;
     }
@@ -91,7 +93,8 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     @Bean
     public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
         LOGGER.info("get JpaTransactionManager");
-        org.springframework.orm.jpa.JpaTransactionManager bean = new org.springframework.orm.jpa.JpaTransactionManager();
+        org.springframework.orm.jpa.JpaTransactionManager bean = 
+                new org.springframework.orm.jpa.JpaTransactionManager();
         bean.setEntityManagerFactory(entityManagerFactory().getObject());
         return bean;
     }
@@ -134,7 +137,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         LOGGER.info("get Marshaller");
         return new CastorMarshaller();
     }
-
+    
     @Bean
     public CacheManager cacheManager() {
         LOGGER.info("get CacheManager");
@@ -175,7 +178,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     }
 
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(localeInterceptor());
     }
 

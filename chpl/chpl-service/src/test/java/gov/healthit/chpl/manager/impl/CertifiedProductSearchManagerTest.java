@@ -58,7 +58,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(5, response.getResults().size());
+		assertEquals(6, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getDeveloper().get("name").toString().startsWith("Test Developer 1"));
@@ -72,7 +72,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setProduct("Test Product 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(3, response.getResults().size());
+		assertEquals(4, response.getResults().size());
 		
 		for (CertifiedProductSearchResult result : response.getResults() ){
 			assertTrue(result.getProduct().get("name").toString().startsWith("Test Product 1"));

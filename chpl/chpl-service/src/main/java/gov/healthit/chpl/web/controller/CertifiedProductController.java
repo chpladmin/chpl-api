@@ -1,14 +1,21 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -52,7 +59,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.PendingCertifiedProductEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -142,6 +149,43 @@ public class CertifiedProductController {
         }
 
         return certifiedProduct;
+    }
+    
+    @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
+            notes = "Download a specific file that is generated overnight.")
+    @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
+    public void streamSEDDetailsDocumentContents(HttpServletResponse response) throws EntityRetrievalException, IOException {
+    	Path path = Paths.get(env.getProperty("downloadFolderPath"), env.getProperty("SEDDownloadName"));
+    	File downloadFile = new File(path.toUri());
+    	byte[] data = Files.readAllBytes(path);
+    	
+        if (data != null && data.length > 0) {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(data);
+            // get MIME type of the file
+            String mimeType = "text/csv";
+            // set content attributes for the response
+            response.setContentType(mimeType);
+            response.setContentLength((int) data.length);
+
+            // set headers for the response
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", downloadFile.getName());
+            response.setHeader(headerKey, headerValue);
+
+            // get output stream of the response
+            OutputStream outStream = response.getOutputStream();
+
+            byte[] buffer = new byte[1024];
+            int bytesRead = -1;
+
+            // write bytes read from the input stream into the output stream
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outStream.write(buffer, 0, bytesRead);
+            }
+
+            inputStream.close();
+            outStream.close();
+        }
     }
 
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
@@ -240,8 +284,6 @@ public class CertifiedProductController {
 
         // search for the product by id to get it with all the updates
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
-        cpManager.handleActivity(existingListing, changedProduct);
-
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
                 changedProduct);
@@ -371,6 +413,8 @@ public class CertifiedProductController {
             CertifiedProductDTO createdProduct = cpManager.createFromPending(acbId, pcpDto);
             pcpManager.confirm(acbId, pendingCp.getId());
             CertifiedProductSearchDetails result = cpdManager.getCertifiedProductDetails(createdProduct.getId());
+            activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, result.getId(),
+                    "Created a certified product", null, result);
 
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -397,7 +441,7 @@ public class CertifiedProductController {
                     + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
                     + " and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductResults upload(@RequestParam("file") MultipartFile file)
+    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
@@ -407,7 +451,7 @@ public class CertifiedProductController {
                 && !file.getContentType().equalsIgnoreCase("application/vnd.ms-excel")) {
             throw new ValidationException("File must be a CSV document.");
         }
-
+        HttpHeaders responseHeaders = new HttpHeaders();
         List<PendingCertifiedProductDetails> uploadedProducts = new ArrayList<PendingCertifiedProductDetails>();
 
         BufferedReader reader = null;
@@ -456,6 +500,10 @@ public class CertifiedProductController {
                                     try {
                                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                                 rows);
+                                        if(handler.getUploadTemplateVersion() != null && 
+                                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+                                        }
                                         PendingCertifiedProductEntity pendingCp = handler.handle();
                                         cpsToAdd.add(pendingCp);
                                     } catch (final InvalidArgumentsException ex) {
@@ -476,9 +524,15 @@ public class CertifiedProductController {
                 if (i == records.size() - 1 && !rows.isEmpty()) {
                     try {
                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
+                        if(handler.getUploadTemplateVersion() != null && 
+                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+                        }
                         PendingCertifiedProductEntity pendingCp = handler.handle();
                         cpsToAdd.add(pendingCp);
                     } catch (final InvalidArgumentsException ex) {
+                        handlerErrors.add(ex.getMessage());
+                    } catch (final Exception ex) {
                         handlerErrors.add(ex.getMessage());
                     }
                 }
@@ -527,8 +581,9 @@ public class CertifiedProductController {
             }
         }
 
+        
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
         results.getPendingCertifiedProducts().addAll(uploadedProducts);
-        return results;
+        return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
     }
 }

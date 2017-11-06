@@ -332,9 +332,9 @@ public class SearchViewControllerTest extends TestCase {
 				null, "Test Developer 1", null, null, null, null, null, 0, 50, "developer", true);
 		assertNotNull(searchResponse);
 		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(5, searchResponse.getRecordCount().intValue());
+		assertEquals(6, searchResponse.getRecordCount().intValue());
 		assertNotNull(searchResponse.getResults());
-		assertEquals(5, searchResponse.getResults().size());
+		assertEquals(6, searchResponse.getResults().size());
 	}
 
 	@Transactional 
@@ -362,9 +362,9 @@ public class SearchViewControllerTest extends TestCase {
 				null, null, "Test Product 1", null, null, null, null, 0, 50, "developer", true);
 		assertNotNull(searchResponse);
 		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(3, searchResponse.getRecordCount().intValue());
+		assertEquals(4, searchResponse.getRecordCount().intValue());
 		assertNotNull(searchResponse.getResults());
-		assertEquals(3, searchResponse.getResults().size());
+		assertEquals(4, searchResponse.getResults().size());
 	}
 	
 	@Transactional 
@@ -377,9 +377,9 @@ public class SearchViewControllerTest extends TestCase {
 				null, null, "Test Product 1", "1.0.0", null, null, null, 0, 50, "developer", true);
 		assertNotNull(searchResponse);
 		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(1, searchResponse.getRecordCount().intValue());
+		assertEquals(2, searchResponse.getRecordCount().intValue());
 		assertNotNull(searchResponse.getResults());
-		assertEquals(1, searchResponse.getResults().size());
+		assertEquals(2, searchResponse.getResults().size());
 	}
 	
 	@Transactional 

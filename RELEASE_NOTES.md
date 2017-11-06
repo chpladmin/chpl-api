@@ -1,5 +1,39 @@
 # Release Notes
 
+## Version 14.2.0
+_06 November 2017_
+
+### Minor Features
+* Add certified_products/sed_details endpoint that returns the latest SED all Details document
+* Add new version of 2014 upload template that adds a GAP column for 170.314 (b)(5)(B)
+* Change warning message for transparency attestation saving
+* Re-work handling of questionable activities. Do not send an email each time questionable activity appears, but save it all and send as a weekly report to subscribers instead.
+
+### Bugs fixed
+* Fix bug where uploaded SED Test Participants with identical demographics are not recognized correctly
+* Improve handling for upload files that have blank columns at the end
+
+---
+
+## Version 14.1.0
+_23 October 2017_
+
+### Minor Features
+* Support multiple upload file templates for 2015 listings. The current template continues to be supported and also one that includes ICS family information, removes g1/g2 information for 170.315(g)(7), adds test tool and test data fields for 170.315 (b)(8), and removes test tool and test data fields for 170.315 (f)(5)
+
+### Bug Fixes
+* Fix issue preventing the creation of new users
+
+---
+
+## Version 14.0.2
+_12 October 2017_
+
+### Bug Fixes
+* Do not allow g1 and g2 booleans for 2015 criteria
+
+---
+
 ## Version 14.0.1
 _11 October 2017_
 
