@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 14.2.0
+_06 November 2017_
 
 ### Minor Features
 * Add certified_products/sed_details endpoint that returns the latest SED all Details document
