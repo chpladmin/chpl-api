@@ -891,17 +891,24 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
                 }
 
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
-                    gapEligibleAndTrue = true;
-                }
-
-                if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)
-                        && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    product.getErrorMessages()
-                            .add("Test Procedures are required for certification " + cert.getNumber() + ".");
+                if(cert.getNumber().equals("170.315 (b)(8)")) {
+                    if(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0) {
+                        product.getWarningMessages()
+                        .add("Test Procedures will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
+                    }
+                } else {
+                    boolean gapEligibleAndTrue = false;
+                    if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                            && cert.getGap() == Boolean.TRUE) {
+                        gapEligibleAndTrue = true;
+                    }
+    
+                    if (!gapEligibleAndTrue
+                            && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)
+                            && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+                        product.getErrorMessages()
+                                .add("Test Procedures are required for certification " + cert.getNumber() + ".");
+                    }
                 }
             }
         }
