@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 14.2.1
+_07 November 2017_
 
 ### Bugs Fixed
 * 170.315 (b)(8) is not required to have test procedures or test tools. Will become required on the Nov 20 push.
