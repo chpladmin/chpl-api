@@ -498,17 +498,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                 }
             }
-            if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                String formattedPrivacyAndSecurityFramework = CertificationResult
-                        .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
-                PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
-                        .getValue(formattedPrivacyAndSecurityFramework);
-                if (foundPrivacyAndSecurityFramework == null) {
-                    product.getErrorMessages().add("Certification " + cert.getNumber()
-                            + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
-                            + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
-                }
-            }
             if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                 for (PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
                     if (!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
