@@ -674,12 +674,19 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 // product.getErrorMessages().add("Functionality Tested is
                 // required for certification " + cert.getNumber() + ".");
                 // }
-                if (!gapEligibleAndTrue
+                if(cert.getNumber().equals("170.315 (b)(8)")) {
+                    if(cert.getTestTools() == null || cert.getTestTools().size() == 0) {
+                        product.getWarningMessages()
+                        .add("Test Tools will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
+                    }
+                } else if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
                     product.getErrorMessages()
                             .add("Test Tools are required for certification " + cert.getNumber() + ".");
-                } else if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+                } 
+
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                     for (PendingCertificationResultTestToolDTO pendingToolMap : cert.getTestTools()) {
                         if (pendingToolMap.getTestToolId() == null) {
@@ -1324,12 +1331,19 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                             .add("API Documentation is required for certification " + cert.getNumber() + ".");
                 }
 
-                if (!gapEligibleAndTrue
+                if(cert.getNumber().equals("170.315 (b)(8)")) {
+                    if(cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0) {
+                        product.getWarningMessages()
+                        .add("Test Tools will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
+                    }
+                } else if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
                     product.getErrorMessages()
                             .add("Test Tools are required for certification " + cert.getNumber() + ".");
-                } else if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+                } 
+                
+                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                     for (CertificationResultTestTool toolMap : cert.getTestToolsUsed()) {
                         if (toolMap.getTestToolId() == null) {
