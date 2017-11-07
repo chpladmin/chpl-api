@@ -6,9 +6,9 @@ import javax.persistence.EntityNotFoundException;
 
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.SearchRequest;
-import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 public interface CertifiedProductSearchDAO {
 
@@ -19,5 +19,5 @@ public interface CertifiedProductSearchDAO {
 
     IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId);
     
-    public List<CertifiedProductBasicSearchResultEntity> search(SearchRequest searchRequest);
+    public List<CertifiedProductBasicSearchResult> search(SearchRequest searchRequest);
 }

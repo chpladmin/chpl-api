@@ -23,12 +23,14 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
+import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
 
 @Repository("certifiedProductSearchDAO")
 public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements CertifiedProductSearchDAO {
@@ -98,19 +100,24 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
         Date endDate = new Date();
         LOGGER.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
-        return convert(results);
+        return convertToFlatListings(results);
     }
 
     @Override
-    public List<CertifiedProductBasicSearchResultEntity> search(SearchRequest searchRequest) {
-        List<CertifiedProductBasicSearchResultEntity> results = new ArrayList<CertifiedProductBasicSearchResultEntity>();
-        
-        Query query = entityManager.createQuery("SELECT cps " +
-                "FROM CertifiedProductBasicSearchResultEntity cps ",
-                CertifiedProductBasicSearchResultEntity.class);
-        query.setMaxResults(searchRequest.getPageSize());
-        query.setFirstResult(searchRequest.getPageNumber() * searchRequest.getPageSize());
-        
+    public List<CertifiedProductBasicSearchResult> search(SearchRequest searchRequest) {
+        List<CertifiedProductBasicSearchResult> results = 
+                new ArrayList<CertifiedProductBasicSearchResult>();
+
+        int firstResult = searchRequest.getPageNumber() * searchRequest.getPageSize();
+        int lastResult = firstResult + searchRequest.getPageSize();
+        Query query = entityManager.createNativeQuery(
+                "{CALL SearchListings(?,?)}",
+                CertifiedProductListingSearchResultEntity.class)
+                .setParameter(1, firstResult)
+                .setParameter(2, lastResult);
+
+        List<CertifiedProductListingSearchResultEntity> queryResults = query.getResultList();
+        results = convertToListings(queryResults);
         return results;
     }
     
@@ -410,12 +417,51 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         return result;
     }
     
-    private List<CertifiedProductFlatSearchResult> convert(List<CertifiedProductBasicSearchResultEntity> dbResults) {
+    private List<CertifiedProductBasicSearchResult> convertToListings(List<CertifiedProductListingSearchResultEntity> dbResults) {
+        List<CertifiedProductBasicSearchResult> results = new ArrayList<CertifiedProductBasicSearchResult>(
+                dbResults.size());
+        for (CertifiedProductListingSearchResultEntity dbResult : dbResults) {
+            CertifiedProductBasicSearchResult result = new CertifiedProductBasicSearchResult();
+            result.setId(dbResult.getId());
+            result.setChplProductNumber(dbResult.getChplProductNumber());
+            result.setEdition(dbResult.getEdition());
+            result.setAtl(dbResult.getAtlName());
+            result.setAcb(dbResult.getAcbName());
+            result.setAcbCertificationId(dbResult.getAcbCertificationId());
+            result.setPracticeType(dbResult.getPracticeTypeName());
+            result.setDeveloper(dbResult.getDeveloper());
+            result.setProduct(dbResult.getProduct());
+            result.setVersion(dbResult.getVersion());
+            result.setNumMeaningfulUse(dbResult.getMeaningfulUseUserCount());
+            result.setDecertificationDate(
+                    dbResult.getDecertificationDate() == null ? null : dbResult.getDecertificationDate().getTime());
+            result.setCertificationDate(dbResult.getCertificationDate().getTime());
+            result.setCertificationStatus(dbResult.getCertificationStatus());
+            result.setTransparencyAttestationUrl(dbResult.getTransparencyAttestationUrl());
+            if(dbResult.getPreviousDeveloperOwners() != null && dbResult.getPreviousDeveloperOwners().size() > 0) {
+                for(String prevOwnerName : dbResult.getPreviousDeveloperOwners()) {
+                    result.getPreviousDevelopers().add(prevOwnerName);
+                }
+            }
+            if(dbResult.getCerts() != null && dbResult.getCerts().size() > 0) {
+                for(String cert : dbResult.getCerts()) {
+                    result.getCriteriaMet().add(cert);
+                }
+            }
+            if(dbResult.getCqms() != null && dbResult.getCqms().size() > 0) {
+                for(String cqm : dbResult.getCqms()) {
+                    result.getCqmsMet().add(cqm);
+                }
+            }
+            results.add(result);
+        }
+        return results;
+    }
+    
+    private List<CertifiedProductFlatSearchResult> convertToFlatListings(List<CertifiedProductBasicSearchResultEntity> dbResults) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>(
                 dbResults.size());
         for (CertifiedProductBasicSearchResultEntity dbResult : dbResults) {
-            // CertifiedProductBasicSearchResult result = new
-            // CertifiedProductBasicSearchResult();
             CertifiedProductFlatSearchResult result = new CertifiedProductFlatSearchResult();
             result.setId(dbResult.getId());
             result.setChplProductNumber(dbResult.getChplProductNumber());
@@ -440,34 +486,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             result.setCriteriaMet(dbResult.getCerts());
             result.setCqmsMet(dbResult.getCqms());
             result.setPreviousDevelopers(dbResult.getPreviousDevelopers());
-
-            // if(!StringUtils.isEmpty(dbResult.getPreviousDevelopers())) {
-            // String[] splitDevelopers =
-            // dbResult.getPreviousDevelopers().split("\u263A");
-            // if(splitDevelopers != null && splitDevelopers.length > 0) {
-            // for(int i = 0; i < splitDevelopers.length; i++) {
-            // result.getPreviousDevelopers().add(splitDevelopers[i].trim());
-            // }
-            // }
-            // }
-            //
-            // if(!StringUtils.isEmpty(dbResult.getCerts())) {
-            // String[] splitCerts = dbResult.getCerts().split("\u263A");
-            // if(splitCerts != null && splitCerts.length > 0) {
-            // for(int i = 0; i < splitCerts.length; i++) {
-            // result.getCriteriaMet().add(splitCerts[i].trim());
-            // }
-            // }
-            // }
-            //
-            // if(!StringUtils.isEmpty(dbResult.getCqms())) {
-            // String[] splitCqms = dbResult.getCqms().split("\u263A");
-            // if(splitCqms != null && splitCqms.length > 0) {
-            // for(int i = 0; i < splitCqms.length; i++) {
-            // result.getCqmsMet().add(splitCqms[i].trim());
-            // }
-            // }
-            // }
 
             results.add(result);
         }

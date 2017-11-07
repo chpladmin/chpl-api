@@ -9,10 +9,4 @@ public interface CertifiedProductSearchResultDAO {
 
     CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException;
 
-    // public CertifiedProductDetailsDTO getAllDetailsById(Long productId)
-    // throws EntityRetrievalException;
-    List<CertifiedProductDetailsDTO> search(SearchRequest searchRequest);
-
-    Long countMultiFilterSearchResults(SearchRequest searchRequest);
-
 }

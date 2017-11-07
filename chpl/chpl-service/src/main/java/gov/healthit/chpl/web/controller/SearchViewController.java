@@ -312,7 +312,7 @@ public class SearchViewController {
             if (!StringUtils.isEmpty(certificationStatusesDelimited)) {
                 String[] certificationStatusArr = certificationStatusesDelimited.split(",");
                 if (certificationStatusArr != null && certificationStatusArr.length > 0) {
-                    List<String> certificationStatuses = new ArrayList<String>();
+                    Set<String> certificationStatuses = new HashSet<String>();
                     Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
 
                     for (int i = 0; i < certificationStatusArr.length; i++) {
@@ -341,7 +341,7 @@ public class SearchViewController {
             if (!StringUtils.isEmpty(certificationEditionsDelimited)) {
                 String[] certificationEditionsArr = certificationEditionsDelimited.split(",");
                 if (certificationEditionsArr != null && certificationEditionsArr.length > 0) {
-                    List<String> certificationEditions = new ArrayList<String>();
+                    Set<String> certificationEditions = new HashSet<String>();
                     Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
 
                     for (int i = 0; i < certificationEditionsArr.length; i++) {
@@ -371,7 +371,7 @@ public class SearchViewController {
             if (!StringUtils.isEmpty(certificationCriteriaDelimited)) {
                 String[] certificationCriteriaArr = certificationCriteriaDelimited.split(",");
                 if (certificationCriteriaArr != null && certificationCriteriaArr.length > 0) {
-                    List<String> certificationCriterion = new ArrayList<String>();
+                    Set<String> certificationCriterion = new HashSet<String>();
                     Set<DescriptiveModel> availableCriterion = searchMenuManager
                             .getCertificationCriterionNumbers(false);
 
@@ -401,7 +401,7 @@ public class SearchViewController {
             if (!StringUtils.isEmpty(cqmsDelimited)) {
                 String[] cqmsArr = cqmsDelimited.split(",");
                 if (cqmsArr != null && cqmsArr.length > 0) {
-                    List<String> cqms = new ArrayList<String>();
+                    Set<String> cqms = new HashSet<String>();
                     Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
 
                     for (int i = 0; i < cqmsArr.length; i++) {
@@ -429,7 +429,7 @@ public class SearchViewController {
             if (!StringUtils.isEmpty(certificationBodiesDelimited)) {
                 String[] certificationBodiesArr = certificationBodiesDelimited.split(",");
                 if (certificationBodiesArr != null && certificationBodiesArr.length > 0) {
-                    List<String> certBodies = new ArrayList<String>();
+                    Set<String> certBodies = new HashSet<String>();
                     Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
 
                     for (int i = 0; i < certificationBodiesArr.length; i++) {
