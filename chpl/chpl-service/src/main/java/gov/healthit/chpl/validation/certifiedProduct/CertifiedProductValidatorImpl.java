@@ -498,17 +498,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
                 }
             }
-            if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                String formattedPrivacyAndSecurityFramework = CertificationResult
-                        .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
-                PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
-                        .getValue(formattedPrivacyAndSecurityFramework);
-                if (foundPrivacyAndSecurityFramework == null) {
-                    product.getErrorMessages().add("Certification " + cert.getNumber()
-                            + " contains Privacy and Security Framework value '" + formattedPrivacyAndSecurityFramework
-                            + "' which must match one of " + PrivacyAndSecurityFrameworkConcept.getFormattedValues());
-                }
-            }
             if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                 for (PendingCertificationResultAdditionalSoftwareDTO asDto : cert.getAdditionalSoftware()) {
                     if (!StringUtils.isEmpty(asDto.getChplId()) && asDto.getCertifiedProductId() == null) {
@@ -902,17 +891,24 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     product.getErrorMessages().add("GAP is required for certification " + cert.getNumber() + ".");
                 }
 
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
-                    gapEligibleAndTrue = true;
-                }
-
-                if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)
-                        && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    product.getErrorMessages()
-                            .add("Test Procedures are required for certification " + cert.getNumber() + ".");
+                if(cert.getNumber().equals("170.315 (b)(8)")) {
+                    if(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0) {
+                        product.getWarningMessages()
+                        .add("Test Procedures will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
+                    }
+                } else {
+                    boolean gapEligibleAndTrue = false;
+                    if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                            && cert.getGap() == Boolean.TRUE) {
+                        gapEligibleAndTrue = true;
+                    }
+    
+                    if (!gapEligibleAndTrue
+                            && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)
+                            && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+                        product.getErrorMessages()
+                                .add("Test Procedures are required for certification " + cert.getNumber() + ".");
+                    }
                 }
             }
         }
