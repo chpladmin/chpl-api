@@ -179,18 +179,23 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         if(!StringUtils.isEmpty(searchRequest.getOrderBy())) {
             String orderBy = searchRequest.getOrderBy().trim();
             if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT)) {
-                sql += " product_name, ";
+                sql += " product_name ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER)) {
-                sql += " vendor_name, ";
+                sql += " vendor_name ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
-                sql += " product_version, ";
+                sql += " product_version ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY)) {
-                sql += " certification_body_name, ";
+                sql += " certification_body_name ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
-                sql += " year, ";
-            } 
+                sql += " year ";
+            }
+            if(searchRequest.getSortDescending() != null && searchRequest.getSortDescending() == Boolean.TRUE) {
+                sql += " DESC ";
+            } else {
+                sql += " ASC ";
+            }
         }
-        sql += " cp.certified_product_id) listing_row " + 
+        sql += ", cp.certified_product_id) listing_row " + 
                 "FROM openchpl.certified_product cp ";
         
         //join in developer, product, and vendor for use in creating chpl id 
@@ -450,19 +455,24 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
        if(!StringUtils.isEmpty(searchRequest.getOrderBy())) {
             String orderBy = searchRequest.getOrderBy().trim();
             if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT)) {
-                sql += " product_name, ";
+                sql += " product_name ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER)) {
-                sql += " vendor_name, ";
+                sql += " vendor_name ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
-                sql += " product_version, ";
+                sql += " product_version ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY)) {
-                sql += " certification_body_name, ";
+                sql += " certification_body_name ";
             } else if(orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION)) {
-                sql += " year, ";
-            } 
+                sql += " year ";
+            }
+            if(searchRequest.getSortDescending() != null && searchRequest.getSortDescending() == Boolean.TRUE) {
+                sql += " DESC ";
+            } else {
+                sql += " ASC ";
+            }
         } 
         sql += 
-                " certified_product_id) filtered_certified_product_ids ";
+                ", certified_product_id) filtered_certified_product_ids ";
         return sql;
     }
     

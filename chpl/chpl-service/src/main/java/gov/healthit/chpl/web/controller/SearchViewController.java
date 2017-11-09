@@ -430,7 +430,9 @@ public class SearchViewController {
         if(!StringUtils.isEmpty(hasHadSurveillanceStr)) {
             if(!hasHadSurveillanceStr.equalsIgnoreCase(Boolean.TRUE.toString()) && 
                !hasHadSurveillanceStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                throw new InvalidArgumentsException("Parameter value for hasHadSurveillance must be either 'true' or 'false'.");
+                String err = "Parameter value '" + hasHadSurveillanceStr + "' for hasHadSurveillance is invalid. It must be either 'true' or 'false'.";
+                LOGGER.error(err);
+                throw new InvalidArgumentsException(err);
             }
             Boolean hasHadSurveillance = Boolean.parseBoolean(hasHadSurveillanceStr);
             searchRequest.getSurveillance().setHasHadSurveillance(hasHadSurveillance);
@@ -722,7 +724,8 @@ public class SearchViewController {
             !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER) && 
             !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT) && 
             !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
-            throw new InvalidArgumentsException("Order by parameter must match one of " + 
+            throw new InvalidArgumentsException("Order by parameter '" + orderBy + "' is invalid. "
+                    + "It must match one of " + 
                     SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", " + 
                     SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", " + 
                     SearchRequest.ORDER_BY_DEVELOPER + ", " + 
