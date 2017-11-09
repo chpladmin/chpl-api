@@ -1,25 +1,31 @@
 package gov.healthit.chpl.entity.search;
 
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.Transient;
+
+import org.hibernate.annotations.Immutable;
 
 /**
- * Represents one listing's worth of search result data.
- * Currently only used with the API search.
+ * Represents one row of one listing's search result data.
+ * Will need to be combined with mutliple other rows to make a complete listing.
  * @author kekey
  *
  */
 @Entity
-@Table(name = "certified_product_search_result")
+@Immutable
 public class CertifiedProductListingSearchResultEntity {
     private static final long serialVersionUID = -2928445796550377509L;
-
+    
     @Id
+    @Column(name = "unique_id")
+    private int uniqueId;
+    
     @Column(name = "certified_product_id", nullable = false)
     private Long id;
 
@@ -59,8 +65,8 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "vendor_name")
     private String developer;
 
-    @Column(name = "owner_history")
-    private Set<String> previousDeveloperOwners;
+    @Column(name = "prev_vendor")
+    private String previousDeveloperOwner;
 
     @Column(name = "certification_date")
     private Date certificationDate;
@@ -69,10 +75,10 @@ public class CertifiedProductListingSearchResultEntity {
     private Date decertificationDate;
 
     @Column(name = "cert_number")
-    private Set<String> certs;
+    private String cert;
 
     @Column(name = "cqm_number")
-    private Set<String> cqms;
+    private String cqm;
 
     public CertifiedProductListingSearchResultEntity() {
     }
@@ -197,27 +203,27 @@ public class CertifiedProductListingSearchResultEntity {
         this.transparencyAttestationUrl = transparencyAttestationUrl;
     }
 
-    public Set<String> getPreviousDeveloperOwners() {
-        return previousDeveloperOwners;
+    public String getPreviousDeveloperOwner() {
+        return previousDeveloperOwner;
     }
 
-    public void setPreviousDeveloperOwners(Set<String> previousDeveloperOwners) {
-        this.previousDeveloperOwners = previousDeveloperOwners;
+    public void setPreviousDeveloperOwner(String previousDeveloperOwner) {
+        this.previousDeveloperOwner = previousDeveloperOwner;
     }
 
-    public Set<String> getCerts() {
-        return certs;
+    public String getCert() {
+        return cert;
     }
 
-    public void setCerts(Set<String> certs) {
-        this.certs = certs;
+    public void setCert(String cert) {
+        this.cert = cert;
     }
 
-    public Set<String> getCqms() {
-        return cqms;
+    public String getCqm() {
+        return cqm;
     }
 
-    public void setCqms(Set<String> cqms) {
-        this.cqms = cqms;
+    public void setCqm(String cqm) {
+        this.cqm = cqm;
     }
 }

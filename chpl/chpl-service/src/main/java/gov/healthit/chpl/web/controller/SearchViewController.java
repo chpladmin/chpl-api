@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -44,9 +42,10 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.notification.NotificationType;
+import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
-import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
+import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -205,38 +204,45 @@ public class SearchViewController {
     @ApiOperation(value = "Search the CHPL",
             notes = "If paging parameters are not specified, the first 20 records are returned by default. "
                     + "All parameters are optional. "
-                    + "Note that Retired products are not included by default, so to see 2011 products (all of which are retired) "
-                    + "both the certificationEditions and certificationStatuses parameters must be provided - ex: "
-                    + "?certificationEditions = 2011&certificationStatuses = Retired ."
                     + "Any parameter that can accept multiple things (i.e. certificationStatuses) expects a comma-delimited list of those things (i.e. certificationStatuses = Active,Suspended). "
                     + "Date parameters are required to be in the format "
                     + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "searchTerm",
-                    value = "CHPL ID, Developer Name, Product Name, ONC-ACB Certification ID", required = false,
+                    value = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID", required = false,
                     dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "certificationStatuses",
                     value = "A comma-separated list of certification statuses "
-                            + "(ex: \"Active,Retired,Withdrawn by Developer\")). Retired listings are excluded unless requested with this parameter."
-                            + " Defaults to \"Active,Suspended by ONC, Suspended by ONC-ACB\"",
+                            + "(ex: \"Active,Retired,Withdrawn by Developer\")). Retired listings are excluded unless requested with this parameter.",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "certificationEditions",
-                    value = "A comma-separated list of certification editions to be 'or'ed together (ex: \"2014,2015\" finds listings with either edition 2014 or 2015)."
-                            + " Defaults to \"2014,2015\"",
+                    value = "A comma-separated list of certification editions to be 'or'ed together (ex: \"2014,2015\" finds listings with either edition 2014 or 2015).",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "certificationCriteria",
-                    value = "A comma-separated list of certification criteria to be 'or'ed together (ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
+                    value = "A comma-separated list of certification criteria to be queried together (ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
+                    required = false, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "certificationCriteriaOperator",
+                    value = "Either AND or OR. Defaults to OR " + 
+                            "Indicates whether a listing must have all certificationCriteria or may have any one or more of the certificationCriteria.",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "cqms",
-                    value = "A comma-separated list of cqms to be 'or'ed together (ex: \"CMS2,CMS9\" finds listings with either CMS2 or CMS9).",
+                    value = "A comma-separated list of cqms to be queried together (ex: \"CMS2,CMS9\" finds listings with either CMS2 or CMS9).",
                     required = false, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "cqmsCriteriaOperator",
+                value = "Either AND or OR. Defaults to OR. " +
+                        "Indicates whether a listing must have all cqms or may have any one or more of the cqms.",
+                required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "certificationBodies",
                     value = "A comma-separated list of certification body names to be 'or'ed together (ex: \"Drummond,ICSA\" finds listings belonging to either Drummond or ICSA).",
                     required = false, dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "surveillance",
-                    value = "A comma-separated list of surveillance options to be 'or'ed together "
-                            + "(ex: \"OPEN_SURVEILLANCE,CLOSED_SURVEILLANCE,OPEN_NONCONFORMITY,CLOSED_NONCONFORMITY\" finds listings that have either open or closed surveillance with open or closed nonconformities).",
+            @ApiImplicitParam(name = "nonconformityOptions",
+                    value = "A comma-separated list of nonconformity search options. Valid options are "
+                            + "OPEN_NONCONFORMITY, CLOSED_NONCONFORMITY, and NEVER_NONCONFORMITY.",
                     required = false, dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "nonconformityOptionsOperator",
+                value = "Either AND or OR. Defaults to OR." + 
+                        "Indicates whether a listing must have met all nonconformityOptions specified or may have met any one or more of the nonconformityOptions",
+                required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "hasHadSurveillance",
                     value = "True or False if a listing has ever had surveillance.", required = false,
                     dataType = "boolean", paramType = "query"),
@@ -261,12 +267,14 @@ public class SearchViewController {
                     value = "Zero-based page number used in concert with pageSize. Defaults to 0.", required = false,
                     dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "pageSize",
-                    value = "Number of results to return used in concert with pageNumber. Defaults to 20.",
+                    value = "Number of results to return used in concert with pageNumber. Defaults to 20. Maximum allowed page size is 100.",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "orderBy",
-                    value = "What to order by. Options are one of the following: "
-                            + "developer, product, version, certificationEdition, productClassification, certificationBody, "
-                            + "certificationDate, or practiceType. Defaults to product.",
+                    value = "What to order by. Options are one of the following: " +
+                            SearchRequest.ORDER_BY_DEVELOPER + ", " + SearchRequest.ORDER_BY_PRODUCT + ", " +
+                            SearchRequest.ORDER_BY_VERSION + ", " + SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", " +
+                            ", or " + SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", " + 
+                            ". Defaults to " + SearchRequest.ORDER_BY_PRODUCT + ".",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "sortDescending",
                     value = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
@@ -275,19 +283,27 @@ public class SearchViewController {
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
-    public @ResponseBody SearchResponse simpleSearch(
+    public @ResponseBody SearchResponse searchGet(
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
             @RequestParam(value = "certificationStatuses", required = false,
-                    defaultValue = "Active,Suspended by ONC,Suspended by ONC-ACB") String certificationStatusesDelimited,
+                    defaultValue = "") String certificationStatusesDelimited,
             @RequestParam(value = "certificationEditions", required = false,
-                    defaultValue = "2014,2015") String certificationEditionsDelimited,
+                    defaultValue = "") String certificationEditionsDelimited,
             @RequestParam(value = "certificationCriteria", required = false,
                     defaultValue = "") String certificationCriteriaDelimited,
+            @RequestParam(value = "certificationCriteriaOperator", required = false,
+                    defaultValue = "OR") String certificationCriteriaOperatorStr,
             @RequestParam(value = "cqms", required = false, defaultValue = "") String cqmsDelimited,
+            @RequestParam(value = "cqmsOperator", required = false,
+                defaultValue = "OR") String cqmsOperatorStr,
             @RequestParam(value = "certificationBodies", required = false,
                     defaultValue = "") String certificationBodiesDelimited,
-            @RequestParam(value = "surveillance", required = false, defaultValue = "") String surveillanceDelimited,
-            @RequestParam(value = "hasHadSurveillance", required = false) Boolean hasHadSurveillance,
+            @RequestParam(value = "hasHadSurveillance", required = false,
+                    defaultValue = "") String hasHadSurveillanceStr,
+            @RequestParam(value = "nonconformityOptions", required = false,
+                    defaultValue = "") String nonconformityOptionsDelimited,
+            @RequestParam(value = "nonconformityOptionsOperator", required = false,
+                defaultValue = "OR") String nonconformityOptionsOperator,
             @RequestParam(value = "developer", required = false, defaultValue = "") String developer,
             @RequestParam(value = "product", required = false, defaultValue = "") String product,
             @RequestParam(value = "version", required = false, defaultValue = "") String version,
@@ -317,19 +333,8 @@ public class SearchViewController {
 
                     for (int i = 0; i < certificationStatusArr.length; i++) {
                         String certStatusParam = certificationStatusArr[i].trim();
-                        boolean found = false;
-                        for (KeyValueModel currAvailableCertStatus : availableCertificationStatuses) {
-                            if (currAvailableCertStatus.getName().equalsIgnoreCase(certStatusParam)) {
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            LOGGER.error("Could not find certification status with value " + certStatusParam);
-                            throw new InvalidArgumentsException(
-                                    "Could not find certification status with value " + certStatusParam);
-                        } else {
-                            certificationStatuses.add(certStatusParam);
-                        }
+                        validateCertificationStatus(certStatusParam, availableCertificationStatuses);
+                        certificationStatuses.add(certStatusParam);
                     }
                     searchRequest.setCertificationStatuses(certificationStatuses);
                 }
@@ -346,19 +351,8 @@ public class SearchViewController {
 
                     for (int i = 0; i < certificationEditionsArr.length; i++) {
                         String certEditionParam = certificationEditionsArr[i].trim();
-                        boolean found = false;
-                        for (KeyValueModel currAvailableEdition : availableCertificationEditions) {
-                            if (currAvailableEdition.getName().equalsIgnoreCase(certEditionParam)) {
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            LOGGER.error("Could not find certification edition with value " + certEditionParam);
-                            throw new InvalidArgumentsException(
-                                    "Could not find certification edition with value " + certEditionParam);
-                        } else {
-                            certificationEditions.add(certEditionParam);
-                        }
+                        validateCertificationEdition(certEditionParam, availableCertificationEditions);
+                        certificationEditions.add(certEditionParam);
                     }
 
                     searchRequest.setCertificationEditions(certificationEditions);
@@ -377,21 +371,16 @@ public class SearchViewController {
 
                     for (int i = 0; i < certificationCriteriaArr.length; i++) {
                         String certCriteriaParam = certificationCriteriaArr[i].trim();
-                        boolean found = false;
-                        for (DescriptiveModel currAvailableCriteria : availableCriterion) {
-                            if (currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            LOGGER.error("Could not find certification criterion with value " + certCriteriaParam);
-                            throw new InvalidArgumentsException(
-                                    "Could not find certification criterion with value " + certCriteriaParam);
-                        } else {
-                            certificationCriterion.add(certCriteriaParam);
-                        }
+                        validateCertificationCriteria(certCriteriaParam, availableCriterion);
+                        certificationCriterion.add(certCriteriaParam);
                     }
                     searchRequest.setCertificationCriteria(certificationCriterion);
+                    
+                    if(!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
+                        certificationCriteriaOperatorStr = certificationCriteriaOperatorStr.trim();
+                        SearchSetOperator certificationCriteriaOperator = validateSearchSetOperator(certificationCriteriaOperatorStr);
+                        searchRequest.setCertificationCriteriaOperator(certificationCriteriaOperator);
+                    }
                 }
             }
         }
@@ -406,20 +395,16 @@ public class SearchViewController {
 
                     for (int i = 0; i < cqmsArr.length; i++) {
                         String cqmParam = cqmsArr[i].trim();
-                        boolean found = false;
-                        for (DescriptiveModel currAvailableCqm : availableCqms) {
-                            if (currAvailableCqm.getName().equalsIgnoreCase(cqmParam)) {
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            LOGGER.error("Could not find CQM with value " + cqmParam);
-                            throw new InvalidArgumentsException("Could not find CQM with value " + cqmParam);
-                        } else {
-                            cqms.add(cqmParam.trim());
-                        }
+                        validateCqm(cqmParam, availableCqms);
+                        cqms.add(cqmParam.trim());
                     }
                     searchRequest.setCqms(cqms);
+                    
+                    if(!StringUtils.isEmpty(cqmsOperatorStr)) {
+                        cqmsOperatorStr = cqmsOperatorStr.trim();
+                        SearchSetOperator cqmOperator = validateSearchSetOperator(cqmsOperatorStr);
+                        searchRequest.setCqmsOperator(cqmOperator);
+                    }
                 }
             }
         }
@@ -434,54 +419,58 @@ public class SearchViewController {
 
                     for (int i = 0; i < certificationBodiesArr.length; i++) {
                         String certBodyParam = certificationBodiesArr[i].trim();
-                        boolean found = false;
-                        for (KeyValueModel currAvailableCertBody : availableCertBodies) {
-                            if (currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            LOGGER.error("Could not find certification body with value " + certBodyParam);
-                            throw new InvalidArgumentsException(
-                                    "Could not find certification body with value " + certBodyParam);
-                        } else {
-                            certBodies.add(certBodyParam);
-                        }
+                        validateCertificationBody(certBodyParam, availableCertBodies);
+                        certBodies.add(certBodyParam);
                     }
                     searchRequest.setCertificationBodies(certBodies);
                 }
             }
         }
 
-        if (surveillanceDelimited != null) {
-            surveillanceDelimited = surveillanceDelimited.trim();
-            if (!StringUtils.isEmpty(surveillanceDelimited)) {
-                String[] surveillanceArr = surveillanceDelimited.split(",");
-                if (surveillanceArr != null && surveillanceArr.length > 0) {
-                    Set<NonconformitySearchOptions> surveillanceSearchOptions = new HashSet<NonconformitySearchOptions>();
-                    for (int i = 0; i < surveillanceArr.length; i++) {
-                        String surveillanceParam = surveillanceArr[i].trim();
-                        try {
-                            NonconformitySearchOptions searchOpt = NonconformitySearchOptions.valueOf(surveillanceParam);
-                            if (searchOpt != null) {
-                                surveillanceSearchOptions.add(searchOpt);
-                            } else {
-                                LOGGER.error("No surveillance search option for the string " + surveillanceParam);
-                                throw new InvalidArgumentsException(
-                                        "No surveillance search option matches " + surveillanceParam);
-                            }
-                        } catch (Exception ex) {
-                            LOGGER.error("No surveillance search option for the string " + surveillanceParam, ex);
+        if(!StringUtils.isEmpty(hasHadSurveillanceStr)) {
+            if(!hasHadSurveillanceStr.equalsIgnoreCase(Boolean.TRUE.toString()) && 
+               !hasHadSurveillanceStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
+                throw new InvalidArgumentsException("Parameter value for hasHadSurveillance must be either 'true' or 'false'.");
+            }
+            Boolean hasHadSurveillance = Boolean.parseBoolean(hasHadSurveillanceStr);
+            searchRequest.getSurveillance().setHasHadSurveillance(hasHadSurveillance);
+        }
+        
+        if (!StringUtils.isEmpty(nonconformityOptionsDelimited)) {
+            nonconformityOptionsDelimited = nonconformityOptionsDelimited.trim();
+            String[] nonconformityOptionsArr = nonconformityOptionsDelimited.split(",");
+            if (nonconformityOptionsArr != null && nonconformityOptionsArr.length > 0) {
+                Set<NonconformitySearchOptions> nonconformitySearchOptions = new HashSet<NonconformitySearchOptions>();
+                for (int i = 0; i < nonconformityOptionsArr.length; i++) {
+                    String nonconformityOptionParam = nonconformityOptionsArr[i].trim();
+                    try {
+                        NonconformitySearchOptions ncOpt = NonconformitySearchOptions.valueOf(nonconformityOptionParam);
+                        if (ncOpt != null) {
+                            nonconformitySearchOptions.add(ncOpt);
+                        } else {
                             throw new InvalidArgumentsException(
-                                    "No surveillance search option matches " + surveillanceParam);
+                                    "No nonconformity search option matches " + nonconformityOptionParam + ". "
+                                    + "Values must be one of " + NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
+                                    + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
+                                    + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name() + ".");
                         }
+                    } catch (Exception ex) {
+                        throw new InvalidArgumentsException(
+                                "No nonconformity search option matches " + nonconformityOptionParam + ". "
+                                + "Values must be one of " + NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
+                                + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
+                                + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name() + ".");
                     }
-                    searchRequest.setSurveillance(surveillanceSearchOptions);
+                }
+                searchRequest.getSurveillance().setNonconformityOptions(nonconformitySearchOptions);
+                
+                if(!StringUtils.isEmpty(nonconformityOptionsOperator)) {
+                    nonconformityOptionsOperator = nonconformityOptionsOperator.trim();
+                    SearchSetOperator ncOperator = validateSearchSetOperator(nonconformityOptionsOperator);
+                    searchRequest.getSurveillance().setNonconformityOptionsOperator(ncOperator);
                 }
             }
         }
-
-        searchRequest.setHasHadSurveillance(hasHadSurveillance);
 
         if (developer != null) {
             developer = developer.trim();
@@ -507,101 +496,241 @@ public class SearchViewController {
         if (practiceType != null) {
             practiceType = practiceType.trim();
             if (!StringUtils.isEmpty(practiceType)) {
-                Set<KeyValueModel> availablePracticeTypes = searchMenuManager.getPracticeTypeNames();
-                boolean found = false;
-                for (KeyValueModel currAvailablePracticeType : availablePracticeTypes) {
-                    if (currAvailablePracticeType.getName().equalsIgnoreCase(practiceType)) {
-                        found = true;
-                    }
-                }
-
-                if (!found) {
-                    LOGGER.error("No practice type exists with name " + practiceType);
-                    throw new InvalidArgumentsException("No practice type exists with name " + practiceType);
-                } else {
-                    searchRequest.setPracticeType(practiceType);
-                }
+                validatePracticeTypeParameter(practiceType);
+                searchRequest.setPracticeType(practiceType);
             }
         }
 
-        // check date formats
-        SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-        if (certificationDateStart != null) {
+        if (!StringUtils.isEmpty(certificationDateStart)) {
             certificationDateStart = certificationDateStart.trim();
             if (!StringUtils.isEmpty(certificationDateStart)) {
-                try {
-                    format.parse(certificationDateStart);
-                } catch (final ParseException ex) {
-                    LOGGER.error("Could not parse " + certificationDateStart + " as date in the format "
-                            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-                    throw new InvalidArgumentsException(
-                            "Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT
-                                    + " Cannot parse " + certificationDateStart);
-                }
+                validateCertificationDateParameter(certificationDateStart);
                 searchRequest.setCertificationDateStart(certificationDateStart);
             }
         }
-
-        if (certificationDateEnd != null) {
+        
+        if (!StringUtils.isEmpty(certificationDateEnd)) {
             certificationDateEnd = certificationDateEnd.trim();
             if (!StringUtils.isEmpty(certificationDateEnd)) {
-                try {
-                    format.parse(certificationDateEnd);
-                } catch (final ParseException ex) {
-                    LOGGER.error("Could not parse " + certificationDateEnd + " as date in the format "
-                            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-                    throw new InvalidArgumentsException("Certification Date format expected is "
-                            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + " Cannot parse " + certificationDateEnd);
-                }
+                validateCertificationDateParameter(certificationDateEnd);
                 searchRequest.setCertificationDateEnd(certificationDateEnd);
             }
         }
-
+        validatePageSize(pageSize);
+        orderBy = orderBy.trim();
+        validateOrderBy(orderBy);
+        
         searchRequest.setPageNumber(pageNumber);
         searchRequest.setPageSize(pageSize);
-        searchRequest.setOrderBy(orderBy.trim());
+        searchRequest.setOrderBy(orderBy);
         searchRequest.setSortDescending(sortDescending);
-
+        
+        //trim everything
+        searchRequest.cleanAllParameters();
         return certifiedProductSearchManager.search(searchRequest);
 
     }
 
-    @ApiOperation(value = "Advanced search for the CHPL",
+    @ApiOperation(value = "Search the CHPL with an HTTP POST Request.",
             notes = "Search the CHPL by specifycing multiple fields of the data to search. "
                     + "If paging fields are not specified, the first 20 records are returned by default.")
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody SearchResponse advancedSearch(@RequestBody SearchRequest searchFilters)
-            throws InvalidArgumentsException {
-        // check date params for format
-        SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-
-        if (!StringUtils.isEmpty(searchFilters.getCertificationDateStart())) {
-            try {
-                format.parse(searchFilters.getCertificationDateStart());
-            } catch (final ParseException ex) {
-                LOGGER.error("Could not parse " + searchFilters.getCertificationDateStart() + " as date in the format "
-                        + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-                throw new InvalidArgumentsException(
-                        "Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT
-                                + " Cannot parse " + searchFilters.getCertificationDateStart());
+    public @ResponseBody SearchResponse searchPost(@RequestBody SearchRequest searchRequest)
+            throws InvalidArgumentsException, EntityRetrievalException {
+        //trim everything
+        searchRequest.cleanAllParameters();
+        
+        if(searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
+            Set<KeyValueModel> availableCertificationStatuses = searchMenuManager.getCertificationStatuses();
+            for(String certStatusName : searchRequest.getCertificationStatuses()) {
+                validateCertificationStatus(certStatusName, availableCertificationStatuses);
             }
         }
-        if (!StringUtils.isEmpty(searchFilters.getCertificationDateEnd())) {
-            try {
-                format.parse(searchFilters.getCertificationDateEnd());
-            } catch (final ParseException ex) {
-                LOGGER.error("Could not parse " + searchFilters.getCertificationDateEnd() + " as date in the format "
-                        + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-                throw new InvalidArgumentsException(
-                        "Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT
-                                + " Cannot parse " + searchFilters.getCertificationDateEnd());
+        
+        if(searchRequest.getCertificationEditions() != null && searchRequest.getCertificationEditions().size() > 0) {
+            Set<KeyValueModel> availableCertificationEditions = searchMenuManager.getEditionNames(false);
+            for(String certEditionName : searchRequest.getCertificationEditions()) {
+                validateCertificationEdition(certEditionName, availableCertificationEditions);
             }
         }
-
-        return certifiedProductSearchManager.search(searchFilters);
+        
+        if(searchRequest.getCertificationCriteria() != null && searchRequest.getCertificationCriteria().size() > 0) {
+            Set<DescriptiveModel> availableCriterion = searchMenuManager
+                    .getCertificationCriterionNumbers(false);
+            for(String criteria : searchRequest.getCertificationCriteria()) {
+                validateCertificationCriteria(criteria, availableCriterion);
+            }
+        }
+        
+        if(searchRequest.getCqms() != null && searchRequest.getCqms().size() > 0) {
+            Set<DescriptiveModel> availableCqms = searchMenuManager.getCQMCriterionNumbers(false);
+            for(String cqm : searchRequest.getCqms()) {
+                validateCqm(cqm, availableCqms);
+            }
+        }
+        
+        if(searchRequest.getCertificationBodies() != null && searchRequest.getCertificationBodies().size() > 0) {
+            Set<KeyValueModel> availableCertBodies = searchMenuManager.getCertBodyNames(true);
+            for(String certBody : searchRequest.getCertificationBodies()) {
+                validateCertificationBody(certBody, availableCertBodies);
+            }
+        }
+        
+        validatePracticeTypeParameter(searchRequest.getPracticeType());
+        validateCertificationDateParameter(searchRequest.getCertificationDateStart());
+        validateCertificationDateParameter(searchRequest.getCertificationDateEnd());
+        validatePageSize(searchRequest.getPageSize());
+        validateOrderBy(searchRequest.getOrderBy());
+        return certifiedProductSearchManager.search(searchRequest);
     }
 
+    private void validateCertificationBody(String certBodyParam,
+            Set<KeyValueModel> availableCertBodies) throws InvalidArgumentsException {
+        boolean found = false;
+        for (KeyValueModel currAvailableCertBody : availableCertBodies) {
+            if (currAvailableCertBody.getName().equalsIgnoreCase(certBodyParam)) {
+                found = true;
+            }
+        }
+        if (!found) {
+            LOGGER.error("Could not find certification body with value " + certBodyParam);
+            throw new InvalidArgumentsException(
+                    "Could not find certification body with value " + certBodyParam);
+        }    
+    }
+    
+    private void validateCqm(String cqmParam, 
+            Set<DescriptiveModel> availableCqms) throws InvalidArgumentsException {
+        boolean found = false;
+        for (DescriptiveModel currAvailableCqm : availableCqms) {
+            if (currAvailableCqm.getName().equalsIgnoreCase(cqmParam)) {
+                found = true;
+            }
+        }
+        if (!found) {
+            LOGGER.error("Could not find CQM with value " + cqmParam);
+            throw new InvalidArgumentsException("Could not find CQM with value " + cqmParam);
+        }           
+    }
+    
+    private void validateCertificationCriteria(String certCriteriaParam, 
+            Set<DescriptiveModel> availableCriterion) throws InvalidArgumentsException {
+        boolean found = false;
+        for (DescriptiveModel currAvailableCriteria : availableCriterion) {
+            if (currAvailableCriteria.getName().equalsIgnoreCase(certCriteriaParam)) {
+                found = true;
+            }
+        }
+        if (!found) {
+            LOGGER.error("Could not find certification criterion with value " + certCriteriaParam);
+            throw new InvalidArgumentsException(
+                    "Could not find certification criterion with value " + certCriteriaParam);
+        }            
+    }
+    
+    private void validateCertificationEdition(String certEditionParam,
+            Set<KeyValueModel> availableCertificationEditions) throws InvalidArgumentsException {
+        boolean found = false;
+        for (KeyValueModel currAvailableEdition : availableCertificationEditions) {
+            if (currAvailableEdition.getName().equalsIgnoreCase(certEditionParam)) {
+                found = true;
+            }
+        }
+        if (!found) {
+            LOGGER.error("Could not find certification edition with value " + certEditionParam);
+            throw new InvalidArgumentsException(
+                    "Could not find certification edition with value " + certEditionParam);
+        }
+    }
+    
+    private void validateCertificationStatus(String certStatusParam, 
+            Set<KeyValueModel> availableCertificationStatuses) throws InvalidArgumentsException {
+        boolean found = false;
+        for (KeyValueModel currAvailableCertStatus : availableCertificationStatuses) {
+            if (currAvailableCertStatus.getName().equalsIgnoreCase(certStatusParam)) {
+                found = true;
+            }
+        }
+        if (!found) {
+            LOGGER.error("Could not find certification status with value " + certStatusParam);
+            throw new InvalidArgumentsException(
+                    "Could not find certification status with value " + certStatusParam);
+        }
+    }
+    
+    private SearchSetOperator validateSearchSetOperator(String searchSetOperator) throws InvalidArgumentsException {
+        SearchSetOperator result = null;
+        try {
+            SearchSetOperator operatorEnum = SearchSetOperator.valueOf(searchSetOperator);
+            if(operatorEnum != null) {
+                result = operatorEnum;
+            } else {
+                throw new InvalidArgumentsException("Invalid search operator value '" + searchSetOperator 
+                        + "' is invalid. Value must be one of " + SearchSetOperator.OR + " or " + SearchSetOperator.AND + ".");
+            }
+        } catch(Exception ex) {
+            throw new InvalidArgumentsException("Invalid search operator value '" + searchSetOperator 
+                    + "' is invalid. Value must be one of " + SearchSetOperator.OR + " or " + SearchSetOperator.AND + ".");
+        }
+        return result;
+    }
+    
+    private void validatePracticeTypeParameter(String practiceType) throws InvalidArgumentsException {
+        if (!StringUtils.isEmpty(practiceType)) {
+            Set<KeyValueModel> availablePracticeTypes = searchMenuManager.getPracticeTypeNames();
+            boolean found = false;
+            for (KeyValueModel currAvailablePracticeType : availablePracticeTypes) {
+                if (currAvailablePracticeType.getName().equalsIgnoreCase(practiceType)) {
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                LOGGER.error("No practice type exists with name " + practiceType);
+                throw new InvalidArgumentsException("No practice type exists with name " + practiceType);
+            } 
+        }    
+    }
+    
+    private void validateCertificationDateParameter(String dateStr) throws InvalidArgumentsException {
+        SimpleDateFormat format = new SimpleDateFormat(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+        if (dateStr != null) {
+            if (!StringUtils.isEmpty(dateStr)) {
+                try {
+                    format.parse(dateStr);
+                } catch (final ParseException ex) {
+                    LOGGER.error("Could not parse " + dateStr + " as date in the format "
+                            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+                    throw new InvalidArgumentsException(
+                            "Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT
+                                    + " Cannot parse " + dateStr);
+                }
+            }
+        }
+    }
+    
+    private void validatePageSize(Integer pageSize) throws InvalidArgumentsException {
+        if(pageSize > 100) {
+            throw new InvalidArgumentsException("Page size cannot exceed 100.");
+        }
+    }
+    
+    private void validateOrderBy(String orderBy) throws InvalidArgumentsException {
+        if(!orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_BODY) && 
+            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_CERTIFICATION_EDITION) && 
+            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER) && 
+            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT) && 
+            !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
+            throw new InvalidArgumentsException("Order by parameter must match one of " + 
+                    SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", " + 
+                    SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", " + 
+                    SearchRequest.ORDER_BY_DEVELOPER + ", " + 
+                    SearchRequest.ORDER_BY_PRODUCT + ", or " +
+                    SearchRequest.ORDER_BY_VERSION);
+        }
+    }
+    
     @Secured({
             Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN
     })

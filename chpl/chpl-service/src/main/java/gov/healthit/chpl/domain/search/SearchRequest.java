@@ -4,11 +4,18 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.util.StringUtils;
+
 public class SearchRequest implements Serializable {
     private static final long serialVersionUID = 1179207628639701580L;
 
     public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
-
+    public static final String ORDER_BY_DEVELOPER = "developer";
+    public static final String ORDER_BY_PRODUCT = "product";
+    public static final String ORDER_BY_VERSION = "version";
+    public static final String ORDER_BY_CERTIFICATION_EDITION = "certificationEdition";
+    public static final String ORDER_BY_CERTIFICATION_BODY = "certificationBody";
+    
     String searchTerm = null;
 
     // search for any of these
@@ -35,11 +42,85 @@ public class SearchRequest implements Serializable {
     String certificationDateEnd = null;
     SurveillanceSearchFilter surveillance = new SurveillanceSearchFilter();
     
-    String orderBy = "product";
+    String orderBy = ORDER_BY_PRODUCT;
     Boolean sortDescending = false;
     Integer pageNumber = 0;
     Integer pageSize = 20;
 
+    public void cleanAllParameters() {
+        if(!StringUtils.isEmpty(searchTerm)) {
+            setSearchTerm(searchTerm.trim());
+        }
+        
+        if(!StringUtils.isEmpty(developer)) {
+            setDeveloper(developer.trim());
+        }
+        
+        if(!StringUtils.isEmpty(product)) {
+            setProduct(product.trim());
+        }
+        
+        if(!StringUtils.isEmpty(version)) {
+            setVersion(version.trim());
+        }
+        
+        if(!StringUtils.isEmpty(practiceType)) {
+            setPracticeType(practiceType.trim());
+        }
+        
+        if(!StringUtils.isEmpty(certificationDateStart)) {
+            setCertificationDateStart(certificationDateStart.trim());
+        }
+        
+        if(!StringUtils.isEmpty(certificationDateEnd)) {
+            setCertificationDateEnd(certificationDateEnd.trim());
+        }
+        
+        if(!StringUtils.isEmpty(orderBy)) {
+            setOrderBy(orderBy.trim());
+        }
+        
+        if(certificationStatuses != null && certificationStatuses.size() > 0) {
+            Set<String> trimmedCertificationStatuses = new HashSet<String>(certificationStatuses.size());
+            for(String certificationStatus : certificationStatuses) {
+                trimmedCertificationStatuses.add(certificationStatus.trim());
+            }
+            setCertificationStatuses(trimmedCertificationStatuses);
+        }
+        
+        if(certificationEditions != null && certificationEditions.size() > 0) {
+            Set<String> trimmedCertificationEditions = new HashSet<String>(certificationEditions.size());
+            for(String certificationEdition : certificationEditions) {
+                trimmedCertificationEditions.add(certificationEdition.trim());
+            }
+            setCertificationEditions(trimmedCertificationEditions);
+        }
+        
+        if(certificationBodies != null && certificationBodies.size() > 0) {
+            Set<String> trimmedCertificationBodies = new HashSet<String>(certificationBodies.size());
+            for(String certificationBody : certificationBodies) {
+                trimmedCertificationBodies.add(certificationBody.trim());
+            }
+            setCertificationBodies(trimmedCertificationBodies);
+        }
+        
+        if(certificationCriteria != null && certificationCriteria.size() > 0) {
+            Set<String> trimmedCertificationCriteria = new HashSet<String>(certificationCriteria.size());
+            for(String certificationCriterion : certificationCriteria) {
+                trimmedCertificationCriteria.add(certificationCriterion.trim());
+            }
+            setCertificationCriteria(trimmedCertificationCriteria);
+        }
+        
+        if(cqms != null && cqms.size() > 0) {
+            Set<String> trimmedCqms = new HashSet<String>(cqms.size());
+            for(String cqm : cqms) {
+                trimmedCqms.add(cqm.trim());
+            }
+            setCqms(trimmedCqms);
+        }
+    }
+    
     public String getSearchTerm() {
         return searchTerm;
     }

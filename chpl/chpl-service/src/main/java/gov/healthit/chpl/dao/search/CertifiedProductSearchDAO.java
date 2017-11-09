@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.search;
 
+import java.util.Collection;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -19,5 +20,6 @@ public interface CertifiedProductSearchDAO {
 
     IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId);
     
-    public List<CertifiedProductBasicSearchResult> search(SearchRequest searchRequest);
+    public int getTotalResultCount(SearchRequest searchRequest);
+    public Collection<CertifiedProductBasicSearchResult> search(SearchRequest searchRequest);
 }
