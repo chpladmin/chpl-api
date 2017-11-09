@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Backwards compatibility breaking features
+* Re-wrote API search code. See documentation for the HTTP GET /search call for information.
+
+---
+
 ## Version 14.2.1
 _07 November 2017_
 
