@@ -646,6 +646,6 @@ public class SearchMenuManagerTest {
     public void getUploadTemplateVersions() {
         Set<UploadTemplateVersion> templateVersions = searchMenuManager.getUploadTemplateVersions();
         assertNotNull(templateVersions);
-        assertEquals(4, templateVersions.size());
+        assertEquals(2, templateVersions.size());
     }
 }
