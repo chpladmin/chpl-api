@@ -430,8 +430,10 @@ public class SearchViewController {
         if(!StringUtils.isEmpty(hasHadSurveillanceStr)) {
             if(!hasHadSurveillanceStr.equalsIgnoreCase(Boolean.TRUE.toString()) && 
                !hasHadSurveillanceStr.equalsIgnoreCase(Boolean.FALSE.toString())) {
-                String err = "Parameter value '" + hasHadSurveillanceStr + "' for hasHadSurveillance is invalid. It must be either 'true' or 'false'.";
-                LOGGER.error(err);
+                String err = String.format(
+                        messageSource.getMessage(new DefaultMessageSourceResolvable("search.hasHadSurveillance.invalid"),
+                                LocaleContextHolder.getLocale()),
+                        hasHadSurveillanceStr);
                 throw new InvalidArgumentsException(err);
             }
             Boolean hasHadSurveillance = Boolean.parseBoolean(hasHadSurveillanceStr);
@@ -450,18 +452,22 @@ public class SearchViewController {
                         if (ncOpt != null) {
                             nonconformitySearchOptions.add(ncOpt);
                         } else {
-                            throw new InvalidArgumentsException(
-                                    "No nonconformity search option matches " + nonconformityOptionParam + ". "
-                                    + "Values must be one of " + NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
+                            String err = String.format(
+                                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
+                                            LocaleContextHolder.getLocale()),
+                                    nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
                                     + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                    + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name() + ".");
+                                    + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
+                            throw new InvalidArgumentsException(err);
                         }
                     } catch (Exception ex) {
-                        throw new InvalidArgumentsException(
-                                "No nonconformity search option matches " + nonconformityOptionParam + ". "
-                                + "Values must be one of " + NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
+                        String err = String.format(
+                                messageSource.getMessage(new DefaultMessageSourceResolvable("search.nonconformitySearchOption.invalid"),
+                                        LocaleContextHolder.getLocale()),
+                                nonconformityOptionParam, NonconformitySearchOptions.CLOSED_NONCONFORMITY.name() 
                                 + ", " + NonconformitySearchOptions.NEVER_NONCONFORMITY.name()
-                                + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name() + ".");
+                                + ", or " + NonconformitySearchOptions.OPEN_NONCONFORMITY.name());
+                        throw new InvalidArgumentsException(err);
                     }
                 }
                 searchRequest.getSurveillance().setNonconformityOptions(nonconformitySearchOptions);
@@ -596,9 +602,12 @@ public class SearchViewController {
             }
         }
         if (!found) {
-            LOGGER.error("Could not find certification body with value " + certBodyParam);
-            throw new InvalidArgumentsException(
-                    "Could not find certification body with value " + certBodyParam);
+            String err = String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationBodies.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    certBodyParam);
+            LOGGER.error(err);
+            throw new InvalidArgumentsException(err);
         }    
     }
     
@@ -611,8 +620,12 @@ public class SearchViewController {
             }
         }
         if (!found) {
-            LOGGER.error("Could not find CQM with value " + cqmParam);
-            throw new InvalidArgumentsException("Could not find CQM with value " + cqmParam);
+            String err = String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.cqms.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    cqmParam);
+            LOGGER.error(err);
+            throw new InvalidArgumentsException(err);
         }           
     }
     
@@ -625,9 +638,12 @@ public class SearchViewController {
             }
         }
         if (!found) {
-            LOGGER.error("Could not find certification criterion with value " + certCriteriaParam);
-            throw new InvalidArgumentsException(
-                    "Could not find certification criterion with value " + certCriteriaParam);
+            String err = String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationCriteria.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    certCriteriaParam);
+            LOGGER.error(err);
+            throw new InvalidArgumentsException(err);
         }            
     }
     
@@ -640,9 +656,12 @@ public class SearchViewController {
             }
         }
         if (!found) {
-            LOGGER.error("Could not find certification edition with value " + certEditionParam);
-            throw new InvalidArgumentsException(
-                    "Could not find certification edition with value " + certEditionParam);
+            String err = String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationEdition.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    certEditionParam);
+            LOGGER.error(err);
+            throw new InvalidArgumentsException(err);
         }
     }
     
@@ -655,9 +674,12 @@ public class SearchViewController {
             }
         }
         if (!found) {
-            LOGGER.error("Could not find certification status with value " + certStatusParam);
-            throw new InvalidArgumentsException(
-                    "Could not find certification status with value " + certStatusParam);
+            String err = String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationStatuses.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    certStatusParam);
+            LOGGER.error(err);
+            throw new InvalidArgumentsException(err);
         }
     }
     
@@ -668,12 +690,18 @@ public class SearchViewController {
             if(operatorEnum != null) {
                 result = operatorEnum;
             } else {
-                throw new InvalidArgumentsException("Invalid search operator value '" + searchSetOperator 
-                        + "' is invalid. Value must be one of " + SearchSetOperator.OR + " or " + SearchSetOperator.AND + ".");
+                String err = String.format(
+                        messageSource.getMessage(new DefaultMessageSourceResolvable("search.searchOperator.invalid"),
+                                LocaleContextHolder.getLocale()),
+                        searchSetOperator, SearchSetOperator.OR + " or " + SearchSetOperator.AND);
+                throw new InvalidArgumentsException(err);
             }
         } catch(Exception ex) {
-            throw new InvalidArgumentsException("Invalid search operator value '" + searchSetOperator 
-                    + "' is invalid. Value must be one of " + SearchSetOperator.OR + " or " + SearchSetOperator.AND + ".");
+            String err = String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.searchOperator.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    searchSetOperator, SearchSetOperator.OR + " or " + SearchSetOperator.AND);
+            throw new InvalidArgumentsException(err);
         }
         return result;
     }
@@ -689,8 +717,12 @@ public class SearchViewController {
             }
 
             if (!found) {
-                LOGGER.error("No practice type exists with name " + practiceType);
-                throw new InvalidArgumentsException("No practice type exists with name " + practiceType);
+                String err = String.format(
+                        messageSource.getMessage(new DefaultMessageSourceResolvable("search.practiceType.invalid"),
+                                LocaleContextHolder.getLocale()),
+                        practiceType);
+                LOGGER.error(err);
+                throw new InvalidArgumentsException(err);
             } 
         }    
     }
@@ -702,11 +734,12 @@ public class SearchViewController {
                 try {
                     format.parse(dateStr);
                 } catch (final ParseException ex) {
-                    LOGGER.error("Could not parse " + dateStr + " as date in the format "
-                            + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
-                    throw new InvalidArgumentsException(
-                            "Certification Date format expected is " + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT
-                                    + " Cannot parse " + dateStr);
+                    String err = String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("search.certificationDate.invalid"),
+                                    LocaleContextHolder.getLocale()),
+                            dateStr, SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
+                    LOGGER.error(err);
+                    throw new InvalidArgumentsException(err);
                 }
             }
         }
@@ -714,7 +747,11 @@ public class SearchViewController {
     
     private void validatePageSize(Integer pageSize) throws InvalidArgumentsException {
         if(pageSize > 100) {
-            throw new InvalidArgumentsException("Page size cannot exceed 100.");
+            String err = String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("search.pageSize.invalid"),
+                            LocaleContextHolder.getLocale()),
+                    SearchRequest.MAX_PAGE_SIZE);
+            throw new InvalidArgumentsException(err);
         }
     }
     
@@ -724,13 +761,15 @@ public class SearchViewController {
             !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_DEVELOPER) && 
             !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_PRODUCT) && 
             !orderBy.equalsIgnoreCase(SearchRequest.ORDER_BY_VERSION)) {
-            throw new InvalidArgumentsException("Order by parameter '" + orderBy + "' is invalid. "
-                    + "It must match one of " + 
-                    SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", " + 
+            String err = String.format(
+                messageSource.getMessage(new DefaultMessageSourceResolvable("search.orderBy.invalid"),
+                        LocaleContextHolder.getLocale()),
+                orderBy, SearchRequest.ORDER_BY_CERTIFICATION_BODY + ", " + 
                     SearchRequest.ORDER_BY_CERTIFICATION_EDITION + ", " + 
                     SearchRequest.ORDER_BY_DEVELOPER + ", " + 
                     SearchRequest.ORDER_BY_PRODUCT + ", or " +
                     SearchRequest.ORDER_BY_VERSION);
+            throw new InvalidArgumentsException(err);
         }
     }
     

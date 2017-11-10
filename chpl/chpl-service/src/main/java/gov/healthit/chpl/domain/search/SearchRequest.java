@@ -10,6 +10,7 @@ public class SearchRequest implements Serializable {
     private static final long serialVersionUID = 1179207628639701580L;
 
     public static final String CERTIFICATION_DATE_SEARCH_FORMAT = "yyyy-MM-dd";
+    public static final int MAX_PAGE_SIZE = 100;
     public static final String ORDER_BY_DEVELOPER = "developer";
     public static final String ORDER_BY_PRODUCT = "product";
     public static final String ORDER_BY_VERSION = "version";
