@@ -32,6 +32,7 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity;
 
@@ -397,7 +398,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         //like a chpl id or not
         if(!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
             String searchTerm = searchRequest.getSearchTerm();
-            if(searchTerm.startsWith("CHP-") || searchTerm.split("\\.").length == 9) {
+            if(searchTerm.startsWith("CHP-") || searchTerm.split("\\.").length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
                 sql += "AND " +
                         "COALESCE(cp.chpl_product_number, substring(edition.year from 3 for 2)||'.'||"
                         + "atl.testing_lab_code||'.'||acb.certification_body_code||'.'||vendor.vendor_code||"
@@ -582,7 +583,10 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         listing.setVersion(queryResult.getVersion());
         listing.setProduct(queryResult.getProduct());
         listing.setDeveloper(queryResult.getDeveloper());
-
+        listing.setSurveillanceCount(queryResult.getCountSurveillance().longValue());
+        listing.setOpenNonconformityCount(queryResult.getCountOpenNonconformities().longValue());
+        listing.setClosedNonconformityCount(queryResult.getCountClosedNonconformities().longValue());
+        
         if(queryResult.getCertificationDate() != null) {
             listing.setCertificationDate(queryResult.getCertificationDate().getTime());
         }

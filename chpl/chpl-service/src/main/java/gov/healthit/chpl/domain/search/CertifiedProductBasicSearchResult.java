@@ -26,14 +26,10 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     })
     private Set<String> cqmsMet; // list of cmqs that were met (any version)
 
-    private Map<String, String> apiDocumentation; // map of criteria to api
-                                                  // documentation url
-
     public CertifiedProductBasicSearchResult() {
         previousDevelopers = new HashSet<String>();
         criteriaMet = new HashSet<String>();
         cqmsMet = new HashSet<String>();
-        apiDocumentation = new HashMap<String, String>();
     }
 
     public Set<String> getCriteriaMet() {
@@ -58,13 +54,5 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
 
     public void setPreviousDevelopers(final Set<String> previousDevelopers) {
         this.previousDevelopers = previousDevelopers;
-    }
-
-    public Map<String, String> getApiDocumentation() {
-        return apiDocumentation;
-    }
-
-    public void setApiDocumentation(final Map<String, String> apiDocumentation) {
-        this.apiDocumentation = apiDocumentation;
     }
 }
