@@ -100,8 +100,9 @@ public class CertifiedProductControllerTest {
 	
 	private static final String UPLOAD_2014 = "2014_error-free_new_Gap_added.csv";
 	
-	private static final String UPLOAD_2015 = "Drummond10252017.csv";
-	
+	private static final String UPLOAD_2015_V10 = "Drummond10252017.csv";
+	private static final String UPLOAD_2015_V11 = "Drummond10252017_v11.csv";
+
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
@@ -113,7 +114,7 @@ public class CertifiedProductControllerTest {
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
 	}
 	
-	public MultipartFile getUploadFile(String edition){
+	public MultipartFile getUploadFile(String edition, String version){
 		ClassLoader classLoader = getClass().getClassLoader();
 		File file = null;
 		Path filePath = null;
@@ -124,11 +125,15 @@ public class CertifiedProductControllerTest {
 			filePath = Paths.get(file.getPath());
 			name = UPLOAD_2014;
 			originalFileName = UPLOAD_2014;
-		}else{
-			file = new File(classLoader.getResource(UPLOAD_2015).getFile());
+		} else {
+		    String resource = UPLOAD_2015_V10;
+		    if(version.equalsIgnoreCase("11") || version.equalsIgnoreCase("v11")) {
+		        resource = UPLOAD_2015_V11;
+		    }
+			file = new File(classLoader.getResource(resource).getFile());
 			filePath = Paths.get(file.getPath());
-			name = UPLOAD_2015;
-			originalFileName = UPLOAD_2015;
+			name = resource;
+			originalFileName = resource;
 		}
 		String contentType = "text/csv";
 		byte[] content = null;
@@ -1128,7 +1133,7 @@ public class CertifiedProductControllerTest {
 	@Test
 	public void test_uploadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		MultipartFile file = getUploadFile("2014");
+		MultipartFile file = getUploadFile("2014", null);
 		ResponseEntity<PendingCertifiedProductResults> response = null;
 		try {
 			response = certifiedProductController.upload(file);
@@ -1143,7 +1148,7 @@ public class CertifiedProductControllerTest {
 	@Test
 	public void test_upLoadCertifiedProduct2015UniqueTestParticipant() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		MultipartFile file = getUploadFile("2015");
+		MultipartFile file = getUploadFile("2015", "v11");
 		ResponseEntity<PendingCertifiedProductResults> response = null;
 		try {
 			response = certifiedProductController.upload(file);

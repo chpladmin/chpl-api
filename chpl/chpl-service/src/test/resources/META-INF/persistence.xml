@@ -37,6 +37,7 @@
 		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
 		<class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
+        <class>gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity</class>

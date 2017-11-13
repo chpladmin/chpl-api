@@ -1,8 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,18 +17,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.caching.CacheUtil;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
 import gov.healthit.chpl.domain.search.CertifiedProductBasicSearchResult;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.search.SearchRequest;
+import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import junit.framework.TestCase;
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,8 +38,6 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 	@Autowired
 	private CertifiedProductSearchManager certifiedProductSearchManager;
 	
-	@Autowired private CacheUtil cacheUtil;
-	
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -58,10 +49,11 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(6, response.getResults().size());
+		assertEquals(9, response.getRecordCount().intValue());
+		assertEquals(9, response.getResults().size());
 		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getDeveloper().get("name").toString().startsWith("Test Developer 1"));
+		for (CertifiedProductBasicSearchResult result : response.getResults() ){
+			assertTrue(result.getDeveloper().startsWith("Test Developer 1"));
 		}
 	}
 	
@@ -72,10 +64,11 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setProduct("Test Product 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(4, response.getResults().size());
+		assertEquals(5, response.getRecordCount().intValue());
+		assertEquals(5, response.getResults().size());
 		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getProduct().get("name").toString().startsWith("Test Product 1"));
+		for (CertifiedProductBasicSearchResult result : response.getResults() ){
+			assertTrue(result.getProduct().startsWith("Test Product 1"));
 		}
 	}
 	
@@ -86,10 +79,11 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setVersion("1.0.1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
+		assertEquals(2, response.getRecordCount().intValue());
 		assertEquals(2, response.getResults().size());
 		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getProduct().get("version").toString().startsWith("1.0.1"));
+		for (CertifiedProductBasicSearchResult result : response.getResults() ){
+			assertTrue(result.getVersion().startsWith("1.0.1"));
 		}
 	}
 	
@@ -100,10 +94,11 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.getCertificationEditions().add("2014");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(2, response.getResults().size());
+		assertEquals(3, response.getRecordCount().intValue());
+		assertEquals(3, response.getResults().size());
 		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getCertificationEdition().get("name").toString().startsWith("2014"));
+		for (CertifiedProductBasicSearchResult result : response.getResults() ){
+			assertTrue(result.getEdition().toString().startsWith("2014"));
 		}
 	}
 	
@@ -114,10 +109,11 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.getCertificationBodies().add("InfoGard");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(4, response.getResults().size());
+		assertEquals(7, response.getRecordCount().intValue());
+		assertEquals(7, response.getResults().size());
 		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getCertifyingBody().get("name").toString().startsWith("InfoGard"));
+		for (CertifiedProductBasicSearchResult result : response.getResults() ){
+			assertTrue(result.getAcb().startsWith("InfoGard"));
 		}
 	}
 
@@ -128,10 +124,11 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(4, response.getResults().size());
+		assertEquals(8, response.getRecordCount().intValue());
+		assertEquals(8, response.getResults().size());
 		
-		for (CertifiedProductSearchResult result : response.getResults() ){
-			assertTrue(result.getPracticeType().get("name").toString().startsWith("Ambulatory"));
+		for (CertifiedProductBasicSearchResult result : response.getResults() ){
+			assertTrue(result.getPracticeType().startsWith("Ambulatory"));
 		}
 	}
 	
@@ -142,11 +139,12 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setCertificationDateStart("2015-08-20");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(11, response.getResults().size());
+		assertEquals(14, response.getRecordCount().intValue());
+		assertEquals(14, response.getResults().size());
 		
 		boolean foundFirstProduct = false;
 		boolean foundSecondProduct = false;
-		for (CertifiedProductSearchResult result : response.getResults() ){
+		for (CertifiedProductBasicSearchResult result : response.getResults() ){
 			if(result.getId().longValue() == 1L) {
 				foundFirstProduct = true;
 			}
@@ -164,7 +162,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setCertificationDateEnd("2015-08-20");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(12, response.getResults().size());
+		assertEquals(2, response.getResults().size());
 	}
 	
 	@Test
@@ -175,7 +173,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		searchRequest.setCertificationDateStart("2015-08-01");
 		searchRequest.setCertificationDateEnd("2015-10-31");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(12, response.getResults().size());
+		assertEquals(16, response.getResults().size());
 	}
 	
 	@Test
@@ -204,7 +202,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(12, response.getResults().size());
+		assertEquals(16, response.getResults().size());
 	}
 	
 	@Test

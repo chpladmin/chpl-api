@@ -1,19 +1,10 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -23,7 +14,6 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -32,15 +22,9 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.CertifiedProductSearchResult;
-import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
-import gov.healthit.chpl.domain.PopulateSearchOptions;
-import gov.healthit.chpl.domain.SearchRequest;
-import gov.healthit.chpl.domain.SearchResponse;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
-import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
+import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
+import gov.healthit.chpl.domain.search.SearchRequest;
+import gov.healthit.chpl.domain.search.SearchResponse;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -76,11 +60,12 @@ public class SearchViewControllerTest extends TestCase {
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException {
 
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, null, null, null,
-				null, null, null, null, null, null, null, 0, 10, "developer", true);
+		SearchResponse searchResponse = searchViewController.searchGet(null, null, null, null, null, null, null,
+				null, null, null, null, null, null, null, null, null, null, 
+				0, 10, SearchRequest.ORDER_BY_DEVELOPER, true);
 		assertNotNull(searchResponse);
 		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(12, searchResponse.getRecordCount().intValue());
+		assertEquals(16, searchResponse.getRecordCount().intValue());
 		assertNotNull(searchResponse.getResults());
 		assertEquals(10, searchResponse.getResults().size());
 	}
@@ -88,518 +73,515 @@ public class SearchViewControllerTest extends TestCase {
 	
 	@Transactional 
 	@Test
-	public void test_basicSearch_emptyStringsAllParameters() 
+	public void testGetSearchInvalidCertificationStatuses() 
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(" ", " ", " ", " ", " ", " ", " ",
-				null, "  ", "  ", "  ", " ", " ", " ", 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(12, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(12, searchResponse.getResults().size());
-	}
-	
-	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by cqms
-	 * 
-	 * Expected Result: Completes without error and returns some SearchResponse records
-	 */
-	@Transactional 
-	@Test
-	public void test_advancedSearch_refineByCqms_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		SearchRequest searchFilters = new SearchRequest();
-		List<String> cqms = new ArrayList<String>();
-		cqms.add("0001");
-		searchFilters.setCqms(cqms);
-		searchFilters.setPageNumber(0);
-		searchFilters.setPageSize(50);
-		searchFilters.setOrderBy("developer");
-		searchFilters.setSortDescending(true);
-		
-		SearchResponse searchResponse = new SearchResponse();
-		searchResponse = searchViewController.advancedSearch(searchFilters);
-		assertTrue("searchViewController.advancedSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
-		SecurityContextHolder.getContext().setAuthentication(null);
+	    try {
+	        searchViewController.searchGet(null, "Active,Bad", null, null, null, null, null,
+				null, null, null, null, null, null, null, null, null, null, 
+				0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+	        fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("Bad"));
+        }  
 	}
 	
 	@Transactional 
-	@Test
-	public void test_basicSearch_refineByCqms_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
+    @Test
+    public void testPostSearchInvalidCertificationStatuses() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+	    try {
+    	    SearchRequest badRequest = new SearchRequest();
+    	    badRequest.getCertificationStatuses().add("Active");
+    	    badRequest.getCertificationStatuses().add("Bad");
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("Bad"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCertificationEditions() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
 
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, "0001", null, null,
-				null, null, null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(1, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(1, searchResponse.getResults().size());
+	    try {
+	        searchViewController.searchGet(null, "Active", "2000,2011", null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+	        fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("2000"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidCertificationEditions() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2000");
+        badRequest.getCertificationEditions().add("2011");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("2000"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCertificationCriteria() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+	    try {
+	        searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1),170.314 (r)(5)", 
+                null, null, null, null, null, null, null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+	        fail();
+	    } catch(InvalidArgumentsException ex) {
+	        assertNotNull(ex.getMessage());
+	        assertTrue(ex.getMessage().contains("170.314 (r)(5)"));
+	    }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidCertificationCriteria() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCertificationCriteria().add("170.314 (r)(5)");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("170.314 (r)(5)"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCertificationCriteriaOperator() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "NEITHER", null, null, null, null, null, null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("NEITHER"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCqms() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMSBAD,CMS122", null, null, null, null, null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("CMSBAD"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCqmOperator() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "NEITHER", null, null, null, null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("NEITHER"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidCqms() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCqms().add("CMSBAD");
+        badRequest.getCqms().add("CMS122");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("CMSBAD"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCertificationBody() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "BAD ACB,Infogard", 
+                null, null, null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("BAD ACB"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidCertificationBody() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCqms().add("CMS122");
+        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.getCertificationBodies().add("BAD ACB");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("BAD ACB"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidHasHadSurveillance() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "TRUEORFALSE", 
+                null, null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("TRUEORFALSE"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidNonconformityOptions() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "FALSE", 
+                NonconformitySearchOptions.CLOSED_NONCONFORMITY + "," + "BAD_OPTION", 
+                null, null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("BAD_OPTION"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidNonconformityOptionsOperator() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "TRUE", 
+                NonconformitySearchOptions.CLOSED_NONCONFORMITY.toString(), "NEITHER", 
+                null, null, null, null, null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("NEITHER"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidPracticeType() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "FALSE", 
+                null, null, null, null, null, "BAD_PRACTICE_TYPE", null, null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("BAD_PRACTICE_TYPE"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidPracticeType() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCqms().add("CMS122");
+        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.setPracticeType("BAD_PRACTICE_TYPE");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("BAD_PRACTICE_TYPE"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCertificationDateStart() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "FALSE", 
+                null, null, null, null, null, "Ambulatory", "20110101", null, 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("20110101"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidCertificationDateStart() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCqms().add("CMS122");
+        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.setPracticeType("Ambulatory");
+        badRequest.setCertificationDateStart("20110101");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("20110101"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidCertificationDateEnd() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "FALSE", 
+                null, null, null, null, null, "Ambulatory", "2011-01-01", "20110131", 
+                0, 50, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("20110131"));
+        }
+    }
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidCertificationDateEnd() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCqms().add("CMS122");
+        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.setPracticeType("Ambulatory");
+        badRequest.setCertificationDateStart("2011-01-01");
+        badRequest.setCertificationDateEnd("20110131");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("20110131"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidPageSize() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "FALSE", 
+                null, null, null, null, null, "Ambulatory", "2011-01-01", "2011-01-31", 
+                0, 5000, SearchRequest.ORDER_BY_DEVELOPER, true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("100"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidPageSize() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCqms().add("CMS122");
+        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.setPracticeType("Ambulatory");
+        badRequest.setCertificationDateStart("2011-01-01");
+        badRequest.setCertificationDateEnd("2011-01-31");
+        badRequest.setPageSize(5000);
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("100"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testGetSearchInvalidOrderBy() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+
+        try {
+            searchViewController.searchGet(null, "Active", "2014", "170.314 (a)(1)", 
+                "OR", "CMS122", "AND", "Infogard", "FALSE", 
+                null, null, null, null, null, "Ambulatory", "2011-01-01", "2011-01-31", 
+                0, 50, "bad_order_by", true);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("bad_order_by"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+    public void testPostSearchInvalidOrderBy() 
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException {
+        SearchRequest badRequest = new SearchRequest();
+        badRequest.getCertificationStatuses().add("Active");
+        badRequest.getCertificationEditions().add("2011");
+        badRequest.getCertificationCriteria().add("170.314 (a)(1)");
+        badRequest.getCqms().add("CMS122");
+        badRequest.getCertificationBodies().add("Infogard");
+        badRequest.setPracticeType("Ambulatory");
+        badRequest.setCertificationDateStart("2011-01-01");
+        badRequest.setCertificationDateEnd("2011-01-31");
+        badRequest.setPageSize(50);
+        badRequest.setOrderBy("bad_order_by");
+        try {
+            searchViewController.searchPost(badRequest);
+            fail();
+        } catch(InvalidArgumentsException ex) {
+            assertNotNull(ex.getMessage());
+            assertTrue(ex.getMessage().contains("bad_order_by"));
+        }
+    }
+	
+	@Transactional 
+    @Test()
+	public void testPostSearch()
+	        throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+	        InvalidArgumentsException{
+	    SearchRequest searchRequest = new SearchRequest();
+        
+        searchRequest.setSearchTerm("Test");
+        searchRequest.setDeveloper("Test Developer 1");
+        searchRequest.setProduct("Test");
+        searchRequest.setVersion("2.0");
+        searchRequest.getCertificationEditions().add("2014");
+        searchRequest.getCertificationBodies().add("InfoGard");
+        searchRequest.setPracticeType("Ambulatory");
+        searchRequest.setOrderBy("product");
+        searchRequest.setSortDescending(true);
+        searchRequest.setPageNumber(0);
+        
+        SearchResponse response = searchViewController.searchPost(searchRequest);
+        assertNotNull(response);
+        assertEquals(1, response.getRecordCount().intValue());
+        assertNotNull(response.getResults());
+        assertEquals(1, response.getResults().size());
 	}
 	
 	@Transactional 
-	@Test
-	public void test_basicSearch_refineByMultipleCqms_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, "0001, 0004", null, null,
-				null, null, null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(1, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(1, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_refineByBadCqms_CompletesWithError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		boolean failed = false;
-		try {
-			searchViewController.simpleSearch(null, null, null, null, "BAD CQM", null, null,
-					null, null, null, null, null, null, null, 0, 50, "developer", true);
-		} catch(InvalidArgumentsException ex) {
-			failed = true;
-		}
-		assertTrue(failed);
-	}
-	
-	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification criteria
-	 * 
-	 * Expected Result: Completes without error and returns some SearchResponse records
-	 */
-	@Transactional
-	@Test
-	public void test_advancedSearch_refineByCertificationCriteria_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-		SearchRequest searchFilters = new SearchRequest();
-		List<String> certificationCriteria = new ArrayList<String>();
-		certificationCriteria.add("170.315 (a)(1)");
-		
-		searchFilters.setCertificationCriteria(certificationCriteria);
-		searchFilters.setPageNumber(0);
-		searchFilters.setPageSize(50);
-		searchFilters.setOrderBy("developer");
-		searchFilters.setSortDescending(true);
-		
-		SearchResponse searchResponse = new SearchResponse();
-		searchResponse = searchViewController.advancedSearch(searchFilters);
-		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_refineByCertificationCriteria_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, "170.315 (a)(1)", null, null, null,
-				null, null, null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(1, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(1, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_refineByMultipleCertificationCriteria_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, "170.314 (a)(1), 170.314 (a)(2)", null, null, null,
-				null, null, null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(1, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(1, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_refineByBadCertificationCriteria_CompletesWithError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		boolean failed = false;
-		try {
-			searchViewController.simpleSearch(null, null, null, "BAD CRITERIA", null, null, null,
-					null, null, null, null, null, null, null, 0, 50, "developer", true);
-		} catch(InvalidArgumentsException ex) {
-			failed = true;
-		}
-		assertTrue(failed);
-	}
-	
-	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification criteria AND cqms
-	 * 
-	 * Expected Result: Completes without error and returns some SearchResponse records
-	 */
-	@Transactional
-	@Test
-	public void test_advancedSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		SearchRequest searchFilters = new SearchRequest();
-		List<String> certificationCriteria = new ArrayList<String>();
-		certificationCriteria.add("170.314 (a)(3)");
-		List<String> cqms = new ArrayList<String>();
-		cqms.add("0001");
-		searchFilters.setCqms(cqms);
-		searchFilters.setCertificationCriteria(certificationCriteria);
-		searchFilters.setPageNumber(0);
-		searchFilters.setPageSize(50);
-		searchFilters.setOrderBy("developer");
-		searchFilters.setSortDescending(true);
-		
-		SearchResponse searchResponse = new SearchResponse();
-		searchResponse = searchViewController.advancedSearch(searchFilters);
-		assertTrue("searchViewController.simpleSearch() should return a SearchResponse with records", searchResponse.getRecordCount() > 0);
-	}
-	
-	/** Description: Tests that the advancedSearch returns valid SearchResponse records when refined by certification start and end date
-	 * 
-	 * Expected Result: Completes without error and returns some SearchResponse records
-	 */
-	@Transactional
-	@Test
-	public void test_advancedSearch_refineByCertificationStartAndEndDate_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		SearchRequest searchFilters = new SearchRequest();
-		searchFilters.setPageNumber(0);
-		searchFilters.setPageSize(50);
-		searchFilters.setOrderBy("developer");
-		searchFilters.setSortDescending(true);
-		searchFilters.setCertificationDateStart("2015-08-01");
-		searchFilters.setCertificationDateEnd("2015-08-31");
-		
-		SearchResponse searchResponse = new SearchResponse();
-		searchResponse = searchViewController.advancedSearch(searchFilters);
-		assertEquals(Integer.valueOf(12), Integer.valueOf(searchResponse.getRecordCount()));
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_refineByCertificationCriteriaAndCqms_CompletesWithoutError() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, "170.314 (a)(3)", "0001", null, null,
-				null, null, null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(1, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(1, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_emptyDeveloperName() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, "170.314 (a)(3)", "0001", null, null,
-				null, "   ", null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(1, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(1, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_developerName() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, null, null, null,
-				null, "Test Developer 1", null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(6, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(6, searchResponse.getResults().size());
-	}
-
-	@Transactional 
-	@Test
-	public void test_basicSearch_badDeveloperName() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, null, null, null,
-				null, "BOGUS DEVELOPER DOES NOT EXIST", null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(0, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(0, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_productName() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, null, null, null,
-				null, null, "Test Product 1", null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(4, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(4, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_versionName() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, null, null, null,
-				null, null, "Test Product 1", "1.0.0", null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(2, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(2, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_certificationBodyName() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, null, "InfoGard", null,
-				null, null, null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(4, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(4, searchResponse.getResults().size());
-	}
-	
-	@Transactional 
-	@Test
-	public void test_basicSearch_certificationBodyNames() 
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException {
-
-		SearchResponse searchResponse = searchViewController.simpleSearch(null, null, null, null, null, "InfoGard, CCHIT", null,
-				null, null, null, null, null, null, null, 0, 50, "developer", true);
-		assertNotNull(searchResponse);
-		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(8, searchResponse.getRecordCount().intValue());
-		assertNotNull(searchResponse.getResults());
-		assertEquals(8, searchResponse.getResults().size());
-	}
-	
-	/** 
-	 * Tests that the getPopulateSearchOptions() caches its data
-	 */
-	@Transactional
-	@Rollback(true)
-	@Test
-	public void test_getPopulateSearchOptions_CachesData() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		long startTime = System.currentTimeMillis();
-		PopulateSearchOptions results = searchViewController.getPopulateSearchData(false, true);
-		// getCertificationCriterionNumbers should now be cached
-		long endTime = System.currentTimeMillis();
-		long timeLength = endTime - startTime;
-		double elapsedSecs = timeLength / 1000.0;
-		
-		assertTrue("Returned " + results.getCertBodyNames() + " getPopulateSearchOptions but should return more than 0", results.getCertBodyNames().size() > 0);
-		
-		System.out.println("getPopulateSearchOptions returned " + results.getCertBodyNames().size() + " total certBodyNames.");
-		System.out.println("getPopulateSearchOptions returned " + results.getCertificationCriterionNumbers().size() + " total certificationCriterionNumbers.");
-		System.out.println("getPopulateSearchOptions returned " + results.getCertificationStatuses().size() + " total certificationStatuses.");
-		System.out.println("getPopulateSearchOptions returned " + results.getCqmCriterionNumbers().size() + " total cqmCriterionNumbers.");
-		System.out.println("getPopulateSearchOptions returned " + results.getDeveloperNames().size() + " total developerNames.");
-		System.out.println("getPopulateSearchOptions returned " + results.getEditions().size() + " total editions.");
-		System.out.println("getPopulateSearchOptions returned " + results.getPracticeTypeNames().size() + " total practiceTypeNames.");
-		System.out.println("getPopulateSearchOptions returned " + results.getProductClassifications().size() + " total productClassifications.");
-		System.out.println("getPopulateSearchOptions returned " + results.getProductNames().size() + " total productNames.");
-		System.out.println("getPopulateSearchOptions completed in  " + timeLength
-				+ " millis or " + elapsedSecs + " seconds");
-		
-		// now compare cached time vs non-cached time
-		startTime = System.currentTimeMillis();
-		results = searchViewController.getPopulateSearchData(false, true);
-		endTime = System.currentTimeMillis();
-		timeLength = endTime - startTime;
-		elapsedSecs = timeLength / 1000.0;
-		System.out.println("getCertificationCriterionNumbers completed in  " + timeLength
-				+ " millis or " + elapsedSecs + " seconds");
-		
-		assertTrue("getCertificationCriterionNumbers should complete within 100 ms but took " + timeLength
-				+ " millis or " + elapsedSecs + " seconds", timeLength < 100);
-	}
-	
-	/** 
-	 * Tests that the getPopulateSearchData(true) caches its data
-	 */
-	@Transactional
-	@Rollback(true)
-	@Test
-	public void test_getPopulateSearchData_simpleAsTrue_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		long getPopulateSearchDataStartTime = System.currentTimeMillis();
-		Boolean required = true;
-		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required, true);
-		long getPopulateSearchDataEndTime = System.currentTimeMillis();
-		long getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
-		double getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
-		
-		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
-		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
-		
-		System.out.println("searchViewController.getPopulateSearchData() should complete within 3 seconds. It took " + getPopulateSearchDataTimeLength
-				+ " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		
-		// now try again to test caching
-		getPopulateSearchDataStartTime = System.currentTimeMillis();
-		results = searchViewController.getPopulateSearchData(required, true);
-		getPopulateSearchDataEndTime = System.currentTimeMillis();
-		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
-		getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
-		
-		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
-		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
-		
-		System.out.println("searchViewController.getPopulateSearchData() should complete immediately due to caching. It took "
-		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		assertTrue("searchViewController.getPopulateSearchData() should complete in 0 seconds due to caching but took " + getPopulateSearchDataTimeLength + "ms", getPopulateSearchDataTimeLength < 100);
-	}
-	
-	/** 
-	 * Tests that the getPopulateSearchData(false) caches its data
-	 */
-	@Transactional
-	@Rollback(true)
-	@Test
-	public void test_getPopulateSearchData_simpleAsFalse_Caching_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		long getPopulateSearchDataStartTime = System.currentTimeMillis();
-		Boolean required = false;
-		PopulateSearchOptions results = searchViewController.getPopulateSearchData(required, true);
-		long getPopulateSearchDataEndTime = System.currentTimeMillis();
-		long getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
-		double getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
-		
-		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
-		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
-		
-		System.out.println("searchViewController.getPopulateSearchData() should complete within 3 seconds. It took " + getPopulateSearchDataTimeLength
-				+ " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		
-		// now try again to test caching
-		getPopulateSearchDataStartTime = System.currentTimeMillis();
-		results = searchViewController.getPopulateSearchData(required, true);
-		getPopulateSearchDataEndTime = System.currentTimeMillis();
-		getPopulateSearchDataTimeLength = getPopulateSearchDataEndTime - getPopulateSearchDataStartTime;
-		getPopulateSearchElapsedSeconds = getPopulateSearchDataTimeLength / 1000.0;
-		
-		assertTrue("Returned " + results.getDeveloperNames().size() + " developers but should return more than 0", results.getDeveloperNames().size() > 0);
-		assertTrue("Returned " + results.getProductNames().size() + " products but should return more than 0", results.getProductNames().size() > 0);
-		
-		System.out.println("searchViewController.getPopulateSearchData() should complete immediately due to caching. It took "
-		+ getPopulateSearchDataTimeLength + " millis or " + getPopulateSearchElapsedSeconds + " seconds");
-		assertTrue("searchViewController.getPopulateSearchData() should complete in 0 seconds due to caching but took " + getPopulateSearchDataTimeLength + "ms", getPopulateSearchDataTimeLength < 100);
-	}
-	
-	/** 
-	 * Given the CHPL is accepting search requests
-	 * When I call the REST API's /decertifications/developers
-	 * Then the controller method's getDecertifiedDevelopers returns expected results
-	 */
-	@Transactional
-	@Test
-	public void test_getDecertifiedDevelopers_CompletesWithoutError() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
-		DecertifiedDeveloperResults resp = searchViewController.getDecertifiedDevelopers();
-		assertTrue(resp.getDecertifiedDeveloperResults().size() > 0);
-		assertTrue(resp.getDecertifiedDeveloperResults().get(0).getDeveloper() != null);
-		assertTrue(resp.getDecertifiedDeveloperResults().get(0).getCertifyingBody() != null);
-		Boolean hasNumMeaningfulUseNonNull = false;
-		for(DecertifiedDeveloperResult ddr : resp.getDecertifiedDeveloperResults()){
-			if(ddr.getEstimatedUsers() > 0){
-				hasNumMeaningfulUseNonNull = true;
-			}
-		}
-		assertTrue("DecertifiedDeveloperResults should contain an index with a non-null numMeaningfulUse.", hasNumMeaningfulUseNonNull);
-	}
-	
-	/** 
-	 * Given the CHPL is accepting search requests
-	 * When I call the REST API's /
-	 * Then the controller method's advancedSearch returns SearchResponse containing numMeaningfulUse
-	 */
-	@Transactional
-	@Test
-	public void test_advancedSearch_resultReturnsNumMeaningfulUse() throws InvalidArgumentsException {
-		SearchRequest sr = new SearchRequest();
-		sr.setPageNumber(0);
-		sr.setPageSize(50);
-		sr.setOrderBy("developer");
-		sr.setSortDescending(true);
-		sr.setDeveloper("VendorSuspended");
-		
-		SearchResponse resp = searchViewController.advancedSearch(sr);
-		assertTrue("SearchResponse should have size > 0 but is " + resp.getResults().size(), resp.getResults().size() > 0);
-		Boolean hasNumMeaningfulUse = false;
-		for(CertifiedProductSearchResult result : resp.getResults()){
-			if(result.getNumMeaningfulUse() != null){
-				hasNumMeaningfulUse = true;
-				break;
-			}
-		}
-		assertTrue("SearchResponse should contain results with numMeaningfulUse.", hasNumMeaningfulUse);
-	}
-	
-	/** 
-	 * Given the CHPL is accepting search requests
-	 * When I call the REST API's /
-	 * Then the controller method's advancedSearch returns SearchResponse containing numMeaningfulUse
-	 * @throws EntityRetrievalException 
-	 */
-	@Transactional
-	@Test
-	public void test_simpleSearch_resultReturnsNumMeaningfulUse() throws EntityRetrievalException {
-		String searchTerm = "VendorSuspended";
-		Integer pageNumber = 0;
-		Integer pageSize = 50;
-		String orderBy = "developer";
-		Boolean sortDescending = true;
-		
-		try {
-			SearchResponse resp = searchViewController.simpleSearch(searchTerm, null, null, null, null, null, null,
-					null, null, null, null, null, null, null, pageNumber, pageSize, orderBy, sortDescending);
-			assertTrue("SearchResponse should have size > 0 but is " + resp.getResults().size(), resp.getResults().size() > 0);
-			Boolean hasNumMeaningfulUse = false;
-			for(CertifiedProductSearchResult result : resp.getResults()){
-				if(result.getNumMeaningfulUse() != null){
-					hasNumMeaningfulUse = true;
-					break;
-				}
-			}
-			assertTrue("SearchResponse should contain results with numMeaningfulUse.", hasNumMeaningfulUse);
-		} catch(InvalidArgumentsException ex) {
-			fail(ex.getMessage());
-		}
-	}
+    @Test()
+    public void testGetSearch()
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException{
+        SearchResponse response = searchViewController.searchGet("Test", null, "2014", null, 
+                null, null, null, "Infogard", null, 
+                null, null, "Test Developer 1", "Test", "2.0", "Ambulatory", null, null, 
+                0, 50, "product", true);
+        assertNotNull(response);
+        assertEquals(1, response.getRecordCount().intValue());
+        assertNotNull(response.getResults());
+        assertEquals(1, response.getResults().size());
+    }
 }
