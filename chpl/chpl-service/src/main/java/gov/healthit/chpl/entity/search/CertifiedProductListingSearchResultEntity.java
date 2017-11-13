@@ -4,10 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Immutable;
 
@@ -74,6 +71,15 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "decertification_date")
     private Date decertificationDate;
 
+    @Column(name = "count_surveillance_activities")
+    private Integer countSurveillance;
+    
+    @Column(name = "count_open_nonconformities")
+    private Integer countOpenNonconformities;
+    
+    @Column(name = "count_closed_nonconformities")
+    private Integer countClosedNonconformities;
+    
     @Column(name = "cert_number")
     private String cert;
 
@@ -225,5 +231,29 @@ public class CertifiedProductListingSearchResultEntity {
 
     public void setCqm(String cqm) {
         this.cqm = cqm;
+    }
+
+    public Integer getCountSurveillance() {
+        return countSurveillance;
+    }
+
+    public void setCountSurveillance(Integer countSurveillance) {
+        this.countSurveillance = countSurveillance;
+    }
+
+    public Integer getCountOpenNonconformities() {
+        return countOpenNonconformities;
+    }
+
+    public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+        this.countOpenNonconformities = countOpenNonconformities;
+    }
+
+    public Integer getCountClosedNonconformities() {
+        return countClosedNonconformities;
+    }
+
+    public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+        this.countClosedNonconformities = countClosedNonconformities;
     }
 }
