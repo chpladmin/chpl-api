@@ -6,6 +6,9 @@ _Date TBD_
 ### Backwards compatibility breaking features
 * Re-wrote API search code. See documentation for the HTTP GET /search call for information.
 
+### Bugs Fixed
+* Fix 60 day date range check for activity when date range overlaps daylight savings.
+
 ---
 
 ## Version 14.2.1
