@@ -639,13 +639,13 @@ public class SearchMenuManagerTest {
             assertTrue(testStandard.getYear().equals("2014") || testStandard.getYear().equals("2015"));
         }
     }
-    
+
     @Transactional
     @Rollback(true)
     @Test
     public void getUploadTemplateVersions() {
         Set<UploadTemplateVersion> templateVersions = searchMenuManager.getUploadTemplateVersions();
         assertNotNull(templateVersions);
-        assertEquals(2, templateVersions.size());
+        assertTrue(templateVersions.size() >= 2);
     }
 }
