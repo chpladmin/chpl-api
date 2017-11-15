@@ -1136,15 +1136,18 @@ public class ActivityController {
     }
 
     private void validateActivityDates(Long startDate, Long endDate) throws ValidationException {
-        Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
-        Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
-        calendarCounter.setTime(new Date(endDate));
-        if (new Date(startDate).compareTo(calendarCounter.getTime()) > 0) {
+        Calendar startDateUtcCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        startDateUtcCal.setTimeInMillis(startDate);
+        
+        Calendar endDateUtcCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        endDateUtcCal.setTimeInMillis(endDate);
+        if (startDateUtcCal.after(endDateUtcCal)) {
             throw new ValidationException("Cannot search for activity with the start date after the end date");
         }
 
-        calendarCounter.add(Calendar.DATE, -maxActivityRangeInDays);
-        if (new Date(startDate).compareTo(calendarCounter.getTime()) < 0) {
+        Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
+        endDateUtcCal.add(Calendar.DATE, -maxActivityRangeInDays);
+        if (startDateUtcCal.before(endDateUtcCal)) {
             throw new ValidationException(
                     "Cannot search for activity with a date range more than " + maxActivityRangeInDays + " days.");
         }
