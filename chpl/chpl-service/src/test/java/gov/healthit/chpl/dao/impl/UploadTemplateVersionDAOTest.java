@@ -35,13 +35,13 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class UploadTemplateVersionDAOTest extends TestCase {
 	private static JWTAuthenticatedUser adminUser;
-	
+
 	@Autowired private UploadTemplateVersionDAO templateDao;;
-	
+
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-		
+
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
@@ -51,15 +51,15 @@ public class UploadTemplateVersionDAOTest extends TestCase {
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 	}
-	
+
 	@Test
 	@Transactional
-	public void findAll() {
+	public void canFindAll() {
 		List<UploadTemplateVersionDTO> allTemplates = templateDao.findAll();
 		assertNotNull(allTemplates);
-		assertEquals(2, allTemplates.size());
+		assertTrue(allTemplates.size() >= 2);
 	}
-	
+
 	@Test
 	@Transactional
 	public void findById() throws EntityRetrievalException {
