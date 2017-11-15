@@ -1,6 +1,9 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
@@ -1136,18 +1139,18 @@ public class ActivityController {
     }
 
     private void validateActivityDates(Long startDate, Long endDate) throws ValidationException {
-        Calendar startDateUtcCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
-        startDateUtcCal.setTimeInMillis(startDate);
-        
-        Calendar endDateUtcCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
-        endDateUtcCal.setTimeInMillis(endDate);
-        if (startDateUtcCal.after(endDateUtcCal)) {
+        LocalDate startDateUtc = 
+                Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();
+        LocalDate endDateUtc = 
+                Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
+
+        if(startDateUtc.isAfter(endDateUtc)) {
             throw new ValidationException("Cannot search for activity with the start date after the end date");
         }
 
         Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
-        endDateUtcCal.add(Calendar.DATE, -maxActivityRangeInDays);
-        if (startDateUtcCal.before(endDateUtcCal)) {
+        endDateUtc = endDateUtc.minusDays(maxActivityRangeInDays);
+        if(startDateUtc.isBefore(endDateUtc)) {
             throw new ValidationException(
                     "Cannot search for activity with a date range more than " + maxActivityRangeInDays + " days.");
         }
