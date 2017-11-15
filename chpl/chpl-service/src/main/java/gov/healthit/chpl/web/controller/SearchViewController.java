@@ -213,7 +213,7 @@ public class SearchViewController {
                     dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "certificationStatuses",
                     value = "A comma-separated list of certification statuses "
-                            + "(ex: \"Active,Retired,Withdrawn by Developer\")). Retired listings are excluded unless requested with this parameter.",
+                            + "(ex: \"Active,Retired,Withdrawn by Developer\")).",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "certificationEditions",
                     value = "A comma-separated list of certification editions to be 'or'ed together (ex: \"2014,2015\" finds listings with either edition 2014 or 2015).",
@@ -222,7 +222,7 @@ public class SearchViewController {
                     value = "A comma-separated list of certification criteria to be queried together (ex: \"170.314 (a)(1),170.314 (a)(2)\" finds listings attesting to either 170.314 (a)(1) or 170.314 (a(2)).",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "certificationCriteriaOperator",
-                    value = "Either AND or OR. Defaults to OR " + 
+                    value = "Either AND or OR. Defaults to OR. " + 
                             "Indicates whether a listing must have all certificationCriteria or may have any one or more of the certificationCriteria.",
                     required = false, dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "cqms",
