@@ -135,7 +135,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         //certified product ids based on all of the passed-in query parameters
         sql += createFilterQuery(searchRequest);
         //add in paging here because it's search-specific; we don't want it in the total count query
-        sql += "WHERE listing_row >= :firstResult AND listing_row <= :lastResult ";
+        sql += "WHERE listing_row >= :firstResult AND listing_row < :lastResult ";
         //this is the end, matches up with the beginning sql
         sql += ") filtered_listings_with_rows " + 
             "INNER JOIN openchpl.certified_product_search_result " + 
@@ -563,7 +563,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
     }
     
     private void populatePagingParams(Query query, SearchRequest searchRequest) {
-        int firstResult = searchRequest.getPageNumber() * searchRequest.getPageSize();
+        int firstResult = (searchRequest.getPageNumber() * searchRequest.getPageSize())+1;
         int lastResult = firstResult + searchRequest.getPageSize();
         query.setParameter("firstResult", firstResult);
         query.setParameter("lastResult", lastResult);

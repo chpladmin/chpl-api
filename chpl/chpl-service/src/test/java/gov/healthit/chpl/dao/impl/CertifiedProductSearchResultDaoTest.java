@@ -93,6 +93,40 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 	}
 	
 	@Test
+    @Transactional
+    public void testPageSizeIsCorrectFirstPage(){
+        
+        SearchRequest searchRequest = new SearchRequest();
+        //there are 9 results here.
+        searchRequest.setDeveloper("Test Developer 1");
+        searchRequest.setPageNumber(0);
+        searchRequest.setPageSize(5);
+        Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
+        assertEquals(5, products.size());
+        
+        for (CertifiedProductBasicSearchResult dto : products ){
+            assertTrue(dto.getDeveloper().startsWith("Test Developer 1"));
+        }
+    }
+	
+	@Test
+    @Transactional
+    public void testPageSizeIsCorrectNotFirstPage(){
+        
+        SearchRequest searchRequest = new SearchRequest();
+        //there are 9 results here.
+        searchRequest.setDeveloper("Test Developer 1");
+        searchRequest.setPageNumber(1);
+        searchRequest.setPageSize(3);
+        Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
+        assertEquals(3, products.size());
+        
+        for (CertifiedProductBasicSearchResult dto : products ){
+            assertTrue(dto.getDeveloper().startsWith("Test Developer 1"));
+        }
+    }
+	   
+	@Test
 	@Transactional
 	public void testSearchDeveloper(){
 		
