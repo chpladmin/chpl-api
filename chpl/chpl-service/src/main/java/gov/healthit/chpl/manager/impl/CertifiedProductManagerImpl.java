@@ -374,7 +374,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+    @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
@@ -957,8 +957,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)" + ")")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB')"
+            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     @Transactional(readOnly = false)
     public void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
             throws EntityNotFoundException {
@@ -1002,8 +1002,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }
 
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)" + ")")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB')"
+            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class, InvalidArgumentsException.class
@@ -1063,7 +1063,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
             } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
                 LOGGER.error("User " + Util.getUsername()
-                        + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN and cannot change the status of developer for certified product with id "
+                        + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of developer for certified product with id "
                         + listingId);
                 throw new AccessDeniedException(
                         "User does not have admin permission to change " + cpDeveloper.getName() + " status.");

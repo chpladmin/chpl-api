@@ -91,7 +91,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     public PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
             throws EntityRetrievalException, AccessDeniedException {
 
@@ -122,8 +122,8 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')) and "
-            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB') and "
+            + "hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     public List<PendingCertifiedProductDTO> getPendingCertifiedProductsByAcb(Long acbId) {
         List<PendingCertifiedProductDTO> products = pcpDao.findByAcbId(acbId);
         updateCertResults(products);
@@ -139,7 +139,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @CacheEvict(value = {
             CacheNames.FIND_BY_ACB_ID
     }, allEntries = true)
-    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+    @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     public PendingCertifiedProductDTO createOrReplace(Long acbId, PendingCertifiedProductEntity toCreate)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -165,7 +165,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @CacheEvict(value = {
             CacheNames.FIND_BY_ACB_ID
     }, allEntries = true)
-    @PreAuthorize("hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ACB')")
     public void deletePendingCertifiedProduct(List<CertificationBodyDTO> userAcbs, Long pendingProductId)
             throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
             JsonProcessingException, ObjectMissingValidationException {
@@ -199,7 +199,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
     @CacheEvict(value = {
             CacheNames.FIND_BY_ACB_ID
     }, allEntries = true)
-    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+    @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     public void confirm(Long acbId, Long pendingProductId)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
@@ -214,7 +214,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+    @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     public boolean isPendingListingAvailableForUpdate(Long acbId, Long pendingProductId)
             throws EntityRetrievalException, ObjectMissingValidationException {
@@ -224,7 +224,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
 
     @Override
     @Transactional
-    @PreAuthorize("(hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
+    @PreAuthorize("hasRole('ROLE_ACB') "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
     public boolean isPendingListingAvailableForUpdate(Long acbId, PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, ObjectMissingValidationException {

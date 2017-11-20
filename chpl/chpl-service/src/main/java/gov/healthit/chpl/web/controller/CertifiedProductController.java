@@ -201,7 +201,7 @@ public class CertifiedProductController {
 
     @ApiOperation(value = "Update an existing certified product.",
             notes = "Updates the certified product after first validating the request. The logged in"
-                    + " user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative "
+                    + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
                     + " authority on the ACB that certified the product. If a different ACB is passed in"
                     + " as part of the request, an ownership change will take place and the logged in "
                     + " user must have ROLE_ADMIN.")
@@ -341,7 +341,7 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Reject a pending certified product.",
-            notes = "Essentially deletes a pending certified product. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+            notes = "Essentially deletes a pending certified product. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/{pcpId}/reject", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -354,7 +354,7 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Reject several pending certified products.",
-            notes = "Marks a list of pending certified products as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+            notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -386,7 +386,7 @@ public class CertifiedProductController {
                     + " passed in on the request. This information may differ from what was previously "
                     + " entered for the pending certified product during upload. It will first be validated "
                     + " to check for errors, then a new certified product is created, and the old pending certified"
-                    + " product will be removed. ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " product will be removed. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -438,7 +438,7 @@ public class CertifiedProductController {
 
     @ApiOperation(value = "Upload a file with certified products",
             notes = "Accepts a CSV file with very specific fields to create pending certified products. "
-                    + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " The user uploading the file must have ROLE_ACB "
                     + " and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)

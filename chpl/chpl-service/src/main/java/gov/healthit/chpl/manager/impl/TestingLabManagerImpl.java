@@ -248,7 +248,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
-            + "(hasRole('ROLE_ATL_ADMIN') and hasPermission(#atl, admin))")
+            + "(hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
     public void addPermission(TestingLabDTO atl, Long userId, Permission permission) throws UserRetrievalException {
         MutableAcl acl;
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
@@ -275,7 +275,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL_ADMIN') and hasPermission(#atl, admin))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
     public void deletePermission(TestingLabDTO atl, Sid recipient, Permission permission) {
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -301,7 +301,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL_ADMIN') and hasPermission(#atl, admin))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ATL') and hasPermission(#atl, admin))")
     public void deleteAllPermissionsOnAtl(TestingLabDTO atl, Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(TestingLabDTO.class, atl.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -325,7 +325,7 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         LOGGER.debug("Deleted all testing lab " + atl.getName() + " ACL permissions for recipient " + recipient);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ATL_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ATL')")
     public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
         if (userDto.getSubjectName() == null) {
             userDto = userDAO.getById(userDto.getId());

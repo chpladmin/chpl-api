@@ -619,16 +619,15 @@ public class SurveillanceValidator implements MessageSourceAware {
     }
 
     public void validateSurveillanceAuthority(Surveillance surv) {
-        // non-null surveillance must be ROLE_ADMIN, ROLE_ACB_ADMIN, or
-        // ROLE_ACB_STAFF
+        // non-null surveillance must be ROLE_ADMIN, ROLE_ACB, or
+        // ROLE_ACB
         if (!StringUtils.isEmpty(surv.getAuthority())) {
             if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
-                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN)
-                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)) {
+                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
                 surv.getErrorMessages().add(String.format(
                         messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.authorityRequired"),
                                 LocaleContextHolder.getLocale()),
-                        Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN, Authority.ROLE_ACB_STAFF));
+                        Authority.ROLE_ADMIN, Authority.ROLE_ACB));
             }
         }
     }

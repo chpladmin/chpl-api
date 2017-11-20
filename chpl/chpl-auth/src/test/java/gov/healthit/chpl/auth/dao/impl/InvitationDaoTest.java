@@ -46,8 +46,7 @@ public class InvitationDaoTest {
 	@Autowired private MutableAclService mutableAclService;
 	
 	private static final String ROLE_CHPL_ADMIN = "ROLE_ADMIN";
-	private static final String ROLE_ACB_STAFF = "ROLE_ACB_STAFF";
-	private static final String ROLE_ACB_ADMIN = "ROLE_ACB_ADMIN";
+	private static final String ROLE_ACB = "ROLE_ACB";
 	private static final String ROLE_ONC_STAFF = "ROLE_ONC_STAFF";
 	private static JWTAuthenticatedUser chplAdminUser;
 	private static JWTAuthenticatedUser acbAdminUser;

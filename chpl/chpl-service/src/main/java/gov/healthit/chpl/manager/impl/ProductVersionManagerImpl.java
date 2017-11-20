@@ -70,7 +70,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     public ProductVersionDTO create(ProductVersionDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
         // check that the developer of this version is Active
@@ -106,7 +106,7 @@ public class ProductVersionManagerImpl implements ProductVersionManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     public ProductVersionDTO update(ProductVersionDTO dto)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
