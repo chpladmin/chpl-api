@@ -14,8 +14,11 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 
 public interface CertificationResultDAO {
+	
+	List<Long> getCpIdsByCriterionId(Long criterionId) throws EntityRetrievalException;
 
     CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException;
 
@@ -24,8 +27,6 @@ public interface CertificationResultDAO {
     void delete(Long resultId);
 
     void deleteByCertifiedProductId(Long certifiedProductId);
-
-    List<CertificationResultDTO> findAll();
 
     List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId);
 

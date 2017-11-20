@@ -553,7 +553,7 @@
 	<certificationResult>
 		<number>170.314 (b)(5)(B)</number>
 		<properties>
-			<gap>false</gap>
+			<gap>true</gap>
 			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
@@ -1797,9 +1797,9 @@
 			<g1Macra>false</g1Macra>
 			<g2Macra>false</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
-			<testTool>false</testTool>
+			<testTool>true</testTool>
 			<testProcedure>true</testProcedure>
-			<testData>false</testData>
+			<testData>true</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
 			<task>false</task>
@@ -1963,7 +1963,7 @@
 	<certificationResult>
 		<number>170.315 (d)(3)</number>
 		<properties>
-			<gap>true</gap>
+			<gap>false</gap>
 			<privacySecurity>false</privacySecurity>
 			<standardsTested>true</standardsTested>
 			<functionalityTested>false</functionalityTested>
@@ -2325,9 +2325,9 @@
 			<g1Macra>false</g1Macra>
 			<g2Macra>false</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
-			<testTool>true</testTool>
+			<testTool>false</testTool>
 			<testProcedure>true</testProcedure>
-			<testData>true</testData>
+			<testData>false</testData>
 			<sed>false</sed>
 			<ucd>false</ucd>
 			<task>false</task>
@@ -2520,8 +2520,8 @@
 			<apiDocumentation>true</apiDocumentation>
 			<g1Success>false</g1Success>
 			<g2Success>false</g2Success>
-			<g1Macra>true</g1Macra>
-			<g2Macra>true</g2Macra>
+            <g1Macra>false</g1Macra>
+			<g2Macra>false</g2Macra>
 			<additionalSoftware>true</additionalSoftware>
 			<testTool>false</testTool>
 			<testProcedure>true</testProcedure>

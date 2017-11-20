@@ -23,7 +23,7 @@ public interface ProductManager {
     ProductDTO create(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
-    ProductDTO update(ProductDTO dto, boolean lookForSuspiciousActivity)
+    ProductDTO update(ProductDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
     ProductDTO merge(List<Long> productIdsToMerge, ProductDTO toCreate)

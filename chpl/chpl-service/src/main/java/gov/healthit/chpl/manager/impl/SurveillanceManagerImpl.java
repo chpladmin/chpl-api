@@ -2,7 +2,6 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -29,7 +27,6 @@ import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.dto.UserPermissionDTO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -63,7 +60,7 @@ import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 
 @Service
-public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl implements SurveillanceManager {
+public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
     @Autowired
     private Environment env;
@@ -137,9 +134,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    @CacheEvict(value = {
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
-    }, allEntries = true)
     public Long createSurveillance(Long acbId, Surveillance surv)
             throws UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         Long insertedId = null;
@@ -171,9 +165,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    @CacheEvict(value = {
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
-    }, allEntries = true)
     public void updateSurveillance(Long acbId, Surveillance surv) throws EntityRetrievalException,
             UserPermissionRetrievalException, SurveillanceAuthorityAccessDeniedException {
         SurveillanceEntity dbSurvEntity = new SurveillanceEntity();
@@ -199,9 +190,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "((hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN')) "
             + "and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
-    @CacheEvict(value = {
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
-    }, allEntries = true)
     public void deleteSurveillance(Long acbId, Surveillance surv)
             throws EntityRetrievalException, SurveillanceAuthorityAccessDeniedException {
         checkSurveillanceAuthority(surv);
@@ -388,27 +376,6 @@ public class SurveillanceManagerImpl extends QuestionableActivityHandlerImpl imp
     @Transactional(readOnly = true)
     public void validate(Surveillance surveillance) {
         validator.validate(surveillance);
-    }
-
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
-        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MMM-dd");
-        String message = "";
-        if (!(src instanceof Surveillance)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            Surveillance original = (Surveillance) src;
-            message = "<p>Questionable activity was detected on "
-                    + original.getCertifiedProduct().getChplProductNumber() + ". "
-                    + "An action was taken related to surveillance " + fmt.format(original.getStartDate()) + ".<p>"
-                    + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports</p>";
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        // it's questionable if the surveillance was deleted (dest is null)
-        return src instanceof Surveillance && dest == null;
     }
 
     @Override

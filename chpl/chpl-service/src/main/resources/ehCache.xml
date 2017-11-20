@@ -179,28 +179,6 @@
 	</cache>
 	<!-- end /search_options caching -->
 	
-	<!-- /search caching -->
-	<cache name="search"
-		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="10000000"
-		eternal="true"
-		diskSpoolBufferSizeMB="20"
-		memoryStoreEvictionPolicy="LFU"
-		transactionalMode="off">
-		<persistence strategy="localTempSwap" />
-	</cache>
-	
-	<cache name="countMultiFilterSearchResults"
-		maxEntriesLocalHeap="10000"
-		maxEntriesLocalDisk="10000000"
-		eternal="true"
-		diskSpoolBufferSizeMB="20"
-		memoryStoreEvictionPolicy="LFU"
-		transactionalMode="off">
-		<persistence strategy="localTempSwap" />
-	</cache>
-	<!--  end /search caching -->
-	
 	<!-- decertifications/certified_products/ -->
 	<cache name="getDecertifiedDevelopers"
 		maxEntriesLocalHeap="10000"
@@ -257,6 +235,17 @@
 	</cache>
 	<!-- end /certified_products/pending -->
 	
+    <!-- upload template versions -->
+    <cache name="uploadTemplateVersions"
+        maxEntriesLocalHeap="10000"
+        maxEntriesLocalDisk="10000000"
+        eternal="true"
+        diskSpoolBufferSizeMB="20"
+        memoryStoreEvictionPolicy="LFU"
+        transactionalMode="off">
+        <persistence strategy="localTempSwap" />
+    </cache>
+    <!-- end upload template versions -->
 	<!--  collections caches -->
 	<cache name="developerCollection"
 		maxEntriesLocalHeap="10000"

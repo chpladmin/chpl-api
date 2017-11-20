@@ -31,7 +31,7 @@ public class SwaggerConfig implements EnvironmentAware {
     private static final Logger LOGGER = LogManager.getLogger(SwaggerConfig.class);
 
     @Autowired
-    ServletContext context;
+    private ServletContext context;
     @Autowired
     private Environment env;
 
@@ -50,7 +50,7 @@ public class SwaggerConfig implements EnvironmentAware {
 
     private ApiInfo apiInfo() {
         LOGGER.info("get ApiInfo");
-        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "14.0.2", "http://terms/of/service.url",
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "15.0.0", "http://terms/of/service.url",
                 "CHPL@ainq.com", "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
@@ -71,8 +71,8 @@ public class SwaggerConfig implements EnvironmentAware {
     }
 
     private class AbsolutePathProvider extends RelativePathProvider {
-        public AbsolutePathProvider(ServletContext context) {
-            super(context);
+        AbsolutePathProvider(final ServletContext localContext) {
+            super(localContext);
         }
 
         @Override
@@ -80,5 +80,13 @@ public class SwaggerConfig implements EnvironmentAware {
             LOGGER.info("get application base path");
             return env.getProperty("basePath");
         }
+    }
+
+    public ServletContext getContext() {
+        return context;
+    }
+
+    public void setContext(final ServletContext context) {
+        this.context = context;
     }
 }

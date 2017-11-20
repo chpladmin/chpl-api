@@ -145,7 +145,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl implements CertifiedProductManager {
+public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
     @Autowired
@@ -379,8 +379,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, CacheNames.SEARCH,
-            CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -488,7 +487,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
 
         // ics
         if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
-            for (CertifiedProductDTO parentCpDto : pendingCp.getIcsParents()) {
+            for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
                 CertifiedProduct cp = searchDao.getByChplProductNumber(parentCpDto.getChplProductNumber());
                 if (cp != null) {
                     ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
@@ -499,7 +498,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             }
         }
         if (pendingCp.getIcsChildren() != null && pendingCp.getIcsChildren().size() > 0) {
-            for (CertifiedProductDTO childCpDto : pendingCp.getIcsChildren()) {
+            for (CertifiedProductDetailsDTO childCpDto : pendingCp.getIcsChildren()) {
                 CertifiedProduct cp = searchDao.getByChplProductNumber(childCpDto.getChplProductNumber());
                 if (cp != null) {
                     ListingToListingMapDTO toAdd = new ListingToListingMapDTO();
@@ -942,11 +941,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
         certEvent.setStatus(activeCertStatus);
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
-
-        CertifiedProductSearchDetails details = detailsManager.getCertifiedProductDetails(newCertifiedProduct.getId());
-        activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, details.getId(),
-                "Created " + newCertifiedProduct.getChplProductNumberForActivity(), null, details);
-
+        
         return newCertifiedProduct;
     }
 
@@ -976,10 +971,12 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
                 && listing.getIcs().getParents().size() > 0) {
             for (CertifiedProduct parent : listing.getIcs().getParents()) {
                 if (parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
+                    try {
                     CertifiedProduct found = searchDao.getByChplProductNumber(parent.getChplProductNumber());
-                    if (found != null) {
-                        parent.setId(found.getId());
-                    }
+                        if (found != null) {
+                            parent.setId(found.getId());
+                        }
+                    } catch(Exception ignore) {}
                 } else if (parent.getId() == null) {
                     throw new EntityNotFoundException(
                             "Every ICS parent must have either a CHPL ID or a CHPL Product Number.");
@@ -1012,8 +1009,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             AccessDeniedException.class, InvalidArgumentsException.class
     })
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
@@ -1800,7 +1796,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.SEARCH
+            CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
             throws EntityCreationException, EntityRetrievalException, IOException {
@@ -1863,116 +1859,6 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
         meaningfulUseUserResults.setMeaningfulUseUsers(results);
         meaningfulUseUserResults.setErrors(errors);
         return meaningfulUseUserResults;
-    }
-
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
-        String message = "";
-        if (!(src instanceof CertifiedProductSearchDetails)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
-            String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-            message = "<p>Activity was detected on certified product " + original.getChplProductNumber();
-            if (activityThresholdDaysStr.equals("0")) {
-                message += ".";
-            } else {
-                message += " more than " + activityThresholdDaysStr + " days after it was certified.";
-            }
-            message += "</p>" + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports/" + original.getId() + " </p>";
-
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        boolean isQuestionable = false;
-        String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-
-        if (!(src instanceof CertifiedProductSearchDetails && dest instanceof CertifiedProductSearchDetails)) {
-            LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass()
-                    + ". Expected both objects to be of type CertifiedProductSearchDetails.");
-        } else {
-            CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
-            CertifiedProductSearchDetails changed = (CertifiedProductSearchDetails) dest;
-
-            if (original.getCertificationEdition().get("name").equals("2011")) {
-                isQuestionable = true;
-            } else {
-                int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-                long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
-                if (original.getCertificationDate() != null && changed.getCertificationDate() != null
-                        && (changed.getLastModifiedDate().longValue()
-                                - original.getCertificationDate().longValue() > activityThresholdMillis)) {
-                    // if they changed something outside of the suspicious
-                    // activity window,
-                    // check if the change was something that should trigger an
-                    // email
-
-                    if (!original.getCertificationStatus().get("id")
-                            .equals(changed.getCertificationStatus().get("id"))) {
-                        isQuestionable = true;
-                    }
-
-                    if ((original.getCqmResults() == null && changed.getCqmResults() != null)
-                            || (original.getCqmResults() != null && changed.getCqmResults() == null)
-                            || (original.getCqmResults().size() != changed.getCqmResults().size())) {
-                        isQuestionable = true;
-                    } else if (original.getCqmResults().size() == changed.getCqmResults().size()) {
-                        for (CQMResultDetails origCqm : original.getCqmResults()) {
-                            for (CQMResultDetails changedCqm : changed.getCqmResults()) {
-                                if (origCqm.getCmsId().equals(changedCqm.getCmsId())) {
-                                    if (origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
-                                        isQuestionable = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if ((original.getCertificationResults() == null && changed.getCertificationResults() != null)
-                            || (original.getCertificationResults() != null && changed.getCertificationResults() == null)
-                            || (original.getCertificationResults().size() != changed.getCertificationResults()
-                                    .size())) {
-                        isQuestionable = true;
-                    } else if (original.getCertificationResults().size() == changed.getCertificationResults().size()) {
-                        for (CertificationResult origCert : original.getCertificationResults()) {
-                            for (CertificationResult changedCert : changed.getCertificationResults()) {
-                                if (origCert.getNumber().equals(changedCert.getNumber())) {
-                                    if (origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
-                                        isQuestionable = true;
-                                    }
-                                    if (origCert.isG1Success() != null || changedCert.isG1Success() != null) {
-                                        if ((origCert.isG1Success() == null && changedCert.isG1Success() != null)
-                                                || (origCert.isG1Success() != null && changedCert.isG1Success() == null)
-                                                || (origCert.isG1Success().booleanValue() != changedCert.isG1Success()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                    if (origCert.isG2Success() != null || changedCert.isG2Success() != null) {
-                                        if ((origCert.isG2Success() == null && changedCert.isG2Success() != null)
-                                                || (origCert.isG2Success() != null && changedCert.isG2Success() == null)
-                                                || (origCert.isG2Success().booleanValue() != changedCert.isG2Success()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                    if (origCert.isGap() != null || changedCert.isGap() != null) {
-                                        if ((origCert.isGap() == null && changedCert.isGap() != null)
-                                                || (origCert.isGap() != null && changedCert.isGap() == null)
-                                                || (origCert.isGap().booleanValue() != changedCert.isGap()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return isQuestionable;
     }
 
     private class QmsStandardPair {
