@@ -279,11 +279,18 @@ public class PendingCertifiedProductDTO implements Serializable {
             }
 
             if (crResult.getTestDataUsed() != null && crResult.getTestDataUsed().size() > 0) {
-                for (CertificationResultTestData testData : crResult.getTestDataUsed()) {
-                    PendingCertificationResultTestDataDTO testDto = new PendingCertificationResultTestDataDTO();
-                    testDto.setAlteration(testData.getAlteration());
-                    testDto.setVersion(testData.getVersion());
-                    certDto.getTestData().add(testDto);
+                for (CertificationResultTestData certResultTestData : crResult.getTestDataUsed()) {
+                    PendingCertificationResultTestDataDTO testDataDto = new PendingCertificationResultTestDataDTO();
+                    if(certResultTestData.getTestData() != null) {
+                        testDataDto.setTestDataId(certResultTestData.getTestData().getId());
+                        TestDataDTO testData = new TestDataDTO();
+                        testData.setId(certResultTestData.getTestData().getId());
+                        testData.setName(certResultTestData.getTestData().getName());
+                        testDataDto.setTestData(testData);
+                    }
+                    testDataDto.setAlteration(certResultTestData.getAlteration());
+                    testDataDto.setVersion(certResultTestData.getVersion());
+                    certDto.getTestData().add(testDataDto);
                 }
             }
 
@@ -299,7 +306,13 @@ public class PendingCertifiedProductDTO implements Serializable {
             if (crResult.getTestProcedures() != null && crResult.getTestProcedures().size() > 0) {
                 for (CertificationResultTestProcedure proc : crResult.getTestProcedures()) {
                     PendingCertificationResultTestProcedureDTO procDto = new PendingCertificationResultTestProcedureDTO();
-                    procDto.setTestProcedureId(proc.getTestProcedureId());
+                    if(proc.getTestProcedure() != null) {
+                        procDto.setTestProcedureId(proc.getTestProcedure().getId());
+                        TestProcedureDTO testProcedure = new TestProcedureDTO();
+                        testProcedure.setId(proc.getTestProcedure().getId());
+                        testProcedure.setName(proc.getTestProcedure().getName());
+                        procDto.setTestProcedure(testProcedure);
+                    }
                     procDto.setVersion(proc.getTestProcedureVersion());
                     certDto.getTestProcedures().add(procDto);
                 }

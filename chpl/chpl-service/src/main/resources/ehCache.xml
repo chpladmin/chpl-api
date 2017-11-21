@@ -147,6 +147,26 @@
 		transactionalMode="off">
 		<persistence strategy="localTempSwap" />
 	</cache>
+    
+    <cache name="testData"
+        maxEntriesLocalHeap="10000"
+        maxEntriesLocalDisk="10000000"
+        eternal="true"
+        diskSpoolBufferSizeMB="20"
+        memoryStoreEvictionPolicy="LFU"
+        transactionalMode="off">
+        <persistence strategy="localTempSwap" />
+    </cache>
+    
+    <cache name="testProcedures"
+        maxEntriesLocalHeap="10000"
+        maxEntriesLocalDisk="10000000"
+        eternal="true"
+        diskSpoolBufferSizeMB="20"
+        memoryStoreEvictionPolicy="LFU"
+        transactionalMode="off">
+        <persistence strategy="localTempSwap" />
+    </cache>
 	
 	<cache name="cqmCriterionNumbers"
 		maxEntriesLocalHeap="10000"

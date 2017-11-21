@@ -13,7 +13,9 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
+import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
@@ -348,14 +350,13 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             String tpValue = row.get(tpColumn).trim();
             if (!StringUtils.isEmpty(tpValue)) {
                 PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
-                tpEntity.setTestProcedureVersion(tpValue);
-                // don't look up by name because we don't want these to be
-                // shared
-                // among certifications. they are user-entered, could be
-                // anything, and if
-                // they are shared then updating in one place could affect other
-                // places
-                // when that is not the intended behavior
+                //there will only be 1 for 2014 entries
+                List<TestProcedureDTO> allowedTestProcedures = 
+                        testProcedureDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestProcedures.size() > 0) {
+                    tpEntity.setTestProcedureId(allowedTestProcedures.get(0).getId());
+                }
+                tpEntity.setVersion(tpValue);
                 cert.getTestProcedures().add(tpEntity);
             }
         }
@@ -367,6 +368,11 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             String tdVersionValue = row.get(tdColumnBegin).trim();
             if (!StringUtils.isEmpty(tdVersionValue)) {
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
+                List<TestDataDTO> allowedTestData = 
+                        testDataDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestData.size() > 0) {
+                    tdEntity.setTestDataId(allowedTestData.get(0).getId());
+                }
                 tdEntity.setVersion(tdVersionValue);
                 Boolean hasAlteration = asBoolean(row.get(tdColumnBegin + 1).trim());
                 tdEntity.setHasAlteration(hasAlteration);

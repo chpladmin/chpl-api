@@ -5,14 +5,17 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "test_procedure_temp")
-public class TestProcedureEntity {
+@Table(name = "test_data_criteria_map")
+public class TestDataCriteriaMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +23,19 @@ public class TestProcedureEntity {
     @Column(name = "id")
     private Long id;
 
-    @Basic(optional = false)
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "criteria_id")
+    private Long certificationCriterionId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterion;
+    
+    @Column(name = "test_data_id")
+    private Long testDataId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_data_id", insertable = false, updatable = false)
+    private TestDataEntity testData;
 
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     protected Date creationDate;
@@ -76,11 +89,35 @@ public class TestProcedureEntity {
         this.lastModifiedUser = lastModifiedUser;
     }
 
-    public String getName() {
-        return name;
+    public Long getCertificationCriterionId() {
+        return certificationCriterionId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCertificationCriterionId(Long certificationCriterionId) {
+        this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public CertificationCriterionEntity getCertificationCriterion() {
+        return certificationCriterion;
+    }
+
+    public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
+        this.certificationCriterion = certificationCriterion;
+    }
+
+    public Long getTestDataId() {
+        return testDataId;
+    }
+
+    public void setTestDataId(Long testDataId) {
+        this.testDataId = testDataId;
+    }
+
+    public TestDataEntity getTestData() {
+        return testData;
+    }
+
+    public void setTestData(TestDataEntity testData) {
+        this.testData = testData;
     }
 }

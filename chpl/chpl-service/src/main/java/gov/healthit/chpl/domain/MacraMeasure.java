@@ -26,7 +26,7 @@ public class MacraMeasure implements Serializable {
      * The criteria for which a given measure is valid.
      */
     @XmlElement(required = false, nillable = true)
-    private CertificationCriterion criteria;;
+    private CertificationCriterion criteria;
 
     @XmlElement(required = true)
     private String abbreviation;

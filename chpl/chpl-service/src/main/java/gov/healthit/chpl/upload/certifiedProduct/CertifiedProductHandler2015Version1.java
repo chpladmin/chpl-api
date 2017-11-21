@@ -22,7 +22,9 @@ import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
@@ -646,14 +648,17 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             String tpValue = row.get(tpColumn).trim();
             if (!StringUtils.isEmpty(tpValue)) {
                 PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
-                tpEntity.setTestProcedureVersion(tpValue);
-                // don't look up by name because we don't want these to be
-                // shared
-                // among certifications. they are user-entered, could be
-                // anything, and if
-                // they are shared then updating in one place could affect other
-                // places
-                // when that is not the intended behavior
+                tpEntity.setVersion(tpValue);
+                tpEntity.setTestProcedureName(null);
+                List<TestProcedureDTO> allowedTestProcedures = 
+                        testProcedureDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestProcedures != null && allowedTestProcedures.size() > 0) {
+                    for(TestProcedureDTO allowedTp : allowedTestProcedures) {
+                        if(allowedTp.getName().equalsIgnoreCase(TestProcedureDTO.DEFAULT_TEST_PROCEDURE)) {
+                            tpEntity.setTestProcedureId(allowedTp.getId());
+                        }
+                    }
+                }
                 cert.getTestProcedures().add(tpEntity);
             }
         }
@@ -665,6 +670,16 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             String tdVersionValue = row.get(tdColumnBegin).trim();
             if (!StringUtils.isEmpty(tdVersionValue)) {
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
+                tdEntity.setTestDataName(null);
+                List<TestDataDTO> allowedTestData = 
+                        testDataDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestData != null && allowedTestData.size() > 0) {
+                    for(TestDataDTO allowedTd : allowedTestData) {
+                        if(allowedTd.getName().equalsIgnoreCase(TestDataDTO.DEFALUT_TEST_DATA)) {
+                            tdEntity.setTestDataId(allowedTd.getId());
+                        }
+                    }
+                }
                 tdEntity.setVersion(tdVersionValue);
                 Boolean hasAlteration = asBoolean(row.get(tdColumnBegin + 1).trim());
                 tdEntity.setHasAlteration(hasAlteration);

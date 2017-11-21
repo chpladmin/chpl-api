@@ -32,7 +32,9 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
@@ -70,7 +72,9 @@ import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
@@ -107,6 +111,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private TestStandardDAO testStandardDao;
     @Autowired
     private TestToolDAO testToolsDao;
+    @Autowired private TestProcedureDAO testProcedureDao;
+    @Autowired private TestDataDAO testDataDao;
+    
     @Autowired
     private AccessibilityStandardDAO asDao;
     @Autowired
@@ -516,6 +523,36 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         return measures;
     }
 
+    @Transactional
+    @Override
+    @Cacheable(CacheNames.TEST_PROCEDURES)
+    public Set<CriteriaSpecificDescriptiveModel> getTestProcedures() {
+        List<TestProcedureCriteriaMapDTO> testProcedureDtos = testProcedureDao.findAllWithMappedCriteria();
+        Set<CriteriaSpecificDescriptiveModel> testProcedures = new HashSet<CriteriaSpecificDescriptiveModel>();
+
+        for (TestProcedureCriteriaMapDTO dto : testProcedureDtos) {
+            testProcedures.add(new CriteriaSpecificDescriptiveModel(
+                    dto.getTestProcedureId(), dto.getTestProcedure().getName(), null,
+                    null, new CertificationCriterion(dto.getCriteria())));
+        }
+        return testProcedures;
+    }
+    
+    @Transactional
+    @Override
+    @Cacheable(CacheNames.TEST_DATA)
+    public Set<CriteriaSpecificDescriptiveModel> getTestData() {
+        List<TestDataCriteriaMapDTO> testDataDtos = testDataDao.findAllWithMappedCriteria();
+        Set<CriteriaSpecificDescriptiveModel> testData = new HashSet<CriteriaSpecificDescriptiveModel>();
+
+        for (TestDataCriteriaMapDTO dto : testDataDtos) {
+            testData.add(new CriteriaSpecificDescriptiveModel(
+                    dto.getTestDataId(), dto.getTestData().getName(), null,
+                    null, new CertificationCriterion(dto.getCriteria())));
+        }
+        return testData;
+    }
+    
     @Transactional
     @Override
     @Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)

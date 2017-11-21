@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing.pending;
+package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
@@ -13,34 +13,29 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.TestProcedureEntity;
-
 @Entity
-@Table(name = "pending_certification_result_test_procedure_temp")
-public class PendingCertificationResultTestProcedureEntity {
+@Table(name = "test_procedure_criteria_map_temp")
+public class TestProcedureCriteriaMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Basic(optional = false)
+    @Column(name = "id")
     private Long id;
 
-    @Basic(optional = false)
-    @Column(name = "pending_certification_result_id", nullable = false)
-    private Long pendingCertificationResultId;
+    @Column(name = "criteria_id")
+    private Long certificationCriterionId;
 
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterion;
+    
     @Column(name = "test_procedure_id")
     private Long testProcedureId;
 
-    @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_procedure_id", unique = true, nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "test_procedure_id", insertable = false, updatable = false)
     private TestProcedureEntity testProcedure;
-    
-    @Column(name = "test_procedure_name")
-    private String testProcedureName;
-    
-    @Column(name = "version")
-    private String version;
 
     @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
     protected Date creationDate;
@@ -62,22 +57,6 @@ public class PendingCertificationResultTestProcedureEntity {
         this.id = id;
     }
 
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
     public Date getCreationDate() {
         return creationDate;
     }
@@ -94,19 +73,43 @@ public class PendingCertificationResultTestProcedureEntity {
         this.deleted = deleted;
     }
 
-    public Long getPendingCertificationResultId() {
-        return pendingCertificationResultId;
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
-    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
-        this.pendingCertificationResultId = pendingCertificationResultId;
+    public void setLastModifiedDate(final Date lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
+    }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getCertificationCriterionId() {
+        return certificationCriterionId;
+    }
+
+    public void setCertificationCriterionId(Long certificationCriterionId) {
+        this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public CertificationCriterionEntity getCertificationCriterion() {
+        return certificationCriterion;
+    }
+
+    public void setCertificationCriterion(CertificationCriterionEntity certificationCriterion) {
+        this.certificationCriterion = certificationCriterion;
     }
 
     public Long getTestProcedureId() {
         return testProcedureId;
     }
 
-    public void setTestProcedureId(final Long testProcedureId) {
+    public void setTestProcedureId(Long testProcedureId) {
         this.testProcedureId = testProcedureId;
     }
 
@@ -116,21 +119,5 @@ public class PendingCertificationResultTestProcedureEntity {
 
     public void setTestProcedure(TestProcedureEntity testProcedure) {
         this.testProcedure = testProcedure;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getTestProcedureName() {
-        return testProcedureName;
-    }
-
-    public void setTestProcedureName(String testProcedureName) {
-        this.testProcedureName = testProcedureName;
     }
 }

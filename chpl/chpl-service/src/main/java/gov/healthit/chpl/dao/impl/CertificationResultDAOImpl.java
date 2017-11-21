@@ -865,6 +865,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         CertificationResultTestDataEntity mapping = new CertificationResultTestDataEntity();
         mapping = new CertificationResultTestDataEntity();
         mapping.setCertificationResultId(dto.getCertificationResultId());
+        mapping.setTestDataId(dto.getTestDataId());
         mapping.setTestDataVersion(dto.getVersion());
         mapping.setAlterationDescription(dto.getAlteration());
         mapping.setCreationDate(new Date());
@@ -901,6 +902,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toUpdate == null) {
             throw new EntityRetrievalException("Could not find test data mapping with id " + dto.getId());
         }
+        toUpdate.setTestDataId(dto.getTestDataId());
         toUpdate.setAlterationDescription(dto.getAlteration());
         toUpdate.setTestDataVersion(dto.getVersion());
         toUpdate.setLastModifiedDate(new Date());
@@ -920,9 +922,11 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     private CertificationResultTestDataEntity getCertificationResultTestDataById(Long id) {
         CertificationResultTestDataEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "from CertificationResultTestDataEntity "
-                        + "where (NOT deleted = true) AND (certification_result_test_data_id = :entityid) ",
+        Query query = entityManager.createQuery("SELECT td " +
+                "FROM CertificationResultTestDataEntity td " +
+                "LEFT JOIN FETCH td.testData " +
+                "WHERE (NOT td.deleted = true) "
+                + "AND (id = :entityid) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestDataEntity> result = query.getResultList();
@@ -934,9 +938,11 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     }
 
     private List<CertificationResultTestDataEntity> getTestDataForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "from CertificationResultTestDataEntity "
-                        + "where (NOT deleted = true) AND (certification_result_id = :certificationResultId) ",
+        Query query = entityManager.createQuery("SELECT td " + 
+                "FROM CertificationResultTestDataEntity td " + 
+                "LEFT JOIN FETCH td.testData " + 
+                "WHERE (NOT deleted = true) " + 
+                "AND (td.certificationResultId = :certificationResultId) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -973,6 +979,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         CertificationResultTestProcedureEntity mapping = new CertificationResultTestProcedureEntity();
         mapping.setCertificationResultId(dto.getCertificationResultId());
         mapping.setTestProcedureId(dto.getTestProcedureId());
+        mapping.setVersion(dto.getVersion());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -998,8 +1005,10 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     private CertificationResultTestProcedureEntity getCertificationResultTestProcedureById(Long id) {
         CertificationResultTestProcedureEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tp " + "FROM CertificationResultTestProcedureEntity tp "
-                + "LEFT OUTER JOIN FETCH tp.testProcedure " + "where (NOT tp.deleted = true) AND (tp.id = :entityid) ",
+        Query query = entityManager.createQuery("SELECT tp " + 
+                "FROM CertificationResultTestProcedureEntity tp " + 
+                "LEFT OUTER JOIN FETCH tp.testProcedure " + 
+                "where (NOT tp.deleted = true) AND (tp.id = :entityid) ",
                 CertificationResultTestProcedureEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestProcedureEntity> result = query.getResultList();

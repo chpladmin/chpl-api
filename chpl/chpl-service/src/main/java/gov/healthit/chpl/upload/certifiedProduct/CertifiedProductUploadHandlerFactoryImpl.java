@@ -2,7 +2,6 @@ package gov.healthit.chpl.upload.certifiedProduct;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -40,6 +39,9 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
     @Qualifier("certifiedProductHandler2015Version2")
     @Autowired
     private CertifiedProductHandler2015Version2 handler2015Version2;
+    @Qualifier("certifiedProductHandler2015Version3")
+    @Autowired
+    private CertifiedProductHandler2015Version3 handler2015Version3;
 
     private CertifiedProductUploadHandlerFactoryImpl() {
     }
@@ -130,6 +132,8 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
             handler = handler2015Version1;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_2.getName())) {
             handler = handler2015Version2;
+        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_3.getName())) {
+            handler = handler2015Version3;
         }
 
         handler.setRecord(cpRecords);
