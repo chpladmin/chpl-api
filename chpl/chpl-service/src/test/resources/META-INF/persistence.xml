@@ -117,7 +117,10 @@
 		<class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>
 		<class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity</class>
 		<class>gov.healthit.chpl.entity.TargetedUserEntity</class>
+        <class>gov.healthit.chpl.entity.TestDataEntity</class>
+        <class>gov.healthit.chpl.entity.TestDataCriteriaMapEntity</class>
 		<class>gov.healthit.chpl.entity.TestProcedureEntity</class>
+        <class>gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity</class>
 		<class>gov.healthit.chpl.entity.TestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.TestToolEntity</class>
 		<class>gov.healthit.chpl.entity.TestFunctionalityEntity</class>

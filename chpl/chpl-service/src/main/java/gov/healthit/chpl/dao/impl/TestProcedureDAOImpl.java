@@ -1,7 +1,9 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Query;
 
@@ -26,7 +28,7 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
     
     @Override
     public List<TestProcedureDTO> getByCriteriaNumber(String criteriaNumber) {
-        List<TestProcedureEntity> entities = getTestProcedureByCertificationCriteria(criteriaNumber);
+        Set<TestProcedureEntity> entities = getTestProcedureByCertificationCriteria(criteriaNumber);
         List<TestProcedureDTO> dtos = new ArrayList<TestProcedureDTO>();
 
         for (TestProcedureEntity entity : entities) {
@@ -66,23 +68,28 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
         }
         return dtos;
     }
-    private List<TestProcedureEntity> getTestProcedureByCertificationCriteria(String criteriaNumber) {
-        Query query = entityManager.createQuery("SELECT tp "
+    private Set<TestProcedureEntity> getTestProcedureByCertificationCriteria(String criteriaNumber) {
+        Query query = entityManager.createQuery("SELECT tpMap "
                 + "FROM TestProcedureCriteriaMapEntity tpMap "
-                + "JOIN FETCH tpMap.testProcedure tp "
-                + "JOIN FETCH tpMap.certificationCriterion cce "
-                + "JOIN FETCH cce.certificationEdition "
+                + "JOIN tpMap.testProcedure tp "
+                + "JOIN tpMap.certificationCriterion cce "
+                + "JOIN cce.certificationEdition "
                 + "WHERE tpMap.deleted <> true "
                 + "AND tp.deleted <> true "
                 + "AND (UPPER(cce.number) = :criteriaNumber)"
-                , TestProcedureEntity.class);
+                , TestProcedureCriteriaMapEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
-        List<TestProcedureEntity> result = query.getResultList();
-        return result;
+        List<TestProcedureCriteriaMapEntity> results = query.getResultList();
+        
+        Set<TestProcedureEntity> tps = new HashSet<TestProcedureEntity>();
+        for(TestProcedureCriteriaMapEntity result : results) {
+            tps.add(result.getTestProcedure());
+        }
+        return tps;
     }
 
     private TestProcedureEntity getTestProcedureByCertificationCriteriaAndValue(String criteriaNumber, String value) {
-        Query query = entityManager.createQuery("SELECT tp "
+        Query query = entityManager.createQuery("SELECT tpMap "
                 + "FROM TestProcedureCriteriaMapEntity tpMap "
                 + "JOIN FETCH tpMap.testProcedure tp "
                 + "JOIN FETCH tpMap.certificationCriterion cce "
@@ -90,15 +97,19 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
                 + "WHERE tpMap.deleted <> true "
                 + "AND tp.deleted <> true "
                 + "AND (UPPER(cce.number) = :criteriaNumber) "
-                + "AND (UPPER(mme.value) = :value)"
-                , TestDataEntity.class);
+                + "AND (UPPER(tp.name) = :value)"
+                , TestProcedureCriteriaMapEntity.class);
         query.setParameter("criteriaNumber", criteriaNumber.trim().toUpperCase());
         query.setParameter("value", value.trim().toUpperCase());
         
-        List<TestProcedureEntity> result = query.getResultList();
-        if (result == null || result.size() == 0) {
+        List<TestProcedureCriteriaMapEntity> results = query.getResultList();
+        if(results == null || results.size() == 0) {
             return null;
         }
-        return result.get(0);
+        List<TestProcedureEntity> tps = new ArrayList<TestProcedureEntity>();
+        for(TestProcedureCriteriaMapEntity result : results) {
+            tps.add(result.getTestProcedure());
+        }
+        return tps.get(0);
     }
 }

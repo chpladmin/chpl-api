@@ -24,7 +24,7 @@ import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap
  * @author kekey
  *
  */
-@Component("certifiedProductHandler2015Version2")
+@Component("certifiedProductHandler2015Version3")
 public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler2015Version2 {
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2015Version3.class);

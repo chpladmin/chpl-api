@@ -926,7 +926,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
                 "FROM CertificationResultTestDataEntity td " +
                 "LEFT JOIN FETCH td.testData " +
                 "WHERE (NOT td.deleted = true) "
-                + "AND (id = :entityid) ",
+                + "AND (td.id = :entityid) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestDataEntity> result = query.getResultList();
@@ -941,7 +941,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         Query query = entityManager.createQuery("SELECT td " + 
                 "FROM CertificationResultTestDataEntity td " + 
                 "LEFT JOIN FETCH td.testData " + 
-                "WHERE (NOT deleted = true) " + 
+                "WHERE (NOT td.deleted = true) " + 
                 "AND (td.certificationResultId = :certificationResultId) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
