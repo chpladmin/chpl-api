@@ -512,8 +512,12 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         parseTestTools(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestToolColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestProcedureColumnLabel())) {
-                        parseTestProcedures(cert, currIndex);
                         currIndex += getColumnIndexMap().getTestProcedureColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestProcedureVersionColumnLabel())) {
+                        String titleOfPreviousColumn = getHeading().get(currIndex-1);
+                        boolean hasTestProcedureCol = titleOfPreviousColumn.equalsIgnoreCase(getColumnIndexMap().getTestProcedureColumnLabel());
+                        parseTestProceduresVersions(cert, hasTestProcedureCol, currIndex);
+                        currIndex += getColumnIndexMap().getTestProcedureVersionColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestDataColumnLabel())) {
                         parseTestData(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestDataColumnCount();
@@ -634,7 +638,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         }
     }
 
-    protected void parseTestProcedures(PendingCertificationResultEntity cert, int tpColumn) {
+    protected void parseTestProceduresVersions(PendingCertificationResultEntity cert, boolean hasTestProcedureNameCol, int tpColumn) {
         for (CSVRecord row : getRecord()) {
             String tpValue = row.get(tpColumn).trim();
             if (!StringUtils.isEmpty(tpValue)) {
@@ -650,6 +654,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         }
                     }
                 }
+                
                 cert.getTestProcedures().add(tpEntity);
             }
         }

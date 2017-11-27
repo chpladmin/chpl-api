@@ -16,7 +16,6 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.entity.TestDataEntity;
 import gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity;
 import gov.healthit.chpl.entity.TestProcedureEntity;
 
@@ -54,9 +53,9 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
         List<TestProcedureCriteriaMapEntity> entities = 
                 entityManager.createQuery("SELECT tpMap "
                         + "FROM TestProcedureCriteriaMapEntity tpMap "
-                        + "JOIN FETCH tpMap.testProcedure tp "
-                        + "JOIN FETCH tpMap.certificationCriterion cce "
-                        + "JOIN FETCH cce.certificationEdition "
+                        + "LEFT JOIN FETCH tpMap.testProcedure tp "
+                        + "LEFT JOIN FETCH tpMap.certificationCriterion cce "
+                        + "LEFT JOIN FETCH cce.certificationEdition "
                         + "WHERE tpMap.deleted <> true "
                         + "AND tp.deleted <> true "
                         , TestProcedureCriteriaMapEntity.class).getResultList();
@@ -71,9 +70,9 @@ public class TestProcedureDAOImpl extends BaseDAOImpl implements TestProcedureDA
     private Set<TestProcedureEntity> getTestProcedureByCertificationCriteria(String criteriaNumber) {
         Query query = entityManager.createQuery("SELECT tpMap "
                 + "FROM TestProcedureCriteriaMapEntity tpMap "
-                + "JOIN tpMap.testProcedure tp "
-                + "JOIN tpMap.certificationCriterion cce "
-                + "JOIN cce.certificationEdition "
+                + "JOIN FETCH tpMap.testProcedure tp "
+                + "JOIN FETCH tpMap.certificationCriterion cce "
+                + "JOIN FETCH cce.certificationEdition "
                 + "WHERE tpMap.deleted <> true "
                 + "AND tp.deleted <> true "
                 + "AND (UPPER(cce.number) = :criteriaNumber)"

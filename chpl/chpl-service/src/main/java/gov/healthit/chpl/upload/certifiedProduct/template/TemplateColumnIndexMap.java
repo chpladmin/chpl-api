@@ -113,10 +113,18 @@ public abstract class TemplateColumnIndexMap {
     }
     
     public String getTestProcedureColumnLabel() {
-        return "TEST PROCEDURE VERSION";
+        return "TEST PROCEDURE";
     }
     
     public int getTestProcedureColumnCount() {
+        return 1;
+    }
+    
+    public String getTestProcedureVersionColumnLabel() {
+        return "TEST PROCEDURE VERSION";
+    }
+    
+    public int getTestProcedureVersionColumnCount() {
         return 1;
     }
     

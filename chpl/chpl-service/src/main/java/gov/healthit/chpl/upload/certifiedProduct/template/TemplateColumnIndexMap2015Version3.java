@@ -169,17 +169,7 @@ public class TemplateColumnIndexMap2015Version3 extends TemplateColumnIndexMap {
     
     @Override
     public int getCriteriaEndIndex() {
-        return 914;
-    }
-    
-    @Override
-    public String getTestProcedureColumnLabel() {
-        return "TEST PROCEDURE";
-    }
-    
-    @Override
-    public int getTestProcedureColumnCount() {
-        return 2;
+        return 913;
     }
     
     @Override

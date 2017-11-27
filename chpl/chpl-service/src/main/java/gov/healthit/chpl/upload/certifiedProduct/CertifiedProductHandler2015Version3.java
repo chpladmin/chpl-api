@@ -38,13 +38,16 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
     public TemplateColumnIndexMap getColumnIndexMap() {
         return templateColumnIndexMap;
     }
-  
+    
     @Override
-    protected void parseTestProcedures(PendingCertificationResultEntity cert, int tpColumn) {
+    protected void parseTestProceduresVersions(PendingCertificationResultEntity cert, boolean hasTestProcedureNameCol, int tpColumn) {
         for (CSVRecord row : getRecord()) {
-            String tpName = row.get(tpColumn).trim();
-            String tpVersion = row.get(tpColumn+1).trim();
-            if (!StringUtils.isEmpty(tpName)) {
+            String tpName = TestProcedureDTO.DEFAULT_TEST_PROCEDURE;
+            if(hasTestProcedureNameCol) {
+                tpName = row.get(tpColumn-1).trim();
+            }
+            String tpVersion = row.get(tpColumn).trim();
+            if (!StringUtils.isEmpty(tpVersion)) {
                 PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
                 tpEntity.setVersion(tpVersion);
                 tpEntity.setTestProcedureName(tpName);
@@ -61,7 +64,7 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
             }
         }
     }
-
+    
     @Override
     protected void parseTestData(PendingCertifiedProductEntity product, PendingCertificationResultEntity cert,
             int tdColumnBegin) {
