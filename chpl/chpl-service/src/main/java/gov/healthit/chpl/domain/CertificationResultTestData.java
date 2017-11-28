@@ -58,7 +58,7 @@ public class CertificationResultTestData implements Serializable {
     public CertificationResultTestData(CertificationResultTestDataDTO dto) {
         this.id = dto.getId();
         TestData td = new TestData();
-        if(dto.getTestData() != null) {
+        if(dto.getTestData() == null) {
             td.setId(dto.getTestDataId());
         } else {
             td.setId(dto.getTestData().getId());
