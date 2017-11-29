@@ -221,9 +221,9 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestToolColumnLabel())) {
                         parseTestTools(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestToolColumnCount();
-                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestProcedureColumnLabel())) {
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestProcedureVersionColumnLabel())) {
                         parseTestProcedures(cert, currIndex);
-                        currIndex += getColumnIndexMap().getTestProcedureColumnCount();
+                        currIndex += getColumnIndexMap().getTestProcedureVersionColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestDataColumnLabel())) {
                         parseTestData(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestDataColumnCount();
