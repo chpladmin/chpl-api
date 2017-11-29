@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -251,10 +250,16 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
             if (certCriterion.getTestData() != null) {
                 for (PendingCertificationResultTestDataDTO td : certCriterion.getTestData()) {
-                    CertificationResultTestData testData = new CertificationResultTestData();
-                    testData.setVersion(td.getVersion());
-                    testData.setAlteration(td.getAlteration());
-                    cert.getTestDataUsed().add(testData);
+                    CertificationResultTestData certResultTestData = new CertificationResultTestData();
+                    TestData testData = new TestData();
+                    testData.setId(td.getTestDataId());
+                    if(td.getTestData() != null) {
+                        testData.setName(td.getTestData().getName());
+                    }
+                    certResultTestData.setTestData(testData);
+                    certResultTestData.setVersion(td.getVersion());
+                    certResultTestData.setAlteration(td.getAlteration());
+                    cert.getTestDataUsed().add(certResultTestData);
                 }
             } else {
                 cert.setTestDataUsed(null);
@@ -285,10 +290,15 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
 
             if (certCriterion.getTestProcedures() != null) {
                 for (PendingCertificationResultTestProcedureDTO tp : certCriterion.getTestProcedures()) {
-                    CertificationResultTestProcedure testProc = new CertificationResultTestProcedure();
-                    testProc.setTestProcedureId(tp.getTestProcedureId());
-                    testProc.setTestProcedureVersion(tp.getVersion());
-                    cert.getTestProcedures().add(testProc);
+                    CertificationResultTestProcedure certResultTestProc = new CertificationResultTestProcedure();
+                    TestProcedure testProc = new TestProcedure();
+                    testProc.setId(tp.getTestProcedureId());
+                    if(tp.getTestProcedure() != null) {
+                        testProc.setName(tp.getTestProcedure().getName());
+                    }
+                    certResultTestProc.setTestProcedure(testProc);
+                    certResultTestProc.setTestProcedureVersion(tp.getVersion());
+                    cert.getTestProcedures().add(certResultTestProc);
                 }
             } else {
                 cert.setTestProcedures(null);

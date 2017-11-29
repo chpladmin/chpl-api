@@ -897,6 +897,30 @@ public class SearchViewController {
         return result;
     }
 
+    @ApiOperation(value = "Get all possible test procedure options in the CHPL",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/test_procedures", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody SearchOption getTestProcedures() {
+        Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestProcedures();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+    
+    @ApiOperation(value = "Get all possible test data options in the CHPL",
+            notes = "This is useful for knowing what values one might possibly search for.")
+    @RequestMapping(value = "/data/test_data", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody SearchOption getTestData() {
+        Set<CriteriaSpecificDescriptiveModel> data = searchMenuManager.getTestData();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+    
     @ApiOperation(value = "Get all possible test standard options in the CHPL",
             notes = "This is useful for knowing what values one might possibly search for.")
     @RequestMapping(value = "/data/test_standards", method = RequestMethod.GET,

@@ -16,13 +16,13 @@ import javax.persistence.Table;
 import gov.healthit.chpl.entity.TestProcedureEntity;
 
 @Entity
-@Table(name = "certification_result_test_procedure")
+@Table(name = "certification_result_test_procedure_temp")
 public class CertificationResultTestProcedureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "certification_result_test_procedure_id")
+    @Column(name = "id")
     private Long id;
 
     @Basic(optional = false)
@@ -37,6 +37,22 @@ public class CertificationResultTestProcedureEntity {
     @JoinColumn(name = "test_procedure_id", unique = true, nullable = true, insertable = false, updatable = false)
     private TestProcedureEntity testProcedure;
 
+    @Basic(optional = false)
+    @Column(name = "version", nullable = false)
+    private String version;
+
+    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
+    protected Date creationDate;
+
+    @Column(nullable = false)
+    protected Boolean deleted;
+
+    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
+    protected Date lastModifiedDate;
+
+    @Column(name = "last_modified_user", nullable = false)
+    protected Long lastModifiedUser;
+    
     public Long getId() {
         return id;
     }
@@ -69,22 +85,6 @@ public class CertificationResultTestProcedureEntity {
         this.testProcedure = testProcedure;
     }
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    protected Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
-
     public Date getCreationDate() {
         return creationDate;
     }
@@ -115,5 +115,13 @@ public class CertificationResultTestProcedureEntity {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

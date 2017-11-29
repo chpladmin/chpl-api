@@ -2,23 +2,22 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.TestProcedureEntity;
+import gov.healthit.chpl.entity.TestDataEntity;
 
-public class TestProcedureDTO implements Serializable {
-    private static final long serialVersionUID = 1794582282532931394L;
-    public static final String DEFAULT_TEST_PROCEDURE = "ONC Test Method";
-    
+public class TestDataDTO implements Serializable {
+    private static final long serialVersionUID = 1794585582532931394L;
+    public static final String DEFALUT_TEST_DATA = "ONC Test Method";
     private Long id;
     private String name;
-    
-    public TestProcedureDTO() {
+
+    public TestDataDTO() {
     }
 
-    public TestProcedureDTO(TestProcedureEntity entity) {
+    public TestDataDTO(TestDataEntity entity) {
         this.id = entity.getId();
         this.name = entity.getName();
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -34,4 +33,5 @@ public class TestProcedureDTO implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
+
 }

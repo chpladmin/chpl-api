@@ -22,7 +22,9 @@ import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
@@ -479,54 +481,50 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                 String colTitle = getHeading().get(currIndex).trim();
                 if (!StringUtils.isEmpty(colTitle)) {
                     colTitle = colTitle.trim().toUpperCase();
-                    switch (colTitle) {
-                    case "GAP":
-                        cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
-                        break;
-                    case "PRIVACY AND SECURITY FRAMEWORK":
+                    if(colTitle.equalsIgnoreCase(getColumnIndexMap().getGapColumnLabel())) {
+                        cert.setGap(asBoolean(firstRow.get(currIndex).trim()));
+                        currIndex += getColumnIndexMap().getGapColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getPrivacySecurityFrameworkColumnLabel())) {
                         cert.setPrivacySecurityFramework(
-                                CertificationResult.formatPrivacyAndSecurityFramework(firstRow.get(currIndex++)));
-                        break;
-                    case "API DOCUMENTATION LINK":
-                        cert.setApiDocumentation(firstRow.get(currIndex++).trim());
-                        break;
-                    case "STANDARD TESTED AGAINST":
+                                CertificationResult.formatPrivacyAndSecurityFramework(firstRow.get(currIndex)));
+                        currIndex += getColumnIndexMap().getPrivacySecurityFrameworkColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getApiDocumentationColumnLabel())) {
+                        cert.setApiDocumentation(firstRow.get(currIndex).trim());
+                        currIndex += getColumnIndexMap().getApiDocumentationColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestStandardsColumnLabel())) {
                         parseTestStandards(pendingCertifiedProduct, cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "FUNCTIONALITY TESTED":
+                        currIndex += getColumnIndexMap().getTestStandardsColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestFunctionalityColumnLabel())) {
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "MEASURE SUCCESSFULLY TESTED FOR G1":
+                        currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
                         parseG1Measures(cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "MEASURE SUCCESSFULLY TESTED FOR G2":
+                        currIndex += getColumnIndexMap().getG1MeasureColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
                         parseG2Measures(cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "ADDITIONAL SOFTWARE":
+                        currIndex += getColumnIndexMap().getG2MeasureColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
                         cert.setHasAdditionalSoftware(hasAdditionalSoftware);
                         parseAdditionalSoftware(pendingCertifiedProduct, cert, currIndex);
-                        currIndex += 6;
-                        break;
-                    case "TEST TOOL NAME":
+                        currIndex += getColumnIndexMap().getAdditionalSoftwareColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestToolColumnLabel())) {
                         parseTestTools(pendingCertifiedProduct, cert, currIndex);
-                        currIndex += 2;
-                    case "TEST PROCEDURE VERSION":
-                        parseTestProcedures(cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "TEST DATA VERSION":
+                        currIndex += getColumnIndexMap().getTestToolColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestProcedureColumnLabel())) {
+                        currIndex += getColumnIndexMap().getTestProcedureColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestProcedureVersionColumnLabel())) {
+                        String titleOfPreviousColumn = getHeading().get(currIndex-1);
+                        boolean hasTestProcedureCol = titleOfPreviousColumn.equalsIgnoreCase(getColumnIndexMap().getTestProcedureColumnLabel());
+                        parseTestProceduresVersions(cert, hasTestProcedureCol, currIndex);
+                        currIndex += getColumnIndexMap().getTestProcedureVersionColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestDataColumnLabel())) {
                         parseTestData(pendingCertifiedProduct, cert, currIndex);
-                        currIndex += 3;
-                        break;
-                    case "UCD PROCESS SELECTED":
+                        currIndex += getColumnIndexMap().getTestDataColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getUcdColumnLabel())) {
                         PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
-                        String ucdName = firstRow.get(currIndex++).trim();
-                        String ucdDetails = firstRow.get(currIndex++).trim();
+                        String ucdName = firstRow.get(currIndex).trim();
+                        String ucdDetails = firstRow.get(currIndex+1).trim();
 
                         if (!StringUtils.isEmpty(ucdName)) {
                             ucd.setUcdProcessName(ucdName);
@@ -536,13 +534,12 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                                 ucd.setUcdProcessId(dto.getId());
                             }
                             cert.getUcdProcesses().add(ucd);
-                        }
-                        break;
-                    case "TASK IDENTIFIER":
+                        }                        
+                        currIndex += getColumnIndexMap().getUcdColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestTasksColumnLabel())) {
                         parseTasksAndParticipants(pendingCertifiedProduct, cert, currIndex);
-                        currIndex += 2;
-                        break;
-                    default:
+                        currIndex += getColumnIndexMap().getTestTasksColumnCount();
+                    } else {
                         pendingCertifiedProduct.getErrorMessages()
                                 .add("Invalid column title " + colTitle + " at index " + currIndex);
                         LOGGER.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
@@ -641,19 +638,23 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         }
     }
 
-    protected void parseTestProcedures(PendingCertificationResultEntity cert, int tpColumn) {
+    protected void parseTestProceduresVersions(PendingCertificationResultEntity cert, boolean hasTestProcedureNameCol, int tpColumn) {
         for (CSVRecord row : getRecord()) {
             String tpValue = row.get(tpColumn).trim();
             if (!StringUtils.isEmpty(tpValue)) {
                 PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
-                tpEntity.setTestProcedureVersion(tpValue);
-                // don't look up by name because we don't want these to be
-                // shared
-                // among certifications. they are user-entered, could be
-                // anything, and if
-                // they are shared then updating in one place could affect other
-                // places
-                // when that is not the intended behavior
+                tpEntity.setVersion(tpValue);
+                tpEntity.setTestProcedureName(null);
+                List<TestProcedureDTO> allowedTestProcedures = 
+                        testProcedureDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestProcedures != null && allowedTestProcedures.size() > 0) {
+                    for(TestProcedureDTO allowedTp : allowedTestProcedures) {
+                        if(allowedTp.getName().equalsIgnoreCase(TestProcedureDTO.DEFAULT_TEST_PROCEDURE)) {
+                            tpEntity.setTestProcedureId(allowedTp.getId());
+                        }
+                    }
+                }
+                
                 cert.getTestProcedures().add(tpEntity);
             }
         }
@@ -665,6 +666,16 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             String tdVersionValue = row.get(tdColumnBegin).trim();
             if (!StringUtils.isEmpty(tdVersionValue)) {
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
+                tdEntity.setTestDataName(null);
+                List<TestDataDTO> allowedTestData = 
+                        testDataDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestData != null && allowedTestData.size() > 0) {
+                    for(TestDataDTO allowedTd : allowedTestData) {
+                        if(allowedTd.getName().equalsIgnoreCase(TestDataDTO.DEFALUT_TEST_DATA)) {
+                            tdEntity.setTestDataId(allowedTd.getId());
+                        }
+                    }
+                }
                 tdEntity.setVersion(tdVersionValue);
                 Boolean hasAlteration = asBoolean(row.get(tdColumnBegin + 1).trim());
                 tdEntity.setHasAlteration(hasAlteration);
@@ -703,7 +714,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
             }
         }
     }
-
+    
     protected void parseG1Measures(PendingCertificationResultEntity cert, int measureCol) {
         // ignore measures for G7
         if (cert.getMappedCriterion().getNumber().equals(G1_CRITERIA_TO_IGNORE)) {
