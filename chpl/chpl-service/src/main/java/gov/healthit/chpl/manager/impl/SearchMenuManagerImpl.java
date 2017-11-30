@@ -149,7 +149,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private NotificationDAO notificationDao;
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public Set<NotificationType> getNotificationTypes() {
         List<NotificationTypeDTO> notificationTypes = notificationDao
                 .getAllNotificationTypes(Util.getCurrentUser().getPermissions());

@@ -3,6 +3,12 @@
 ## Version TBD
 _Date TBD_
 
+### Backwards compatability breaking features
+* Change ROLE_ACB_ADMIN to ROLE_ACB
+* Change ROLE_ATL_ADMIN to ROLE_ATL
+* Remove ROLE_ACB_STAFF
+* Remove ROLE_ATL_STAFF
+
 ### Minor Features
 * Added /data/test_data service to get all criteria with allowable test data
 * Added /data/test_procedure service to get all criteria with allowable test procedure

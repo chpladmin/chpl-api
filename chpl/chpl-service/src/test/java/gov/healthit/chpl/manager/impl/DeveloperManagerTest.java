@@ -75,7 +75,7 @@ public class DeveloperManagerTest extends TestCase {
 		testUser3.setId(3L);
 		testUser3.setLastName("User3");
 		testUser3.setSubjectName("testUser3");
-		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 	}
 	
 	@Test

@@ -198,7 +198,7 @@ public class UserManagerTest {
 		UserDTO before = userManager.getByName("testUser2");
 		Set<UserPermissionDTO> beforeRoles = getUserPermissions(before);
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		userManager.grantRole("testUser2", "ROLE_ACB_ADMIN");
+		userManager.grantRole("testUser2", "ROLE_ACB");
 		
 		UserDTO after = userManager.getByName("testUser2");
 		
@@ -251,7 +251,7 @@ public class UserManagerTest {
 	public void testRemoveRole() throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		userManager.grantRole("testUser2", "ROLE_ACB_ADMIN");
+		userManager.grantRole("testUser2", "ROLE_ACB");
 		
 		UserDTO after = userManager.getByName("testUser2");
 		
@@ -260,7 +260,7 @@ public class UserManagerTest {
 		
 		assertEquals(afterRoles.size(),2);
 		
-		userManager.removeRole("testUser2", "ROLE_ACB_ADMIN");
+		userManager.removeRole("testUser2", "ROLE_ACB");
 		Set<UserPermissionDTO> afterRemovedRoles = getUserPermissions(after);
 		
 		assertEquals(afterRemovedRoles.size(),1);
@@ -273,7 +273,7 @@ public class UserManagerTest {
 		
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		userManager.grantRole("testUser2", "ROLE_ACB_ADMIN");
+		userManager.grantRole("testUser2", "ROLE_ACB");
 		
 		UserDTO after = userManager.getByName("testUser2");
 		
@@ -282,7 +282,7 @@ public class UserManagerTest {
 		
 		assertEquals(afterRoles.size(),2);
 		
-		userManager.removeRole(after, "ROLE_ACB_ADMIN");
+		userManager.removeRole(after, "ROLE_ACB");
 		Set<UserPermissionDTO> afterRemovedRoles = getUserPermissions(after);
 		
 		assertEquals(afterRemovedRoles.size(),1);

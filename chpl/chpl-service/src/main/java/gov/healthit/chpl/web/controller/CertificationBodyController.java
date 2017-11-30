@@ -85,7 +85,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Get details about a specific certification body (ACB).",
-            notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+            notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB "
                     + " for the ACB with the provided ID.")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") Long acbId)
@@ -125,7 +125,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Update an existing ACB.",
-            notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB_ADMIN "
+            notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB "
                     + " to update an existing ACB.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -182,11 +182,11 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Add a user to an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the "
+            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ACB. It is recommended to pass 'ADMIN' in as the 'authority' field"
                     + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
                     + " Note that this method gives special permission on a specific ACB and is not the "
-                    + " equivalent of assigning the ROLE_ACB_ADMIN role. Please view /users/grant_role "
+                    + " equivalent of assigning the ROLE_ACB role. Please view /users/grant_role "
                     + " request for more information on that.")
     @RequestMapping(value = "/add_user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -211,7 +211,7 @@ public class CertificationBodyController {
     }
 
     @ApiOperation(value = "Remove user permissions from an ACB.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the "
+            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ACB.")
     @RequestMapping(value = "{acbId}/remove_user/{userId}", method = RequestMethod.POST,

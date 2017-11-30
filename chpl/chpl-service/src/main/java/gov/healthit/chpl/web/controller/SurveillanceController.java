@@ -169,7 +169,7 @@ public class SurveillanceController implements MessageSourceAware {
             notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system and associates them with the certified product indicated in the "
                     + "request body. The surveillance passed into this request will first be validated "
-                    + " to check for errors. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " to check for errors. " + "ROLE_ACB "
                     + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> createSurveillance(
@@ -229,7 +229,7 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Add documentation to an existing nonconformity.",
             notes = "Upload a file of any kind (current size limit 5MB) as supporting "
                     + " documentation to an existing nonconformity. The logged in user uploading the file "
-                    + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+                    + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/nonconformity/{nonconformityId}/document/create",
             method = RequestMethod.POST, produces = "application/json; charset=utf-8")
@@ -275,7 +275,7 @@ public class SurveillanceController implements MessageSourceAware {
     @ApiOperation(value = "Update a surveillance activity for a certified product.",
             notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system. The surveillance passed into this request will first be validated "
-                    + " to check for errors. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " to check for errors. " + "ROLE_ACB "
                     + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<Surveillance> updateSurveillance(
@@ -327,7 +327,7 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Delete a surveillance activity for a certified product.",
             notes = "Deletes an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
-                    + "in the system. " + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + "in the system. " + "ROLE_ACB "
                     + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/{surveillanceId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -377,7 +377,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Remove documentation from a nonconformity.",
-            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/document/{docId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -426,7 +426,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @ApiOperation(value = "Reject several pending surveillance.",
-            notes = "Marks a list of pending surveillance as deleted. ROLE_ACB_ADMIN, ROLE_ACB_STAFF "
+            notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending surveillance is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -461,7 +461,7 @@ public class SurveillanceController implements MessageSourceAware {
                     + "activity will be marked as deleted and the surveillance in this request body will "
                     + "be inserted. The surveillance passed into this request will first be validated "
                     + " to check for errors and the related pending surveillance will be removed. "
-                    + "ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + "ROLE_ACB "
                     + " and administrative authority on the ACB associated with the certified product is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -613,7 +613,7 @@ public class SurveillanceController implements MessageSourceAware {
 
     @ApiOperation(value = "Upload a file with surveillance and nonconformities for certified products.",
             notes = "Accepts a CSV file with very specific fields to create pending surveillance items. "
-                    + " The user uploading the file must have ROLE_ACB_ADMIN or ROLE_ACB_STAFF "
+                    + " The user uploading the file must have ROLE_ACB "
                     + " and administrative authority on the ACB(s) responsible for the product(s) in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults upload(@RequestParam("file") MultipartFile file)
