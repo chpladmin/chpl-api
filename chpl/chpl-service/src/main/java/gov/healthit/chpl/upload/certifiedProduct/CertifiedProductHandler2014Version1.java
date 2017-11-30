@@ -13,7 +13,9 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
+import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
@@ -196,44 +198,38 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                 String colTitle = getHeading().get(currIndex);
                 if (!StringUtils.isEmpty(colTitle)) {
                     colTitle = colTitle.trim().toUpperCase();
-                    switch (colTitle) {
-                    case "GAP":
-                        cert.setGap(asBoolean(firstRow.get(currIndex++).trim()));
-                        break;
-                    case "STANDARD TESTED AGAINST":
+                    if(colTitle.equalsIgnoreCase(getColumnIndexMap().getGapColumnLabel())) {
+                        cert.setGap(asBoolean(firstRow.get(currIndex).trim()));
+                        currIndex += getColumnIndexMap().getGapColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestStandardsColumnLabel())) {
                         parseTestStandards(pendingCertifiedProduct, cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "FUNCTIONALITY TESTED":
+                        currIndex += getColumnIndexMap().getTestStandardsColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestFunctionalityColumnLabel())) {
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "MEASURE SUCCESSFULLY TESTED FOR G1":
-                        cert.setG1Success(asBoolean(firstRow.get(currIndex++).trim()));
-                        break;
-                    case "MEASURE SUCCESSFULLY TESTED FOR G2":
-                        cert.setG2Success(asBoolean(firstRow.get(currIndex++).trim()));
-                        break;
-                    case "ADDITIONAL SOFTWARE":
+                        currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
+                        cert.setG1Success(asBoolean(firstRow.get(currIndex).trim()));
+                        currIndex += getColumnIndexMap().getG1MeasureColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
+                        cert.setG2Success(asBoolean(firstRow.get(currIndex).trim()));
+                        currIndex += getColumnIndexMap().getG2MeasureColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
                         cert.setHasAdditionalSoftware(hasAdditionalSoftware);
                         parseAdditionalSoftware(pendingCertifiedProduct, cert, currIndex);
-                        currIndex += 4;
-                        break;
-                    case "TEST TOOL NAME":
+                        currIndex += getColumnIndexMap().getAdditionalSoftwareColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestToolColumnLabel())) {
                         parseTestTools(pendingCertifiedProduct, cert, currIndex);
-                        currIndex += 2;
-                    case "TEST PROCEDURE VERSION":
+                        currIndex += getColumnIndexMap().getTestToolColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestProcedureVersionColumnLabel())) {
                         parseTestProcedures(cert, currIndex);
-                        currIndex++;
-                        break;
-                    case "TEST DATA VERSION":
+                        currIndex += getColumnIndexMap().getTestProcedureVersionColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getTestDataColumnLabel())) {
                         parseTestData(pendingCertifiedProduct, cert, currIndex);
-                        currIndex += 3;
-                        break;
-                    case "SED":
-                        cert.setSed(asBoolean(firstRow.get(currIndex++).trim()));
-                        String ucdProcessName = firstRow.get(currIndex++).trim();
+                        currIndex += getColumnIndexMap().getTestDataColumnCount();
+                    } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getUcdColumnLabel())) {
+                        cert.setSed(asBoolean(firstRow.get(currIndex).trim()));
+                        String ucdProcessName = firstRow.get(currIndex+1).trim();
                         String ucdProcessDetails = firstRow.get(currIndex++).trim();
                         if (!StringUtils.isEmpty(ucdProcessName)) {
                             PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
@@ -245,8 +241,8 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                             }
                             cert.getUcdProcesses().add(ucd);
                         }
-                        break;
-                    default:
+                        currIndex += getColumnIndexMap().getUcdColumnCount();
+                    } else {
                         pendingCertifiedProduct.getErrorMessages()
                                 .add("Invalid column title " + colTitle + " at index " + currIndex);
                         LOGGER.error("Could not handle column " + colTitle + " at index " + currIndex + ".");
@@ -348,14 +344,13 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             String tpValue = row.get(tpColumn).trim();
             if (!StringUtils.isEmpty(tpValue)) {
                 PendingCertificationResultTestProcedureEntity tpEntity = new PendingCertificationResultTestProcedureEntity();
-                tpEntity.setTestProcedureVersion(tpValue);
-                // don't look up by name because we don't want these to be
-                // shared
-                // among certifications. they are user-entered, could be
-                // anything, and if
-                // they are shared then updating in one place could affect other
-                // places
-                // when that is not the intended behavior
+                //there will only be 1 for 2014 entries
+                List<TestProcedureDTO> allowedTestProcedures = 
+                        testProcedureDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestProcedures.size() > 0) {
+                    tpEntity.setTestProcedureId(allowedTestProcedures.get(0).getId());
+                }
+                tpEntity.setVersion(tpValue);
                 cert.getTestProcedures().add(tpEntity);
             }
         }
@@ -367,6 +362,11 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             String tdVersionValue = row.get(tdColumnBegin).trim();
             if (!StringUtils.isEmpty(tdVersionValue)) {
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
+                List<TestDataDTO> allowedTestData = 
+                        testDataDao.getByCriteriaNumber(cert.getMappedCriterion().getNumber());
+                if(allowedTestData.size() > 0) {
+                    tdEntity.setTestDataId(allowedTestData.get(0).getId());
+                }
                 tdEntity.setVersion(tdVersionValue);
                 Boolean hasAlteration = asBoolean(row.get(tdColumnBegin + 1).trim());
                 tdEntity.setHasAlteration(hasAlteration);

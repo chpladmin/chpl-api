@@ -11,8 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "test_procedure_temp")
-public class TestProcedureEntity {
+@Table(name = "test_data")
+public class TestDataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

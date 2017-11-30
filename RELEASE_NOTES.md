@@ -9,6 +9,13 @@ _Date TBD_
 * Remove ROLE_ACB_STAFF
 * Remove ROLE_ATL_STAFF
 
+### Minor Features
+* Added /data/test_data service to get all criteria with allowable test data
+* Added /data/test_procedure service to get all criteria with allowable test procedure
+* Use new test data values for upload and validation of listings.
+* Use new test procedure values for upload and validation of listings.
+* Support 2015 upload template v12.
+
 ---
 
 ## Version 15.0.0

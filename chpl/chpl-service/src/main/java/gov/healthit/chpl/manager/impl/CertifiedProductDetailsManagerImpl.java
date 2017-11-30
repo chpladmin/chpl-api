@@ -336,7 +336,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                 result.setTestDataUsed(null);
             }
 
-            if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)) {
+            if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
                 List<CertificationResultTestProcedureDTO> testProcedure = certResultManager
                         .getTestProceduresForCertificationResult(certResult.getId());
                 for (CertificationResultTestProcedureDTO currResult : testProcedure) {

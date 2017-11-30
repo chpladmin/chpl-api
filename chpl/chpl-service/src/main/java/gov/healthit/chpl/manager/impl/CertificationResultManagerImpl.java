@@ -826,6 +826,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         for (CertificationResultTestData toAdd : testDataToAdd) {
             CertificationResultTestDataDTO toAddDto = new CertificationResultTestDataDTO();
             toAddDto.setCertificationResultId(certResult.getId());
+            toAddDto.setTestDataId(toAdd.getTestData().getId());
             toAddDto.setAlteration(toAdd.getAlteration());
             toAddDto.setVersion(toAdd.getVersion());
             certResultDAO.addTestDataMapping(toAddDto);
@@ -833,7 +834,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         for (CertificationResultTestDataPair toUpdate : testDataToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
+            if (!ObjectUtils.equals(toUpdate.getOrig().getTestData().getId(), toUpdate.getUpdated().getTestData().getId())
+                    || !ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
                     || !ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
                 hasChanged = true;
             }
@@ -842,6 +844,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                 CertificationResultTestDataDTO toUpdateDto = new CertificationResultTestDataDTO();
                 toUpdateDto.setId(toUpdate.getOrig().getId());
                 toUpdateDto.setCertificationResultId(certResult.getId());
+                toUpdateDto.setTestDataId(toUpdate.getUpdated().getTestData().getId());
                 toUpdateDto.setAlteration(toUpdate.getUpdated().getAlteration());
                 toUpdateDto.setVersion(toUpdate.getUpdated().getVersion());
                 certResultDAO.updateTestDataMapping(toUpdateDto);
@@ -864,28 +867,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         // figure out which test procedures to add
         if (updatedTestProcedures != null && updatedTestProcedures.size() > 0) {
-            // fill in potentially missing test procedure id
-            for (CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
-                if (updatedItem.getTestProcedureId() == null
-                        && !StringUtils.isEmpty(updatedItem.getTestProcedureVersion())) {
-                    TestProcedureDTO foundProcedure = testProcedureDAO.getByName(updatedItem.getTestProcedureVersion());
-                    if (foundProcedure == null) {
-                        TestProcedureDTO procToCreate = new TestProcedureDTO();
-                        procToCreate.setVersion(updatedItem.getTestProcedureVersion());
-                        TestProcedureDTO createdProc = testProcedureDAO.create(procToCreate);
-                        updatedItem.setTestProcedureId(createdProc.getId());
-                    } else {
-                        updatedItem.setTestProcedureId(foundProcedure.getId());
-                    }
-                }
-            }
-
             if (existingTestProcedures == null || existingTestProcedures.size() == 0) {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
                     CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
                     toAdd.setCertificationResultId(certResult.getId());
-                    toAdd.setTestProcedureId(updatedItem.getTestProcedureId());
+                    toAdd.setVersion(updatedItem.getTestProcedureVersion());
+                    toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
                     testProceduresToAdd.add(toAdd);
                 }
             } else if (existingTestProcedures.size() > 0) {
@@ -900,7 +888,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                     if (!inExistingListing) {
                         CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
                         toAdd.setCertificationResultId(certResult.getId());
-                        toAdd.setTestProcedureId(updatedItem.getTestProcedureId());
+                        toAdd.setVersion(updatedItem.getTestProcedureVersion());
+                        toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
                         testProceduresToAdd.add(toAdd);
                     }
                 }

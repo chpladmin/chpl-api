@@ -49,6 +49,7 @@ import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
@@ -124,6 +125,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
@@ -197,6 +199,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     TestStandardDAO testStandardDao;
     @Autowired
     TestProcedureDAO testProcDao;
+    @Autowired
+    TestDataDAO testDataDao;
     @Autowired
     TestFunctionalityDAO testFuncDao;
     @Autowired
@@ -654,7 +658,24 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             testDto.setAlteration(testData.getAlteration());
                             testDto.setVersion(testData.getVersion());
                             testDto.setCertificationResultId(createdCert.getId());
-                            certDao.addTestDataMapping(testDto);
+                            if(testData.getTestDataId() != null) {
+                                testDto.setTestDataId(testData.getTestDataId());
+                                testDto.setTestData(testData.getTestData());
+                                certDao.addTestDataMapping(testDto);
+                            } else if(testData.getTestData() != null) {
+                                TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(
+                                        certResult.getNumber(), testData.getTestData().getName());
+                                if(foundTestData == null) {
+                                    LOGGER.error("Could not find test data for " + certResult.getNumber() + 
+                                            " and test data name " + testData.getTestData().getName());
+                                } else {
+                                    testDto.setTestData(foundTestData);
+                                    testDto.setTestDataId(foundTestData.getId());
+                                    certDao.addTestDataMapping(testDto);
+                                }
+                            } else {
+                                LOGGER.error("No valid test data was supplied.");
+                            }
                         }
                     }
 
@@ -688,17 +709,30 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
                         for (PendingCertificationResultTestProcedureDTO proc : certResult.getTestProcedures()) {
                             CertificationResultTestProcedureDTO procDto = new CertificationResultTestProcedureDTO();
-                            if (proc.getTestProcedureId() == null) {
-                                TestProcedureDTO tp = new TestProcedureDTO();
-                                tp.setVersion(proc.getVersion());
-                                tp = testProcDao.create(tp);
-                                procDto.setTestProcedureId(tp.getId());
-                            } else {
-                                procDto.setTestProcedureId(proc.getTestProcedureId());
-                            }
-                            procDto.setTestProcedureVersion(proc.getVersion());
+                            procDto.setVersion(proc.getVersion());
                             procDto.setCertificationResultId(createdCert.getId());
-                            certDao.addTestProcedureMapping(procDto);
+
+                            if(proc.getTestProcedureId() != null) {
+                                procDto.setTestProcedureId(proc.getTestProcedureId());
+                                procDto.setTestProcedure(proc.getTestProcedure());
+                                certDao.addTestProcedureMapping(procDto);
+                            } else if(proc.getTestProcedure() != null){
+                                // check again for a matching test procedure because
+                                // the user could have edited it since upload
+                                TestProcedureDTO foundTp = 
+                                        testProcDao.getByCriteriaNumberAndValue(certResult.getNumber(), 
+                                                proc.getTestProcedure().getName());
+                                if(foundTp == null) {
+                                    LOGGER.error("Could not find test procedure for " + certResult.getNumber() + 
+                                            " and test procedure name " + proc.getTestProcedure().getName());
+                                } else {
+                                    procDto.setTestProcedure(foundTp);
+                                    procDto.setTestProcedureId(foundTp.getId());
+                                    certDao.addTestProcedureMapping(procDto);
+                                }
+                            } else {
+                                LOGGER.error("No valid test procedure was supplied.");
+                            }
                         }
                     }
 

@@ -249,7 +249,7 @@ public class PendingCertifiedProductDAOImpl extends BaseDAOImpl implements Pendi
                     } catch (Exception ex) {
                         String msg = String.format(messageSource.getMessage(
                                 new DefaultMessageSourceResolvable("listing.criteria.badTestProcedure"),
-                                LocaleContextHolder.getLocale()), tpEntity.getTestProcedureVersion());
+                                LocaleContextHolder.getLocale()), tpEntity.getVersion());
                         LOGGER.error(msg, ex);
                         throw new EntityCreationException(msg);
                     }

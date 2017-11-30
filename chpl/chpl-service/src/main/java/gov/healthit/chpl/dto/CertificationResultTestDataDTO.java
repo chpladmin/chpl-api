@@ -8,6 +8,8 @@ public class CertificationResultTestDataDTO implements Serializable {
     private static final long serialVersionUID = -8409772564902652781L;
     private Long id;
     private Long certificationResultId;
+    private Long testDataId;
+    private TestDataDTO testData;
     private String version;
     private String alteration;
 
@@ -17,6 +19,10 @@ public class CertificationResultTestDataDTO implements Serializable {
     public CertificationResultTestDataDTO(CertificationResultTestDataEntity entity) {
         this.id = entity.getId();
         this.certificationResultId = entity.getCertificationResultId();
+        this.testDataId = entity.getTestDataId();
+        if(entity.getTestData() != null) {
+            this.testData = new TestDataDTO(entity.getTestData());
+        }
         this.version = entity.getTestDataVersion();
         this.alteration = entity.getAlterationDescription();
     }
@@ -51,6 +57,22 @@ public class CertificationResultTestDataDTO implements Serializable {
 
     public void setAlteration(final String alteration) {
         this.alteration = alteration;
+    }
+
+    public Long getTestDataId() {
+        return testDataId;
+    }
+
+    public void setTestDataId(Long testDataId) {
+        this.testDataId = testDataId;
+    }
+
+    public TestDataDTO getTestData() {
+        return testData;
+    }
+
+    public void setTestData(TestDataDTO testData) {
+        this.testData = testData;
     }
 
 }

@@ -904,7 +904,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     }
     
                     if (!gapEligibleAndTrue
-                            && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)
+                            && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                             && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
                         product.getErrorMessages()
                                 .add("Test Procedures are required for certification " + cert.getNumber() + ".");

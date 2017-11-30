@@ -304,7 +304,7 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
                 if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
                     certResult.setTestData(null);
                 }
-                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE_VERSION)) {
+                if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
                     certResult.setTestProcedures(null);
                 }
                 if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {

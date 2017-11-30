@@ -51,7 +51,9 @@ import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
+import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -1501,6 +1503,9 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
 				CertificationResultTestData tdToAdd = new CertificationResultTestData();
+				TestData testData = new TestData();
+                testData.setId(1L);
+                tdToAdd.setTestData(testData);
 				tdToAdd.setAlteration("altered");
 				tdToAdd.setVersion("1.0.0");
 				cert.getTestDataUsed().add(tdToAdd);
@@ -1518,6 +1523,9 @@ public class CertifiedProductManagerTest extends TestCase {
 				foundCert = true;
 				assertEquals(1, cert.getTestDataUsed().size());
 				CertificationResultTestData added = cert.getTestDataUsed().get(0);
+				assertNotNull(added.getTestData());
+				assertNotNull(added.getTestData().getId());
+				assertEquals(1, added.getTestData().getId().longValue());
 				assertEquals("altered", added.getAlteration());
 				assertEquals("1.0.0", added.getVersion());
 			}
@@ -1542,6 +1550,9 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
 				CertificationResultTestData tdToAdd = new CertificationResultTestData();
+				TestData testData = new TestData();
+                testData.setId(1L);
+                tdToAdd.setTestData(testData);
 				tdToAdd.setAlteration("altered");
 				tdToAdd.setVersion("1.0.0");
 				cert.getTestDataUsed().add(tdToAdd);
@@ -1595,6 +1606,9 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
 				CertificationResultTestData tdToAdd = new CertificationResultTestData();
+				TestData testData = new TestData();
+				testData.setId(1L);
+				tdToAdd.setTestData(testData);
 				tdToAdd.setAlteration("altered");
 				tdToAdd.setVersion("1.0.0");
 				cert.getTestDataUsed().add(tdToAdd);
@@ -1649,6 +1663,9 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
 				CertificationResultTestProcedure procToAdd = new CertificationResultTestProcedure();
+				TestProcedure testProcedure = new TestProcedure();
+				testProcedure.setId(1L);
+				procToAdd.setTestProcedure(testProcedure);
 				procToAdd.setTestProcedureVersion("1.1.1");
 				cert.getTestProcedures().add(procToAdd);
 			}
@@ -1665,7 +1682,9 @@ public class CertifiedProductManagerTest extends TestCase {
 				foundCert = true;
 				assertEquals(1, cert.getTestProcedures().size());
 				CertificationResultTestProcedure added = cert.getTestProcedures().get(0);
-				assertNotNull(added.getTestProcedureId());
+				assertNotNull(added.getTestProcedure());
+				assertNotNull(added.getTestProcedure().getId());
+				assertEquals(1, added.getTestProcedure().getId().longValue());
 				assertEquals("1.1.1", added.getTestProcedureVersion());
 			}
 		}
@@ -1689,6 +1708,9 @@ public class CertifiedProductManagerTest extends TestCase {
 		for(CertificationResult cert : toUpdateListing.getCertificationResults()) {
 			if(cert.getId().longValue() == certIdToUpdate.longValue()) {
 				CertificationResultTestProcedure procToAdd = new CertificationResultTestProcedure();
+				TestProcedure testProcedure = new TestProcedure();
+                testProcedure.setId(1L);
+                procToAdd.setTestProcedure(testProcedure);
 				procToAdd.setTestProcedureVersion("1.1.1");
 				cert.getTestProcedures().add(procToAdd);
 			}

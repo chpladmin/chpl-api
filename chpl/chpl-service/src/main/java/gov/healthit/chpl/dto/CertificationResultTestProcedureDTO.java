@@ -9,7 +9,8 @@ public class CertificationResultTestProcedureDTO implements Serializable {
     private Long id;
     private Long certificationResultId;
     private Long testProcedureId;
-    private String testProcedureVersion;
+    private TestProcedureDTO testProcedure;
+    private String version;
     private Boolean deleted;
 
     public CertificationResultTestProcedureDTO() {
@@ -20,8 +21,9 @@ public class CertificationResultTestProcedureDTO implements Serializable {
         this.certificationResultId = entity.getCertificationResultId();
         this.testProcedureId = entity.getTestProcedureId();
         if (entity.getTestProcedure() != null) {
-            this.testProcedureVersion = entity.getTestProcedure().getVersion();
+            this.testProcedure = new TestProcedureDTO(entity.getTestProcedure());
         }
+        this.version = entity.getVersion();
         this.deleted = entity.getDeleted();
     }
 
@@ -57,12 +59,19 @@ public class CertificationResultTestProcedureDTO implements Serializable {
         this.testProcedureId = testProcedureId;
     }
 
-    public String getTestProcedureVersion() {
-        return testProcedureVersion;
+    public TestProcedureDTO getTestProcedure() {
+        return testProcedure;
     }
 
-    public void setTestProcedureVersion(final String testProcedureVersion) {
-        this.testProcedureVersion = testProcedureVersion;
+    public void setTestProcedure(TestProcedureDTO testProcedure) {
+        this.testProcedure = testProcedure;
     }
 
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
 }
