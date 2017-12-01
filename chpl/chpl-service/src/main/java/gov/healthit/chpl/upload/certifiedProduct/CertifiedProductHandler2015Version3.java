@@ -45,6 +45,9 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
             String tpName = TestProcedureDTO.DEFAULT_TEST_PROCEDURE;
             if(hasTestProcedureNameCol) {
                 tpName = row.get(tpColumn-1).trim();
+                if(StringUtils.isEmpty(tpName)) {
+                    tpName = TestProcedureDTO.DEFAULT_TEST_PROCEDURE;
+                }
             }
             String tpVersion = row.get(tpColumn).trim();
             if (!StringUtils.isEmpty(tpVersion)) {
@@ -73,7 +76,10 @@ public class CertifiedProductHandler2015Version3 extends CertifiedProductHandler
             String tdVersion = row.get(tdColumnBegin+1).trim();
             String tdHasAlteration = row.get(tdColumnBegin + 2).trim();
             String tdAlteration = row.get(tdColumnBegin + 3).trim();
-            if (!StringUtils.isEmpty(tdName)) {
+            if(StringUtils.isEmpty(tdName)) {
+                tdName = TestDataDTO.DEFALUT_TEST_DATA;
+            }
+            if (!StringUtils.isEmpty(tdVersion) || !StringUtils.isEmpty(tdAlteration)) {
                 PendingCertificationResultTestDataEntity tdEntity = new PendingCertificationResultTestDataEntity();
                 tdEntity.setTestDataName(tdName);
                 List<TestDataDTO> allowedTestData = 
