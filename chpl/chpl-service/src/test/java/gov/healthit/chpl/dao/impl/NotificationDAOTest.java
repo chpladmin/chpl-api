@@ -74,14 +74,14 @@ public class NotificationDAOTest extends TestCase {
 		testUser3.setId(3L);
 		testUser3.setLastName("User3");
 		testUser3.setSubjectName("testUser3");
-		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		atlUser = new JWTAuthenticatedUser();
 		atlUser.setFirstName("ATL");
 		atlUser.setId(3L);
 		atlUser.setLastName("User");
 		atlUser.setSubjectName("atlUser");
-		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL_ADMIN"));
+		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
 	}
 	
 	@Test
@@ -106,7 +106,7 @@ public class NotificationDAOTest extends TestCase {
 		for(NotificationTypeDTO type : types) {
 			boolean hasAcbPermission = false;
 			for(UserPermissionDTO typePermission : type.getPermissions()) {
-				if(typePermission.getAuthority().equals(Authority.ROLE_ACB_ADMIN)) {
+				if(typePermission.getAuthority().equals(Authority.ROLE_ACB)) {
 					hasAcbPermission = true;
 				}
 			}

@@ -82,14 +82,14 @@ public class ProductManagerTest extends TestCase {
 		testUser2.setId(2L);
 		testUser2.setLastName("User2");
 		testUser2.setSubjectName("testUser2");
-		testUser2.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		testUser2.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		testUser3 = new JWTAuthenticatedUser();
 		testUser3.setFirstName("Test");
 		testUser3.setId(3L);
 		testUser3.setLastName("User3");
 		testUser3.setSubjectName("testUser3");
-		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 	}
 	
 	@Test

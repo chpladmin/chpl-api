@@ -105,14 +105,14 @@ public class SurveillanceControllerTest {
 		acbAdmin.setId(3L);
 		acbAdmin.setLastName("User");
 		acbAdmin.setSubjectName("acbAdminUser");
-		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
+		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
 		
 		acbAdmin2 = new JWTAuthenticatedUser();
 		acbAdmin2.setFirstName("acbAdmin2");
 		acbAdmin2.setId(1L);
 		acbAdmin2.setLastName("User");
 		acbAdmin2.setSubjectName("acbAdmin2");
-		acbAdmin2.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
+		acbAdmin2.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
 		
 		oncAdmin = new JWTAuthenticatedUser();
 		oncAdmin.setFirstName("oncAdmin");
@@ -127,7 +127,7 @@ public class SurveillanceControllerTest {
 		oncAndAcb.setLastName("User");
 		oncAndAcb.setSubjectName("oncAndAcbUser");
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
-		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_ADMIN));
+		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
 		
 		oncAndAcbStaff = new JWTAuthenticatedUser();
 		oncAndAcbStaff.setFirstName("oncAndAcbStaff");
@@ -135,7 +135,6 @@ public class SurveillanceControllerTest {
 		oncAndAcbStaff.setLastName("User");
 		oncAndAcbStaff.setSubjectName("oncAndAcbStaffUser");
 		oncAndAcbStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
-		oncAndAcbStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB_STAFF));
 	}
 	
 	/** 1. 
@@ -268,10 +267,10 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 3. 
-	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB_ADMIN
+	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB
 	 * Given I have authority on the ACB
-	 * When I create a surveillance and pass in ROLE_ACB_ADMIN authority to the API
-	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_ACB_ADMIN
+	 * When I create a surveillance and pass in ROLE_ACB authority to the API
+	 * Then openchpl.surveillance.user_permission_id matches the surveillance authority of ROLE_ACB
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
@@ -298,7 +297,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -321,7 +320,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -332,7 +331,7 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 4. 
-	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB_ADMIN
+	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB
 	 * Given I have authority on the ACB
 	 * When I create a surveillance and pass in null authority to the API
 	 * Then the validator adds an error
@@ -384,7 +383,7 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 5. 
-	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I am authenticated as ROLE_ACB
 	 * Given I have authority on the ACB
 	 * When I create a surveillance and pass in ROLE_ADMIN authority to the API (or any role that <> user's role)
 	 * Then the validator adds an error
@@ -439,7 +438,7 @@ public class SurveillanceControllerTest {
 	 * Given I am authenticated as only ROLE_ADMIN
 	 * Given I have authority on the ACB
 	 * When I create a surveillance and pass in "foobar" authority to the API
-	 * Then the validator adds an error that the surveillance authority must be ROLE_ADMIN or ROLE_ACB_ADMIN
+	 * Then the validator adds an error that the surveillance authority must be ROLE_ADMIN or ROLE_ACB
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
@@ -490,7 +489,7 @@ public class SurveillanceControllerTest {
 	/** 7. 
 	 * Given I am authenticated as ROLE_ADMIN
 	 * Given I have authority on the ACB
-	 * When I update a surveillance with authority ROLE_ACB_ADMIN
+	 * When I update a surveillance with authority ROLE_ACB
 	 * Then I am allowed to edit it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -518,7 +517,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -541,7 +540,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -616,7 +615,7 @@ public class SurveillanceControllerTest {
 	
 	
 	/** 9.
-	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I am authenticated as ROLE_ACB
 	 * Given I have authority on the ACB
 	 * When I update a surveillance with authority ROLE_ADMIN
 	 * Then I am NOT allowed to edit it
@@ -667,9 +666,9 @@ public class SurveillanceControllerTest {
 	}
 	
 	/** 10. 
-	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I am authenticated as ROLE_ACB
 	 * Given I have authority on the ACB
-	 * When I update a surveillance with authority ROLE_ACB_ADMIN
+	 * When I update a surveillance with authority ROLE_ACB
 	 * Then I am allowed to edit it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -697,7 +696,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -720,7 +719,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -733,7 +732,7 @@ public class SurveillanceControllerTest {
 	/** 11. 
 	 * Given I am authenticated as ROLE_ADMIN
 	 * Given I have authority on the ACB
-	 * When I delete a surveillance that was created by ROLE_ACB_ADMIN
+	 * When I delete a surveillance that was created by ROLE_ACB
 	 * Then I am allowed to delete it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -761,7 +760,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -784,7 +783,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -876,7 +875,7 @@ public class SurveillanceControllerTest {
 	}
 	
 	/** 13. 
-	 * 	Given I am authenticated as ROLE_ACB_ADMIN
+	 * 	Given I am authenticated as ROLE_ACB
 	 * Given I have authority on the ACB
 	 * When I delete a surveillance that was created by ROLE_ADMIN
 	 * Then I am NOT allowed to delete it
@@ -952,9 +951,9 @@ public class SurveillanceControllerTest {
 	
 
 	/** 14. 
-	 * Given I am authenticated as ROLE_ACB_ADMIN
+	 * Given I am authenticated as ROLE_ACB
 	 * Given I have authority on the ACB
-	 * When I delete a surveillance that was created by ROLE_ACB_ADMIN
+	 * When I delete a surveillance that was created by ROLE_ACB
 	 * Then I am allowed to delete it
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
@@ -982,7 +981,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1005,7 +1004,7 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_ADMIN);
+			assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -1026,10 +1025,10 @@ public class SurveillanceControllerTest {
 	}
 	
 	/** 15. 
-	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB_STAFF
+	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB
 	 * Given I have authority on the ACB
 	 * When I create a surveillance and pass in null authority to the API
-	 * Then the surveillance authority is set to ROLE_ACB_STAFF
+	 * Then the surveillance authority is set to ROLE_ACB
 	 * @throws ValidationException 
 	 * @throws EntityRetrievalException
 	 * @throws JsonProcessingException
@@ -1079,7 +1078,6 @@ public class SurveillanceControllerTest {
 			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
 			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
 			assertEquals(surv.getAuthority(), got.getAuthority());
-			assertEquals(surv.getAuthority(), Authority.ROLE_ACB_STAFF);
 		} catch (Exception e) {
 			System.out.println(e.getClass() + ": " + e.getMessage());
 		}
@@ -1123,7 +1121,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1185,7 +1183,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1248,7 +1246,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1310,7 +1308,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1372,7 +1370,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1438,7 +1436,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1501,7 +1499,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1563,7 +1561,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1625,7 +1623,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1691,7 +1689,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1754,7 +1752,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -1816,7 +1814,7 @@ public class SurveillanceControllerTest {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");

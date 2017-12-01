@@ -77,21 +77,21 @@ public class NotificationManagerTest extends TestCase {
 		acbUser.setId(3L);
 		acbUser.setLastName("User3");
 		acbUser.setSubjectName("testUser3");
-		acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		acbUser2 = new JWTAuthenticatedUser();
 		acbUser2.setFirstName("Test");
 		acbUser2.setId(3L);
 		acbUser2.setLastName("User");
 		acbUser2.setSubjectName("TESTUSER");
-		acbUser2.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		acbUser2.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		atlUser = new JWTAuthenticatedUser();
 		atlUser.setFirstName("ATL");
 		atlUser.setId(3L);
 		atlUser.setLastName("User");
 		atlUser.setSubjectName("atlUser");
-		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL_ADMIN"));
+		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
 	}
 	
 	@Before

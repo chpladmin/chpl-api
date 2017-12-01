@@ -1494,7 +1494,7 @@
 		deleted="FALSE" />
 	<global_user_permission_map
 		global_user_permission_id="2" user_id="1"
-		user_permission_id_user_permission="3" creation_date="2015-08-26 12:43:00.015"
+		user_permission_id_user_permission="2" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
 	<global_user_permission_map
@@ -1504,12 +1504,12 @@
 		deleted="FALSE" />
 	<global_user_permission_map
 		global_user_permission_id="4" user_id="3"
-		user_permission_id_user_permission="3" creation_date="2015-08-26 12:43:00.015"
+		user_permission_id_user_permission="2" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
 	<global_user_permission_map
-		global_user_permission_id="5" user_id="4"
-		user_permission_id_user_permission="5" creation_date="2015-08-26 12:43:00.015"
+		global_user_permission_id="6" user_id="4"
+		user_permission_id_user_permission="4" creation_date="2015-08-26 12:43:00.015"
 		last_modified_date="2015-08-26 12:43:00.015" last_modified_user="-1"
 		deleted="FALSE" />
 	<global_user_permission_map

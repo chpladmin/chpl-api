@@ -69,7 +69,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
     public List<DeveloperDTO> getAllIncludingDeleted() {
         List<DeveloperDTO> allDevelopers = developerDao.findAllIncludingDeleted();
@@ -113,7 +113,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return developerDao.getAllDevelopersWithTransparencies();
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
@@ -150,12 +150,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 && newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-            LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN but may "
+            LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB but may "
                     + "have tried to change status history for the developer " + beforeDev.getName() + " to include "
                     + DeveloperStatusType.UnderCertificationBanByOnc.toString());
             throw new EntityCreationException("User cannot change developer status to "
                     + DeveloperStatusType.UnderCertificationBanByOnc.toString()
-                    + " without ROLE_ADMIN or ROLE_ACB_ADMIN.");
+                    + " without ROLE_ADMIN or ROLE_ACB.");
         } else if (devStatusHistoryUpdated && !newDevStatus.getStatus().getStatusName()
                 .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && !Util.isUserRoleAdmin()) {
             LOGGER.error("User " + Util.getUsername()
@@ -166,7 +166,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         }
 
         // determine if the status has been changed
-        // in most cases only allowed by ROLE_ADMIN but ROLE_ACB_ADMIN
+        // in most cases only allowed by ROLE_ADMIN but ROLE_ACB
         // can change it to UnderCertificationBanByOnc
         boolean currentStatusChanged = !currDevStatus.getStatus().getStatusName()
                 .equals(newDevStatus.getStatus().getStatusName());
@@ -174,12 +174,12 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 && newDevStatus.getStatus().getStatusName()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                 && !(Util.isUserRoleAdmin() || Util.isUserRoleAcbAdmin())) {
-            LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB_ADMIN but may "
+            LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN or ROLE_ACB but may "
                     + "have tried to change status for the developer " + beforeDev.getName() + " to include "
                     + DeveloperStatusType.UnderCertificationBanByOnc.toString());
             throw new EntityCreationException("User cannot change developer status to "
                     + DeveloperStatusType.UnderCertificationBanByOnc.toString()
-                    + " without ROLE_ADMIN or ROLE_ACB_ADMIN.");
+                    + " without ROLE_ADMIN or ROLE_ACB.");
         } else if (currentStatusChanged && !newDevStatus.getStatus().getStatusName()
                 .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString()) && !Util.isUserRoleAdmin()) {
             LOGGER.error("User " + Util.getUsername() + " does not have ROLE_ADMIN and cannot change developer "
@@ -238,7 +238,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return after;
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,

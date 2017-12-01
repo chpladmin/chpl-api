@@ -774,7 +774,7 @@ public class SearchViewController {
     }
     
     @Secured({
-            Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN
+            Authority.ROLE_ADMIN, Authority.ROLE_ACB
     })
     @ApiOperation(value = "Get all possible types of jobs that can be created in the system.")
     @RequestMapping(value = "/data/job_types", method = RequestMethod.GET,
@@ -784,7 +784,7 @@ public class SearchViewController {
     }
 
     @Secured({
-            Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN
+            Authority.ROLE_ADMIN, Authority.ROLE_ACB
     })
     @ApiOperation(value = "Get all possible types of notifications that a user can sign up for.")
     @RequestMapping(value = "/data/notification_types", method = RequestMethod.GET,

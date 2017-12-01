@@ -311,8 +311,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Give additional roles to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
-                    + "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
+            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
+                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/grant_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
@@ -348,8 +348,8 @@ public class UserManagementController {
     }
 
     @ApiOperation(value = "Remove roles previously granted to a user.",
-            notes = "Users may be given ROLE_ADMIN, ROLE_ACB_ADMIN, ROLE_ACB_STAFF, "
-                    + "ROLE_ATL_ADMIN, ROLE_ATL_STAFF, or ROLE_ONC_STAFF roles within the system.")
+            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
+                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/revoke_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
@@ -369,7 +369,7 @@ public class UserManagementController {
             } catch (final AccessDeniedException adEx) {
                 LOGGER.error("User " + Util.getUsername() + " does not have access to revoke ROLE_ADMIN");
             }
-        } else if (grantRoleObj.getRole().equals(Authority.ROLE_ACB_ADMIN)) {
+        } else if (grantRoleObj.getRole().equals(Authority.ROLE_ACB)) {
             try {
                 userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
 
@@ -425,7 +425,7 @@ public class UserManagementController {
 
     @ApiOperation(value = "View a specific user's details.",
             notes = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB_ADMIN.")
+                    + "have ROLE_ACB.")
     @RequestMapping(value = "/{userName}/details", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody UserInfoJSONObject getUser(@PathVariable("userName") String userName)

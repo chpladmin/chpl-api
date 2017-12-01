@@ -111,7 +111,7 @@ public class CertifiedProductControllerTest {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 	}
 	
 	public MultipartFile getUploadFile(String edition, String version){
@@ -152,7 +152,7 @@ public class CertifiedProductControllerTest {
 	 * 
 	 * 1. 2015 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
 	 * Given that a user with sufficient privileges edits/updates an existing Certified Product 
-	 * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the ACB that certified the product. 
+	 * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the ACB that certified the product. 
 	 * If a different ACB is passed in as part of the request, an ownership change will take place and the logged in user must have ROLE_ADMIN)
 	 * When the UI calls the API at /certified_products/update
 	 * When the user tries to update a 2015 Certified Product with the following:
@@ -331,7 +331,7 @@ public class CertifiedProductControllerTest {
 	 * 
 	 * 1. 2015 Certification Edition + false Certification Status + true ICS = returns error (no mismatch)
 	 * Given that a user with sufficient privileges edits/updates an existing Certified Product 
-	 * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and have administrative authority on the ACB that certified the product. 
+	 * (Note: the logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the ACB that certified the product. 
 	 * If a different ACB is passed in as part of the request, an ownership change will take place and the logged in user must have ROLE_ADMIN)
 	 * When the UI calls the API at /certified_products/update
 	 * When the user tries to update a 2015 Certified Product with the following:
