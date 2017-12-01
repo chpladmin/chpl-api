@@ -14,7 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "test_procedure_criteria_map_temp")
+@Table(name = "test_procedure_criteria_map")
 public class TestProcedureCriteriaMapEntity {
 
     @Id
