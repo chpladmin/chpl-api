@@ -730,9 +730,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
-                        if (crTestProc.getTestProcedure() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber() +
-                                    " must provide a test procedure.");
+                        if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
+                            product.getErrorMessages().add("Certification " + cert.getNumber()
+                                + " contains an invalid test procedure name: '" + crTestProc.getEnteredName() + "'.");
                         } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc = 
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
@@ -749,9 +749,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
                         && cert.getTestData() != null && cert.getTestData().size() > 0) {
                     for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
-                        if (crTestData.getTestData() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber() +
-                                    " must provide a test data.");
+                        if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
+                            product.getErrorMessages().add("Certification " + cert.getNumber()
+                                + " contains an invalid test data name: '" + crTestData.getEnteredName() + "'.");
                         } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
