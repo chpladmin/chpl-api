@@ -743,6 +743,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
                         }
+                        
+                        if(!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
+                            product.getErrorMessages().add("Test procedure version is required for "
+                                    + "certification " + cert.getNumber());
+                        }
                     }
                 }
                 
@@ -761,6 +766,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }
+                        }
+                        
+                        if(!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
+                            product.getErrorMessages().add("Test data version is required for "
+                                    + "certification " + cert.getNumber());
                         }
                     }
                 }
