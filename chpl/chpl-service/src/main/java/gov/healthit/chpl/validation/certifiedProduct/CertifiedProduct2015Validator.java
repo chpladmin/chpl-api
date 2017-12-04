@@ -29,6 +29,7 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
@@ -755,14 +756,22 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestData() != null && cert.getTestData().size() > 0) {
                     for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
                         if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test data name: '" + crTestData.getEnteredName() + "'.");
+                            product.getWarningMessages().add("Test data '" + crTestData.getEnteredName() + 
+                                    "' is invalid for certification " + cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
+                                    " will be used instead.");
+                            TestDataDTO foundTestData = 
+                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                            crTestData.setTestData(foundTestData);
                         } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
                             if(foundTestData == null || foundTestData.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test data name: '" + crTestData.getTestData().getName() + "'.");
+                                product.getWarningMessages().add("Test data '" + crTestData.getTestData().getName() + 
+                                        "' is invalid for certification " + cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
+                                        " will be used instead.");
+                                foundTestData = 
+                                        testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                                crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }
@@ -1433,10 +1442,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (CertificationResultTestProcedure crTestProc : cert.getTestProcedures()) {
-                        if (crTestProc.getTestProcedure() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber() +
-                                    " must provide a test procedure.");
-                        } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
+                        if(crTestProc.getTestProcedure() == null) {
+                            product.getErrorMessages().add("Certification " + cert.getNumber()
+                            + " is missing a required test procedure.");
+                        } if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc = 
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
@@ -1446,6 +1455,13 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
                         }
+                        
+                        if(crTestProc.getTestProcedure() != null && 
+                                !StringUtils.isEmpty(crTestProc.getTestProcedure().getName()) && 
+                                StringUtils.isEmpty(crTestProc.getTestProcedureVersion())) {
+                            product.getErrorMessages().add("Test procedure version is required for "
+                                    + "certification " + cert.getNumber());
+                        }
                     }
                 }
                 
@@ -1453,17 +1469,33 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {
                         if (crTestData.getTestData() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber() +
-                                    " must provide a test data.");
+                            product.getWarningMessages().add("Test data was not provided for certification " + 
+                                    cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
+                                    " will be used.");
+                            TestDataDTO foundTestData = 
+                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                            TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
+                            crTestData.setTestData(foundTestDataDomain);
                         } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
                             if(foundTestData == null || foundTestData.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test data name: '" + crTestData.getTestData().getName() + "'.");
+                                product.getWarningMessages().add("Test data '" + crTestData.getTestData().getName() + 
+                                        "' is invalid for certification " + cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
+                                        " will be used instead.");
+                                foundTestData = 
+                                        testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                                crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }
+                        }
+                        
+                        if(crTestData.getTestData() != null && 
+                                !StringUtils.isEmpty(crTestData.getTestData().getName()) && 
+                                StringUtils.isEmpty(crTestData.getVersion())) {
+                            product.getErrorMessages().add("Test data version is required for "
+                                    + "certification " + cert.getNumber());
                         }
                     }
                 }
