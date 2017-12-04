@@ -10,6 +10,9 @@ _Date TBD_
 * Use new test procedure values for upload and validation of listings.
 * Support 2015 upload template v12.
 
+### Bugs Fixed
+* Surveillance upload fixed to match on criteria number without space between number and letters.
+
 ---
 
 ## Version 15.0.0
