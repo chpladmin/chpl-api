@@ -638,13 +638,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     if (certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
                         for (PendingCertificationResultUcdProcessDTO ucd : certResult.getUcdProcesses()) {
                             CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
-                            if (ucd.getUcdProcessId() == null) {
-                                UcdProcessDTO newUcd = new UcdProcessDTO();
-                                newUcd.setName(ucd.getUcdProcessName());
-                                newUcd = ucdDao.create(newUcd);
-                                ucdDto.setUcdProcessId(newUcd.getId());
-                            } else {
+                            if (ucd.getUcdProcessId() != null) {
                                 ucdDto.setUcdProcessId(ucd.getUcdProcessId());
+                            } else {
+                                UcdProcessDTO foundUcd = ucdDao.getByName(ucd.getUcdProcessName());
+                                if(foundUcd != null && foundUcd.getId() != null) {
+                                    ucdDto.setUcdProcessId(foundUcd.getId());
+                                } else {
+                                    UcdProcessDTO newUcd = new UcdProcessDTO();
+                                    newUcd.setName(ucd.getUcdProcessName());
+                                    newUcd = ucdDao.create(newUcd);
+                                    ucdDto.setUcdProcessId(newUcd.getId());
+                                }
                             }
                             ucdDto.setCertificationResultId(createdCert.getId());
                             ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
