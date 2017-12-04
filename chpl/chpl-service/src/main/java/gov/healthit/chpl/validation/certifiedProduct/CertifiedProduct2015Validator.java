@@ -732,22 +732,31 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
                         if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test procedure name: '" + crTestProc.getEnteredName() + "'.");
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.badTestProcedureName"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getEnteredName()));
                         } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc = 
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test procedure name: '" + crTestProc.getTestProcedure().getName() + "'.");
+                                product.getErrorMessages().add(
+                                        String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestProcedureName"),
+                                        LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getTestProcedure().getName()));
                             } else {
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
                         }
                         
                         if(!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
-                            product.getErrorMessages().add("Test procedure version is required for "
-                                    + "certification " + cert.getNumber());
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestProcedureVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }
@@ -756,9 +765,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestData() != null && cert.getTestData().size() > 0) {
                     for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
                         if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
-                            product.getWarningMessages().add("Test data '" + crTestData.getEnteredName() + 
-                                    "' is invalid for certification " + cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
-                                    " will be used instead.");
+                            product.getWarningMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.badTestDataName"),
+                                    LocaleContextHolder.getLocale()), crTestData.getEnteredName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
                             crTestData.setTestData(foundTestData);
@@ -766,9 +777,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
                             if(foundTestData == null || foundTestData.getId() == null) {
-                                product.getWarningMessages().add("Test data '" + crTestData.getTestData().getName() + 
-                                        "' is invalid for certification " + cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
-                                        " will be used instead.");
+                                product.getWarningMessages().add(
+                                        String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestDataName"),
+                                        LocaleContextHolder.getLocale()), crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
                                 foundTestData = 
                                         testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());
@@ -778,8 +791,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         }
                         
                         if(!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
-                            product.getErrorMessages().add("Test data version is required for "
-                                    + "certification " + cert.getNumber());
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestDataVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }
@@ -1443,14 +1459,20 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (CertificationResultTestProcedure crTestProc : cert.getTestProcedures()) {
                         if(crTestProc.getTestProcedure() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber()
-                            + " is missing a required test procedure.");
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestProcedureName"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         } if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc = 
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test procedure name: '" + crTestProc.getTestProcedure().getName() + "'.");
+                                product.getErrorMessages().add(
+                                        String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestProcedureName"),
+                                        LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getTestProcedure().getName()));
                             } else {
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
@@ -1459,8 +1481,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         if(crTestProc.getTestProcedure() != null && 
                                 !StringUtils.isEmpty(crTestProc.getTestProcedure().getName()) && 
                                 StringUtils.isEmpty(crTestProc.getTestProcedureVersion())) {
-                            product.getErrorMessages().add("Test procedure version is required for "
-                                    + "certification " + cert.getNumber());
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestProcedureVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }
@@ -1469,9 +1494,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {
                         if (crTestData.getTestData() == null) {
-                            product.getWarningMessages().add("Test data was not provided for certification " + 
-                                    cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
-                                    " will be used.");
+                            product.getWarningMessages().add(String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestDataName"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
                             TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
@@ -1480,9 +1506,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
                             if(foundTestData == null || foundTestData.getId() == null) {
-                                product.getWarningMessages().add("Test data '" + crTestData.getTestData().getName() + 
-                                        "' is invalid for certification " + cert.getNumber() + ". " + TestDataDTO.DEFALUT_TEST_DATA +
-                                        " will be used instead.");
+                                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestDataName"),
+                                        LocaleContextHolder.getLocale()), crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
                                 foundTestData = 
                                         testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());
@@ -1494,8 +1521,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         if(crTestData.getTestData() != null && 
                                 !StringUtils.isEmpty(crTestData.getTestData().getName()) && 
                                 StringUtils.isEmpty(crTestData.getVersion())) {
-                            product.getErrorMessages().add("Test data version is required for "
-                                    + "certification " + cert.getNumber());
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestDataVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }
