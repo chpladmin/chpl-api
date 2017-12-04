@@ -1455,6 +1455,22 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     }
                 }
 
+                //require at least one test procedure where gap does not exist or is false
+                if(cert.getNumber().equals("170.315 (b)(8)")) {
+                    if(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0) {
+                        product.getWarningMessages()
+                        .add("Test Procedures will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
+                    }
+                } else {
+                    if (!gapEligibleAndTrue
+                            && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
+                            && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+                        product.getErrorMessages()
+                                .add("Test Procedures are required for certification " + cert.getNumber() + ".");
+                    }
+                }
+                
+                //if the criteria can and does have test procedures, make sure they are each valid
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (CertificationResultTestProcedure crTestProc : cert.getTestProcedures()) {
