@@ -11,25 +11,23 @@
   	<module>chpl-api</module>
     <module>chpl-service</module>
     <module>chpl-auth</module>
-    <!--
-        <module>chpl-etl</module>
-    -->
   </modules>
-  
+
   <dependencies>
-  <dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-api</artifactId>
-    <version>2.6.2</version>
-  </dependency>
-  <dependency>
-    <groupId>org.apache.logging.log4j</groupId>
-    <artifactId>log4j-core</artifactId>
-    <version>2.6.2</version>
-  </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+      <version>2.6.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <version>2.6.2</version>
+    </dependency>
   </dependencies>
-  
+
   <properties>
-  	<org.springframework.version>4.1.1.RELEASE</org.springframework.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <org.springframework.version>4.1.1.RELEASE</org.springframework.version>
   </properties>
 </project>
