@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 15.1.0
+_5 December 2017_
 
 ### Minor Features
 * Added /data/test_data service to get all criteria with allowable test data

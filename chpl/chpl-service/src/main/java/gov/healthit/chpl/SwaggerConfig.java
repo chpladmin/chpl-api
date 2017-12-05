@@ -50,7 +50,7 @@ public class SwaggerConfig implements EnvironmentAware {
 
     private ApiInfo apiInfo() {
         LOGGER.info("get ApiInfo");
-        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "15.0.0", "http://terms/of/service.url",
+        return new ApiInfo("CHPL", "Certified Health IT Product Listing", "15.1.0", "http://terms/of/service.url",
                 "CHPL@ainq.com", "License Text", "https://github.com/chpladmin/chpl-api/blob/staging/LICENSE");
     }
 
