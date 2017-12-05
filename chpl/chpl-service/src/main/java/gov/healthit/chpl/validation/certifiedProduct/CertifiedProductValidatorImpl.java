@@ -70,9 +70,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     protected Integer icsCodeInteger;
 
     Pattern urlRegex;
+    Pattern emailRegex;
 
     public CertifiedProductValidatorImpl() {
         urlRegex = Pattern.compile(URL_PATTERN);
+        emailRegex = Pattern.compile(EMAIL_PATTERN);
     }
 
     @Override
@@ -861,6 +863,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         if (StringUtils.isEmpty(product.getDeveloperEmail())) {
             product.getErrorMessages().add("Developer contact email address is required.");
+        }else{
+        	if(emailRegex.matcher(product.getTransparencyAttestationUrl()).matches() == false){
+        		String msg = String
+                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("developer.contactEmail.format"),
+                                LocaleContextHolder.getLocale()));
+        		product.getErrorMessages().add(msg);
+        	}
         }
 
         if (StringUtils.isEmpty(product.getDeveloperPhoneNumber())) {
