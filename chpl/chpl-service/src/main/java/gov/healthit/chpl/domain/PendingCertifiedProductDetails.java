@@ -252,9 +252,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                 for (PendingCertificationResultTestDataDTO td : certCriterion.getTestData()) {
                     CertificationResultTestData certResultTestData = new CertificationResultTestData();
                     TestData testData = new TestData();
-                    testData.setId(td.getTestDataId());
                     if(td.getTestData() != null) {
+                        testData.setId(td.getTestData().getId());
                         testData.setName(td.getTestData().getName());
+                    } else {
+                        testData.setId(td.getTestDataId());
+                        testData.setName(td.getEnteredName());
                     }
                     certResultTestData.setTestData(testData);
                     certResultTestData.setVersion(td.getVersion());
@@ -292,9 +295,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                 for (PendingCertificationResultTestProcedureDTO tp : certCriterion.getTestProcedures()) {
                     CertificationResultTestProcedure certResultTestProc = new CertificationResultTestProcedure();
                     TestProcedure testProc = new TestProcedure();
-                    testProc.setId(tp.getTestProcedureId());
                     if(tp.getTestProcedure() != null) {
+                        testProc.setId(tp.getTestProcedure().getId());
                         testProc.setName(tp.getTestProcedure().getName());
+                    } else {
+                        testProc.setId(tp.getTestProcedureId());
+                        testProc.setName(tp.getEnteredName());
                     }
                     certResultTestProc.setTestProcedure(testProc);
                     certResultTestProc.setTestProcedureVersion(tp.getVersion());
