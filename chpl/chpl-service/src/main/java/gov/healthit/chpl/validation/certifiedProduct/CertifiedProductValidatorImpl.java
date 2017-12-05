@@ -802,7 +802,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add("Certification date occurs in the future.");
         }
         if (product.getCertificationBodyId() == null) {
-            product.getErrorMessages().add("ACB ID is required but was not found.");
+            product.getErrorMessages().add("ONC-ACB is required but was not found.");
         }
 
         if (StringUtils.isEmpty(product.getUniqueId())) {

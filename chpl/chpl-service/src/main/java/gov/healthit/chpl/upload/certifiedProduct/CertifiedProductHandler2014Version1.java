@@ -1,7 +1,10 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -39,21 +42,16 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2014Version1.class);
-    private TemplateColumnIndexMap templateColumnIndexMap;
-    private String[] criteriaNames = {
-            "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)",
-            "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(9)", "170.314 (a)(10)",
-            "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)", "170.314 (a)(15)",
-            "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)",
-            "170.314 (b)(1)", "170.314 (b)(2)", "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (b)(5)(A)",
-            "170.314 (b)(5)(B)", "170.314 (b)(6)", "170.314 (b)(7)", "170.314 (b)(8)", "170.314 (b)(9)",
-            "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)", "170.314 (d)(1)", "170.314 (d)(2)",
-            "170.314 (d)(3)", "170.314 (d)(4)", "170.314 (d)(5)", "170.314 (d)(6)", "170.314 (d)(7)",
-            "170.314 (d)(8)", "170.314 (d)(9)", "170.314 (e)(1)", "170.314 (e)(2)", "170.314 (e)(3)",
-            "170.314 (f)(1)", "170.314 (f)(2)", "170.314 (f)(3)", "170.314 (f)(4)", "170.314 (f)(5)",
-            "170.314 (f)(6)", "170.314 (f)(7)", "170.314 (g)(1)", "170.314 (g)(2)", "170.314 (g)(3)",
-            "170.314 (g)(4)", "170.314 (h)(1)",  "170.314 (h)(2)", "170.314 (h)(3)"
-    };
+    private TemplateColumnIndexMap templateColumnIndexMap;    
+    private int[] a = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+    private int[] b = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private int[] d = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    private int[] c = {1, 2, 3};
+    private int[] e = {1, 2, 3};
+    private int[] h = {1, 2, 3};
+    private int[] f = {1, 2, 3, 4, 5, 6, 7};
+    private int[] g = {1, 2, 3, 4};
+    private HashMap<String, int[]> criteriaList = new HashMap<String, int[]>();
     
     public CertifiedProductHandler2014Version1() {
        templateColumnIndexMap = new TemplateColumnIndexMap2014Version1();
@@ -64,7 +62,33 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
     }
     
     public String[] getCriteriaNames() {
-        return this.criteriaNames;
+    	criteriaList.put("a", a);
+    	criteriaList.put("b", b);
+    	criteriaList.put("c", c);
+    	criteriaList.put("d", d);
+    	criteriaList.put("e", e);
+    	criteriaList.put("f", f);
+    	criteriaList.put("g", g);
+    	criteriaList.put("h", h);
+        String[] criteria = new String[100];
+        int i = 0;
+        String[] letter = {"A", "B"};
+        HashMap<String, Integer> sub = new HashMap<String, Integer>();
+        sub.put("b5", 2);
+        for(Map.Entry<String, int[]> entry: criteriaList.entrySet()){
+        	for(int j : entry.getValue()){
+        		if(sub.containsKey(entry.getKey() + String.valueOf(j))){
+        			for(int k = 0; k < sub.get(entry.getKey() + String.valueOf(j)); k++){
+        				criteria[i] = "170.314 (" + entry.getKey() + ")(" + j + ")(" + letter[k] + ")";
+        				i++;
+        			}
+        		}else{
+        				criteria[i] = "170.314 (" + entry.getKey() + ")(" + j + ")";
+        				i++;
+        		}
+        	}
+        }
+        return criteria;
     }
     
     public PendingCertifiedProductEntity handle() {
@@ -86,13 +110,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                     || SUBSEQUENT_ROW_INDICATOR.equalsIgnoreCase(statusStr))) {
                 parseQms(record, pendingCertifiedProduct);
             }
-        }
-        if (!pendingCertifiedProduct.isHasQms() && pendingCertifiedProduct.getQmsStandards().size() > 0) {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add(pendingCertifiedProduct.getUniqueId() + " has 'false' in the QMS column but a QMS was found.");
-        } else if (pendingCertifiedProduct.isHasQms() && pendingCertifiedProduct.getQmsStandards().size() == 0) {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add(pendingCertifiedProduct.getUniqueId() + " has 'true' in the QMS column but no QMS was found.");
         }
 
         // parse CQMs
@@ -141,7 +158,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         parseCertificationDate(pendingCertifiedProduct, record);        
         parseSed(pendingCertifiedProduct, record);
         parseHasQms(pendingCertifiedProduct, record);
-        parseHasIcs(pendingCertifiedProduct, record);
         parseTransparencyAttestation(pendingCertifiedProduct, record);
     }
 

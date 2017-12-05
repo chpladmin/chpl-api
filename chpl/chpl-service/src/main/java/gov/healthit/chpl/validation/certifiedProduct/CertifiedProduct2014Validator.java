@@ -89,48 +89,97 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
         }
 
-        // g4 check
+        // g4, g3 and g3 complement check
         boolean hasG4 = false;
+        boolean hasG3 = false;
+        boolean hasG3Complement = false;
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if (cert.getNumber().equals("170.314 (g)(4)") && cert.getMeetsCriteria()) {
                 hasG4 = true;
             }
-        }
-        if (!hasG4) {
-            product.getErrorMessages().add("Required certification criteria 170.314 (g)(4) was not found.");
-        }
-
-        // g3 check
-        boolean hasG3 = false;
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if (cert.getNumber().equals("170.314 (g)(3)") && cert.getMeetsCriteria()) {
                 hasG3 = true;
             }
-        }
-        boolean hasG3Complement = false;
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             for (int i = 0; i < g3ComplementaryCerts.length; i++) {
                 if (cert.getNumber().equals(g3ComplementaryCerts[i]) && cert.getMeetsCriteria()) {
                     hasG3Complement = true;
                 }
             }
         }
-
+        if (!hasG4) {
+            product.getErrorMessages().add("Required certification criteria 170.314 (g)(4) was not found.");
+        }
         if (hasG3 && !hasG3Complement) {
             product.getErrorMessages().add("(g)(3) was found without a required related certification.");
         }
         if (hasG3Complement && !hasG3) {
             product.getErrorMessages().add("A certification that requires (g)(3) was found but (g)(3) was not.");
         }
+        
+        // (a)(1) (OR) ((a)(18), (a)(19), (a)(20))"
+        boolean hasA1 = false;
+        boolean hasA18 = false;
+        boolean hasA19 = false;
+        boolean hasA20 = false;
+        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+            if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.getMeetsCriteria()) {
+                hasA1 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.getMeetsCriteria()) {
+                hasA18 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.getMeetsCriteria()) {
+                hasA19 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.getMeetsCriteria()) {
+                hasA20 = true;
+            }
+        }
+        if (!hasA1) {
+            if (!hasA18 || !hasA19 || !hasA20) {
+                product.getErrorMessages()
+                        .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
+            }
+        }
+
+        // (b)(1), (b)(2)**
+        // (in replacement for (b)(1) and (b)(2) -
+        // (b)(1) and (b)(8), OR
+        // (b)(8) and (h)(1), OR
+        // (b)(1) and (b)(2) and (b)(8), OR
+        // (b)(1) and (b)(2) and (h)(1), OR
+        // (b)(1) and (b)(2) and (b)(8) and (h)(1)"
+        boolean hasB1 = false;
+        boolean hasB2 = false;
+        boolean hasB8 = false;
+        boolean hasH1 = false;
+        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+            if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.getMeetsCriteria()) {
+                hasB1 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.getMeetsCriteria()) {
+                hasB2 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.getMeetsCriteria()) {
+                hasB8 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.getMeetsCriteria()) {
+                hasH1 = true;
+            }
+        }
+        if (!hasB1 && !hasB2) {
+            if (!hasB1 && !hasB8) {
+                if (!hasB8 && !hasH1) {
+                    product.getErrorMessages()
+                            .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
+                }
+            }
+        }
     }
 
     @Override
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
-
-        if (StringUtils.isEmpty(product.getReportFileLocation())) {
-            product.getErrorMessages().add("A test result summary URL is required.");
-        }
 
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
@@ -275,6 +324,66 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         }
         if (hasG3Complement && !hasG3) {
             product.getErrorMessages().add("A certification that requires (g)(3) was found but (g)(3) was not.");
+        }
+        
+     // (a)(1) (OR) ((a)(18), (a)(19), (a)(20))"
+        boolean hasA1 = false;
+        boolean hasA18 = false;
+        boolean hasA19 = false;
+        boolean hasA20 = false;
+        for (CertificationResult certCriteria : product.getCertificationResults()) {
+            if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.isSuccess()) {
+                hasA1 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.isSuccess()) {
+                hasA18 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.isSuccess()) {
+                hasA19 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.isSuccess()) {
+                hasA20 = true;
+            }
+        }
+        if (!hasA1) {
+            if (!hasA18 || !hasA19 || !hasA20) {
+                product.getErrorMessages()
+                        .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
+            }
+        }
+
+        // (b)(1), (b)(2)**
+        // (in replacement for (b)(1) and (b)(2) -
+        // (b)(1) and (b)(8), OR
+        // (b)(8) and (h)(1), OR
+        // (b)(1) and (b)(2) and (b)(8), OR
+        // (b)(1) and (b)(2) and (h)(1), OR
+        // (b)(1) and (b)(2) and (b)(8) and (h)(1)"
+        boolean hasB1 = false;
+        boolean hasB2 = false;
+        boolean hasB8 = false;
+        boolean hasH1 = false;
+        for (CertificationResult certCriteria : product.getCertificationResults()) {
+            if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.isSuccess()) {
+                hasB1 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.isSuccess()) {
+                hasB2 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.isSuccess()) {
+                hasB8 = true;
+            }
+            if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.isSuccess()) {
+                hasH1 = true;
+            }
+        }
+        if (!hasB1 && !hasB2) {
+            if (!hasB1 && !hasB8) {
+                if (!hasB8 && !hasH1) {
+                    product.getErrorMessages()
+                            .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
+                }
+            }
         }
     }
 
