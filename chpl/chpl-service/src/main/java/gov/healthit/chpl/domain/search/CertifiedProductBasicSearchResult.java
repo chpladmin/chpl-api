@@ -1,9 +1,9 @@
 package gov.healthit.chpl.domain.search;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -13,58 +13,46 @@ public class CertifiedProductBasicSearchResult extends CertifiedProductSearchRes
     @JsonView({
             SearchViews.Default.class
     })
-    private List<String> previousDevelopers; // list of previous developer names
+    private Set<String> previousDevelopers; // list of previous developer names
                                              // that owned the product
 
     @JsonView({
             SearchViews.Default.class
     })
-    private List<String> criteriaMet; // list of criteria numbers
+    private Set<String> criteriaMet; // list of criteria numbers
 
     @JsonView({
             SearchViews.Default.class
     })
-    private List<String> cqmsMet; // list of cmqs that were met (any version)
-
-    private Map<String, String> apiDocumentation; // map of criteria to api
-                                                  // documentation url
+    private Set<String> cqmsMet; // list of cmqs that were met (any version)
 
     public CertifiedProductBasicSearchResult() {
-        previousDevelopers = new ArrayList<String>();
-        criteriaMet = new ArrayList<String>();
-        cqmsMet = new ArrayList<String>();
-        apiDocumentation = new HashMap<String, String>();
+        previousDevelopers = new HashSet<String>();
+        criteriaMet = new HashSet<String>();
+        cqmsMet = new HashSet<String>();
     }
 
-    public List<String> getCriteriaMet() {
+    public Set<String> getCriteriaMet() {
         return criteriaMet;
     }
 
-    public void setCriteriaMet(final List<String> criteriaMet) {
+    public void setCriteriaMet(final Set<String> criteriaMet) {
         this.criteriaMet = criteriaMet;
     }
 
-    public List<String> getCqmsMet() {
+    public Set<String> getCqmsMet() {
         return cqmsMet;
     }
 
-    public void setCqmsMet(final List<String> cqmsMet) {
+    public void setCqmsMet(final Set<String> cqmsMet) {
         this.cqmsMet = cqmsMet;
     }
 
-    public List<String> getPreviousDevelopers() {
+    public Set<String> getPreviousDevelopers() {
         return previousDevelopers;
     }
 
-    public void setPreviousDevelopers(final List<String> previousDevelopers) {
+    public void setPreviousDevelopers(final Set<String> previousDevelopers) {
         this.previousDevelopers = previousDevelopers;
-    }
-
-    public Map<String, String> getApiDocumentation() {
-        return apiDocumentation;
-    }
-
-    public void setApiDocumentation(final Map<String, String> apiDocumentation) {
-        this.apiDocumentation = apiDocumentation;
     }
 }

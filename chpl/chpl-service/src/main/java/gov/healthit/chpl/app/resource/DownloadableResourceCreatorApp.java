@@ -12,6 +12,8 @@ import org.springframework.context.support.AbstractApplicationContext;
 
 import gov.healthit.chpl.app.App;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CertificationResultDAO;
+import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
@@ -26,6 +28,8 @@ public abstract class DownloadableResourceCreatorApp extends App {
     protected CertifiedProductDetailsManager cpdManager;
     protected CertifiedProductDAO certifiedProductDao;
     protected CertificationCriterionDAO criteriaDao;
+    protected CertificationResultDAO certificationResultDao;
+    protected CertificationResultDetailsDAO certificationResultDetailsDAO;
 
     public DownloadableResourceCreatorApp() {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
@@ -35,33 +39,11 @@ public abstract class DownloadableResourceCreatorApp extends App {
         this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
         this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
         this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
+        this.setCertificationResultDao((CertificationResultDAO) context.getBean("certificationResultDAO"));
+        this.setCertificationResultDetailsDao((CertificationResultDetailsDAO) context.getBean("certificationResultDetailsDAO"));
     }
-
-    protected abstract List<CertifiedProductDetailsDTO> getRelevantListings();
-
-    protected abstract void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results)
-            throws IOException;
-
-    protected void runJob(String[] args) throws Exception {
-        File downloadFolder = getDownloadFolder();
-        List<CertifiedProductDetailsDTO> listings = getRelevantListings();
-
-        CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
-        for (CertifiedProductDetailsDTO currListing : listings) {
-            try {
-                LOGGER.info("Getting details for listing ID " + currListing.getId());
-                Date start = new Date();
-                CertifiedProductSearchDetails product = getCpdManager().getCertifiedProductDetails(currListing.getId());
-                Date end = new Date();
-                LOGGER.info("Got details for listing ID " + currListing.getId() + " in "
-                        + (end.getTime() - start.getTime()) / 1000 + " seconds");
-                results.getListings().add(product);
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Could not get details for certified product " + currListing.getId());
-            }
-        }
-        writeToFile(downloadFolder, results);
-    }
+    
+    protected abstract void runJob(String[] args) throws Exception;
 
     public CertifiedProductDAO getCertifiedProductDao() {
         return certifiedProductDao;
@@ -94,4 +76,22 @@ public abstract class DownloadableResourceCreatorApp extends App {
     public void setCriteriaDao(final CertificationCriterionDAO criteriaDao) {
         this.criteriaDao = criteriaDao;
     }
+
+	public CertificationResultDAO getCertificationResultDao() {
+		return certificationResultDao;
+	}
+
+	public void setCertificationResultDao(
+			CertificationResultDAO certificationResultDao) {
+		this.certificationResultDao = certificationResultDao;
+	}
+
+	public CertificationResultDetailsDAO getCertificationResultDetailsDao() {
+		return certificationResultDetailsDAO;
+	}
+
+	public void setCertificationResultDetailsDao(
+			CertificationResultDetailsDAO certificationResultDetailsDAO) {
+		this.certificationResultDetailsDAO = certificationResultDetailsDAO;
+	}
 }

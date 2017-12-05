@@ -50,7 +50,9 @@ public interface SearchMenuManager {
     Set<TestStandard> getTestStandards();
 
     Set<KeyValueModel> getTestTools();
-
+    public Set<CriteriaSpecificDescriptiveModel> getTestProcedures();
+    public Set<CriteriaSpecificDescriptiveModel> getTestData();
+    
     Set<KeyValueModel> getDeveloperStatuses();
 
     Set<KeyValueModel> getSurveillanceTypes();

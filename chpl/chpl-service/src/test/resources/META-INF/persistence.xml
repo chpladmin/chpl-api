@@ -37,11 +37,18 @@
 		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
 		<class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
+        <class>gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CQMResultEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityTriggerEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityProductEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityDeveloperEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityListingEntity</class>
+        <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityCertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.ContactEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity</class>
 		<class>gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity</class>
@@ -110,7 +117,10 @@
 		<class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>
 		<class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity</class>
 		<class>gov.healthit.chpl.entity.TargetedUserEntity</class>
+        <class>gov.healthit.chpl.entity.TestDataEntity</class>
+        <class>gov.healthit.chpl.entity.TestDataCriteriaMapEntity</class>
 		<class>gov.healthit.chpl.entity.TestProcedureEntity</class>
+        <class>gov.healthit.chpl.entity.TestProcedureCriteriaMapEntity</class>
 		<class>gov.healthit.chpl.entity.TestStandardEntity</class>
 		<class>gov.healthit.chpl.entity.TestToolEntity</class>
 		<class>gov.healthit.chpl.entity.TestFunctionalityEntity</class>

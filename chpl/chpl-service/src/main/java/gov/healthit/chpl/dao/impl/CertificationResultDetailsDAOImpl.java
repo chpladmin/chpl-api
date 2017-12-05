@@ -26,7 +26,7 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
         }
         return dtos;
     }
-
+    
     private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId)
             throws EntityRetrievalException {
 
@@ -34,6 +34,32 @@ public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements Ce
 
         Query query = entityManager.createQuery(
                 "from CertificationResultDetailsEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
+                CertificationResultDetailsEntity.class);
+        query.setParameter("entityid", productId);
+        List<CertificationResultDetailsEntity> result = query.getResultList();
+
+        return result;
+    }
+    
+    @Override
+    public List<CertificationResultDetailsDTO> getCertificationResultDetailsByCertifiedProductIdSED(
+            Long certifiedProductId) throws EntityRetrievalException {
+        List<CertificationResultDetailsEntity> entities = getEntitiesByCertifiedProductIdSED(certifiedProductId);
+        List<CertificationResultDetailsDTO> dtos = new ArrayList<CertificationResultDetailsDTO>(entities.size());
+
+        for (CertificationResultDetailsEntity entity : entities) {
+            dtos.add(new CertificationResultDetailsDTO(entity));
+        }
+        return dtos;
+    }
+    
+    private List<CertificationResultDetailsEntity> getEntitiesByCertifiedProductIdSED(Long productId)
+            throws EntityRetrievalException {
+
+        CertificationResultDetailsEntity entity = null;
+
+        Query query = entityManager.createQuery(
+                "from CertificationResultDetailsEntity where (NOT deleted = true) AND (certified_product_id = :entityid) AND (success = true) AND (sed = true) ",
                 CertificationResultDetailsEntity.class);
         query.setParameter("entityid", productId);
         List<CertificationResultDetailsEntity> result = query.getResultList();

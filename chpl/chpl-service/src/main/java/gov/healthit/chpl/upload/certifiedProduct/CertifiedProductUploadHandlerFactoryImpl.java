@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.certifiedProduct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -26,14 +27,21 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
     private MessageSource messageSource;
     @Autowired
     private UploadTemplateVersionDAO templateVersionDao;
+    @Qualifier("certifiedProductHandler2014Version1")
     @Autowired
-    private CertifiedProductHandler2014 handler2014;
+    private CertifiedProductHandler2014Version1 handler2014Version1;
+    @Qualifier("certifiedProductHandler2014Version2")
+    @Autowired
+    private CertifiedProductHandler2014Version2 handler2014Version2;
     @Qualifier("certifiedProductHandler2015Version1")
     @Autowired
     private CertifiedProductHandler2015Version1 handler2015Version1;
     @Qualifier("certifiedProductHandler2015Version2")
     @Autowired
     private CertifiedProductHandler2015Version2 handler2015Version2;
+    @Qualifier("certifiedProductHandler2015Version3")
+    @Autowired
+    private CertifiedProductHandler2015Version3 handler2015Version3;
 
     private CertifiedProductUploadHandlerFactoryImpl() {
     }
@@ -54,6 +62,24 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
         for(int i = 0; i < heading.size(); i++) {
             String headerVal = heading.get(i).trim();
             trimmedHeaderVals.add(headerVal);
+        }
+        
+        //it is common for a bunch of extra blank columns to get put at the end
+        //of an xls/csv file without the user knowing, so delete any that are at the end
+        //use a list iterator to go from the end of the list to tbe beginning
+        //deleting blank columns from the end until we come to the first one that's 
+        //not blank, they we won't delete anymore
+        ListIterator<String> headerValIter = trimmedHeaderVals.listIterator(trimmedHeaderVals.size());
+        boolean foundLastColumnWithText = false;
+        while(headerValIter.hasPrevious()) {
+            String lastItem = headerValIter.previous();
+            if(!foundLastColumnWithText) {
+                if(StringUtils.isEmpty(lastItem)) {
+                    headerValIter.remove();
+                } else {
+                    foundLastColumnWithText = true;
+                }
+            }
         }
         
         StringBuffer buf = new StringBuffer();
@@ -99,11 +125,15 @@ public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProduc
                             LocaleContextHolder.getLocale()), trimmedHeadingStr);
             throw new InvalidArgumentsException(msg);
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2014_VERSION_1.getName())) {
-            handler = handler2014;
+            handler = handler2014Version1;
+        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2014_VERSION_2.getName())) {
+            handler = handler2014Version2;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_1.getName())) {
             handler = handler2015Version1;
         } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_2.getName())) {
             handler = handler2015Version2;
+        } else if (templateVersion.getName().equals(UploadTemplateVersion.EDITION_2015_VERSION_3.getName())) {
+            handler = handler2015Version3;
         }
 
         handler.setRecord(cpRecords);

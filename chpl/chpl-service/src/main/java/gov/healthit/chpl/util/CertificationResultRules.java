@@ -34,7 +34,7 @@ public class CertificationResultRules {
     public static final String G2_MACRA = "g2Macra";
     public static final String ADDITIONAL_SOFTWARE = "additionalSoftware";
     public static final String TEST_TOOLS_USED = "testTool";
-    public static final String TEST_PROCEDURE_VERSION = "testProcedure";
+    public static final String TEST_PROCEDURE = "testProcedure";
     public static final String TEST_DATA = "testData";
     public static final String SED = "sed";
     public static final String UCD_FIELDS = "ucd";

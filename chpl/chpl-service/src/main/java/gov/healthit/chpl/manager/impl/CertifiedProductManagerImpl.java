@@ -49,6 +49,7 @@ import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
@@ -124,6 +125,7 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
@@ -145,7 +147,7 @@ import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
-public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl implements CertifiedProductManager {
+public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
     @Autowired
@@ -197,6 +199,8 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
     TestStandardDAO testStandardDao;
     @Autowired
     TestProcedureDAO testProcDao;
+    @Autowired
+    TestDataDAO testDataDao;
     @Autowired
     TestFunctionalityDAO testFuncDao;
     @Autowired
@@ -379,8 +383,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES, CacheNames.SEARCH,
-            CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
@@ -655,7 +658,24 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
                             testDto.setAlteration(testData.getAlteration());
                             testDto.setVersion(testData.getVersion());
                             testDto.setCertificationResultId(createdCert.getId());
-                            certDao.addTestDataMapping(testDto);
+                            if(testData.getTestDataId() != null) {
+                                testDto.setTestDataId(testData.getTestDataId());
+                                testDto.setTestData(testData.getTestData());
+                                certDao.addTestDataMapping(testDto);
+                            } else if(testData.getTestData() != null) {
+                                TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(
+                                        certResult.getNumber(), testData.getTestData().getName());
+                                if(foundTestData == null) {
+                                    LOGGER.error("Could not find test data for " + certResult.getNumber() + 
+                                            " and test data name " + testData.getTestData().getName());
+                                } else {
+                                    testDto.setTestData(foundTestData);
+                                    testDto.setTestDataId(foundTestData.getId());
+                                    certDao.addTestDataMapping(testDto);
+                                }
+                            } else {
+                                LOGGER.error("No valid test data was supplied.");
+                            }
                         }
                     }
 
@@ -689,17 +709,30 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
                     if (certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0) {
                         for (PendingCertificationResultTestProcedureDTO proc : certResult.getTestProcedures()) {
                             CertificationResultTestProcedureDTO procDto = new CertificationResultTestProcedureDTO();
-                            if (proc.getTestProcedureId() == null) {
-                                TestProcedureDTO tp = new TestProcedureDTO();
-                                tp.setVersion(proc.getVersion());
-                                tp = testProcDao.create(tp);
-                                procDto.setTestProcedureId(tp.getId());
-                            } else {
-                                procDto.setTestProcedureId(proc.getTestProcedureId());
-                            }
-                            procDto.setTestProcedureVersion(proc.getVersion());
+                            procDto.setVersion(proc.getVersion());
                             procDto.setCertificationResultId(createdCert.getId());
-                            certDao.addTestProcedureMapping(procDto);
+
+                            if(proc.getTestProcedureId() != null) {
+                                procDto.setTestProcedureId(proc.getTestProcedureId());
+                                procDto.setTestProcedure(proc.getTestProcedure());
+                                certDao.addTestProcedureMapping(procDto);
+                            } else if(proc.getTestProcedure() != null){
+                                // check again for a matching test procedure because
+                                // the user could have edited it since upload
+                                TestProcedureDTO foundTp = 
+                                        testProcDao.getByCriteriaNumberAndValue(certResult.getNumber(), 
+                                                proc.getTestProcedure().getName());
+                                if(foundTp == null) {
+                                    LOGGER.error("Could not find test procedure for " + certResult.getNumber() + 
+                                            " and test procedure name " + proc.getTestProcedure().getName());
+                                } else {
+                                    procDto.setTestProcedure(foundTp);
+                                    procDto.setTestProcedureId(foundTp.getId());
+                                    certDao.addTestProcedureMapping(procDto);
+                                }
+                            } else {
+                                LOGGER.error("No valid test procedure was supplied.");
+                            }
                         }
                     }
 
@@ -1010,8 +1043,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
             AccessDeniedException.class, InvalidArgumentsException.class
     })
     @CacheEvict(value = {
-            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.SEARCH, CacheNames.COUNT_MULTI_FILTER_SEARCH_RESULTS
+            CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
     public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
@@ -1798,7 +1830,7 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
-            CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.SEARCH
+            CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public MeaningfulUseUserResults updateMeaningfulUseUsers(Set<MeaningfulUseUser> meaningfulUseUserSet)
             throws EntityCreationException, EntityRetrievalException, IOException {
@@ -1861,116 +1893,6 @@ public class CertifiedProductManagerImpl extends QuestionableActivityHandlerImpl
         meaningfulUseUserResults.setMeaningfulUseUsers(results);
         meaningfulUseUserResults.setErrors(errors);
         return meaningfulUseUserResults;
-    }
-
-    public String getQuestionableActivityHtmlMessage(Object src, Object dest) {
-        String message = "";
-        if (!(src instanceof CertifiedProductSearchDetails)) {
-            LOGGER.error("Cannot use object of type " + src.getClass());
-        } else {
-            CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
-            String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-            message = "<p>Activity was detected on certified product " + original.getChplProductNumber();
-            if (activityThresholdDaysStr.equals("0")) {
-                message += ".";
-            } else {
-                message += " more than " + activityThresholdDaysStr + " days after it was certified.";
-            }
-            message += "</p>" + "<p>To view the details of this activity go to: " + env.getProperty("chplUrlBegin")
-                    + "/#/admin/reports/" + original.getId() + " </p>";
-
-        }
-        return message;
-    }
-
-    public boolean isQuestionableActivity(Object src, Object dest) {
-        boolean isQuestionable = false;
-        String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
-
-        if (!(src instanceof CertifiedProductSearchDetails && dest instanceof CertifiedProductSearchDetails)) {
-            LOGGER.error("Cannot compare " + src.getClass() + " to " + dest.getClass()
-                    + ". Expected both objects to be of type CertifiedProductSearchDetails.");
-        } else {
-            CertifiedProductSearchDetails original = (CertifiedProductSearchDetails) src;
-            CertifiedProductSearchDetails changed = (CertifiedProductSearchDetails) dest;
-
-            if (original.getCertificationEdition().get("name").equals("2011")) {
-                isQuestionable = true;
-            } else {
-                int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-                long activityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
-                if (original.getCertificationDate() != null && changed.getCertificationDate() != null
-                        && (changed.getLastModifiedDate().longValue()
-                                - original.getCertificationDate().longValue() > activityThresholdMillis)) {
-                    // if they changed something outside of the suspicious
-                    // activity window,
-                    // check if the change was something that should trigger an
-                    // email
-
-                    if (!original.getCertificationStatus().get("id")
-                            .equals(changed.getCertificationStatus().get("id"))) {
-                        isQuestionable = true;
-                    }
-
-                    if ((original.getCqmResults() == null && changed.getCqmResults() != null)
-                            || (original.getCqmResults() != null && changed.getCqmResults() == null)
-                            || (original.getCqmResults().size() != changed.getCqmResults().size())) {
-                        isQuestionable = true;
-                    } else if (original.getCqmResults().size() == changed.getCqmResults().size()) {
-                        for (CQMResultDetails origCqm : original.getCqmResults()) {
-                            for (CQMResultDetails changedCqm : changed.getCqmResults()) {
-                                if (origCqm.getCmsId().equals(changedCqm.getCmsId())) {
-                                    if (origCqm.isSuccess().booleanValue() != changedCqm.isSuccess().booleanValue()) {
-                                        isQuestionable = true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    if ((original.getCertificationResults() == null && changed.getCertificationResults() != null)
-                            || (original.getCertificationResults() != null && changed.getCertificationResults() == null)
-                            || (original.getCertificationResults().size() != changed.getCertificationResults()
-                                    .size())) {
-                        isQuestionable = true;
-                    } else if (original.getCertificationResults().size() == changed.getCertificationResults().size()) {
-                        for (CertificationResult origCert : original.getCertificationResults()) {
-                            for (CertificationResult changedCert : changed.getCertificationResults()) {
-                                if (origCert.getNumber().equals(changedCert.getNumber())) {
-                                    if (origCert.isSuccess().booleanValue() != changedCert.isSuccess().booleanValue()) {
-                                        isQuestionable = true;
-                                    }
-                                    if (origCert.isG1Success() != null || changedCert.isG1Success() != null) {
-                                        if ((origCert.isG1Success() == null && changedCert.isG1Success() != null)
-                                                || (origCert.isG1Success() != null && changedCert.isG1Success() == null)
-                                                || (origCert.isG1Success().booleanValue() != changedCert.isG1Success()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                    if (origCert.isG2Success() != null || changedCert.isG2Success() != null) {
-                                        if ((origCert.isG2Success() == null && changedCert.isG2Success() != null)
-                                                || (origCert.isG2Success() != null && changedCert.isG2Success() == null)
-                                                || (origCert.isG2Success().booleanValue() != changedCert.isG2Success()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                    if (origCert.isGap() != null || changedCert.isGap() != null) {
-                                        if ((origCert.isGap() == null && changedCert.isGap() != null)
-                                                || (origCert.isGap() != null && changedCert.isGap() == null)
-                                                || (origCert.isGap().booleanValue() != changedCert.isGap()
-                                                        .booleanValue())) {
-                                            isQuestionable = true;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return isQuestionable;
     }
 
     private class QmsStandardPair {

@@ -3,6 +3,7 @@ package gov.healthit.chpl;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +11,12 @@ import org.apache.logging.log4j.Logger;
 public final class Util {
     private static final Logger LOGGER = LogManager.getLogger(Util.class);
     private static final int BASE_16 = 16;
-
+    private static final String dateFormat = "yyyy-MM-dd";
+    private static final String timestampFormat = "yyyyMMdd_HHmmss";
+    
+    public static SimpleDateFormat dateFormatter = new SimpleDateFormat(dateFormat);
+    public static SimpleDateFormat timestampFormatter = new SimpleDateFormat(timestampFormat);
+    
     private Util() {
 
     }
@@ -36,9 +42,17 @@ public final class Util {
         }
         return md5;
     }
+    
+    public static SimpleDateFormat getDateFormatter() {
+        return Util.dateFormatter;
+    }
+    
+    public static SimpleDateFormat getTimestampFormatter() {
+        return Util.timestampFormatter;
+    }
 
     public static String coerceToCriterionNumberFormat(final String input) {
-        String formatRegex = "^\\d {3}\\.\\d {3}\\s {1}\\([a-z] {1}\\)(\\([0-9] {1,2}\\))?$";
+        String formatRegex = "^\\d{3}\\.\\d{3}\\s{1}\\([a-z]{1}\\)(\\([0-9]{1,2}\\))?$";
         if (input.matches(formatRegex)) {
             LOGGER.debug("\tMatches required format. Not changing input.");
             return input;

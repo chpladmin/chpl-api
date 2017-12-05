@@ -32,6 +32,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
@@ -643,9 +644,43 @@ public class SearchMenuManagerTest {
     @Transactional
     @Rollback(true)
     @Test
+    public void getTestData() {
+        Set<CriteriaSpecificDescriptiveModel> testData = searchMenuManager.getTestData();
+        assertNotNull(testData);
+        assertTrue(testData.size() > 0);
+        for (CriteriaSpecificDescriptiveModel td : testData) {
+            assertNotNull(td.getCriteria());
+            assertNotNull(td.getCriteria().getNumber());
+            assertNotNull(td.getId());
+            assertNotNull(td.getName());
+            assertTrue(td.getCriteria().getCertificationEdition().equals("2014") 
+                    || td.getCriteria().getCertificationEdition().equals("2015"));
+        }
+    }
+
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void getTestProcedures() {
+        Set<CriteriaSpecificDescriptiveModel> testProcs = searchMenuManager.getTestProcedures();
+        assertNotNull(testProcs);
+        assertTrue(testProcs.size() > 0);
+        for (CriteriaSpecificDescriptiveModel tp : testProcs) {
+            assertNotNull(tp.getCriteria());
+            assertNotNull(tp.getCriteria().getNumber());
+            assertNotNull(tp.getId());
+            assertNotNull(tp.getName());
+            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014") 
+                    || tp.getCriteria().getCertificationEdition().equals("2015"));
+        }
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
     public void getUploadTemplateVersions() {
         Set<UploadTemplateVersion> templateVersions = searchMenuManager.getUploadTemplateVersions();
         assertNotNull(templateVersions);
-        assertEquals(3, templateVersions.size());
+        assertTrue(templateVersions.size() >= 2);
     }
 }

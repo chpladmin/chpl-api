@@ -1,8 +1,12 @@
 package gov.healthit.chpl.web.controller;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -256,5 +260,34 @@ public class ActivityControllerTest {
 		throws EntityRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		activityController.activityForVersions(-100L, null, null);
+	}
+	
+	@Test
+	public void testDateRangeComparisonWorksAcrossDaylightSavings() {
+	    //two dates where daylight savings falls between them
+	    Long startDate = 1505620800000L; //9/17/17
+	    Long endDate = 1510808400000L; //11/16/17
+	    
+	    LocalDate startDateUtc = 
+	            Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();
+	    LocalDate endDateUtc = 
+                Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
+	    
+        System.out.println("Start: " + startDateUtc);
+        System.out.println("End: " + endDateUtc);
+        if(startDateUtc.isAfter(endDateUtc)) {
+            fail("End date is not before start date.");
+        }
+
+        Integer maxActivityRangeInDays = Integer.getInteger(env.getProperty("maxActivityRangeInDays"), 60);
+        
+        endDateUtc = endDateUtc.minusDays(maxActivityRangeInDays);
+        if(startDateUtc.isBefore(endDateUtc)) {
+            System.out.println("Start: " + startDateUtc);
+            System.out.println("End minus " + maxActivityRangeInDays + " days: " + endDateUtc);
+            fail("Date range is not more than 60 days apart");
+        }
+        
+        System.out.println("End minus " + maxActivityRangeInDays + " days: " + endDateUtc);
 	}
 }

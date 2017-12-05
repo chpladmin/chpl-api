@@ -8,6 +8,9 @@ questionableActivityThresholdDays=0
 #display jobs that are currently running or have completed within the last jobThresholdDays days
 jobThresholdDays=7 
 
+#file name that daily SED details will be written to
+SEDDownloadName=chpl-sed-all-details.csv
+
 #cache properties
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15
@@ -21,6 +24,10 @@ listingCacheRefreshDelayMillis=60000
 summaryEmailSubject=CHPL - Weekly Summary Statistics Report (Local)
 summaryEmailName=summaryStatistics.csv
 summaryEmailPeriodInDays=7
+
+#questionable activity email properties
+questionableActivityReportFilename=questionable-activity.csv
+questionableActivityEmailSubject=Questionable Activity Report
 
 #oversight email properties
 suspendedDaysAllowed=30

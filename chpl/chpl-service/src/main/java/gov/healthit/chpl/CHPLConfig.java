@@ -41,6 +41,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.manager.ApiKeyManager;
+import gov.healthit.chpl.questionableActivity.QuestionableActivityAspect;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
 @Configuration
@@ -136,7 +137,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         LOGGER.info("get Marshaller");
         return new CastorMarshaller();
     }
-
+    
     @Bean
     public CacheManager cacheManager() {
         LOGGER.info("get CacheManager");

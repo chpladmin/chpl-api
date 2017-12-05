@@ -4,8 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +28,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -32,9 +40,10 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
@@ -53,8 +62,8 @@ import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.search.BasicSearchResponse;
-import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -64,6 +73,7 @@ import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFa
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
+import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -88,6 +98,11 @@ public class CertifiedProductControllerTest {
 	
 	private static JWTAuthenticatedUser adminUser;
 	
+	private static final String UPLOAD_2014 = "2014_error-free_new_Gap_added.csv";
+	
+	private static final String UPLOAD_2015_V10 = "Drummond10252017.csv";
+	private static final String UPLOAD_2015_V11 = "Drummond10252017_v11.csv";
+
 	@BeforeClass
 	public static void setUpClass() throws Exception {
 		adminUser = new JWTAuthenticatedUser();
@@ -97,6 +112,37 @@ public class CertifiedProductControllerTest {
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+	}
+	
+	public MultipartFile getUploadFile(String edition, String version){
+		ClassLoader classLoader = getClass().getClassLoader();
+		File file = null;
+		Path filePath = null;
+		String name =  null;
+		String originalFileName = null;
+		if(edition.equals("2014")){
+			file = new File(classLoader.getResource(UPLOAD_2014).getFile());
+			filePath = Paths.get(file.getPath());
+			name = UPLOAD_2014;
+			originalFileName = UPLOAD_2014;
+		} else {
+		    String resource = UPLOAD_2015_V10;
+		    if(version.equalsIgnoreCase("11") || version.equalsIgnoreCase("v11")) {
+		        resource = UPLOAD_2015_V11;
+		    }
+			file = new File(classLoader.getResource(resource).getFile());
+			filePath = Paths.get(file.getPath());
+			name = resource;
+			originalFileName = resource;
+		}
+		String contentType = "text/csv";
+		byte[] content = null;
+		try {
+			content = Files.readAllBytes(filePath);
+		} catch (final IOException e) {
+		}
+		MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
+		return result;
 	}
 	
 	/** 
@@ -1080,6 +1126,44 @@ public class CertifiedProductControllerTest {
 		Long cpId = 1L;
 		CertifiedProductSearchDetails cpDetails = certifiedProductController.getCertifiedProductById(cpId);
 		assertNotNull(cpDetails);
+	}
+	
+	
+	@Transactional
+	@Test
+	public void test_uploadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MultipartFile file = getUploadFile("2014", null);
+		ResponseEntity<PendingCertifiedProductResults> response = null;
+		try {
+			response = certifiedProductController.upload(file);
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		}
+		assertNotNull(response);
+		assertEquals(HttpStatus.OK,response.getStatusCode());
+	}
+	
+	@Transactional
+	@Test
+	public void test_upLoadCertifiedProduct2015UniqueTestParticipant() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MultipartFile file = getUploadFile("2015", "v11");
+		ResponseEntity<PendingCertifiedProductResults> response = null;
+		try {
+			response = certifiedProductController.upload(file);
+		} catch (ValidationException e) {
+		    fail(e.getMessage());
+			e.printStackTrace();
+		}
+		assertNotNull(response);
+		int testParticipantCount = 0;
+		for(TestTask tt : response.getBody().getPendingCertifiedProducts().get(0).getSed().getTestTasks()){
+			testParticipantCount += tt.getTestParticipants().size();
+
+		}
+		assertEquals(50, testParticipantCount);
+		assertEquals(HttpStatus.OK,response.getStatusCode());
 	}
 	
 	/** 

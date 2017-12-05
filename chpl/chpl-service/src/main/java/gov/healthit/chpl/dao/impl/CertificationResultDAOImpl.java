@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.annotations.Where;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,6 +23,7 @@ import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
+import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestFunctionalityDTO;
@@ -37,6 +37,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
+import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultG1MacraMeasureEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultG2MacraMeasureEntity;
@@ -162,20 +163,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     }
 
     @Override
-    public List<CertificationResultDTO> findAll() {
-
-        List<CertificationResultEntity> entities = getAllEntities();
-        List<CertificationResultDTO> products = new ArrayList<>();
-
-        for (CertificationResultEntity entity : entities) {
-            CertificationResultDTO result = new CertificationResultDTO(entity);
-            products.add(result);
-        }
-        return products;
-
-    }
-
-    @Override
     public CertificationResultDTO getById(Long resultId) throws EntityRetrievalException {
 
         CertificationResultDTO dto = null;
@@ -185,16 +172,6 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
             dto = new CertificationResultDTO(entity);
         }
         return dto;
-    }
-
-    private List<CertificationResultEntity> getAllEntities() {
-
-        List<CertificationResultEntity> result = entityManager
-                .createQuery("from CertificationResultEntity where (NOT deleted = true) ",
-                        CertificationResultEntity.class)
-                .getResultList();
-        return result;
-
     }
 
     private CertificationResultEntity getEntityById(Long id) throws EntityRetrievalException {
@@ -217,6 +194,18 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 
         return entity;
     }
+    
+    public List<Long> getCpIdsByCriterionId(Long criterionId) throws EntityRetrievalException {
+
+        CertificationResultEntity entity = null;
+
+        Query query = entityManager.createQuery(
+                "select certifiedProductId from CertificationResultEntity where (NOT deleted = true) AND (certification_criterion_id = :entityid) AND (success = true)");
+        query.setParameter("entityid", criterionId);
+        List<Long> result = query.getResultList();
+
+        return result;
+    }
 
     @Override
     public List<CertificationResultDTO> findByCertifiedProductId(Long certifiedProductId) {
@@ -234,6 +223,17 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
 
         Query query = entityManager.createQuery(
                 "from CertificationResultEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
+                CertificationResultEntity.class);
+        query.setParameter("entityid", certifiedProductId);
+        List<CertificationResultEntity> result = query.getResultList();
+        return result;
+    }
+
+    private List<CertificationResultEntity> getEntitiesByCertifiedProductIdSED(Long certifiedProductId) {
+
+        Query query = entityManager.createQuery(
+                "from CertificationResultEntity "
+        		+ "where (NOT deleted = true) AND (certified_product_id = :entityid) AND sed = true and success = true ",
                 CertificationResultEntity.class);
         query.setParameter("entityid", certifiedProductId);
         List<CertificationResultEntity> result = query.getResultList();
@@ -865,6 +865,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         CertificationResultTestDataEntity mapping = new CertificationResultTestDataEntity();
         mapping = new CertificationResultTestDataEntity();
         mapping.setCertificationResultId(dto.getCertificationResultId());
+        mapping.setTestDataId(dto.getTestDataId());
         mapping.setTestDataVersion(dto.getVersion());
         mapping.setAlterationDescription(dto.getAlteration());
         mapping.setCreationDate(new Date());
@@ -901,6 +902,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         if (toUpdate == null) {
             throw new EntityRetrievalException("Could not find test data mapping with id " + dto.getId());
         }
+        toUpdate.setTestDataId(dto.getTestDataId());
         toUpdate.setAlterationDescription(dto.getAlteration());
         toUpdate.setTestDataVersion(dto.getVersion());
         toUpdate.setLastModifiedDate(new Date());
@@ -920,9 +922,11 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     private CertificationResultTestDataEntity getCertificationResultTestDataById(Long id) {
         CertificationResultTestDataEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "from CertificationResultTestDataEntity "
-                        + "where (NOT deleted = true) AND (certification_result_test_data_id = :entityid) ",
+        Query query = entityManager.createQuery("SELECT td " +
+                "FROM CertificationResultTestDataEntity td " +
+                "LEFT JOIN FETCH td.testData " +
+                "WHERE (NOT td.deleted = true) "
+                + "AND (td.id = :entityid) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestDataEntity> result = query.getResultList();
@@ -934,9 +938,11 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     }
 
     private List<CertificationResultTestDataEntity> getTestDataForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "from CertificationResultTestDataEntity "
-                        + "where (NOT deleted = true) AND (certification_result_id = :certificationResultId) ",
+        Query query = entityManager.createQuery("SELECT td " + 
+                "FROM CertificationResultTestDataEntity td " + 
+                "LEFT JOIN FETCH td.testData " + 
+                "WHERE (NOT td.deleted = true) " + 
+                "AND (td.certificationResultId = :certificationResultId) ",
                 CertificationResultTestDataEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -973,6 +979,7 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
         CertificationResultTestProcedureEntity mapping = new CertificationResultTestProcedureEntity();
         mapping.setCertificationResultId(dto.getCertificationResultId());
         mapping.setTestProcedureId(dto.getTestProcedureId());
+        mapping.setVersion(dto.getVersion());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -998,8 +1005,10 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
     private CertificationResultTestProcedureEntity getCertificationResultTestProcedureById(Long id) {
         CertificationResultTestProcedureEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tp " + "FROM CertificationResultTestProcedureEntity tp "
-                + "LEFT OUTER JOIN FETCH tp.testProcedure " + "where (NOT tp.deleted = true) AND (tp.id = :entityid) ",
+        Query query = entityManager.createQuery("SELECT tp " + 
+                "FROM CertificationResultTestProcedureEntity tp " + 
+                "LEFT OUTER JOIN FETCH tp.testProcedure " + 
+                "where (NOT tp.deleted = true) AND (tp.id = :entityid) ",
                 CertificationResultTestProcedureEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultTestProcedureEntity> result = query.getResultList();
@@ -1195,6 +1204,8 @@ public class CertificationResultDAOImpl extends BaseDAOImpl implements Certifica
                 "SELECT tp " + "FROM CertificationResultTestTaskEntity tp " + "LEFT OUTER JOIN FETCH tp.testTask task "
                         + "LEFT OUTER JOIN FETCH task.testParticipants participantMappings "
                         + "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
+                        + "LEFT OUTER JOIN FETCH participant.education education "
+                        + "LEFT OUTER JOIN FETCH participant.ageRange ageRange "
                         + "where (NOT tp.deleted = true) AND (certification_result_id = :certificationResultId) ",
                 CertificationResultTestTaskEntity.class);
         query.setParameter("certificationResultId", certificationResultId);

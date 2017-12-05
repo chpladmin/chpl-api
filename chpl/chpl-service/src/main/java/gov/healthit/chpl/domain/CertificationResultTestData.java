@@ -27,6 +27,13 @@ public class CertificationResultTestData implements Serializable {
     private Long id;
 
     /**
+     * This variable explains the test data being used to test
+     * the associated criteria. It is applicable for 2015 Edition.
+     */
+    @XmlElement(required = true)
+    private TestData testData;
+    
+    /**
      * This variable explains the version of the test data being used for a
      * given certification criteria. It is applicable for 2014 and 2015 Edition
      * and a string variable that does not take any restrictions on formatting
@@ -50,13 +57,24 @@ public class CertificationResultTestData implements Serializable {
 
     public CertificationResultTestData(CertificationResultTestDataDTO dto) {
         this.id = dto.getId();
+        TestData td = new TestData();
+        if(dto.getTestData() == null) {
+            td.setId(dto.getTestDataId());
+        } else {
+            td.setId(dto.getTestData().getId());
+            td.setName(dto.getTestData().getName());
+        }
+        this.testData = td;
         this.version = dto.getVersion();
         this.alteration = dto.getAlteration();
     }
 
     public boolean matches(CertificationResultTestData anotherTestData) {
         boolean result = false;
-        if (!StringUtils.isEmpty(this.getVersion()) && !StringUtils.isEmpty(anotherTestData.getVersion())
+        if (this.getTestData() != null && anotherTestData.getTestData() != null &&
+                this.getTestData().getId() != null && anotherTestData.getTestData().getId() != null && 
+                this.getTestData().getId().longValue() == anotherTestData.getTestData().getId().longValue() && 
+                !StringUtils.isEmpty(this.getVersion()) && !StringUtils.isEmpty(anotherTestData.getVersion())
                 && this.getVersion().equals(anotherTestData.getVersion())
                 && ((StringUtils.isEmpty(this.getAlteration()) && StringUtils.isEmpty(anotherTestData.getAlteration()))
                         || this.getAlteration().equals(anotherTestData.getAlteration()))) {
@@ -87,5 +105,13 @@ public class CertificationResultTestData implements Serializable {
 
     public void setAlteration(final String alteration) {
         this.alteration = alteration;
+    }
+
+    public TestData getTestData() {
+        return testData;
+    }
+
+    public void setTestData(TestData testData) {
+        this.testData = testData;
     }
 }

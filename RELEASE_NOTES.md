@@ -1,5 +1,54 @@
 # Release Notes
 
+## Version 15.1.0
+_5 December 2017_
+
+### Minor Features
+* Added /data/test_data service to get all criteria with allowable test data
+* Added /data/test_procedure service to get all criteria with allowable test procedure
+* Use new test data values for upload and validation of listings.
+* Use new test procedure values for upload and validation of listings.
+* Support 2015 upload template v12.
+
+### Bugs Fixed
+* Surveillance upload fixed to match on criteria number without space between number and letters.
+
+---
+
+## Version 15.0.0
+_20 November 2017_
+
+### Backwards compatibility breaking features
+* Re-wrote API search code. See documentation for the HTTP GET /search call for information.
+
+### Bugs Fixed
+* Fix 60 day date range check for activity when date range overlaps daylight savings.
+
+---
+
+## Version 14.2.1
+_07 November 2017_
+
+### Bugs Fixed
+* 170.315 (b)(8) is not required to have test procedures or test tools. Will become required on the Nov 20 push.
+
+---
+
+## Version 14.2.0
+_06 November 2017_
+
+### Minor Features
+* Add certified_products/sed_details endpoint that returns the latest SED all Details document
+* Add new version of 2014 upload template that adds a GAP column for 170.314 (b)(5)(B)
+* Change warning message for transparency attestation saving
+* Re-work handling of questionable activities. Do not send an email each time questionable activity appears, but save it all and send as a weekly report to subscribers instead.
+
+### Bugs fixed
+* Fix bug where uploaded SED Test Participants with identical demographics are not recognized correctly
+* Improve handling for upload files that have blank columns at the end
+
+---
+
 ## Version 14.1.0
 _23 October 2017_
 

@@ -3,7 +3,10 @@ package gov.healthit.chpl.entity.listing;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -24,6 +27,10 @@ public class CertificationResultDetailsEntity {
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
 
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
+    private CertifiedProductDetailsEntity listing;
+    
     @Column(name = "success")
     private Boolean success;
 
@@ -145,5 +152,13 @@ public class CertificationResultDetailsEntity {
 
     public void setPrivacySecurityFramework(final String privacySecurityFramework) {
         this.privacySecurityFramework = privacySecurityFramework;
+    }
+
+    public CertifiedProductDetailsEntity getListing() {
+        return listing;
+    }
+
+    public void setListing(CertifiedProductDetailsEntity listing) {
+        this.listing = listing;
     }
 }
