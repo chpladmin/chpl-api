@@ -3,11 +3,17 @@
 ## Version TBD
 _Date TBD_
 
-### Backwards compatability breaking features
-* Change ROLE_ACB_ADMIN to ROLE_ACB
-* Change ROLE_ATL_ADMIN to ROLE_ATL
-* Remove ROLE_ACB_STAFF
-* Remove ROLE_ATL_STAFF
+### Major feature
+* Update ROLES
+  * Change ROLE_ACB_ADMIN to ROLE_ACB
+  * Change ROLE_ATL_ADMIN to ROLE_ATL
+  * Remove ROLE_ACB_STAFF
+  * Remove ROLE_ATL_STAFF
+
+---
+
+## Version 15.1.0
+_5 December 2017_
 
 ### Minor Features
 * Added /data/test_data service to get all criteria with allowable test data
@@ -15,6 +21,9 @@ _Date TBD_
 * Use new test data values for upload and validation of listings.
 * Use new test procedure values for upload and validation of listings.
 * Support 2015 upload template v12.
+
+### Bugs Fixed
+* Surveillance upload fixed to match on criteria number without space between number and letters.
 
 ---
 
