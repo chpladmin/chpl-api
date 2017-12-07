@@ -260,11 +260,11 @@ public class TestingLabController {
         List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
         for (UserDTO user : users) {
 
-            // only show users that have ROLE_ATL_*
+            // only show users that have ROLE_ATL
             Set<UserPermissionDTO> systemPermissions = userManager.getGrantedPermissionsForUser(user);
             boolean hasAtlPermission = false;
             for (UserPermissionDTO systemPermission : systemPermissions) {
-                if (systemPermission.getAuthority().startsWith("ROLE_ATL_")) {
+                if (systemPermission.getAuthority().equals("ROLE_ATL")) {
                     hasAtlPermission = true;
                 }
             }
