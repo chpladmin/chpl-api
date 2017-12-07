@@ -70,7 +70,6 @@ import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.MeaningfulUseUser;
-import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -515,19 +514,13 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         // qms
         if (pendingCp.getQmsStandards() != null && pendingCp.getQmsStandards().size() > 0) {
-            for (PendingCertifiedProductQmsStandardDTO qms : pendingCp.getQmsStandards()) {
+            for (PendingCertifiedProductQmsStandardDTO pendingQms : pendingCp.getQmsStandards()) {
                 CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
-                if (qms.getQmsStandardId() == null) {
-                    QmsStandardDTO toAdd = new QmsStandardDTO();
-                    toAdd.setName(qms.getName());
-                    toAdd = qmsDao.create(toAdd);
-                    qmsDto.setQmsStandardId(toAdd.getId());
-                } else {
-                    qmsDto.setQmsStandardId(qms.getQmsStandardId());
-                }
+                QmsStandardDTO qms = qmsDao.findOrCreate(pendingQms.getQmsStandardId(), pendingQms.getName());
+                qmsDto.setQmsStandardId(qms.getId());
                 qmsDto.setCertifiedProductId(newCertifiedProduct.getId());
-                qmsDto.setApplicableCriteria(qms.getApplicableCriteria());
-                qmsDto.setQmsModification(qms.getModification());
+                qmsDto.setApplicableCriteria(pendingQms.getApplicableCriteria());
+                qmsDto.setQmsModification(pendingQms.getModification());
                 cpQmsDao.createCertifiedProductQms(qmsDto);
             }
         }
@@ -636,23 +629,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     }
 
                     if (certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
-                        for (PendingCertificationResultUcdProcessDTO ucd : certResult.getUcdProcesses()) {
+                        for (PendingCertificationResultUcdProcessDTO pendingUcd : certResult.getUcdProcesses()) {
                             CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
-                            if (ucd.getUcdProcessId() != null) {
-                                ucdDto.setUcdProcessId(ucd.getUcdProcessId());
-                            } else {
-                                UcdProcessDTO foundUcd = ucdDao.getByName(ucd.getUcdProcessName());
-                                if(foundUcd != null && foundUcd.getId() != null) {
-                                    ucdDto.setUcdProcessId(foundUcd.getId());
-                                } else {
-                                    UcdProcessDTO newUcd = new UcdProcessDTO();
-                                    newUcd.setName(ucd.getUcdProcessName());
-                                    newUcd = ucdDao.create(newUcd);
-                                    ucdDto.setUcdProcessId(newUcd.getId());
-                                }
-                            }
+                            UcdProcessDTO ucd = ucdDao.findOrCreate(pendingUcd.getUcdProcessId(), pendingUcd.getUcdProcessName());
+                            ucdDto.setUcdProcessId(ucd.getId());
                             ucdDto.setCertificationResultId(createdCert.getId());
-                            ucdDto.setUcdProcessDetails(ucd.getUcdProcessDetails());
+                            ucdDto.setUcdProcessDetails(pendingUcd.getUcdProcessDetails());
                             certDao.addUcdProcessMapping(ucdDto);
                         }
                     }
