@@ -510,17 +510,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         if (updatedUcdProcesses != null && updatedUcdProcesses.size() > 0) {
             // fill in potentially missing ucd process id
             for (UcdProcess updatedItem : updatedUcdProcesses) {
-                if (updatedItem.getId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
-                    UcdProcessDTO foundUcd = ucdDao.getByName(updatedItem.getName());
-                    if (foundUcd == null) {
-                        UcdProcessDTO ucdToCreate = new UcdProcessDTO();
-                        ucdToCreate.setName(updatedItem.getName());
-                        UcdProcessDTO created = ucdDao.create(ucdToCreate);
-                        updatedItem.setId(created.getId());
-                    } else {
-                        updatedItem.setId(foundUcd.getId());
-                    }
-                }
+                UcdProcessDTO foundUcd = ucdDao.findOrCreate(updatedItem.getId(), updatedItem.getName());
+                updatedItem.setId(foundUcd.getId());
             }
 
             if (existingUcdProcesses == null || existingUcdProcesses.size() == 0) {
