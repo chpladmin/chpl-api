@@ -10,6 +10,9 @@ _Date TBD_
   * Remove ROLE_ACB_STAFF
   * Remove ROLE_ATL_STAFF
 
+### Minor Features
+* Do not allow duplicate QMS Standards or UCD Processes to be added.
+
 ---
 
 ## Version 15.1.0
