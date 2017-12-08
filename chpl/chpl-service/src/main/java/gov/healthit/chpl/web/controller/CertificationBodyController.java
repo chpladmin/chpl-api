@@ -248,11 +248,11 @@ public class CertificationBodyController {
         List<UserDTO> users = acbManager.getAllUsersOnAcb(acb);
         for (UserDTO user : users) {
 
-            // only show users that have ROLE_ACB_*
+            // only show users that have ROLE_ACB
             Set<UserPermissionDTO> systemPermissions = userManager.getGrantedPermissionsForUser(user);
             boolean hasAcbPermission = false;
             for (UserPermissionDTO systemPermission : systemPermissions) {
-                if (systemPermission.getAuthority().startsWith("ROLE_ACB_")) {
+                if (systemPermission.getAuthority().equals("ROLE_ACB")) {
                     hasAcbPermission = true;
                 }
             }
