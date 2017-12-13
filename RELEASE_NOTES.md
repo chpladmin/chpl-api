@@ -12,6 +12,7 @@ _Date TBD_
 
 ### Minor Features
 * Do not allow duplicate QMS Standards or UCD Processes to be added.
+* If GAP is not specified for 170.314 (b)(5)(B) a warning will be returned instead of an error.
 
 ---
 
