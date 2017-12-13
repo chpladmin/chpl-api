@@ -576,14 +576,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 
         //make sure the ICS boolean and presence of parents match
         if (product.getIcs() != null) {
-            if(product.getIcs().booleanValue() == true && 
+            if(product.getIcs().booleanValue() == true &&
                     (product.getIcsParents() == null || product.getIcsParents().size() == 0)) {
-                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                product.getErrorMessages().add(String.format(messageSource.getMessage(
                                                     new DefaultMessageSourceResolvable("listing.icsTrueAndNoParentsFound"),
                                                     LocaleContextHolder.getLocale())));
-            } else if(product.getIcs().booleanValue() == false && product.getIcsParents() != null && 
+            } else if(product.getIcs().booleanValue() == false && product.getIcsParents() != null &&
                     product.getIcsParents().size() > 0) {
-                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                product.getErrorMessages().add(String.format(messageSource.getMessage(
                         new DefaultMessageSourceResolvable("listing.icsFalseAndParentsFound"),
                         LocaleContextHolder.getLocale())));
             }
@@ -592,7 +592,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     new DefaultMessageSourceResolvable("listing.missingIcs"),
                     LocaleContextHolder.getLocale())));
         }
-        
+
         //if parents exist make sure they are valid
         if(product.getIcsParents() != null && product.getIcsParents().size() > 0) {
             // parents are non-empty - check inheritance rules
@@ -1296,11 +1296,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     new DefaultMessageSourceResolvable("listing.missingIcs"),
                     LocaleContextHolder.getLocale())));
         } else if (product.getIcs().getInherits().equals(Boolean.TRUE) && icsCodeInteger.intValue() > 0) {
-            // if ICS is nonzero, warn about providing parents
+            // if ICS is nonzero, and no parents are found, give error
             if (product.getIcs() == null || product.getIcs().getParents() == null
                     || product.getIcs().getParents().size() == 0) {
-                product.getWarningMessages().add(
-                        "The ICS code is greater than zero which means this listing has inherited properties. It is recommended to specify at least one parent from which the listing inherits.");
+                product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                                    new DefaultMessageSourceResolvable("listing.icsTrueAndNoParentsFound"),
+                                                    LocaleContextHolder.getLocale())));
             } else {
                 // parents are non-empty - check inheritance rules
                 // certification edition must be the same as this listings
