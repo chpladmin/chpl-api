@@ -888,35 +888,24 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                         .add("0 or 1 is required to inidicate whether " + cert.getNumber() + " was met.");
             } else if (cert.getMeetsCriteria() == Boolean.TRUE) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() == null) {
-                    if(cert.getNumber().equals("170.314 (b)(5)(B)")) {
-                        product.getWarningMessages().add(String.format(
-                                messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber()));
-                    } else {
-                        product.getErrorMessages().add(String.format(
-                                messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber()));
-                    }
+                    product.getErrorMessages().add(String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                 }
 
-                if(cert.getNumber().equals("170.315 (b)(8)")) {
-                    if(cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0) {
-                        product.getWarningMessages()
-                        .add("Test Procedures will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
-                    }
-                } else {
-                    boolean gapEligibleAndTrue = false;
-                    if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                            && cert.getGap() == Boolean.TRUE) {
-                        gapEligibleAndTrue = true;
-                    }
-    
-                    if (!gapEligibleAndTrue
-                            && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                            && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                        product.getErrorMessages()
-                                .add("Test Procedures are required for certification " + cert.getNumber() + ".");
-                    }
+                boolean gapEligibleAndTrue = false;
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+                    && cert.getGap() == Boolean.TRUE) {
+                    gapEligibleAndTrue = true;
+                }
+
+                if (!gapEligibleAndTrue
+                    && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
+                    && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.criteria.missingTestProcedure"),
+                        LocaleContextHolder.getLocale()),
+                        cert.getNumber()));
                 }
             }
         }
@@ -960,15 +949,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         for (CertificationResult cert : product.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
-                    if(cert.getNumber().equals("170.314 (b)(5)(B)")) {
-                        product.getWarningMessages().add(String.format(
-                                messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber()));
-                    } else {
-                        product.getErrorMessages().add(String.format(
-                                messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber()));
-                    }
+                    product.getErrorMessages().add(String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                 }
                 // Jennifer asked to take out the test procedure validation for
                 // existing products

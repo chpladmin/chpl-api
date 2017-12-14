@@ -3,6 +3,10 @@
 ## OCD-1870: ICS source
 * Made ICS Source required for 2015 w/ICS on upload/confirm/edit
 
+## OCD-1913: Warings -> Errors
+* Test tools are required for 170.315 (b)(8)
+* GAP is required for 170.314 (b)(5)(B)
+
 ---
 
 ## Version TBD
