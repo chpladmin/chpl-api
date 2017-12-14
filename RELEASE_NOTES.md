@@ -1,5 +1,10 @@
 # Release Notes
 
+## OCD-1870: ICS source
+* Made ICS Source required for 2015 w/ICS on upload/confirm/edit
+
+---
+
 ## Version TBD
 _Date TBD_
 
