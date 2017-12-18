@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -458,6 +459,7 @@ public class CertifiedProductController {
         CSVParser parser = null;
         try {
             reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+            //reader = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
             parser = new CSVParser(reader, CSVFormat.EXCEL);
 
             List<CSVRecord> records = parser.getRecords();
