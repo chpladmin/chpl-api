@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 15.2.0
+_18 December 2017_
 
 ### Major feature
 * Update ROLES
