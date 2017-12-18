@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 15.2.0
+_18 December 2017_
+
+### Major feature
+* Update ROLES
+  * Change ROLE_ACB_ADMIN to ROLE_ACB
+  * Change ROLE_ATL_ADMIN to ROLE_ATL
+  * Remove ROLE_ACB_STAFF
+  * Remove ROLE_ATL_STAFF
+
+### Minor Features
+* Do not allow duplicate QMS Standards or UCD Processes to be added.
+* If GAP is not specified for 170.314 (b)(5)(B) a warning will be returned instead of an error.
+
+---
+
 ## Version 15.1.0
 _5 December 2017_
 

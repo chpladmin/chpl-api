@@ -47,8 +47,7 @@ public class UserDaoTest {
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	private static final String ROLE_ACB_STAFF = "ROLE_ACB_STAFF";
-	private static final String ROLE_ACB_ADMIN = "ROLE_ACB_ADMIN";
+	private static final String ROLE_ACB = "ROLE_ACB";
 	private static final String ROLE_ONC_STAFF = "ROLE_ONC_STAFF";
 	private static JWTAuthenticatedUser authUser;
 
@@ -91,25 +90,6 @@ public class UserDaoTest {
 	}
 
 	@Test
-	public void testAddAcbStaffPermission() throws UserRetrievalException, UserPermissionRetrievalException {
-		UserDTO toEdit = dao.getByName("TESTUSER");
-		assertNotNull(toEdit);
-
-		dao.removePermission(toEdit.getSubjectName(), ROLE_ACB_STAFF);
-		dao.addPermission(toEdit.getSubjectName(), ROLE_ACB_STAFF);
-
-		Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
-		assertNotNull(permissions);
-		boolean hasAcbStaffRole = false;
-		for (UserPermissionDTO perm : permissions) {
-			if (ROLE_ACB_STAFF.equals(perm.toString())) {
-				hasAcbStaffRole = true;
-			}
-		}
-		assertTrue(hasAcbStaffRole);
-	}
-
-	@Test
 	public void testAddOncStaffPermission() throws UserRetrievalException, UserPermissionRetrievalException {
 		UserDTO toEdit = dao.getByName("TESTUSER");
 		assertNotNull(toEdit);
@@ -133,14 +113,14 @@ public class UserDaoTest {
 		UserDTO toEdit = dao.getByName("TESTUSER");
 		assertNotNull(toEdit);
 
-		dao.removePermission(toEdit.getSubjectName(), ROLE_ACB_ADMIN);
-		dao.addPermission(toEdit.getSubjectName(), ROLE_ACB_ADMIN);
+		dao.removePermission(toEdit.getSubjectName(), ROLE_ACB);
+		dao.addPermission(toEdit.getSubjectName(), ROLE_ACB);
 
 		Set<UserPermissionDTO> permissions = permDao.findPermissionsForUser(toEdit.getId());
 		assertNotNull(permissions);
 		boolean hasAcbStaffRole = false;
 		for (UserPermissionDTO perm : permissions) {
-			if (ROLE_ACB_ADMIN.equals(perm.toString())) {
+			if (ROLE_ACB.equals(perm.toString())) {
 				hasAcbStaffRole = true;
 			}
 		}

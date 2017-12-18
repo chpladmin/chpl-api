@@ -84,7 +84,7 @@ public class InvitationManagerImpl implements InvitationManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     public InvitationDTO inviteWithRolesOnly(String emailAddress, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -98,7 +98,7 @@ public class InvitationManagerImpl implements InvitationManager {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
+            + "(hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     public InvitationDTO inviteWithAcbAccess(String emailAddress, Long acbId, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -115,7 +115,7 @@ public class InvitationManagerImpl implements InvitationManager {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ATL_ADMIN') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
+            + "(hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin))")
     public InvitationDTO inviteWithAtlAccess(String emailAddress, Long atlId, List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
         InvitationDTO dto = new InvitationDTO();
@@ -132,9 +132,9 @@ public class InvitationManagerImpl implements InvitationManager {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or " + "("
-            + "hasRole('ROLE_ACB_ADMIN') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
+            + "hasRole('ROLE_ACB') and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin) "
             + " and "
-            + "hasRole('ROLE_ATL_ADMIN') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)" + ")")
+            + "hasRole('ROLE_ATL') and hasPermission(#atlId, 'gov.healthit.chpl.dto.TestingLabDTO', admin)" + ")")
     public InvitationDTO inviteWithAcbAndAtlAccess(String emailAddress, Long acbId, Long atlId,
             List<String> permissions)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {

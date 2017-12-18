@@ -100,7 +100,7 @@ public class DeveloperController {
                     + " is created with all of the information provided (name, address, etc.) and all of the prodcuts "
                     + " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
                     + " old developers are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN, ROLE_ACB_ADMIN, or ROLE_ACB_STAFF. ")
+                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloper(

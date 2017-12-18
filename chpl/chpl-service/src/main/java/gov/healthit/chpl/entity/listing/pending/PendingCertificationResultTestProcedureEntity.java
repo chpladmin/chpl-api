@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import gov.healthit.chpl.entity.TestProcedureEntity;
 
 @Entity
-@Table(name = "pending_certification_result_test_procedure_temp")
+@Table(name = "pending_certification_result_test_procedure")
 public class PendingCertificationResultTestProcedureEntity {
 
     @Id

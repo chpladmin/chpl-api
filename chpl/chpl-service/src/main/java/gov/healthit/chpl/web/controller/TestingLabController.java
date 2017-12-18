@@ -194,11 +194,11 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Add a user to an ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL_ADMIN and have administrative authority on the "
+            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
                     + " specified ATL. It is recommended to pass 'ADMIN' in as the 'authority' field"
                     + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
                     + " Note that this method gives special permission on a specific ATL and is not the "
-                    + " equivalent of assigning the ROLE_ATL_ADMIN role. Please view /users/grant_role "
+                    + " equivalent of assigning the ROLE_ATL role. Please view /users/grant_role "
                     + " request for more information on that.")
     @RequestMapping(value = "/add_user", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -223,7 +223,7 @@ public class TestingLabController {
     }
 
     @ApiOperation(value = "Remove user permissions from an ATL.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL_ADMIN and have administrative authority on the "
+            notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
                     + " specified ATL. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ATL.")
     @RequestMapping(value = "{atlId}/remove_user/{userId}", method = RequestMethod.POST,
@@ -260,11 +260,11 @@ public class TestingLabController {
         List<UserDTO> users = atlManager.getAllUsersOnAtl(atl);
         for (UserDTO user : users) {
 
-            // only show users that have ROLE_ATL_*
+            // only show users that have ROLE_ATL
             Set<UserPermissionDTO> systemPermissions = userManager.getGrantedPermissionsForUser(user);
             boolean hasAtlPermission = false;
             for (UserPermissionDTO systemPermission : systemPermissions) {
-                if (systemPermission.getAuthority().startsWith("ROLE_ATL_")) {
+                if (systemPermission.getAuthority().equals("ROLE_ATL")) {
                     hasAtlPermission = true;
                 }
             }

@@ -131,7 +131,7 @@ public class CorrectiveActionPlanController {
     }
 
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods.<br/>Update a corrective action plan.",
-            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+            notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and administrative "
                     + "authority on the ACB associated with the corrective action plan.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @Deprecated
@@ -282,7 +282,7 @@ public class CorrectiveActionPlanController {
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods.<br/>Add documentation to an existing CAP.",
             notes = "Upload a file of any kind (current size limit 5MB) as supporting "
                     + " documentation to an existing CAP. The logged in user uploading the file "
-                    + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+                    + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/{capId}/documentation", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -332,7 +332,7 @@ public class CorrectiveActionPlanController {
     }
 
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods. <br/>Create a new corrective action plan.",
-            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     @Deprecated
@@ -408,7 +408,7 @@ public class CorrectiveActionPlanController {
     }
 
     @ApiOperation(value = "DEPRECATED. Use surveillance API methods.<br/>Delete a corrective action plan.",
-            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/{planId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
@@ -448,7 +448,7 @@ public class CorrectiveActionPlanController {
 
     @ApiOperation(
             value = "DEPRECATED. Use surveillance API methods.<br/>Remove documentation from a corrective action plan.",
-            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB_ADMIN and administrative "
+            notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/documentation/{docId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")

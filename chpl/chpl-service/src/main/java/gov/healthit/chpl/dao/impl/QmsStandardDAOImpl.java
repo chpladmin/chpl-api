@@ -29,36 +29,6 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
     MessageSource messageSource;
 
     @Override
-    public QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
-
-        QmsStandardEntity entity = null;
-        if (dto.getId() != null) {
-            entity = this.getEntityById(dto.getId());
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-            try {
-                entity = new QmsStandardEntity();
-                entity.setCreationDate(new Date());
-                entity.setDeleted(false);
-                entity.setLastModifiedDate(new Date());
-                entity.setLastModifiedUser(Util.getCurrentUser().getId());
-                entity.setName(dto.getName());
-                create(entity);
-            } catch (Exception ex) {
-                String msg = String
-                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"),
-                                LocaleContextHolder.getLocale()), dto.getName());
-                LOGGER.error(msg, ex);
-                throw new EntityCreationException(msg);
-            }
-            return new QmsStandardDTO(entity);
-        }
-    }
-
-    @Override
     public QmsStandardDTO update(QmsStandardDTO dto) throws EntityRetrievalException {
         QmsStandardEntity entity = this.getEntityById(dto.getId());
 
@@ -67,8 +37,8 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
         }
 
         entity.setName(dto.getName());
-
-        update(entity);
+        entityManager.merge(entity);
+        entityManager.flush();
         return new QmsStandardDTO(entity);
     }
 
@@ -81,7 +51,8 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
             toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-            update(toDelete);
+            entityManager.merge(toDelete);
+            entityManager.flush();
         }
     }
 
@@ -139,19 +110,36 @@ public class QmsStandardDAOImpl extends BaseDAOImpl implements QmsStandardDAO {
         return result;
     }
 
-    private void create(QmsStandardEntity entity) {
+    private QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException {
 
-        entityManager.persist(entity);
-        entityManager.flush();
+        QmsStandardEntity entity = null;
+        if (dto.getId() != null) {
+            entity = this.getEntityById(dto.getId());
+        }
 
+        if (entity != null) {
+            throw new EntityCreationException("An entity with this ID already exists.");
+        } else {
+            try {
+                entity = new QmsStandardEntity();
+                entity.setCreationDate(new Date());
+                entity.setDeleted(false);
+                entity.setLastModifiedDate(new Date());
+                entity.setLastModifiedUser(Util.getCurrentUser().getId());
+                entity.setName(dto.getName());
+                entityManager.persist(entity);
+                entityManager.flush();
+            } catch (Exception ex) {
+                String msg = String
+                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badQmsStandard"),
+                                LocaleContextHolder.getLocale()), dto.getName());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+            return new QmsStandardDTO(entity);
+        }
     }
-
-    private void update(QmsStandardEntity entity) {
-
-        entityManager.merge(entity);
-        entityManager.flush();
-    }
-
+    
     private List<QmsStandardEntity> getAllEntities() {
         return entityManager.createQuery("from QmsStandardEntity where (NOT deleted = true) ", QmsStandardEntity.class)
                 .getResultList();

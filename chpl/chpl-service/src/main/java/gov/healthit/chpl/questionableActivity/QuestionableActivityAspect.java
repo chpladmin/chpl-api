@@ -61,7 +61,8 @@ public class QuestionableActivityAspect implements EnvironmentAware {
     public void checkQuestionableActivity(ActivityConcept concept, 
             Long objectId, String activityDescription, Object originalData, Object newData) {
         if(originalData == null || newData == null || 
-                !originalData.getClass().equals(newData.getClass())) {
+                !originalData.getClass().equals(newData.getClass()) ||
+                Util.getCurrentUser() == null) {
             return;
         }
         
