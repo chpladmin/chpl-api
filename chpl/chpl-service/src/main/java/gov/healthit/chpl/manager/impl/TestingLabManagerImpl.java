@@ -133,13 +133,13 @@ public class TestingLabManagerImpl extends ApplicationObjectSupport implements T
         // normally we shouldn't call an internal manager method because
         // permissions will be
         // ignored but we know the user calling this has ROLE_ADMIN already
-        List<UserDTO> usersOnAcb = getAllUsersOnAtl(atl);
+        List<UserDTO> usersOnAtl = getAllUsersOnAtl(atl);
 
         // check all the ACBs to see if each user has permission on it
         List<CertificationBodyDTO> allAcbs = certificationBodyDao.findAll(false);
         List<TestingLabDTO> allTestingLabs = testingLabDAO.findAll(false);
 
-        for (UserDTO currUser : usersOnAcb) {
+        for (UserDTO currUser : usersOnAtl) {
             boolean userHasOtherPermissions = false;
             Set<UserPermissionDTO> permissions = userManager.getGrantedPermissionsForUser(currUser);
             for (UserPermissionDTO currPermission : permissions) {

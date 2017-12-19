@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,36 +28,6 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
     @Autowired
     MessageSource messageSource;
 
-    @Override
-    public UcdProcessDTO create(UcdProcessDTO dto) throws EntityCreationException {
-        UcdProcessEntity entity = null;
-        if (dto.getId() != null) {
-            entity = this.getEntityById(dto.getId());
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-            entity = new UcdProcessEntity();
-            entity.setCreationDate(new Date());
-            entity.setDeleted(false);
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
-            entity.setName(dto.getName());
-
-            try {
-                create(entity);
-            } catch (Exception ex) {
-                String msg = String.format(
-                        messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"),
-                                LocaleContextHolder.getLocale()),
-                        dto.getName());
-                LOGGER.error(msg, ex);
-                throw new EntityCreationException(msg);
-            }
-            return new UcdProcessDTO(entity);
-        }
-    }
 
     @Override
     public UcdProcessDTO update(UcdProcessDTO dto) throws EntityRetrievalException {
@@ -70,7 +41,8 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
         entity.setLastModifiedUser(Util.getCurrentUser().getId());
         entity.setLastModifiedDate(new Date());
 
-        update(entity);
+        entityManager.merge(entity);
+        entityManager.flush();
         return new UcdProcessDTO(entity);
     }
 
@@ -83,7 +55,8 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
             toDelete.setLastModifiedUser(Util.getCurrentUser().getId());
-            update(toDelete);
+            entityManager.merge(toDelete);
+            entityManager.flush();
         }
     }
 
@@ -112,6 +85,23 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
     }
 
     @Override
+    public UcdProcessDTO findOrCreate(Long id, String name) throws EntityCreationException {
+        UcdProcessDTO result = null;
+        if (id != null) {
+            result = getById(id);
+        } else if (!StringUtils.isEmpty(name)) {
+            result = getByName(name);
+        }
+
+        if (result == null) {
+            UcdProcessDTO toCreate = new UcdProcessDTO();
+            toCreate.setName(name.trim());
+            result = create(toCreate);
+        }
+        return result;
+    }
+    
+    @Override
     public List<UcdProcessDTO> findAll() {
 
         List<UcdProcessEntity> entities = getAllEntities();
@@ -125,17 +115,35 @@ public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {
 
     }
 
-    private void create(UcdProcessEntity entity) {
+    private UcdProcessDTO create(UcdProcessDTO dto) throws EntityCreationException {
+        UcdProcessEntity entity = null;
+        if (dto.getId() != null) {
+            entity = this.getEntityById(dto.getId());
+        }
 
-        entityManager.persist(entity);
-        entityManager.flush();
+        if (entity != null) {
+            throw new EntityCreationException("An entity with this ID already exists.");
+        } else {
+            entity = new UcdProcessEntity();
+            entity.setCreationDate(new Date());
+            entity.setDeleted(false);
+            entity.setLastModifiedDate(new Date());
+            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setName(dto.getName());
 
-    }
-
-    private void update(UcdProcessEntity entity) {
-
-        entityManager.merge(entity);
-        entityManager.flush();
+            try {
+                entityManager.persist(entity);
+                entityManager.flush();
+            } catch (Exception ex) {
+                String msg = String.format(
+                        messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badUcdProcess"),
+                                LocaleContextHolder.getLocale()),
+                        dto.getName());
+                LOGGER.error(msg, ex);
+                throw new EntityCreationException(msg);
+            }
+            return new UcdProcessDTO(entity);
+        }
     }
 
     private List<UcdProcessEntity> getAllEntities() {

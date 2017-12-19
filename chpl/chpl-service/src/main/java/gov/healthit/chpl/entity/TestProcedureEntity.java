@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "test_procedure_temp")
+@Table(name = "test_procedure")
 public class TestProcedureEntity {
 
     @Id

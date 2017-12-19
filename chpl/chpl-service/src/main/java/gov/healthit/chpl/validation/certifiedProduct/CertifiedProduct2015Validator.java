@@ -29,6 +29,7 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
@@ -575,14 +576,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 
         //make sure the ICS boolean and presence of parents match
         if (product.getIcs() != null) {
-            if(product.getIcs().booleanValue() == true && 
+            if(product.getIcs().booleanValue() == true &&
                     (product.getIcsParents() == null || product.getIcsParents().size() == 0)) {
-                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                product.getErrorMessages().add(String.format(messageSource.getMessage(
                                                     new DefaultMessageSourceResolvable("listing.icsTrueAndNoParentsFound"),
                                                     LocaleContextHolder.getLocale())));
-            } else if(product.getIcs().booleanValue() == false && product.getIcsParents() != null && 
+            } else if(product.getIcs().booleanValue() == false && product.getIcsParents() != null &&
                     product.getIcsParents().size() > 0) {
-                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                product.getErrorMessages().add(String.format(messageSource.getMessage(
                         new DefaultMessageSourceResolvable("listing.icsFalseAndParentsFound"),
                         LocaleContextHolder.getLocale())));
             }
@@ -591,7 +592,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     new DefaultMessageSourceResolvable("listing.missingIcs"),
                     LocaleContextHolder.getLocale())));
         }
-        
+
         //if parents exist make sure they are valid
         if(product.getIcsParents() != null && product.getIcsParents().size() > 0) {
             // parents are non-empty - check inheritance rules
@@ -686,17 +687,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 // product.getErrorMessages().add("Functionality Tested is
                 // required for certification " + cert.getNumber() + ".");
                 // }
-                if(cert.getNumber().equals("170.315 (b)(8)")) {
-                    if(cert.getTestTools() == null || cert.getTestTools().size() == 0) {
-                        product.getWarningMessages()
-                        .add("Test Tools will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
-                    }
-                } else if (!gapEligibleAndTrue
+                if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    product.getErrorMessages()
-                            .add("Test Tools are required for certification " + cert.getNumber() + ".");
-                } 
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.criteria.missingTestTool"),
+                        LocaleContextHolder.getLocale()),
+                        cert.getNumber()));
+                }
 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
@@ -731,17 +729,31 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
                         if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test procedure name: '" + crTestProc.getEnteredName() + "'.");
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.badTestProcedureName"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getEnteredName()));
                         } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc = 
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test procedure name: '" + crTestProc.getTestProcedure().getName() + "'.");
+                                product.getErrorMessages().add(
+                                        String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestProcedureName"),
+                                        LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getTestProcedure().getName()));
                             } else {
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
+                        }
+                        
+                        if(!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestProcedureVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }
@@ -750,17 +762,37 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestData() != null && cert.getTestData().size() > 0) {
                     for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
                         if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test data name: '" + crTestData.getEnteredName() + "'.");
+                            product.getWarningMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.badTestDataName"),
+                                    LocaleContextHolder.getLocale()), crTestData.getEnteredName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                            TestDataDTO foundTestData = 
+                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                            crTestData.setTestData(foundTestData);
                         } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
                             if(foundTestData == null || foundTestData.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test data name: '" + crTestData.getTestData().getName() + "'.");
+                                product.getWarningMessages().add(
+                                        String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestDataName"),
+                                        LocaleContextHolder.getLocale()), crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                                foundTestData = 
+                                        testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                                crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }
+                        }
+                        
+                        if(!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestDataVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }
@@ -1264,11 +1296,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     new DefaultMessageSourceResolvable("listing.missingIcs"),
                     LocaleContextHolder.getLocale())));
         } else if (product.getIcs().getInherits().equals(Boolean.TRUE) && icsCodeInteger.intValue() > 0) {
-            // if ICS is nonzero, warn about providing parents
+            // if ICS is nonzero, and no parents are found, give error
             if (product.getIcs() == null || product.getIcs().getParents() == null
                     || product.getIcs().getParents().size() == 0) {
-                product.getWarningMessages().add(
-                        "The ICS code is greater than zero which means this listing has inherited properties. It is recommended to specify at least one parent from which the listing inherits.");
+                product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                                    new DefaultMessageSourceResolvable("listing.icsTrueAndNoParentsFound"),
+                                                    LocaleContextHolder.getLocale())));
             } else {
                 // parents are non-empty - check inheritance rules
                 // certification edition must be the same as this listings
@@ -1384,18 +1417,15 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                             .add("API Documentation is required for certification " + cert.getNumber() + ".");
                 }
 
-                if(cert.getNumber().equals("170.315 (b)(8)")) {
-                    if(cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0) {
-                        product.getWarningMessages()
-                        .add("Test Tools will be required for criteria 170.315(b)(8) when 2015 CHPL Upload Template v10 is retired.");
-                    }
-                } else if (!gapEligibleAndTrue
+                if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
-                    product.getErrorMessages()
-                            .add("Test Tools are required for certification " + cert.getNumber() + ".");
-                } 
-                
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.criteria.missingTestTool"),
+                        LocaleContextHolder.getLocale()),
+                        cert.getNumber()));
+                }
+
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                     for (CertificationResultTestTool toolMap : cert.getTestToolsUsed()) {
@@ -1423,21 +1453,48 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     }
                 }
 
+                //require at least one test procedure where gap does not exist or is false
+                if (!gapEligibleAndTrue
+                    && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
+                    && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
+                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.criteria.missingTestProcedure"),
+                        LocaleContextHolder.getLocale()),
+                        cert.getNumber()));
+                }
+
+                //if the criteria can and does have test procedures, make sure they are each valid
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
                     for (CertificationResultTestProcedure crTestProc : cert.getTestProcedures()) {
-                        if (crTestProc.getTestProcedure() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber() +
-                                    " must provide a test procedure.");
-                        } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
+                        if(crTestProc.getTestProcedure() == null) {
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestProcedureName"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
+                        } if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc = 
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test procedure name: '" + crTestProc.getTestProcedure().getName() + "'.");
+                                product.getErrorMessages().add(
+                                        String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestProcedureName"),
+                                        LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getTestProcedure().getName()));
                             } else {
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
+                        }
+                        
+                        if(crTestProc.getTestProcedure() != null && 
+                                !StringUtils.isEmpty(crTestProc.getTestProcedure().getName()) && 
+                                StringUtils.isEmpty(crTestProc.getTestProcedureVersion())) {
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestProcedureVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }
@@ -1446,17 +1503,38 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {
                         if (crTestData.getTestData() == null) {
-                            product.getErrorMessages().add("Certification " + cert.getNumber() +
-                                    " must provide a test data.");
+                            product.getWarningMessages().add(String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestDataName"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                            TestDataDTO foundTestData = 
+                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                            TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
+                            crTestData.setTestData(foundTestDataDomain);
                         } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
                             if(foundTestData == null || foundTestData.getId() == null) {
-                                product.getErrorMessages().add("Certification " + cert.getNumber()
-                                + " contains an invalid test data name: '" + crTestData.getTestData().getName() + "'.");
+                                product.getWarningMessages().add(String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.badTestDataName"),
+                                        LocaleContextHolder.getLocale()), crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                                foundTestData = 
+                                        testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+                                crTestData.getTestData().setId(foundTestData.getId());
                             } else {
                                 crTestData.getTestData().setId(foundTestData.getId());
                             }
+                        }
+                        
+                        if(crTestData.getTestData() != null && 
+                                !StringUtils.isEmpty(crTestData.getTestData().getName()) && 
+                                StringUtils.isEmpty(crTestData.getVersion())) {
+                            product.getErrorMessages().add(
+                                    String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.criteria.missingTestDataVersion"),
+                                    LocaleContextHolder.getLocale()), cert.getNumber()));
                         }
                     }
                 }

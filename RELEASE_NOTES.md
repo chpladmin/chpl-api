@@ -3,11 +3,31 @@
 ## Version TBD
 _Date TBD_
 
-### Backwards compatability breaking features
-* Change ROLE_ACB_ADMIN to ROLE_ACB
-* Change ROLE_ATL_ADMIN to ROLE_ATL
-* Remove ROLE_ACB_STAFF
-* Remove ROLE_ATL_STAFF
+### Minor features
+* Made ICS Source required for 2015 w/ICS on upload/confirm/edit
+* Test tools are required for 170.315 (b)(8)
+* GAP is required for 170.314 (b)(5)(B)
+
+---
+
+## Version 15.2.0
+_18 December 2017_
+
+### Major feature
+* Update ROLES
+  * Change ROLE_ACB_ADMIN to ROLE_ACB
+  * Change ROLE_ATL_ADMIN to ROLE_ATL
+  * Remove ROLE_ACB_STAFF
+  * Remove ROLE_ATL_STAFF
+
+### Minor Features
+* Do not allow duplicate QMS Standards or UCD Processes to be added.
+* If GAP is not specified for 170.314 (b)(5)(B) a warning will be returned instead of an error.
+
+---
+
+## Version 15.1.0
+_5 December 2017_
 
 ### Minor Features
 * Added /data/test_data service to get all criteria with allowable test data
@@ -15,6 +35,9 @@ _Date TBD_
 * Use new test data values for upload and validation of listings.
 * Use new test procedure values for upload and validation of listings.
 * Support 2015 upload template v12.
+
+### Bugs Fixed
+* Surveillance upload fixed to match on criteria number without space between number and letters.
 
 ---
 

@@ -6,8 +6,6 @@ import gov.healthit.chpl.dto.QmsStandardDTO;
 
 public interface QmsStandardDAO {
 
-    QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException;
-
     QmsStandardDTO update(QmsStandardDTO dto) throws EntityRetrievalException;
 
     void delete(Long id) throws EntityRetrievalException;
