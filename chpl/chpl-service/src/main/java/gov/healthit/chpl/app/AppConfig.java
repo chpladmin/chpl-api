@@ -93,6 +93,14 @@ public class AppConfig {
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
+    
+    @Bean
+    public ReloadableResourceBundleMessageSource maxLengthMessageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:/maxLengths");
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
 
     @Bean
     public CookieLocaleResolver localeResolver() {

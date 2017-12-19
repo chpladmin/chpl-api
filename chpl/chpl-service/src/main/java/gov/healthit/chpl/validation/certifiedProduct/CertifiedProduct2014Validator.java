@@ -48,6 +48,35 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     public String[] getG2ComplimentaryCerts() {
         return g2ComplementaryCerts;
     }
+    
+    public boolean certCheck(PendingCertificationResultDTO certToCompare, String[] certs){
+    	for(String cert : certs){
+    		if(!certToCompare.getNumber().equals(cert)){
+    			return false;
+    		}
+    	}
+    	return true;
+    }
+    
+    public void g1g2TestToolCheck(String[] certs, PendingCertifiedProductDTO product){
+    	for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+    		if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+    			boolean gapEligibleAndTrue = false;
+    			if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+    					&& cert.getGap() == Boolean.TRUE) {
+    				gapEligibleAndTrue = true;
+    			}
+
+    			if (!gapEligibleAndTrue
+    					&& certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+    					&& certCheck(cert, certs)
+    					&& (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+    				product.getErrorMessages()
+    				.add("Test Tools are required for certification " + cert.getNumber() + ".");
+    			}
+    		}
+    	}
+    }
 
     @Override
     public void validate(PendingCertifiedProductDTO product) {
@@ -174,6 +203,56 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                             .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
                 }
             }
+        }
+        
+     // check (g)(1)
+        boolean hasG1Cert = false;
+        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+            if (certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
+                hasG1Cert = true;
+            }
+        }
+        if (hasG1Cert) {
+            String[] g1Certs = getG1ComplimentaryCerts();
+            boolean hasG1Complement = false;
+            for (int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
+                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+                    if (certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
+                        hasG1Complement = true;
+                    }
+                }
+            }
+
+            if (!hasG1Complement) {
+                product.getWarningMessages().add("(g)(1) was found without a required related certification.");
+            }
+        }
+
+        // check (g)(2)
+        boolean hasG2Cert = false;
+        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+            if (certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
+                hasG2Cert = true;
+            }
+        }
+        if (hasG2Cert) {
+            String[] g2Certs = getG2ComplimentaryCerts();
+            boolean hasG2Complement = false;
+            for (int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
+                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+                    if (certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
+                        hasG2Complement = true;
+                    }
+                }
+            }
+
+            if (!hasG2Complement) {
+                product.getWarningMessages().add("(g)(2) was found without a required related certification.");
+            }
+        }
+
+        if (hasG1Cert && hasG2Cert) {
+            product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
         }
     }
 
