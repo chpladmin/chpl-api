@@ -8,6 +8,9 @@ _Date TBD_
 * Test tools are required for 170.315 (b)(8)
 * GAP is required for 170.314 (b)(5)(B)
 
+### Bugs fixed
+* Allow Listings to have CHPL IDs that match "deleted" Listings
+
 ---
 
 ## Version 15.2.0
