@@ -34,6 +34,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("surveillanceValidator")
 public class SurveillanceValidator implements MessageSourceAware {
@@ -204,6 +205,10 @@ public class SurveillanceValidator implements MessageSourceAware {
                         ex);
             }
         }
+        
+        if(surv.getType() != null) {
+            addSurveillanceWarningIfNotValid(surv, surv.getType().getName(), "Surveillance Type");
+        }
 
         validateSurveillanceAuthority(surv);
         validateSurveillanceRequirements(surv, certResults);
@@ -345,6 +350,8 @@ public class SurveillanceValidator implements MessageSourceAware {
                         req.setResult(resType);
                     }
                 }
+                
+                addSurveillanceWarningIfNotValid(surv, req.getRequirement(), "Requirement '" + req.getRequirement() + "'");
             }
         }
     }
@@ -599,6 +606,17 @@ public class SurveillanceValidator implements MessageSourceAware {
                             }
                             requiresCloseDate = false;
                         }
+                        
+                        addSurveillanceWarningIfNotValid(surv, nc.getDeveloperExplanation(), 
+                                "Developer Explanation '" + nc.getDeveloperExplanation() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getFindings(), 
+                                "Findings '" + nc.getFindings() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getNonconformityType(), 
+                                "Nonconformity Type '" + nc.getNonconformityType() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getResolution(), 
+                                "Resolution '" + nc.getResolution() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getSummary(), 
+                                "Summary '" + nc.getSummary() + "'");
                     }
                 }
             } else {
@@ -619,8 +637,7 @@ public class SurveillanceValidator implements MessageSourceAware {
     }
 
     public void validateSurveillanceAuthority(Surveillance surv) {
-        // non-null surveillance must be ROLE_ADMIN, ROLE_ACB, or
-        // ROLE_ACB
+        // non-null surveillance must be ROLE_ADMIN, ROLE_ACB
         if (!StringUtils.isEmpty(surv.getAuthority())) {
             if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
                     && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
@@ -635,5 +652,18 @@ public class SurveillanceValidator implements MessageSourceAware {
     @Override
     public void setMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+    
+    private void addSurveillanceWarningIfNotValid(Surveillance surv, String input, String fieldName) {
+        if(!ValidationUtils.isValidUtf8(input)) {
+            surv.getWarningMessages().add(String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.badCharacterFound"),
+                                    LocaleContextHolder.getLocale()), fieldName));
+        }
+        if(ValidationUtils.hasNewline(input)) {
+            surv.getWarningMessages().add(String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.newlineCharacterFound"),
+                            LocaleContextHolder.getLocale()), fieldName));
+        }
     }
 }
