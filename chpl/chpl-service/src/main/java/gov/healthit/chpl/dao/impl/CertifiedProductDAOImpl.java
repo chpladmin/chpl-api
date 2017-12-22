@@ -544,6 +544,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
                 + "deets.developerCode = :developerCode AND " + "deets.productCode = :productCode AND "
                 + "deets.versionCode = :versionCode AND " + "deets.icsCode = :icsCode AND "
                 + "deets.additionalSoftwareCode = :additionalSoftwareCode AND "
+                + "deets.deleted = false AND "
                 + "deets.certifiedDateCode = :certifiedDateCode ", CertifiedProductDetailsEntity.class);
 
         query.setParameter("yearCode", yearCode);
