@@ -89,15 +89,7 @@ public class AppConfig {
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/errors");
-        messageSource.setDefaultEncoding("UTF-8");
-        return messageSource;
-    }
-    
-    @Bean
-    public ReloadableResourceBundleMessageSource maxLengthMessageSource() {
-        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasename("classpath:/maxLengths");
+        messageSource.setBasenames("classpath:/errors");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }

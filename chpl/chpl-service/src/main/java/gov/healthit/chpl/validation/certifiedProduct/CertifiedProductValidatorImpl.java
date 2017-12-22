@@ -46,8 +46,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     @Autowired
     MessageSource messageSource;
     @Autowired
-    MessageSource maxLengthMessageSource;
-    @Autowired
     CertifiedProductDAO cpDao;
     @Autowired
     CertifiedProductManager cpManager;
@@ -79,7 +77,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     
     public int getMaxLength(String field){
     	return Integer.parseInt(String.format(
-    			maxLengthMessageSource.getMessage(new DefaultMessageSourceResolvable(field),
+    			messageSource.getMessage(new DefaultMessageSourceResolvable(field),
     			LocaleContextHolder.getLocale())));
     }
     
@@ -807,7 +805,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         if (product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
             product.getErrorMessages().add("Certification edition is required but was not found.");
         }
-        if(product.getCertificationEditionId().toString().length() > getMaxLength("certificationEdition")){
+        if(product.getCertificationEditionId().toString().length() > getMaxLength("acbCertificationId")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.acbCertificationId.maxlength"));
         }
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
