@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Bug Fixes
+* Allow ROLE_ADMIN to edit listings.
+
+---
+
 ## Version 15.2.0
 _18 December 2017_
 
