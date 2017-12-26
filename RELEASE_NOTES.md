@@ -9,6 +9,9 @@ _Date TBD_
 * GAP is required for 170.314 (b)(5)(B)
 * Add warning messages to uploaded listings and surveillance regarding invalid characters found.
 
+### Bugs fixed
+* Allow Listings to have CHPL IDs that match "deleted" Listings
+
 ---
 
 ## Version 15.2.0
