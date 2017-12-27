@@ -8,6 +8,7 @@ _Date TBD_
 * Test tools are required for 170.315 (b)(8)
 * GAP is required for 170.314 (b)(5)(B)
 * Add warning messages to uploaded listings and surveillance regarding invalid characters found.
+* Do not include 'deleted' field in listing update generated sql
 
 ### Bugs fixed
 * Allow Listings to have CHPL IDs that match "deleted" Listingsi
