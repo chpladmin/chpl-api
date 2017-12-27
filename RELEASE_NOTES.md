@@ -13,6 +13,7 @@ _Date TBD_
 ### Bugs fixed
 * Allow Listings to have CHPL IDs that match "deleted" Listingsi
 * Allow ROLE_ADMIN to edit listings.
+* Allow ROLE_ADMIN to create and edit surveillance
 
 ---
 
