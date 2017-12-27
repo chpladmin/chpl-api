@@ -8,17 +8,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,25 +40,31 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dto.UserDTO;
+import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
+import gov.healthit.chpl.domain.Job;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.domain.concept.JobTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.job.JobDTO;
+import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
-import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
-import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
@@ -78,17 +79,16 @@ import io.swagger.annotations.ApiOperation;
 public class SurveillanceController implements MessageSourceAware {
 
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceController.class);
-    private static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
-    private static final String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
-    private static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
-    private static final String SUBELEMENT_INDICATOR = "Subelement";
-
+    private final JobTypeConcept allowedJobType = JobTypeConcept.SURV_UPLOAD;
+    
     @Autowired
     Environment env;
     @Autowired
     MessageSource messageSource;
     @Autowired
-    private SurveillanceUploadHandlerFactory uploadHandlerFactory;
+    private UserManager userManager;
+    @Autowired
+    private JobManager jobManager;
     @Autowired
     private SurveillanceManager survManager;
     @Autowired
@@ -543,7 +543,7 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "text/csv")
     public void download(@RequestParam(value = "type", required = false, defaultValue = "") String type,
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException {
+            HttpServletRequest request, HttpServletResponse response) throws IOException, EntityRetrievalException {
 
         File downloadFile = null;
         if (isDefinition != null && isDefinition.booleanValue() == true) {
@@ -616,8 +616,9 @@ public class SurveillanceController implements MessageSourceAware {
                     + " The user uploading the file must have ROLE_ACB "
                     + " and administrative authority on the ACB(s) responsible for the product(s) in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody SurveillanceResults upload(@RequestParam("file") MultipartFile file)
-            throws ValidationException, MaxUploadSizeExceededException {
+    public @ResponseBody ResponseEntity<?> upload(@RequestParam("file") MultipartFile file)
+            throws ValidationException, MaxUploadSizeExceededException, EntityRetrievalException,
+            EntityCreationException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
         }
@@ -627,186 +628,109 @@ public class SurveillanceController implements MessageSourceAware {
             throw new ValidationException("File must be a CSV document.");
         }
 
-        List<Surveillance> uploadedSurveillance = new ArrayList<Surveillance>();
-
-        BufferedReader reader = null;
-        CSVParser parser = null;
+        String surveillanceThresholdToProcessAsJobStr = env.getProperty("surveillanceThresholdToProcessAsJob").trim();
+        Integer surveillanceThresholdToProcessAsJob = 50;
         try {
-            reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            parser = new CSVParser(reader, CSVFormat.EXCEL);
-
-            List<CSVRecord> records = parser.getRecords();
-            if (records.size() <= 1) {
-                throw new ValidationException(
-                        "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
-            }
-
-            Set<String> handlerErrors = new HashSet<String>();
-            List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
-
-            // parse the entire file into groups of records, one group per
-            // surveillance item
-            CSVRecord heading = null;
-            List<CSVRecord> rows = new ArrayList<CSVRecord>();
-            for (int i = 0; i < records.size(); i++) {
-                CSVRecord currRecord = records.get(i);
-
-                if (heading == null && !StringUtils.isEmpty(currRecord.get(1))
-                        && currRecord.get(0).equals(HEADING_CELL_INDICATOR)) {
-                    // have to find the heading first
-                    heading = currRecord;
-                } else if (heading != null) {
-                    if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
-                        String currRecordStatus = currRecord.get(0).trim();
-
-                        if (currRecordStatus.equalsIgnoreCase(NEW_SURVEILLANCE_BEGIN_INDICATOR)
-                                || currRecordStatus.equalsIgnoreCase(UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
-                            // parse the previous recordset because we hit a new
-                            // surveillance item
-                            // if this is the last recordset, we'll handle that
-                            // later
-                            if (rows.size() > 0) {
-                                try {
-                                    SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
-                                    Surveillance pendingSurv = handler.handle();
-                                    checkUploadedSurveillanceOwnership(pendingSurv);
-                                    pendingSurvs.add(pendingSurv);
-                                } catch (final InvalidArgumentsException ex) {
-                                    handlerErrors.add(ex.getMessage());
-                                }
-                            }
-                            rows.clear();
-                            rows.add(currRecord);
-                        } else if (currRecordStatus.equalsIgnoreCase(SUBELEMENT_INDICATOR)) {
-                            rows.add(currRecord);
-                        } // ignore blank rows
-                    }
-                }
-
-                // add the last object
-                if (i == records.size() - 1 && !rows.isEmpty()) {
-                    try {
-                        SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
-                        Surveillance pendingSurv = handler.handle();
-                        checkUploadedSurveillanceOwnership(pendingSurv);
-                        pendingSurvs.add(pendingSurv);
-                    } catch (final InvalidArgumentsException ex) {
-                        handlerErrors.add(ex.getMessage());
-                    }
-                }
-            }
-            if (heading == null) {
-                handlerErrors.add("Could not find heading row in the uploaded file.");
-            }
-
-            // if we couldn't parse the files (bad format or something), stop
-            // here with the errors
-            if (handlerErrors.size() > 0) {
-                throw new ValidationException(handlerErrors, null);
-            }
-
-            // we parsed the files but maybe some of the data in them has errors
-            // that are too severe to continue putting them in the database
-            Set<String> allErrors = new HashSet<String>();
-            for (Surveillance surv : pendingSurvs) {
-                if (surv.getErrorMessages() != null && surv.getErrorMessages().size() > 0) {
-                    allErrors.addAll(surv.getErrorMessages());
-                }
-            }
-
-            if (allErrors.size() > 0) {
-                throw new ValidationException(allErrors, null);
-            } else {
-                // Certified product is guaranteed to be filled in at this
-                // point.
-                // If it hadn't been found during upload an error would have
-                // been thrown above.
-                for (Surveillance surv : pendingSurvs) {
-                    CertifiedProductDTO owningCp = null;
-                    try {
-                        owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
-                        survValidator.validate(surv);
-                        Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
-                        Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId,
-                                false);
-                        uploadedSurveillance.add(uploaded);
-                    } catch (final AccessDeniedException denied) {
-                        LOGGER.error(
-                                "User " + Util.getCurrentUser().getSubjectName()
-                                        + " does not have access to add surveillance"
-                                        + (owningCp != null
-                                                ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
-                                                : "."));
-                    } catch (Exception ex) {
-                        LOGGER.error(
-                                "Error adding a new pending surveillance. Please make sure all required fields are present.",
-                                ex);
-                    }
-                }
-            }
-        } catch (final IOException ioEx) {
-            LOGGER.error("Could not get input stream for uploaded file " + file.getName());
-            throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
-        } finally {
-            try {
-                parser.close();
-            } catch (Exception ignore) {
-            }
-            try {
-                reader.close();
-            } catch (Exception ignore) {
-            }
+            surveillanceThresholdToProcessAsJob = Integer.parseInt(surveillanceThresholdToProcessAsJobStr);
+        } catch (final NumberFormatException ex) {
+            LOGGER.error(
+                    "Could not format " + surveillanceThresholdToProcessAsJobStr + " as an integer. Defaulting to 50 instead.");
         }
-
-        SurveillanceResults results = new SurveillanceResults();
-        results.getPendingSurveillance().addAll(uploadedSurveillance);
-        return results;
-    }
-
-    private void checkUploadedSurveillanceOwnership(Surveillance pendingSurv) {
-        // perform additional checks if there are no errors in the uploaded
-        // surveillance already
-        if (pendingSurv.getErrorMessages() == null || pendingSurv.getErrorMessages().size() == 0) {
-            // check this pendingSurv to confirm the user has ACB permissions on
-            // the
-            // appropriate ACB for the CHPL ID specified
-            CertifiedProductDTO surveilledProduct = null;
-            try {
-                surveilledProduct = cpManager.getById(pendingSurv.getCertifiedProduct().getId());
-            } catch (final EntityRetrievalException ex) {
-                pendingSurv.getErrorMessages().add(
-                        String.format(
-                                messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "pendingSurveillance.certifiedProductIdNotFound"),
-                                        LocaleContextHolder.getLocale()),
-                                pendingSurv.getCertifiedProduct().getId()));
-                LOGGER.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
-            }
-
-            if (surveilledProduct != null) {
+        
+        //first we need to count how many surveillance records are in the file
+        //to know if we handle it normally or as a background job
+        int numSurveillance = survManager.countSurveillanceRecords(file);
+        if(numSurveillance < surveillanceThresholdToProcessAsJob) {
+            //process as normal
+            List<Surveillance> uploadedSurveillance = new ArrayList<Surveillance>();
+            List<Surveillance> pendingSurvs = survManager.parseUploadFile(file);
+            for (Surveillance surv : pendingSurvs) {
+                CertifiedProductDTO owningCp = null;
                 try {
-                    acbManager.getById(surveilledProduct.getCertificationBodyId());
-                } catch (final EntityRetrievalException ex) {
-                    pendingSurv.getErrorMessages().add(String.format(
-                            messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "pendingSurveillance.certificationBodyIdNotFound"),
-                                    LocaleContextHolder.getLocale()),
-                            surveilledProduct.getCertificationBodyId()));
-                    LOGGER.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
+                    owningCp = cpManager.getById(surv.getCertifiedProduct().getId());
+                    survValidator.validate(surv);
+                    Long pendingId = survManager.createPendingSurveillance(owningCp.getCertificationBodyId(), surv);
+                    Surveillance uploaded = survManager.getPendingById(owningCp.getCertificationBodyId(), pendingId,
+                            false);
+                    uploadedSurveillance.add(uploaded);
                 } catch (final AccessDeniedException denied) {
-                    pendingSurv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "pendingSurveillance.addSurveillancePermissionDenied"),
-                                            LocaleContextHolder.getLocale()),
-                                    pendingSurv.getCertifiedProduct().getChplProductNumber()));
-                    LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
-                            + " does not have access to the ACB with id " + surveilledProduct.getCertificationBodyId());
+                    LOGGER.error(
+                            "User " + Util.getCurrentUser().getSubjectName()
+                                    + " does not have access to add surveillance"
+                                    + (owningCp != null
+                                            ? " to ACB with ID '" + owningCp.getCertificationBodyId() + "'."
+                                            : "."));
+                } catch (Exception ex) {
+                    LOGGER.error(
+                            "Error adding a new pending surveillance. Please make sure all required fields are present.",
+                            ex);
                 }
             }
+            
+            SurveillanceResults results = new SurveillanceResults();
+            results.getPendingSurveillance().addAll(uploadedSurveillance);
+            return new ResponseEntity<SurveillanceResults>(results, HttpStatus.OK);
+        } else { //process as job
+            //figure out the user
+            UserDTO currentUser = null;
+            try {
+                currentUser = userManager.getById(Util.getCurrentUser().getId());
+            } catch (final UserRetrievalException ex) {
+                LOGGER.error("Error finding user with ID " + Util.getCurrentUser().getId() + ": " + ex.getMessage());
+                return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
+            }
+            if (currentUser == null) {
+                LOGGER.error("No user with ID " + Util.getCurrentUser().getId() + " could be found in the system.");
+                return new ResponseEntity<Job>(HttpStatus.UNAUTHORIZED);
+            }
+
+            JobTypeDTO jobType = null;
+            List<JobTypeDTO> jobTypes = jobManager.getAllJobTypes();
+            for (JobTypeDTO jt : jobTypes) {
+                if (jt.getName().equalsIgnoreCase(allowedJobType.getName())) {
+                    jobType = jt;
+                }
+            }
+
+            // read the file into a string
+            StringBuffer data = new StringBuffer();
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+                    if (data.length() > 0) {
+                        data.append(System.getProperty("line.separator"));
+                    }
+                    data.append(line);
+                }
+            } catch (final IOException ex) {
+                String msg = "Could not read file: " + ex.getMessage();
+                LOGGER.error(msg);
+                throw new ValidationException(msg);
+            }
+
+            JobDTO toCreate = new JobDTO();
+            toCreate.setData(data.toString());
+            toCreate.setUser(currentUser);
+            toCreate.setJobType(jobType);
+            JobDTO insertedJob = jobManager.createJob(toCreate);
+            JobDTO createdJob = jobManager.getJobById(insertedJob.getId());
+
+            try {
+                boolean isStarted = jobManager.start(createdJob);
+                if (!isStarted) {
+                    return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.BAD_REQUEST);
+                } else {
+                    createdJob = jobManager.getJobById(insertedJob.getId());
+                }
+            } catch (final EntityRetrievalException ex) {
+                LOGGER.error("Could not mark job " + createdJob.getId() + " as started.");
+                return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            // query the now running job
+            return new ResponseEntity<Job>(new Job(createdJob), HttpStatus.OK);
         }
     }
 
