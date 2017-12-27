@@ -1060,42 +1060,63 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     
     protected void weirdCharacterCheck(PendingCertifiedProductDTO listing) {
         //check all string fields at the listing level
-        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(), "ACB Certification ID");
-        addListingWarningIfNotValid(listing, listing.getCertificationBodyName(), "ACB Name");
-        addListingWarningIfNotValid(listing, listing.getCertificationEdition(), "Certification Edition");
+        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(), 
+                "ACB Certification ID '" + listing.getAcbCertificationId() + "'");
+        addListingWarningIfNotValid(listing, listing.getCertificationBodyName(), 
+                "ACB Name '" + listing.getCertificationBodyName() + "'");
+        addListingWarningIfNotValid(listing, listing.getCertificationEdition(), 
+                "Certification Edition '" + listing.getCertificationEdition() + "'");
         if(listing.getDeveloperAddress() != null) {
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineOne(), 
-                    "Developer's Street Address (Line 1)");
+                    "Developer's Street Address (Line 1) '" + listing.getDeveloperAddress().getStreetLineOne() + "'");
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineTwo(), 
-                    "Developer's Street Address (Line 2)");
+                    "Developer's Street Address (Line 2) '" + listing.getDeveloperAddress().getStreetLineTwo() + "'");
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getCity(), 
-                    "Developer's City");
+                    "Developer's City '" + listing.getDeveloperAddress().getCity() + "'");
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getState(), 
-                    "Developer's State");
+                    "Developer's State '" + listing.getDeveloperAddress().getState() + "'");
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getZipcode(), 
-                    "Developer's Zip Code");
+                    "Developer's Zip Code '" + listing.getDeveloperAddress().getZipcode() + "'");
             addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getCountry(), 
-                    "Developer's Country");
+                    "Developer's Country '" + listing.getDeveloperAddress().getCountry() + "'");
         } else {
-            addListingWarningIfNotValid(listing, listing.getDeveloperStreetAddress(), "Developer's Street Address");
-            addListingWarningIfNotValid(listing, listing.getDeveloperCity(), "Developer's City");
-            addListingWarningIfNotValid(listing, listing.getDeveloperState(), "Developer's State");
-            addListingWarningIfNotValid(listing, listing.getDeveloperZipCode(), "Developer's Zip Code");
+            addListingWarningIfNotValid(listing, listing.getDeveloperStreetAddress(), 
+                    "Developer's Street Address '" + listing.getDeveloperStreetAddress() + "'");
+            addListingWarningIfNotValid(listing, listing.getDeveloperCity(), 
+                    "Developer's City '" + listing.getDeveloperCity() + "'");
+            addListingWarningIfNotValid(listing, listing.getDeveloperState(), 
+                    "Developer's State '" + listing.getDeveloperState() + "'");
+            addListingWarningIfNotValid(listing, listing.getDeveloperZipCode(), 
+                    "Developer's Zip Code '" + listing.getDeveloperZipCode() + "'");
         }
-        addListingWarningIfNotValid(listing, listing.getDeveloperContactName(), "Developer's Contact Name");
-        addListingWarningIfNotValid(listing, listing.getDeveloperEmail(), "Developer's Email Address");
-        addListingWarningIfNotValid(listing, listing.getDeveloperPhoneNumber(), "Developer's Phone Number");
-        addListingWarningIfNotValid(listing, listing.getDeveloperWebsite(), "Developer's Website");
-        addListingWarningIfNotValid(listing, listing.getPracticeType(), "Practice Type");
-        addListingWarningIfNotValid(listing, listing.getProductClassificationName(), "Product Classification");
-        addListingWarningIfNotValid(listing, listing.getProductName(), "Product Name");
-        addListingWarningIfNotValid(listing, listing.getProductVersion(), "Version");
-        addListingWarningIfNotValid(listing, listing.getReportFileLocation(), "Report File Location");
-        addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(), "SED Intended User Description");
-        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(), "SED Report File Location");
-        addListingWarningIfNotValid(listing, listing.getTestingLabName(), "Testing Lab Name");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(), "Transparency Attestation");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(), "Transparency Attestation URL");
+        addListingWarningIfNotValid(listing, listing.getDeveloperContactName(), 
+                "Developer's Contact Name '" + listing.getDeveloperContactName() + "'");
+        addListingWarningIfNotValid(listing, listing.getDeveloperEmail(), 
+                "Developer's Email Address '" + listing.getDeveloperEmail() + "'");
+        addListingWarningIfNotValid(listing, listing.getDeveloperPhoneNumber(), 
+                "Developer's Phone Number '" + listing.getDeveloperPhoneNumber() + "'");
+        addListingWarningIfNotValid(listing, listing.getDeveloperWebsite(), 
+                "Developer's Website '" + listing.getDeveloperWebsite() + "'");
+        addListingWarningIfNotValid(listing, listing.getPracticeType(), 
+                "Practice Type '" + listing.getPracticeType() + "'");
+        addListingWarningIfNotValid(listing, listing.getProductClassificationName(), 
+                "Product Classification '" + listing.getProductClassificationName() + "'");
+        addListingWarningIfNotValid(listing, listing.getProductName(), 
+                "Product Name '" + listing.getProductName() + "'");
+        addListingWarningIfNotValid(listing, listing.getProductVersion(), 
+                "Version '" + listing.getProductVersion() + "'");
+        addListingWarningIfNotValid(listing, listing.getReportFileLocation(), 
+                "Report File Location '" + listing.getReportFileLocation() + "'");
+        addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(), 
+                "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
+        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(), 
+                "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
+        addListingWarningIfNotValid(listing, listing.getTestingLabName(), 
+                "Testing Lab Name '" + listing.getTestingLabName() + "'");
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(), 
+                "Transparency Attestation '" + listing.getTransparencyAttestation() + "'");
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(), 
+                "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
         
         //users can add to accessibility standards so check these
         for(PendingCertifiedProductAccessibilityStandardDTO accStd : listing.getAccessibilityStandards()) {
@@ -1203,68 +1224,86 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     
     protected void weirdCharacterCheck(CertifiedProductSearchDetails listing) {
         //check all string fields at the listing level
-        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(), "ACB Certification ID");
+        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(), 
+                "ACB Certification ID '" + listing.getAcbCertificationId() + "'");
         if(listing.getCertifyingBody() != null && listing.getCertifyingBody().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getCertifyingBody().get("name").toString(), "ACB Name");
+            addListingWarningIfNotValid(listing, listing.getCertifyingBody().get("name").toString(), 
+                    "ACB Name '" + listing.getCertifyingBody().get("name").toString() + "'");
         }
         if(listing.getCertificationEdition() != null && listing.getCertificationEdition().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getCertificationEdition().get("name").toString(), "Certification Edition");
+            addListingWarningIfNotValid(listing, listing.getCertificationEdition().get("name").toString(), 
+                    "Certification Edition '" + listing.getCertificationEdition().get("name").toString() + "'");
         }
-        addListingWarningIfNotValid(listing, listing.getProductAdditionalSoftware(), "Listing-level Additional Software");
+        addListingWarningIfNotValid(listing, listing.getProductAdditionalSoftware(), 
+                "Listing-level Additional Software '" + listing.getProductAdditionalSoftware() + "'");
 
         if(listing.getDeveloper() != null && listing.getDeveloper().getAddress() != null) {
             Address address = listing.getDeveloper().getAddress();
             addListingWarningIfNotValid(listing, address.getLine1(), 
-                    "Developer's Street Address (Line 1)");
+                    "Developer's Street Address (Line 1) '" + address.getLine1() + "'");
             addListingWarningIfNotValid(listing, address.getLine2(), 
-                    "Developer's Street Address (Line 2)");
+                    "Developer's Street Address (Line 2) '" + address.getLine2() + "'");
             addListingWarningIfNotValid(listing, address.getCity(), 
-                    "Developer's City");
+                    "Developer's City '" + address.getCity() + "'");
             addListingWarningIfNotValid(listing, address.getState(), 
-                    "Developer's State");
+                    "Developer's State '" + address.getState() + "'");
             addListingWarningIfNotValid(listing, address.getZipcode(), 
-                    "Developer's Zip Code");
+                    "Developer's Zip Code '" + address.getZipcode() + "'");
             addListingWarningIfNotValid(listing, address.getCountry(), 
-                    "Developer's Country");
+                    "Developer's Country  '" + address.getCountry() + "'");
         }
         
         if(listing.getDeveloper() != null && listing.getDeveloper().getContact() != null) {
             Contact contact = listing.getDeveloper().getContact();
-            addListingWarningIfNotValid(listing, contact.getFirstName(), "Developer Contact's First Name");
-            addListingWarningIfNotValid(listing, contact.getLastName(), "Developer Contact's Last Name");
-            addListingWarningIfNotValid(listing, contact.getEmail(), "Developer Contact's Email Address");
-            addListingWarningIfNotValid(listing, contact.getPhoneNumber(), "Developer Contact's Phone Number");
-            addListingWarningIfNotValid(listing, contact.getTitle(), "Developer Contact's Title");
+            addListingWarningIfNotValid(listing, contact.getFirstName(), 
+                    "Developer Contact's First Name '" + contact.getFirstName() + "'");
+            addListingWarningIfNotValid(listing, contact.getLastName(), 
+                    "Developer Contact's Last Name '" + contact.getLastName() + "'");
+            addListingWarningIfNotValid(listing, contact.getEmail(), 
+                    "Developer Contact's Email Address '" + contact.getEmail() + "'");
+            addListingWarningIfNotValid(listing, contact.getPhoneNumber(), 
+                    "Developer Contact's Phone Number '" + contact.getPhoneNumber() + "'");
+            addListingWarningIfNotValid(listing, contact.getTitle(), 
+                    "Developer Contact's Title '" + contact.getTitle() + "'");
         }
         
         if(listing.getDeveloper() != null) {
-            addListingWarningIfNotValid(listing, listing.getDeveloper().getWebsite(), "Developer's Website");
+            addListingWarningIfNotValid(listing, listing.getDeveloper().getWebsite(), 
+                    "Developer's Website '" + listing.getDeveloper().getWebsite() + "'");
         }
 
         if(listing.getPracticeType() != null && listing.getPracticeType().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getPracticeType().get("name").toString(), "Practice Type");
+            addListingWarningIfNotValid(listing, listing.getPracticeType().get("name").toString(), 
+                    "Practice Type '" + listing.getPracticeType().get("name").toString() + "'");
         }
         if(listing.getClassificationType() != null && listing.getClassificationType().get("name") != null) {
             addListingWarningIfNotValid(listing, listing.getClassificationType().get("name").toString(), 
-                    "Product Classification");
+                    "Product Classification '" + listing.getClassificationType().get("name").toString() + "'");
         }
         if(listing.getProduct() != null) {
-            addListingWarningIfNotValid(listing, listing.getProduct().getName(), "Product Name");
+            addListingWarningIfNotValid(listing, listing.getProduct().getName(), 
+                    "Product Name '" + listing.getProduct().getName() + "'");
         }
         if(listing.getVersion() != null) {
-            addListingWarningIfNotValid(listing, listing.getVersion().getVersion(), "Version Name");
+            addListingWarningIfNotValid(listing, listing.getVersion().getVersion(), 
+                    "Version Name '" + listing.getVersion().getVersion() + "'");
         }
         
         if(listing.getTestingLab() != null && listing.getTestingLab().get("name") != null) {
             addListingWarningIfNotValid(listing, listing.getTestingLab().get("name").toString(), 
-                    "Testing Lab Name");
+                    "Testing Lab Name '" + listing.getTestingLab().get("name").toString() + "'");
         }
 
-        addListingWarningIfNotValid(listing, listing.getReportFileLocation(), "Report File Location");
-        addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(), "SED Intended User Description");
-        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(), "SED Report File Location");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(), "Transparency Attestation");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(), "Transparency Attestation URL");
+        addListingWarningIfNotValid(listing, listing.getReportFileLocation(), 
+                "Report File Location '" + listing.getReportFileLocation() + "'");
+        addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(),
+                "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
+        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(), 
+                "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(), 
+                "Transparency Attestation '" + listing.getTransparencyAttestation() + "'");
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(), 
+                "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
         
         //users can add to accessibility standards so check these
         for(CertifiedProductAccessibilityStandard accStd : listing.getAccessibilityStandards()) {
