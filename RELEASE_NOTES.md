@@ -10,7 +10,8 @@ _Date TBD_
 * Add warning messages to uploaded listings and surveillance regarding invalid characters found.
 
 ### Bugs fixed
-* Allow Listings to have CHPL IDs that match "deleted" Listings
+* Allow Listings to have CHPL IDs that match "deleted" Listingsi
+* Allow ROLE_ADMIN to edit listings.
 
 ---
 
