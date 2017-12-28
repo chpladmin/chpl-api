@@ -89,7 +89,7 @@ public class AppConfig {
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-        messageSource.setBasenames("classpath:/errors");
+        messageSource.setBasename("classpath:/errors");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
