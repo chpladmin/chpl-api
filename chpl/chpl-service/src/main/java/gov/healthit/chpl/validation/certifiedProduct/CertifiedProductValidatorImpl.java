@@ -834,8 +834,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         if (product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
             product.getErrorMessages().add("Certification edition is required but was not found.");
         }
-        if(product.getCertificationEditionId() != null && product.getCertificationEditionId().toString().length() > getMaxLength("acbCertificationId")){
-        	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.acbCertificationId.maxlength"));
+        if(product.getCertificationEditionId() != null && product.getCertificationEditionId().toString().length() > getMaxLength("certificationEdition")){
+        	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.certificationEdition.maxlength"));
         }
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
             product.getErrorMessages().add("CHPL certification ID is required but was not found.");
