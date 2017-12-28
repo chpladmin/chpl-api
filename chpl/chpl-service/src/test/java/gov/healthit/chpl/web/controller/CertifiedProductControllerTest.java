@@ -98,7 +98,7 @@ public class CertifiedProductControllerTest {
 	
 	private static JWTAuthenticatedUser adminUser;
 	
-	private static final String UPLOAD_2014 = "2014_error-free_new_Gap_added.csv";
+	private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
 	
 	private static final String UPLOAD_2015_V10 = "Drummond10252017.csv";
 	private static final String UPLOAD_2015_V11 = "Drummond10252017_v11.csv";

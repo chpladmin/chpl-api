@@ -25,6 +25,8 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
     @Override
     public void validate(PendingCertifiedProductDTO product) {
         super.validate(product);
+        super.checkA1OrA18A19A20(product);
+        super.checkB1B2B8H1(product);
 
         List<PendingCertificationResultDTO> certificationCriterion = product.getCertificationCriterion();
         for (int i = 0; i < requiredCriteria.length; i++) {
@@ -44,6 +46,8 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
     @Override
     public void validate(CertifiedProductSearchDetails product) {
         super.validate(product);
+        super.checkA1OrA18A19A20(product);
+        super.checkB1B2B8H1(product);
 
         List<CertificationResult> certificationCriterion = product.getCertificationResults();
         for (int i = 0; i < requiredCriteria.length; i++) {

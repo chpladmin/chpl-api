@@ -352,11 +352,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         } else {
             icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
             if (icsCodeInteger != null) {
-                if (icsCodeInteger.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
+                if (icsCodeInteger.intValue() == 0 && product.getIcs() != null && product.getIcs().equals(Boolean.TRUE)) {
                     product.getErrorMessages().add(
                             "The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
                     hasIcsConflict = true;
-                } else if (icsCodeInteger.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
+                } else if (icsCodeInteger.intValue() > 0 && product.getIcs() != null && product.getIcs().equals(Boolean.FALSE)) {
                     product.getErrorMessages().add(
                             "The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
                     hasIcsConflict = true;
@@ -832,13 +832,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         if (product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
             product.getErrorMessages().add("Certification edition is required but was not found.");
         }
-        if(product.getCertificationEditionId().toString().length() > getMaxLength("acbCertificationId")){
+        if(product.getCertificationEditionId() != null && product.getCertificationEditionId().toString().length() > getMaxLength("acbCertificationId")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.acbCertificationId.maxlength"));
         }
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
             product.getErrorMessages().add("CHPL certification ID is required but was not found.");
         }
-        if(product.getAcbCertificationId().toString().length() > getMaxLength("acbCertificationId")){
+        if(product.getAcbCertificationId() != null && product.getAcbCertificationId().toString().length() > getMaxLength("acbCertificationId")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.acbCertificationId.maxlength"));
         }
         if (product.getCertificationDate() == null) {
@@ -849,84 +849,84 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         if (product.getCertificationBodyId() == null) {
             product.getErrorMessages().add("ONC-ACB is required but was not found.");
         }
-        if(product.getCertificationBodyId().toString().length() > getMaxLength("certifyingAcb")){
+        if(product.getCertificationBodyId() != null && product.getCertificationBodyId().toString().length() > getMaxLength("certifyingAcb")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.certifyingAcb.maxlength"));
         }
         if (StringUtils.isEmpty(product.getUniqueId())) {
             product.getErrorMessages().add("The product unique id is required.");
         }
-        if(product.getUniqueId().toString().length() > getMaxLength("uniqueCHPLId")){
+        if(product.getUniqueId() != null && product.getUniqueId().toString().length() > getMaxLength("uniqueCHPLId")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.uniqueId.maxLength"));
         }
         if (StringUtils.isEmpty(product.getDeveloperName())) {
             product.getErrorMessages().add("A developer name is required.");
         }
-        if(product.getDeveloperName().toString().length() > getMaxLength("vendorName")){
+        if(product.getDeveloperName() != null && product.getDeveloperName().toString().length() > getMaxLength("vendorName")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorName.maxlength"));
         }
         if (StringUtils.isEmpty(product.getProductName())) {
             product.getErrorMessages().add("A product name is required.");
         }
-        if(product.getProductName().toString().length() > getMaxLength("productName")){
+        if(product.getProductName() != null && product.getProductName().toString().length() > getMaxLength("productName")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.productName.maxlength"));
         }
         if (StringUtils.isEmpty(product.getProductVersion())) {
             product.getErrorMessages().add("A product version is required.");
         }
-        if(product.getProductVersion().toString().length() > getMaxLength("productVersion")){
+        if(product.getProductVersion() != null && product.getProductVersion().toString().length() > getMaxLength("productVersion")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.productVersion.maxlength"));
         }
         if (product.getDeveloperAddress() != null) {
             if (StringUtils.isEmpty(product.getDeveloperAddress().getStreetLineOne())) {
                 product.getErrorMessages().add("Developer street address is required.");
             }
-            if(product.getDeveloperAddress().getStreetLineOne().toString().length() > getMaxLength("vendorStreetAddress")){
+            if(product.getDeveloperAddress() != null && product.getDeveloperAddress().getStreetLineOne().toString().length() > getMaxLength("vendorStreetAddress")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorAddress.maxlength"));
             }
-            if(product.getDeveloperAddress().getStreetLineTwo().toString().length() > getMaxLength("vendorStreetAddress")){
+            if(product.getDeveloperAddress().getStreetLineTwo() != null && product.getDeveloperAddress().getStreetLineTwo().toString().length() > getMaxLength("vendorStreetAddress")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorAddressTwo.maxlength"));
             }
             if (StringUtils.isEmpty(product.getDeveloperAddress().getCity())) {
                 product.getErrorMessages().add("Developer city is required.");
             }
-            if(product.getDeveloperAddress().getCity().toString().length() > getMaxLength("vendorCity")){
+            if(product.getDeveloperAddress().getCity() != null && product.getDeveloperAddress().getCity().toString().length() > getMaxLength("vendorCity")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorCity.maxlength"));
             }
             if (StringUtils.isEmpty(product.getDeveloperAddress().getState())) {
                 product.getErrorMessages().add("Developer state is required.");
             }
-            if(product.getDeveloperAddress().getState().toString().length() > getMaxLength("vendorState")){
+            if(product.getDeveloperAddress().getState() != null && product.getDeveloperAddress().getState().toString().length() > getMaxLength("vendorState")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorState.maxlength"));
             }
             if (StringUtils.isEmpty(product.getDeveloperAddress().getZipcode())) {
                 product.getErrorMessages().add("Developer zip code is required.");
             }
-            if(product.getDeveloperAddress().getZipcode().toString().length() > getMaxLength("vendorZip")){
+            if(product.getDeveloperAddress().getZipcode() != null && product.getDeveloperAddress().getZipcode().toString().length() > getMaxLength("vendorZip")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorZip.maxlength"));
             }
         } else {
             if (StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
                 product.getErrorMessages().add("Developer street address is required.");
             }
-            if(product.getDeveloperStreetAddress().toString().length() > getMaxLength("vendorStreetAddress")){
+            if(product.getDeveloperStreetAddress() != null && product.getDeveloperStreetAddress().toString().length() > getMaxLength("vendorStreetAddress")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorAddress.maxlength"));
             }
             if (StringUtils.isEmpty(product.getDeveloperCity())) {
                 product.getErrorMessages().add("Developer city is required.");
             }
-            if(product.getDeveloperCity().toString().length() > getMaxLength("vendorCity")){
+            if(product.getDeveloperCity() != null && product.getDeveloperCity().toString().length() > getMaxLength("vendorCity")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorCity.maxlength"));
             }
             if (StringUtils.isEmpty(product.getDeveloperState())) {
                 product.getErrorMessages().add("Developer state is required.");
             }
-            if(product.getDeveloperState().toString().length() > getMaxLength("vendorState")){
+            if(product.getDeveloperState() != null && product.getDeveloperState().toString().length() > getMaxLength("vendorState")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorState.maxlength"));
             }
             if (StringUtils.isEmpty(product.getDeveloperZipCode())) {
                 product.getErrorMessages().add("Developer zip code is required.");
             }
-            if(product.getDeveloperZipCode().toString().length() > getMaxLength("vendorZip")){
+            if(product.getDeveloperZipCode() != null && product.getDeveloperZipCode().toString().length() > getMaxLength("vendorZip")){
             	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorZip.maxlength"));
             }
         }
@@ -934,25 +934,25 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         if (StringUtils.isEmpty(product.getDeveloperWebsite())) {
             product.getErrorMessages().add("Developer website is required.");
         }
-        if(product.getDeveloperWebsite().toString().length() > getMaxLength("vendorWebsite")){
+        if(product.getDeveloperWebsite() != null && product.getDeveloperWebsite().toString().length() > getMaxLength("vendorWebsite")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorWebsite.maxlength"));
         }
         if (StringUtils.isEmpty(product.getDeveloperEmail())) {
             product.getErrorMessages().add("Developer contact email address is required.");
         }
-        if(product.getDeveloperEmail().toString().length() > getMaxLength("vendorEmail")){
+        if(product.getDeveloperEmail() != null && product.getDeveloperEmail().toString().length() > getMaxLength("vendorEmail")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorEmail.maxlength"));
         }
         if (StringUtils.isEmpty(product.getDeveloperPhoneNumber())) {
             product.getErrorMessages().add("Developer contact phone number is required.");
         }
-        if(product.getDeveloperPhoneNumber().toString().length() > getMaxLength("vendorPhone")){
+        if(product.getDeveloperPhoneNumber() != null && product.getDeveloperPhoneNumber().toString().length() > getMaxLength("vendorPhone")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorPhone.maxlength"));
         }
         if (StringUtils.isEmpty(product.getDeveloperContactName())) {
             product.getErrorMessages().add("Developer contact name is required.");
         }
-        if(product.getDeveloperContactName().toString().length() > getMaxLength("vendorContactName")){
+        if(product.getDeveloperContactName() != null && product.getDeveloperContactName().toString().length() > getMaxLength("vendorContactName")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.vendorContactName.maxlength"));
         }
 
@@ -1019,13 +1019,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         if (product.getProduct() == null || StringUtils.isEmpty(product.getProduct().getName())) {
             product.getErrorMessages().add("A product name is required.");
         }
-        if(product.getCertifyingBody().get("id") != null && product.getProduct().getName().toString().length() > getMaxLength("productName")){
+        if(product.getProduct() != null && product.getProduct().getName() != null && product.getProduct().getName().toString().length() > getMaxLength("productName")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.productName.maxlength"));
         }
         if (product.getVersion() == null || StringUtils.isEmpty(product.getVersion().getVersion())) {
             product.getErrorMessages().add("A product version is required.");
         }
-        if(product.getVersion().getVersion() != null && product.getVersion().getVersion().toString().length() > getMaxLength("productVersion")){
+        if(product.getVersion() != null && product.getVersion().getVersion() != null && product.getVersion().getVersion().toString().length() > getMaxLength("productVersion")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.productVersion.maxlength"));
         }
         // if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) &&

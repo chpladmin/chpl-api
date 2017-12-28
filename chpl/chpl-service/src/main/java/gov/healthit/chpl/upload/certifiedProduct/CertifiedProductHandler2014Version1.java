@@ -131,14 +131,16 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             }
         }
         if (firstRow != null) {
-            int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
-            for(int i = 0; i < getCriteriaNames().length; i++) {
-                String criteriaName = getCriteriaNames()[i];
-                int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
-                pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                        criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
-                criteriaBeginIndex = criteriaEndIndex + 1;
-            }
+        	int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
+        	for(int i = 0; i < getCriteriaNames().length; i++) {
+        		String criteriaName = getCriteriaNames()[i];
+        		if(criteriaName != null){
+        			int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+        			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
+        					criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
+        			criteriaBeginIndex = criteriaEndIndex + 1;
+        		}
+        	}
         }
 
         return pendingCertifiedProduct;
