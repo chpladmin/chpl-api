@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -72,6 +73,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
@@ -426,16 +428,23 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         }
         return downloadFile;
     }
-
+    
     @Override
-    @PreAuthorize("hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public int countSurveillanceRecords(MultipartFile file) throws ValidationException {
+        String data = FileUtils.readFileAsString(file);
+        return countSurveillanceRecords(data);
+    }
+    
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    public int countSurveillanceRecords(String fileContents) throws ValidationException {
         int survCount = 0;
         
         BufferedReader reader = null;
         CSVParser parser = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
+            reader = new BufferedReader(new StringReader(fileContents));
             parser = new CSVParser(reader, CSVFormat.EXCEL);
 
             List<CSVRecord> records = parser.getRecords();
@@ -464,8 +473,9 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                 }
             }
         } catch (final IOException ioEx) {
-            LOGGER.error("Could not get input stream for uploaded file " + file.getName());
-            throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
+            String msg = "Could not read the uploaded file as a CSV.";
+            LOGGER.error(msg);
+            throw new ValidationException(msg);
         } finally {
             try {
                 parser.close();
@@ -480,7 +490,7 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     }
     
     @Override
-    @PreAuthorize("hasRole('ROLE_ACB')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<Surveillance> parseUploadFile(MultipartFile file) throws ValidationException {
         List<Surveillance> pendingSurvs = new ArrayList<Surveillance>();
 
@@ -521,7 +531,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                                 try {
                                     SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                     Surveillance pendingSurv = handler.handle();
-                                    checkUploadedSurveillanceOwnership(pendingSurv);
+                                    List<String> errors = checkUploadedSurveillanceOwnership(pendingSurv);
+                                    for(String error : errors) {
+                                        pendingSurv.getErrorMessages().add(error);
+                                    }
                                     pendingSurvs.add(pendingSurv);
                                 } catch (final InvalidArgumentsException ex) {
                                     handlerErrors.add(ex.getMessage());
@@ -540,7 +553,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
                     try {
                         SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                         Surveillance pendingSurv = handler.handle();
-                        checkUploadedSurveillanceOwnership(pendingSurv);
+                        List<String> errors = checkUploadedSurveillanceOwnership(pendingSurv);
+                        for(String error : errors) {
+                            pendingSurv.getErrorMessages().add(error);
+                        }
                         pendingSurvs.add(pendingSurv);
                     } catch (final InvalidArgumentsException ex) {
                         handlerErrors.add(ex.getMessage());
@@ -585,7 +601,10 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
         return pendingSurvs;
     }
     
-    private void checkUploadedSurveillanceOwnership(Surveillance pendingSurv) {
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    public List<String> checkUploadedSurveillanceOwnership(Surveillance pendingSurv) {
+        List<String> errors = new ArrayList<String>();
         // perform additional checks if there are no errors in the uploaded
         // surveillance already
         if (pendingSurv.getErrorMessages() == null || pendingSurv.getErrorMessages().size() == 0) {
@@ -595,40 +614,41 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
             try {
                 surveilledProduct = cpManager.getById(pendingSurv.getCertifiedProduct().getId());
             } catch (final EntityRetrievalException ex) {
-                pendingSurv.getErrorMessages().add(
-                        String.format(
-                                messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "pendingSurveillance.certifiedProductIdNotFound"),
-                                        LocaleContextHolder.getLocale()),
-                                pendingSurv.getCertifiedProduct().getId()));
-                LOGGER.error("Could not look up certified product by id " + pendingSurv.getCertifiedProduct().getId());
+                String msg = String.format(
+                        messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "pendingSurveillance.certifiedProductIdNotFound"),
+                                LocaleContextHolder.getLocale()),
+                        pendingSurv.getCertifiedProduct().getId());
+                LOGGER.error(msg);
+                errors.add(msg);
             }
 
             if (surveilledProduct != null) {
                 try {
                     acbManager.getById(surveilledProduct.getCertificationBodyId());
                 } catch (final EntityRetrievalException ex) {
-                    pendingSurv.getErrorMessages().add(String.format(
+                    String msg = String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "pendingSurveillance.certificationBodyIdNotFound"),
+                            LocaleContextHolder.getLocale()),
+                    surveilledProduct.getCertificationBodyId());
+                    LOGGER.error(msg);
+                    errors.add(msg);
+                } catch (final AccessDeniedException denied) {
+                    String msg = String.format(
                             messageSource.getMessage(
                                     new DefaultMessageSourceResolvable(
-                                            "pendingSurveillance.certificationBodyIdNotFound"),
+                                            "pendingSurveillance.addSurveillancePermissionDenied"),
                                     LocaleContextHolder.getLocale()),
-                            surveilledProduct.getCertificationBodyId()));
-                    LOGGER.error("Could not look up ACB by id " + surveilledProduct.getCertificationBodyId());
-                } catch (final AccessDeniedException denied) {
-                    pendingSurv.getErrorMessages()
-                            .add(String.format(
-                                    messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "pendingSurveillance.addSurveillancePermissionDenied"),
-                                            LocaleContextHolder.getLocale()),
-                                    pendingSurv.getCertifiedProduct().getChplProductNumber()));
+                            pendingSurv.getCertifiedProduct().getChplProductNumber());
                     LOGGER.error("User " + Util.getCurrentUser().getSubjectName()
                             + " does not have access to the ACB with id " + surveilledProduct.getCertificationBodyId());
+                    errors.add(msg);
                 }
             }
         }
+        return errors;
     }
     
     private Surveillance convertToDomain(PendingSurveillanceEntity pr) {

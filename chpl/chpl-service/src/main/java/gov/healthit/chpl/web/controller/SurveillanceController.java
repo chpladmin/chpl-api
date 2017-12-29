@@ -1,11 +1,9 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +63,7 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
@@ -639,7 +638,9 @@ public class SurveillanceController implements MessageSourceAware {
         
         //first we need to count how many surveillance records are in the file
         //to know if we handle it normally or as a background job
-        int numSurveillance = survManager.countSurveillanceRecords(file);
+        String data = FileUtils.readFileAsString(file);
+
+        int numSurveillance = survManager.countSurveillanceRecords(data);
         if(numSurveillance < surveillanceThresholdToProcessAsJob) {
             //process as normal
             List<Surveillance> uploadedSurveillance = new ArrayList<Surveillance>();
@@ -692,26 +693,8 @@ public class SurveillanceController implements MessageSourceAware {
                 }
             }
 
-            // read the file into a string
-            StringBuffer data = new StringBuffer();
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    if (data.length() > 0) {
-                        data.append(System.getProperty("line.separator"));
-                    }
-                    data.append(line);
-                }
-            } catch (final IOException ex) {
-                String msg = "Could not read file: " + ex.getMessage();
-                LOGGER.error(msg);
-                throw new ValidationException(msg);
-            }
-
             JobDTO toCreate = new JobDTO();
-            toCreate.setData(data.toString());
+            toCreate.setData(data);
             toCreate.setUser(currentUser);
             toCreate.setJobType(jobType);
             JobDTO insertedJob = jobManager.createJob(toCreate);

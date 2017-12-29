@@ -64,7 +64,9 @@ public interface SurveillanceManager {
     Long createPendingSurveillance(Long acbId, Surveillance surv);
     
     public int countSurveillanceRecords(MultipartFile file) throws ValidationException;
+    public int countSurveillanceRecords(String fileContents) throws ValidationException;
     public List<Surveillance> parseUploadFile(MultipartFile file) throws ValidationException;
+    public List<String> checkUploadedSurveillanceOwnership(Surveillance pendingSurv);
     
     void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
