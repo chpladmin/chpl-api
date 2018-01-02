@@ -1,5 +1,7 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -47,6 +49,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 
     public String[] getG2ComplimentaryCerts() {
         return g2ComplementaryCerts;
+    }
+    
+    public String getErrorMessage(String errorField){
+    	return String.format(
+    			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
+    					LocaleContextHolder.getLocale()));
     }
     
     public boolean checkB1B2B8H1(Object product){
@@ -255,14 +263,11 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
         }
-        if (!hasG4) {
-            product.getErrorMessages().add("Required certification criteria 170.314 (g)(4) was not found.");
-        }
         if (hasG3 && !hasG3Complement) {
-            product.getErrorMessages().add("(g)(3) was found without a required related certification.");
+            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG3complement"));
         }
         if (hasG3Complement && !hasG3) {
-            product.getErrorMessages().add("A certification that requires (g)(3) was found but (g)(3) was not.");
+            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingComplementG3"));
         }
         
      // check (g)(1)
@@ -284,7 +289,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
 
             if (!hasG1Complement) {
-                product.getWarningMessages().add("(g)(1) was found without a required related certification.");
+                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -307,12 +312,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
 
             if (!hasG2Complement) {
-                product.getWarningMessages().add("(g)(2) was found without a required related certification.");
+                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
+            product.getWarningMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
         }
     }
 

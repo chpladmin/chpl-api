@@ -1146,6 +1146,21 @@ public class CertifiedProductControllerTest {
 	
 	@Transactional
 	@Test
+	public void test_uploadCertifiedProduct2014v2Maxlength() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MultipartFile file = getUploadFile("2014", null);
+		ResponseEntity<PendingCertifiedProductResults> response = null;
+		try {
+			response = certifiedProductController.upload(file);
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		}
+		assertNotNull(response);
+		assertEquals(HttpStatus.OK,response.getStatusCode());
+	}
+	
+	@Transactional
+	@Test
 	public void test_upLoadCertifiedProduct2015UniqueTestParticipant() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		MultipartFile file = getUploadFile("2015", "v11");
