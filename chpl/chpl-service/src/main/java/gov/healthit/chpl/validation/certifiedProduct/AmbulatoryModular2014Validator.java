@@ -18,6 +18,9 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
     private static final String[] g2ComplementaryCerts = {
             "170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"
     };
+    private static final String[] g1g2TestToolCheckCerts = {
+    	"170.314 (g)(1)", "170.314 (g)(2)", "170.314 (f)(3)"
+    };
 
     @Autowired
     CertifiedProductDetailsManager cpdManager;
@@ -62,25 +65,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
     @Override
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
-
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
-                    gapEligibleAndTrue = true;
-                }
-
-                if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && !cert.getNumber().equals("170.314 (g)(1)") && !cert.getNumber().equals("170.314 (g)(2)")
-                        && !cert.getNumber().equals("170.314 (f)(3)")
-                        && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    product.getErrorMessages()
-                            .add("Test Tools are required for certification " + cert.getNumber() + ".");
-                }
-            }
-        }
+        super.g1g2TestToolCheck(g1g2TestToolCheckCerts, product);
     }
 
     @Override

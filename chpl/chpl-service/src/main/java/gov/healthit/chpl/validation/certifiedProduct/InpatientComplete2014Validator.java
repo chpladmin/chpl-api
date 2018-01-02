@@ -25,6 +25,8 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
     @Override
     public void validate(PendingCertifiedProductDTO product) {
         super.validate(product);
+        super.checkA1OrA18A19A20(product);
+        super.checkB1B2B8H1(product);
 
         List<PendingCertificationResultDTO> certificationCriterion = product.getCertificationCriterion();
         for (int i = 0; i < requiredCriteria.length; i++) {
@@ -39,71 +41,13 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
                         .add("Required certification criteria " + requiredCriteria[i] + " was not found.");
             }
         }
-
-        // (a)(1) (OR) ((a)(18), (a)(19), (a)(20))"
-        boolean hasA1 = false;
-        boolean hasA18 = false;
-        boolean hasA19 = false;
-        boolean hasA20 = false;
-        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.getMeetsCriteria()) {
-                hasA1 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.getMeetsCriteria()) {
-                hasA18 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.getMeetsCriteria()) {
-                hasA19 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.getMeetsCriteria()) {
-                hasA20 = true;
-            }
-        }
-        if (!hasA1) {
-            if (!hasA18 || !hasA19 || !hasA20) {
-                product.getErrorMessages()
-                        .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
-            }
-        }
-
-        // (b)(1), (b)(2)**
-        // (in replacement for (b)(1) and (b)(2) -
-        // (b)(1) and (b)(8), OR
-        // (b)(8) and (h)(1), OR
-        // (b)(1) and (b)(2) and (b)(8), OR
-        // (b)(1) and (b)(2) and (h)(1), OR
-        // (b)(1) and (b)(2) and (b)(8) and (h)(1)"
-        boolean hasB1 = false;
-        boolean hasB2 = false;
-        boolean hasB8 = false;
-        boolean hasH1 = false;
-        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.getMeetsCriteria()) {
-                hasB1 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.getMeetsCriteria()) {
-                hasB2 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.getMeetsCriteria()) {
-                hasB8 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.getMeetsCriteria()) {
-                hasH1 = true;
-            }
-        }
-        if (!hasB1 && !hasB2) {
-            if (!hasB1 && !hasB8) {
-                if (!hasB8 && !hasH1) {
-                    product.getErrorMessages()
-                            .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
-                }
-            }
-        }
     }
 
     @Override
     public void validate(CertifiedProductSearchDetails product) {
         super.validate(product);
+        super.checkA1OrA18A19A20(product);
+        super.checkB1B2B8H1(product);
 
         List<CertificationResult> certificationCriterion = product.getCertificationResults();
         for (int i = 0; i < requiredCriteria.length; i++) {
@@ -116,66 +60,6 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
             if (!hasCert) {
                 product.getErrorMessages()
                         .add("Required certification criteria " + requiredCriteria[i] + " was not found.");
-            }
-        }
-
-        // (a)(1) (OR) ((a)(18), (a)(19), (a)(20))"
-        boolean hasA1 = false;
-        boolean hasA18 = false;
-        boolean hasA19 = false;
-        boolean hasA20 = false;
-        for (CertificationResult certCriteria : product.getCertificationResults()) {
-            if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.isSuccess()) {
-                hasA1 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.isSuccess()) {
-                hasA18 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.isSuccess()) {
-                hasA19 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.isSuccess()) {
-                hasA20 = true;
-            }
-        }
-        if (!hasA1) {
-            if (!hasA18 || !hasA19 || !hasA20) {
-                product.getErrorMessages()
-                        .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
-            }
-        }
-
-        // (b)(1), (b)(2)**
-        // (in replacement for (b)(1) and (b)(2) -
-        // (b)(1) and (b)(8), OR
-        // (b)(8) and (h)(1), OR
-        // (b)(1) and (b)(2) and (b)(8), OR
-        // (b)(1) and (b)(2) and (h)(1), OR
-        // (b)(1) and (b)(2) and (b)(8) and (h)(1)"
-        boolean hasB1 = false;
-        boolean hasB2 = false;
-        boolean hasB8 = false;
-        boolean hasH1 = false;
-        for (CertificationResult certCriteria : product.getCertificationResults()) {
-            if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.isSuccess()) {
-                hasB1 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.isSuccess()) {
-                hasB2 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.isSuccess()) {
-                hasB8 = true;
-            }
-            if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.isSuccess()) {
-                hasH1 = true;
-            }
-        }
-        if (!hasB1 && !hasB2) {
-            if (!hasB1 && !hasB8) {
-                if (!hasB8 && !hasH1) {
-                    product.getErrorMessages()
-                            .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
-                }
             }
         }
     }

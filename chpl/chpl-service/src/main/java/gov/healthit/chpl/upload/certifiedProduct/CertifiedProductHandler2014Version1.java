@@ -1,7 +1,10 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +43,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2014Version1.class);
     private TemplateColumnIndexMap templateColumnIndexMap;
+    
     private String[] criteriaNames = {
             "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)",
             "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(9)", "170.314 (a)(10)",
@@ -87,13 +91,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                 parseQms(record, pendingCertifiedProduct);
             }
         }
-        if (!pendingCertifiedProduct.isHasQms() && pendingCertifiedProduct.getQmsStandards().size() > 0) {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add(pendingCertifiedProduct.getUniqueId() + " has 'false' in the QMS column but a QMS was found.");
-        } else if (pendingCertifiedProduct.isHasQms() && pendingCertifiedProduct.getQmsStandards().size() == 0) {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add(pendingCertifiedProduct.getUniqueId() + " has 'true' in the QMS column but no QMS was found.");
-        }
 
         // parse CQMs
         for (CSVRecord record : getRecord()) {
@@ -114,14 +111,16 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             }
         }
         if (firstRow != null) {
-            int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
-            for(int i = 0; i < getCriteriaNames().length; i++) {
-                String criteriaName = getCriteriaNames()[i];
-                int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
-                pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                        criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
-                criteriaBeginIndex = criteriaEndIndex + 1;
-            }
+        	int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
+        	for(int i = 0; i < getCriteriaNames().length; i++) {
+        		String criteriaName = getCriteriaNames()[i];
+        		if(criteriaName != null){
+        			int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+        			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
+        					criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
+        			criteriaBeginIndex = criteriaEndIndex + 1;
+        		}
+        	}
         }
 
         return pendingCertifiedProduct;
@@ -141,7 +140,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         parseCertificationDate(pendingCertifiedProduct, record);        
         parseSed(pendingCertifiedProduct, record);
         parseHasQms(pendingCertifiedProduct, record);
-        parseHasIcs(pendingCertifiedProduct, record);
         parseTransparencyAttestation(pendingCertifiedProduct, record);
     }
 

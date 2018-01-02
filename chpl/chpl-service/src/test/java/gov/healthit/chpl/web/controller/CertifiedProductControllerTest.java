@@ -98,7 +98,7 @@ public class CertifiedProductControllerTest {
 	
 	private static JWTAuthenticatedUser adminUser;
 	
-	private static final String UPLOAD_2014 = "2014_error-free_new_Gap_added.csv";
+	private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
 	
 	private static final String UPLOAD_2015_V10 = "Drummond10252017.csv";
 	private static final String UPLOAD_2015_V11 = "Drummond10252017_v11.csv";
@@ -1132,6 +1132,21 @@ public class CertifiedProductControllerTest {
 	@Transactional
 	@Test
 	public void test_uploadCertifiedProduct2014v2() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
+		SecurityContextHolder.getContext().setAuthentication(adminUser);
+		MultipartFile file = getUploadFile("2014", null);
+		ResponseEntity<PendingCertifiedProductResults> response = null;
+		try {
+			response = certifiedProductController.upload(file);
+		} catch (ValidationException e) {
+			e.printStackTrace();
+		}
+		assertNotNull(response);
+		assertEquals(HttpStatus.OK,response.getStatusCode());
+	}
+	
+	@Transactional
+	@Test
+	public void test_uploadCertifiedProduct2014v2Maxlength() throws EntityRetrievalException, EntityCreationException, IOException, MaxUploadSizeExceededException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		MultipartFile file = getUploadFile("2014", null);
 		ResponseEntity<PendingCertifiedProductResults> response = null;

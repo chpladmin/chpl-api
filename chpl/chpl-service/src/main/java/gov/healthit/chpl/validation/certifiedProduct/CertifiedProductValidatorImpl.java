@@ -99,6 +99,44 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     public CertifiedProductValidatorImpl() {
         urlRegex = Pattern.compile(URL_PATTERN);
     }
+    
+    public void checkField(Object product, Object field, String errorField){
+    	if(field instanceof Long){
+    		Long fieldCasted = (Long) field;
+    		if(fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)){
+    			if(product instanceof PendingCertifiedProductDTO){
+    				PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
+    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    			}else{
+    				CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
+    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    			}
+    		}
+    	}else if(field instanceof String){
+    		String fieldCasted = (String) field;
+    		if(fieldCasted.length() > getMaxLength("maxLength." + errorField)){
+    			if(product instanceof PendingCertifiedProductDTO){
+    				PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
+    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    			}else{
+    				CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
+    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    			}
+    		}
+    	}
+    }
+    
+    public int getMaxLength(String field){
+    	return Integer.parseInt(String.format(
+    			messageSource.getMessage(new DefaultMessageSourceResolvable(field),
+    			LocaleContextHolder.getLocale())));
+    }
+    
+    public String getMaxLengthErrorMessage(String errorField){
+    		return String.format(
+    				messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
+    				LocaleContextHolder.getLocale()));
+    }
 
     @Override
     public boolean validateUniqueId(String chplProductNumber) {
@@ -340,11 +378,11 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         } else {
             icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
             if (icsCodeInteger != null) {
-                if (icsCodeInteger.intValue() == 0 && product.getIcs().equals(Boolean.TRUE)) {
+                if (icsCodeInteger.intValue() == 0 && product.getIcs() != null && product.getIcs().equals(Boolean.TRUE)) {
                     product.getErrorMessages().add(
                             "The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
                     hasIcsConflict = true;
-                } else if (icsCodeInteger.intValue() > 0 && product.getIcs().equals(Boolean.FALSE)) {
+                } else if (icsCodeInteger.intValue() > 0 && product.getIcs() != null && product.getIcs().equals(Boolean.FALSE)) {
                     product.getErrorMessages().add(
                             "The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
                     hasIcsConflict = true;
@@ -820,87 +858,89 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         if (product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
             product.getErrorMessages().add("Certification edition is required but was not found.");
         }
+        checkField(product, product.getCertificationEditionId(), "certificationEdition");
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
             product.getErrorMessages().add("CHPL certification ID is required but was not found.");
         }
+        checkField(product, product.getAcbCertificationId(), "acbCertificationId");
         if (product.getCertificationDate() == null) {
             product.getErrorMessages().add("Certification date was not found.");
         } else if (product.getCertificationDate().getTime() > new Date().getTime()) {
             product.getErrorMessages().add("Certification date occurs in the future.");
         }
         if (product.getCertificationBodyId() == null) {
-            product.getErrorMessages().add("ACB ID is required but was not found.");
+            product.getErrorMessages().add("ONC-ACB is required but was not found.");
         }
-
+        checkField(product, product.getCertificationBodyId(), "certifyingAcb");
         if (StringUtils.isEmpty(product.getUniqueId())) {
             product.getErrorMessages().add("The product unique id is required.");
         }
-
+        checkField(product, product.getUniqueId(), "uniqueCHPLId");
         if (StringUtils.isEmpty(product.getDeveloperName())) {
             product.getErrorMessages().add("A developer name is required.");
         }
-
+        checkField(product, product.getDeveloperName(), "vendorName");
         if (StringUtils.isEmpty(product.getProductName())) {
             product.getErrorMessages().add("A product name is required.");
         }
-
+        checkField(product, product.getProductName(), "productName");
         if (StringUtils.isEmpty(product.getProductVersion())) {
             product.getErrorMessages().add("A product version is required.");
         }
-
+        checkField(product, product.getProductVersion(), "productVersion");
         if (product.getDeveloperAddress() != null) {
             if (StringUtils.isEmpty(product.getDeveloperAddress().getStreetLineOne())) {
                 product.getErrorMessages().add("Developer street address is required.");
             }
-
+            checkField(product, product.getDeveloperAddress().getStreetLineOne(), "vendorStreetAddress");
+            checkField(product, product.getDeveloperAddress().getStreetLineTwo(), "vendorStreetAddressTwo");
             if (StringUtils.isEmpty(product.getDeveloperAddress().getCity())) {
                 product.getErrorMessages().add("Developer city is required.");
             }
-
+            checkField(product, product.getDeveloperAddress().getCity(), "vendorCity");
             if (StringUtils.isEmpty(product.getDeveloperAddress().getState())) {
                 product.getErrorMessages().add("Developer state is required.");
             }
-
+            checkField(product, product.getDeveloperAddress().getState(), "vendorState");
             if (StringUtils.isEmpty(product.getDeveloperAddress().getZipcode())) {
                 product.getErrorMessages().add("Developer zip code is required.");
             }
+            checkField(product, product.getDeveloperAddress().getZipcode(), "vendorZip");
         } else {
             if (StringUtils.isEmpty(product.getDeveloperStreetAddress())) {
                 product.getErrorMessages().add("Developer street address is required.");
             }
-
+            checkField(product, product.getDeveloperStreetAddress(), "vendorStreetAddress");
             if (StringUtils.isEmpty(product.getDeveloperCity())) {
                 product.getErrorMessages().add("Developer city is required.");
             }
-
+            checkField(product, product.getDeveloperCity(), "vendorCity");
             if (StringUtils.isEmpty(product.getDeveloperState())) {
                 product.getErrorMessages().add("Developer state is required.");
             }
-
+            checkField(product, product.getDeveloperState(), "vendorState");
             if (StringUtils.isEmpty(product.getDeveloperZipCode())) {
                 product.getErrorMessages().add("Developer zip code is required.");
             }
+            checkField(product, product.getDeveloperZipCode(), "vendorZip");
         }
 
         if (StringUtils.isEmpty(product.getDeveloperWebsite())) {
             product.getErrorMessages().add("Developer website is required.");
         }
-
+        checkField(product, product.getDeveloperWebsite(), "vendorWebsite");
         if (StringUtils.isEmpty(product.getDeveloperEmail())) {
             product.getErrorMessages().add("Developer contact email address is required.");
         }
-
+        checkField(product, product.getDeveloperEmail(), "vendorEmail");
         if (StringUtils.isEmpty(product.getDeveloperPhoneNumber())) {
             product.getErrorMessages().add("Developer contact phone number is required.");
         }
-
+        checkField(product, product.getDeveloperPhoneNumber(), "vendorPhone");
         if (StringUtils.isEmpty(product.getDeveloperContactName())) {
             product.getErrorMessages().add("Developer contact name is required.");
         }
-
-        if (product.getIcs() == null) {
-            product.getErrorMessages().add("ICS is required.");
-        }
+        checkField(product, product.getDeveloperContactName(), "vendorContactName");
 
         // if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) &&
         // urlRegex.matcher(product.getTransparencyAttestationUrl()).matches()
@@ -941,6 +981,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     protected void validateDemographics(CertifiedProductSearchDetails product) {
         if (product.getCertificationEdition() == null || product.getCertificationEdition().get("id") == null) {
             product.getErrorMessages().add("Certification edition is required but was not found.");
+        }else{
+        	checkField(product, product.getCertificationEdition().get("id"), "certificationEdition");
         }
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
             product.getErrorMessages().add("CHPL certification ID is required but was not found.");
@@ -952,20 +994,22 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
         if (product.getCertifyingBody() == null || product.getCertifyingBody().get("id") == null) {
             product.getErrorMessages().add("ACB ID is required but was not found.");
+        }else{
+            checkField(product, product.getCertifyingBody().get("id"), "acbCertificationId");
         }
-
         if (product.getDeveloper() == null) {
             product.getErrorMessages().add("A developer is required.");
         }
-
         if (product.getProduct() == null || StringUtils.isEmpty(product.getProduct().getName())) {
             product.getErrorMessages().add("A product name is required.");
+        }else{
+            checkField(product, product.getProduct().getName(), "productName");
         }
-
         if (product.getVersion() == null || StringUtils.isEmpty(product.getVersion().getVersion())) {
             product.getErrorMessages().add("A product version is required.");
+        }else{
+            checkField(product, product.getVersion().getVersion(), "productVersion");
         }
-
         // if(!StringUtils.isEmpty(product.getTransparencyAttestationUrl()) &&
         // urlRegex.matcher(product.getTransparencyAttestationUrl()).matches()
         // == false) {
