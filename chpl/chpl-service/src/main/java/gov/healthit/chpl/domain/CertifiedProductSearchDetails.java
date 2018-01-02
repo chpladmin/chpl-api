@@ -169,12 +169,6 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private Integer countCqms;
-    
-    /**
-     * If this product has QMS.
-     */
-    @XmlElement(required = false, nillable = true)
-    private Boolean hasQms;
 
     /**
      * Total count of open+closed surveillance for this listing.
@@ -439,14 +433,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     public void setCqmResults(final List<CQMResultDetails> cqmResults) {
         this.cqmResults = cqmResults;
     }
-
-    public Boolean getHasQms() {
-		return hasQms;
-	}
-
-	public void setHasQms(Boolean hasQms) {
-		this.hasQms = hasQms;
-	}
 
 	public Integer getCountCerts() {
         return countCerts;

@@ -198,7 +198,6 @@ public class CertifiedProductControllerTest {
 		updateRequest.getCertifyingBody().put("id", "-1");
 		updateRequest.getSed().setTestTasks(null);
 		updateRequest.getSed().setUcdProcesses(null);
-		updateRequest.setHasQms(false);
 		List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 		CertificationResult cr = new CertificationResult();
 		cr.setAdditionalSoftware(null);

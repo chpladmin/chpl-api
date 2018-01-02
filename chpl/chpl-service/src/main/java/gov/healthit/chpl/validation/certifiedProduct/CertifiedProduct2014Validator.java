@@ -402,9 +402,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if(StringUtils.isEmpty(product.getTestingLab())){
         	product.getErrorMessages().add(getErrorMessage("listing.missingTestingLab"));
         }
-        if(product.getHasQms() && product.getQmsStandards().isEmpty()){
-        	product.getErrorMessages().add(getErrorMessage("listing.missingQMSStandards"));
-        }
         // else if(urlRegex.matcher(product.getReportFileLocation()).matches()
         // == false) {
         // product.getErrorMessages().add("Test Report URL provided is not a

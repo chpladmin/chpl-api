@@ -106,10 +106,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     		if(fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)){
     			if(product instanceof PendingCertifiedProductDTO){
     				PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
-    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    				productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
     			}else{
     				CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
-    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    				productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
     			}
     		}
     	}else if(field instanceof String){
@@ -117,10 +117,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     		if(fieldCasted.length() > getMaxLength("maxLength." + errorField)){
     			if(product instanceof PendingCertifiedProductDTO){
     				PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
-    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    				productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
     			}else{
     				CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
-    				productCasted.getErrorMessages().add(getMaxLengthErrorMessage("listing." + errorField + ".maxlength"));
+    				productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
     			}
     		}
     	}
@@ -132,7 +132,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     			LocaleContextHolder.getLocale())));
     }
     
-    public String getMaxLengthErrorMessage(String errorField){
+    public String getErrorMessage(String errorField){
     		return String.format(
     				messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
     				LocaleContextHolder.getLocale()));
@@ -635,8 +635,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
                     if (product.getIcs() != null && product.getIcs().getParents() != null
                             && product.getIcs().getParents().size() > 0) {
-                        product.getErrorMessages().add(
-                                "ICS Code is listed as 00 so no parents may be specified from which the listing inherits.");
+                        product.getErrorMessages().add(getErrorMessage("listing.ics00"));
                     }
 
                     if (product.getIcs() != null && product.getIcs().getInherits() != null
@@ -860,7 +859,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
         checkField(product, product.getCertificationEditionId(), "certificationEdition");
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
-            product.getWarningMessages().add("CHPL certification ID was not found.");
+            product.getWarningMessages().add("listing.chplCertificationId");
         }
         checkField(product, product.getAcbCertificationId(), "acbCertificationId");
         if (product.getCertificationDate() == null) {
@@ -993,12 +992,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add("Certification date occurs in the future.");
         }
         if (product.getCertifyingBody() == null || product.getCertifyingBody().get("id") == null) {
-            product.getWarningMessages().add("ACB ID was not found.");
-        }
-        if(product.getCertifyingBody().get("id") != null && product.getCertifyingBody().get("id").toString().length() > getMaxLength("acbCertificationId")){
-        	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.acbCertificationId.maxlength"));
+            product.getWarningMessages().add(getErrorMessage("listing.acbCertificationId"));
         }else{
-            checkField(product, product.getCertifyingBody().get("id"), "acbCertificationId");
+        	checkField(product, product.getCertifyingBody().get("id"), "acbCertificationId");
         }
         if (product.getDeveloper() == null) {
             product.getErrorMessages().add("A developer is required.");
