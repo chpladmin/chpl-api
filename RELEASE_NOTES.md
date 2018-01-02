@@ -1,5 +1,10 @@
 # Release Notes
 
+## OCD-1932
+* Add new surveillance upload job type; process large upload files as background jobs.
+
+---
+
 ## Version TBD
 _Date TBD_
 
