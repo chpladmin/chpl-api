@@ -7,7 +7,6 @@ public interface CertifiedProductValidator {
     static final long AMBULATORY_CQM_TYPE_ID = 1;
     static final long INPATIENT_CQM_TYPE_ID = 2;
     static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
-    static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,}$";
     
     public boolean validateUniqueId(String uniqueId);
 
