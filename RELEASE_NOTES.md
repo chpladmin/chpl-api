@@ -1,12 +1,15 @@
 # Release Notes
 
-## OCD-1932
+## Version TBD
+_Date TBD_
+
+### Major features
 * Add new surveillance upload job type; process large upload files as background jobs.
 
 ---
 
-## Version TBD
-_Date TBD_
+## Version 15.3.0
+_2 January 2018_
 
 ### Minor features
 * Made ICS Source required for 2015 w/ICS on upload/confirm/edit
@@ -16,8 +19,8 @@ _Date TBD_
 * Do not include 'deleted' field in listing update generated sql
 
 ### Bugs fixed
-* Allow Listings to have CHPL IDs that match "deleted" Listingsi
-* Allow ROLE_ADMIN to edit listings.
+* Allow Listings to have CHPL IDs that match "deleted" Listings
+* Allow ROLE_ADMIN to edit listings
 * Allow ROLE_ADMIN to create and edit surveillance
 
 ---
