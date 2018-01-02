@@ -5,8 +5,14 @@ persistenceUnitName=openchpl
 springfox.documentation.swagger.v2.path=/api-docs
 basePath=/rest
 questionableActivityThresholdDays=0
+
+#
+# job properties
+#
 #display jobs that are currently running or have completed within the last jobThresholdDays days
 jobThresholdDays=7 
+#how many surveillances should be in a file before it's turned into a job?
+surveillanceThresholdToProcessAsJob=50
 
 #file name that daily SED details will be written to
 SEDDownloadName=chpl-sed-all-details.csv

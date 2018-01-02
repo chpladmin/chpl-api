@@ -7,6 +7,7 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -19,8 +20,14 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 public interface SurveillanceManager {
+    static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";
+    static final String NEW_SURVEILLANCE_BEGIN_INDICATOR = "New";
+    static final String UPDATE_SURVEILLANCE_BEGIN_INDICATOR = "Update";
+    static final String SUBELEMENT_INDICATOR = "Subelement";
+    
     File getDownloadFile(String filename) throws IOException;
 
     File getProtectedDownloadFile(String filename) throws IOException;
@@ -55,7 +62,12 @@ public interface SurveillanceManager {
     Surveillance getPendingById(Long acbId, Long survId, boolean includeDeleted) throws EntityRetrievalException;
 
     Long createPendingSurveillance(Long acbId, Surveillance surv);
-
+    
+    public int countSurveillanceRecords(MultipartFile file) throws ValidationException;
+    public int countSurveillanceRecords(String fileContents) throws ValidationException;
+    public List<Surveillance> parseUploadFile(MultipartFile file) throws ValidationException;
+    public List<String> checkUploadedSurveillanceOwnership(Surveillance pendingSurv);
+    
     void deletePendingSurveillance(Long acbId, Long survId, boolean isConfirmed)
             throws ObjectMissingValidationException, JsonProcessingException, EntityRetrievalException,
             EntityCreationException;

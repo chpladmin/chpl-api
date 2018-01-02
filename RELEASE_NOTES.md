@@ -1,5 +1,10 @@
 # Release Notes
 
+## OCD-1932
+* Add new surveillance upload job type; process large upload files as background jobs.
+
+---
+
 ## Version TBD
 _Date TBD_
 
@@ -13,6 +18,7 @@ _Date TBD_
 ### Bugs fixed
 * Allow Listings to have CHPL IDs that match "deleted" Listingsi
 * Allow ROLE_ADMIN to edit listings.
+* Allow ROLE_ADMIN to create and edit surveillance
 
 ---
 

@@ -1,7 +1,8 @@
 package gov.healthit.chpl.domain.concept;
 
 public enum JobTypeConcept {
-    MUU_UPLOAD("MUU Upload");
+    MUU_UPLOAD("MUU Upload"),
+    SURV_UPLOAD("Surveillance Upload");
 
     private String name;
 
