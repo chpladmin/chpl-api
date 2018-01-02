@@ -56,6 +56,11 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
     					LocaleContextHolder.getLocale()));
     }
+    public String getErrorMessage(String errorField, String input){
+    	return String.format(messageSource.getMessage(
+                new DefaultMessageSourceResolvable("listing.criteria.badG1MacraMeasure"),
+                LocaleContextHolder.getLocale()), input);
+    }
     
     public boolean checkB1B2B8H1(Object product){
     	// (b)(1), (b)(2)**
@@ -425,7 +430,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         			} else if (cert.isSed() != null && cert.isSed() == true
         					&& (product.getSed().getUcdProcesses() == null || product.getSed().getUcdProcesses().size() == 0)) {
         				product.getErrorMessages().add(
-        						"Critiera " + cert.getNumber() + " indicated SED but no UCD Processes were listed.");
+        						getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
         			}
         		}
         	}
