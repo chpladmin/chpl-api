@@ -82,6 +82,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String sedIntendedUserDescription;
     private Date sedTestingEnd;
     private Boolean ics;
+    private Boolean hasQms;
     private Boolean accessibilityCertified;
     private String transparencyAttestation;
     private String transparencyAttestationUrl;
@@ -485,6 +486,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
         this();
         this.id = entity.getId();
+        this.hasQms = entity.isHasQms();
         this.practiceTypeId = entity.getPracticeTypeId();
         this.testingLabId = entity.getTestingLabId();
         this.deleted = entity.getDeleted();
@@ -589,7 +591,15 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getPracticeTypeId() {
+    public Boolean getHasQms() {
+		return hasQms;
+	}
+
+	public void setHasQms(Boolean hasQms) {
+		this.hasQms = hasQms;
+	}
+
+	public Long getPracticeTypeId() {
         return practiceTypeId;
     }
 

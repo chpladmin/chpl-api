@@ -612,7 +612,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     if (product.getIcs() != null && product.getIcs().getParents() != null
                             && product.getIcs().getParents().size() > 0) {
                         product.getErrorMessages().add(
-                                "ICS Code is listed as 0 so no parents may be specified from which the listing inherits.");
+                                "ICS Code is listed as 00 so no parents may be specified from which the listing inherits.");
                     }
 
                     if (product.getIcs() != null && product.getIcs().getInherits() != null
@@ -838,7 +838,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.certificationEdition.maxlength"));
         }
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
-            product.getErrorMessages().add("CHPL certification ID is required but was not found.");
+            product.getWarningMessages().add("CHPL certification ID was not found.");
         }
         if(product.getAcbCertificationId() != null && product.getAcbCertificationId().toString().length() > getMaxLength("acbCertificationId")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.acbCertificationId.maxlength"));
@@ -1017,7 +1017,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add("Certification date occurs in the future.");
         }
         if (product.getCertifyingBody() == null || product.getCertifyingBody().get("id") == null) {
-            product.getErrorMessages().add("ACB ID is required but was not found.");
+            product.getWarningMessages().add("ACB ID was not found.");
         }
         if(product.getCertifyingBody().get("id") != null && product.getCertifyingBody().get("id").toString().length() > getMaxLength("acbCertificationId")){
         	product.getErrorMessages().add(getMaxLengthErrorMessage("listing.acbCertificationId.maxlength"));

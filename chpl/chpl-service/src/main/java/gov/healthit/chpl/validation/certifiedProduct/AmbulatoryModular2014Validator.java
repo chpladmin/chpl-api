@@ -91,7 +91,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
             }
 
             if (!hasG1Complement) {
-                product.getWarningMessages().add("(g)(1) was found without a required related certification.");
+                product.getErrorMessages().add("(g)(1) was found without a required related certification.");
             }
         }
 
@@ -114,12 +114,12 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
             }
 
             if (!hasG2Complement) {
-                product.getWarningMessages().add("(g)(2) was found without a required related certification.");
+                product.getErrorMessages().add("(g)(2) was found without a required related certification.");
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
+            product.getErrorMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
         }
     }
 
