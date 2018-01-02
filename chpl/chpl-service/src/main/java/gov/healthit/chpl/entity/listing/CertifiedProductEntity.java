@@ -346,7 +346,7 @@ public class CertifiedProductEntity {
     protected Date creationDate;
 
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     protected Boolean deleted;
 
     @Basic(optional = false)

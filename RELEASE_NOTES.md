@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 15.3.0
+_2 January 2018_
+
+### Minor features
+* Made ICS Source required for 2015 w/ICS on upload/confirm/edit
+* Test tools are required for 170.315 (b)(8)
+* GAP is required for 170.314 (b)(5)(B)
+* Add warning messages to uploaded listings and surveillance regarding invalid characters found.
+* Do not include 'deleted' field in listing update generated sql
+
+### Bugs fixed
+* Allow Listings to have CHPL IDs that match "deleted" Listings
+* Allow ROLE_ADMIN to edit listings
+* Allow ROLE_ADMIN to create and edit surveillance
+
+---
+
 ## Version 15.2.0
 _18 December 2017_
 

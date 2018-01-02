@@ -100,8 +100,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private MacraMeasureDAO mmDao;
 
     @Override
-    @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "hasRole('ROLE_ACB'))"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)")
+    @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB'))"
+            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })

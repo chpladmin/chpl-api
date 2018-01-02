@@ -82,10 +82,14 @@ public class Surveillance implements Serializable {
 
     @XmlTransient
     private Set<String> errorMessages;
+    
+    @XmlTransient
+    private Set<String> warningMessages;
 
     public Surveillance() {
         this.requirements = new LinkedHashSet<SurveillanceRequirement>();
         this.errorMessages = new HashSet<String>();
+        this.warningMessages = new HashSet<String>();
     }
 
     public Set<String> getErrorMessages() {
@@ -94,6 +98,14 @@ public class Surveillance implements Serializable {
 
     public void setErrorMessages(final Set<String> errors) {
         this.errorMessages = errors;
+    }
+    
+    public Set<String> getWarningMessages() {
+        return warningMessages;
+    }
+
+    public void setWarningMessages(final Set<String> warnings) {
+        this.warningMessages = warnings;
     }
 
     public Long getId() {
