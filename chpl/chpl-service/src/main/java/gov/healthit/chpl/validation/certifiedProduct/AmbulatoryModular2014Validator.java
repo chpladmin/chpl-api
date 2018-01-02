@@ -1,6 +1,8 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
@@ -62,6 +64,12 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
         return allCerts;
     }
 
+    public String getErrorMessage(String errorField){
+    	return String.format(
+    			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
+    					LocaleContextHolder.getLocale()));
+    }
+
     @Override
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
@@ -91,7 +99,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
             }
 
             if (!hasG1Complement) {
-                product.getErrorMessages().add("(g)(1) was found without a required related certification.");
+                product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -114,12 +122,12 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
             }
 
             if (!hasG2Complement) {
-                product.getErrorMessages().add("(g)(2) was found without a required related certification.");
+                product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getErrorMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
+            product.getErrorMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
         }
     }
 
@@ -154,7 +162,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
             }
 
             if (!hasAtLeastOneCertPartner) {
-                product.getWarningMessages().add("(g)(1) was found without a required related certification.");
+                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -177,12 +185,12 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
             }
 
             if (!hasAtLeastOneCertPartner) {
-                product.getWarningMessages().add("(g)(2) was found without a required related certification.");
+                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
+            product.getWarningMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
         }
     }
 }

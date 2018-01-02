@@ -858,9 +858,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add("Certification edition is required but was not found.");
         }
         checkField(product, product.getCertificationEditionId(), "certificationEdition");
-        if (StringUtils.isEmpty(product.getAcbCertificationId())) {
-            product.getWarningMessages().add("listing.chplCertificationId");
-        }
         checkField(product, product.getAcbCertificationId(), "acbCertificationId");
         if (product.getCertificationDate() == null) {
             product.getErrorMessages().add("Certification date was not found.");
@@ -990,11 +987,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add("Certification date was not found.");
         } else if (product.getCertificationDate() > new Date().getTime()) {
             product.getErrorMessages().add("Certification date occurs in the future.");
-        }
-        if (product.getCertifyingBody() == null || product.getCertifyingBody().get("id") == null) {
-            product.getWarningMessages().add(getErrorMessage("listing.acbCertificationId"));
-        }else{
-        	checkField(product, product.getCertifyingBody().get("id"), "acbCertificationId");
         }
         if (product.getDeveloper() == null) {
             product.getErrorMessages().add("A developer is required.");
