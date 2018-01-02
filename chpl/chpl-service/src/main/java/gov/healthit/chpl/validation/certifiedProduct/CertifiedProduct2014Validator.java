@@ -402,6 +402,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if(StringUtils.isEmpty(product.getTestingLab())){
         	product.getErrorMessages().add(getErrorMessage("listing.missingTestingLab"));
         }
+        if(product.getHasQms() && product.getQmsStandards().isEmpty()){
+        	product.getErrorMessages().add(getErrorMessage("listing.missingQMSStandards"));
+        }
         // else if(urlRegex.matcher(product.getReportFileLocation()).matches()
         // == false) {
         // product.getErrorMessages().add("Test Report URL provided is not a
@@ -416,6 +419,17 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         	for (int i = 0; i < cqmRequiredCerts.length; i++) {
         		if (cert.getNumber().equals(cqmRequiredCerts[i]) && cert.isSuccess()) {
         			isCqmRequired = true;
+        		}
+        	}
+        	if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+        		if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
+        			if (cert.isSed() == null) {
+        				product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
+        			} else if (cert.isSed() != null && cert.isSed() == true
+        					&& (product.getSed().getUcdProcesses() == null || product.getSed().getUcdProcesses().size() == 0)) {
+        				product.getErrorMessages().add(
+        						"Critiera " + cert.getNumber() + " indicated SED but no UCD Processes were listed.");
+        			}
         		}
         	}
         }
