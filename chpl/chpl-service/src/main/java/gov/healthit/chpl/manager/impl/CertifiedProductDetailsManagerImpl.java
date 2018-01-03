@@ -39,6 +39,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -168,11 +169,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                     + dto.getProductCode() + "." + dto.getVersionCode() + "." + dto.getIcsCode() + "."
                     + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
         }
-
-        
-        searchDetails.getCertificationStatus().put("id", dto.getCertificationStatusId());
-        searchDetails.getCertificationStatus().put("name", dto.getCertificationStatusName());
-        searchDetails.getCertificationStatus().put("date", dto.getCertificationStatusDate());
 
         searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
         searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
@@ -572,8 +568,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
 
             CertificationStatusDTO statusDto = certStatusDao.getById(certStatusDto.getStatus().getId());
-            cse.setCertificationStatusId(statusDto.getId());
-            cse.setCertificationStatusName(statusDto.getStatus());
+            cse.setStatus(new CertificationStatus(statusDto));
             certEvents.add(cse);
         }
         return certEvents;

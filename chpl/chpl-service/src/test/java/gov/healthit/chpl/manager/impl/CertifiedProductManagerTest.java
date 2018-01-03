@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,8 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
@@ -155,7 +158,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		updatedListing.getCertificationStatus().put("id", stat.getId());
+		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+		statusEvent.setEventDate(System.currentTimeMillis());
+		statusEvent.setStatus(new CertificationStatus(stat));
+		updatedListing.getCertificationEvents().add(statusEvent);
+		
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setListing(updatedListing);
 		cpManager.update(acbId, toUpdate, existingListing);
@@ -184,7 +191,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		updatedListing.getCertificationStatus().put("id", stat.getId());
+		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        updatedListing.getCertificationEvents().add(statusEvent);
+        
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setListing(updatedListing);
 		
@@ -220,7 +231,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		updatedListing.getCertificationStatus().put("id", stat.getId());
+		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        updatedListing.getCertificationEvents().add(statusEvent);
+        
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setListing(updatedListing);
 		
@@ -256,7 +271,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		updatedListing.getCertificationStatus().put("id", stat.getId());
+		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        updatedListing.getCertificationEvents().add(statusEvent);
 
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setListing(updatedListing);
@@ -293,7 +311,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		updatedListing.getCertificationStatus().put("id", stat.getId());
+		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        updatedListing.getCertificationEvents().add(statusEvent);
 
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setListing(updatedListing);
@@ -322,7 +343,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		updatedListing.getCertificationStatus().put("id", stat.getId());
+		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        updatedListing.getCertificationEvents().add(statusEvent);
+        
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setListing(updatedListing);
 		cpManager.update(acbId, toUpdate, existingListing);
@@ -351,7 +376,11 @@ public class CertifiedProductManagerTest extends TestCase {
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
 		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		updatedListing.getCertificationStatus().put("id", stat.getId());
+		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        updatedListing.getCertificationEvents().add(statusEvent);
+        
 		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
 		toUpdate.setListing(updatedListing);
 		boolean success = true;
