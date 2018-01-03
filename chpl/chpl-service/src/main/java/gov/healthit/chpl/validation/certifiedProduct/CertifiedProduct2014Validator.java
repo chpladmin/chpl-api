@@ -250,7 +250,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
             if (!hasOneCqmWithVersion) {
-                product.getErrorMessages().add("At least one CQM/version is required but was not found.");
+                product.getErrorMessages().add(getErrorMessage("listing.criteria.missingCQM"));
             }
         }
 
