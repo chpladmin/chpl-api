@@ -45,7 +45,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.getCertificationDate()),
                 ZoneId.systemDefault());
         result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
-        result.add(data.getCertificationStatus().get("name").toString());
+        result.add(data.getCurrentStatus().getStatus().getName());
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());

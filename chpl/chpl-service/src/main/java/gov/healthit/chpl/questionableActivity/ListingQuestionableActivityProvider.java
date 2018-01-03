@@ -32,11 +32,11 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         
         QuestionableActivityListingDTO activity = null;
-        if (!origListing.getCertificationStatus().get("id")
-                .equals(newListing.getCertificationStatus().get("id"))) {
+        if (!origListing.getCurrentStatus().getStatus().getId()
+                .equals(newListing.getCurrentStatus().getStatus().getId())) {
               activity = new QuestionableActivityListingDTO();
-              activity.setBefore(origListing.getCertificationStatus().get("name").toString());
-              activity.setAfter(newListing.getCertificationStatus().get("name").toString());
+              activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
+              activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
         }
         
         return activity;
@@ -55,11 +55,11 @@ public class ListingQuestionableActivityProvider {
             CertifiedProductSearchDetails newListing) {
         
         QuestionableActivityListingDTO activity = null;
-        if (!origListing.getCertificationStatus().get("name").toString().equals(updateTo.getName()) && 
-            newListing.getCertificationStatus().get("name").toString().equals(updateTo.getName())) {
+        if (!origListing.getCurrentStatus().getStatus().getName().equals(updateTo.getName()) && 
+            newListing.getCurrentStatus().getStatus().getName().equals(updateTo.getName())) {
               activity = new QuestionableActivityListingDTO();
-              activity.setBefore(origListing.getCertificationStatus().get("name").toString());
-              activity.setAfter(newListing.getCertificationStatus().get("name").toString());
+              activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
+              activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
         }
         
         return activity;

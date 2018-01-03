@@ -27,10 +27,10 @@ public class CapClosedComplianceChecker implements RuleComplianceChecker {
     public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
         Date result = null;
         if (nc.getCapEndDate() == null
-                && (cp.getCertificationStatus().get("name").equals(CertificationStatusType.WithdrawnByAcb.getName())
-                        || cp.getCertificationStatus().get("name")
+                && (cp.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.WithdrawnByAcb.getName())
+                        || cp.getCurrentStatus().getStatus().getName()
                                 .equals(CertificationStatusType.WithdrawnByDeveloper.getName())
-                        || cp.getCertificationStatus().get("name")
+                        || cp.getCurrentStatus().getStatus().getName()
                                 .equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName()))) {
             List<CertificationStatusEvent> statusEvents = cp.getCertificationEvents();
             // find the most recent one

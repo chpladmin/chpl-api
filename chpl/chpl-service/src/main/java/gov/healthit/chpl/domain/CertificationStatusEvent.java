@@ -26,16 +26,10 @@ public class CertificationStatusEvent implements Serializable {
     private Long eventDate;
 
     /**
-     * Internal certification status ID.
+     * The certification status for the listing on the eventDate.
      */
     @XmlElement(required = true)
-    private Long certificationStatusId;
-
-    /**
-     * Certification status name.
-     */
-    @XmlElement(required = true)
-    private String certificationStatusName;
+    private CertificationStatus status;
 
     @XmlTransient
     private Long lastModifiedUser;
@@ -78,19 +72,11 @@ public class CertificationStatusEvent implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Long getCertificationStatusId() {
-        return certificationStatusId;
+    public CertificationStatus getStatus() {
+        return status;
     }
 
-    public void setCertificationStatusId(final Long certificationStatusId) {
-        this.certificationStatusId = certificationStatusId;
-    }
-
-    public String getCertificationStatusName() {
-        return certificationStatusName;
-    }
-
-    public void setCertificationStatusName(final String certificationStatusName) {
-        this.certificationStatusName = certificationStatusName;
+    public void setStatus(CertificationStatus status) {
+        this.status = status;
     }
 }

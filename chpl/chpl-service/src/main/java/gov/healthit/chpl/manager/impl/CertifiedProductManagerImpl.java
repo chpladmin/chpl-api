@@ -17,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -61,6 +60,7 @@ import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -148,9 +148,6 @@ import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 @Service("certifiedProductManager")
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     CertifiedProductDAO cpDao;
@@ -417,16 +414,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     "The ID of an existing certification edition (year) must be provided. A new certification edition cannot be created via this process.");
         }
         toCreate.setCertificationEditionId(pendingCp.getCertificationEditionId());
-
-        String status = pendingCp.getRecordStatus();
-        if (StringUtils.isEmpty(status)) {
-            throw new EntityCreationException(
-                    "Cannot determine certification status. Is this a new record? An update? A removal?");
-        }
-        if (status.trim().equalsIgnoreCase("new")) {
-            CertificationStatusDTO statusDto = certStatusDao.getByStatusName("Active");
-            toCreate.setCertificationStatusId(statusDto.getId());
-        }
         toCreate.setTransparencyAttestationUrl(pendingCp.getTransparencyAttestationUrl());
 
         DeveloperDTO developer = null;
@@ -949,7 +936,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
             }
         }
-
+        
         // if all this was successful, insert a certification status event for
         // the certification date
         CertificationStatusDTO activeCertStatus = certStatusDao
@@ -1038,11 +1025,11 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
-        Long certificationStatusId = new Long(updatedListing.getCertificationStatus().get("id").toString());
         Long productVersionId = new Long(updatedListing.getVersion().getVersionId());
+        CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
 
         // look at the updated status and see if a developer ban is appropriate
-        CertificationStatusDTO updatedCertificationStatus = certStatusDao.getById(certificationStatusId);
+        CertificationStatusDTO updatedStatusDto = certStatusDao.getById(updatedStatus.getId());
         DeveloperDTO cpDeveloper = developerDao.getByVersion(productVersionId);
         if (cpDeveloper == null) {
             LOGGER.error("Could not find developer for product version with id " + productVersionId);
@@ -1050,15 +1037,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     "No developer could be located for the certified product in the update. Update cannot continue.");
         }
         DeveloperStatusDTO newDevStatusDto = null;
-        switch (CertificationStatusType.getValue(updatedCertificationStatus.getStatus())) {
+        switch (CertificationStatusType.getValue(updatedStatusDto.getStatus())) {
         case SuspendedByOnc:
         case TerminatedByOnc:
             // only onc admin can do this and it always triggers developer ban
             if (Util.isUserRoleAdmin()) {
                 // find the new developer status
-                if (updatedCertificationStatus.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
+                if (updatedStatusDto.getStatus().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                     newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
-                } else if (updatedCertificationStatus.getStatus()
+                } else if (updatedStatusDto.getStatus()
                         .equals(CertificationStatusType.TerminatedByOnc.toString())) {
                     newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                 }
@@ -1079,7 +1066,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 if (updateRequest.getBanDeveloper() != null && updateRequest.getBanDeveloper().booleanValue() == true) {
                     newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                 } else {
-                    LOGGER.info("Request was made to update listing status to " + updatedCertificationStatus.getStatus()
+                    LOGGER.info("Request was made to update listing status to " + updatedStatusDto.getStatus()
                             + " but not ban the developer.");
                 }
             } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
@@ -1091,7 +1078,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             }
             break;
         default:
-            LOGGER.info("New listing status is " + updatedCertificationStatus.getStatus()
+            LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
                     + " which does not trigger a developer ban.");
             break;
         }
@@ -1115,9 +1102,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     updatedListing.getAccessibilityStandards());
             updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
                     new Date(updatedListing.getCertificationDate()));
-            updateCertificationStatusEvents(listingId,
-                    new Long(existingListing.getCertificationStatus().get("id").toString()),
-                    new Long(updatedListing.getCertificationStatus().get("id").toString()));
+            
+            //TODO: make this update the entire history of status events
+            updateCertificationStatusEvents(listingId, existingListing.getCurrentStatus().getId(),
+                    updatedStatus.getId());
             updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
                     existingListing.getCertificationResults(), updatedListing.getCertificationResults());
             updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());

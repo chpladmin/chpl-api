@@ -169,6 +169,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                     + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
         }
 
+        
         searchDetails.getCertificationStatus().put("id", dto.getCertificationStatusId());
         searchDetails.getCertificationStatus().put("name", dto.getCertificationStatusName());
         searchDetails.getCertificationStatus().put("date", dto.getCertificationStatusDate());
