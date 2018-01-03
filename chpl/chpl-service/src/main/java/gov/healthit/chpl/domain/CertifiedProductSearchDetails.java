@@ -434,7 +434,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.cqmResults = cqmResults;
     }
 
-    public Integer getCountCerts() {
+	public Integer getCountCerts() {
         return countCerts;
     }
 

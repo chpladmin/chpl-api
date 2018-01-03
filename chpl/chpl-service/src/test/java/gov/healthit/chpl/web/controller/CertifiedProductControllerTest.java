@@ -455,6 +455,7 @@ public class CertifiedProductControllerTest {
 		pcpDTO.setCqmCriterion(cqmCriterionDTOList);
 		String certEdition = "2015";
 		pcpDTO.setCertificationEdition(certEdition);
+		pcpDTO.setHasQms(false);
 		pcpDTO.setCertificationEditionId(3L); // 1 = 2011; 2 = 2014; 3 = 2015
 		pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
 		pcpDTO.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");

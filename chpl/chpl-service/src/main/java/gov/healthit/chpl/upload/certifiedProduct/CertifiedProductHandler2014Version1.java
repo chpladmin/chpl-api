@@ -43,7 +43,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler2014Version1.class);
     private TemplateColumnIndexMap templateColumnIndexMap;
-    
     private String[] criteriaNames = {
             "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)",
             "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(9)", "170.314 (a)(10)",

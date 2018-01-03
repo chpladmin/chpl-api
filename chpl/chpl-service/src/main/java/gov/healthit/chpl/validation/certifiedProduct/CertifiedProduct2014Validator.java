@@ -56,6 +56,11 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
     					LocaleContextHolder.getLocale()));
     }
+    public String getErrorMessage(String errorField, String input){
+    	return String.format(messageSource.getMessage(
+                new DefaultMessageSourceResolvable("listing.criteria.badG1MacraMeasure"),
+                LocaleContextHolder.getLocale()), input);
+    }
     
     public boolean checkB1B2B8H1(Object product){
     	// (b)(1), (b)(2)**
@@ -219,6 +224,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("Test Report URL is required but was not found.");
         }
+        if(product.getHasQms() && product.getQmsStandards().isEmpty()){
+        	product.getErrorMessages().add(getErrorMessage("listing.missingQMSStandards"));
+        }
         // else if(urlRegex.matcher(product.getReportFileLocation()).matches()
         // == false) {
         // product.getErrorMessages().add("Test Report URL provided is not a
@@ -242,7 +250,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
             if (!hasOneCqmWithVersion) {
-                product.getErrorMessages().add("At least one CQM/version is required but was not found.");
+                product.getErrorMessages().add(getErrorMessage("listing.criteria.missingCQM"));
             }
         }
 
@@ -262,6 +270,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                     hasG3Complement = true;
                 }
             }
+        }
+        if (!hasG4) {
+            product.getErrorMessages().add(getErrorMessage("listing.criteria.missing170314g4"));
         }
         if (hasG3 && !hasG3Complement) {
             product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG3complement"));
@@ -335,11 +346,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
                     if (cert.getSed() == null) {
-                        product.getErrorMessages().add("SED is required for certification " + cert.getNumber() + ".");
+                        product.getErrorMessages().add(getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
                     } else if (cert.getSed() != null && cert.getSed().booleanValue() == true
                             && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
-                        product.getErrorMessages().add(
-                                "Critiera " + cert.getNumber() + " indicated SED but no UCD Processes were listed.");
+                        product.getErrorMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                     }
                 }
 
@@ -390,39 +400,39 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("Test Report URL is required but was not found.");
         }
+        if(product.getCertificationStatus().isEmpty()){
+        	product.getErrorMessages().add(getErrorMessage("listing.missingCertificationStatus"));
+        }
+        if(StringUtils.isEmpty(product.getTestingLab())){
+        	product.getErrorMessages().add(getErrorMessage("listing.missingTestingLab"));
+        }
         // else if(urlRegex.matcher(product.getReportFileLocation()).matches()
         // == false) {
         // product.getErrorMessages().add("Test Report URL provided is not a
         // valid URL format.");
         // }
-
-        // check sed/ucd/tasks
-        if (product.getSed() != null && product.getSed().getTestTasks() != null) {
-            for (TestTask task : product.getSed().getTestTasks()) {
-                StringBuffer criteriaNumbers = new StringBuffer();
-                for (CertificationCriterion criteria : task.getCriteria()) {
-                    if (criteriaNumbers.length() > 0) {
-                        criteriaNumbers.append(",");
-                    }
-                    criteriaNumbers.append(criteria.getNumber());
-                }
-                if (task.getTestParticipants() == null || task.getTestParticipants().size() < 5) {
-                    product.getWarningMessages()
-                            .add("A test task for certification(s) " + criteriaNumbers.toString()
-                                    + " requires at least 5 participants and only has "
-                                    + task.getTestParticipants().size() + ".");
-                }
-            }
-        }
+        
+        
 
         // check cqms
         boolean isCqmRequired = false;
         for (CertificationResult cert : product.getCertificationResults()) {
-            for (int i = 0; i < cqmRequiredCerts.length; i++) {
-                if (cert.getNumber().equals(cqmRequiredCerts[i]) && cert.isSuccess()) {
-                    isCqmRequired = true;
-                }
-            }
+        	for (int i = 0; i < cqmRequiredCerts.length; i++) {
+        		if (cert.getNumber().equals(cqmRequiredCerts[i]) && cert.isSuccess()) {
+        			isCqmRequired = true;
+        		}
+        	}
+        	if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+        		if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
+        			if (cert.isSed() == null) {
+        				product.getErrorMessages().add(getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
+        			} else if (cert.isSed() != null && cert.isSed() == true
+        					&& (product.getSed().getUcdProcesses() == null || product.getSed().getUcdProcesses().size() == 0)) {
+        				product.getErrorMessages().add(
+        						getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+        			}
+        		}
+        	}
         }
         if (isCqmRequired) {
             boolean hasOneCqmWithVersion = false;
@@ -432,7 +442,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
             if (!hasOneCqmWithVersion) {
-                product.getErrorMessages().add("At least one CQM/version is required but was not found.");
+                product.getErrorMessages().add(getErrorMessage("listing.criteria.missingCQM"));
             }
         }
 
@@ -444,7 +454,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
         }
         if (!hasG4) {
-            product.getErrorMessages().add("(g)(4) is required but was not found.");
+            product.getErrorMessages().add(getErrorMessage("lisitng.criteria.missingG4"));
         }
 
         // g3 check
@@ -464,10 +474,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         }
 
         if (hasG3 && !hasG3Complement) {
-            product.getErrorMessages().add("(g)(3) was found without a required related certification.");
+            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG3complement"));
         }
         if (hasG3Complement && !hasG3) {
-            product.getErrorMessages().add("A certification that requires (g)(3) was found but (g)(3) was not.");
+            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingComplementG3"));
         }
     }
 
