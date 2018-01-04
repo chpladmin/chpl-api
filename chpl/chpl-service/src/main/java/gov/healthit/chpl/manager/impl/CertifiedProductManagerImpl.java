@@ -1608,17 +1608,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
                 statusEventDto.setStatus(statusDto);
             }
-            
-            //check if the reason is required
-            if(statusEventDto.getStatus().getStatus().equals(
-                    CertificationStatusType.WithdrawnByAcb.getName())
-                && StringUtils.isEmpty(statusEventDto.getReason())) {
-                String msg = String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable(
-                                "listing.noCertificationStatusReasonProvided"),
-                        LocaleContextHolder.getLocale()), CertificationStatusType.WithdrawnByAcb.getName());
-                throw new EntityRetrievalException(msg);
-            }
             statusEventDao.create(statusEventDto);
         }
 
@@ -1667,17 +1656,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                         throw new EntityRetrievalException(msg);
                     }
                     statusEventDto.setStatus(statusDto);
-                }
-                
-                //check if the reason is required
-                if(statusEventDto.getStatus().getStatus().equals(
-                        CertificationStatusType.WithdrawnByAcb.getName())
-                    && StringUtils.isEmpty(statusEventDto.getReason())) {
-                    String msg = String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable(
-                                    "listing.noCertificationStatusReasonProvided"),
-                            LocaleContextHolder.getLocale()), CertificationStatusType.WithdrawnByAcb.getName());
-                    throw new EntityRetrievalException(msg);
                 }
                 statusEventDao.update(statusEventDto);
                 numChanges++;

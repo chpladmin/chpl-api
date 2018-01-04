@@ -201,28 +201,6 @@ public class CertifiedProductManagerTest extends TestCase {
 	@Test
     @Transactional(readOnly=false)
     @Rollback(true)
-    public void testAdminUserChangeStatusToWithdrawnByAcbWithoutReason() throws EntityRetrievalException,
-        EntityCreationException, JsonProcessingException, InvalidArgumentsException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
-        assertNotNull(stat);
-        Long acbId = 1L;
-        Long listingId = 1L;
-        
-        boolean success = false;
-        try {
-            updateListingStatus(acbId, listingId, stat, null);
-        } catch(EntityRetrievalException ex) {
-            if(ex.getMessage().contains("required")) {
-                success = true;
-            }
-        }
-        assertTrue(success);
-    }
-	
-	@Test
-    @Transactional(readOnly=false)
-    @Rollback(true)
     public void testAdminUserSeesStatusChangeReason() throws EntityRetrievalException,
         EntityCreationException, JsonProcessingException, InvalidArgumentsException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
