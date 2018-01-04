@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
@@ -566,6 +567,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setEventDate(certStatusDto.getEventDate().getTime());
             cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
             cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
+            
+            if(Util.getCurrentUser() != null && 
+                    (Util.isUserRoleAcbAdmin() || Util.isUserRoleAdmin())) {
+                cse.setReason(certStatusDto.getReason());
+            }
 
             CertificationStatusDTO statusDto = certStatusDao.getById(certStatusDto.getStatus().getId());
             cse.setStatus(new CertificationStatus(statusDto));

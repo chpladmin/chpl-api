@@ -17,6 +17,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -61,6 +64,7 @@ import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -149,6 +153,8 @@ import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductManagerImpl.class);
 
+    @Autowired
+    MessageSource messageSource;
     @Autowired
     CertifiedProductDAO cpDao;
     @Autowired
@@ -1103,9 +1109,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
                     new Date(updatedListing.getCertificationDate()));
             
-            //TODO: make this update the entire history of status events
-            updateCertificationStatusEvents(listingId, existingListing.getCurrentStatus().getId(),
-                    updatedStatus.getId());
+            updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
+                    updatedListing.getCertificationEvents());
             updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
                     existingListing.getCertificationResults(), updatedListing.getCertificationResults());
             updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
@@ -1514,22 +1519,175 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
     }
 
-    private void updateCertificationStatusEvents(Long listingId, Long existingCertificationStatusId,
-            Long updatedCertificationStatusId)
+    private int updateCertificationStatusEvents(Long listingId, 
+            List<CertificationStatusEvent> existingStatusEvents,
+            List<CertificationStatusEvent> updatedStatusEvents)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        if (existingCertificationStatusId != null && updatedCertificationStatusId != null
-                && existingCertificationStatusId.longValue() != updatedCertificationStatusId.longValue()) {
-            CertificationStatusEventDTO certificationEvent = new CertificationStatusEventDTO();
-            certificationEvent.setCertifiedProductId(listingId);
-            certificationEvent.setEventDate(new Date());
-            CertificationStatusDTO status = certStatusDao.getById(updatedCertificationStatusId);
-            if (status == null) {
-                throw new EntityRetrievalException(
-                        "No certification status found with id " + updatedCertificationStatusId);
+        
+        int numChanges = 0;
+        List<CertificationStatusEvent> statusEventsToAdd = new ArrayList<CertificationStatusEvent>();
+        List<CertificationStatusEventPair> statusEventsToUpdate = new ArrayList<CertificationStatusEventPair>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which status events to add
+        if (updatedStatusEvents != null && updatedStatusEvents.size() > 0) {
+            if (existingStatusEvents == null || existingStatusEvents.size() == 0) {
+                // existing listing has none, add all from the update
+                for (CertificationStatusEvent updatedItem : updatedStatusEvents) {
+                    statusEventsToAdd.add(updatedItem);
+                }
+            } else if (existingStatusEvents.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any are different
+                for (CertificationStatusEvent updatedItem : updatedStatusEvents) {
+                    boolean inExistingListing = false;
+                    for (CertificationStatusEvent existingItem : existingStatusEvents) {
+                        if (updatedItem.matches(existingItem)) {
+                            inExistingListing = true;
+                            statusEventsToUpdate.add(new CertificationStatusEventPair(existingItem, updatedItem));
+                        }
+                    }
+
+                    if (!inExistingListing) {
+                        statusEventsToAdd.add(updatedItem);
+                    }
+                }
             }
-            certificationEvent.setStatus(status);
-            statusEventDao.create(certificationEvent);
         }
+
+        // figure out which status events to remove
+        if (existingStatusEvents != null && existingStatusEvents.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedStatusEvents == null || updatedStatusEvents.size() == 0) {
+                for (CertificationStatusEvent existingItem : existingStatusEvents) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedStatusEvents.size() > 0) {
+                for (CertificationStatusEvent existingItem : existingStatusEvents) {
+                    boolean inUpdatedListing = false;
+                    for (CertificationStatusEvent updatedItem : updatedStatusEvents) {
+                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = statusEventsToAdd.size() + idsToRemove.size();
+        for (CertificationStatusEvent toAdd : statusEventsToAdd) {
+            CertificationStatusEventDTO statusEventDto = new CertificationStatusEventDTO();
+            statusEventDto.setCertifiedProductId(listingId);
+            statusEventDto.setEventDate(new Date(toAdd.getEventDate()));
+            statusEventDto.setReason(toAdd.getReason());
+            if(toAdd.getStatus() == null) {
+                String msg = String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "listing.missingCertificationStatus"),
+                                LocaleContextHolder.getLocale()));
+                throw new EntityRetrievalException(msg);
+            } else if(toAdd.getStatus().getId() != null) {
+                CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
+                if(statusDto == null) {
+                    String msg = String.format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable(
+                                            "listing.badCertificationStatusId"),
+                                    LocaleContextHolder.getLocale()), toAdd.getStatus().getId());
+                    throw new EntityRetrievalException(msg);
+                }
+                statusEventDto.setStatus(statusDto);
+            } else if(!StringUtils.isEmpty(toAdd.getStatus().getName())) {
+                CertificationStatusDTO statusDto = certStatusDao.getByStatusName(toAdd.getStatus().getName());
+                if(statusDto == null) {
+                    String msg = String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.badCertificationStatusName"),
+                            LocaleContextHolder.getLocale()), toAdd.getStatus().getName());
+                    throw new EntityRetrievalException(msg);
+                }
+                statusEventDto.setStatus(statusDto);
+            }
+            
+            //check if the reason is required
+            if(statusEventDto.getStatus().getStatus().equals(
+                    CertificationStatusType.WithdrawnByAcb.getName())
+                && StringUtils.isEmpty(statusEventDto.getReason())) {
+                String msg = String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable(
+                                "listing.noCertificationStatusReasonProvided"),
+                        LocaleContextHolder.getLocale()), CertificationStatusType.WithdrawnByAcb.getName());
+                throw new EntityRetrievalException(msg);
+            }
+            statusEventDao.create(statusEventDto);
+        }
+
+        for (CertificationStatusEventPair toUpdate : statusEventsToUpdate) {
+            boolean hasChanged = false;
+            if (!ObjectUtils.equals(toUpdate.getOrig().getEventDate(),
+                    toUpdate.getUpdated().getEventDate())
+                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getId(),
+                            toUpdate.getUpdated().getStatus().getId())
+                    || !ObjectUtils.equals(toUpdate.getOrig().getStatus().getName(),
+                            toUpdate.getUpdated().getStatus().getName())
+                    || !ObjectUtils.equals(toUpdate.getOrig().getReason(), 
+                            toUpdate.getUpdated().getReason())) {
+                hasChanged = true;
+            }
+
+            if (hasChanged) {
+                CertificationStatusEvent cseToUpdate = toUpdate.getUpdated();
+                CertificationStatusEventDTO statusEventDto = new CertificationStatusEventDTO();
+                statusEventDto.setCertifiedProductId(listingId);
+                statusEventDto.setEventDate(new Date(cseToUpdate.getEventDate()));
+                statusEventDto.setReason(cseToUpdate.getReason());
+                if(cseToUpdate.getStatus() == null) {
+                    String msg = String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.missingCertificationStatus"),
+                            LocaleContextHolder.getLocale()));
+                    throw new EntityRetrievalException(msg);
+                } else if(cseToUpdate.getStatus().getId() != null) {
+                    CertificationStatusDTO statusDto = certStatusDao.getById(cseToUpdate.getStatus().getId());
+                    if(statusDto == null) {
+                        String msg = String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "listing.badCertificationStatusId"),
+                                LocaleContextHolder.getLocale()), cseToUpdate.getStatus().getId());
+                        throw new EntityRetrievalException(msg);
+                    }
+                    statusEventDto.setStatus(statusDto);
+                } else if(!StringUtils.isEmpty(cseToUpdate.getStatus().getName())) {
+                    CertificationStatusDTO statusDto = certStatusDao.getByStatusName(cseToUpdate.getStatus().getName());
+                    if(statusDto == null) {
+                        String msg = String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "listing.badCertificationStatusName"),
+                                LocaleContextHolder.getLocale()), cseToUpdate.getStatus().getName());
+                        throw new EntityRetrievalException(msg);
+                    }
+                    statusEventDto.setStatus(statusDto);
+                }
+                
+                //check if the reason is required
+                if(statusEventDto.getStatus().getStatus().equals(
+                        CertificationStatusType.WithdrawnByAcb.getName())
+                    && StringUtils.isEmpty(statusEventDto.getReason())) {
+                    String msg = String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.noCertificationStatusReasonProvided"),
+                            LocaleContextHolder.getLocale()), CertificationStatusType.WithdrawnByAcb.getName());
+                    throw new EntityRetrievalException(msg);
+                }
+                statusEventDao.update(statusEventDto);
+                numChanges++;
+            }
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            statusEventDao.delete(idToRemove);
+        }
+        return numChanges;
     }
 
     private int updateCertifications(Long acbId, CertifiedProductSearchDetails existingListing,
@@ -1870,6 +2028,36 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return meaningfulUseUserResults;
     }
 
+    private class CertificationStatusEventPair {
+        CertificationStatusEvent orig;
+        CertificationStatusEvent updated;
+
+        public CertificationStatusEventPair() {
+        }
+
+        public CertificationStatusEventPair(CertificationStatusEvent orig, CertificationStatusEvent updated) {
+            this.orig = orig;
+            this.updated = updated;
+        }
+
+        public CertificationStatusEvent getOrig() {
+            return orig;
+        }
+
+        public void setOrig(final CertificationStatusEvent orig) {
+            this.orig = orig;
+        }
+
+        public CertificationStatusEvent getUpdated() {
+            return updated;
+        }
+
+        public void setUpdated(final CertificationStatusEvent updated) {
+            this.updated = updated;
+        }
+
+    }
+    
     private class QmsStandardPair {
         CertifiedProductQmsStandard orig;
         CertifiedProductQmsStandard updated;

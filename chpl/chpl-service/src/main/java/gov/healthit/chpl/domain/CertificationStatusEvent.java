@@ -31,6 +31,12 @@ public class CertificationStatusEvent implements Serializable {
     @XmlElement(required = true)
     private CertificationStatus status;
 
+    /**
+     * The user-provided reason that a change of certification status occurred.
+     */
+    @XmlElement(required = true)
+    private String reason;
+    
     @XmlTransient
     private Long lastModifiedUser;
 
@@ -78,5 +84,23 @@ public class CertificationStatusEvent implements Serializable {
 
     public void setStatus(CertificationStatus status) {
         this.status = status;
+    }
+    
+    public boolean matches(CertificationStatusEvent other) {
+        boolean result = false;
+        
+        if (this.getId() != null && other.getId() != null
+                && this.getId().longValue() == other.getId().longValue()) {
+            result = true;
+        }
+        return result;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

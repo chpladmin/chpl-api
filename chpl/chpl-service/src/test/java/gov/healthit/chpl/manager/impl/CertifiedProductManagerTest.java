@@ -152,20 +152,17 @@ public class CertifiedProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
 		assertNotNull(stat);
-		
 		Long acbId = 1L;
 		Long listingId = 1L;
-		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+        updateListingStatus(acbId, listingId, stat, null);
 		
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-		statusEvent.setEventDate(System.currentTimeMillis());
-		statusEvent.setStatus(new CertificationStatus(stat));
-		updatedListing.getCertificationEvents().add(statusEvent);
-		
-		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		toUpdate.setListing(updatedListing);
-		cpManager.update(acbId, toUpdate, existingListing);
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+		assertNotNull(updatedListing);
+		assertNotNull(updatedListing.getCertificationEvents());
+		assertTrue(updatedListing.getCertificationEvents().size() > 0);
+		assertNotNull(updatedListing.getCurrentStatus());
+		assertNotNull(updatedListing.getCurrentStatus().getStatus());
+		assertEquals(CertificationStatusType.SuspendedByOnc.getName(), updatedListing.getCurrentStatus().getStatus().getName());
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -178,6 +175,108 @@ public class CertifiedProductManagerTest extends TestCase {
 	}
 	
 	@Test
+    @Transactional(readOnly=false)
+    @Rollback(true)
+    public void testAdminUserChangeStatusToWithdrawnByAcbWithReason() throws EntityRetrievalException,
+        EntityCreationException, JsonProcessingException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
+        assertNotNull(stat);
+        String reason = "Reason Text";
+        Long acbId = 1L;
+        Long listingId = 1L;
+        updateListingStatus(acbId, listingId, stat, reason);
+        
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(updatedListing);
+        assertNotNull(updatedListing.getCertificationEvents());
+        assertTrue(updatedListing.getCertificationEvents().size() > 0);
+        assertNotNull(updatedListing.getCurrentStatus());
+        assertNotNull(updatedListing.getCurrentStatus().getStatus());
+        assertNotNull(updatedListing.getCurrentStatus().getReason());
+        assertEquals(reason, updatedListing.getCurrentStatus().getReason());
+        assertEquals(CertificationStatusType.WithdrawnByAcb.getName(), updatedListing.getCurrentStatus().getStatus().getName());
+    }
+	
+	@Test
+    @Transactional(readOnly=false)
+    @Rollback(true)
+    public void testAdminUserChangeStatusToWithdrawnByAcbWithoutReason() throws EntityRetrievalException,
+        EntityCreationException, JsonProcessingException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
+        assertNotNull(stat);
+        Long acbId = 1L;
+        Long listingId = 1L;
+        
+        boolean success = false;
+        try {
+            updateListingStatus(acbId, listingId, stat, null);
+        } catch(EntityRetrievalException ex) {
+            if(ex.getMessage().contains("required")) {
+                success = true;
+            }
+        }
+        assertTrue(success);
+    }
+	
+	@Test
+    @Transactional(readOnly=false)
+    @Rollback(true)
+    public void testAdminUserSeesStatusChangeReason() throws EntityRetrievalException,
+        EntityCreationException, JsonProcessingException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
+        assertNotNull(stat);
+        String reason = "Reason Text";
+        Long acbId = 1L;
+        Long listingId = 1L;
+        updateListingStatus(acbId, listingId, stat, reason);
+        
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(updatedListing.getCurrentStatus().getReason());
+        assertEquals(reason, updatedListing.getCurrentStatus().getReason());
+    }
+	
+	@Test
+    @Transactional(readOnly=false)
+    @Rollback(true)
+    public void testAcbUserSeesStatusChangeReason() throws EntityRetrievalException,
+        EntityCreationException, JsonProcessingException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
+        assertNotNull(stat);
+        String reason = "Reason Text";
+        Long acbId = 1L;
+        Long listingId = 1L;
+        updateListingStatus(acbId, listingId, stat, reason);
+        
+        SecurityContextHolder.getContext().setAuthentication(testUser3);
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(updatedListing.getCurrentStatus().getReason());
+        assertEquals(reason, updatedListing.getCurrentStatus().getReason());
+    }
+	
+	@Test
+    @Transactional(readOnly=false)
+    @Rollback(true)
+    public void testNonLoggedInUserSeesStatusChangeReason() throws EntityRetrievalException,
+        EntityCreationException, JsonProcessingException, InvalidArgumentsException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByAcb.getName());
+        assertNotNull(stat);
+        String reason = "Reason Text";
+        Long acbId = 1L;
+        Long listingId = 1L;
+        updateListingStatus(acbId, listingId, stat, reason);
+        
+        SecurityContextHolder.getContext().setAuthentication(null);
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNull(updatedListing.getCurrentStatus().getReason());
+    }
+	   
+	@Test
 	@Transactional(readOnly=false)
 	@Rollback(true)
 	public void testNonAdminUserNotAllowedToChangeStatusToSuspendedByOnc() throws EntityRetrievalException,
@@ -185,23 +284,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.SuspendedByOnc.getName());
 		assertNotNull(stat);
-		
 		Long acbId = 1L;
 		Long listingId = 1L;
-		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
-        statusEvent.setStatus(new CertificationStatus(stat));
-        updatedListing.getCertificationEvents().add(statusEvent);
-        
-		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		toUpdate.setListing(updatedListing);
-		
 		boolean success = true;
 		try {
-			cpManager.update(acbId, toUpdate, existingListing);
+		    updateListingStatus(acbId, listingId, stat, null);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -225,23 +313,12 @@ public class CertifiedProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
-		
 		Long acbId = 1L;
 		Long listingId = 1L;
-		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
-		
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
-        statusEvent.setStatus(new CertificationStatus(stat));
-        updatedListing.getCertificationEvents().add(statusEvent);
-        
-		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		toUpdate.setListing(updatedListing);
 		
 		boolean success = true;
 		try {
-			cpManager.update(acbId, toUpdate, existingListing);
+	         updateListingStatus(acbId, listingId, stat, null);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -265,22 +342,21 @@ public class CertifiedProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
 		assertNotNull(stat);
-		
 		Long acbId = 1L;
 		Long listingId = 1L;
+
 		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
-		
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
         statusEvent.setEventDate(System.currentTimeMillis());
         statusEvent.setStatus(new CertificationStatus(stat));
         updatedListing.getCertificationEvents().add(statusEvent);
 
-		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		toUpdate.setListing(updatedListing);
-		toUpdate.setBanDeveloper(true);
-		cpManager.update(acbId, toUpdate, existingListing);
-		
+        ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+        toUpdate.setListing(updatedListing);
+        toUpdate.setBanDeveloper(true);
+        cpManager.update(acbId, toUpdate, existingListing);
+
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
 		DeveloperStatusEventDTO status = dev.getStatus();
@@ -308,18 +384,7 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		Long acbId = 1L;
 		Long listingId = 1L;
-		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
-		
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
-        statusEvent.setStatus(new CertificationStatus(stat));
-        updatedListing.getCertificationEvents().add(statusEvent);
-
-		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		toUpdate.setListing(updatedListing);
-		toUpdate.setBanDeveloper(false);
-		cpManager.update(acbId, toUpdate, existingListing);
+        updateListingStatus(acbId, listingId, stat, null);
 		
 		DeveloperDTO afterDev = devManager.getById(-1L);
 		assertNotNull(afterDev);
@@ -337,20 +402,9 @@ public class CertifiedProductManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
 		assertNotNull(stat);
-		
 		Long acbId = 1L;
 		Long listingId = 1L;
-		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
-		
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
-        statusEvent.setStatus(new CertificationStatus(stat));
-        updatedListing.getCertificationEvents().add(statusEvent);
-        
-		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		toUpdate.setListing(updatedListing);
-		cpManager.update(acbId, toUpdate, existingListing);
+        updateListingStatus(acbId, listingId, stat, null);
 		
 		DeveloperDTO dev = devManager.getById(-1L);
 		assertNotNull(dev);
@@ -373,19 +427,10 @@ public class CertifiedProductManagerTest extends TestCase {
 		
 		Long acbId = 1L;
 		Long listingId = 1L;
-		CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 		
-		CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
-		CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
-        statusEvent.setStatus(new CertificationStatus(stat));
-        updatedListing.getCertificationEvents().add(statusEvent);
-        
-		ListingUpdateRequest toUpdate = new ListingUpdateRequest();
-		toUpdate.setListing(updatedListing);
 		boolean success = true;
 		try {
-			cpManager.update(acbId, toUpdate, existingListing);
+	         updateListingStatus(acbId, listingId, stat, null);
 		} catch(AccessDeniedException adEx) {
 			success = false;
 		}
@@ -2513,4 +2558,21 @@ public class CertifiedProductManagerTest extends TestCase {
 		assertNotNull(listings);
 		assertEquals(5, listings.size());
 	}
+	
+   private void updateListingStatus(Long acbId, Long listingId, CertificationStatusDTO stat, String reason) 
+            throws EntityRetrievalException, EntityCreationException, 
+            JsonProcessingException, InvalidArgumentsException {
+        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+        
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        statusEvent.setStatus(new CertificationStatus(stat));
+        statusEvent.setReason(reason);
+        updatedListing.getCertificationEvents().add(statusEvent);
+        
+        ListingUpdateRequest toUpdate = new ListingUpdateRequest();
+        toUpdate.setListing(updatedListing);
+        cpManager.update(acbId, toUpdate, existingListing);
+    }
 }
