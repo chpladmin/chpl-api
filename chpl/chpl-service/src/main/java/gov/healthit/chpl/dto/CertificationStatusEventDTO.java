@@ -3,7 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.CertificationStatusEventEntity;
+import gov.healthit.chpl.entity.listing.CertificationStatusEventEntity;
 
 public class CertificationStatusEventDTO implements Serializable {
     private static final long serialVersionUID = 1171613630377844762L;
@@ -11,6 +11,7 @@ public class CertificationStatusEventDTO implements Serializable {
     private Long certifiedProductId;
     private Date eventDate;
     private CertificationStatusDTO status;
+    private String reason;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -30,6 +31,7 @@ public class CertificationStatusEventDTO implements Serializable {
             this.status = new CertificationStatusDTO();
             this.status.setId(entity.getCertificationStatusId());
         }
+        this.reason = entity.getReason();
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
@@ -99,6 +101,14 @@ public class CertificationStatusEventDTO implements Serializable {
 
     public void setStatus(final CertificationStatusDTO status) {
         this.status = status;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
 }

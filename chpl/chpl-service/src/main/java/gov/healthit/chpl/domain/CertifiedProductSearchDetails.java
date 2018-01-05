@@ -89,17 +89,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     private String otherAcb;
 
     /**
-     * The certification status for the corresponding listing. This variable
-     * takes value of Active; Suspended by ONC; Suspended by ONC-ACB; Withdrawn
-     * by Developer; Withdrawn by Developer Under Surveillance/Review; Withdrawn
-     * by ONC-ACB; Terminated by ONC; Retired. For a detailed description of
-     * each certification status, please see 'Understanding Certification Status
-     * in the CHPL', available in the CHPL Public User Guide.
-     */
-    @XmlElement(required = true)
-    private Map<String, Object> certificationStatus = new HashMap<String, Object>();
-
-    /**
      * The developer or vendor of the certified health IT product listing.
      */
     @XmlElement(required = true)
@@ -308,7 +297,12 @@ public class CertifiedProductSearchDetails implements Serializable {
     private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 
     /**
-     * Changes to the certification status of this listing
+     * All current and historical certification status of this listing.
+     * The certification statuses take values of Active; Suspended by ONC; Suspended by ONC-ACB; 
+     * Withdrawn by Developer; Withdrawn by Developer Under Surveillance/Review; Withdrawn
+     * by ONC-ACB; Terminated by ONC; Retired. For a detailed description of
+     * each certification status, please see 'Understanding Certification Status
+     * in the CHPL', available in the CHPL Public User Guide.
      */
     @XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
     @XmlElement(name = "certificationEvent")
@@ -464,14 +458,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setLastModifiedDate(final Long lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Map<String, Object> getCertificationStatus() {
-        return certificationStatus;
-    }
-
-    public void setCertificationStatus(final Map<String, Object> certificationStatus) {
-        this.certificationStatus = certificationStatus;
     }
 
     public Set<String> getWarningMessages() {
@@ -672,5 +658,19 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public void setSed(final CertifiedProductSed sed) {
         this.sed = sed;
+    }
+    
+    public CertificationStatusEvent getCurrentStatus() {
+        if(this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
+            return null;
+        }
+        
+        CertificationStatusEvent newest = this.getCertificationEvents().get(0);
+        for(CertificationStatusEvent event : this.getCertificationEvents()) {
+            if(event.getEventDate() > newest.getEventDate()) {
+                newest = event;
+            }
+        }
+        return newest;
     }
 }
