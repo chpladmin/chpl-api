@@ -1627,6 +1627,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             if (hasChanged) {
                 CertificationStatusEvent cseToUpdate = toUpdate.getUpdated();
                 CertificationStatusEventDTO statusEventDto = new CertificationStatusEventDTO();
+                statusEventDto.setId(cseToUpdate.getId());
                 statusEventDto.setCertifiedProductId(listingId);
                 statusEventDto.setEventDate(new Date(cseToUpdate.getEventDate()));
                 statusEventDto.setReason(cseToUpdate.getReason());
