@@ -103,10 +103,6 @@ public class CertifiedProductEntity {
     @Column(name = "other_acb", length = 64)
     private String otherAcb;
 
-    @Basic(optional = false)
-    @Column(name = "certification_status_id", nullable = false)
-    private Long certificationStatusId;
-
     @Basic(optional = true)
     @Column(name = "meaningful_use_users", nullable = true)
     private Long meaningfulUseUsers;
@@ -251,14 +247,6 @@ public class CertifiedProductEntity {
 
     public void setOtherAcb(final String otherAcb) {
         this.otherAcb = otherAcb;
-    }
-
-    public Long getCertificationStatusId() {
-        return certificationStatusId;
-    }
-
-    public void setCertificationStatusId(final Long certificationStatusId) {
-        this.certificationStatusId = certificationStatusId;
     }
 
     public String getProductCode() {

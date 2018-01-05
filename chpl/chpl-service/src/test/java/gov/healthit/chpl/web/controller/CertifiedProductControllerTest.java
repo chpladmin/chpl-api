@@ -57,12 +57,13 @@ import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
-import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
@@ -192,9 +193,15 @@ public class CertifiedProductControllerTest {
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
 		updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
-		Map<String, Object> certStatus = new HashMap<String, Object>();
-		certStatus.put("name", "Active");
-		updateRequest.setCertificationStatus(certStatus);
+		
+		CertificationStatusEvent cse = new CertificationStatusEvent();
+		cse.setEventDate(System.currentTimeMillis());
+		CertificationStatus status = new CertificationStatus();
+		status.setId(1L);
+		status.setName("Active");
+		cse.setStatus(status);
+		updateRequest.getCertificationEvents().add(cse);
+		
 		updateRequest.getCertifyingBody().put("id", "-1");
 		updateRequest.getSed().setTestTasks(null);
 		updateRequest.getSed().setUcdProcesses(null);
@@ -520,9 +527,15 @@ public class CertifiedProductControllerTest {
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
 		updateRequest.setId(1L);
-		Map<String, Object> certStatus = new HashMap<String, Object>();
-		certStatus.put("name", "Active");
-		updateRequest.setCertificationStatus(certStatus);
+		
+		CertificationStatusEvent cse = new CertificationStatusEvent();
+        cse.setEventDate(System.currentTimeMillis());
+        CertificationStatus status = new CertificationStatus();
+        status.setId(1L);
+        status.setName("Active");
+        cse.setStatus(status);
+        updateRequest.getCertificationEvents().add(cse);
+        
 		updateRequest.getCertifyingBody().put("id", "-1");
 		updateRequest.getSed().setTestTasks(null);
 		updateRequest.getSed().setUcdProcesses(null);
@@ -638,9 +651,15 @@ public class CertifiedProductControllerTest {
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
 		updateRequest.setId(1L);
-		Map<String, Object> certStatus = new HashMap<String, Object>();
-		certStatus.put("name", "Active");
-		updateRequest.setCertificationStatus(certStatus);
+		
+		CertificationStatusEvent cse = new CertificationStatusEvent();
+        cse.setEventDate(System.currentTimeMillis());
+        CertificationStatus status = new CertificationStatus();
+        status.setId(1L);
+        status.setName("Active");
+        cse.setStatus(status);
+        updateRequest.getCertificationEvents().add(cse);
+        
 		updateRequest.getCertifyingBody().put("id", "-1");
 		updateRequest.getSed().setTestTasks(null);
 		updateRequest.getSed().setUcdProcesses(null);

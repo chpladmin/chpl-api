@@ -79,7 +79,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
     
     @Override
     public IcsFamilyTreeNode getICSFamilyTree(Long certifiedProductId) {
-        Long id = null;
         Query query = entityManager.createQuery(
                 "SELECT cps " + "FROM CertifiedProductBasicSearchResultEntity cps "
                         + "WHERE certified_product_id = :certifiedProductId",
@@ -647,7 +646,8 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         node.setId(result.getId());
         node.setChplProductNumber(result.getChplProductNumber());
         node.setCertificationDate(result.getCertificationDate());
-        CertificationStatus cs = new CertificationStatus(result.getCertificationStatus());
+        CertificationStatus cs = new CertificationStatus();
+        cs.setName(result.getCertificationStatus());
         node.setCertificationStatus(cs);
         Developer dev = new Developer();
         dev.setName(result.getDeveloper());
