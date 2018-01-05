@@ -5,41 +5,26 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certified_product_accessibility_standard")
-public class PendingCertifiedProductAccessibilityStandardEntity {
-
-    @Id
+@Table(name = "pending_certified_product_system_update")
+public class PendingCertifiedProductSystemUpdateEntity {
+	
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "pending_certified_product_accessibility_standard_id", nullable = false)
+    @Column(name = "pending_certified_product_system_update_id", nullable = false)
     private Long id;
-
-    @Basic(optional = true)
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false,
-            updatable = false)
-    private PendingCertifiedProductEntity mappedProduct;
 
     @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
 
-    @Column(name = "accessibility_standard_id")
-    private Long accessibilityStandardId;
-
-    @Column(name = "accessibility_standard_name")
-    private String name;
-    
-    @Column(name = "fuzzy_match_accessibility_standard_name")
-    private String fuzzyMatchName;
+    @Column(name = "change_made")
+    private String changeMade;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -65,20 +50,12 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getFuzzyMatchName() {
-		return fuzzyMatchName;
+    public String getChangeMade() {
+		return changeMade;
 	}
 
-	public void setFuzzyMatchName(String fuzzyMatchName) {
-		this.fuzzyMatchName = fuzzyMatchName;
+	public void setChangeMade(String change_made) {
+		this.changeMade = change_made;
 	}
 
 	public Date getLastModifiedDate() {
@@ -113,27 +90,11 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
         this.deleted = deleted;
     }
 
-    public PendingCertifiedProductEntity getMappedProduct() {
-        return mappedProduct;
-    }
-
-    public void setMappedProduct(final PendingCertifiedProductEntity mappedProduct) {
-        this.mappedProduct = mappedProduct;
-    }
-
     public Long getPendingCertifiedProductId() {
         return pendingCertifiedProductId;
     }
 
     public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
-    }
-
-    public Long getAccessibilityStandardId() {
-        return accessibilityStandardId;
-    }
-
-    public void setAccessibilityStandardId(final Long accessibilityStandardId) {
-        this.accessibilityStandardId = accessibilityStandardId;
     }
 }

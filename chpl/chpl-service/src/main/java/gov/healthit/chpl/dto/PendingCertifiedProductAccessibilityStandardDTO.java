@@ -10,6 +10,7 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
     private Long pendingCertifiedProductId;
     private Long accessibilityStandardId;
     private String name;
+    private String fuzzyMatchAccessibilityStandardName;
 
     public PendingCertifiedProductAccessibilityStandardDTO() {
     }
@@ -22,6 +23,7 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
         }
         this.setAccessibilityStandardId(entity.getAccessibilityStandardId());
         this.setName(entity.getName());
+        this.setFuzzyMatchAccessibilityStandardName(entity.getFuzzyMatchName());
     }
 
     public Long getId() {
@@ -55,4 +57,13 @@ public class PendingCertifiedProductAccessibilityStandardDTO implements Serializ
     public void setAccessibilityStandardId(final Long accessibilityStandardId) {
         this.accessibilityStandardId = accessibilityStandardId;
     }
+
+	public String getFuzzyMatchAccessibilityStandardName() {
+		return fuzzyMatchAccessibilityStandardName;
+	}
+
+	public void setFuzzyMatchAccessibilityStandardName(
+			String fuzzyMatchAccessibilityStandardName) {
+		this.fuzzyMatchAccessibilityStandardName = fuzzyMatchAccessibilityStandardName;
+	}
 }

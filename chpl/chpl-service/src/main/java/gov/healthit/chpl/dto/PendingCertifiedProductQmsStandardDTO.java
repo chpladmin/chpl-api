@@ -12,6 +12,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
     private String name;
     private String modification;
     private String applicableCriteria;
+    private String fuzzyMatchName;
 
     public PendingCertifiedProductQmsStandardDTO() {
     }
@@ -26,6 +27,7 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
         this.setName(entity.getName());
         this.setModification(entity.getModification());
         this.setApplicableCriteria(entity.getApplicableCriteria());
+        this.setFuzzyMatchName(entity.getFuzzyMatchName());
     }
 
     public Long getId() {
@@ -75,4 +77,12 @@ public class PendingCertifiedProductQmsStandardDTO implements Serializable {
     public void setApplicableCriteria(final String applicableCriteria) {
         this.applicableCriteria = applicableCriteria;
     }
+
+	public String getFuzzyMatchName() {
+		return fuzzyMatchName;
+	}
+
+	public void setFuzzyMatchName(String fuzzyMatchName) {
+		this.fuzzyMatchName = fuzzyMatchName;
+	}
 }

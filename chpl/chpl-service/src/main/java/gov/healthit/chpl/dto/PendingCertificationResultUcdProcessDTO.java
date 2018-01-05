@@ -11,6 +11,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
     private Long ucdProcessId;
     private String ucdProcessName;
     private String ucdProcessDetails;
+    private String fuzzyMatchUcdProcessName;
 
     public PendingCertificationResultUcdProcessDTO() {
     }
@@ -21,6 +22,7 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
         this.setUcdProcessName(entity.getUcdProcessName());
         this.setUcdProcessId(entity.getUcdProcessId());
         this.setUcdProcessDetails(entity.getUcdProcessDetails());
+        this.setFuzzyMatchUcdProcessName(entity.getFuzzyMatchUcdProcessName());
     }
 
     public Long getId() {
@@ -62,4 +64,12 @@ public class PendingCertificationResultUcdProcessDTO implements Serializable {
     public void setUcdProcessName(final String ucdProcessName) {
         this.ucdProcessName = ucdProcessName;
     }
+
+	public String getFuzzyMatchUcdProcessName() {
+		return fuzzyMatchUcdProcessName;
+	}
+
+	public void setFuzzyMatchUcdProcessName(String fuzzyMatchUcdProcessName) {
+		this.fuzzyMatchUcdProcessName = fuzzyMatchUcdProcessName;
+	}
 }

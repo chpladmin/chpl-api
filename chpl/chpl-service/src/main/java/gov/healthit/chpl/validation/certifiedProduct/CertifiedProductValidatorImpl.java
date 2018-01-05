@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -18,6 +20,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.dao.PendingCertifiedProductSystemUpdateDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.Address;
@@ -62,8 +65,10 @@ import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -86,6 +91,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     TestToolDAO testToolDao;
     @Autowired
     ListingGraphDAO inheritanceDao;
+    @Autowired
+    FuzzyChoicesManager fuzzyChoicesManager;
+    @Autowired
+    PendingCertifiedProductSystemUpdateDAO systemUpdateDao;
 
     @Autowired
     protected CertificationResultRules certRules;
@@ -809,6 +818,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 if (product.getSed() != null && product.getSed().getUcdProcesses() != null
                         && product.getSed().getUcdProcesses().size() > 0) {
                     for (UcdProcess ucd : product.getSed().getUcdProcesses()) {
+                    	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(ucd.getName(), FuzzyType.UCD_PROCESS, product.getId());
+                    	if(topChoice != null){
+                    		ucd.setName(topChoice);
+                    	}
                         for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
                             if (ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
                                 product.getWarningMessages().add(String.format(
