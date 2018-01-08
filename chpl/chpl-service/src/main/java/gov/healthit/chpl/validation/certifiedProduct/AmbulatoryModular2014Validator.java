@@ -127,7 +127,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getErrorMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
+            product.getWarningMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
         }
     }
 
