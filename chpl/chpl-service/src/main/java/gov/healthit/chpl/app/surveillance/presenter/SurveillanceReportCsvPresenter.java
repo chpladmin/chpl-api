@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -100,8 +99,8 @@ public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
         productDetailsUrl += "#/product/" + data.getId();
         survFields.add(productDetailsUrl);
         survFields.add(data.getCertifyingBody().get("name").toString());
-        survFields.add(data.getCertificationStatus().get("name").toString());
-        Long lastCertificationChangeMillis = ((Date) data.getCertificationStatus().get("date")).getTime();
+        survFields.add(data.getCurrentStatus().getStatus().getName());
+        Long lastCertificationChangeMillis = data.getCurrentStatus().getEventDate();
         if (lastCertificationChangeMillis.longValue() == data.getCertificationDate().longValue()) {
             survFields.add("No status change");
         } else {

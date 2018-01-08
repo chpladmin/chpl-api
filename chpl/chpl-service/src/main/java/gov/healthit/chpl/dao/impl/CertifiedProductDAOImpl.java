@@ -80,10 +80,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
                 entity.setCertificationEditionId(dto.getCertificationEditionId());
             }
 
-            if (dto.getCertificationStatusId() != null) {
-                entity.setCertificationStatusId(dto.getCertificationStatusId());
-            }
-
             if (dto.getProductVersionId() != null) {
                 entity.setProductVersionId(dto.getProductVersionId());
             }
@@ -151,7 +147,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         entity.setTransparencyAttestationUrl(dto.getTransparencyAttestationUrl());
         entity.setCertificationBodyId(dto.getCertificationBodyId());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
-        entity.setCertificationStatusId(dto.getCertificationStatusId());
         entity.setProductVersionId(dto.getProductVersionId());
 
         entity.setLastModifiedDate(new Date());
