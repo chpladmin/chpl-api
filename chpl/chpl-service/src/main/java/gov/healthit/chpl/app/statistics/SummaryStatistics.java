@@ -81,20 +81,20 @@ public class SummaryStatistics {
         endDateCal.add(Calendar.DATE, numDaysInPeriod);
         
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
-            LOGGER.info("Getting csvRecord for start date " + startDate.toString() + " end date "
+            LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
-            DateRange csvRange = new DateRange(startDate, new Date(endDateCal.getTimeInMillis()));
+            DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             Statistics historyStat = new Statistics();
             historyStat.setDateRange(csvRange);
             Future<Statistics> futureEmailCsvStats = summaryStats.asynchronousStatisticsInitializor
                     .getStatistics(csvRange);
             historyStat = futureEmailCsvStats.get();
             csvStats.add(historyStat);
-            LOGGER.info("Finished getting csvRecord for start date " + startDate.toString() + " end date "
+            LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
             
             startDateCal.add(Calendar.DATE, numDaysInPeriod);
-            endDateCal.setTime(startDate);
+            endDateCal.setTime(startDateCal.getTime());
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
         LOGGER.info("Finished getting statistics");

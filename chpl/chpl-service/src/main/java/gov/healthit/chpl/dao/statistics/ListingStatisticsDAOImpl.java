@@ -18,7 +18,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
      */
     @Override
     public Long getTotalUniqueProductsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses) {
-        String hql = "SELECT COUNT(DISTINCT CONCAT(UPPER(productName), UPPER(developerName))) "
+        String hql = "SELECT DISTINCT UPPER(productName) || UPPER(developerName) "
                 + "FROM CertifiedProductDetailsEntity ";
         
         boolean hasWhere = false;
@@ -52,9 +52,8 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             }
             hql += "((deleted = false AND creationDate <= :endDate) "
                     + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :startDate)) ";
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
-        
         Query query = entityManager.createQuery(hql);
         if(edition != null) {
             query.setParameter("edition", edition);
@@ -63,10 +62,10 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             query.setParameter("statuses", statuses);
         }
         if(dateRange != null) {
-            query.setParameter("startDate", dateRange.getStartDate());
+            //query.setParameter("startDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
-        return (Long) query.getSingleResult();
+        return (long) query.getResultList().size();
     }
 
     /**
@@ -88,8 +87,8 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + "(deleted = true AND creation_date <= :endDate AND last_modified_date > :startDate)) ";
         }
         sql += ") t " 
-                + "GROUP BY certification_body_name, year " 
-                + "ORDER BY t.certification_body_name ";
+                + " GROUP BY certification_body_name, year " 
+                + " ORDER BY t.certification_body_name ";
 
         Query query = entityManager.createNativeQuery(sql);
         
@@ -131,8 +130,8 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + "(deleted = true AND creation_date <= :endDate AND last_modified_date > :startDate)) ";
         }
         sql += ") t " 
-                + "GROUP BY certification_body_name, year, certification_status_name "
-                + "ORDER BY t.certification_body_name ";
+                + " GROUP BY certification_body_name, year, certification_status_name "
+                + " ORDER BY t.certification_body_name ";
 
         Query query = entityManager.createNativeQuery(sql);
         if(dateRange != null) {
@@ -191,7 +190,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             }
             hql += "((deleted = false AND creationDate <= :endDate) "
                     + " OR "
-                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :startDate)) ";
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
         
         Query query = entityManager.createQuery(hql);
@@ -202,7 +201,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             query.setParameter("statuses", statuses);
         }
         if(dateRange != null) {
-            query.setParameter("startDate", dateRange.getStartDate());
+           // query.setParameter("startDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
 
@@ -225,8 +224,8 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :startDate)) ";
         }
-        hql += "GROUP BY certificationBodyName, year " 
-                + "ORDER BY certificationBodyName ";
+        hql += " GROUP BY certificationBodyName, year " 
+                + " ORDER BY certificationBodyName ";
         
         Query query = entityManager.createQuery(hql);
         if(dateRange != null) {

@@ -19,13 +19,23 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
      */
     @Override
     public Long getTotalDevelopers(DateRange dateRange) {
-        Query query = entityManager.createQuery("SELECT count(DISTINCT developerCode) "
+        String hql = "SELECT count(DISTINCT developerCode) "
                 + "FROM DeveloperEntity "
-                + "WHERE "
-                + "(deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + " WHERE ";
+        if(dateRange == null) {
+                hql += " deleted = false";
+        } else {
+            hql += "(deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
         return (Long) query.getSingleResult();
     }
 
@@ -33,68 +43,55 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
      * Total # of Developers with Active 2014 Listings
      */
     @Override
-    public Long getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
-        Query query = entityManager
-                .createQuery("SELECT count(DISTINCT developerCode) "
-                        + "FROM CertifiedProductDetailsEntity "
-                        + "WHERE year = '2014' "
-                        + "AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-                        + "AND ((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                        + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
-        return (Long) query.getSingleResult();
-    }
-
-    /**
-     * Total # of Developers with 2014 Listings
-     */
-    @Override
-    public Long getTotalDevelopersWith2014Listings(DateRange dateRange) {
-        Query query = entityManager
-                .createQuery("SELECT count(DISTINCT developerCode) "
-                        + "FROM CertifiedProductDetailsEntity "
-                        + "WHERE year = '2014' "
-                        + "AND "
-                        + "((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                        + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
-        return (Long) query.getSingleResult();
-    }
-
-    /**
-     * Total # of Developers with 2015 Listings
-     */
-    @Override
-    public Long getTotalDevelopersWith2015Listings(DateRange dateRange) {
-        Query query = entityManager
-                .createQuery("SELECT count(DISTINCT developerCode) "
-                        + "FROM CertifiedProductDetailsEntity "
-                        + "WHERE year = '2015' "
-                        + "AND "
-                        + "((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                        + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
-        return (Long) query.getSingleResult();
-    }
-
-    /**
-     * Total # of Developers with Active 2015 Listings
-     */
-    @Override
-    public Long getTotalDevelopersWithActive2015Listings(DateRange dateRange) {
-        Query query = entityManager
-                .createQuery("SELECT count(DISTINCT developerCode) "
-                        + "FROM CertifiedProductDetailsEntity "
-                        + "WHERE year = '2015' "
-                        + "AND UPPER(certificationStatusName) IN ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') "
-                        + "AND "
-                        + "((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                        + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+    public Long getTotalDevelopersWithListingsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses) {
+        String hql = "SELECT count(DISTINCT developerCode) "
+                + "FROM CertifiedProductDetailsEntity ";
+        boolean hasWhere = false;
+        if(edition != null) {
+            hql += " WHERE year = :edition ";
+            hasWhere = true;
+        }
+        if(statuses != null && statuses.size() > 0) {
+            if(!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += " UPPER(certificationStatusName) IN (:statuses) ";
+        }
+        
+        if(dateRange == null) {
+            if(!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += " deleted = false ";
+        } else {
+            if(!hasWhere) {
+                hql += " WHERE ";
+                hasWhere = true;
+            } else {
+                hql += " AND ";
+            }
+            hql += "((deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+        }
+        Query query = entityManager.createQuery(hql);
+        
+        if(edition != null) {
+            query.setParameter("edition", edition);
+        }
+        if(statuses != null && statuses.size() > 0) {
+            query.setParameter("statuses", statuses);
+        }
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
         return (Long) query.getSingleResult();
     }
 
@@ -103,16 +100,26 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
      */
     @Override
     public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange) {
-        Query query = entityManager.createQuery(
-                "SELECT certificationBodyName, year, count(DISTINCT developerCode) "
+        String hql = "SELECT certificationBodyName, year, count(DISTINCT developerCode) "
                 + "FROM CertifiedProductDetailsEntity "
-                + "WHERE "
-                + "(deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
-                + "GROUP BY certificationBodyName, year " 
-                + "ORDER BY certificationBodyName ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "WHERE ";
+        if(dateRange == null) {
+            hql += " deleted = false ";
+        } else {
+            hql += "(deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
+        }
+        hql += " GROUP BY certificationBodyName, year " 
+                + " ORDER BY certificationBodyName ";
+        
+        Query query = entityManager.createQuery(hql);
+        
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
+        
         List<Object[]> results = query.getResultList();
         List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
         for (Object[] obj : results) {
@@ -132,16 +139,26 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
     @Override
     public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
             DateRange dateRange) {
-        Query query = entityManager.createQuery(
-                "SELECT certificationBodyName, year, count(DISTINCT developerCode), certificationStatusName "
+        String hql = "SELECT certificationBodyName, year, count(DISTINCT developerCode), certificationStatusName "
                 + "FROM CertifiedProductDetailsEntity "
-                + "WHERE "
-                + "(deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) "
-                + "GROUP BY certificationBodyName, year, certificationStatusName "
-                + "ORDER BY certificationBodyName ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "WHERE ";
+        if(dateRange == null) {
+            hql += " deleted = false ";
+        } else {
+            hql += "(deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
+        }
+        hql += " GROUP BY certificationBodyName, year, certificationStatusName " 
+                + " ORDER BY certificationBodyName ";
+        
+        Query query = entityManager.createQuery(hql);
+        
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
+
         List<Object[]> results = query.getResultList();
         List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
         for (Object[] obj : results) {

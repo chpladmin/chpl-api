@@ -43,7 +43,8 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWith2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2014Listings(dateRange));
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", null));
     }
 
     /**
@@ -52,7 +53,12 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWithActive2014Listings(dateRange));
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", activeStatuses));
     }
 
     /**
@@ -84,7 +90,8 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWith2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2015Listings(dateRange));
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2015", null));
     }
 
     /**
@@ -93,8 +100,12 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWithActive2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWithActive2015Listings(dateRange));
-    }
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2015", activeStatuses));    }
 
     /**
      * Total # of Certified Unique Products (Regardless of Status or Edition -

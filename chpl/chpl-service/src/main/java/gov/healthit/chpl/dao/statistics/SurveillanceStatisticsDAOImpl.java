@@ -14,13 +14,22 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
      */
     @Override
     public Long getTotalSurveillanceActivities(DateRange dateRange) {
-        Query query = entityManager.createQuery("SELECT count(*) "
+        String hql = "SELECT count(*) "
                 + "FROM SurveillanceEntity "
-                + "WHERE "
-                + "(deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "WHERE ";
+        if(dateRange == null) {
+            hql += " deleted = false";
+        } else {
+            hql += "(deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
         return (Long) query.getSingleResult();
     }
 
@@ -29,15 +38,23 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
      */
     @Override
     public Long getTotalOpenSurveillanceActivities(DateRange dateRange) {
-        Query query = entityManager.createQuery("SELECT count(*) "
+       String hql = "SELECT count(*) "
                 + "FROM SurveillanceEntity "
                 + "WHERE startDate <= now() "
-                + "AND (endDate IS NULL OR endDate >= now()) "
-                + "AND "
-                + "((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "AND (endDate IS NULL OR endDate >= now()) ";
+       if(dateRange == null) {
+           hql += " AND deleted = false";
+       } else {
+           hql += "AND ((deleted = false AND creationDate <= :endDate) "
+                   + " OR "
+                   + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+       }
+
+       Query query = entityManager.createQuery(hql);
+       if(dateRange != null) {
+           //query.setParameter("creationStartDate", dateRange.getStartDate());
+           query.setParameter("endDate", dateRange.getEndDate());
+       }
         return (Long) query.getSingleResult();
     }
 
@@ -46,15 +63,23 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
      */
     @Override
     public Long getTotalClosedSurveillanceActivities(DateRange dateRange) {
-        Query query = entityManager.createQuery("SELECT count(*) "
+        String hql = "SELECT count(*) "
                 + "FROM SurveillanceEntity "
                 + "WHERE startDate <= now() "
-                + "AND (endDate IS NOT NULL AND endDate <= now()) "
-                + "AND "
-                + "((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "AND (endDate IS NOT NULL AND endDate <= now()) ";
+        if(dateRange == null) {
+            hql += " AND deleted = false";
+        } else {
+            hql += "AND ((deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
         return (Long) query.getSingleResult();
     }
 
@@ -63,13 +88,22 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
      */
     @Override
     public Long getTotalNonConformities(DateRange dateRange) {
-        Query query = entityManager.createQuery("SELECT count(*) "
+        String hql = "SELECT count(*) "
                 + "FROM SurveillanceNonconformityEntity "
-                + "WHERE "
-                + "(deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "WHERE ";
+        if(dateRange == null) {
+            hql += " deleted = false";
+        } else {
+            hql += "(deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
         return (Long) query.getSingleResult();
     }
 
@@ -78,14 +112,22 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
      */
     @Override
     public Long getTotalOpenNonconformities(DateRange dateRange) {
-        Query query = entityManager.createQuery("SELECT count(*) "
+        String hql = "SELECT count(*) "
                 + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonconformityStatusId = 1 "
-                + "AND "
-                + "((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "WHERE nonconformityStatusId = 1 ";
+        if(dateRange == null) {
+            hql += " AND deleted = false";
+        } else {
+            hql += " AND ((deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
         return (Long) query.getSingleResult();
     }
 
@@ -94,14 +136,22 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
      */
     @Override
     public Long getTotalClosedNonconformities(DateRange dateRange) {
-        Query query = entityManager.createQuery("SELECT count(*) "
+        String hql = "SELECT count(*) "
                 + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonconformityStatusId = 2 "
-                + "AND "
-                + "((deleted = false AND creationDate BETWEEN :creationStartDate AND :creationEndDate) "
-                + "OR (deleted = true AND creationDate BETWEEN :creationStartDate AND :creationEndDate AND lastModifiedDate > :creationEndDate)) ");
-        query.setParameter("creationStartDate", dateRange.getStartDate());
-        query.setParameter("creationEndDate", dateRange.getEndDate());
+                + "WHERE nonconformityStatusId = 2 ";
+        if(dateRange == null) {
+            hql += " AND deleted = false";
+        } else {
+            hql += " AND ((deleted = false AND creationDate <= :endDate) "
+                    + " OR "
+                    + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
+        }
+
+        Query query = entityManager.createQuery(hql);
+        if(dateRange != null) {
+            //query.setParameter("creationStartDate", dateRange.getStartDate());
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
         return (Long) query.getSingleResult();
     }
 }
