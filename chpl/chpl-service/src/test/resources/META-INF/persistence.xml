@@ -20,6 +20,7 @@
 		<class>gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdEntity</class>
 		<class>gov.healthit.chpl.entity.CertificationIdProductMapEntity</class>
+        <class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity</class>
@@ -32,10 +33,9 @@
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity</class>
+        <class>gov.healthit.chpl.entity.listing.CertificationStatusEventEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity</class>
 		<class>gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationStatusEntity</class>
-		<class>gov.healthit.chpl.entity.CertificationStatusEventEntity</class>
 		<class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
         <class>gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity</class>
 		<class>gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity</class>
