@@ -34,6 +34,7 @@ import gov.healthit.chpl.dto.PendingTestTaskDTO;
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = -461584179489619328L;
     private String recordStatus;
+    private Boolean hasQms;
 
     public PendingCertifiedProductDetails() {
     }
@@ -44,6 +45,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setWarningMessages(dto.getWarningMessages());
         this.setRecordStatus(dto.getRecordStatus());
         this.setChplProductNumber(dto.getUniqueId());
+        this.setHasQms(dto.getHasQms());
         this.setReportFileLocation(dto.getReportFileLocation());
         this.setSedReportFileLocation(dto.getSedReportFileLocation());
         this.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
@@ -498,4 +500,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
     public void setRecordStatus(final String recordStatus) {
         this.recordStatus = recordStatus;
     }
+
+	public Boolean getHasQms() {
+		return hasQms;
+	}
+
+	public void setHasQms(Boolean hasQms) {
+		this.hasQms = hasQms;
+	}
 }

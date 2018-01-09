@@ -196,6 +196,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.sedReportFileLocation = details.getSedReportFileLocation();
         this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
         this.sedTestingEnd = details.getSedTestingEnd();
+        this.hasQms = details.getHasQms();
         this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? false
                 : details.getIcs().getInherits();
         this.accessibilityCertified = details.getAccessibilityCertified();
