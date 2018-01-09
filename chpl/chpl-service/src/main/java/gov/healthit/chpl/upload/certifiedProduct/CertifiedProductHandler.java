@@ -80,12 +80,14 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     
     protected void parsePracticeType(PendingCertifiedProductEntity pendingCertifiedProduct, 
             CSVRecord record) {
+    	PracticeTypeDTO foundPracticeType = null;
         String practiceType = record.get(getColumnIndexMap().getPracticeTypeIndex()).trim();
         pendingCertifiedProduct.setPracticeType(practiceType);
         if(practiceType.equals("")){
         	pendingCertifiedProduct.getErrorMessages().add(getErrorMessage("listing.missingPracticeType"));
+        }else{
+        	foundPracticeType = practiceTypeDao.getByName(practiceType);
         }
-        PracticeTypeDTO foundPracticeType = practiceTypeDao.getByName(practiceType);
         if (foundPracticeType != null) {
             pendingCertifiedProduct.setPracticeTypeId(foundPracticeType.getId());
         }    
