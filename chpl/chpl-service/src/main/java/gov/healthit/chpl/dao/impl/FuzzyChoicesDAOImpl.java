@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +54,23 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
         }
         return dto;
     }
-	
+
+    @Override
+    @Transactional
+    public List<FuzzyChoicesDTO> findAllTypes() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+        List<FuzzyChoicesEntity> entities = entityManager
+                .createQuery("SELECT fuzzy FROM FuzzyChoicesEntity fuzzy WHERE (fuzzy.deleted <> true) ",
+                        FuzzyChoicesEntity.class)
+                .getResultList();
+
+        List<FuzzyChoicesDTO> dtos = new ArrayList<FuzzyChoicesDTO>();
+        for (FuzzyChoicesEntity entity : entities) {
+            FuzzyChoicesDTO dto = new FuzzyChoicesDTO(entity);
+            dtos.add(dto);
+        }
+        return dtos;
+    }
+
 	private FuzzyChoicesEntity getEntityByType(FuzzyType type)
             throws EntityRetrievalException {
 

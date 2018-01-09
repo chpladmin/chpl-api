@@ -1,8 +1,12 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,6 +27,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.NotificationDAO;
@@ -66,6 +71,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
@@ -138,6 +144,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private JobDAO jobDao;
 
     @Autowired
+    private FuzzyChoicesDAO fuzzyChoicesDAO;
+
+    @Autowired
     private PracticeTypeDAO practiceTypeDAO;
 
     @Autowired
@@ -168,6 +177,17 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
         for (JobTypeDTO dto : jobTypes) {
             results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
+        }
+        return results;
+    }
+
+    @Transactional
+    @Override
+    public Set<FuzzyChoicesDTO> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+        List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDAO.findAllTypes();
+        Set<FuzzyChoicesDTO> results = new HashSet<FuzzyChoicesDTO>();
+        for (FuzzyChoicesDTO dto : fuzzyChoices) {
+            results.add(dto);
         }
         return results;
     }

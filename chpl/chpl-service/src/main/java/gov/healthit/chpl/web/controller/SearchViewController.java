@@ -9,6 +9,9 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -46,6 +49,7 @@ import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -791,6 +795,16 @@ public class SearchViewController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody Set<NotificationType> getNotificationTypes() {
         return searchMenuManager.getNotificationTypes();
+    }
+
+    @Secured({
+            Authority.ROLE_ADMIN
+    })
+    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
+    @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody Set<FuzzyChoicesDTO> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+        return searchMenuManager.getFuzzyChoices();
     }
 
     @ApiOperation(value = "Get all possible classifications in the CHPL",

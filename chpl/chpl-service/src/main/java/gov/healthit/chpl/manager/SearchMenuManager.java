@@ -1,8 +1,13 @@
 package gov.healthit.chpl.manager;
 
+import java.io.IOException;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -18,6 +23,8 @@ public interface SearchMenuManager {
     Set<NotificationType> getNotificationTypes();
 
     Set<KeyValueModel> getJobTypes();
+
+    Set<FuzzyChoicesDTO> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException;
 
     Set<KeyValueModel> getClassificationNames();
 
