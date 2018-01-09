@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -183,7 +185,8 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCertifiedProducts_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalCertifiedProducts = listingStatisticsDao.getTotalCertifiedProducts(dateRange);
+		Long totalCertifiedProducts = listingStatisticsDao
+		        .getTotalUniqueProductsByEditionAndStatus(dateRange, null, null);
 		assertNotNull(totalCertifiedProducts);
 		assertEquals(8L, totalCertifiedProducts.longValue()); 
 	}
@@ -197,9 +200,12 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCPsActive2014Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2014Listings = listingStatisticsDao.getTotalCPsActive2014Listings(dateRange);
-		assertNotNull(totalActive2014Listings);
-		assertEquals(1L, totalActive2014Listings.longValue()); 
+		 List<String> activeStatuses = new ArrayList<String>();
+		 activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+		 Long totalActive2014Listings = listingStatisticsDao
+		        .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", activeStatuses);
+		 assertNotNull(totalActive2014Listings);
+		 assertEquals(1L, totalActive2014Listings.longValue()); 
 	}
 	
 	/**
@@ -211,7 +217,10 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCPsActive2015Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2015Listings = listingStatisticsDao.getTotalCPsActive2015Listings(dateRange);
+		List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        Long totalActive2015Listings = listingStatisticsDao
+               .getTotalUniqueProductsByEditionAndStatus(dateRange, "2015", activeStatuses);        
 		assertNotNull(totalActive2015Listings);
 		assertEquals(1L, totalActive2015Listings.longValue()); 
 	}
@@ -226,7 +235,10 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalCPsActiveListings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActiveCPs = listingStatisticsDao.getTotalCPsActiveListings(dateRange);
+		List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        Long totalActiveCPs = listingStatisticsDao
+               .getTotalUniqueProductsByEditionAndStatus(dateRange, null, activeStatuses); 
 		assertNotNull(totalActiveCPs);
 		assertEquals(3L, totalActiveCPs.longValue()); 
 	}
@@ -240,7 +252,8 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalListings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalListings = listingStatisticsDao.getTotalListings(dateRange);
+        Long totalListings = listingStatisticsDao
+               .getTotalListingsByEditionAndStatus(dateRange, null, null); 
 		assertNotNull(totalListings);
 		assertEquals(16L, totalListings.longValue()); 
 	}
@@ -255,7 +268,12 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalActive2014Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2014Listings = listingStatisticsDao.getTotalActive2014Listings(dateRange);
+		List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+		Long totalActive2014Listings = listingStatisticsDao
+	               .getTotalListingsByEditionAndStatus(dateRange, "2014", activeStatuses);		
 		assertNotNull(totalActive2014Listings);
 		assertEquals(2L, totalActive2014Listings.longValue()); 
 	}
@@ -283,7 +301,12 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotalActive2015Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long totalActive2015Listings = listingStatisticsDao.getTotalActive2015Listings(dateRange);
+		List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+        Long totalActive2015Listings = listingStatisticsDao
+                   .getTotalListingsByEditionAndStatus(dateRange, "2015", activeStatuses);  
 		assertNotNull(totalActive2015Listings);
 		assertEquals(3L, totalActive2015Listings.longValue()); 
 	}
@@ -297,7 +320,8 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotal2014Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long total2014Listings = listingStatisticsDao.getTotal2014Listings(dateRange);
+        Long total2014Listings = listingStatisticsDao
+                   .getTotalListingsByEditionAndStatus(dateRange, "2014", null); 
 		assertNotNull(total2014Listings);
 		assertEquals(3L, total2014Listings.longValue()); 
 	}
@@ -311,7 +335,8 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotal2015Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long total2015Listings = listingStatisticsDao.getTotal2015Listings(dateRange);
+		Long total2015Listings = listingStatisticsDao
+                .getTotalListingsByEditionAndStatus(dateRange, "2015", null); 
 		assertNotNull(total2015Listings);
 		assertEquals(10L, total2015Listings.longValue()); 
 	}
@@ -325,7 +350,8 @@ public class StatisticsDAOTest extends TestCase {
 	@Transactional(readOnly = true)
 	public void getTotal2011Listings_filterDateRange_allDates() {
 		DateRange dateRange = new DateRange(new Date(0), new Date());
-		Long total2011Listings = listingStatisticsDao.getTotal2011Listings(dateRange);
+		Long total2011Listings = listingStatisticsDao
+                .getTotalListingsByEditionAndStatus(dateRange, "2011", null); 
 		assertNotNull(total2011Listings);
 		assertEquals(3L, total2011Listings.longValue()); 
 	}
