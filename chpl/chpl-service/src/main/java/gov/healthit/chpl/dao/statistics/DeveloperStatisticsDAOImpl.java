@@ -33,7 +33,6 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
         Query query = entityManager.createQuery(hql);
         
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -89,7 +88,6 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
             query.setParameter("statuses", statuses);
         }
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -155,7 +153,6 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
         Query query = entityManager.createQuery(hql);
         
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
 

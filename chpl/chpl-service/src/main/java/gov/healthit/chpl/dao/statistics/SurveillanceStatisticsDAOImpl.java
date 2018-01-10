@@ -27,7 +27,6 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
 
         Query query = entityManager.createQuery(hql);
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -52,7 +51,6 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
 
        Query query = entityManager.createQuery(hql);
        if(dateRange != null) {
-           //query.setParameter("creationStartDate", dateRange.getStartDate());
            query.setParameter("endDate", dateRange.getEndDate());
        }
         return (Long) query.getSingleResult();
@@ -77,7 +75,6 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
 
         Query query = entityManager.createQuery(hql);
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -101,7 +98,6 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
 
         Query query = entityManager.createQuery(hql);
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -125,7 +121,6 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
 
         Query query = entityManager.createQuery(hql);
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -149,7 +144,6 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
 
         Query query = entityManager.createQuery(hql);
         if(dateRange != null) {
-            //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();

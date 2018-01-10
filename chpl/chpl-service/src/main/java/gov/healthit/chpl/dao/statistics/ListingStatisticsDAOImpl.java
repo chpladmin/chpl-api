@@ -62,7 +62,6 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             query.setParameter("statuses", statuses);
         }
         if(dateRange != null) {
-            //query.setParameter("startDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (long) query.getResultList().size();
@@ -201,7 +200,6 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             query.setParameter("statuses", statuses);
         }
         if(dateRange != null) {
-           // query.setParameter("startDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
 
