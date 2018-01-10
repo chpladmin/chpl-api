@@ -71,25 +71,31 @@ public class SummaryStatistics {
         AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
         summaryStats.initializeSpringClasses(context);
         Future<Statistics> futureEmailBodyStats = summaryStats.asynchronousStatisticsInitializor
-                .getStatistics(new DateRange(startDate, endDate), true);
+                .getStatistics(null);
         Statistics emailBodyStats = futureEmailBodyStats.get();
         List<Statistics> csvStats = new ArrayList<Statistics>();
-        Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
-        calendarCounter.setTime(startDate);
-        calendarCounter.add(Calendar.DATE, numDaysInPeriod);
-        while (endDate.compareTo(calendarCounter.getTime()) >= 0) {
-            LOGGER.info("Getting csvRecord for start date " + startDate.toString() + " end date "
-                    + calendarCounter.getTime().toString());
-            DateRange csvRange = new DateRange(startDate, new Date(calendarCounter.getTimeInMillis()));
+        Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        startDateCal.setTime(startDate);
+        Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        endDateCal.setTime(startDate);
+        endDateCal.add(Calendar.DATE, numDaysInPeriod);
+        
+        while (endDate.compareTo(endDateCal.getTime()) >= 0) {
+            LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
+                    + endDateCal.getTime().toString());
+            DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             Statistics historyStat = new Statistics();
             historyStat.setDateRange(csvRange);
             Future<Statistics> futureEmailCsvStats = summaryStats.asynchronousStatisticsInitializor
-                    .getStatistics(csvRange, false);
+                    .getStatistics(csvRange);
             historyStat = futureEmailCsvStats.get();
             csvStats.add(historyStat);
-            LOGGER.info("Finished getting csvRecord for start date " + startDate.toString() + " end date "
-                    + calendarCounter.getTime().toString());
-            calendarCounter.add(Calendar.DATE, numDaysInPeriod);
+            LOGGER.info("Finished getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
+                    + endDateCal.getTime().toString());
+            
+            startDateCal.add(Calendar.DATE, numDaysInPeriod);
+            endDateCal.setTime(startDateCal.getTime());
+            endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
         LOGGER.info("Finished getting statistics");
         StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator

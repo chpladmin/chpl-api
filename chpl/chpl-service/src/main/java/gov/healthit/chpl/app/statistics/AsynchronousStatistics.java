@@ -1,5 +1,6 @@
 package gov.healthit.chpl.app.statistics;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -15,6 +16,7 @@ import gov.healthit.chpl.dao.statistics.ListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
+import gov.healthit.chpl.entity.CertificationStatusType;
 
 @Component
 @EnableAsync
@@ -41,7 +43,8 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWith2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2014Listings(dateRange));
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", null));
     }
 
     /**
@@ -50,7 +53,12 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWithActive2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWithActive2014Listings(dateRange));
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2014", activeStatuses));
     }
 
     /**
@@ -82,7 +90,8 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWith2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWith2015Listings(dateRange));
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2015", null));
     }
 
     /**
@@ -91,8 +100,12 @@ public class AsynchronousStatistics {
     @Transactional
     @Async
     public Future<Long> getTotalDevelopersWithActive2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(developerStatisticsDAO.getTotalDevelopersWithActive2015Listings(dateRange));
-    }
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+        return new AsyncResult<>(developerStatisticsDAO
+                .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2015", activeStatuses));    }
 
     /**
      * Total # of Certified Unique Products (Regardless of Status or Edition -
@@ -101,7 +114,7 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCertifiedProducts(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCertifiedProducts(dateRange));
+        return new AsyncResult<>(listingStatisticsDAO.getTotalUniqueProductsByEditionAndStatus(dateRange, null, null));
     }
 
     /**
@@ -131,7 +144,8 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCPs2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCPs2014Listings(dateRange));
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", null));
     }
 
     /**
@@ -140,7 +154,10 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCPsActive2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2014Listings(dateRange));
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", activeStatuses));
     }
 
     /**
@@ -150,7 +167,12 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCPsSuspended2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCPsSuspended2014Listings(dateRange));
+        List<String> suspendedStatuses = new ArrayList<String>();
+        suspendedStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        suspendedStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2014", suspendedStatuses));        
     }
 
     /**
@@ -159,7 +181,8 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCPs2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCPs2015Listings(dateRange));
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2015", null));
     }
 
     /**
@@ -168,7 +191,10 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCPsActive2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActive2015Listings(dateRange));
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2015", activeStatuses));
     }
 
     /**
@@ -178,8 +204,12 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCPsSuspended2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCPsSuspended2015Listings(dateRange));
-    }
+        List<String> suspendedStatuses = new ArrayList<String>();
+        suspendedStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        suspendedStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, "2015", suspendedStatuses));      }
 
     /**
      * Total # of unique Products with Active Listings (Regardless of Edition)
@@ -187,7 +217,10 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalCPsActiveListings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalCPsActiveListings(dateRange));
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalUniqueProductsByEditionAndStatus(dateRange, null, activeStatuses));
     }
 
     /**
@@ -196,7 +229,8 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalListings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalListings(dateRange));
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(dateRange, null, null));
     }
 
     /**
@@ -205,7 +239,12 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalActive2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalActive2014Listings(dateRange));
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(dateRange, "2014", activeStatuses));
     }
 
     /**
@@ -214,7 +253,12 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotalActive2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotalActive2015Listings(dateRange));
+        List<String> activeStatuses = new ArrayList<String>();
+        activeStatuses.add(CertificationStatusType.Active.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByAcb.getName().toUpperCase());
+        activeStatuses.add(CertificationStatusType.SuspendedByOnc.getName().toUpperCase());
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(dateRange, "2015", activeStatuses));
     }
 
     /**
@@ -232,7 +276,8 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotal2014Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotal2014Listings(dateRange));
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(dateRange, "2014", null));
     }
 
     /**
@@ -241,7 +286,8 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotal2015Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotal2015Listings(dateRange));
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(dateRange, "2015", null));
     }
 
     /**
@@ -250,7 +296,8 @@ public class AsynchronousStatistics {
     @Async
     @Transactional
     public Future<Long> getTotal2011Listings(DateRange dateRange) {
-        return new AsyncResult<>(listingStatisticsDAO.getTotal2011Listings(dateRange));
+        return new AsyncResult<>(listingStatisticsDAO
+                .getTotalListingsByEditionAndStatus(dateRange, "2011", null));
     }
 
     /**
