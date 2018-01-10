@@ -34,7 +34,7 @@ public class FuzzyChoiceDTOTest {
 	public void testFuzzy() throws JsonParseException, JsonMappingException, IOException{
 		FuzzyChoicesEntity entity = new FuzzyChoicesEntity();
 		entity.setId(1L);
-		entity.setFuzzyType(FuzzyType.UCD_PROCESS.toString());
+		entity.setFuzzyType(FuzzyType.UCD_PROCESS);
 		entity.setChoices("[\"Multiple Standards\",\"ISO 9241-210:2010 4.2\",\"ISO/IEC 25062:2006\",\"Homegrown\",\"NISTIR 7742\",\"(NISTIR 7741) NIST Guide to the Processes Approach for Improving the Usability of Electronic Health Records\",\"IEC 62366\",\"Internal Process Used\",\"IEC 62366-1\",\"ISO 13407\",\"ISO 16982\",\"ISO/IEC 62367\"]");
 		FuzzyChoicesDTO fuzzy = new FuzzyChoicesDTO(entity);
 		assertTrue(fuzzy.getChoices().contains("Multiple Standards"));

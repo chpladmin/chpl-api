@@ -11,34 +11,34 @@ import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.FuzzyChoicesEntity;
 
 public class FuzzyChoicesDTO {
-	
     private Long id;
-    private String fuzzyType;
+    private FuzzyType fuzzyType;
     private List<String> choices;
-    
+
+    public FuzzyChoicesDTO () {
+    }
     public FuzzyChoicesDTO(FuzzyChoicesEntity entity) throws JsonParseException, JsonMappingException, IOException{
     	this.id = entity.getId();
-    	this.fuzzyType = entity.getFuzzyType().toString();
+    	this.fuzzyType = entity.getFuzzyType();
     	List<String> choiceList = new ObjectMapper().readValue(entity.getChoices(), List.class);
     	this.choices = choiceList;
     }
-    
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public String getFuzzyType() {
-		return fuzzyType;
-	}
-	public void setFuzzyType(String fuzzyType) {
-		this.fuzzyType = fuzzyType;
-	}
-	public List<String> getChoices() {
-		return choices;
-	}
-	public void setChoices(List<String> choices) {
-		this.choices = choices;
-	}
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public FuzzyType getFuzzyType() {
+        return fuzzyType;
+    }
+    public void setFuzzyType(FuzzyType fuzzyType) {
+        this.fuzzyType = fuzzyType;
+    }
+    public List<String> getChoices() {
+        return choices;
+    }
+    public void setChoices(List<String> choices) {
+        this.choices = choices;
+    }
 }

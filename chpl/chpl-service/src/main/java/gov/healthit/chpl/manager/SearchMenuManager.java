@@ -5,12 +5,15 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.SurveillanceRequirementOptions;
@@ -24,7 +27,9 @@ public interface SearchMenuManager {
 
     Set<KeyValueModel> getJobTypes();
 
-    Set<FuzzyChoicesDTO> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException;
+    Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException;
+
+    FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO) throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException;
 
     Set<KeyValueModel> getClassificationNames();
 

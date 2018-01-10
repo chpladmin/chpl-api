@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -26,6 +27,7 @@ import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.JobDAO;
@@ -47,6 +49,7 @@ import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -183,13 +186,24 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
 
     @Transactional
     @Override
-    public Set<FuzzyChoicesDTO> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
         List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDAO.findAllTypes();
-        Set<FuzzyChoicesDTO> results = new HashSet<FuzzyChoicesDTO>();
+        Set<FuzzyChoices> results = new HashSet<FuzzyChoices>();
         for (FuzzyChoicesDTO dto : fuzzyChoices) {
-            results.add(dto);
+            results.add(new FuzzyChoices(dto));
         }
         return results;
+    }
+
+    @Transactional
+    @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO)
+        throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+
+        FuzzyChoices result = null;
+        result = new FuzzyChoices(fuzzyChoicesDAO.update(fuzzyChoicesDTO));
+        return result;
     }
 
     @Transactional

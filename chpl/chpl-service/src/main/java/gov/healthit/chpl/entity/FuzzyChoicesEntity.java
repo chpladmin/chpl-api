@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import gov.healthit.chpl.entity.FuzzyType;
-
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -14,19 +12,24 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 
+import gov.healthit.chpl.entity.FuzzyType;
+
 @Entity
 @Table(name = "fuzzy_choices")
 public class FuzzyChoicesEntity {
-	
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "fuzzy_choices_id", nullable = false)
     private Long id;
 
-	@Column(name = "fuzzy_type")
-    private String fuzzyType;
-    
+    @Column(name = "fuzzy_type")
+    @Type(type = "gov.healthit.chpl.entity.PostgresFuzzyType", parameters = {
+            @org.hibernate.annotations.Parameter(name = "enumClassName",
+                                                 value = "gov.healthit.chpl.entity.FuzzyType")
+        })
+        private FuzzyType fuzzyType;
+
     @Basic(optional = false)
     @Column(name = "choices", nullable = false)
     private String choices;
@@ -86,20 +89,20 @@ public class FuzzyChoicesEntity {
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
-    
-	public String getFuzzyType() {
-		return fuzzyType;
-	}
 
-	public void setFuzzyType(String fuzzyType) {
-		this.fuzzyType = fuzzyType;
-	}
+    public FuzzyType getFuzzyType() {
+        return fuzzyType;
+    }
 
-	public String getChoices() {
-		return choices;
-	}
+    public void setFuzzyType(final FuzzyType fuzzyType) {
+        this.fuzzyType = fuzzyType;
+    }
 
-	public void setChoices(String choices) {
-		this.choices = choices;
-	}
+    public String getChoices() {
+        return choices;
+    }
+
+    public void setChoices(String choices) {
+        this.choices = choices;
+    }
 }
