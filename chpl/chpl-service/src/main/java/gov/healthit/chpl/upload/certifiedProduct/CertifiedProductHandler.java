@@ -8,6 +8,10 @@ import java.util.List;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -32,6 +36,8 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 @Component("certifiedProductHandler")
 public abstract class CertifiedProductHandler extends CertifiedProductUploadHandlerImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductHandler.class);
@@ -40,10 +46,19 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     protected static final String FIRST_ROW_INDICATOR = "NEW";
     protected static final String SUBSEQUENT_ROW_INDICATOR = "SUBELEMENT";
     protected static final String CRITERIA_COL_HEADING_BEGIN = "CRITERIA_";
+    
+    @Autowired
+    MessageSource messageSource;
 
     public abstract PendingCertifiedProductEntity handle() throws InvalidArgumentsException;
     public abstract TemplateColumnIndexMap getColumnIndexMap();
     public abstract String[] getCriteriaNames();
+    
+    public String getErrorMessage(String errorField){
+    	return String.format(
+    			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
+    					LocaleContextHolder.getLocale()));
+    }
     
     public Long getDefaultStatusId() {
         CertificationStatusDTO statusDto = statusDao.getByStatusName("Pending");
@@ -65,9 +80,14 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     
     protected void parsePracticeType(PendingCertifiedProductEntity pendingCertifiedProduct, 
             CSVRecord record) {
+    	PracticeTypeDTO foundPracticeType = null;
         String practiceType = record.get(getColumnIndexMap().getPracticeTypeIndex()).trim();
         pendingCertifiedProduct.setPracticeType(practiceType);
-        PracticeTypeDTO foundPracticeType = practiceTypeDao.getByName(practiceType);
+        if(practiceType.equals("")){
+        	pendingCertifiedProduct.getErrorMessages().add(getErrorMessage("listing.missingPracticeType"));
+        }else{
+        	foundPracticeType = practiceTypeDao.getByName(practiceType);
+        }
         if (foundPracticeType != null) {
             pendingCertifiedProduct.setPracticeTypeId(foundPracticeType.getId());
         }    

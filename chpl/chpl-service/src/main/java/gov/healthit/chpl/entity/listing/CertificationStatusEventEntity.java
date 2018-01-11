@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity.listing;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.CertificationStatusEntity;
 
 @Entity
 @Table(name = "certification_status_event")
@@ -38,6 +40,9 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
     @JoinColumn(name = "certification_status_id", insertable = false, updatable = false)
     private CertificationStatusEntity certificationStatus;
 
+    @Column(name = "reason")
+    private String reason;
+    
     @Column(name = "deleted")
     private Boolean deleted;
 
@@ -120,5 +125,13 @@ public class CertificationStatusEventEntity implements Cloneable, Serializable {
 
     public void setCertificationStatus(final CertificationStatusEntity certificationStatus) {
         this.certificationStatus = certificationStatus;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }

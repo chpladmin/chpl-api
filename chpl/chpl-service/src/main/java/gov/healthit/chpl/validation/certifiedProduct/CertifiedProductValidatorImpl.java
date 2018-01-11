@@ -31,6 +31,7 @@ import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
@@ -66,6 +67,7 @@ import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
@@ -1021,6 +1023,19 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         // valid URL format.");
         // }
 
+        //check if the certification status event reason is required
+        for(CertificationStatusEvent statusEvent : product.getCertificationEvents()) {
+            if(statusEvent.getStatus().getName().equals(
+                    CertificationStatusType.WithdrawnByAcb.getName())
+                && StringUtils.isEmpty(statusEvent.getReason())) {
+                String msg = String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable(
+                                "listing.noCertificationStatusReasonProvided"),
+                        LocaleContextHolder.getLocale()), CertificationStatusType.WithdrawnByAcb.getName());
+                product.getErrorMessages().add(msg);
+            }
+        }
+        
         for (CertificationResult cert : product.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {

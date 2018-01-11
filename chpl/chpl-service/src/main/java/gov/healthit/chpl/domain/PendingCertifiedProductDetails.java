@@ -64,7 +64,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setClassificationType(classificationTypeMap);
 
         this.setOtherAcb(null);
-        this.setCertificationStatus(null);
 
         Developer developer = new Developer();
         developer.setDeveloperId(dto.getDeveloperId());

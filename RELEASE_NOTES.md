@@ -6,6 +6,12 @@ _Date TBD_
 ### Major features
 * Add new surveillance upload job type; process large upload files as background jobs.
 
+### Minor features
+* Allow reason for certification status change for any listing. Require reason for certification status change if new status is Withdrawn by ONC-ACB.
+
+### Bugs Fixed
+* Statistics correctly account for deleted listings/unique products.
+
 ---
 
 ## Version 15.3.0

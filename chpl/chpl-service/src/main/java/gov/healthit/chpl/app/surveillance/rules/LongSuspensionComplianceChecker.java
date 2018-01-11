@@ -26,7 +26,7 @@ public class LongSuspensionComplianceChecker implements RuleComplianceChecker {
 
     public Date check(CertifiedProductSearchDetails cp, Surveillance surv, SurveillanceNonconformity nc) {
         Date result = null;
-        if (cp.getCertificationStatus().get("name").equals(CertificationStatusType.SuspendedByAcb.getName())) {
+        if (cp.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.SuspendedByAcb.getName())) {
             List<CertificationStatusEvent> statusEvents = cp.getCertificationEvents();
             // find the most recent one
             CertificationStatusEvent mostRecent = null;

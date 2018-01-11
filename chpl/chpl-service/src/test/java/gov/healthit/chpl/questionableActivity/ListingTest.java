@@ -33,6 +33,8 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
@@ -117,8 +119,14 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date(); 
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        listing.getCertificationStatus().put("id", 2L);
-        listing.getCertificationStatus().put("name", "Retired");
+        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
+        statusEvent.setEventDate(System.currentTimeMillis());
+        CertificationStatus status = new CertificationStatus();
+        status.setId(2L);
+        status.setName("Retired");
+        statusEvent.setStatus(status);
+        listing.getCertificationEvents().add(statusEvent);
+        
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
