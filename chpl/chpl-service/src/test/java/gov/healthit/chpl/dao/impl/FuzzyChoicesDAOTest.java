@@ -1,5 +1,8 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -20,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -80,4 +84,28 @@ public class FuzzyChoicesDAOTest {
 		PendingCertifiedProductSystemUpdateDTO created = updateDao.create(dto);
 		assertNotNull(created);
 	}
+
+    @Test
+    @Transactional
+    @Rollback(true)
+    public void updateFuzzyChoicesList() throws EntityRetrievalException, EntityCreationException, JsonParseException, JsonMappingException, IOException{
+        // arrange
+        SecurityContextHolder.getContext().setAuthentication(authUser);
+        Long lastModifiedUserId = -4L;
+        FuzzyChoicesDTO fuzzy = fuzzyDao.getByType(FuzzyType.UCD_PROCESS);
+        FuzzyChoicesDTO fuzzyToUpdate = fuzzyDao.getByType(FuzzyType.UCD_PROCESS);
+        List<String> choices = new ArrayList<String>();
+        choices.add("a string");
+        fuzzyToUpdate.setChoices(choices);
+        authUser.setId(lastModifiedUserId);
+
+        // act
+        FuzzyChoicesDTO updatedFuzzy = fuzzyDao.update(fuzzyToUpdate);
+
+        // assert
+        assertNotNull(updatedFuzzy);
+        assertNotNull(updatedFuzzy.getId());
+        assertEquals(updatedFuzzy.getChoices(), choices);
+        assertEquals(lastModifiedUserId.longValue(), updatedFuzzy.getLastModifiedUser().longValue());
+    }
 }
