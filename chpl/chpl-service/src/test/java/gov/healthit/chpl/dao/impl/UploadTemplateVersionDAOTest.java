@@ -63,7 +63,7 @@ public class UploadTemplateVersionDAOTest extends TestCase {
 	@Test
 	@Transactional
 	public void findById() throws EntityRetrievalException {
-		Long id = 1L;
+		Long id = 5L;
 		UploadTemplateVersionDTO template = templateDao.getById(id);
 		assertNotNull(template);
 		assertEquals(id.longValue(), template.getId().longValue());
