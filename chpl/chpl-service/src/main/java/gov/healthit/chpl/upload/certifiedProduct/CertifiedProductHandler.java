@@ -297,7 +297,32 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         result.setMeetsCriteria(asBoolean(columnValue));
         return result;
     }
+    
+    protected Boolean asBooleanEmpty(String value) {
+        value = value.trim();
 
+        if (StringUtils.isEmpty(value)) {
+            return null;
+        }
+
+        // look for a string
+        if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
+                || value.equalsIgnoreCase("y")) {
+            return true;
+        }
+
+        try {
+            double numValue = Double.parseDouble(value);
+            if (numValue > 0) {
+                return true;
+            }
+        } catch (final NumberFormatException ex) {
+            LOGGER.error("Could not parse " + value + " as an integer");
+        }
+
+        return false;
+    }
+    
     protected Boolean asBoolean(String value) {
         value = value.trim();
 

@@ -61,7 +61,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     }
     public String getErrorMessage(String errorField, String input){
     	return String.format(messageSource.getMessage(
-                new DefaultMessageSourceResolvable("listing.criteria.badG1MacraMeasure"),
+                new DefaultMessageSourceResolvable(errorField),
                 LocaleContextHolder.getLocale()), input);
     }
     
@@ -234,12 +234,18 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         // }
         
         if(product.getHasQms() != null && product.getHasQms() && product.getQmsStandards().isEmpty()){
-        	product.getErrorMessages().add(getErrorMessage("listing.missingQMSStandards"));
+        	product.getWarningMessages().add(getErrorMessage("listing.missingQMSStandards"));
         }
 
         // check cqms
         boolean isCqmRequired = false;
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+        	if(cert.getG1Success() == null){
+        		product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG1Success"));
+        	}
+        	if(cert.getG2Success() == null){
+        		product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG2Success"));
+        	}
             for (int i = 0; i < cqmRequiredCerts.length; i++) {
                 if (cert.getNumber().equals(cqmRequiredCerts[i]) && cert.getMeetsCriteria()) {
                     isCqmRequired = true;

@@ -207,16 +207,10 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
-                    	if(StringUtils.isEmpty(firstRow.get(currIndex).trim())){
-                    		pendingCertifiedProduct.getErrorMessages().add(getErrorMessage("listing.criteria.missingG1Success"));
-                    	}
-                        cert.setG1Success(asBoolean(firstRow.get(currIndex).trim()));
+                        cert.setG1Success(asBooleanEmpty(firstRow.get(currIndex).trim()));
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
-                    	if(StringUtils.isEmpty(firstRow.get(currIndex).trim())){
-                    		pendingCertifiedProduct.getErrorMessages().add(getErrorMessage("listing.criteria.missingG2Success"));
-                    	}
-                        cert.setG2Success(asBoolean(firstRow.get(currIndex).trim()));
+                        cert.setG2Success(asBooleanEmpty(firstRow.get(currIndex).trim()));
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());
