@@ -7,7 +7,9 @@ import me.xdrop.fuzzywuzzy.FuzzySearch;
 import me.xdrop.fuzzywuzzy.model.ExtractedResult;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ import gov.healthit.chpl.dao.PendingCertifiedProductSystemUpdateDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductSystemUpdateDTO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductSystemUpdateEntity;
@@ -35,16 +38,18 @@ import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 
 @Service
-public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements FuzzyChoicesManager {
+public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements FuzzyChoicesManager, EnvironmentAware {
 
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
     @Autowired
     private PendingCertifiedProductSystemUpdateDAO systemUpdateDao;
-    private int limit = 1;
-    private int cutoff = 80;
+    @Autowired 
+    private Environment env;
+    private int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
+    private int cutoff = Integer.parseInt(env.getProperty("fuzzyChoiceThreshold"));
     
-    public String getTopFuzzyChoice(String query, FuzzyType type, Long pendingCertId){
+    public String getTopFuzzyChoice(String query, FuzzyType type, PendingCertifiedProductDTO product){
     	List<ExtractedResult> results = null;
 		try {
 			results = FuzzySearch.extractTop(query, getFuzzyChoicesByType(type), limit, cutoff);
@@ -55,13 +60,14 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
     		String result = er.getString();
     		PendingCertifiedProductSystemUpdateEntity entity = new PendingCertifiedProductSystemUpdateEntity();
     		entity.setChangeMade("Changed " + type.toString() + " name from " + query + " to " + er.getString());
-    		entity.setPendingCertifiedProductId(pendingCertId);
+    		entity.setPendingCertifiedProductId(product.getId());
     		PendingCertifiedProductSystemUpdateDTO dto = new PendingCertifiedProductSystemUpdateDTO(entity);
     		try {
 				systemUpdateDao.create(dto);
 			} catch (EntityRetrievalException | EntityCreationException e) {
 				e.printStackTrace();
 			}
+    		product.getWarningMessages().add("Changed " + type.toString() + " name from " + query + " to " + er.getString());
     		return result;
     	}
     	return null;
@@ -80,4 +86,10 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
     public void setFuzzyChoicesDAO(final FuzzyChoicesDAO FuzzyChoicesDAO) {
         this.fuzzyChoicesDao = FuzzyChoicesDAO;
     }
+
+	@Override
+	public void setEnvironment(Environment environment) {
+		// TODO Auto-generated method stub
+		
+	}
 }

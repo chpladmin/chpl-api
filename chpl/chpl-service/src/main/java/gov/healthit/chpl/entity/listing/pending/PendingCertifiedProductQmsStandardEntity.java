@@ -38,7 +38,7 @@ public class PendingCertifiedProductQmsStandardEntity {
     @Column(name = "qms_standard_name")
     private String name;
     
-    @Column(name = "fuzzy_standard_qms_standard_name")
+    @Column(name = "fuzzy_match_qms_standard_name")
     private String fuzzyMatchName;
 
     @Column(name = "modification")

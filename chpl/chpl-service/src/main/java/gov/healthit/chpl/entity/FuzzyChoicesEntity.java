@@ -28,7 +28,7 @@ public class FuzzyChoicesEntity {
             @org.hibernate.annotations.Parameter(name = "enumClassName",
                                                  value = "gov.healthit.chpl.entity.FuzzyType")
         })
-        private FuzzyType fuzzyType;
+    private FuzzyType fuzzyType;
 
     @Basic(optional = false)
     @Column(name = "choices", nullable = false)

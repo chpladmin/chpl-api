@@ -270,6 +270,33 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
         String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
         String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+        
+        if(product.getCertificationCriterion() != null && !product.getCertificationCriterion().isEmpty()){
+        	for(PendingCertificationResultDTO cert : product.getCertificationCriterion()){
+        		if(cert.getUcdProcesses() != null && !cert.getUcdProcesses().isEmpty()){
+        			for(PendingCertificationResultUcdProcessDTO ucd : cert.getUcdProcesses()){
+        				String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(ucd.getUcdProcessName(), FuzzyType.UCD_PROCESS, product);
+        				if(topChoice != null){
+        					ucd.setFuzzyMatchUcdProcessName(topChoice);
+        				}
+        			}
+        		}
+        	}
+        }
+        
+        for(PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()){
+        	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(qms.getName(), FuzzyType.QMS_STANDARD, product);
+			if(topChoice != null){
+				qms.setFuzzyMatchName(topChoice);
+			}
+        }
+        
+        for(PendingCertifiedProductAccessibilityStandardDTO access : product.getAccessibilityStandards()){
+        	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(access.getName(), FuzzyType.ACCESSIBILITY_STANDARD, product);
+			if(topChoice != null){
+				access.setFuzzyMatchAccessibilityStandardName(topChoice);
+			}
+        }
 
         try {
             CertificationEditionDTO certificationEdition = certEditionDao.getById(product.getCertificationEditionId());
@@ -820,10 +847,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 if (product.getSed() != null && product.getSed().getUcdProcesses() != null
                         && product.getSed().getUcdProcesses().size() > 0) {
                     for (UcdProcess ucd : product.getSed().getUcdProcesses()) {
-                    	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(ucd.getName(), FuzzyType.UCD_PROCESS, product.getId());
-                    	if(topChoice != null){
-                    		ucd.setName(topChoice);
-                    	}
                         for (CertificationCriterion ucdCriteria : ucd.getCriteria()) {
                             if (ucdCriteria.getNumber() != null && ucdCriteria.getNumber().equals(cert.getNumber())) {
                                 product.getWarningMessages().add(String.format(
