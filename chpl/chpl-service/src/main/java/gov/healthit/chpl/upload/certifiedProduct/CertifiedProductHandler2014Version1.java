@@ -1,7 +1,9 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,7 +149,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         // report file location
         pendingCertifiedProduct.setReportFileLocation(record.get(sedIndex++).trim());
         // sed report link
-        pendingCertifiedProduct.setSedReportFileLocation(record.get(sedIndex).trim());
+        pendingCertifiedProduct.setSedReportFileLocation(record.get(sedIndex).trim());  
     }
     
     private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
@@ -205,9 +207,15 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
+                    	if(StringUtils.isEmpty(firstRow.get(currIndex).trim())){
+                    		pendingCertifiedProduct.getErrorMessages().add(getErrorMessage("listing.criteria.missingG1Success"));
+                    	}
                         cert.setG1Success(asBoolean(firstRow.get(currIndex).trim()));
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
+                    	if(StringUtils.isEmpty(firstRow.get(currIndex).trim())){
+                    		pendingCertifiedProduct.getErrorMessages().add(getErrorMessage("listing.criteria.missingG2Success"));
+                    	}
                         cert.setG2Success(asBoolean(firstRow.get(currIndex).trim()));
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {

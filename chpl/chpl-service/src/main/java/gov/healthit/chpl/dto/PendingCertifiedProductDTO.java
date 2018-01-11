@@ -195,7 +195,7 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.reportFileLocation = details.getReportFileLocation();
         this.sedReportFileLocation = details.getSedReportFileLocation();
         this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
-        this.sedTestingEnd = details.getSedTestingEnd();
+        this.sedTestingEnd = details.getSedTestingEndDate();
         this.hasQms = details.getHasQms();
         this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? false
                 : details.getIcs().getInherits();
@@ -482,6 +482,7 @@ public class PendingCertifiedProductDTO implements Serializable {
                 this.cqmCriterion.add(cqmDto);
             }
         }
+        this.setErrorMessages(details.getErrorMessages());
     }
 
     public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
@@ -581,6 +582,9 @@ public class PendingCertifiedProductDTO implements Serializable {
             for (PendingCqmCriterionEntity cqmEntity : cqmEntities) {
                 this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
             }
+        }
+        for(String message : entity.getErrorMessages()){
+        	this.errorMessages.add(message);
         }
     }
 

@@ -1,5 +1,8 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
@@ -224,14 +227,15 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("Test Report URL is required but was not found.");
         }
-        if(product.getHasQms() != null && product.getHasQms() && product.getQmsStandards().isEmpty()){
-        	product.getErrorMessages().add(getErrorMessage("listing.missingQMSStandards"));
-        }
         // else if(urlRegex.matcher(product.getReportFileLocation()).matches()
         // == false) {
         // product.getErrorMessages().add("Test Report URL provided is not a
         // valid URL format.");
         // }
+        
+        if(product.getHasQms() != null && product.getHasQms() && product.getQmsStandards().isEmpty()){
+        	product.getErrorMessages().add(getErrorMessage("listing.missingQMSStandards"));
+        }
 
         // check cqms
         boolean isCqmRequired = false;
@@ -488,6 +492,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("A test result summary URL is required.");
         }
+        Date sedTestingEnd = product.getSedTestingEndDate();
+        if (!StringUtils.isEmpty(sedTestingEnd)) {
+            product.setSedTestingEndDate(sedTestingEnd);
+        }  
 
         // Allow retired test tool only if CP ICS = true
         for (CertificationResult cert : product.getCertificationResults()) {

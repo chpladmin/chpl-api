@@ -49,7 +49,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setReportFileLocation(dto.getReportFileLocation());
         this.setSedReportFileLocation(dto.getSedReportFileLocation());
         this.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
-        this.setSedTestingEnd(dto.getSedTestingEnd());
+        this.setSedTestingEndDate(dto.getSedTestingEnd());
         this.setAcbCertificationId(dto.getAcbCertificationId());
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
