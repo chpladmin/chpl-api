@@ -11,6 +11,7 @@ public class FuzzyChoices implements Serializable {
     private Long id;
     private String fuzzyType;
     private List<String> choices;
+    private Long lastModifiedUser;
 
     public FuzzyChoices() {
     }
@@ -19,6 +20,7 @@ public class FuzzyChoices implements Serializable {
         this.id = dto.getId();
         this.fuzzyType = dto.getFuzzyType().toString();
         this.choices = dto.getChoices();
+        this.lastModifiedUser = dto.getLastModifiedUser();
     }
 
     public Long getId() {
@@ -44,4 +46,13 @@ public class FuzzyChoices implements Serializable {
     public void setChoices(final List<String> choices) {
         this.choices = choices;
     }
+
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+
+    public void setLastModifiedUser(final Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
+    }
+
 }

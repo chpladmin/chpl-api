@@ -80,6 +80,7 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
 
         String toJSON = new ObjectMapper().writeValueAsString(dto.getChoices());
         entity.setChoices(toJSON);
+        entity.setLastModifiedUser(Util.getCurrentUser().getId());
 
         update(entity);
         return new FuzzyChoicesDTO(entity);
@@ -104,26 +105,6 @@ public class FuzzyChoicesDAOImpl extends BaseDAOImpl implements FuzzyChoicesDAO 
         return entity;
     }
 
-    /*
-    private FuzzyChoicesEntity getEntityById(long entityId)
-        throws EntityRetrievalException {
-
-        FuzzyChoicesEntity entity = null;
-
-        String queryStr = "SELECT fuzzy from FuzzyChoicesEntity fuzzy where "
-            + "(fuzzy_choices_id = :entityId)";
-
-        Query query = entityManager.createQuery(queryStr, FuzzyChoicesEntity.class);
-        query.setParameter("entityId", entityId);
-        List<FuzzyChoicesEntity> result = query.getResultList();
-
-        if (result.size() == 1) {
-            entity = result.get(0);
-        }
-
-        return entity;
-    }
-    */
     private void create(FuzzyChoicesEntity announcement) {
 
         entityManager.persist(announcement);

@@ -91,11 +91,13 @@ public class FuzzyChoicesDAOTest {
     public void updateFuzzyChoicesList() throws EntityRetrievalException, EntityCreationException, JsonParseException, JsonMappingException, IOException{
         // arrange
         SecurityContextHolder.getContext().setAuthentication(authUser);
+        Long lastModifiedUserId = -4L;
         FuzzyChoicesDTO fuzzy = fuzzyDao.getByType(FuzzyType.UCD_PROCESS);
         FuzzyChoicesDTO fuzzyToUpdate = fuzzyDao.getByType(FuzzyType.UCD_PROCESS);
         List<String> choices = new ArrayList<String>();
         choices.add("a string");
         fuzzyToUpdate.setChoices(choices);
+        authUser.setId(lastModifiedUserId);
 
         // act
         FuzzyChoicesDTO updatedFuzzy = fuzzyDao.update(fuzzyToUpdate);
@@ -104,5 +106,6 @@ public class FuzzyChoicesDAOTest {
         assertNotNull(updatedFuzzy);
         assertNotNull(updatedFuzzy.getId());
         assertEquals(updatedFuzzy.getChoices(), choices);
+        assertEquals(lastModifiedUserId.longValue(), updatedFuzzy.getLastModifiedUser().longValue());
     }
 }

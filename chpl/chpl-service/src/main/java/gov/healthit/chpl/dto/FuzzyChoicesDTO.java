@@ -14,6 +14,7 @@ public class FuzzyChoicesDTO {
     private Long id;
     private FuzzyType fuzzyType;
     private List<String> choices;
+    private Long lastModifiedUser;
 
     public FuzzyChoicesDTO () {
     }
@@ -22,6 +23,7 @@ public class FuzzyChoicesDTO {
     	this.fuzzyType = entity.getFuzzyType();
     	List<String> choiceList = new ObjectMapper().readValue(entity.getChoices(), List.class);
     	this.choices = choiceList;
+        this.lastModifiedUser = entity.getLastModifiedUser();
     }
     public Long getId() {
         return id;
@@ -40,5 +42,11 @@ public class FuzzyChoicesDTO {
     }
     public void setChoices(List<String> choices) {
         this.choices = choices;
+    }
+    public Long getLastModifiedUser() {
+        return lastModifiedUser;
+    }
+    public void setLastModifiedUser(Long lastModifiedUser) {
+        this.lastModifiedUser = lastModifiedUser;
     }
 }
