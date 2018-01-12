@@ -305,22 +305,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             return null;
         }
 
-        // look for a string
-        if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
-                || value.equalsIgnoreCase("y")) {
-            return true;
-        }
-
-        try {
-            double numValue = Double.parseDouble(value);
-            if (numValue > 0) {
-                return true;
-            }
-        } catch (final NumberFormatException ex) {
-            LOGGER.error("Could not parse " + value + " as an integer");
-        }
-
-        return false;
+        return parseBoolean(value);
     }
     
     protected Boolean asBoolean(String value) {
@@ -330,7 +315,11 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             return false;
         }
 
-        // look for a string
+        return parseBoolean(value);
+    }
+    
+    protected Boolean parseBoolean(String value){
+    	// look for a string
         if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
                 || value.equalsIgnoreCase("y")) {
             return true;
