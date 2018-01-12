@@ -140,6 +140,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     				LocaleContextHolder.getLocale()));
     }
 
+    public String getErrorMessage(String errorField, String input){
+    	return String.format(messageSource.getMessage(
+                new DefaultMessageSourceResolvable(errorField),
+                LocaleContextHolder.getLocale()), input);
+    }
+
     @Override
     public boolean validateUniqueId(String chplProductNumber) {
         try {

@@ -54,17 +54,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         return g2ComplementaryCerts;
     }
     
-    public String getErrorMessage(String errorField){
-    	return String.format(
-    			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
-    					LocaleContextHolder.getLocale()));
-    }
-    public String getErrorMessage(String errorField, String input){
-    	return String.format(messageSource.getMessage(
-                new DefaultMessageSourceResolvable(errorField),
-                LocaleContextHolder.getLocale()), input);
-    }
-    
     public boolean checkB1B2B8H1(Object product){
     	// (b)(1), (b)(2)**
     	// (in replacement for (b)(1) and (b)(2) -
