@@ -5,15 +5,24 @@ import java.util.List;
 
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -26,13 +35,17 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 
 @Component
 @Aspect
 public class QuestionableActivityAspect implements EnvironmentAware {
     @Autowired private Environment env;
+    @Autowired private MessageSource messageSource;
     @Autowired private CertificationResultRules certResultRules;
+    @Autowired private CertifiedProductDetailsManager cpdManager;
     @Autowired private QuestionableActivityDAO questionableActivityDao;
     @Autowired private DeveloperQuestionableActivityProvider developerQuestionableActivityProvider;
     @Autowired private ProductQuestionableActivityProvider productQuestionableActivityProvider;
@@ -56,6 +69,54 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
     
+    @Before("execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProduct(..)) && "
+            + "args(updateRequest,..)")
+    public void checkReasonProvidedIfRequiredOnListingUpdate(ListingUpdateRequest updateRequest) 
+            throws EntityRetrievalException, MissingReasonException {
+        CertifiedProductSearchDetails newListing = updateRequest.getListing();
+        CertifiedProductSearchDetails origListing = cpdManager.getCertifiedProductDetails(newListing.getId());
+        
+        QuestionableActivityListingDTO activity = listingQuestionableActivityProvider
+                .check2011EditionUpdated(origListing, newListing);
+        if(activity != null && StringUtils.isEmpty(updateRequest.getReason())) {
+            throw new MissingReasonException("TODO");
+        }
+        
+        List<QuestionableActivityListingDTO> activities = 
+                listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
+        if(activities != null && activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
+            throw new MissingReasonException("TODO");
+        }
+        
+        activities = 
+                listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
+        if(activities != null && activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
+            throw new MissingReasonException("TODO");
+        }
+        
+        activity = listingQuestionableActivityProvider
+                .checkCertificationStatusUpdated(origListing, newListing);
+        if(activity != null && 
+                newListing.getCurrentStatus().getStatus().getName().toUpperCase().equals(
+                        CertificationStatusType.Active.getName().toUpperCase()) && 
+                StringUtils.isEmpty(updateRequest.getReason())) {
+            throw new MissingReasonException("TODO");
+        }
+    }
+    
+    @Before("execution(* gov.healthit.chpl.web.controller.SurveillanceController.deleteSurveillance(..)) && "
+            + "args(surveillanceId,requestBody,..)")
+    public void checkReasonProvidedIfRequiredOnSurveillanceUpdate(Long surveillanceId,
+            SimpleExplainableAction requestBody) 
+            throws MissingReasonException {
+        if(surveillanceId != null && (requestBody == null || 
+                StringUtils.isEmpty(requestBody.getReason()))) {
+            throw new MissingReasonException(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("surveillance.reasonRequired"),
+                    LocaleContextHolder.getLocale())));
+        }
+    }
+
     @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
             + "args(concept,objectId,activityDescription,originalData,newData,..)")
     public void checkQuestionableActivity(ActivityConcept concept, 

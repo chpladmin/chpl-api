@@ -1,10 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +43,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.IdListContainer;
+import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.SurveillanceNonconformityStatus;
@@ -756,7 +753,8 @@ public class SurveillanceControllerTest {
 		cp.setChplProductNumber(cp.getChplProductNumber());
 		cp.setEdition(cp.getEdition());
 		surv.setCertifiedProduct(cp);
-		surv.setStartDate(new Date());
+		surv.setStartDate(new Date(System.currentTimeMillis() - 1000));
+		surv.setEndDate(new Date());
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
@@ -771,7 +769,7 @@ public class SurveillanceControllerTest {
 		
 		surv.getRequirements().add(req);
 		
-		Surveillance insertedSurv;
+		Surveillance insertedSurv = null;
 		try {
 			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
 			insertedSurv = response.getBody();
@@ -785,19 +783,25 @@ public class SurveillanceControllerTest {
 			assertEquals(surv.getAuthority(), got.getAuthority());
 			assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
 		} catch (Exception e) {
-			System.out.println(e.getClass() + ": " + e.getMessage());
+			fail(e.getMessage());
+			e.printStackTrace();
 		}
-		assertEquals(1, surv.getRequirements().size());
-		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals(1, insertedSurv.getRequirements().size());
+		assertNotNull(insertedSurv.getId());
+		SurveillanceRequirement gotReq = insertedSurv.getRequirements().iterator().next();
 		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
 		
 		String result = null;
 		try{
-			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
+		    SimpleExplainableAction requestBody = new SimpleExplainableAction();
+            requestBody.setReason("unit test");
+			ResponseEntity<String> response = surveillanceController
+			        .deleteSurveillance(insertedSurv.getId(), requestBody);
 			result = response.getBody();
 			assertTrue(result.contains("true"));
 		} catch(Exception e){
-			System.out.println(e.getClass() + ": " + e.getMessage());
+		    fail(e.getMessage());
+            e.printStackTrace();
 		}
 	}
 	
@@ -829,7 +833,8 @@ public class SurveillanceControllerTest {
 		cp.setChplProductNumber(cp.getChplProductNumber());
 		cp.setEdition(cp.getEdition());
 		surv.setCertifiedProduct(cp);
-		surv.setStartDate(new Date());
+		surv.setStartDate(new Date(System.currentTimeMillis()-1000));
+		surv.setEndDate(new Date());
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
@@ -844,7 +849,7 @@ public class SurveillanceControllerTest {
 		
 		surv.getRequirements().add(req);
 		
-		Surveillance insertedSurv;
+		Surveillance insertedSurv = null;
 		try {
 			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
 			insertedSurv = response.getBody();
@@ -858,19 +863,25 @@ public class SurveillanceControllerTest {
 			assertEquals(surv.getAuthority(), got.getAuthority());
 			assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
 		} catch (Exception e) {
-			System.out.println(e.getClass() + ": " + e.getMessage());
+			e.printStackTrace();
+			fail(e.getMessage());
 		}
-		assertEquals(1, surv.getRequirements().size());
-		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals(1, insertedSurv.getRequirements().size());
+		assertNotNull(insertedSurv.getId());
+		SurveillanceRequirement gotReq = insertedSurv.getRequirements().iterator().next();
 		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
 		
 		String result = null;
 		try{
-			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
+		    SimpleExplainableAction requestBody = new SimpleExplainableAction();
+		    requestBody.setReason("unit test");
+			ResponseEntity<String> response = surveillanceController
+			        .deleteSurveillance(insertedSurv.getId(), requestBody);
 			result = response.getBody();
 			assertTrue(result.contains("true"));
 		} catch(Exception e){
-			System.out.println(e.getClass() + ": " + e.getMessage());
+		    e.printStackTrace();
+            fail(e.getMessage());
 		}
 	}
 	
@@ -887,11 +898,12 @@ public class SurveillanceControllerTest {
 	 * @throws ValidationException
 	 */
 	@Transactional 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	@Rollback
 	public void test_deleteSurveillance_HaveAcbAdmin_survCreatedByOnc_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException, ValidationException {
+			InvalidArgumentsException, ValidationException, AccessDeniedException,
+	        SurveillanceAuthorityAccessDeniedException {
 		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
@@ -901,7 +913,8 @@ public class SurveillanceControllerTest {
 		cp.setChplProductNumber(cp.getChplProductNumber());
 		cp.setEdition(cp.getEdition());
 		surv.setCertifiedProduct(cp);
-		surv.setStartDate(new Date());
+		surv.setStartDate(new Date(System.currentTimeMillis() - 1000));
+		surv.setEndDate(new Date());
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
@@ -916,7 +929,7 @@ public class SurveillanceControllerTest {
 		
 		surv.getRequirements().add(req);
 		
-		Surveillance insertedSurv;
+		Surveillance insertedSurv = null;
 		try {
 			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
 			insertedSurv = response.getBody();
@@ -930,23 +943,19 @@ public class SurveillanceControllerTest {
 			assertEquals(surv.getAuthority(), got.getAuthority());
 			assertEquals(surv.getAuthority(), Authority.ROLE_ADMIN);
 		} catch (Exception e) {
-			System.out.println(e.getClass() + ": " + e.getMessage());
+			e.printStackTrace();
+			fail(e.getMessage());
 		}
-		assertEquals(1, surv.getRequirements().size());
-		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals(1, insertedSurv.getRequirements().size());
+		assertNotNull(insertedSurv.getId());
+		SurveillanceRequirement gotReq = insertedSurv.getRequirements().iterator().next();
 		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
 		
 		SecurityContextHolder.getContext().setAuthentication(acbAdmin);
-		String result = null;
-		try{
-			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
-			result = response.getBody();
-			assertFalse(result.contains("true"));
-		} catch (AccessDeniedException e) {
-			assertTrue(e != null);
-		} catch(Exception e){
-			System.out.println(e.getClass() + ": " + e.getMessage());
-		}
+	    SimpleExplainableAction requestBody = new SimpleExplainableAction();
+        requestBody.setReason("unit test");
+		ResponseEntity<String> response = surveillanceController
+		        .deleteSurveillance(insertedSurv.getId(), requestBody);
 	}
 	
 
@@ -977,7 +986,8 @@ public class SurveillanceControllerTest {
 		cp.setChplProductNumber(cp.getChplProductNumber());
 		cp.setEdition(cp.getEdition());
 		surv.setCertifiedProduct(cp);
-		surv.setStartDate(new Date());
+		surv.setStartDate(new Date(System.currentTimeMillis() - 1000));
+		surv.setEndDate(new Date());
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
@@ -992,7 +1002,7 @@ public class SurveillanceControllerTest {
 		
 		surv.getRequirements().add(req);
 		
-		Surveillance insertedSurv;
+		Surveillance insertedSurv = null;
 		try {
 			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
 			insertedSurv = response.getBody();
@@ -1006,21 +1016,27 @@ public class SurveillanceControllerTest {
 			assertEquals(surv.getAuthority(), got.getAuthority());
 			assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
 		} catch (Exception e) {
-			System.out.println(e.getClass() + ": " + e.getMessage());
+		    e.printStackTrace();
+            fail(e.getMessage());
 		}
-		assertEquals(1, surv.getRequirements().size());
-		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
+		assertEquals(1, insertedSurv.getRequirements().size());
+		assertNotNull(insertedSurv.getId());
+		SurveillanceRequirement gotReq = insertedSurv.getRequirements().iterator().next();
 		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
 		
 		String result = null;
 		try{
-			ResponseEntity<String> response = surveillanceController.deleteSurveillance(surv.getId());
+		    SimpleExplainableAction requestBody = new SimpleExplainableAction();
+            requestBody.setReason("unit test");
+            ResponseEntity<String> response = surveillanceController
+                    .deleteSurveillance(insertedSurv.getId(), requestBody);
 			result = response.getBody();
 			assertTrue(result.contains("true"));
 		} catch (ValidationException e) {
 			assertTrue(e.getErrorMessages().contains("Surveillance cannot have authority " + Authority.ROLE_ADMIN + " for a user lacking " + Authority.ROLE_ADMIN));
 		} catch(Exception e){
-			System.out.println(e.getClass() + ": " + e.getMessage());
+		    e.printStackTrace();
+            fail(e.getMessage());
 		}
 	}
 	
