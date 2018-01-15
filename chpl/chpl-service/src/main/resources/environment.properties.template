@@ -17,6 +17,9 @@ surveillanceThresholdToProcessAsJob=50
 #file name that daily SED details will be written to
 SEDDownloadName=chpl-sed-all-details.csv
 
+fuzzyChoiceThreshold=80
+fuzzyChoiceLimit=1 
+
 #cache properties
 enableCacheInitialization=true
 cacheClearTimeoutSecs=15

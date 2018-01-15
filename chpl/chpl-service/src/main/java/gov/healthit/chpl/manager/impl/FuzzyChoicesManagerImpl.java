@@ -38,7 +38,7 @@ import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 
 @Service
-public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements FuzzyChoicesManager, EnvironmentAware {
+public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements FuzzyChoicesManager {
 
     @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
@@ -46,20 +46,23 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
     private PendingCertifiedProductSystemUpdateDAO systemUpdateDao;
     @Autowired 
     private Environment env;
-    private int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
-    private int cutoff = Integer.parseInt(env.getProperty("fuzzyChoiceThreshold"));
     
     public String getTopFuzzyChoice(String query, FuzzyType type, PendingCertifiedProductDTO product){
+    	int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
+        int cutoff = Integer.parseInt(env.getProperty("fuzzyChoiceThreshold"));
     	List<ExtractedResult> results = null;
 		try {
 			results = FuzzySearch.extractTop(query, getFuzzyChoicesByType(type), limit, cutoff);
 		} catch (EntityRetrievalException | IOException e) {
 			e.printStackTrace();
 		}
+		String result = null;
     	for(ExtractedResult er : results){
-    		String result = er.getString();
+    		result = er.getString();
+    	}
+    	if(result != null){
     		PendingCertifiedProductSystemUpdateEntity entity = new PendingCertifiedProductSystemUpdateEntity();
-    		entity.setChangeMade("Changed " + type.toString() + " name from " + query + " to " + er.getString());
+    		entity.setChangeMade("Changed " + type.toString() + " name from " + query + " to " + result);
     		entity.setPendingCertifiedProductId(product.getId());
     		PendingCertifiedProductSystemUpdateDTO dto = new PendingCertifiedProductSystemUpdateDTO(entity);
     		try {
@@ -67,7 +70,7 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
 			} catch (EntityRetrievalException | EntityCreationException e) {
 				e.printStackTrace();
 			}
-    		product.getWarningMessages().add("Changed " + type.toString() + " name from " + query + " to " + er.getString());
+    		product.getWarningMessages().add("Changed " + type.toString() + " name from " + query + " to " + result);
     		return result;
     	}
     	return null;
@@ -86,10 +89,4 @@ public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements
     public void setFuzzyChoicesDAO(final FuzzyChoicesDAO FuzzyChoicesDAO) {
         this.fuzzyChoicesDao = FuzzyChoicesDAO;
     }
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		// TODO Auto-generated method stub
-		
-	}
 }
