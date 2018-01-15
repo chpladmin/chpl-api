@@ -179,7 +179,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setReportFileLocation(dto.getReportFileLocation());
         searchDetails.setSedReportFileLocation(dto.getSedReportFileLocation());
         searchDetails.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
-        searchDetails.setSedTestingEnd(dto.getSedTestingEnd());
+        searchDetails.setSedTestingEndDate(dto.getSedTestingEnd());
 
         searchDetails.getTestingLab().put("id", dto.getTestingLabId());
         searchDetails.getTestingLab().put("name", dto.getTestingLabName());

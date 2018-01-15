@@ -204,7 +204,8 @@ public class PendingCertifiedProductEntity {
     @Column(name = "pending_certified_product_id", nullable = false)
     private Set<PendingCertifiedProductParentListingEntity> parentListings;
     
-    @Transient
+    @Basic(optional = false)
+    @Column(name = "has_qms", nullable = false)
     private boolean hasQms;
 
     @Basic(optional = false)
