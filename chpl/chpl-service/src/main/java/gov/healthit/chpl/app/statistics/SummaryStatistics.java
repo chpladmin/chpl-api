@@ -206,9 +206,13 @@ public class SummaryStatistics {
     }
 
     private String createHtmlMessage(Statistics stats, List<File> files) {
-        Calendar calendarCounter = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        Calendar currDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
+        endDateCal.setTime(endDate);
         StringBuilder emailMessage = new StringBuilder();
-        emailMessage.append("Date: " + calendarCounter.getTime());
+        emailMessage.append("Email body has current statistics as of " + currDateCal.getTime());
+        emailMessage.append("<br/>");
+        emailMessage.append("Email attachment has weekly statistics ending " + endDateCal.getTime());
         emailMessage.append(
                 "<h4>Total # of Unique Developers (Regardless of Edition) -  " + stats.getTotalDevelopers() + "</h4>");
         emailMessage.append("<ul><li>Total # of Developers with Active 2014 Listings - "
