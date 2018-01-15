@@ -1,5 +1,9 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -9,6 +13,9 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 
 @Component("allowedValidator")
 public class CertifiedProductAllowedValidator implements CertifiedProductValidator {
+	
+	@Autowired
+    MessageSource messageSource;
 
     @Override
     public void validate(PendingCertifiedProductDTO product) {
@@ -94,5 +101,26 @@ public class CertifiedProductAllowedValidator implements CertifiedProductValidat
             }
         }
         return true;
+    }
+    
+    @Override
+    public int getMaxLength(String field){
+    	return Integer.parseInt(String.format(
+    			messageSource.getMessage(new DefaultMessageSourceResolvable(field),
+    			LocaleContextHolder.getLocale())));
+    }
+    
+    @Override
+    public String getErrorMessage(String errorField){
+    		return String.format(
+    				messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
+    				LocaleContextHolder.getLocale()));
+    }
+    
+    @Override
+    public String getErrorMessage(String errorField, String input){
+    	return String.format(messageSource.getMessage(
+                new DefaultMessageSourceResolvable(errorField),
+                LocaleContextHolder.getLocale()), input);
     }
 }

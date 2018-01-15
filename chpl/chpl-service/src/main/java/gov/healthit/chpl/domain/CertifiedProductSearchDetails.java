@@ -63,7 +63,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * date is YYYMMDD
      */
     @XmlElement(required = false, nillable = true)
-    private Date sedTestingEnd;
+    private Date sedTestingEndDate;
 
     /**
      * The ID used by ONC-ACBs for internal tracking for 2014 and 2015
@@ -564,15 +564,15 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
-    public Date getSedTestingEnd() {
-        return sedTestingEnd;
-    }
+    public Date getSedTestingEndDate() {
+		return sedTestingEndDate;
+	}
 
-    public void setSedTestingEnd(final Date sedTestingEnd) {
-        this.sedTestingEnd = sedTestingEnd;
-    }
+	public void setSedTestingEndDate(Date sedTestingEndDate) {
+		this.sedTestingEndDate = sedTestingEndDate;
+	}
 
-    public Product getProduct() {
+	public Product getProduct() {
         return product;
     }
 

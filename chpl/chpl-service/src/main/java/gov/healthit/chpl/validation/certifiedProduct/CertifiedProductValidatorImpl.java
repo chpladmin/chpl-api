@@ -140,6 +140,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     				LocaleContextHolder.getLocale()));
     }
 
+    public String getErrorMessage(String errorField, String input){
+    	return String.format(messageSource.getMessage(
+                new DefaultMessageSourceResolvable(errorField),
+                LocaleContextHolder.getLocale()), input);
+    }
+
     @Override
     public boolean validateUniqueId(String chplProductNumber) {
         try {
@@ -983,7 +989,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         	checkField(product, product.getCertificationEdition().get("id"), "certificationEdition");
         }
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
-            product.getErrorMessages().add("CHPL certification ID is required but was not found.");
+            product.getWarningMessages().add("CHPL certification ID was not found.");
         }
         if (product.getCertificationDate() == null) {
             product.getErrorMessages().add("Certification date was not found.");

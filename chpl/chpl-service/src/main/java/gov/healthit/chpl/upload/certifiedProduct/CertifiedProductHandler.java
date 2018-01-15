@@ -297,7 +297,17 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         result.setMeetsCriteria(asBoolean(columnValue));
         return result;
     }
+    
+    protected Boolean asBooleanEmpty(String value) {
+        value = value.trim();
 
+        if (StringUtils.isEmpty(value)) {
+            return null;
+        }
+
+        return parseBoolean(value);
+    }
+    
     protected Boolean asBoolean(String value) {
         value = value.trim();
 
@@ -305,7 +315,11 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             return false;
         }
 
-        // look for a string
+        return parseBoolean(value);
+    }
+    
+    protected Boolean parseBoolean(String value){
+    	// look for a string
         if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
                 || value.equalsIgnoreCase("y")) {
             return true;
