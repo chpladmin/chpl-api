@@ -277,7 +277,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         			for(PendingCertificationResultUcdProcessDTO ucd : cert.getUcdProcesses()){
         				String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(ucd.getUcdProcessName(), FuzzyType.UCD_PROCESS, product);
         				if(topChoice != null){
-        					ucd.setFuzzyMatchUcdProcessName(topChoice);
+        					ucd.setUcdProcessName(topChoice);
         				}
         			}
         		}
@@ -287,14 +287,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         for(PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()){
         	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(qms.getName(), FuzzyType.QMS_STANDARD, product);
 			if(topChoice != null){
-				qms.setFuzzyMatchName(topChoice);
+				qms.setName(topChoice);
 			}
         }
         
         for(PendingCertifiedProductAccessibilityStandardDTO access : product.getAccessibilityStandards()){
         	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(access.getName(), FuzzyType.ACCESSIBILITY_STANDARD, product);
 			if(topChoice != null){
-				access.setFuzzyMatchAccessibilityStandardName(topChoice);
+				access.setName(topChoice);
 			}
         }
 
