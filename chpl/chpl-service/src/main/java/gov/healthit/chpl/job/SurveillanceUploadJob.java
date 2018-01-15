@@ -27,6 +27,7 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -44,6 +45,7 @@ public class SurveillanceUploadJob extends RunnableJob {
     private CertifiedProductManager cpManager;
     @Autowired
     private SurveillanceManager survManager;
+    @Autowired private SurveillanceUploadManager survUploadManager;
     @Autowired
     private SurveillanceValidator survValidator;
     @Autowired
@@ -89,7 +91,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                 //this is like 2% of the work
                 int survCount = 0;
                 try {
-                    survCount = survManager.countSurveillanceRecords(job.getData());
+                    survCount = survUploadManager.countSurveillanceRecords(job.getData());
                 } catch(Exception ex) {
                     addJobMessage(ex.getMessage());
                     updateStatus(100, JobStatusType.Error);
@@ -105,22 +107,22 @@ public class SurveillanceUploadJob extends RunnableJob {
                     for (int i = 1; i <= records.size(); i++) {
                         CSVRecord currRecord = records.get(i - 1);
                         if (heading == null && !StringUtils.isEmpty(currRecord.get(1))
-                                && currRecord.get(0).equals(SurveillanceManager.HEADING_CELL_INDICATOR)) {
+                                && currRecord.get(0).equals(SurveillanceUploadManager.HEADING_CELL_INDICATOR)) {
                             // have to find the heading first
                             heading = currRecord;
                         } else if (heading != null) {
                             if (!StringUtils.isEmpty(currRecord.get(0).trim())) {
                                 String currRecordStatus = currRecord.get(0).trim();
     
-                                if (currRecordStatus.equalsIgnoreCase(SurveillanceManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
-                                        || currRecordStatus.equalsIgnoreCase(SurveillanceManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
+                                if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.NEW_SURVEILLANCE_BEGIN_INDICATOR)
+                                        || currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.UPDATE_SURVEILLANCE_BEGIN_INDICATOR)) {
                                     // parse the previous recordset because we hit a new surveillance item
                                     // if this is the last recordset, we'll handle that later
                                     if (rows.size() > 0) {
                                         try {
                                             SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                             Surveillance pendingSurv = handler.handle();
-                                            List<String> errors = survManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                            List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
                                             for(String error : errors) {
                                                 parserErrors.add(error);
                                             }
@@ -136,7 +138,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                                     }
                                     rows.clear();
                                     rows.add(currRecord);
-                                } else if (currRecordStatus.equalsIgnoreCase(SurveillanceManager.SUBELEMENT_INDICATOR)) {
+                                } else if (currRecordStatus.equalsIgnoreCase(SurveillanceUploadManager.SUBELEMENT_INDICATOR)) {
                                     rows.add(currRecord);
                                 } // ignore blank rows
                             }
@@ -147,7 +149,7 @@ public class SurveillanceUploadJob extends RunnableJob {
                             try {
                                 SurveillanceUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
                                 Surveillance pendingSurv = handler.handle();
-                                List<String> errors = survManager.checkUploadedSurveillanceOwnership(pendingSurv);
+                                List<String> errors = survUploadManager.checkUploadedSurveillanceOwnership(pendingSurv);
                                 for(String error : errors) {
                                     parserErrors.add(error);
                                 }
