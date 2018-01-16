@@ -15,6 +15,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.sun.mail.imap.OlderTerm;
+
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
@@ -79,19 +81,25 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         QuestionableActivityListingDTO activity = listingQuestionableActivityProvider
                 .check2011EditionUpdated(origListing, newListing);
         if(activity != null && StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException("TODO");
+            throw new MissingReasonException(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("listing.2011Updated.reasonRequired"),
+                    LocaleContextHolder.getLocale())));
         }
         
         List<QuestionableActivityListingDTO> activities = 
                 listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
         if(activities != null && activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException("TODO");
+            throw new MissingReasonException(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("listing.cqmRemoved.reasonRequired"),
+                    LocaleContextHolder.getLocale())));
         }
         
         activities = 
                 listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
         if(activities != null && activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException("TODO");
+            throw new MissingReasonException(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("listing.criteriaRemoved.reasonRequired"),
+                    LocaleContextHolder.getLocale())));
         }
         
         activity = listingQuestionableActivityProvider
@@ -100,7 +108,10 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 newListing.getCurrentStatus().getStatus().getName().toUpperCase().equals(
                         CertificationStatusType.Active.getName().toUpperCase()) && 
                 StringUtils.isEmpty(updateRequest.getReason())) {
-            throw new MissingReasonException("TODO");
+            throw new MissingReasonException(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("listing.statusChange.reasonRequired"),
+                    LocaleContextHolder.getLocale()),
+                    origListing.getCurrentStatus().getStatus().getName()));
         }
     }
     
@@ -117,10 +128,20 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         }
     }
 
+    /**
+     * Any activity added with a reason would be handled here.
+     * @param concept
+     * @param objectId
+     * @param activityDescription
+     * @param originalData
+     * @param newData
+     * @param reason
+     */
     @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
-            + "args(concept,objectId,activityDescription,originalData,newData,..)")
-    public void checkQuestionableActivity(ActivityConcept concept, 
-            Long objectId, String activityDescription, Object originalData, Object newData) {
+            + "args(concept,objectId,activityDescription,originalData,newData,reason,..)")
+    public void checkQuestionableActivityWithReason(ActivityConcept concept, 
+            Long objectId, String activityDescription, Object originalData, 
+            Object newData, String reason) {
         if(originalData == null || newData == null || 
                 !originalData.getClass().equals(newData.getClass()) ||
                 Util.getCurrentUser() == null) {
@@ -137,7 +158,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             CertifiedProductSearchDetails newListing = (CertifiedProductSearchDetails)newData;
             
             //look for any of the listing questionable activity
-            checkListingQuestionableActivity(origListing, newListing, activityDate, activityUser);
+            checkListingQuestionableActivity(origListing, newListing, activityDate, activityUser, reason);
 
             //look for certification result questionable activity
             if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
@@ -149,12 +170,29 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                     for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                         if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
                             checkCertificationResultQuestionableActivity(origCertResult, newCertResult, 
-                                    activityDate, activityUser);
+                                    activityDate, activityUser, reason);
                         }
                     }
                 }
             }
-        } else if(originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
+        }
+    }
+    
+    @After("execution(* gov.healthit.chpl.manager.impl.ActivityManagerImpl.addActivity(..)) && "
+            + "args(concept,objectId,activityDescription,originalData,newData,..)")
+    public void checkQuestionableActivity(ActivityConcept concept, 
+            Long objectId, String activityDescription, Object originalData, Object newData) {
+        if(originalData == null || newData == null || 
+                !originalData.getClass().equals(newData.getClass()) ||
+                Util.getCurrentUser() == null) {
+            return;
+        }
+        
+        //all questionable activity from this action should have the exact same date and user id
+        Date activityDate = new Date();
+        Long activityUser = Util.getCurrentUser().getId();
+        
+        if(originalData instanceof DeveloperDTO && newData instanceof DeveloperDTO) {
             DeveloperDTO origDeveloper = (DeveloperDTO)originalData;
             DeveloperDTO newDeveloper = (DeveloperDTO)newData;
             checkDeveloperQuestionableActivity(origDeveloper, newDeveloper, activityDate, activityUser);
@@ -292,27 +330,30 @@ public class QuestionableActivityAspect implements EnvironmentAware {
     
     /**
      * checks for various listing changes - add or remove certs and cqms, deleting surveillance, 
-     * editing certification date
+     * editing certification date 
      * @param origListing
      * @param newListing
      * @param activityDate
      * @param activityUser
      */
     private void checkListingQuestionableActivity(CertifiedProductSearchDetails origListing, 
-            CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser) {
+            CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser,
+            String activityReason) {
         QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(origListing, newListing);
         if(activity != null) {
-            createListingActivity(activity, origListing.getId(), activityDate, activityUser, QuestionableActivityTriggerConcept.EDITION_2011_EDITED);
+            createListingActivity(activity, origListing.getId(), activityDate, activityUser, 
+                    QuestionableActivityTriggerConcept.EDITION_2011_EDITED, activityReason);
         } else {
             //it wasn't a 2011 update, check for any changes that are questionable
             //outside of the acceptable activity threshold
             activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(
                     CertificationStatusType.WithdrawnByDeveloperUnderReview, origListing, newListing);
             if(activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED);
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser, 
+                        QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED, activityReason);
             }
             
-            //finall check for other changes that are only questionable 
+            //finally check for other changes that are only questionable 
             //outside of the acceptable activity threshold
             if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null
                     && (newListing.getLastModifiedDate().longValue()
@@ -320,20 +361,23 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(origListing, newListing);
                 if(activity != null) {
                     createListingActivity(activity, origListing.getId(), activityDate, 
-                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED);
+                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED,
+                            activityReason);
                 }
                 
                 activity = listingQuestionableActivityProvider.checkSurveillanceDeleted(origListing, newListing);
                 if(activity != null) {
                     createListingActivity(activity, origListing.getId(), activityDate, 
-                            activityUser, QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED);
+                            activityUser, QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED,
+                            activityReason);
                 }
                 
                 List<QuestionableActivityListingDTO> activities = listingQuestionableActivityProvider.checkCqmsAdded(origListing, newListing);
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
                         createListingActivity(currActivity, origListing.getId(), activityDate, 
-                                activityUser, QuestionableActivityTriggerConcept.CQM_ADDED);
+                                activityUser, QuestionableActivityTriggerConcept.CQM_ADDED,
+                                activityReason);
                     }
                 }
                 
@@ -341,7 +385,8 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
                         createListingActivity(currActivity, origListing.getId(), activityDate, 
-                                activityUser, QuestionableActivityTriggerConcept.CQM_REMOVED);
+                                activityUser, QuestionableActivityTriggerConcept.CQM_REMOVED,
+                                activityReason);
                     }
                 }
 
@@ -349,7 +394,8 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
                         createListingActivity(currActivity, origListing.getId(), activityDate, 
-                                activityUser, QuestionableActivityTriggerConcept.CRITERIA_ADDED);
+                                activityUser, QuestionableActivityTriggerConcept.CRITERIA_ADDED,
+                                activityReason);
                     }
                 }
                 
@@ -357,7 +403,8 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 if(activities != null && activities.size() > 0) {
                     for(QuestionableActivityListingDTO currActivity : activities) {
                         createListingActivity(currActivity, origListing.getId(), activityDate, 
-                                activityUser, QuestionableActivityTriggerConcept.CRITERIA_REMOVED);
+                                activityUser, QuestionableActivityTriggerConcept.CRITERIA_REMOVED,
+                                activityReason);
                     }
                 }
             }
@@ -373,7 +420,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
      * @param activityUser
      */
     private void checkCertificationResultQuestionableActivity(CertificationResult origCertResult, CertificationResult newCertResult,
-            Date activityDate, Long activityUser) {
+            Date activityDate, Long activityUser, String activityReason) {
         QuestionableActivityCertificationResultDTO certActivity = null;
         List<QuestionableActivityCertificationResultDTO> certActivities = null;
         
@@ -381,21 +428,21 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             certActivity = certResultQuestionableActivityProvider.checkG1SuccessUpdated(origCertResult, newCertResult);
             if(certActivity != null) {
                 createCertificationActivity(certActivity, origCertResult.getId(), activityDate, 
-                        activityUser, QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED);
+                        activityUser, QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED, activityReason);
             }
         }
         if(certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G2_SUCCESS)) {
             certActivity = certResultQuestionableActivityProvider.checkG2SuccessUpdated(origCertResult, newCertResult);
             if(certActivity != null) {
                 createCertificationActivity(certActivity, origCertResult.getId(), activityDate, 
-                        activityUser, QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED);
+                        activityUser, QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED, activityReason);
             }
         }
         if(certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.GAP)) {
             certActivity = certResultQuestionableActivityProvider.checkGapUpdated(origCertResult, newCertResult);
             if(certActivity != null) {
                 createCertificationActivity(certActivity, origCertResult.getId(), activityDate, 
-                        activityUser, QuestionableActivityTriggerConcept.GAP_EDITED);
+                        activityUser, QuestionableActivityTriggerConcept.GAP_EDITED, activityReason);
             }
         }
         if(certResultRules.hasCertOption(origCertResult.getNumber(), CertificationResultRules.G1_MACRA)) {
@@ -403,7 +450,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
                     createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
-                            activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_ADDED);
+                            activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_ADDED, activityReason);
                 }
             }
         }
@@ -412,7 +459,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
                     createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
-                            activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED);
+                            activityUser, QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED, activityReason);
                 }
             }
         }
@@ -421,7 +468,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
                     createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
-                            activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_ADDED);
+                            activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_ADDED, activityReason);
                 }
             }
         }
@@ -430,27 +477,30 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             if(certActivities != null && certActivities.size() > 0) {
                 for(QuestionableActivityCertificationResultDTO currCertActivity : certActivities) {
                     createCertificationActivity(currCertActivity, origCertResult.getId(), activityDate, 
-                            activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED);
+                            activityUser, QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED, activityReason);
                 }
             }
         }
     }
     
     private void createListingActivity(QuestionableActivityListingDTO activity, Long listingId, 
-            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger,
+            String activityReason) {
         activity.setListingId(listingId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
+        activity.setReason(activityReason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
         activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
     }
     
     private void createCertificationActivity(QuestionableActivityCertificationResultDTO activity, Long certResultId, 
-            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger) {
+            Date activityDate, Long activityUser, QuestionableActivityTriggerConcept trigger, String activityReason) {
         activity.setCertResultId(certResultId);
         activity.setActivityDate(activityDate);
         activity.setUserId(activityUser);
+        activity.setReason(activityReason);
         QuestionableActivityTriggerDTO triggerDto = getTrigger(trigger);
         activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);

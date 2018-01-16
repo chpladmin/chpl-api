@@ -97,6 +97,13 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional
     public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
+            Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+        this.addActivity(concept, objectId, activityDescription, originalData, newData);
+    }
+    
+    @Override
+    @Transactional
+    public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 

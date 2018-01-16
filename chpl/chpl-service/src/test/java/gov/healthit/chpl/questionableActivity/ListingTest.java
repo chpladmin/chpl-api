@@ -106,6 +106,8 @@ public class ListingTest extends TestCase {
 		assertEquals(3, activity.getListingId().longValue());
 		assertNull(activity.getBefore());
 		assertNull(activity.getAfter());
+		assertNotNull(activity.getReason());
+		assertEquals("unit test", activity.getReason());
 		assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
 		
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -176,6 +178,8 @@ public class ListingTest extends TestCase {
         assertEquals(1, activity.getListingId().longValue());
         assertEquals("Active", activity.getBefore());
         assertEquals("Retired", activity.getAfter());
+        assertNotNull(activity.getReason());
+        assertEquals("unit test", activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED.getName(), activity.getTrigger().getName());
         
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -214,6 +218,7 @@ public class ListingTest extends TestCase {
         assertEquals(1, activity.getListingId().longValue());
         assertEquals("Active", activity.getBefore());
         assertEquals("Retired", activity.getAfter());
+        assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED.getName(), activity.getTrigger().getName());
         
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -252,6 +257,7 @@ public class ListingTest extends TestCase {
         assertEquals(1, activity.getListingId().longValue());
         assertNull(activity.getBefore());
         assertEquals("CMS82", activity.getAfter());
+        assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CQM_ADDED.getName(), activity.getTrigger().getName());
         
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -290,6 +296,8 @@ public class ListingTest extends TestCase {
         assertEquals(1, activity.getListingId().longValue());
         assertEquals("CMS146", activity.getBefore());
         assertNull(activity.getAfter());
+        assertNotNull(activity.getReason());
+        assertEquals("unit test", activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CQM_REMOVED.getName(), activity.getTrigger().getName());
         
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -360,6 +368,7 @@ public class ListingTest extends TestCase {
         assertEquals(1, activity.getListingId().longValue());
         assertNull(activity.getBefore());
         assertEquals("170.314 (a)(4)", activity.getAfter());
+        assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CRITERIA_ADDED.getName(), activity.getTrigger().getName());
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -395,6 +404,8 @@ public class ListingTest extends TestCase {
         assertEquals(1, activity.getListingId().longValue());
         assertEquals("170.314 (a)(1)", activity.getBefore());
         assertNull(activity.getAfter());
+        assertNotNull(activity.getReason());
+        assertEquals("unit test", activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName(), activity.getTrigger().getName());
 
         SecurityContextHolder.getContext().setAuthentication(null);

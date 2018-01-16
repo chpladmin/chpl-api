@@ -288,7 +288,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
-                changedProduct);
+                changedProduct, updateRequest.getReason());
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);

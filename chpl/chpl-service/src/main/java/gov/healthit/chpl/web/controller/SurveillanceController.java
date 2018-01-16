@@ -372,7 +372,8 @@ public class SurveillanceController implements MessageSourceAware {
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
-                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(), 
+                beforeCp, afterCp, requestBody.getReason());
 
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }
