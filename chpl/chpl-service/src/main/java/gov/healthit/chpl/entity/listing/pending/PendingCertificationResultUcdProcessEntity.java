@@ -28,9 +28,6 @@ public class PendingCertificationResultUcdProcessEntity {
 
     @Column(name = "ucd_process_name")
     private String ucdProcessName;
-    
-    @Column(name = "fuzzy_match_ucd_process_name")
-    private String fuzzyMatchUcdProcessName;
 
     @Column(name = "ucd_process_details")
     private String ucdProcessDetails;
@@ -122,12 +119,4 @@ public class PendingCertificationResultUcdProcessEntity {
     public void setUcdProcessName(final String ucdProcessName) {
         this.ucdProcessName = ucdProcessName;
     }
-
-	public String getFuzzyMatchUcdProcessName() {
-		return fuzzyMatchUcdProcessName;
-	}
-
-	public void setFuzzyMatchUcdProcessName(String fuzzyMatchUcdProcessName) {
-		this.fuzzyMatchUcdProcessName = fuzzyMatchUcdProcessName;
-	}
 }

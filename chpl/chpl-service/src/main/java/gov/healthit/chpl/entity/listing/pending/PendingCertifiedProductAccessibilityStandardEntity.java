@@ -37,9 +37,6 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
 
     @Column(name = "accessibility_standard_name")
     private String name;
-    
-    @Column(name = "fuzzy_match_accessibility_standard_name")
-    private String fuzzyMatchName;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -72,14 +69,6 @@ public class PendingCertifiedProductAccessibilityStandardEntity {
     public void setName(final String name) {
         this.name = name;
     }
-
-    public String getFuzzyMatchName() {
-		return fuzzyMatchName;
-	}
-
-	public void setFuzzyMatchName(String fuzzyMatchName) {
-		this.fuzzyMatchName = fuzzyMatchName;
-	}
 
 	public Date getLastModifiedDate() {
         return lastModifiedDate;

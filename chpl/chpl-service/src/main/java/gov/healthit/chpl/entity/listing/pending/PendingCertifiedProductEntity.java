@@ -206,7 +206,7 @@ public class PendingCertifiedProductEntity {
     
     @Basic(optional = false)
     @Column(name = "has_qms", nullable = false)
-    private boolean hasQms;
+    private Boolean hasQms;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -571,11 +571,11 @@ public class PendingCertifiedProductEntity {
         this.qmsStandards = qmsStandards;
     }
 
-    public boolean isHasQms() {
+    public Boolean isHasQms() {
         return hasQms;
     }
 
-    public void setHasQms(final boolean hasQms) {
+    public void setHasQms(final Boolean hasQms) {
         this.hasQms = hasQms;
     }
 

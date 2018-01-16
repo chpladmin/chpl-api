@@ -37,9 +37,6 @@ public class PendingCertifiedProductQmsStandardEntity {
 
     @Column(name = "qms_standard_name")
     private String name;
-    
-    @Column(name = "fuzzy_match_qms_standard_name")
-    private String fuzzyMatchName;
 
     @Column(name = "modification")
     private String modification;
@@ -86,14 +83,6 @@ public class PendingCertifiedProductQmsStandardEntity {
     public void setName(final String name) {
         this.name = name;
     }
-
-    public String getFuzzyMatchName() {
-		return fuzzyMatchName;
-	}
-
-	public void setFuzzyMatchName(String fuzzyMatchName) {
-		this.fuzzyMatchName = fuzzyMatchName;
-	}
 
 	public String getModification() {
         return modification;

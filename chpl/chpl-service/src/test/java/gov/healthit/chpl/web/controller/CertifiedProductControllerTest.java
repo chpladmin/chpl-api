@@ -1129,6 +1129,9 @@ public class CertifiedProductControllerTest {
 				}
 			}
 			assertTrue(e.getContact() != null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		assertTrue(hasError);
 	}
