@@ -70,6 +70,7 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -208,7 +209,8 @@ public class CertifiedProductController {
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest) throws EntityCreationException,
-            EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, ValidationException {
+            EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, 
+            ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
 

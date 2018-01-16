@@ -67,6 +67,7 @@ import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -338,7 +339,8 @@ public class SurveillanceController implements MessageSourceAware {
             @PathVariable(value = "surveillanceId") Long surveillanceId,
             @RequestBody(required = false) SimpleExplainableAction requestBody)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException {
+            JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
+            MissingReasonException {
         Surveillance survToDelete = survManager.getById(surveillanceId);
 
         if (survToDelete == null) {

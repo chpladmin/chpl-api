@@ -55,6 +55,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -82,7 +83,6 @@ public class SurveillanceControllerTest {
 	private static JWTAuthenticatedUser acbAdmin2;
 	private static JWTAuthenticatedUser oncAdmin;
 	private static JWTAuthenticatedUser oncAndAcb;
-	private static JWTAuthenticatedUser oncAndAcbStaff;
 
 	@Rule
 	@Autowired
@@ -101,7 +101,7 @@ public class SurveillanceControllerTest {
 		acbAdmin.setFirstName("acbAdmin");
 		acbAdmin.setId(3L);
 		acbAdmin.setLastName("User");
-		acbAdmin.setSubjectName("acbAdminUser");
+		acbAdmin.setSubjectName("testUser3");
 		acbAdmin.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
 		
 		acbAdmin2 = new JWTAuthenticatedUser();
@@ -125,13 +125,6 @@ public class SurveillanceControllerTest {
 		oncAndAcb.setSubjectName("oncAndAcbUser");
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 		oncAndAcb.getPermissions().add(new GrantedPermission(Authority.ROLE_ACB));
-		
-		oncAndAcbStaff = new JWTAuthenticatedUser();
-		oncAndAcbStaff.setFirstName("oncAndAcbStaff");
-		oncAndAcbStaff.setId(3L);
-		oncAndAcbStaff.setLastName("User");
-		oncAndAcbStaff.setSubjectName("oncAndAcbStaffUser");
-		oncAndAcbStaff.getPermissions().add(new GrantedPermission(Authority.ROLE_ADMIN));
 	}
 	
 	/** 1. 
@@ -805,6 +798,63 @@ public class SurveillanceControllerTest {
 		}
 	}
 	
+	@Transactional 
+    @Test(expected = MissingReasonException.class)
+    @Rollback
+    public void test_deleteSurveillanceWithoutReason()
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
+            InvalidArgumentsException, ValidationException, 
+            SurveillanceAuthorityAccessDeniedException, MissingReasonException {
+        SecurityContextHolder.getContext().setAuthentication(oncAdmin);
+        Surveillance surv = new Surveillance();
+        
+        CertifiedProductDTO cpDto = cpDao.getById(1L);
+        CertifiedProduct cp = new CertifiedProduct();
+        cp.setId(cpDto.getId());
+        cp.setChplProductNumber(cp.getChplProductNumber());
+        cp.setEdition(cp.getEdition());
+        surv.setCertifiedProduct(cp);
+        surv.setStartDate(new Date(System.currentTimeMillis() - 1000));
+        surv.setEndDate(new Date());
+        surv.setRandomizedSitesUsed(10);
+        SurveillanceType type = survDao.findSurveillanceType("Randomized");
+        surv.setType(type);
+        surv.setAuthority(Authority.ROLE_ACB);
+        
+        SurveillanceRequirement req = new SurveillanceRequirement();
+        req.setRequirement("170.314 (a)(1)");
+        SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
+        req.setType(reqType);
+        SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
+        req.setResult(resType);
+        
+        surv.getRequirements().add(req);
+        
+        Surveillance insertedSurv = null;
+        try {
+            ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
+            insertedSurv = response.getBody();
+            assertNotNull(insertedSurv);
+            Surveillance got = survManager.getById(insertedSurv.getId());
+            assertNotNull(got);
+            assertNotNull(got.getCertifiedProduct());
+            assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
+            assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
+            assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
+            assertEquals(surv.getAuthority(), got.getAuthority());
+            assertEquals(surv.getAuthority(), Authority.ROLE_ACB);
+        } catch (Exception e) {
+            fail(e.getMessage());
+            e.printStackTrace();
+        }
+        assertEquals(1, insertedSurv.getRequirements().size());
+        assertNotNull(insertedSurv.getId());
+        SurveillanceRequirement gotReq = insertedSurv.getRequirements().iterator().next();
+        assertEquals("170.314 (a)(1)", gotReq.getRequirement());
+        
+        ResponseEntity<String> response = surveillanceController
+                    .deleteSurveillance(insertedSurv.getId(), null);
+    }
 	
 	/** 12. 
 	 * Given I am authenticated as ROLE_ADMIN
@@ -903,7 +953,7 @@ public class SurveillanceControllerTest {
 	public void test_deleteSurveillance_HaveAcbAdmin_survCreatedByOnc_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
 			InvalidArgumentsException, ValidationException, AccessDeniedException,
-	        SurveillanceAuthorityAccessDeniedException {
+	        SurveillanceAuthorityAccessDeniedException, MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(oncAdmin);
 		Surveillance surv = new Surveillance();
 		
@@ -1039,69 +1089,6 @@ public class SurveillanceControllerTest {
             fail(e.getMessage());
 		}
 	}
-	
-	/** 15. 
-	 * Given I am authenticated as ROLE_ADMIN and ROLE_ACB
-	 * Given I have authority on the ACB
-	 * When I create a surveillance and pass in null authority to the API
-	 * Then the surveillance authority is set to ROLE_ACB
-	 * @throws ValidationException 
-	 * @throws EntityRetrievalException
-	 * @throws JsonProcessingException
-	 * @throws EntityCreationException
-	 * @throws InvalidArgumentsException
-	 * @throws ValidationException
-	 */
-	@Transactional 
-	@Test
-	@Rollback
-	public void test_createSurveillance_HaveOncAndAcb_passnull_authoritySetToAcbStaff()
-			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
-			InvalidArgumentsException, ValidationException {
-		SecurityContextHolder.getContext().setAuthentication(oncAndAcbStaff);
-		Surveillance surv = new Surveillance();
-		
-		CertifiedProductDTO cpDto = cpDao.getById(1L);
-		CertifiedProduct cp = new CertifiedProduct();
-		cp.setId(cpDto.getId());
-		cp.setChplProductNumber(cp.getChplProductNumber());
-		cp.setEdition(cp.getEdition());
-		surv.setCertifiedProduct(cp);
-		surv.setStartDate(new Date());
-		surv.setRandomizedSitesUsed(10);
-		SurveillanceType type = survDao.findSurveillanceType("Randomized");
-		surv.setType(type);
-		surv.setAuthority(null);
-		
-		SurveillanceRequirement req = new SurveillanceRequirement();
-		req.setRequirement("170.314 (a)(1)");
-		SurveillanceRequirementType reqType = survDao.findSurveillanceRequirementType("Certified Capability");
-		req.setType(reqType);
-		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
-		req.setResult(resType);
-		
-		surv.getRequirements().add(req);
-		
-		Surveillance insertedSurv;
-		try {
-			ResponseEntity<Surveillance> response = surveillanceController.createSurveillance(surv);
-			insertedSurv = response.getBody();
-			assertNotNull(insertedSurv);
-			Surveillance got = survManager.getById(insertedSurv.getId());
-			assertNotNull(got);
-			assertNotNull(got.getCertifiedProduct());
-			assertEquals(cpDto.getId(), got.getCertifiedProduct().getId());
-			assertEquals(cpDto.getChplProductNumber(), got.getCertifiedProduct().getChplProductNumber());
-			assertEquals(surv.getRandomizedSitesUsed(), got.getRandomizedSitesUsed());
-			assertEquals(surv.getAuthority(), got.getAuthority());
-		} catch (Exception e) {
-			System.out.println(e.getClass() + ": " + e.getMessage());
-		}
-		assertEquals(1, surv.getRequirements().size());
-		SurveillanceRequirement gotReq = surv.getRequirements().iterator().next();
-		assertEquals("170.314 (a)(1)", gotReq.getRequirement());
-	}
-	
 	
 	/** 
 	 * Given I am authenticated as ACB Admin

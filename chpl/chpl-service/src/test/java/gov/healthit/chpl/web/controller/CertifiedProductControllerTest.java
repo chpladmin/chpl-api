@@ -71,6 +71,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -188,7 +189,9 @@ public class CertifiedProductControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_updateCertifiedProductSearchDetails_icsAndRetiredTTs_warningvsError() throws EntityRetrievalException, EntityCreationException, IOException {
+	public void test_updateCertifiedProductSearchDetails_icsAndRetiredTTs_warningvsError() 
+	        throws EntityRetrievalException, EntityCreationException, IOException,
+	        MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
@@ -522,7 +525,9 @@ public class CertifiedProductControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_badValueShowsError() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException {
+	public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_badValueShowsError() 
+	        throws EntityRetrievalException, EntityCreationException, IOException, 
+	        ValidationException, MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
 		updateRequest.setCertificationDate(1440090840000L);
@@ -633,7 +638,9 @@ public class CertifiedProductControllerTest {
 	@Transactional
 	@Rollback(true)
 	@Test
-	public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_handlesWhitespaces() throws EntityRetrievalException, EntityCreationException, IOException, ValidationException, InvalidArgumentsException {
+	public void test_updateCertifiedProductSearchDetails_privacyAndSecurityFramework_handlesWhitespaces() 
+	        throws EntityRetrievalException, EntityCreationException, IOException, 
+	        ValidationException, InvalidArgumentsException, MissingReasonException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		String formattedPrivacyAndSecurityFramework = CertificationResult.formatPrivacyAndSecurityFramework(" Approach 1 ,  Approach 2 ");
