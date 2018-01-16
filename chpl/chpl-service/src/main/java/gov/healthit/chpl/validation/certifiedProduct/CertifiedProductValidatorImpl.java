@@ -300,7 +300,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 }
             }
             
-            if(product.getPracticeType().equals("")){
+            if(product.getPracticeType() == null || product.getPracticeType().equals("")){
             	product.getErrorMessages().add(getErrorMessage("listing.missingPracticeType"));
             }
 
