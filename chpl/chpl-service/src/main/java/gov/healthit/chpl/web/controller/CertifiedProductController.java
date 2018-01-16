@@ -226,7 +226,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 
         // make sure the old and new certification statuses aren't ONC bans
-        if (!existingListing.getCurrentStatus().getStatus().getId()
+        if (existingListing.getCurrentStatus() != null && updatedListing.getCurrentStatus() != null && !existingListing.getCurrentStatus().getStatus().getId()
                 .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
             // if the status is to or from suspended by onc make sure the user
             // has admin

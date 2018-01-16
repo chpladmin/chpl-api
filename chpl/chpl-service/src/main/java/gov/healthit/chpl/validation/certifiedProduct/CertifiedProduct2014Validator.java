@@ -1,5 +1,8 @@
 package gov.healthit.chpl.validation.certifiedProduct;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Component;
@@ -49,17 +52,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 
     public String[] getG2ComplimentaryCerts() {
         return g2ComplementaryCerts;
-    }
-    
-    public String getErrorMessage(String errorField){
-    	return String.format(
-    			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
-    					LocaleContextHolder.getLocale()));
-    }
-    public String getErrorMessage(String errorField, String input){
-    	return String.format(messageSource.getMessage(
-                new DefaultMessageSourceResolvable("listing.criteria.badG1MacraMeasure"),
-                LocaleContextHolder.getLocale()), input);
     }
     
     public boolean checkB1B2B8H1(Object product){
@@ -224,18 +216,25 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("Test Report URL is required but was not found.");
         }
-        if(product.getHasQms() != null && product.getHasQms() && product.getQmsStandards().isEmpty()){
-        	product.getErrorMessages().add(getErrorMessage("listing.missingQMSStandards"));
-        }
         // else if(urlRegex.matcher(product.getReportFileLocation()).matches()
         // == false) {
         // product.getErrorMessages().add("Test Report URL provided is not a
         // valid URL format.");
         // }
+        
+        if(product.getHasQms() != null && product.getHasQms() && product.getQmsStandards().isEmpty()){
+        	product.getWarningMessages().add(getErrorMessage("listing.missingQMSStandards"));
+        }
 
         // check cqms
         boolean isCqmRequired = false;
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+        	if(cert.getG1Success() == null){
+        		product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG1Success"));
+        	}
+        	if(cert.getG2Success() == null){
+        		product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG2Success"));
+        	}
             for (int i = 0; i < cqmRequiredCerts.length; i++) {
                 if (cert.getNumber().equals(cqmRequiredCerts[i]) && cert.getMeetsCriteria()) {
                     isCqmRequired = true;
@@ -488,6 +487,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("A test result summary URL is required.");
         }
+        Date sedTestingEnd = product.getSedTestingEndDate();
+        if (!StringUtils.isEmpty(sedTestingEnd)) {
+            product.setSedTestingEndDate(sedTestingEnd);
+        }  
 
         // Allow retired test tool only if CP ICS = true
         for (CertificationResult cert : product.getCertificationResults()) {

@@ -23,4 +23,10 @@ public interface CertifiedProductValidator {
     public void validate(PendingCertifiedProductDTO product);
 
     public void validate(CertifiedProductSearchDetails product);
+    
+    public int getMaxLength(String field);
+    
+    public String getErrorMessage(String errorField);
+    
+    public String getErrorMessage(String errorField, String input);
 }

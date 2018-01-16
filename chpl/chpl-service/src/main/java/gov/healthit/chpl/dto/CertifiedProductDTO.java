@@ -123,7 +123,7 @@ public class CertifiedProductDTO implements Serializable {
         this.setReportFileLocation(from.getReportFileLocation());
         this.setSedReportFileLocation(from.getSedReportFileLocation());
         this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());
-        this.setSedTestingEnd(from.getSedTestingEnd());
+        this.setSedTestingEnd(from.getSedTestingEndDate());
         this.setAcbCertificationId(from.getAcbCertificationId());
         this.setOtherAcb(from.getOtherAcb());
         this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? false : from.getIcs().getInherits());
