@@ -63,6 +63,7 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
@@ -91,6 +92,8 @@ public class SurveillanceController implements MessageSourceAware {
     private JobManager jobManager;
     @Autowired
     private SurveillanceManager survManager;
+    @Autowired
+    private SurveillanceUploadManager survUploadManager;
     @Autowired
     private CertifiedProductManager cpManager;
     @Autowired
@@ -637,11 +640,11 @@ public class SurveillanceController implements MessageSourceAware {
         //to know if we handle it normally or as a background job
         String data = FileUtils.readFileAsString(file);
 
-        int numSurveillance = survManager.countSurveillanceRecords(data);
+        int numSurveillance = survUploadManager.countSurveillanceRecords(data);
         if(numSurveillance < surveillanceThresholdToProcessAsJob) {
             //process as normal
             List<Surveillance> uploadedSurveillance = new ArrayList<Surveillance>();
-            List<Surveillance> pendingSurvs = survManager.parseUploadFile(file);
+            List<Surveillance> pendingSurvs = survUploadManager.parseUploadFile(file);
             for (Surveillance surv : pendingSurvs) {
                 CertifiedProductDTO owningCp = null;
                 try {

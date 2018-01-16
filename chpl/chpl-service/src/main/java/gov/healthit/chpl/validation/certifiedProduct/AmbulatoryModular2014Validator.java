@@ -64,12 +64,6 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
         return allCerts;
     }
 
-    public String getErrorMessage(String errorField){
-    	return String.format(
-    			messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
-    					LocaleContextHolder.getLocale()));
-    }
-
     @Override
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);

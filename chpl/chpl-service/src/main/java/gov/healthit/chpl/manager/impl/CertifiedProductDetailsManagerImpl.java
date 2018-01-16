@@ -1,12 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.concurrent.SynchronousQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,7 +44,6 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
@@ -76,7 +70,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -186,7 +179,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setReportFileLocation(dto.getReportFileLocation());
         searchDetails.setSedReportFileLocation(dto.getSedReportFileLocation());
         searchDetails.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
-        searchDetails.setSedTestingEnd(dto.getSedTestingEnd());
+        searchDetails.setSedTestingEndDate(dto.getSedTestingEnd());
 
         searchDetails.getTestingLab().put("id", dto.getTestingLabId());
         searchDetails.getTestingLab().put("name", dto.getTestingLabName());
