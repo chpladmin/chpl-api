@@ -83,9 +83,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     	PracticeTypeDTO foundPracticeType = null;
         String practiceType = record.get(getColumnIndexMap().getPracticeTypeIndex()).trim();
         pendingCertifiedProduct.setPracticeType(practiceType);
-        if(practiceType.equals("")){
-        	pendingCertifiedProduct.getErrorMessages().add(getErrorMessage("listing.missingPracticeType"));
-        }else{
+        if(!practiceType.equals("")){
         	foundPracticeType = practiceTypeDao.getByName(practiceType);
         }
         if (foundPracticeType != null) {
