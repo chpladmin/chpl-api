@@ -1,5 +1,11 @@
 # Release Notes
 
+## OCD-1997
+* Look for required reason for certain questionable activities; error on those actions if a reason is not found.
+* Add reason to questionable activity report.
+
+---
+
 ## Version TBD
 _Date TBD_
 
