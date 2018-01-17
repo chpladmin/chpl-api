@@ -948,7 +948,7 @@ public class SurveillanceControllerTest {
 	 * @throws ValidationException
 	 */
 	@Transactional 
-	@Test(expected = AccessDeniedException.class)
+	@Test(expected = SurveillanceAuthorityAccessDeniedException.class)
 	@Rollback
 	public void test_deleteSurveillance_HaveAcbAdmin_survCreatedByOnc_returnsError()
 			throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
