@@ -35,11 +35,4 @@ public class PendingCertifiedProductSystemUpdateDAOImpl extends BaseDAOImpl impl
         entityManager.persist(announcement);
         entityManager.flush();
     }
-
-    private void update(PendingCertifiedProductSystemUpdateEntity announcement) {
-
-        entityManager.merge(announcement);
-        entityManager.flush();
-
-    }
 }
