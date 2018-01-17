@@ -1,25 +1,28 @@
 # Release Notes
 
-## OCD-1997
+## Version TBD
+_Date TBD_
+
+### Major features
+* Add fuzzy match functionality for uploading of UCD Process, QMS Standard and Accessibility Standard names
+* Add warning messages that name values have changed for certain Processes or Standard names
+* Add /data/fuzzy_choices controller for getting and updating fuzzy match choices
+
+### Minor features
 * Look for required reason for certain questionable activities; error on those actions if a reason is not found.
 * Add reason to questionable activity report.
 
-## OCD-1923
-* Add fuzzy match functionality for uploading of UCD Process, QMS Standard and Accessibility Standard names
-* Add warning messages that name values have changed for certain Processes or Standard names
-
-## OCD-1936
-* Add /data/fuzzy_choices controller for getting and updating fuzzy match choices
 ---
 
-## Version TBD
-_Date TBD_
+## Version 15.4.0
+_17 January 2018_
 
 ### Major features
 * Add new surveillance upload job type; process large upload files as background jobs.
 
 ### Minor features
 * Allow reason for certification status change for any listing. Require reason for certification status change if new status is Withdrawn by ONC-ACB.
+* Stop using 'certificationStatus' field; instead use "latest" of the certificationEvents array for current status
 
 ### Bugs Fixed
 * Statistics correctly account for deleted listings/unique products.
