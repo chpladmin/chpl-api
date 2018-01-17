@@ -48,6 +48,7 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.IdListContainer;
 import gov.healthit.chpl.domain.Job;
+import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformityDocument;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
@@ -66,6 +67,7 @@ import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -334,9 +336,11 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/{surveillanceId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public synchronized @ResponseBody ResponseEntity<String> deleteSurveillance(
-            @PathVariable(value = "surveillanceId") Long surveillanceId)
+            @PathVariable(value = "surveillanceId") Long surveillanceId,
+            @RequestBody(required = false) SimpleExplainableAction requestBody)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, SurveillanceAuthorityAccessDeniedException {
+            JsonProcessingException, AccessDeniedException, SurveillanceAuthorityAccessDeniedException,
+            MissingReasonException {
         Surveillance survToDelete = survManager.getById(surveillanceId);
 
         if (survToDelete == null) {
@@ -350,13 +354,8 @@ public class SurveillanceController implements MessageSourceAware {
 
         CertifiedProductSearchDetails beforeCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
-        CertificationBodyDTO owningAcb = null;
-        try {
-            owningAcb = acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
-        } catch (Exception ex) {
-            LOGGER.error("Error looking up ACB associated with surveillance.", ex);
-            throw new EntityRetrievalException("Error looking up ACB associated with surveillance.");
-        }
+        CertificationBodyDTO owningAcb = 
+                acbManager.getById(new Long(beforeCp.getCertifyingBody().get("id").toString()));
 
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
@@ -373,7 +372,8 @@ public class SurveillanceController implements MessageSourceAware {
         CertifiedProductSearchDetails afterCp = cpdetailsManager
                 .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, afterCp.getId(),
-                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(), beforeCp, afterCp);
+                "Surveillance was delete from certified product " + afterCp.getChplProductNumber(), 
+                beforeCp, afterCp, requestBody.getReason());
 
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }

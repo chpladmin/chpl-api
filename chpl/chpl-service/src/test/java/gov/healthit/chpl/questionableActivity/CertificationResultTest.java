@@ -37,6 +37,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificat
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
@@ -76,7 +77,8 @@ public class CertificationResultTest extends TestCase {
 	@Rollback
 	public void testUpdateGap() throws 
 	    EntityCreationException, EntityRetrievalException, 
-	    ValidationException, InvalidArgumentsException, JsonProcessingException {
+	    ValidationException, InvalidArgumentsException, JsonProcessingException,
+	    MissingReasonException {
 	    SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 	    Date beforeActivity = new Date(); 
@@ -113,7 +115,8 @@ public class CertificationResultTest extends TestCase {
     @Rollback
     public void testUpdateG1Success() throws 
         EntityCreationException, EntityRetrievalException, 
-        ValidationException, InvalidArgumentsException, JsonProcessingException {
+        ValidationException, InvalidArgumentsException, JsonProcessingException,
+	    MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -150,7 +153,8 @@ public class CertificationResultTest extends TestCase {
     @Rollback
     public void testUpdateG2Success() throws 
         EntityCreationException, EntityRetrievalException, 
-        ValidationException, InvalidArgumentsException, JsonProcessingException {
+        ValidationException, InvalidArgumentsException, JsonProcessingException,
+	    MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 

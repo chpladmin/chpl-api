@@ -5,6 +5,7 @@ import gov.healthit.chpl.entity.questionableActivity.QuestionableActivityListing
 
 public class QuestionableActivityListingDTO extends QuestionableActivityDTO {
     private Long listingId;
+    private String reason;
     private CertifiedProductDetailsDTO listing;
     
     public QuestionableActivityListingDTO() {
@@ -14,6 +15,7 @@ public class QuestionableActivityListingDTO extends QuestionableActivityDTO {
     public QuestionableActivityListingDTO(QuestionableActivityListingEntity entity) {
         super(entity);
         this.listingId = entity.getListingId();
+        this.reason = entity.getReason();
         if(entity.getListing() != null) {
             this.listing = new CertifiedProductDetailsDTO(entity.getListing());
         }
@@ -37,6 +39,14 @@ public class QuestionableActivityListingDTO extends QuestionableActivityDTO {
 
     public void setListing(CertifiedProductDetailsDTO listing) {
         this.listing = listing;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
 }

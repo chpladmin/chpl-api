@@ -14,7 +14,6 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.auth.entity.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
 @Entity
 @Table(name = "questionable_activity_listing")
@@ -44,6 +43,9 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
     
     @Column(name = "after_data")
     private String after;
+    
+    @Column(name = "reason")
+    private String reason;
     
     @Column(name = "activity_date")
     private Date activityDate;
@@ -177,6 +179,14 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
 
     public void setListing(CertifiedProductDetailsEntity listing) {
         this.listing = listing;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }
 
