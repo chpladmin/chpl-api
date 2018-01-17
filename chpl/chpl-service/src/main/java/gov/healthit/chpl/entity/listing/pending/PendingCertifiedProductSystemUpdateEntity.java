@@ -11,26 +11,20 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "pending_certification_result_ucd_process")
-public class PendingCertificationResultUcdProcessEntity {
-
-    @Id
+@Table(name = "pending_certified_product_system_update")
+public class PendingCertifiedProductSystemUpdateEntity {
+	
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_ucd_process_id", nullable = false)
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_system_update_id", nullable = false)
     private Long id;
 
-    @Basic(optional = false)
-    @Column(name = "pending_certification_result_id", nullable = false)
-    private Long pendingCertificationResultId;
+    @Column(name = "pending_certified_product_id")
+    private Long pendingCertifiedProductId;
 
-    @Column(name = "ucd_process_id")
-    private Long ucdProcessId;
-
-    @Column(name = "ucd_process_name")
-    private String ucdProcessName;
-
-    @Column(name = "ucd_process_details")
-    private String ucdProcessDetails;
+    @Column(name = "change_made")
+    private String changeMade;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -56,7 +50,15 @@ public class PendingCertificationResultUcdProcessEntity {
         this.id = id;
     }
 
-    public Date getLastModifiedDate() {
+    public String getChangeMade() {
+		return changeMade;
+	}
+
+	public void setChangeMade(String change_made) {
+		this.changeMade = change_made;
+	}
+
+	public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
 
@@ -88,35 +90,11 @@ public class PendingCertificationResultUcdProcessEntity {
         this.deleted = deleted;
     }
 
-    public Long getPendingCertificationResultId() {
-        return pendingCertificationResultId;
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
     }
 
-    public void setPendingCertificationResultId(final Long pendingCertificationResultId) {
-        this.pendingCertificationResultId = pendingCertificationResultId;
-    }
-
-    public Long getUcdProcessId() {
-        return ucdProcessId;
-    }
-
-    public void setUcdProcessId(final Long ucdProcessId) {
-        this.ucdProcessId = ucdProcessId;
-    }
-
-    public String getUcdProcessDetails() {
-        return ucdProcessDetails;
-    }
-
-    public void setUcdProcessDetails(final String ucdProcessDetails) {
-        this.ucdProcessDetails = ucdProcessDetails;
-    }
-
-    public String getUcdProcessName() {
-        return ucdProcessName;
-    }
-
-    public void setUcdProcessName(final String ucdProcessName) {
-        this.ucdProcessName = ucdProcessName;
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 }

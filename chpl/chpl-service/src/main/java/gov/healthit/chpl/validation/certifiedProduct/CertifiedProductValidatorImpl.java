@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -18,6 +20,7 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.dao.PendingCertifiedProductSystemUpdateDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.Address;
@@ -63,9 +66,11 @@ import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -88,6 +93,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     TestToolDAO testToolDao;
     @Autowired
     ListingGraphDAO inheritanceDao;
+    @Autowired
+    FuzzyChoicesManager fuzzyChoicesManager;
+    @Autowired
+    PendingCertifiedProductSystemUpdateDAO systemUpdateDao;
 
     @Autowired
     protected CertificationResultRules certRules;
@@ -267,6 +276,33 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
         String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
         String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+        
+        if(product.getCertificationCriterion() != null && !product.getCertificationCriterion().isEmpty()){
+        	for(PendingCertificationResultDTO cert : product.getCertificationCriterion()){
+        		if(cert.getUcdProcesses() != null && !cert.getUcdProcesses().isEmpty()){
+        			for(PendingCertificationResultUcdProcessDTO ucd : cert.getUcdProcesses()){
+        				String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(ucd.getUcdProcessName(), FuzzyType.UCD_PROCESS, product);
+        				if(topChoice != null){
+        					ucd.setUcdProcessName(topChoice);
+        				}
+        			}
+        		}
+        	}
+        }
+        
+        for(PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()){
+        	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(qms.getName(), FuzzyType.QMS_STANDARD, product);
+			if(topChoice != null){
+				qms.setName(topChoice);
+			}
+        }
+        
+        for(PendingCertifiedProductAccessibilityStandardDTO access : product.getAccessibilityStandards()){
+        	String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(access.getName(), FuzzyType.ACCESSIBILITY_STANDARD, product);
+			if(topChoice != null){
+				access.setName(topChoice);
+			}
+        }
 
         try {
             CertificationEditionDTO certificationEdition = certEditionDao.getById(product.getCertificationEditionId());

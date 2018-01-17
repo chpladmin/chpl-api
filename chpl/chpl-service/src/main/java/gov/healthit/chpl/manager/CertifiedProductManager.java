@@ -55,7 +55,7 @@ public interface CertifiedProductManager {
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 
     CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException, IOException;
 
     List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException;
 

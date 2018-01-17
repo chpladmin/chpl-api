@@ -4,6 +4,12 @@
 * Look for required reason for certain questionable activities; error on those actions if a reason is not found.
 * Add reason to questionable activity report.
 
+## OCD-1923
+* Add fuzzy match functionality for uploading of UCD Process, QMS Standard and Accessibility Standard names
+* Add warning messages that name values have changed for certain Processes or Standard names
+
+## OCD-1936
+* Add /data/fuzzy_choices controller for getting and updating fuzzy match choices
 ---
 
 ## Version TBD

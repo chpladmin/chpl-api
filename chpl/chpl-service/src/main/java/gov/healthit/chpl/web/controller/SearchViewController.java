@@ -9,6 +9,10 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,9 +34,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.auth.domain.Authority;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PopulateSearchOptions;
@@ -46,6 +52,8 @@ import gov.healthit.chpl.domain.search.NonconformitySearchOptions;
 import gov.healthit.chpl.domain.search.SearchRequest;
 import gov.healthit.chpl.domain.search.SearchResponse;
 import gov.healthit.chpl.domain.search.SearchSetOperator;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SearchMenuManager;
@@ -791,6 +799,31 @@ public class SearchViewController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody Set<NotificationType> getNotificationTypes() {
         return searchMenuManager.getNotificationTypes();
+    }
+
+    @Secured({
+            Authority.ROLE_ADMIN
+    })
+    @ApiOperation(value = "Get all fuzzy matching choices for the items that be fuzzy matched.")
+    @RequestMapping(value = "/data/fuzzy_choices", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+        return searchMenuManager.getFuzzyChoices();
+    }
+
+    @ApiOperation(value = "Change existing fuzzy matching choices.",
+            notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
+    @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public FuzzyChoices updateFuzzyChoices(@RequestBody FuzzyChoices fuzzyChoices) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+        FuzzyChoicesDTO toUpdate = new FuzzyChoicesDTO();
+        toUpdate.setId(fuzzyChoices.getId());
+        toUpdate.setFuzzyType(FuzzyType.getValue(fuzzyChoices.getFuzzyType()));
+        toUpdate.setChoices(fuzzyChoices.getChoices());
+
+        FuzzyChoices result = searchMenuManager.updateFuzzyChoices(toUpdate);
+        return result;
+        //return new FuzzyChoices(result);
     }
 
     @ApiOperation(value = "Get all possible classifications in the CHPL",

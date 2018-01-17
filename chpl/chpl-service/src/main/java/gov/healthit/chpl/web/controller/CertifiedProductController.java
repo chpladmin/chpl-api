@@ -395,7 +395,7 @@ public class CertifiedProductController {
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, ObjectMissingValidationException {
+            ObjectMissingValidationException, IOException {
 
         String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
         if (StringUtils.isEmpty(acbIdStr)) {

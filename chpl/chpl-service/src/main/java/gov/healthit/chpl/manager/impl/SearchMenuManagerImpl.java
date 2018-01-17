@@ -1,8 +1,13 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,7 +27,9 @@ import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.NotificationDAO;
@@ -42,6 +49,7 @@ import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -66,6 +74,7 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
@@ -138,6 +147,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private JobDAO jobDao;
 
     @Autowired
+    private FuzzyChoicesDAO fuzzyChoicesDAO;
+
+    @Autowired
     private PracticeTypeDAO practiceTypeDAO;
 
     @Autowired
@@ -170,6 +182,28 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
             results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
         }
         return results;
+    }
+
+    @Transactional
+    @Override
+    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+        List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDAO.findAllTypes();
+        Set<FuzzyChoices> results = new HashSet<FuzzyChoices>();
+        for (FuzzyChoicesDTO dto : fuzzyChoices) {
+            results.add(new FuzzyChoices(dto));
+        }
+        return results;
+    }
+
+    @Transactional
+    @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO)
+        throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+
+        FuzzyChoices result = null;
+        result = new FuzzyChoices(fuzzyChoicesDAO.update(fuzzyChoicesDTO));
+        return result;
     }
 
     @Transactional

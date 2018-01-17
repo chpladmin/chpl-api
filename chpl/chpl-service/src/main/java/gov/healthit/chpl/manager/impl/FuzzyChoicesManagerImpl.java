@@ -1,0 +1,92 @@
+package gov.healthit.chpl.manager.impl;
+
+import java.io.IOException;
+import java.util.List;
+
+import me.xdrop.fuzzywuzzy.FuzzySearch;
+import me.xdrop.fuzzywuzzy.model.ExtractedResult;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.core.env.Environment;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.AnnouncementDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
+import gov.healthit.chpl.dao.PendingCertifiedProductSystemUpdateDAO;
+import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.AnnouncementDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductSystemUpdateDTO;
+import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductSystemUpdateEntity;
+import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.manager.AnnouncementManager;
+import gov.healthit.chpl.manager.FuzzyChoicesManager;
+
+@Service
+public class FuzzyChoicesManagerImpl extends ApplicationObjectSupport implements FuzzyChoicesManager {
+
+    @Autowired
+    private FuzzyChoicesDAO fuzzyChoicesDao;
+    @Autowired
+    private PendingCertifiedProductSystemUpdateDAO systemUpdateDao;
+    @Autowired 
+    private Environment env;
+    
+    public String getTopFuzzyChoice(String query, FuzzyType type, PendingCertifiedProductDTO product){
+    	int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
+        int cutoff = Integer.parseInt(env.getProperty("fuzzyChoiceThreshold"));
+    	List<ExtractedResult> results = null;
+		try {
+			results = FuzzySearch.extractTop(query, getFuzzyChoicesByType(type), limit, cutoff);
+		} catch (EntityRetrievalException | IOException e) {
+			e.printStackTrace();
+		}
+		String result = null;
+    	for(ExtractedResult er : results){
+    		result = er.getString();
+    	}
+    	if(result != null){
+    		PendingCertifiedProductSystemUpdateEntity entity = new PendingCertifiedProductSystemUpdateEntity();
+    		entity.setChangeMade("Changed " + type.toString() + " name from " + query + " to " + result);
+    		entity.setPendingCertifiedProductId(product.getId());
+    		PendingCertifiedProductSystemUpdateDTO dto = new PendingCertifiedProductSystemUpdateDTO(entity);
+    		try {
+				systemUpdateDao.create(dto);
+			} catch (EntityRetrievalException | EntityCreationException e) {
+				e.printStackTrace();
+			}
+    		product.getWarningMessages().add("Changed " + type.toString() + " name from " + query + " to " + result);
+    		return result;
+    	}
+    	return null;
+    }
+    
+    public List<String> getFuzzyChoicesByType(FuzzyType type) throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException{
+    	FuzzyChoicesDTO choices = getByType(type);
+    	return choices.getChoices();
+    }
+
+    @Transactional(readOnly = true)
+    public FuzzyChoicesDTO getByType(FuzzyType type) throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+        return fuzzyChoicesDao.getByType(type);
+    }
+
+    public void setFuzzyChoicesDAO(final FuzzyChoicesDAO FuzzyChoicesDAO) {
+        this.fuzzyChoicesDao = FuzzyChoicesDAO;
+    }
+}
