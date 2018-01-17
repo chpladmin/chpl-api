@@ -34,6 +34,7 @@ import gov.healthit.chpl.dto.PendingTestTaskDTO;
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = -461584179489619328L;
     private String recordStatus;
+    private Boolean hasQms;
 
     public PendingCertifiedProductDetails() {
     }
@@ -44,10 +45,11 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setWarningMessages(dto.getWarningMessages());
         this.setRecordStatus(dto.getRecordStatus());
         this.setChplProductNumber(dto.getUniqueId());
+        this.setHasQms(dto.getHasQms());
         this.setReportFileLocation(dto.getReportFileLocation());
         this.setSedReportFileLocation(dto.getSedReportFileLocation());
         this.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
-        this.setSedTestingEnd(dto.getSedTestingEnd());
+        this.setSedTestingEndDate(dto.getSedTestingEnd());
         this.setAcbCertificationId(dto.getAcbCertificationId());
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
@@ -64,7 +66,6 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.setClassificationType(classificationTypeMap);
 
         this.setOtherAcb(null);
-        this.setCertificationStatus(null);
 
         Developer developer = new Developer();
         developer.setDeveloperId(dto.getDeveloperId());
@@ -499,4 +500,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
     public void setRecordStatus(final String recordStatus) {
         this.recordStatus = recordStatus;
     }
+
+	public Boolean getHasQms() {
+		return hasQms;
+	}
+
+	public void setHasQms(Boolean hasQms) {
+		this.hasQms = hasQms;
+	}
 }

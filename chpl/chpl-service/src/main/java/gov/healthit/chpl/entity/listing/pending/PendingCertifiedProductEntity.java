@@ -204,8 +204,9 @@ public class PendingCertifiedProductEntity {
     @Column(name = "pending_certified_product_id", nullable = false)
     private Set<PendingCertifiedProductParentListingEntity> parentListings;
     
-    @Transient
-    private boolean hasQms;
+    @Basic(optional = false)
+    @Column(name = "has_qms", nullable = false)
+    private Boolean hasQms;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -570,11 +571,11 @@ public class PendingCertifiedProductEntity {
         this.qmsStandards = qmsStandards;
     }
 
-    public boolean isHasQms() {
+    public Boolean isHasQms() {
         return hasQms;
     }
 
-    public void setHasQms(final boolean hasQms) {
+    public void setHasQms(final Boolean hasQms) {
         this.hasQms = hasQms;
     }
 

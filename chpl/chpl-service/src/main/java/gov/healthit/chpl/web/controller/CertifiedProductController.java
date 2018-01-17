@@ -226,25 +226,25 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 
         // make sure the old and new certification statuses aren't ONC bans
-        if (!existingListing.getCertificationStatus().get("id").toString()
-                .equals(updatedListing.getCertificationStatus().get("id"))) {
+        if (existingListing.getCurrentStatus() != null && updatedListing.getCurrentStatus() != null && !existingListing.getCurrentStatus().getStatus().getId()
+                .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
             // if the status is to or from suspended by onc make sure the user
             // has admin
-            if ((existingListing.getCertificationStatus().get("name").toString()
+            if ((existingListing.getCurrentStatus().getStatus().getName()
                     .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || updatedListing.getCertificationStatus().get("name").toString()
+                    || updatedListing.getCurrentStatus().getStatus().getName()
                             .equals(CertificationStatusType.SuspendedByOnc.toString())
-                    || existingListing.getCertificationStatus().get("name").toString()
+                    || existingListing.getCurrentStatus().getStatus().getName()
                             .equals(CertificationStatusType.TerminatedByOnc.toString())
-                    || updatedListing.getCertificationStatus().get("name").toString()
+                    || updatedListing.getCurrentStatus().getStatus().getName()
                             .equals(CertificationStatusType.TerminatedByOnc.toString()))
                     && !Util.isUserRoleAdmin()) {
                 updatedListing.getErrorMessages()
                         .add("User " + Util.getUsername()
                                 + " does not have permission to change certification status of "
                                 + existingListing.getChplProductNumber() + " from "
-                                + existingListing.getCertificationStatus().get("name").toString() + " to "
-                                + updatedListing.getCertificationStatus().get("name").toString());
+                                + existingListing.getCurrentStatus().getStatus().getName() + " to "
+                                + updatedListing.getCurrentStatus().getStatus().getName());
             }
         }
 

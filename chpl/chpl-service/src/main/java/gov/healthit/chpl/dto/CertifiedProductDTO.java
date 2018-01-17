@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
@@ -52,7 +53,7 @@ public class CertifiedProductDTO implements Serializable {
     private String sedIntendedUserDescription;
     private Date sedTestingEnd;
     private Long testingLabId;
-    private Long certificationStatusId;
+    private CertificationStatusDTO certificationStatus;
     private String otherAcb;
     private String transparencyAttestationUrl;
     private Boolean ics;
@@ -90,7 +91,6 @@ public class CertifiedProductDTO implements Serializable {
         this.sedTestingEnd = entity.getSedTestingEnd();
         this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
         this.testingLabId = entity.getTestingLabId();
-        this.certificationStatusId = entity.getCertificationStatusId();
         this.otherAcb = entity.getOtherAcb();
         this.setIcs(entity.getIcs());
         this.setSedTesting(entity.getSedTesting());
@@ -112,12 +112,18 @@ public class CertifiedProductDTO implements Serializable {
             this.setProductClassificationTypeId(new Long(from.getClassificationType().get("id").toString()));
         }
         this.setProductVersionId(new Long(from.getVersion().getVersionId()));
-        this.setCertificationStatusId(new Long(from.getCertificationStatus().get("id").toString()));
+        
+        CertificationStatus fromStatus = from.getCurrentStatus().getStatus();
+        if(fromStatus != null) {
+            this.certificationStatus = new CertificationStatusDTO();
+            this.certificationStatus.setId(fromStatus.getId());
+            this.certificationStatus.setStatus(fromStatus.getName());
+        }
         this.setCertificationEditionId(new Long(from.getCertificationEdition().get("id").toString()));
         this.setReportFileLocation(from.getReportFileLocation());
         this.setSedReportFileLocation(from.getSedReportFileLocation());
         this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());
-        this.setSedTestingEnd(from.getSedTestingEnd());
+        this.setSedTestingEnd(from.getSedTestingEndDate());
         this.setAcbCertificationId(from.getAcbCertificationId());
         this.setOtherAcb(from.getOtherAcb());
         this.setIcs(from.getIcs() == null || from.getIcs().getInherits() == null ? false : from.getIcs().getInherits());
@@ -287,15 +293,7 @@ public class CertifiedProductDTO implements Serializable {
     public void setTestingLabId(final Long testingLabId) {
         this.testingLabId = testingLabId;
     }
-
-    public Long getCertificationStatusId() {
-        return certificationStatusId;
-    }
-
-    public void setCertificationStatusId(final Long certificationStatusId) {
-        this.certificationStatusId = certificationStatusId;
-    }
-
+    
     public String getOtherAcb() {
         return otherAcb;
     }
@@ -422,5 +420,13 @@ public class CertifiedProductDTO implements Serializable {
 
     public void setSedTestingEnd(final Date sedTestingEnd) {
         this.sedTestingEnd = sedTestingEnd;
+    }
+
+    public CertificationStatusDTO getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(CertificationStatusDTO certificationStatus) {
+        this.certificationStatus = certificationStatus;
     }
 }

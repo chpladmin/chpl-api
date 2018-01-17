@@ -1,7 +1,12 @@
 package gov.healthit.chpl.upload.certifiedProduct;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
@@ -87,13 +92,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                 parseQms(record, pendingCertifiedProduct);
             }
         }
-        if (!pendingCertifiedProduct.isHasQms() && pendingCertifiedProduct.getQmsStandards().size() > 0) {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add(pendingCertifiedProduct.getUniqueId() + " has 'false' in the QMS column but a QMS was found.");
-        } else if (pendingCertifiedProduct.isHasQms() && pendingCertifiedProduct.getQmsStandards().size() == 0) {
-            pendingCertifiedProduct.getErrorMessages()
-                    .add(pendingCertifiedProduct.getUniqueId() + " has 'true' in the QMS column but no QMS was found.");
-        }
 
         // parse CQMs
         for (CSVRecord record : getRecord()) {
@@ -114,14 +112,16 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
             }
         }
         if (firstRow != null) {
-            int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
-            for(int i = 0; i < getCriteriaNames().length; i++) {
-                String criteriaName = getCriteriaNames()[i];
-                int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
-                pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
-                        criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
-                criteriaBeginIndex = criteriaEndIndex + 1;
-            }
+        	int criteriaBeginIndex = getColumnIndexMap().getCriteriaStartIndex();
+        	for(int i = 0; i < getCriteriaNames().length; i++) {
+        		String criteriaName = getCriteriaNames()[i];
+        		if(criteriaName != null){
+        			int criteriaEndIndex = getColumnIndexMap().getLastIndexForCriteria(getHeading(), criteriaBeginIndex);
+        			pendingCertifiedProduct.getCertificationCriterion().add(parseCriteria(pendingCertifiedProduct,
+        					criteriaName, firstRow, criteriaBeginIndex, criteriaEndIndex));
+        			criteriaBeginIndex = criteriaEndIndex + 1;
+        		}
+        	}
         }
 
         return pendingCertifiedProduct;
@@ -141,7 +141,6 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         parseCertificationDate(pendingCertifiedProduct, record);        
         parseSed(pendingCertifiedProduct, record);
         parseHasQms(pendingCertifiedProduct, record);
-        parseHasIcs(pendingCertifiedProduct, record);
         parseTransparencyAttestation(pendingCertifiedProduct, record);
     }
 
@@ -150,7 +149,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         // report file location
         pendingCertifiedProduct.setReportFileLocation(record.get(sedIndex++).trim());
         // sed report link
-        pendingCertifiedProduct.setSedReportFileLocation(record.get(sedIndex).trim());
+        pendingCertifiedProduct.setSedReportFileLocation(record.get(sedIndex).trim());  
     }
     
     private void parseQms(CSVRecord record, PendingCertifiedProductEntity pendingCertifiedProduct) {
@@ -208,10 +207,10 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                         parseTestFunctionality(pendingCertifiedProduct, cert, currIndex);
                         currIndex += getColumnIndexMap().getTestFunctionalityColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG1MeasureColumnLabel())) {
-                        cert.setG1Success(asBoolean(firstRow.get(currIndex).trim()));
+                        cert.setG1Success(asBooleanEmpty(firstRow.get(currIndex).trim()));
                         currIndex += getColumnIndexMap().getG1MeasureColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getG2MeasureColumnLabel())) {
-                        cert.setG2Success(asBoolean(firstRow.get(currIndex).trim()));
+                        cert.setG2Success(asBooleanEmpty(firstRow.get(currIndex).trim()));
                         currIndex += getColumnIndexMap().getG2MeasureColumnCount();
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getAdditionalSoftwareColumnLabel())) {
                         Boolean hasAdditionalSoftware = asBoolean(firstRow.get(currIndex).trim());

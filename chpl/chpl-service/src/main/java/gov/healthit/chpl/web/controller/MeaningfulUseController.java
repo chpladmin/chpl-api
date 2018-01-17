@@ -1,8 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +32,7 @@ import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.JobManager;
 import gov.healthit.chpl.manager.MeaningfulUseManager;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -97,26 +95,9 @@ public class MeaningfulUseController {
             }
         }
 
-        // read the file into a string
-        StringBuffer data = new StringBuffer();
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new InputStreamReader(file.getInputStream()));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                if (data.length() > 0) {
-                    data.append(System.getProperty("line.separator"));
-                }
-                data.append(line);
-            }
-        } catch (final IOException ex) {
-            String msg = "Could not read file: " + ex.getMessage();
-            LOGGER.error(msg);
-            throw new ValidationException(msg);
-        }
-
+        String data = FileUtils.readFileAsString(file);
         JobDTO toCreate = new JobDTO();
-        toCreate.setData(data.toString());
+        toCreate.setData(data);
         toCreate.setUser(currentUser);
         toCreate.setJobType(jobType);
         JobDTO insertedJob = jobManager.createJob(toCreate);

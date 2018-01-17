@@ -872,6 +872,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 }
             }
         }
+        if (product.getIcs() == null) {
+            product.getErrorMessages().add("ICS is required.");
+        }
     }
 
     @Override

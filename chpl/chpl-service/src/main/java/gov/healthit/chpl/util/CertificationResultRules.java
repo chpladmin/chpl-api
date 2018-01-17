@@ -88,7 +88,11 @@ public class CertificationResultRules {
                             boolean canHaveProperty = new Boolean(propValue).booleanValue();
                             CertificationResultOption option = new CertificationResultOption();
                             option.setOptionName(propName);
-                            option.setCanHaveOption(canHaveProperty);
+                            if(propName.equals("gap")){
+                            	option.setCanHaveOption(true);
+                            }else{
+                            	option.setCanHaveOption(canHaveProperty);
+                            }
                             if (rules.get(certNumber) == null) {
                                 List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
                                 options.add(option);

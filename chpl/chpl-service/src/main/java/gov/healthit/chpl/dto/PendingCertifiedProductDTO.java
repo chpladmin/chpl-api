@@ -82,6 +82,7 @@ public class PendingCertifiedProductDTO implements Serializable {
     private String sedIntendedUserDescription;
     private Date sedTestingEnd;
     private Boolean ics;
+    private Boolean hasQms;
     private Boolean accessibilityCertified;
     private String transparencyAttestation;
     private String transparencyAttestationUrl;
@@ -194,7 +195,8 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.reportFileLocation = details.getReportFileLocation();
         this.sedReportFileLocation = details.getSedReportFileLocation();
         this.sedIntendedUserDescription = details.getSedIntendedUserDescription();
-        this.sedTestingEnd = details.getSedTestingEnd();
+        this.sedTestingEnd = details.getSedTestingEndDate();
+        this.hasQms = details.getHasQms();
         this.ics = (details.getIcs() == null || details.getIcs().getInherits() == null) ? false
                 : details.getIcs().getInherits();
         this.accessibilityCertified = details.getAccessibilityCertified();
@@ -480,11 +482,13 @@ public class PendingCertifiedProductDTO implements Serializable {
                 this.cqmCriterion.add(cqmDto);
             }
         }
+        this.setErrorMessages(details.getErrorMessages());
     }
 
     public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
         this();
         this.id = entity.getId();
+        this.hasQms = entity.isHasQms();
         this.practiceTypeId = entity.getPracticeTypeId();
         this.testingLabId = entity.getTestingLabId();
         this.deleted = entity.getDeleted();
@@ -579,6 +583,9 @@ public class PendingCertifiedProductDTO implements Serializable {
                 this.cqmCriterion.add(new PendingCqmCriterionDTO(cqmEntity));
             }
         }
+        for(String message : entity.getErrorMessages()){
+        	this.errorMessages.add(message);
+        }
     }
 
     public Long getId() {
@@ -589,7 +596,15 @@ public class PendingCertifiedProductDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getPracticeTypeId() {
+    public Boolean getHasQms() {
+		return hasQms;
+	}
+
+	public void setHasQms(Boolean hasQms) {
+		this.hasQms = hasQms;
+	}
+
+	public Long getPracticeTypeId() {
         return practiceTypeId;
     }
 

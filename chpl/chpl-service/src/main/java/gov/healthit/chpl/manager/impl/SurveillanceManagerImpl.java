@@ -10,6 +10,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -64,17 +65,17 @@ public class SurveillanceManagerImpl implements SurveillanceManager {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceManagerImpl.class);
     @Autowired
     private Environment env;
-
+    
     @Autowired
-    SurveillanceDAO survDao;
+    private SurveillanceDAO survDao;
     @Autowired
-    CertifiedProductDAO cpDao;
+    private CertifiedProductDAO cpDao;
     @Autowired
-    UserDAO userDAO;
+    private UserDAO userDAO;
     @Autowired
-    SurveillanceValidator validator;
+    private SurveillanceValidator validator;
     @Autowired
-    UserPermissionDAO userPermissionDao;
+    private UserPermissionDAO userPermissionDao;
 
     @Autowired
     private ActivityManager activityManager;

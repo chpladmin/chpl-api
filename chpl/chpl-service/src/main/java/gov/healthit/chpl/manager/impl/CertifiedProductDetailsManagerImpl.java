@@ -1,12 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
-import java.util.concurrent.SynchronousQueue;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
@@ -39,6 +35,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -47,7 +44,6 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
@@ -74,7 +70,6 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -169,10 +164,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                     + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode());
         }
 
-        searchDetails.getCertificationStatus().put("id", dto.getCertificationStatusId());
-        searchDetails.getCertificationStatus().put("name", dto.getCertificationStatusName());
-        searchDetails.getCertificationStatus().put("date", dto.getCertificationStatusDate());
-
         searchDetails.getCertifyingBody().put("id", dto.getCertificationBodyId());
         searchDetails.getCertifyingBody().put("name", dto.getCertificationBodyName());
         searchDetails.getCertifyingBody().put("code", dto.getCertificationBodyCode());
@@ -188,7 +179,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setReportFileLocation(dto.getReportFileLocation());
         searchDetails.setSedReportFileLocation(dto.getSedReportFileLocation());
         searchDetails.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
-        searchDetails.setSedTestingEnd(dto.getSedTestingEnd());
+        searchDetails.setSedTestingEndDate(dto.getSedTestingEnd());
 
         searchDetails.getTestingLab().put("id", dto.getTestingLabId());
         searchDetails.getTestingLab().put("name", dto.getTestingLabName());
@@ -569,10 +560,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setEventDate(certStatusDto.getEventDate().getTime());
             cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
             cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
+            
+            if(Util.getCurrentUser() != null && 
+                    (Util.isUserRoleAcbAdmin() || Util.isUserRoleAdmin())) {
+                cse.setReason(certStatusDto.getReason());
+            }
 
             CertificationStatusDTO statusDto = certStatusDao.getById(certStatusDto.getStatus().getId());
-            cse.setCertificationStatusId(statusDto.getId());
-            cse.setCertificationStatusName(statusDto.getStatus());
+            cse.setStatus(new CertificationStatus(statusDto));
             certEvents.add(cse);
         }
         return certEvents;
