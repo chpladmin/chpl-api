@@ -335,10 +335,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             + certificationBody.getAcbCode() + "'.");
                 }
             }
-            
-            if(product.getPracticeType() == null || product.getPracticeType().equals("")){
-            	product.getErrorMessages().add(getErrorMessage("listing.missingPracticeType"));
-            }
 
             if (product.getDeveloperId() != null && !developerCode.matches("X+")) {
                 DeveloperDTO developer = developerDao.getById(product.getDeveloperId());
