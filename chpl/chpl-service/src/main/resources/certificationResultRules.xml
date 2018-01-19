@@ -71,8 +71,8 @@
 			<standardsTested>true</standardsTested>
 			<functionalityTested>true</functionalityTested>
 			<apiDocumentation>false</apiDocumentation>
-			<g1Success>false</g1Success>
-			<g2Success>false</g2Success>
+			<g1Success>true</g1Success>
+			<g2Success>true</g2Success>
 			<g1Macra>false</g1Macra>
 			<g2Macra>false</g2Macra>
 			<additionalSoftware>true</additionalSoftware>

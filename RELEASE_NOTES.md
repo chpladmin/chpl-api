@@ -14,6 +14,14 @@ _Date TBD_
 
 ---
 
+## Version 15.4.1
+_19 January 2018_
+
+### Bugs Fixed
+* Save g1 and g2 success values for new 2014 listings with 170.314 (a)(4) criteria.
+
+---
+
 ## Version 15.4.0
 _17 January 2018_
 
