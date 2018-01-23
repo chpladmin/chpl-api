@@ -103,7 +103,14 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         List<CertifiedProductBasicSearchResultEntity> results = query.getResultList();
         Date endDate = new Date();
         LOGGER.info("Got query results in " + (endDate.getTime() - startDate.getTime()) + " millis");
-        return convertToFlatListings(results);
+        List<CertifiedProductFlatSearchResult> domainResults = null;
+        
+        try {
+            domainResults = convertToFlatListings(results);
+        } catch(Exception ex) {
+            LOGGER.error("Could not convert to flat listings " + ex.getMessage(), ex);
+        }
+        return domainResults;
     }
 
     @Override
