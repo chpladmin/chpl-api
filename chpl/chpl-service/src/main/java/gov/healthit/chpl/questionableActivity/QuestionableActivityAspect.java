@@ -79,7 +79,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 .check2011EditionUpdated(origListing, newListing);
         if(activity != null && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.2011Updated.reasonRequired"),
+                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
                     LocaleContextHolder.getLocale())));
         }
         
@@ -87,7 +87,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
         if(activities != null && activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.cqmRemoved.reasonRequired"),
+                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
                     LocaleContextHolder.getLocale())));
         }
         
@@ -95,7 +95,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
         if(activities != null && activities.size() > 0 && StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.criteriaRemoved.reasonRequired"),
+                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
                     LocaleContextHolder.getLocale())));
         }
         
@@ -106,7 +106,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                         CertificationStatusType.Active.getName().toUpperCase()) && 
                 StringUtils.isEmpty(updateRequest.getReason())) {
             throw new MissingReasonException(String.format(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("listing.statusChange.reasonRequired"),
+                    new DefaultMessageSourceResolvable("listing.reasonRequired"),
                     LocaleContextHolder.getLocale()),
                     origListing.getCurrentStatus().getStatus().getName()));
         }
