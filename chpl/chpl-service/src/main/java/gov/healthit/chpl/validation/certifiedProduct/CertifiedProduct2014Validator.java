@@ -399,9 +399,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("Test Report URL is required but was not found.");
         }
-        if(product.getCertificationEvents() == null || product.getCertificationEvents().size() == 0){
-        	product.getErrorMessages().add(getErrorMessage("listing.missingCertificationStatus"));
-        }
         if(StringUtils.isEmpty(product.getTestingLab())){
         	product.getErrorMessages().add(getErrorMessage("listing.missingTestingLab"));
         }
