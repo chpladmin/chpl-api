@@ -673,4 +673,18 @@ public class CertifiedProductSearchDetails implements Serializable {
         }
         return newest;
     }
+    
+    public CertificationStatusEvent getOldestStatus() {
+        if(this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
+            return null;
+        }
+        
+        CertificationStatusEvent oldest = this.getCertificationEvents().get(0);
+        for(CertificationStatusEvent event : this.getCertificationEvents()) {
+            if(event.getEventDate() < oldest.getEventDate()) {
+                oldest = event;
+            }
+        }
+        return oldest;
+    }
 }

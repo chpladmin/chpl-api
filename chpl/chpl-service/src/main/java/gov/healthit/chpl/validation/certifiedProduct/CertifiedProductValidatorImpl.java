@@ -28,6 +28,7 @@ import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
@@ -1016,6 +1017,25 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         // valid URL format.");
         // }
 
+        //check if the oldest status for the updated listing is 'Active'
+        CertificationStatusEvent  earliestStatus = product.getOldestStatus();
+        if(earliestStatus != null) {
+            CertificationStatus earliestStatusInUpdate = product.getOldestStatus().getStatus();
+            if(earliestStatusInUpdate == null || 
+                    !CertificationStatusType.Active.getName().equals(earliestStatusInUpdate.getName())) {
+                String msg = String.format(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable(
+                                "listing.firstStatusNotActive"),
+                        LocaleContextHolder.getLocale()), CertificationStatusType.Active.getName());
+                product.getErrorMessages().add(msg);
+            }
+        } else {
+            String msg = String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable(
+                            "listing.noStatusProvided"), LocaleContextHolder.getLocale()));
+            product.getErrorMessages().add(msg);
+        }
+        
         //check if the certification status event reason is required
         for(CertificationStatusEvent statusEvent : product.getCertificationEvents()) {
             if(statusEvent.getStatus().getName().equals(
