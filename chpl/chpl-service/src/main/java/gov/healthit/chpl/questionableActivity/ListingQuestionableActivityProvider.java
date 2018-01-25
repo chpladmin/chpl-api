@@ -143,6 +143,12 @@ public class ListingQuestionableActivityProvider {
                             activity.setBefore(origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
                             activity.setAfter(null);
                             cqmRemovedActivities.add(activity);
+                        } else if(origCqm.getSuccessVersions() != null && origCqm.getSuccessVersions().size() > 0 && 
+                                (newCqm.getSuccessVersions() == null || newCqm.getSuccessVersions().size() == 0)) {
+                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            activity.setBefore(origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
+                            activity.setAfter(null);
+                            cqmRemovedActivities.add(activity);
                         }
                         break;
                     }
