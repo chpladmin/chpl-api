@@ -1,7 +1,7 @@
 # Release Notes
 
 ## Version 15.4.2
-_Date TBD_
+_25 January 2018_
 
 ### Bugs Fixed
 * Do not allow users to update listings certification status history if they remove the original Active status.
