@@ -14,6 +14,13 @@ _Date TBD_
 
 ---
 
+## Version 15.4.2
+_25 January 2018_
+
+* Do not allow users to update listings certification status history if they remove the original Active status.
+
+---
+
 ## Version 15.4.1
 _19 January 2018_
 
