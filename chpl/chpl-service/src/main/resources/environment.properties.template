@@ -18,7 +18,7 @@ surveillanceThresholdToProcessAsJob=50
 SEDDownloadName=chpl-sed-all-details.csv
 
 fuzzyChoiceThreshold=80
-fuzzyChoiceLimit=1 
+fuzzyChoiceLimit=1
 
 #cache properties
 enableCacheInitialization=true
