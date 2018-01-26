@@ -9,12 +9,8 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
-import gov.healthit.chpl.dao.PendingCertifiedProductSystemUpdateDAO;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
-import gov.healthit.chpl.dto.PendingCertifiedProductSystemUpdateDTO;
-import gov.healthit.chpl.entity.FuzzyChoicesEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductSystemUpdateEntity;
 
 import java.io.IOException;
 
@@ -47,8 +43,6 @@ public class FuzzyChoicesDAOTest {
 	
 	@Autowired
 	FuzzyChoicesDAO fuzzyDao;
-	@Autowired
-	PendingCertifiedProductSystemUpdateDAO updateDao;
 	
 	
 	private static JWTAuthenticatedUser authUser;
@@ -71,18 +65,6 @@ public class FuzzyChoicesDAOTest {
 		assertTrue(fuzzyReturned2.getChoices().contains("ISO 13485:2003"));
 		FuzzyChoicesDTO fuzzyReturned3 = fuzzyDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD);
 		assertTrue(fuzzyReturned3.getChoices().contains("WCAG 2.0 Level AA"));
-	}
-	
-	@Test
-	@Transactional(readOnly = true)
-	public void testSystemUpdateDao() throws JsonParseException, JsonMappingException, IOException, EntityRetrievalException, EntityCreationException{
-		SecurityContextHolder.getContext().setAuthentication(authUser);
-		PendingCertifiedProductSystemUpdateEntity entity = new PendingCertifiedProductSystemUpdateEntity();
-		entity.setChangeMade("This x was changed to this y.");
-		entity.setPendingCertifiedProductId(-1L);
-		PendingCertifiedProductSystemUpdateDTO dto = new PendingCertifiedProductSystemUpdateDTO(entity);
-		PendingCertifiedProductSystemUpdateDTO created = updateDao.create(dto);
-		assertNotNull(created);
 	}
 
     @Test
