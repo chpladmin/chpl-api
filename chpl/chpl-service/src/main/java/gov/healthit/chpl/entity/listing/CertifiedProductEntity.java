@@ -125,8 +125,7 @@ public class CertifiedProductEntity {
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
 
-    @Basic(optional = false)
-    @Column(name = "pending_certified_product_id", nullable = false)
+    @Column(name = "pending_certified_product_id")
     private Long pendingCertifiedProductId;
     
     @Basic(optional = true)
