@@ -11,6 +11,7 @@ _Date TBD_
 ### Minor features
 * Look for required reason for certain questionable activities; error on those actions if a reason is not found.
 * Add reason to questionable activity report.
+* Add reference of pending listing to confirmed listings to enable tracking between pending and confirmed.
 
 ---
 

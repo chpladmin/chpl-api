@@ -61,6 +61,7 @@ public class CertifiedProductDTO implements Serializable {
     private Boolean qmsTesting;
     private Boolean accessibilityCertified;
     private String productAdditionalSoftware;
+    private Long pendingCertifiedProductId;
     private Boolean transparencyAttestation = null;
 
     public CertifiedProductDTO() {
@@ -428,5 +429,13 @@ public class CertifiedProductDTO implements Serializable {
 
     public void setCertificationStatus(CertificationStatusDTO certificationStatus) {
         this.certificationStatus = certificationStatus;
+    }
+
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
+    }
+
+    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 }
