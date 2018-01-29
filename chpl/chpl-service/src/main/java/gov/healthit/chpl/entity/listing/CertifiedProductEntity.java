@@ -125,6 +125,10 @@ public class CertifiedProductEntity {
     @Column(name = "product_additional_software")
     private String productAdditionalSoftware;
 
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_id", nullable = false)
+    private Long pendingCertifiedProductId;
+    
     @Basic(optional = true)
     @OneToMany(targetEntity = CertificationResultEntity.class, mappedBy = "certifiedProduct", fetch = FetchType.LAZY)
     private List<CertificationResultEntity> certificationResult;
@@ -419,5 +423,13 @@ public class CertifiedProductEntity {
 
     public CertifiedProductEntity getCertifiedProduct() {
         return this;
+    }
+
+    public Long getPendingCertifiedProductId() {
+        return pendingCertifiedProductId;
+    }
+
+    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+        this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 }

@@ -48,7 +48,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         } else {
 
             entity = new CertifiedProductEntity();
-
+            entity.setPendingCertifiedProductId(dto.getPendingCertifiedProductId());
             entity.setAcbCertificationId(dto.getAcbCertificationId());
             // new products will always have null numbers
             entity.setChplProductNumber(null);

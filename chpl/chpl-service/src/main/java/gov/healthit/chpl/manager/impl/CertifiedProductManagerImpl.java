@@ -397,6 +397,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
+        toCreate.setPendingCertifiedProductId(pendingCp.getId());
         toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
         toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
         toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
