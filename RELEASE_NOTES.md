@@ -5,6 +5,7 @@ _Date TBD_
 
 ### Bugs Fixed
 * Do not require UCD Processes for 2014 criteria with SED true if the listing ICS is false.
+* Do not require a reason for listing certification status change
 
 ---
 
