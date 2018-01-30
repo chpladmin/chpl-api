@@ -141,6 +141,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         parseCertificationDate(pendingCertifiedProduct, record);        
         parseSed(pendingCertifiedProduct, record);
         parseHasQms(pendingCertifiedProduct, record);
+        parseHasIcs(pendingCertifiedProduct, record);
         parseTransparencyAttestation(pendingCertifiedProduct, record);
     }
 

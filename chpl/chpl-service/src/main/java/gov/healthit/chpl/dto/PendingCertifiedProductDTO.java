@@ -482,7 +482,6 @@ public class PendingCertifiedProductDTO implements Serializable {
                 this.cqmCriterion.add(cqmDto);
             }
         }
-        this.setErrorMessages(details.getErrorMessages());
     }
 
     public PendingCertifiedProductDTO(PendingCertifiedProductEntity entity) {
