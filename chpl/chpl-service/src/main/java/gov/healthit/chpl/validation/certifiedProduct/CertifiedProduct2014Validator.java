@@ -348,7 +348,11 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                         product.getErrorMessages().add(getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
                     } else if (cert.getSed() != null && cert.getSed().booleanValue() == true
                             && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
-                        product.getErrorMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                        if(product.getIcs() != null && product.getIcs().booleanValue() == true) {
+                            product.getWarningMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                        } else {
+                            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                        }
                     }
                 }
 
@@ -424,8 +428,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         				product.getErrorMessages().add(getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
         			} else if (cert.isSed() != null && cert.isSed() == true
         					&& (product.getSed().getUcdProcesses() == null || product.getSed().getUcdProcesses().size() == 0)) {
-        				product.getErrorMessages().add(
-        						getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+        			    if(product.getIcs() != null && product.getIcs().getInherits() != null && 
+        			            product.getIcs().getInherits().booleanValue() == true) {
+                            product.getWarningMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+        			    } else {
+        			        product.getErrorMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+        			    }
         			}
         		}
         	}

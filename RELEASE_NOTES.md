@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Bugs Fixed
+* Do not require UCD Processes for 2014 criteria with SED true if the listing ICS is false.
+
+---
+
 ## Version 15.4.2
 _25 January 2018_
 
