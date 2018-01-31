@@ -1,6 +1,7 @@
 package gov.healthit.chpl.questionableActivity;
 
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -85,7 +86,7 @@ public class ListingTest extends TestCase {
 	public void testUpdate2011Listing_IncludesReason() throws 
 	    EntityCreationException, EntityRetrievalException, 
 	    ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException {
+	    MissingReasonException, IOException {
 	    SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 	    Date beforeActivity = new Date(); 
@@ -119,7 +120,7 @@ public class ListingTest extends TestCase {
     public void testUpdate2011Listing_WithoutReason() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException {
+        MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -150,7 +151,7 @@ public class ListingTest extends TestCase {
     public void testUpdateCertificationStatus_IncludesReason() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException {
+	    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -191,7 +192,7 @@ public class ListingTest extends TestCase {
     public void testUpdateCertificationStatus() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException {
+        MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -230,7 +231,7 @@ public class ListingTest extends TestCase {
     public void testAddCqm() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException {
+	    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -269,7 +270,7 @@ public class ListingTest extends TestCase {
     public void testRemoveCqm_IncludesReason() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException {
+	    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -309,7 +310,7 @@ public class ListingTest extends TestCase {
     public void testRemoveCqm_WithoutReason() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException {
+        MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -344,7 +345,7 @@ public class ListingTest extends TestCase {
     @Transactional
     @Rollback
     public void testAddCriteria() throws EntityCreationException, EntityRetrievalException, ValidationException,
-            InvalidArgumentsException, JsonProcessingException, MissingReasonException {
+            InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -379,7 +380,7 @@ public class ListingTest extends TestCase {
     @Rollback
     public void testRemoveCriteria_IncludesReason() throws EntityCreationException, 
         EntityRetrievalException, ValidationException,
-        InvalidArgumentsException, JsonProcessingException, MissingReasonException {
+        InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -416,7 +417,7 @@ public class ListingTest extends TestCase {
     @Rollback
     public void testRemoveCriteria_WithoutReason() throws EntityCreationException, 
         EntityRetrievalException, ValidationException,
-        InvalidArgumentsException, JsonProcessingException, MissingReasonException {
+        InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();

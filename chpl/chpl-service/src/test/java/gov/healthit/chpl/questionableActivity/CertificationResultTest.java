@@ -1,6 +1,7 @@
 package gov.healthit.chpl.questionableActivity;
 
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -78,7 +79,7 @@ public class CertificationResultTest extends TestCase {
 	public void testUpdateGap() throws 
 	    EntityCreationException, EntityRetrievalException, 
 	    ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException {
+	    MissingReasonException, IOException {
 	    SecurityContextHolder.getContext().setAuthentication(adminUser);
 
 	    Date beforeActivity = new Date(); 
@@ -116,7 +117,7 @@ public class CertificationResultTest extends TestCase {
     public void testUpdateG1Success() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException {
+	    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 
@@ -154,7 +155,7 @@ public class CertificationResultTest extends TestCase {
     public void testUpdateG2Success() throws 
         EntityCreationException, EntityRetrievalException, 
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException {
+	    MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date(); 

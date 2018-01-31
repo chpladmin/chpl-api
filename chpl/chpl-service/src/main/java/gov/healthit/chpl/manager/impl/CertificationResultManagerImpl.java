@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
@@ -38,6 +40,7 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -56,6 +59,7 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
@@ -64,6 +68,7 @@ import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.manager.CertificationResultManager;
 
 @Service
@@ -98,7 +103,9 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private UcdProcessDAO ucdDao;
     @Autowired
     private MacraMeasureDAO mmDao;
-
+    @Autowired
+    private FuzzyChoicesDAO fuzzyChoicesDao;
+    
     @Override
     @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB'))"
             + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
@@ -107,7 +114,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     })
     public int update(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
-            throws EntityCreationException, EntityRetrievalException {
+            throws EntityCreationException, EntityRetrievalException, IOException {
         int numChanges = 0;
         // does the cert result need updated?
         boolean hasChanged = false;
@@ -500,7 +507,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     }
 
     private int updateUcdProcesses(CertificationResult certResult, List<UcdProcess> existingUcdProcesses,
-            List<UcdProcess> updatedUcdProcesses) throws EntityCreationException, EntityRetrievalException {
+            List<UcdProcess> updatedUcdProcesses) throws EntityCreationException, EntityRetrievalException,
+            IOException {
         int numChanges = 0;
         List<UcdProcess> ucdToAdd = new ArrayList<UcdProcess>();
         List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
@@ -559,7 +567,17 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
 
         numChanges = ucdToAdd.size() + idsToRemove.size();
+        
+        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
         for (UcdProcess toAdd : ucdToAdd) {
+            if(!fuzzyQmsChoices.contains(toAdd.getName())){
+                fuzzyQmsChoices.add(toAdd.getName());
+                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                dto.setFuzzyType(FuzzyType.UCD_PROCESS);
+                dto.setChoices(fuzzyQmsChoices);
+                fuzzyChoicesDao.update(dto);
+            }
+            
             CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
             toAddDto.setCertificationResultId(certResult.getId());
             toAddDto.setUcdProcessId(toAdd.getId());

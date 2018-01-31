@@ -46,7 +46,7 @@ public interface CertifiedProductManager {
 
     CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, InvalidArgumentsException;
+            EntityCreationException, InvalidArgumentsException, IOException;
 
     void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
             throws EntityNotFoundException;

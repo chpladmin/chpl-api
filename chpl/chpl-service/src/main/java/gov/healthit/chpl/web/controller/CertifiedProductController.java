@@ -210,7 +210,7 @@ public class CertifiedProductController {
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest) throws EntityCreationException,
             EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, 
-            ValidationException, MissingReasonException {
+            IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
 

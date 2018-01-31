@@ -1060,7 +1060,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }, allEntries = true)
     public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
-            JsonProcessingException, EntityCreationException, InvalidArgumentsException {
+            JsonProcessingException, EntityCreationException, InvalidArgumentsException,
+            IOException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
@@ -1308,7 +1309,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private int updateQmsStandards(Long listingId, List<CertifiedProductQmsStandard> existingQmsStandards,
             List<CertifiedProductQmsStandard> updatedQmsStandards)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, 
+            JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
@@ -1362,7 +1364,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         numChanges = qmsToAdd.size() + idsToRemove.size();
+        
+        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
         for (CertifiedProductQmsStandard toAdd : qmsToAdd) {
+            if(!fuzzyQmsChoices.contains(toAdd.getQmsStandardName())){
+                fuzzyQmsChoices.add(toAdd.getQmsStandardName());
+                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                dto.setFuzzyType(FuzzyType.QMS_STANDARD);
+                dto.setChoices(fuzzyQmsChoices);
+                fuzzyChoicesDao.update(dto);
+            }
             QmsStandardDTO qmsItem = qmsDao.findOrCreate(toAdd.getQmsStandardId(), toAdd.getQmsStandardName());
             CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
             qmsDto.setApplicableCriteria(toAdd.getApplicableCriteria());
@@ -1474,7 +1485,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, 
+            JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
@@ -1524,7 +1536,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         numChanges = accStdsToAdd.size() + idsToRemove.size();
+        
+        List<String> fuzzyAsChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
         for (CertifiedProductAccessibilityStandard toAdd : accStdsToAdd) {
+            if(!fuzzyAsChoices.contains(toAdd.getAccessibilityStandardName())){
+                fuzzyAsChoices.add(toAdd.getAccessibilityStandardName());
+                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
+                dto.setChoices(fuzzyAsChoices);
+                fuzzyChoicesDao.update(dto);
+            }
+                
             AccessibilityStandardDTO item = asDao.findOrCreate(toAdd.getAccessibilityStandardId(),
                     toAdd.getAccessibilityStandardName());
             CertifiedProductAccessibilityStandardDTO toAddStd = new CertifiedProductAccessibilityStandardDTO();
@@ -1705,7 +1727,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateCertifications(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, List<CertificationResult> existingCertifications,
             List<CertificationResult> updatedCertifications)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, 
+            JsonProcessingException, IOException {
 
         int numChanges = 0;
 
