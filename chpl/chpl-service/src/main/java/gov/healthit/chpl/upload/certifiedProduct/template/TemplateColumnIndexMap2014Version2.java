@@ -197,7 +197,7 @@ public class TemplateColumnIndexMap2014Version2 extends TemplateColumnIndexMap {
     }
     
     public int getUcdColumnCount() {
-        return 2;
+        return 3;
     }
     
     public String getTestTasksColumnLabel() {

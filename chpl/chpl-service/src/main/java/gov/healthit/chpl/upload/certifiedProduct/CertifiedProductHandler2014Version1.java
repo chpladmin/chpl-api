@@ -141,6 +141,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
         parseCertificationDate(pendingCertifiedProduct, record);        
         parseSed(pendingCertifiedProduct, record);
         parseHasQms(pendingCertifiedProduct, record);
+        parseHasIcs(pendingCertifiedProduct, record);
         parseTransparencyAttestation(pendingCertifiedProduct, record);
     }
 
@@ -229,7 +230,7 @@ public class CertifiedProductHandler2014Version1 extends CertifiedProductHandler
                     } else if(colTitle.equalsIgnoreCase(getColumnIndexMap().getUcdColumnLabel())) {
                         cert.setSed(asBoolean(firstRow.get(currIndex).trim()));
                         String ucdProcessName = firstRow.get(currIndex+1).trim();
-                        String ucdProcessDetails = firstRow.get(currIndex++).trim();
+                        String ucdProcessDetails = firstRow.get(currIndex+2).trim();
                         if (!StringUtils.isEmpty(ucdProcessName)) {
                             PendingCertificationResultUcdProcessEntity ucd = new PendingCertificationResultUcdProcessEntity();
                             ucd.setUcdProcessName(ucdProcessName);

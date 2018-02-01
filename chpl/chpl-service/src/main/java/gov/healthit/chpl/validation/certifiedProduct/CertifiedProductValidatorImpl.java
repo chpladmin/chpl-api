@@ -1134,19 +1134,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add(msg);
         }
         
-        //check if the certification status event reason is required
-        for(CertificationStatusEvent statusEvent : product.getCertificationEvents()) {
-            if(statusEvent.getStatus().getName().equals(
-                    CertificationStatusType.WithdrawnByAcb.getName())
-                && StringUtils.isEmpty(statusEvent.getReason())) {
-                String msg = String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable(
-                                "listing.noCertificationStatusReasonProvided"),
-                        LocaleContextHolder.getLocale()), CertificationStatusType.WithdrawnByAcb.getName());
-                product.getErrorMessages().add(msg);
-            }
-        }
-        
         for (CertificationResult cert : product.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {

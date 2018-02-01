@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.certifiedProduct;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -14,6 +15,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -330,7 +332,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             product.getWarningMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
         }
     }
-
+    
     @Override
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
@@ -348,7 +350,11 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                         product.getErrorMessages().add(getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
                     } else if (cert.getSed() != null && cert.getSed().booleanValue() == true
                             && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
-                        product.getErrorMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                        if(product.getIcs() != null && product.getIcs().booleanValue() == true) {
+                            product.getWarningMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                        } else {
+                            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                        }
                     }
                 }
 
@@ -386,6 +392,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         }
     }
 
+    
     @Override
     public void validate(CertifiedProductSearchDetails product) {
         super.validate(product);
@@ -422,10 +429,14 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         		if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
         			if (cert.isSed() == null) {
         				product.getErrorMessages().add(getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
-        			} else if (cert.isSed() != null && cert.isSed() == true
-        					&& (product.getSed().getUcdProcesses() == null || product.getSed().getUcdProcesses().size() == 0)) {
-        				product.getErrorMessages().add(
-        						getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+        			} else if (cert.isSed() != null && cert.isSed().booleanValue() == true
+        					&& !certHasUcdProcess(cert, product.getSed().getUcdProcesses())) {
+        			    if(product.getIcs() != null && product.getIcs().getInherits() != null && 
+        			            product.getIcs().getInherits().booleanValue() == true) {
+                            product.getWarningMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+        			    } else {
+        			        product.getErrorMessages().add(getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+        			    }
         			}
         		}
         	}
@@ -525,4 +536,16 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         // this is not supposed to match the list of things checked for pending
         // products
     }
+    
+    private boolean certHasUcdProcess(CertificationResult cert, List<UcdProcess> ucdProcesses) {
+        boolean hasUcd = false;
+        for(UcdProcess ucdProcess : ucdProcesses) {
+            for(CertificationCriterion ucdCriteria : ucdProcess.getCriteria()) {
+                if(ucdCriteria.getNumber().equalsIgnoreCase(cert.getNumber())) {
+                    hasUcd = true;
+                }
+            }
+        }
+        return hasUcd;
+     }
 }
