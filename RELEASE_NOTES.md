@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 15.4.3
+_1 February 2018_
+
+### Tiny features
+* Do not require UCD Processes for 2014 criteria with SED true if the listing ICS is false.
+* Do not require a reason for listing certification status change
+
+---
+
 ## Version 15.4.2
 _25 January 2018_
 
