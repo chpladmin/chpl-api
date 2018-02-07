@@ -44,6 +44,9 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
     @Column(name = "after_data")
     private String after;
     
+    @Column(name = "certification_status_change_reason")
+    private String certificationStatusChangeReason;
+    
     @Column(name = "reason")
     private String reason;
     
@@ -187,6 +190,14 @@ public class QuestionableActivityListingEntity implements QuestionableActivityEn
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getCertificationStatusChangeReason() {
+        return certificationStatusChangeReason;
+    }
+
+    public void setCertificationStatusChangeReason(String certificationStatusChangeReason) {
+        this.certificationStatusChangeReason = certificationStatusChangeReason;
     }
 }
 
