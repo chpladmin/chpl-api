@@ -359,7 +359,9 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         query.setParameter("productCount", new Long(productIds.size()));
         query.setParameter("year", year);
         result = query.getResultList();
-        entity = result.get(0);
+        if (result.size() > 0) {
+            entity = result.get(0);
+        }
 
         return entity;
     }

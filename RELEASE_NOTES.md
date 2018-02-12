@@ -12,6 +12,7 @@ _Date TBD_
 * Look for required reason for certain questionable activities; error on those actions if a reason is not found.
 * Add reason to questionable activity report.
 * Add reference of pending listing to confirmed listings to enable tracking between pending and confirmed.
+* Add certification status change reason to listing activity entities and to questionable activity report.
 * Use most recently generated CMS ID if multiple exist with same product list set
 
 ---

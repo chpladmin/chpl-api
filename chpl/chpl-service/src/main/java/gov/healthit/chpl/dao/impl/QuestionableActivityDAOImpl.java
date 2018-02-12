@@ -53,6 +53,8 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
             toCreate = new QuestionableActivityListingEntity();
             QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity)toCreate;
             listingActivity.setListingId(((QuestionableActivityListingDTO)dto).getListingId());
+            listingActivity.setCertificationStatusChangeReason(
+                    ((QuestionableActivityListingDTO)dto).getCertificationStatusChangeReason());
             listingActivity.setReason(((QuestionableActivityListingDTO) dto).getReason());
         } else if(dto instanceof QuestionableActivityCertificationResultDTO) {
             toCreate = new QuestionableActivityCertificationResultEntity();

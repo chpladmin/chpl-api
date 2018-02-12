@@ -37,6 +37,7 @@ public class ListingQuestionableActivityProvider {
               activity = new QuestionableActivityListingDTO();
               activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
               activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
+              activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());
         }
         
         return activity;
@@ -60,6 +61,7 @@ public class ListingQuestionableActivityProvider {
               activity = new QuestionableActivityListingDTO();
               activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
               activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
+              activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());
         }
         
         return activity;
