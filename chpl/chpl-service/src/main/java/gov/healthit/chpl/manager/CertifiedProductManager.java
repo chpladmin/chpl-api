@@ -46,7 +46,7 @@ public interface CertifiedProductManager {
 
     CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, InvalidArgumentsException;
+            EntityCreationException, InvalidArgumentsException, IOException;
 
     void sanitizeUpdatedListingData(Long acbId, CertifiedProductSearchDetails listing)
             throws EntityNotFoundException;
@@ -55,7 +55,7 @@ public interface CertifiedProductManager {
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException;
 
     CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException, IOException;
 
     List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException;
 

@@ -53,10 +53,14 @@ public class QuestionableActivityDAOImpl extends BaseDAOImpl implements Question
             toCreate = new QuestionableActivityListingEntity();
             QuestionableActivityListingEntity listingActivity = (QuestionableActivityListingEntity)toCreate;
             listingActivity.setListingId(((QuestionableActivityListingDTO)dto).getListingId());
+            listingActivity.setCertificationStatusChangeReason(
+                    ((QuestionableActivityListingDTO)dto).getCertificationStatusChangeReason());
+            listingActivity.setReason(((QuestionableActivityListingDTO) dto).getReason());
         } else if(dto instanceof QuestionableActivityCertificationResultDTO) {
             toCreate = new QuestionableActivityCertificationResultEntity();
             QuestionableActivityCertificationResultEntity certResultActivity = (QuestionableActivityCertificationResultEntity)toCreate;
             certResultActivity.setCertResultId(((QuestionableActivityCertificationResultDTO)dto).getCertResultId());
+            certResultActivity.setReason(((QuestionableActivityCertificationResultDTO) dto).getReason());
         } else {
             LOGGER.error("Unknown class of questionable activity passed in: " + dto.getClass().getName());
             return null;

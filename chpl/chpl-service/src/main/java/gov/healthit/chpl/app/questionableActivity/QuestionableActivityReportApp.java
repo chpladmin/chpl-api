@@ -44,7 +44,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO
 
 public class QuestionableActivityReportApp extends App {
     private static final Logger LOGGER = LogManager.getLogger(QuestionableActivityReportApp.class);
-    private static final int NUM_REPORT_COLS = 11;
+    private static final int NUM_REPORT_COLS = 13;
     private static final int ACB_COL = 0;
     private static final int DEVELOPER_COL = 1;
     private static final int PRODUCT_COL = 2;
@@ -56,6 +56,8 @@ public class QuestionableActivityReportApp extends App {
     private static final int ACTIVITY_USER_COL = 8;
     private static final int ACTIVITY_TYPE_COL = 9;
     private static final int ACTIVITY_DESCRIPTION_COL = 10;
+    private static final int ACTIVITY_CERT_STATUS_CHANGE_REASON_COL = 11;
+    private static final int ACTIVITY_REASON_COL = 12;
     private Date startDate, endDate;
     
     protected QuestionableActivityDAO qaDao;
@@ -432,83 +434,86 @@ public class QuestionableActivityReportApp extends App {
                 QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL,
                     "From " + activity.getBefore() + " to " + activity.getAfter());
+            currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
         }
+        currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
     
     private void putCertResultActivityInRow(QuestionableActivityCertificationResultDTO activity,
-            List<String> currRow) throws IOException {
-            //fill in info about the listing that will be the same for every
-            //activity found in this date bucket
-            currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
-            currRow.set(DEVELOPER_COL, activity.getListing().getDeveloper().getName());
-            currRow.set(PRODUCT_COL, activity.getListing().getProduct().getName());
-            currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
-            currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
-            currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
-            currRow.set(LINK_COL, this.getProperties().getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
-            currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
-            
-            if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {
-                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += activity.getCertResult().getNumber() + ": from " + 
-                            activity.getBefore() + " to " + activity.getAfter();
-                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.G1_MEASURE_ADDED.getName())) {
-                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
-                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED.getName())) {
-                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
-                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
-                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += activity.getCertResult().getNumber() + ": from " + 
-                            activity.getBefore() + " to " + activity.getAfter();
-                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.G2_MEASURE_ADDED.getName())) {
-                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
-                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED.getName())) {
-                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
-                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
-            } else if(activity.getTrigger().getName().equals(
-                    QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
-                String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
-                if(!StringUtils.isEmpty(currActivityRowValue)) {
-                    currActivityRowValue += "; "; 
-                }
-                currActivityRowValue += activity.getCertResult().getNumber() + " from " + 
-                            activity.getBefore() + " to " + activity.getAfter();
-                currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        List<String> currRow) throws IOException {
+        //fill in info about the listing that will be the same for every
+        //activity found in this date bucket
+        currRow.set(ACB_COL, activity.getListing().getCertificationBodyName());
+        currRow.set(DEVELOPER_COL, activity.getListing().getDeveloper().getName());
+        currRow.set(PRODUCT_COL, activity.getListing().getProduct().getName());
+        currRow.set(VERSION_COL, activity.getListing().getVersion().getVersion());
+        currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
+        currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
+        currRow.set(LINK_COL, this.getProperties().getProperty("chplUrlBegin") + "/#/admin/reports/" + activity.getListing().getId());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
+        
+        if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
             }
+            currActivityRowValue += activity.getCertResult().getNumber() + ": from " + 
+                        activity.getBefore() + " to " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.G1_MEASURE_ADDED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.G1_MEASURE_REMOVED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += activity.getCertResult().getNumber() + ": from " + 
+                        activity.getBefore() + " to " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.G2_MEASURE_ADDED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.G2_MEASURE_REMOVED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += activity.getCertResult().getNumber() + ": " + activity.getBefore();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
+        } else if(activity.getTrigger().getName().equals(
+                QuestionableActivityTriggerConcept.GAP_EDITED.getName())) {
+            String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
+            if(!StringUtils.isEmpty(currActivityRowValue)) {
+                currActivityRowValue += "; "; 
+            }
+            currActivityRowValue += activity.getCertResult().getNumber() + " from " + 
+                        activity.getBefore() + " to " + activity.getAfter();
+            currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
         }
+        currRow.set(ACTIVITY_REASON_COL, activity.getReason());
+    }
     
     private void putDeveloperActivityInRow(QuestionableActivityDeveloperDTO developerActivity,
             List<String> activityRow) {
@@ -612,7 +617,7 @@ public class QuestionableActivityReportApp extends App {
             activityRow.set(ACTIVITY_DESCRIPTION_COL,
                     "From " + activity.getBefore() + " to " + activity.getAfter());
         }
-}
+    }
     
     private List<String> createHeader() {
         List<String> row = new ArrayList<String>();
@@ -627,6 +632,8 @@ public class QuestionableActivityReportApp extends App {
         row.add("Responsible User");
         row.add("Activity Type");
         row.add("Activity");
+        row.add("Reason for Status Change");
+        row.add("Reason");
         return row;
     }
     

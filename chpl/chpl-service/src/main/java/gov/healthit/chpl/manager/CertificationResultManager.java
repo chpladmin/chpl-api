@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager;
 
+import java.io.IOException;
 import java.util.List;
 
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -19,7 +20,7 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 public interface CertificationResultManager {
     int update(Long abcId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
-            throws EntityCreationException, EntityRetrievalException;
+            throws EntityCreationException, EntityRetrievalException, IOException;
 
     List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
             Long certificationResultId);

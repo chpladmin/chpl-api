@@ -343,26 +343,23 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
                 "from CertificationIdEntity " + "where ehr_certification_id_id in (" +
 
-                        "select mpx.certificationIdId " + "from CertificationIdProductMapEntity as mpx "
-                        + "where mpx.certifiedProductId in :productIds " + "and mpx.certificationIdId not in ( "
-                        + "select mpa.certificationIdId " + "from CertificationIdProductMapEntity as mpa "
-                        + "where mpa.certificationIdId in ( " + "select mpy.certificationIdId "
-                        + "from CertificationIdProductMapEntity as mpy "
-                        + "where mpy.certifiedProductId in :productIds " + "group by mpy.certificationIdId " + ") "
-                        + "and mpa.certifiedProductId not in :productIds " + "group by mpa.certificationIdId " + ") "
-                        + "group by mpx.certificationIdId " + "having count(mpx.certificationIdId) = :productCount " +
-
-                        ") " + "and year = :year",
+                "select mpx.certificationIdId " + "from CertificationIdProductMapEntity as mpx "
+                + "where mpx.certifiedProductId in :productIds " + "and mpx.certificationIdId not in ( "
+                + "select mpa.certificationIdId " + "from CertificationIdProductMapEntity as mpa "
+                + "where mpa.certificationIdId in ( " + "select mpy.certificationIdId "
+                + "from CertificationIdProductMapEntity as mpy "
+                + "where mpy.certifiedProductId in :productIds " + "group by mpy.certificationIdId " + ") "
+                + "and mpa.certifiedProductId not in :productIds " + "group by mpa.certificationIdId " + ") "
+                + "group by mpx.certificationIdId " + "having count(mpx.certificationIdId) = :productCount "
+                + ") " + "and year = :year "
+                + "order by creation_date DESC ",
                 CertificationIdEntity.class);
 
         query.setParameter("productIds", productIds);
         query.setParameter("productCount", new Long(productIds.size()));
         query.setParameter("year", year);
         result = query.getResultList();
-
-        if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate certificationId in database.");
-        } else if (result.size() == 1) {
+        if (result.size() > 0) {
             entity = result.get(0);
         }
 

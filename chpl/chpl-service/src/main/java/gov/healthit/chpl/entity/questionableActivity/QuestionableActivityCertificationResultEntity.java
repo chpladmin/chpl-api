@@ -44,6 +44,9 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
     @Column(name = "after_data")
     private String after;
     
+    @Column(name = "reason")
+    private String reason;
+    
     @Column(name = "activity_date")
     private Date activityDate;
     
@@ -176,6 +179,14 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
 
     public void setCertResult(CertificationResultDetailsEntity certResult) {
         this.certResult = certResult;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 }
 

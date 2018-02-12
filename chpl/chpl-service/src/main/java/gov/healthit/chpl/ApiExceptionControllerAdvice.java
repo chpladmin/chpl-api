@@ -23,6 +23,7 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.web.controller.CertificationBodyAccessException;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -139,6 +140,14 @@ public class ApiExceptionControllerAdvice {
                 HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(MissingReasonException.class)
+    public ResponseEntity<ErrorJSONObject> exception(final MissingReasonException e) {
+        LOGGER.error("Caught missing reason exception.", e);
+        return new ResponseEntity<ErrorJSONObject>(
+                new ErrorJSONObject(e.getMessage() != null ? e.getMessage() : "A reason is required to perform this action."),
+                HttpStatus.BAD_REQUEST);
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorJSONObject> exception(final Exception e) {
         LOGGER.error("Caught exception.", e);

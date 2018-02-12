@@ -6,20 +6,26 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
+import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -30,7 +36,6 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -41,6 +46,7 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
+import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -63,14 +69,20 @@ import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
+import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
+    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductValidatorImpl.class);
+
     @Autowired
     MessageSource messageSource;
     @Autowired
@@ -89,6 +101,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     TestToolDAO testToolDao;
     @Autowired
     ListingGraphDAO inheritanceDao;
+    @Autowired
+    UcdProcessDAO ucdDao;
+    @Autowired
+    QmsStandardDAO qmsDao;
+    @Autowired
+    AccessibilityStandardDAO accStdDao;
+    @Autowired
+    FuzzyChoicesManager fuzzyChoicesManager;
 
     @Autowired
     protected CertificationResultRules certRules;
@@ -268,6 +288,84 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
         String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
         String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+        
+        if(product.getCertificationCriterion() != null && !product.getCertificationCriterion().isEmpty()){
+        	for(PendingCertificationResultDTO cert : product.getCertificationCriterion()){
+        		if(cert.getUcdProcesses() != null && !cert.getUcdProcesses().isEmpty()){
+        			for(PendingCertificationResultUcdProcessDTO ucd : cert.getUcdProcesses()) {
+        			    String origUcdProcessName = ucd.getUcdProcessName();
+        				String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(origUcdProcessName, FuzzyType.UCD_PROCESS);
+        				if(topChoice != null && !origUcdProcessName.equals(topChoice)) {
+        				    UcdProcessDTO fuzzyMatchedUcd = null;
+        				    try {
+        				        fuzzyMatchedUcd = ucdDao.findOrCreate(null, topChoice);
+        				    } catch(EntityCreationException ex) {
+        				        LOGGER.error("Could not insert ucd process " + topChoice, ex);
+        				    }
+        				    
+        				    if(fuzzyMatchedUcd != null) {
+        				        ucd.setUcdProcessId(fuzzyMatchedUcd.getId());
+                                ucd.setUcdProcessName(fuzzyMatchedUcd.getName());
+                                
+                                String warningMsg = String.format(
+                                        messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.fuzzyMatch"),
+                                                LocaleContextHolder.getLocale()), FuzzyType.UCD_PROCESS.fuzzyType(), 
+                                                cert.getNumber(), origUcdProcessName, topChoice);
+                                product.getWarningMessages().add(warningMsg);
+        				    }
+        				}
+        			}
+        		}
+        	}
+        }
+        
+        for(PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()){
+            String origQmsName = qms.getName();
+            String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(origQmsName, FuzzyType.QMS_STANDARD);
+            if(topChoice != null && !origQmsName.equals(topChoice)) {
+                QmsStandardDTO fuzzyMatchedQms = null;
+                try {
+                    fuzzyMatchedQms = qmsDao.findOrCreate(null, topChoice);
+                } catch(EntityCreationException ex) {
+                    LOGGER.error("Could not insert qms standard " + topChoice, ex);
+                }
+                
+                if(fuzzyMatchedQms != null) {
+                    qms.setQmsStandardId(fuzzyMatchedQms.getId());
+                    qms.setName(fuzzyMatchedQms.getName());
+                    
+                    String warningMsg = String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("listing.fuzzyMatch"),
+                                    LocaleContextHolder.getLocale()), FuzzyType.QMS_STANDARD.fuzzyType(), 
+                                    origQmsName, topChoice);
+                    product.getWarningMessages().add(warningMsg);
+                }
+            }
+        }
+        
+        for(PendingCertifiedProductAccessibilityStandardDTO access : product.getAccessibilityStandards()){
+            String origAccStd = access.getName();
+            String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(origAccStd, FuzzyType.ACCESSIBILITY_STANDARD);
+            if(topChoice != null && !origAccStd.equals(topChoice)) {
+                AccessibilityStandardDTO fuzzyMatchedAccStd = null;
+                try {
+                    fuzzyMatchedAccStd = accStdDao.findOrCreate(null, topChoice);
+                } catch(EntityCreationException ex) {
+                    LOGGER.error("Could not insert accessibility standard " + topChoice, ex);
+                }
+                
+                if(fuzzyMatchedAccStd != null) {
+                    access.setAccessibilityStandardId(fuzzyMatchedAccStd.getId());
+                    access.setName(fuzzyMatchedAccStd.getName());
+                    
+                    String warningMsg = String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("listing.fuzzyMatch"),
+                                    LocaleContextHolder.getLocale()), FuzzyType.ACCESSIBILITY_STANDARD.fuzzyType(), 
+                                    origAccStd, topChoice);
+                    product.getWarningMessages().add(warningMsg);
+                }
+            }
+        }
 
         try {
             CertificationEditionDTO certificationEdition = certEditionDao.getById(product.getCertificationEditionId());

@@ -409,7 +409,7 @@ public class SummaryStatistics {
         emailMessage.append("<ul>");
         for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()) {
             if (!uniqueAcbList.contains(cbStat.getName()) && cbStat.getYear() == 2015 && cbStat.getTotalListings() > 0
-                    && cbStat.getCertificationStatusName().contains("suspended")) {
+                    && cbStat.getCertificationStatusName().toLowerCase().contains("suspended")) {
                 emailMessage.append("<li>Certified by " + cbStat.getName() + " - "
                         + getSuspendedCPsForAcb(2015,
                                 stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(),

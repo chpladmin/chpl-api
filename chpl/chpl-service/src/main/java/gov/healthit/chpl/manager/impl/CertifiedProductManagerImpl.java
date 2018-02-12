@@ -47,6 +47,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
@@ -104,6 +105,7 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -137,6 +139,7 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -144,6 +147,7 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
@@ -219,6 +223,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     ListingGraphDAO listingGraphDao;
     @Autowired
     CertificationResultDAO certResultDao;
+    @Autowired
+    FuzzyChoicesDAO fuzzyChoicesDao;
 
     @Autowired
     public ActivityManager activityManager;
@@ -388,9 +394,10 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
     public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
+        toCreate.setPendingCertifiedProductId(pendingCp.getId());
         toCreate.setAcbCertificationId(pendingCp.getAcbCertificationId());
         toCreate.setReportFileLocation(pendingCp.getReportFileLocation());
         toCreate.setSedReportFileLocation(pendingCp.getSedReportFileLocation());
@@ -504,10 +511,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
             }
         }
-
+        
+        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
+        
         // qms
         if (pendingCp.getQmsStandards() != null && pendingCp.getQmsStandards().size() > 0) {
             for (PendingCertifiedProductQmsStandardDTO pendingQms : pendingCp.getQmsStandards()) {
+            	if(!fuzzyQmsChoices.contains(pendingQms.getName())){
+    				fuzzyQmsChoices.add(pendingQms.getName());
+    				FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+    				dto.setFuzzyType(FuzzyType.QMS_STANDARD);
+    				dto.setChoices(fuzzyQmsChoices);
+    				fuzzyChoicesDao.update(dto);
+    			}
                 CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
                 QmsStandardDTO qms = qmsDao.findOrCreate(pendingQms.getQmsStandardId(), pendingQms.getName());
                 qmsDto.setQmsStandardId(qms.getId());
@@ -534,13 +550,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
             }
         }
-
+        
+        List<String> fuzzyAsChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
+        
         // accessibility standards
         if (pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
             for (PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
                 CertifiedProductAccessibilityStandardDTO asDto = new CertifiedProductAccessibilityStandardDTO();
                 asDto.setCertifiedProductId(newCertifiedProduct.getId());
-
+                if(!fuzzyAsChoices.contains(as.getName())){
+    				fuzzyAsChoices.add(as.getName());
+    				FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+    				dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
+    				dto.setChoices(fuzzyAsChoices);
+    				fuzzyChoicesDao.update(dto);
+    			}
                 if (as.getAccessibilityStandardId() != null) {
                     asDto.setAccessibilityStandardName(as.getName());
                     asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
@@ -620,9 +644,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             certDao.addAdditionalSoftwareMapping(as);
                         }
                     }
-
+                    
+                    List<String> fuzzyUcdChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
+                    
                     if (certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
                         for (PendingCertificationResultUcdProcessDTO pendingUcd : certResult.getUcdProcesses()) {
+                        	if(!fuzzyUcdChoices.contains(pendingUcd.getUcdProcessName())){
+                        		fuzzyUcdChoices.add(pendingUcd.getUcdProcessName());
+                				FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                				dto.setFuzzyType(FuzzyType.UCD_PROCESS);
+                				dto.setChoices(fuzzyUcdChoices);
+                				fuzzyChoicesDao.update(dto);
+                			}
                             CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
                             UcdProcessDTO ucd = ucdDao.findOrCreate(pendingUcd.getUcdProcessId(), pendingUcd.getUcdProcessName());
                             ucdDto.setUcdProcessId(ucd.getId());
@@ -1027,7 +1060,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }, allEntries = true)
     public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
-            JsonProcessingException, EntityCreationException, InvalidArgumentsException {
+            JsonProcessingException, EntityCreationException, InvalidArgumentsException,
+            IOException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
@@ -1275,7 +1309,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private int updateQmsStandards(Long listingId, List<CertifiedProductQmsStandard> existingQmsStandards,
             List<CertifiedProductQmsStandard> updatedQmsStandards)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, 
+            JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
@@ -1329,7 +1364,16 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         numChanges = qmsToAdd.size() + idsToRemove.size();
+        
+        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
         for (CertifiedProductQmsStandard toAdd : qmsToAdd) {
+            if(!fuzzyQmsChoices.contains(toAdd.getQmsStandardName())){
+                fuzzyQmsChoices.add(toAdd.getQmsStandardName());
+                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                dto.setFuzzyType(FuzzyType.QMS_STANDARD);
+                dto.setChoices(fuzzyQmsChoices);
+                fuzzyChoicesDao.update(dto);
+            }
             QmsStandardDTO qmsItem = qmsDao.findOrCreate(toAdd.getQmsStandardId(), toAdd.getQmsStandardName());
             CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
             qmsDto.setApplicableCriteria(toAdd.getApplicableCriteria());
@@ -1441,7 +1485,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, 
+            JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
@@ -1491,7 +1536,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         numChanges = accStdsToAdd.size() + idsToRemove.size();
+        
+        List<String> fuzzyAsChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
         for (CertifiedProductAccessibilityStandard toAdd : accStdsToAdd) {
+            if(!fuzzyAsChoices.contains(toAdd.getAccessibilityStandardName())){
+                fuzzyAsChoices.add(toAdd.getAccessibilityStandardName());
+                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
+                dto.setChoices(fuzzyAsChoices);
+                fuzzyChoicesDao.update(dto);
+            }
+                
             AccessibilityStandardDTO item = asDao.findOrCreate(toAdd.getAccessibilityStandardId(),
                     toAdd.getAccessibilityStandardName());
             CertifiedProductAccessibilityStandardDTO toAddStd = new CertifiedProductAccessibilityStandardDTO();
@@ -1672,7 +1727,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateCertifications(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, List<CertificationResult> existingCertifications,
             List<CertificationResult> updatedCertifications)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws EntityCreationException, EntityRetrievalException, 
+            JsonProcessingException, IOException {
 
         int numChanges = 0;
 

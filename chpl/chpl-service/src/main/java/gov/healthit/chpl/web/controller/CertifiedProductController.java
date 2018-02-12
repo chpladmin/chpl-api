@@ -70,6 +70,7 @@ import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
+import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
@@ -208,7 +209,8 @@ public class CertifiedProductController {
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest) throws EntityCreationException,
-            EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, ValidationException {
+            EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, 
+            IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
 
@@ -286,7 +288,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
-                changedProduct);
+                changedProduct, updateRequest.getReason());
 
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
@@ -393,7 +395,7 @@ public class CertifiedProductController {
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
             throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, ObjectMissingValidationException {
+            ObjectMissingValidationException, IOException {
 
         String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
         if (StringUtils.isEmpty(acbIdStr)) {

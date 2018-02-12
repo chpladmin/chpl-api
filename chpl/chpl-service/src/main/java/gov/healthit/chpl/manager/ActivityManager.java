@@ -20,6 +20,9 @@ public interface ActivityManager {
             Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 
     void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
+            Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
+
+    void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException;
 

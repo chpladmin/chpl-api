@@ -119,5 +119,4 @@ public class PendingCertificationResultUcdProcessEntity {
     public void setUcdProcessName(final String ucdProcessName) {
         this.ucdProcessName = ucdProcessName;
     }
-
 }

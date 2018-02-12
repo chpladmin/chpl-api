@@ -65,6 +65,7 @@
 		<class>gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity</class>
 		<class>gov.healthit.chpl.entity.developer.DeveloperTransparencyEntity</class>
 		<class>gov.healthit.chpl.entity.EducationTypeEntity</class>
+		<class>gov.healthit.chpl.entity.FuzzyChoicesEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationEntity</class>
 		<class>gov.healthit.chpl.auth.entity.InvitationPermissionEntity</class>
 		<class>gov.healthit.chpl.entity.job.JobEntity</class>

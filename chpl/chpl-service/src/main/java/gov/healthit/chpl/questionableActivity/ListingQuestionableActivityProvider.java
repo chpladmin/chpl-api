@@ -37,6 +37,7 @@ public class ListingQuestionableActivityProvider {
               activity = new QuestionableActivityListingDTO();
               activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
               activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
+              activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());
         }
         
         return activity;
@@ -60,6 +61,7 @@ public class ListingQuestionableActivityProvider {
               activity = new QuestionableActivityListingDTO();
               activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
               activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
+              activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());
         }
         
         return activity;
@@ -139,6 +141,12 @@ public class ListingQuestionableActivityProvider {
                         // CMS is the same if the CMS ID and version is equal
                         if (origCqm.isSuccess() == Boolean.TRUE && newCqm.isSuccess() == Boolean.FALSE) {
                             //orig did not have this cqm but new does so it was added
+                            QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
+                            activity.setBefore(origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
+                            activity.setAfter(null);
+                            cqmRemovedActivities.add(activity);
+                        } else if(origCqm.getSuccessVersions() != null && origCqm.getSuccessVersions().size() > 0 && 
+                                (newCqm.getSuccessVersions() == null || newCqm.getSuccessVersions().size() == 0)) {
                             QuestionableActivityListingDTO activity = new QuestionableActivityListingDTO();
                             activity.setBefore(origCqm.getCmsId() != null ? origCqm.getCmsId() : origCqm.getNqfNumber());
                             activity.setAfter(null);
