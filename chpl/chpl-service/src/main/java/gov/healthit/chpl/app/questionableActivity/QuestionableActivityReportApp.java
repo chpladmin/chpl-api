@@ -431,7 +431,7 @@ public class QuestionableActivityReportApp extends App {
                 QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, "TRUE");
         } else if(activity.getTrigger().getName().equals(
-                QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED.getName())) {
+                QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL,
                     "From " + activity.getBefore() + " to " + activity.getAfter());
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
