@@ -1,6 +1,8 @@
 package gov.healthit.chpl.questionableActivity;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +48,11 @@ import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
+/**
+ * Test Listing updates for questionable activity.
+ * @author alarned
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
@@ -160,13 +167,14 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(0);
         CertificationStatus status = new CertificationStatus();
         status.setId(2L);
         status.setName("Retired");
         statusEvent.setStatus(status);
-        listing.getCertificationEvents().add(statusEvent);
+        events.set(0, statusEvent);
+        listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
@@ -202,13 +210,14 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(0);
         CertificationStatus status = new CertificationStatus();
         status.setId(2L);
         status.setName("Retired");
         statusEvent.setStatus(status);
-        listing.getCertificationEvents().add(statusEvent);
+        events.set(0, statusEvent);
+        listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
@@ -241,10 +250,13 @@ public class ListingTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
+        Date eventDate = new Date("2/14/2018");
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent statusEvent = listing.getCertificationEvents().get(1);
-        statusEvent.setEventDate(System.currentTimeMillis());
-        listing.getCertificationEvents().set(1, statusEvent);
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(0);
+        statusEvent.setEventDate(eventDate.getTime());
+        events.set(0, statusEvent);
+        listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
@@ -258,8 +270,8 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals("Active", activity.getBefore());
-        assertEquals("Retired", activity.getAfter());
+        assertEquals("Tue Oct 20 13:14:00 EDT 2015", activity.getBefore());
+        assertEquals("Wed Feb 14 00:00:00 EST 2018", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT.getName(),
                 activity.getTrigger().getName());
@@ -279,11 +291,13 @@ public class ListingTest extends TestCase {
         final long dateDifference = 1000L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent statusEvent = listing.getCertificationEvents().get(1);
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(2);
         Long beforeEventDate = statusEvent.getEventDate();
         Long afterEventDate = beforeEventDate - dateDifference;
         statusEvent.setEventDate(afterEventDate);
-        listing.getCertificationEvents().set(1, statusEvent);
+        events.set(2, statusEvent);
+        listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
@@ -297,10 +311,10 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals(beforeEventDate, activity.getBefore());
-        assertEquals(afterEventDate, activity.getAfter());
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:13:59 EDT 2015)]", activity.getAfter());
         assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_HISTORY.getName(),
+        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
                 activity.getTrigger().getName());
 
         SecurityContextHolder.getContext().setAuthentication(null);
@@ -318,12 +332,14 @@ public class ListingTest extends TestCase {
         final long statusId = 4L;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent statusEvent = listing.getCertificationEvents().get(1);
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(2);
         CertificationStatus status = new CertificationStatus();
         status.setId(statusId);
         status.setName("Withdrawn by ONC-ACB");
         statusEvent.setStatus(status);
-        listing.getCertificationEvents().set(1, statusEvent);
+        events.set(2, statusEvent);
+        listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
@@ -337,8 +353,8 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals("Withdrawn by Developer", activity.getBefore());
-        assertEquals("Withdrawn by ONC-ACB", activity.getAfter());
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
+        assertEquals("[Withdrawn by ONC-ACB (Sun Sep 20 13:14:00 EDT 2015)]", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
                 activity.getTrigger().getName());

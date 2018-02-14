@@ -355,12 +355,6 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY, activityReason);
             }
-            activity = listingQuestionableActivityProvider.checkCertificationStatusDateHistoryUpdated(
-                    origListing, newListing);
-            if (activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
-                        QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_HISTORY, activityReason);
-            }
             //finally check for other changes that are only questionable
             //outside of the acceptable activity threshold
             if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null
@@ -550,11 +544,11 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
     }
-    
-    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
+
+    private QuestionableActivityTriggerDTO getTrigger(final QuestionableActivityTriggerConcept trigger) {
         QuestionableActivityTriggerDTO result = null;
-        for(QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
-            if(trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
+        for (QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
+            if (trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
                 result = currTrigger;
             }
         }

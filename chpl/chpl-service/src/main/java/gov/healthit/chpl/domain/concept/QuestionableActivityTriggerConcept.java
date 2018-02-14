@@ -73,10 +73,6 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
      */
     CERTIFICATION_STATUS_EDITED_HISTORY("Historical Certification Status Edited"),
     /**
-     * Historical Certification Date Edited.
-     */
-    CERTIFICATION_STATUS_DATE_EDITED_HISTORY("Historical Certification Date Edited"),
-    /**
      * Developer Name Edited.
      */
     DEVELOPER_NAME_EDITED("Developer Name Edited"),
