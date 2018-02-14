@@ -4,6 +4,7 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -82,10 +83,8 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         List<CertificationStatusEvent> prevEvents = origListing.getCertificationEvents();
         List<CertificationStatusEvent> currEvents = newListing.getCertificationEvents();
-        Collections.sort(prevEvents, (a, b) -> a.getEventDate().longValue() < b.getEventDate().longValue()
-                ? -1 : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1);
-        Collections.sort(currEvents, (a, b) -> a.getEventDate().longValue() < b.getEventDate().longValue()
-                ? -1 : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1);
+        Collections.sort(prevEvents, new CertificationStatusEventComparator());
+        Collections.sort(currEvents, new CertificationStatusEventComparator());
         int p = 0, c = 0;
         List<String> beforeRes = new ArrayList<String>();
         List<String> afterRes = new ArrayList<String>();
@@ -416,5 +415,13 @@ public class ListingQuestionableActivityProvider {
               activity.setAfter(null);
         }
         return activity;
+    }
+
+    class CertificationStatusEventComparator implements Comparator<CertificationStatusEvent> {
+        @Override
+        public int compare(final CertificationStatusEvent a, final CertificationStatusEvent b) {
+            return a.getEventDate().longValue() < b.getEventDate().longValue()
+                    ? -1 : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
+        }
     }
 }
