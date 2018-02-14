@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 15.5.0
+_18 February 2018_
 
 ### Major features
 * Add fuzzy match functionality for uploading of UCD Process, QMS Standard and Accessibility Standard names
