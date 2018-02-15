@@ -324,81 +324,94 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                     activityUser, QuestionableActivityTriggerConcept.VERSION_NAME_EDITED);
         }
     }
-    
+
     /**
-     * checks for various listing changes - add or remove certs and cqms, deleting surveillance, 
-     * editing certification date 
+     * checks for various listing changes - add or remove certs and cqms, deleting surveillance,
+     * editing certification date.
      * @param origListing
      * @param newListing
      * @param activityDate
      * @param activityUser
      */
-    private void checkListingQuestionableActivity(CertifiedProductSearchDetails origListing, 
-            CertifiedProductSearchDetails newListing, Date activityDate, Long activityUser,
-            String activityReason) {
-        QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(origListing, newListing);
-        if(activity != null) {
-            createListingActivity(activity, origListing.getId(), activityDate, activityUser, 
+    private void checkListingQuestionableActivity(final CertifiedProductSearchDetails origListing,
+            final CertifiedProductSearchDetails newListing, final Date activityDate, final Long activityUser,
+            final String activityReason) {
+        QuestionableActivityListingDTO activity = listingQuestionableActivityProvider.check2011EditionUpdated(
+                origListing, newListing);
+        if (activity != null) {
+            createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                     QuestionableActivityTriggerConcept.EDITION_2011_EDITED, activityReason);
         } else {
             //it wasn't a 2011 update, check for any changes that are questionable at any time
             activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(
                     CertificationStatusType.WithdrawnByDeveloperUnderReview, origListing, newListing);
-            if(activity != null) {
-                createListingActivity(activity, origListing.getId(), activityDate, activityUser, 
-                        QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED, activityReason);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT, activityReason);
             }
-            
-            //finally check for other changes that are only questionable 
+            activity = listingQuestionableActivityProvider.checkCertificationStatusHistoryUpdated(
+                    origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY, activityReason);
+            }
+            //finally check for other changes that are only questionable
             //outside of the acceptable activity threshold
             if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null
                     && (newListing.getLastModifiedDate().longValue()
                             - origListing.getCertificationDate().longValue() > listingActivityThresholdMillis)) {
                 activity = listingQuestionableActivityProvider.checkCertificationStatusUpdated(origListing, newListing);
-                if(activity != null) {
-                    createListingActivity(activity, origListing.getId(), activityDate, 
-                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED,
+                if (activity != null) {
+                    createListingActivity(activity, origListing.getId(), activityDate,
+                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT,
                             activityReason);
                 }
-                
+                activity = listingQuestionableActivityProvider.checkCertificationStatusDateUpdated(
+                        origListing, newListing);
+                if (activity != null) {
+                    createListingActivity(activity, origListing.getId(), activityDate,
+                            activityUser, QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT,
+                            activityReason);
+                }
                 activity = listingQuestionableActivityProvider.checkSurveillanceDeleted(origListing, newListing);
-                if(activity != null) {
-                    createListingActivity(activity, origListing.getId(), activityDate, 
+                if (activity != null) {
+                    createListingActivity(activity, origListing.getId(), activityDate,
                             activityUser, QuestionableActivityTriggerConcept.SURVEILLANCE_REMOVED,
                             activityReason);
                 }
-                
-                List<QuestionableActivityListingDTO> activities = listingQuestionableActivityProvider.checkCqmsAdded(origListing, newListing);
-                if(activities != null && activities.size() > 0) {
-                    for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+
+                List<QuestionableActivityListingDTO> activities = listingQuestionableActivityProvider
+                        .checkCqmsAdded(origListing, newListing);
+                if (activities != null && activities.size() > 0) {
+                    for (QuestionableActivityListingDTO currActivity : activities) {
+                        createListingActivity(currActivity, origListing.getId(), activityDate,
                                 activityUser, QuestionableActivityTriggerConcept.CQM_ADDED,
                                 activityReason);
                     }
                 }
-                
+
                 activities = listingQuestionableActivityProvider.checkCqmsRemoved(origListing, newListing);
-                if(activities != null && activities.size() > 0) {
-                    for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+                if (activities != null && activities.size() > 0) {
+                    for (QuestionableActivityListingDTO currActivity : activities) {
+                        createListingActivity(currActivity, origListing.getId(), activityDate,
                                 activityUser, QuestionableActivityTriggerConcept.CQM_REMOVED,
                                 activityReason);
                     }
                 }
 
                 activities = listingQuestionableActivityProvider.checkCertificationsAdded(origListing, newListing);
-                if(activities != null && activities.size() > 0) {
-                    for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+                if (activities != null && activities.size() > 0) {
+                    for (QuestionableActivityListingDTO currActivity : activities) {
+                        createListingActivity(currActivity, origListing.getId(), activityDate,
                                 activityUser, QuestionableActivityTriggerConcept.CRITERIA_ADDED,
                                 activityReason);
                     }
                 }
-                
+
                 activities = listingQuestionableActivityProvider.checkCertificationsRemoved(origListing, newListing);
-                if(activities != null && activities.size() > 0) {
-                    for(QuestionableActivityListingDTO currActivity : activities) {
-                        createListingActivity(currActivity, origListing.getId(), activityDate, 
+                if (activities != null && activities.size() > 0) {
+                    for (QuestionableActivityListingDTO currActivity : activities) {
+                        createListingActivity(currActivity, origListing.getId(), activityDate,
                                 activityUser, QuestionableActivityTriggerConcept.CRITERIA_REMOVED,
                                 activityReason);
                     }
@@ -406,7 +419,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             }
         }
     }
-    
+
     /**
      * checks for changes to listing certification results; g1/g2 boolean changes, macra measures added
      * or removed for g1/g2, or changes to gap
@@ -531,11 +544,11 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         activity.setTriggerId(triggerDto.getId());
         questionableActivityDao.create(activity);
     }
-    
-    private QuestionableActivityTriggerDTO getTrigger(QuestionableActivityTriggerConcept trigger) {
+
+    private QuestionableActivityTriggerDTO getTrigger(final QuestionableActivityTriggerConcept trigger) {
         QuestionableActivityTriggerDTO result = null;
-        for(QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
-            if(trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
+        for (QuestionableActivityTriggerDTO currTrigger : triggerTypes) {
+            if (trigger.getName().equalsIgnoreCase(currTrigger.getName())) {
                 result = currTrigger;
             }
         }

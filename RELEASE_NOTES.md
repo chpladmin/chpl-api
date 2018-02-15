@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Minor features
+* Enhanced certification status change questionable activity abilities to support
+  * Change of current status date
+  * Any modification of certification status history
+
+---
+
 ## Version 15.5.0
 _18 February 2018_
 

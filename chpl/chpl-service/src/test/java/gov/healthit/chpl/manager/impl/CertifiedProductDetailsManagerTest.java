@@ -130,7 +130,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	public void testCertifiedProductDetailsChplProductCertificationEvents() throws EntityRetrievalException{
 		
 		CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
-		assertEquals(1, detail.getCertificationEvents().size());
+		assertEquals(3, detail.getCertificationEvents().size());
 		
 	}
 	
