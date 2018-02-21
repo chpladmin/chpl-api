@@ -929,31 +929,54 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
         }
         if (meetsC1Criterion && !hasC1Cqm) {
             product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missingCqmFor170315c"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(1)"));
         } else if (!meetsC1Criterion && hasC1Cqm) {
             product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(1), but the product does not attest to that criterion.");
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missing170315cForCqm"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(1)"));
         }
         if (meetsC2Criterion && !hasC2Cqm) {
             product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(2) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC2Criterion && hasC2Cqm) {
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missingCqmFor170315c"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(2)"));
             product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(2), but the product does not attest to that criterion.");
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missing170315cForCqm"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(2)"));
         }
         if (meetsC3Criterion && !hasC3Cqm) {
             product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(3) was found but no matching Clinical Quality Measurement was found.");
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missingCqmFor170315c"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(3)"));
         } else if (!meetsC3Criterion && hasC3Cqm) {
             product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(3), but the product does not attest to that criterion.");
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missing170315cForCqm"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(3)"));
         }
         if (meetsC4Criterion && !hasC4Cqm) {
             product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(4) was found but no matching Clinical Quality Measurement was found.");
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missingCqmFor170315c"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(4)"));
         } else if (!meetsC4Criterion && hasC4Cqm) {
             product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(4), but the product does not attest to that criterion.");
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable(
+                                    "listing.criteria.missing170315cForCqm"),
+                            LocaleContextHolder.getLocale()), "170.315 (c)(4)"));
         }
 
         // check for (e)(2) or (e)(3) certs

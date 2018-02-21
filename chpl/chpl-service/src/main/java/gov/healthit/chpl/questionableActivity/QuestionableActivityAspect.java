@@ -54,20 +54,21 @@ public class QuestionableActivityAspect implements EnvironmentAware {
 
     private List<QuestionableActivityTriggerDTO> triggerTypes;
     private long listingActivityThresholdMillis = -1;
-    
+    private static final long MILLIS_PER_DAY = 24 * 60 * 60 * 1000;
+
     public QuestionableActivityAspect() {
     }
-    
+
     @Override
     public void setEnvironment(final Environment e) {
         this.env = e;
         String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
         int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-        listingActivityThresholdMillis = activityThresholdDays * 24 * 60 * 60 * 1000;
-        
+        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY * -1;
+
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
-    
+
     @Before("execution(* gov.healthit.chpl.web.controller.CertifiedProductController.updateCertifiedProduct(..)) && "
             + "args(updateRequest,..)")
     public void checkReasonProvidedIfRequiredOnListingUpdate(ListingUpdateRequest updateRequest) 
