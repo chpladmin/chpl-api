@@ -8,6 +8,9 @@ _Date TBD_
   * Change of current status date
   * Any modification of certification status history
 
+### Bug fixed
+* Enabled questionable activity window
+
 ---
 
 ## Version 15.5.0
