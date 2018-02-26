@@ -1,5 +1,10 @@
 # Release Notes
 
+### OCD-2098 Bug fixed
+* No longer show errant error messages for missing g1/g2 values if criteria not attested to
+
+---
+
 ## Version TBD
 _Date TBD_
 

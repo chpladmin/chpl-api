@@ -231,15 +231,21 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         // check cqms
         boolean isCqmRequired = false;
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-        	if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS) && cert.getG1Success() == null){
-        		product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG1Success", cert.getNumber()));
-        	}
-        	if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS) && cert.getG2Success() == null){
-        		product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG2Success", cert.getNumber()));
-        	}
-            for (int i = 0; i < cqmRequiredCerts.length; i++) {
-                if (cert.getNumber().equals(cqmRequiredCerts[i]) && cert.getMeetsCriteria()) {
-                    isCqmRequired = true;
+            if (cert.getMeetsCriteria()) {
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS)
+                        && cert.getG1Success() == null) {
+                    product.getErrorMessages().add(
+                            getErrorMessage("listing.criteria.missingG1Success", cert.getNumber()));
+                }
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS)
+                        && cert.getG2Success() == null) {
+                    product.getErrorMessages().add(
+                            getErrorMessage("listing.criteria.missingG2Success", cert.getNumber()));
+                }
+                for (int i = 0; i < cqmRequiredCerts.length; i++) {
+                    if (cert.getNumber().equals(cqmRequiredCerts[i])) {
+                        isCqmRequired = true;
+                    }
                 }
             }
         }
