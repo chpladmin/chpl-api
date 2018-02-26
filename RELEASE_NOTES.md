@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 15.6.0
+_26 February 2018_
+
+### Minor features
+* Enhanced certification status change questionable activity abilities to support
+  * Change of current status date
+  * Any modification of certification status history
+
+### Bug fixed
+* Enabled questionable activity window
+
+---
+
 ## Version 15.5.0
 _18 February 2018_
 
