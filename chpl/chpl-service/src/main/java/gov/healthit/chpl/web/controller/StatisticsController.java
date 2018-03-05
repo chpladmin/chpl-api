@@ -17,25 +17,38 @@ import gov.healthit.chpl.web.controller.results.SedParticipantStatisticsCountRes
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * The StatisticsController is used to return data that can be used to charting.
+ * @author TYoung
+ *
+ */
 @Api(value = "statistics")
 @RestController
 @RequestMapping("/statistics")
 public class StatisticsController {
-	
-	private static final Logger LOGGER = LogManager.getLogger(StatisticsController.class);
-	
-	@Autowired
-	private StatisticsManager statisticsManager;
-	
-	@ApiOperation(value = "Get all Sed/Participant counts.",
-            notes = "Need to enter notes... ")
-    @RequestMapping(value = "/sed_participant_count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+
+    private static final Logger LOGGER = LogManager.getLogger(StatisticsController.class);
+
+    @Autowired
+    private StatisticsManager statisticsManager;
+
+    /**
+     * Retrieves and returns the SED/Participant counts.
+     * @return a JSON representation of a SedParticipantStatisticsCountResults object
+     */
+    @ApiOperation(value = "Get all Sed/Participant counts.",
+            notes = "Retrieves and returns the SED/Participant counts.")
+    @RequestMapping(value = "/sed_participant_count", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SedParticipantStatisticsCountResults getSedParticipantStatisticsCounts() {
-		SedParticipantStatisticsCountResults results = new SedParticipantStatisticsCountResults();
-        List<SedParticipantStatisticsCountDTO> sedParticipantStatisticsCountDTOs = statisticsManager.getAllSedParticipantCounts();
+        SedParticipantStatisticsCountResults results = new SedParticipantStatisticsCountResults();
+        List<SedParticipantStatisticsCountDTO> sedParticipantStatisticsCountDTOs = statisticsManager
+                .getAllSedParticipantCounts();
         if (sedParticipantStatisticsCountDTOs != null) {
-            for (SedParticipantStatisticsCountDTO sedParticipantStatisticsCountDTO : sedParticipantStatisticsCountDTOs) {
-                results.getSedParticipantStatisticsCounts().add(new SedParticipantStatisticsCount(sedParticipantStatisticsCountDTO));
+            for (SedParticipantStatisticsCountDTO sedParticipantStatisticsCountDTO
+                    : sedParticipantStatisticsCountDTOs) {
+                results.getSedParticipantStatisticsCounts()
+                        .add(new SedParticipantStatisticsCount(sedParticipantStatisticsCountDTO));
             }
         }
         return results;
