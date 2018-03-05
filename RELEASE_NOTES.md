@@ -3,6 +3,14 @@
 ## Version TBD
 _Date TBD_
 
+### Bug fixed
+* No longer show errant error messages for missing g1/g2 values if criteria not attested to
+
+---
+
+## Version 15.6.0
+_26 February 2018_
+
 ### Minor features
 * Enhanced certification status change questionable activity abilities to support
   * Change of current status date
