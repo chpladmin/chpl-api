@@ -8,6 +8,14 @@ _Date TBD_
 
 ---
 
+## Version 15.7.0
+_05 March 2018_
+
+### Minor features
+* Add endpoint for retrieving SED/Participant counts to be used for charting
+
+---
+
 ## Version 15.6.0
 _26 February 2018_
 
