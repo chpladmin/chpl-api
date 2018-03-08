@@ -5,6 +5,8 @@ _Date TBD_
 
 ### Bug fixed
 * No longer show errant error messages for missing g1/g2 values if criteria not attested to
+### Minor features
+* Add endpoint for retrieving SED/Participant counts to be used for charting
 
 ---
 
