@@ -1,7 +1,8 @@
 package gov.healthit.chpl.questionableActivity;
 
-
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -41,16 +42,17 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.SurveillanceController;
 import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
-
-
+/**
+ * Test Listing updates for questionable activity.
+ * @author alarned
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
@@ -59,119 +61,129 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class ListingTest extends TestCase {
-	
-	@Autowired private QuestionableActivityDAO qaDao;	
-	@Autowired private CertifiedProductController cpController;
-	@Autowired private CertifiedProductDetailsManager cpdManager;
-	private static JWTAuthenticatedUser adminUser;
-	
-	@Rule
+
+    @Autowired private QuestionableActivityDAO qaDao;
+    @Autowired private CertifiedProductController cpController;
+    @Autowired private CertifiedProductDetailsManager cpdManager;
+    private static JWTAuthenticatedUser adminUser;
+    private static final long ADMIN_ID = -2L;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-	
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
-	
-	@Test
-	@Transactional
-	@Rollback
-	public void testUpdate2011Listing_IncludesReason() throws 
-	    EntityCreationException, EntityRetrievalException, 
-	    ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException, IOException {
-	    SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-	    Date beforeActivity = new Date(); 
-	    CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(3L);
-	    listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-	    ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-	    updateRequest.setBanDeveloper(false);
-	    updateRequest.setListing(listing);
-	    updateRequest.setReason("unit test");
-	    cpController.updateCertifiedProduct(updateRequest);
-		Date afterActivity = new Date();
-		
-		List<QuestionableActivityListingDTO> activities = 
-		        qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-		assertNotNull(activities);
-		assertEquals(1, activities.size());
-		QuestionableActivityListingDTO activity = activities.get(0);
-		assertEquals(3, activity.getListingId().longValue());
-		assertNull(activity.getBefore());
-		assertNull(activity.getAfter());
-		assertNotNull(activity.getReason());
-		assertEquals("unit test", activity.getReason());
-		assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
-	
-	@Test(expected = MissingReasonException.class)
+    /**
+     * Set up class for tests.
+     *
+     * @throws Exception if user can't be created
+     */
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFirstName("Administrator");
+        adminUser.setId(ADMIN_ID);
+        adminUser.setLastName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    @Test
     @Transactional
     @Rollback
-    public void testUpdate2011Listing_WithoutReason() throws 
-        EntityCreationException, EntityRetrievalException, 
+    public void testUpdate2011ListingIncludesReason() throws
+        EntityCreationException, EntityRetrievalException,
         ValidationException, InvalidArgumentsException, JsonProcessingException,
         MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Date beforeActivity = new Date(); 
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(3L);
+        final long cpId = 3L;
+        final long expectedId = 3L;
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
         listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
-        updateRequest.setListing(listing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-        
-        List<QuestionableActivityListingDTO> activities = 
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertNotNull(activities);
-        assertEquals(1, activities.size());
-        QuestionableActivityListingDTO activity = activities.get(0);
-        assertEquals(3, activity.getListingId().longValue());
-        assertNull(activity.getBefore());
-        assertNull(activity.getAfter());
-        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
-        
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-	   
-	@Test
-    @Transactional
-    @Rollback
-    public void testUpdateCertificationStatus_IncludesReason() throws 
-        EntityCreationException, EntityRetrievalException, 
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        Date beforeActivity = new Date(); 
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
-        CertificationStatus status = new CertificationStatus();
-        status.setId(2L);
-        status.setName("Retired");
-        statusEvent.setStatus(status);
-        listing.getCertificationEvents().add(statusEvent);
-        
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         updateRequest.setReason("unit test");
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
-        
-        List<QuestionableActivityListingDTO> activities = 
+
+        List<QuestionableActivityListingDTO> activities =
+                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(expectedId, activity.getListingId().longValue());
+        assertNull(activity.getBefore());
+        assertNull(activity.getAfter());
+        assertNotNull(activity.getReason());
+        assertEquals("unit test", activity.getReason());
+        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test(expected = MissingReasonException.class)
+    @Transactional
+    @Rollback
+    public void testUpdate2011ListingWithoutReason() throws
+        EntityCreationException, EntityRetrievalException,
+        ValidationException, InvalidArgumentsException, JsonProcessingException,
+        MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final long cpId = 3L;
+        final long expectedId = 3L;
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(cpId);
+        listing.setAcbCertificationId("NEWACBCERTIFICATIONID");
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities =
+                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(expectedId, activity.getListingId().longValue());
+        assertNull(activity.getBefore());
+        assertNull(activity.getAfter());
+        assertEquals(QuestionableActivityTriggerConcept.EDITION_2011_EDITED.getName(), activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateCertificationStatusIncludesReason() throws
+        EntityCreationException, EntityRetrievalException,
+        ValidationException, InvalidArgumentsException, JsonProcessingException,
+        MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(0);
+        CertificationStatus status = new CertificationStatus();
+        status.setId(2L);
+        status.setName("Retired");
+        statusEvent.setStatus(status);
+        events.set(0, statusEvent);
+        listing.setCertificationEvents(events);
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        updateRequest.setReason("unit test");
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities =
                 qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
@@ -181,37 +193,39 @@ public class ListingTest extends TestCase {
         assertEquals("Retired", activity.getAfter());
         assertNotNull(activity.getReason());
         assertEquals("unit test", activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED.getName(), activity.getTrigger().getName());
-        
+        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT.getName(),
+                activity.getTrigger().getName());
+
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-	
-	@Test
+
+    @Test
     @Transactional
     @Rollback
-    public void testUpdateCertificationStatus() throws 
-        EntityCreationException, EntityRetrievalException, 
+    public void testUpdateCertificationStatus() throws
+        EntityCreationException, EntityRetrievalException,
         ValidationException, InvalidArgumentsException, JsonProcessingException,
         MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Date beforeActivity = new Date(); 
+        Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        statusEvent.setEventDate(System.currentTimeMillis());
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(0);
         CertificationStatus status = new CertificationStatus();
         status.setId(2L);
         status.setName("Retired");
         statusEvent.setStatus(status);
-        listing.getCertificationEvents().add(statusEvent);
-        
+        events.set(0, statusEvent);
+        listing.setCertificationEvents(events);
+
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
-        
-        List<QuestionableActivityListingDTO> activities = 
+
+        List<QuestionableActivityListingDTO> activities =
                 qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
@@ -220,24 +234,148 @@ public class ListingTest extends TestCase {
         assertEquals("Active", activity.getBefore());
         assertEquals("Retired", activity.getAfter());
         assertNull(activity.getReason());
-        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED.getName(), activity.getTrigger().getName());
-        
+        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_CURRENT.getName(),
+                activity.getTrigger().getName());
+
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-	
-	@Test
+
+    @Test
     @Transactional
     @Rollback
-    public void testAddCqm() throws 
-        EntityCreationException, EntityRetrievalException, 
+    public void testUpdateCertificationStatusDate() throws
+        EntityCreationException, EntityRetrievalException,
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException, IOException {
+        MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Date beforeActivity = new Date(); 
+        Date beforeActivity = new Date();
+        Date eventDate = new Date("2/14/2018");
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(0);
+        statusEvent.setEventDate(eventDate.getTime());
+        events.set(0, statusEvent);
+        listing.setCertificationEvents(events);
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities =
+                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(1, activity.getListingId().longValue());
+        assertEquals("Tue Oct 20 13:14:00 EDT 2015", activity.getBefore());
+        assertEquals("Wed Feb 14 00:00:00 EST 2018", activity.getAfter());
+        assertNull(activity.getReason());
+        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT.getName(),
+                activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateCertificationStatusHistoryDate() throws
+        EntityCreationException, EntityRetrievalException,
+        ValidationException, InvalidArgumentsException, JsonProcessingException,
+        MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final long dateDifference = 1000L;
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(2);
+        Long beforeEventDate = statusEvent.getEventDate();
+        Long afterEventDate = beforeEventDate - dateDifference;
+        statusEvent.setEventDate(afterEventDate);
+        events.set(2, statusEvent);
+        listing.setCertificationEvents(events);
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities =
+                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(1, activity.getListingId().longValue());
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:13:59 EDT 2015)]", activity.getAfter());
+        assertNull(activity.getReason());
+        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
+                activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testUpdateCertificationStatusHistoryStatus() throws
+        EntityCreationException, EntityRetrievalException,
+        ValidationException, InvalidArgumentsException, JsonProcessingException,
+        MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final long statusId = 4L;
+        Date beforeActivity = new Date();
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        List<CertificationStatusEvent> events = listing.getCertificationEvents();
+        CertificationStatusEvent statusEvent = events.get(2);
+        CertificationStatus status = new CertificationStatus();
+        status.setId(statusId);
+        status.setName("Withdrawn by ONC-ACB");
+        statusEvent.setStatus(status);
+        events.set(2, statusEvent);
+        listing.setCertificationEvents(events);
+
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setBanDeveloper(false);
+        updateRequest.setListing(listing);
+        cpController.updateCertifiedProduct(updateRequest);
+        Date afterActivity = new Date();
+
+        List<QuestionableActivityListingDTO> activities =
+                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
+        assertNotNull(activities);
+        assertEquals(1, activities.size());
+        QuestionableActivityListingDTO activity = activities.get(0);
+        assertEquals(1, activity.getListingId().longValue());
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
+        assertEquals("[Withdrawn by ONC-ACB (Sun Sep 20 13:14:00 EDT 2015)]", activity.getAfter());
+        assertNull(activity.getReason());
+        assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
+                activity.getTrigger().getName());
+
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void testAddCqm() throws
+        EntityCreationException, EntityRetrievalException,
+        ValidationException, InvalidArgumentsException, JsonProcessingException,
+        MissingReasonException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final long cms82Id = 60L;
+        Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
         CQMResultDetails addedCqm = new CQMResultDetails();
-        addedCqm.setId(60L);
+        addedCqm.setId(cms82Id);
         addedCqm.setCmsId("CMS82");
         addedCqm.setSuccess(Boolean.TRUE);
         Set<String> successVersions = new HashSet<String>();
@@ -249,8 +387,8 @@ public class ListingTest extends TestCase {
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
-        
-        List<QuestionableActivityListingDTO> activities = 
+
+        List<QuestionableActivityListingDTO> activities =
                 qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
@@ -260,23 +398,23 @@ public class ListingTest extends TestCase {
         assertEquals("CMS82", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CQM_ADDED.getName(), activity.getTrigger().getName());
-        
+
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-	
-	@Test
+
+    @Test
     @Transactional
     @Rollback
-    public void testRemoveCqm_IncludesReason() throws 
-        EntityCreationException, EntityRetrievalException, 
+    public void testRemoveCqmIncludesReason() throws
+        EntityCreationException, EntityRetrievalException,
         ValidationException, InvalidArgumentsException, JsonProcessingException,
-	    MissingReasonException, IOException {
+        MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Date beforeActivity = new Date(); 
+        Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for(CQMResultDetails cqm : listing.getCqmResults()) {
-            if(cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
+        for (CQMResultDetails cqm : listing.getCqmResults()) {
+            if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
                 cqm.setSuccess(Boolean.FALSE);
                 cqm.setSuccessVersions(null);
             }
@@ -288,8 +426,8 @@ public class ListingTest extends TestCase {
         updateRequest.setReason("unit test");
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
-        
-        List<QuestionableActivityListingDTO> activities = 
+
+        List<QuestionableActivityListingDTO> activities =
                 qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
@@ -300,23 +438,23 @@ public class ListingTest extends TestCase {
         assertNotNull(activity.getReason());
         assertEquals("unit test", activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CQM_REMOVED.getName(), activity.getTrigger().getName());
-        
+
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-	
-	@Test(expected = MissingReasonException.class)
+
+    @Test(expected = MissingReasonException.class)
     @Transactional
     @Rollback
-    public void testRemoveCqm_WithoutReason() throws 
-        EntityCreationException, EntityRetrievalException, 
+    public void testRemoveCqmWithoutReason() throws
+        EntityCreationException, EntityRetrievalException,
         ValidationException, InvalidArgumentsException, JsonProcessingException,
         MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Date beforeActivity = new Date(); 
+        Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for(CQMResultDetails cqm : listing.getCqmResults()) {
-            if(cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
+        for (CQMResultDetails cqm : listing.getCqmResults()) {
+            if (cqm.getCmsId() != null && cqm.getCmsId().equals("CMS146")) {
                 cqm.setSuccess(Boolean.FALSE);
                 cqm.setSuccessVersions(null);
             }
@@ -327,8 +465,8 @@ public class ListingTest extends TestCase {
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
-        
-        List<QuestionableActivityListingDTO> activities = 
+
+        List<QuestionableActivityListingDTO> activities =
                 qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
         assertNotNull(activities);
         assertEquals(1, activities.size());
@@ -337,10 +475,10 @@ public class ListingTest extends TestCase {
         assertEquals("CMS146", activity.getBefore());
         assertNull(activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.CQM_REMOVED.getName(), activity.getTrigger().getName());
-        
+
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-	
+
     @Test
     @Transactional
     @Rollback
@@ -348,10 +486,11 @@ public class ListingTest extends TestCase {
             InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
+        final int critId = 4;
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.getId().longValue() == 4) {
+            if (cert.getId().longValue() == critId) {
                 cert.setSuccess(Boolean.TRUE);
             }
         }
@@ -374,11 +513,11 @@ public class ListingTest extends TestCase {
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-    
+
     @Test
     @Transactional
     @Rollback
-    public void testRemoveCriteria_IncludesReason() throws EntityCreationException, 
+    public void testRemoveCriteriaIncludesReason() throws EntityCreationException,
         EntityRetrievalException, ValidationException,
         InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -411,11 +550,11 @@ public class ListingTest extends TestCase {
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-    
+
     @Test(expected = MissingReasonException.class)
     @Transactional
     @Rollback
-    public void testRemoveCriteria_WithoutReason() throws EntityCreationException, 
+    public void testRemoveCriteriaWithoutReason() throws EntityCreationException,
         EntityRetrievalException, ValidationException,
         InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -445,6 +584,6 @@ public class ListingTest extends TestCase {
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-    //TODO: add test for surveillance deleted. Need surveillance associated with 
+    //TODO: add test for surveillance deleted. Need surveillance associated with
     //product ID 10 to pass surveillance validation
 }

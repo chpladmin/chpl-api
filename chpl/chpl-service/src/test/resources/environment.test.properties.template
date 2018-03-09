@@ -15,6 +15,7 @@ testDbServer=localhost/openchpl_test
 persistenceUnitName=openchpl-test
 authAclCacheName=aclCache
 questionableActivityEmail=test@email.com
+questionableActivityThresholdDays=30
 
 #fuzzy choice options
 fuzzyChoiceThreshold=80

@@ -8,6 +8,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Certification Status Event domain object.
+ * @author alarned
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationStatusEvent implements Serializable {
@@ -36,13 +41,16 @@ public class CertificationStatusEvent implements Serializable {
      */
     @XmlElement(required = true)
     private String reason;
-    
+
     @XmlTransient
     private Long lastModifiedUser;
 
     @XmlTransient
     private Long lastModifiedDate;
 
+    /**
+     * Constructor.
+     */
     public CertificationStatusEvent() {
     }
 
@@ -82,13 +90,18 @@ public class CertificationStatusEvent implements Serializable {
         return status;
     }
 
-    public void setStatus(CertificationStatus status) {
+    public void setStatus(final CertificationStatus status) {
         this.status = status;
     }
-    
-    public boolean matches(CertificationStatusEvent other) {
+
+    /**
+     * Check to see if this CSE matches another one.
+     * @param other CSE to check against
+     * @return true if the IDs match
+     */
+    public boolean matches(final CertificationStatusEvent other) {
         boolean result = false;
-        
+
         if (this.getId() != null && other.getId() != null
                 && this.getId().longValue() == other.getId().longValue()) {
             result = true;
@@ -100,7 +113,7 @@ public class CertificationStatusEvent implements Serializable {
         return reason;
     }
 
-    public void setReason(String reason) {
+    public void setReason(final String reason) {
         this.reason = reason;
     }
 }

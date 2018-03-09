@@ -29,6 +29,8 @@ target/
 # PDT-specific
 .buildpath
 
+# Checkstyle on the fly configuration
+.checkstyle
 
 #################
 ## Visual Studio

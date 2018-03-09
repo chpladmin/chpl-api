@@ -1,5 +1,28 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Bug fixed
+* No longer show errant error messages for missing g1/g2 values if criteria not attested to
+### Minor features
+* Add endpoint for retrieving SED/Participant counts to be used for charting
+
+---
+
+## Version 15.6.0
+_26 February 2018_
+
+### Minor features
+* Enhanced certification status change questionable activity abilities to support
+  * Change of current status date
+  * Any modification of certification status history
+
+### Bug fixed
+* Enabled questionable activity window
+
+---
+
 ## Version 15.5.0
 _18 February 2018_
 
