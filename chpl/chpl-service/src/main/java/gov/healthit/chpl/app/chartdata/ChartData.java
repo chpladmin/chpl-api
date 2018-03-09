@@ -1,5 +1,7 @@
 package gov.healthit.chpl.app.chartdata;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This is the starting point for populating statistics tables that will be used for the
@@ -8,7 +10,8 @@ package gov.healthit.chpl.app.chartdata;
  *
  */
 public final class ChartData {
-
+    private static final Logger LOGGER = LogManager.getLogger(ChartData.class);
+    
     private ChartData() {
         //Default private constructor
     }
@@ -24,7 +27,7 @@ public final class ChartData {
             SedParticipantsStatisticCount sedParticipantsStatisticCount = new SedParticipantsStatisticCount();
             sedParticipantsStatisticCount.run(appEnvironment);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
         }
     }
 }
