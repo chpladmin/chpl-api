@@ -1,5 +1,8 @@
 package gov.healthit.chpl.app.chartdata;
 
+import java.util.List;
+
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 /**
  * This is the starting point for populating statistics tables that will be used for the
@@ -21,8 +24,19 @@ public final class ChartData {
         ChartDataApplicationEnvironment appEnvironment;
         try {
             appEnvironment = new ChartDataApplicationEnvironment();
-            SedParticipantsStatisticCount sedParticipantsStatisticCount = new SedParticipantsStatisticCount();
-            sedParticipantsStatisticCount.run(appEnvironment);
+            
+            SedDataCollector sedDataCollector = new SedDataCollector();
+            
+            List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(appEnvironment);
+            
+            SedParticipantsStatisticCountCalculator sedParticipantsStatisticCountCalculator = 
+                    new SedParticipantsStatisticCountCalculator();
+            sedParticipantsStatisticCountCalculator.run(seds, appEnvironment);
+            
+            ParticipantGenderStatisticsCalculator participantGenderStatisticsCalculator = 
+                    new ParticipantGenderStatisticsCalculator();
+            participantGenderStatisticsCalculator.run(seds, appEnvironment);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

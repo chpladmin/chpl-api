@@ -5,16 +5,8 @@ import java.util.Date;
 
 import gov.healthit.chpl.entity.SedParticipantStatisticsCountEntity;
 
-/**
- * Represents the sed_participant_statistics_count table.
- * @author TYoung
- *
- */
 public class SedParticipantStatisticsCountDTO implements Serializable {
-
-    /** Serial Version UID. */
-    private static final long serialVersionUID = -1536844909545189801L;
-
+    private static final long serialVersionUID = 8353909432965835502L;
     private Long id;
     private Long sedCount;
     private Long participantCount;
@@ -52,20 +44,20 @@ public class SedParticipantStatisticsCountDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getParticipantCount() {
-        return participantCount;
-    }
-
-    public void setParticipantCount(final Long participantCount) {
-        this.participantCount = participantCount;
-    }
-
     public Long getSedCount() {
         return sedCount;
     }
 
     public void setSedCount(final Long sedCount) {
         this.sedCount = sedCount;
+    }
+
+    public Long getParticipantCount() {
+        return participantCount;
+    }
+
+    public void setParticipantCount(final Long participantCount) {
+        this.participantCount = participantCount;
     }
 
     public Date getCreationDate() {
@@ -99,4 +91,5 @@ public class SedParticipantStatisticsCountDTO implements Serializable {
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
+
 }

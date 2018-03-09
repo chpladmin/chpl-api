@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.domain.ParticipantGenderStatistics;
 import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
+import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.web.controller.results.SedParticipantStatisticsCountResults;
@@ -52,5 +54,18 @@ public class StatisticsController {
             }
         }
         return results;
+    }
+    
+    /**
+     * Retrieves and returns the SED/Participant/Gender counts.
+     * @return a JSON representation of a ???????? object
+     */
+    @ApiOperation(value = "Get all Sed/Participant/Gender counts.",
+            notes = "Retrieves and returns the SED/Participant/Gender counts.")
+    @RequestMapping(value = "/participant_gender_count", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody ParticipantGenderStatistics getParticipantGenderStatistics() {
+        ParticipantGenderStatisticsDTO stats = statisticsManager.getParticipantGenderStatisticsDTO();
+        return new ParticipantGenderStatistics(stats);
     }
 }
