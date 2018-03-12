@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
+import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
@@ -25,6 +27,9 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     @Autowired
     private ParticipantGenderStatisticsDAO participantGenderStatisticsCountDAO;
     
+    @Autowired
+    private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
+    
     @Override
     public List<SedParticipantStatisticsCountDTO> getAllSedParticipantCounts() {
         return sedParticipantStatisticsCountDAO.findAll();
@@ -41,4 +46,11 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
             return new ParticipantGenderStatisticsDTO();
         }
     }
+
+    @Override
+    public List<ParticipantAgeStatisticsDTO> getParticipantAgerStatisticsDTO() {
+        return participantAgeStatisticsDAO.findAll();
+    }
+    
+    
 }

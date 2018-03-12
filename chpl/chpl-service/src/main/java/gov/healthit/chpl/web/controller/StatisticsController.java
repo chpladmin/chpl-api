@@ -68,4 +68,17 @@ public class StatisticsController {
         ParticipantGenderStatisticsDTO stats = statisticsManager.getParticipantGenderStatisticsDTO();
         return new ParticipantGenderStatistics(stats);
     }
+    
+    /**
+     * Retrieves and returns the SED/Participant/Age counts.
+     * @return a JSON representation of a XXXXXXX object
+     */
+    @ApiOperation(value = "Get all Sed/Participant/Age counts.",
+            notes = "Retrieves and returns the SED/Participant/Age counts.")
+    @RequestMapping(value = "/participant_age_count", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody ParticipantGenderStatistics getParticipantAgeStatistics() {
+        ParticipantGenderStatisticsDTO stats = statisticsManager.getParticipantGenderStatisticsDTO();
+        return new ParticipantGenderStatistics(stats);
+    }
 }

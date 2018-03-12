@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
+import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 
@@ -23,4 +24,11 @@ public interface StatisticsManager {
      *
      */
     ParticipantGenderStatisticsDTO getParticipantGenderStatisticsDTO();
+    
+    /**
+     * Retrieves that data that will be used for the SED/participant/age counts chart.
+     * @return ParticipantAgeStatisticsDTO object
+     *
+     */
+    List<ParticipantAgeStatisticsDTO> getParticipantAgerStatisticsDTO();
 }

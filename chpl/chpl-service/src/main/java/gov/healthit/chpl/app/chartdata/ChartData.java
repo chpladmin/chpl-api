@@ -37,6 +37,10 @@ public final class ChartData {
                     new ParticipantGenderStatisticsCalculator();
             participantGenderStatisticsCalculator.run(seds, appEnvironment);
             
+            ParticipantAgeStatisticsCalculator participantAgeStatisticsCalculator =
+                    new ParticipantAgeStatisticsCalculator();
+            participantAgeStatisticsCalculator.run(seds, appEnvironment);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

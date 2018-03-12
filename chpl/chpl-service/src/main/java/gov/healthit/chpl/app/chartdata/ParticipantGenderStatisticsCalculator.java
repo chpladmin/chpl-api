@@ -22,7 +22,7 @@ import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantGenderStatisticsEntity;
 
 public class ParticipantGenderStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(SedParticipantsStatisticCountCalculator.class);
+    private static final Logger LOGGER = LogManager.getLogger(ParticipantGenderStatisticsCalculator.class);
     
     private ChartDataApplicationEnvironment appEnvironment;
     private ParticipantGenderStatisticsDAO participantGenderStatisticsDAO;
