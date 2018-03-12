@@ -58,7 +58,7 @@ public class StatisticsController {
     
     /**
      * Retrieves and returns the SED/Participant/Gender counts.
-     * @return a JSON representation of a ???????? object
+     * @return a JSON representation of a ParticipantGenderStatistics object
      */
     @ApiOperation(value = "Get all Sed/Participant/Gender counts.",
             notes = "Retrieves and returns the SED/Participant/Gender counts.")
