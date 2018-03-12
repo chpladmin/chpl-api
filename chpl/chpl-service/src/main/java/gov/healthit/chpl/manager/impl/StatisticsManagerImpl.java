@@ -51,6 +51,4 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     public List<ParticipantAgeStatisticsDTO> getParticipantAgerStatisticsDTO() {
         return participantAgeStatisticsDAO.findAll();
     }
-    
-    
 }
