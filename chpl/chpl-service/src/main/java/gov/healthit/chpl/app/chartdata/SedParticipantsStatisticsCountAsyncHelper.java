@@ -24,7 +24,7 @@ public class SedParticipantsStatisticsCountAsyncHelper {
     /**
      * Retrieves the associated CertifiedProductionSearchDetails object as a Future<>.
      * @param id id associated to the requested CertifiedProductionSearchDetails object
-     * @param certifiedProductDetailsManager provides access to retrieve CertifiedProductionSearchDetails object
+     * @param certifiedProductDetailsManager provides access to retrrieve CertifiedProductionSearchDetails object
      * @return CertifiedProductionSearchDetails object
      * @throws EntityRetrievalException when the CertifiedProductionSearchDetails object could not be retrieved
      */
