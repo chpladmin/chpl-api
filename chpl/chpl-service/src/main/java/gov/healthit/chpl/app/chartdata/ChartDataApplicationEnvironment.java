@@ -50,14 +50,23 @@ public class ChartDataApplicationEnvironment {
         return applicationContext.getBean(name);
     }
 
+    /**
+     * Close the active application context.
+     */
+    public void closeApplicationContext() {
+        applicationContext.close();
+    }
+
     private void loadApplicationContext() {
         applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
     }
 
     private void loadLocalContext() throws Exception {
         localContext = LocalContextFactory.createLocalContext(properties.getProperty("dbDriverClass"));
-        localContext.addDataSource(properties.getProperty("dataSourceName"),
-                properties.getProperty("dataSourceConnection"), properties.getProperty("dataSourceUsername"),
+        localContext.addDataSource(
+                properties.getProperty("dataSourceName"),
+                properties.getProperty("dataSourceConnection"),
+                properties.getProperty("dataSourceUsername"),
                 properties.getProperty("dataSourcePassword"));
     }
 
