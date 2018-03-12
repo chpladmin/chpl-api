@@ -26,6 +26,9 @@ public final class ChartData {
             appEnvironment = new ChartDataApplicationEnvironment();
             SedParticipantsStatisticCount sedParticipantsStatisticCount = new SedParticipantsStatisticCount();
             sedParticipantsStatisticCount.run(appEnvironment);
+            
+            appEnvironment.close();
+            
         } catch (Exception e) {
             LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
         } finally {
