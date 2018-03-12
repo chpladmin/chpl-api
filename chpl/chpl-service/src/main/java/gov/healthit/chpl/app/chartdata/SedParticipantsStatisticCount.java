@@ -49,16 +49,16 @@ public class SedParticipantsStatisticCount {
      * This method is the entry point for generating data and populating the sed_participant_statistics_count table.
      * The following steps are being performed:
      * 1) initialize the object with required Spring objects
-     * 2) retrieve list of all certified products (summary onjects)
+     * 2) retrieve list of all certified products (summary objects)
      * 3) filter the list be 'edition' (2015)
      * 4) retrieve the details for the remaining certified products
      * 5) filter for only certified products that are SED
-     * 6) sum the sed certified apps by thier unique participants
+     * 6) sum the SED certified Listings by their unique participants
      * 7) write the sums to the sed_participant_statistics_count table
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
+     * @param environment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
      */
-    public void run(final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
+    public void run(final ChartDataApplicationEnvironment environment) {
+        this.appEnvironment = environment;
         initialize();
 
         List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts();
