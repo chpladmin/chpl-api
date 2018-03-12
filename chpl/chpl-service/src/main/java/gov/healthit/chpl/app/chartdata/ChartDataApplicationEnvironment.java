@@ -49,13 +49,6 @@ public class ChartDataApplicationEnvironment {
         LOGGER.info(applicationContext.getClassLoader());
         return applicationContext.getBean(name);
     }
-    
-    /**
-     * Closes the AbstractApplicationContext
-     */
-    public void close() {
-        applicationContext.close();
-    }
 
     private void loadApplicationContext() {
         applicationContext = new AnnotationConfigApplicationContext(AppConfig.class);
