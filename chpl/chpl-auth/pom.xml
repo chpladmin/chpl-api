@@ -8,9 +8,7 @@
 		<artifactId>chpl</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>gov.healthit.chpl</groupId>
 	<artifactId>chpl-auth</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>chpl-auth</name>
 	<url>http://maven.apache.org</url>
