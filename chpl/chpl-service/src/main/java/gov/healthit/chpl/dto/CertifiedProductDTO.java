@@ -11,23 +11,73 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 
+/**
+ * Basic Certified Product DTO.
+ * @author alarned
+ *
+ */
 public class CertifiedProductDTO implements Serializable {
     private static final long serialVersionUID = 7918387302717979598L;
+    /**
+     * How many parts there are in the CHPL Product ID.
+     */
     public static final int CHPL_PRODUCT_ID_PARTS = 9;
+    /**
+     * Location of the EDITION in the CHPL_PRODUCT_ID.
+     */
     public static final int EDITION_CODE_INDEX = 0;
+    /**
+     * Location of the ATL in the CHPL_PRODUCT_ID.
+     */
     public static final int ATL_CODE_INDEX = 1;
+    /**
+     * Location of the ACB in the CHPL_PRODUCT_ID.
+     */
     public static final int ACB_CODE_INDEX = 2;
+    /**
+     * Location of the Developer in the CHPL_PRODUCT_ID.
+     */
     public static final int DEVELOPER_CODE_INDEX = 3;
+    /**
+     * Location of the Product in the CHPL_PRODUCT_ID.
+     */
     public static final int PRODUCT_CODE_INDEX = 4;
+    /**
+     * Location of the Version in the CHPL_PRODUCT_ID.
+     */
     public static final int VERSION_CODE_INDEX = 5;
+    /**
+     * Location of the ICS in the CHPL_PRODUCT_ID.
+     */
     public static final int ICS_CODE_INDEX = 6;
+    /**
+     * Location of the Additional Software in the CHPL_PRODUCT_ID.
+     */
     public static final int ADDITIONAL_SOFTWARE_CODE_INDEX = 7;
+    /**
+     * Location of the Certification Date in the CHPL_PRODUCT_ID.
+     */
     public static final int CERTIFIED_DATE_CODE_INDEX = 8;
 
+    /**
+     * Required length of the PRODUCT code.
+     */
     public static final int PRODUCT_CODE_LENGTH = 4;
+    /**
+     * Required length of the VERSION code.
+     */
     public static final int VERSION_CODE_LENGTH = 2;
+    /**
+     * Required length of the ICS code.
+     */
     public static final int ICS_CODE_LENGTH = 2;
+    /**
+     * Required length of the ADDITIONAL SOFTWARE code.
+     */
     public static final int ADDITIONAL_SOFTWARE_CODE_LENGTH = 1;
+    /**
+     * Required length of the CERTIFICATION DATE code.
+     */
     public static final int CERTIFIED_DATE_CODE_LENGTH = 6;
 
     private Long id;
@@ -52,7 +102,6 @@ public class CertifiedProductDTO implements Serializable {
     private String sedReportFileLocation;
     private String sedIntendedUserDescription;
     private Date sedTestingEnd;
-    private Long testingLabId;
     private CertificationStatusDTO certificationStatus;
     private String otherAcb;
     private String transparencyAttestationUrl;
@@ -64,10 +113,17 @@ public class CertifiedProductDTO implements Serializable {
     private Long pendingCertifiedProductId;
     private Boolean transparencyAttestation = null;
 
+    /**
+     * Default constructor.
+     */
     public CertifiedProductDTO() {
     }
 
-    public CertifiedProductDTO(CertifiedProductEntity entity) {
+    /**
+     * Construct from entity.
+     * @param entity starting point
+     */
+    public CertifiedProductDTO(final CertifiedProductEntity entity) {
         this.id = entity.getId();
         this.productCode = entity.getProductCode();
         this.versionCode = entity.getVersionCode();
@@ -91,7 +147,6 @@ public class CertifiedProductDTO implements Serializable {
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
         this.transparencyAttestationUrl = entity.getTransparencyAttestationUrl();
-        this.testingLabId = entity.getTestingLabId();
         this.otherAcb = entity.getOtherAcb();
         this.setIcs(entity.getIcs());
         this.setSedTesting(entity.getSedTesting());
@@ -100,11 +155,13 @@ public class CertifiedProductDTO implements Serializable {
         this.setProductAdditionalSoftware(entity.getProductAdditionalSoftware());
     }
 
-    public CertifiedProductDTO(CertifiedProductSearchDetails from) throws InvalidArgumentsException {
+    /**
+     * Construct from search details entity.
+     * @param from from entity
+     * @throws InvalidArgumentsException when CHPL ID isn't recognized
+     */
+    public CertifiedProductDTO(final CertifiedProductSearchDetails from) throws InvalidArgumentsException {
         this.setId(from.getId());
-        if (from.getTestingLab() != null && !StringUtils.isEmpty(from.getTestingLab().get("id"))) {
-            this.setTestingLabId(new Long(from.getTestingLab().get("id").toString()));
-        }
         this.setCertificationBodyId(new Long(from.getCertifyingBody().get("id").toString()));
         if (from.getPracticeType() != null && from.getPracticeType().get("id") != null) {
             this.setPracticeTypeId(new Long(from.getPracticeType().get("id").toString()));
@@ -113,9 +170,9 @@ public class CertifiedProductDTO implements Serializable {
             this.setProductClassificationTypeId(new Long(from.getClassificationType().get("id").toString()));
         }
         this.setProductVersionId(new Long(from.getVersion().getVersionId()));
-        
+
         CertificationStatus fromStatus = from.getCurrentStatus().getStatus();
-        if(fromStatus != null) {
+        if (fromStatus != null) {
             this.certificationStatus = new CertificationStatusDTO();
             this.certificationStatus.setId(fromStatus.getId());
             this.certificationStatus.setStatus(fromStatus.getName());
@@ -140,15 +197,15 @@ public class CertifiedProductDTO implements Serializable {
             } else {
                 String chplProductId = from.getChplProductNumber();
                 String[] chplProductIdComponents = chplProductId.split("\\.");
-                if (chplProductIdComponents == null || chplProductIdComponents.length != 9) {
+                if (chplProductIdComponents == null || chplProductIdComponents.length != CHPL_PRODUCT_ID_PARTS) {
                     throw new InvalidArgumentsException(
                             "CHPL Product Id " + chplProductId + " is not in a format recognized by the system.");
                 } else {
-                    this.setProductCode(chplProductIdComponents[4]);
-                    this.setVersionCode(chplProductIdComponents[5]);
-                    this.setIcsCode(chplProductIdComponents[6]);
-                    this.setAdditionalSoftwareCode(chplProductIdComponents[7]);
-                    this.setCertifiedDateCode(chplProductIdComponents[8]);
+                    this.setProductCode(chplProductIdComponents[PRODUCT_CODE_INDEX]);
+                    this.setVersionCode(chplProductIdComponents[VERSION_CODE_INDEX]);
+                    this.setIcsCode(chplProductIdComponents[ICS_CODE_INDEX]);
+                    this.setAdditionalSoftwareCode(chplProductIdComponents[ADDITIONAL_SOFTWARE_CODE_INDEX]);
+                    this.setCertifiedDateCode(chplProductIdComponents[CERTIFIED_DATE_CODE_INDEX]);
                 }
 
                 if (from.getCertificationDate() != null) {
@@ -287,14 +344,6 @@ public class CertifiedProductDTO implements Serializable {
         this.reportFileLocation = reportFileLocation;
     }
 
-    public Long getTestingLabId() {
-        return testingLabId;
-    }
-
-    public void setTestingLabId(final Long testingLabId) {
-        this.testingLabId = testingLabId;
-    }
-    
     public String getOtherAcb() {
         return otherAcb;
     }
@@ -427,7 +476,7 @@ public class CertifiedProductDTO implements Serializable {
         return certificationStatus;
     }
 
-    public void setCertificationStatus(CertificationStatusDTO certificationStatus) {
+    public void setCertificationStatus(final CertificationStatusDTO certificationStatus) {
         this.certificationStatus = certificationStatus;
     }
 
@@ -435,7 +484,7 @@ public class CertifiedProductDTO implements Serializable {
         return pendingCertifiedProductId;
     }
 
-    public void setPendingCertifiedProductId(Long pendingCertifiedProductId) {
+    public void setPendingCertifiedProductId(final Long pendingCertifiedProductId) {
         this.pendingCertifiedProductId = pendingCertifiedProductId;
     }
 }

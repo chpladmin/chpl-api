@@ -16,6 +16,11 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Certified Product Search Details entity.
+ * @author alarned
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertifiedProductSearchDetails implements Serializable {
@@ -133,8 +138,9 @@ public class CertifiedProductSearchDetails implements Serializable {
      * for 2014 and 2015 Edition and takes values of: Drummond Group, ICSA Labs,
      * Infogard, National Technical Systems, SLI Global, CCHIT
      */
-    @XmlElement(required = false, nillable = true)
-    private Map<String, Object> testingLab = new HashMap<String, Object>();
+    @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
+    @XmlElement(name = "testingLabs")
+    private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
     /**
      * Certification date represented in milliseconds since epoch
@@ -259,7 +265,8 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
     @XmlElement(name = "accessibilityStandard")
-    private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
+    private List<CertifiedProductAccessibilityStandard> accessibilityStandards =
+    new ArrayList<CertifiedProductAccessibilityStandard>();
 
     /**
      * Description of the health IT module(s) intended users for the tested
@@ -298,7 +305,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     /**
      * All current and historical certification status of this listing.
-     * The certification statuses take values of Active; Suspended by ONC; Suspended by ONC-ACB; 
+     * The certification statuses take values of Active; Suspended by ONC; Suspended by ONC-ACB;
      * Withdrawn by Developer; Withdrawn by Developer Under Surveillance/Review; Withdrawn
      * by ONC-ACB; Terminated by ONC; Retired. For a detailed description of
      * each certification status, please see 'Understanding Certification Status
@@ -320,6 +327,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlTransient
     private Set<String> errorMessages = new HashSet<String>();
 
+    /**
+     * Default constructor.
+     */
     public CertifiedProductSearchDetails() {
         sed = new CertifiedProductSed();
     }
@@ -428,7 +438,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.cqmResults = cqmResults;
     }
 
-	public Integer getCountCerts() {
+    public Integer getCountCerts() {
         return countCerts;
     }
 
@@ -492,12 +502,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.ics = ics;
     }
 
-    public Map<String, Object> getTestingLab() {
-        return testingLab;
+    public List<CertifiedProductTestingLab> getTestingLabs() {
+        return testingLabs;
     }
 
-    public void setTestingLab(final Map<String, Object> testingLab) {
-        this.testingLab = testingLab;
+    public void setTestingLabs(final List<CertifiedProductTestingLab> testingLabs) {
+        this.testingLabs = testingLabs;
     }
 
     public String getSedReportFileLocation() {
@@ -565,14 +575,14 @@ public class CertifiedProductSearchDetails implements Serializable {
     }
 
     public Date getSedTestingEndDate() {
-		return sedTestingEndDate;
-	}
+        return sedTestingEndDate;
+    }
 
-	public void setSedTestingEndDate(Date sedTestingEndDate) {
-		this.sedTestingEndDate = sedTestingEndDate;
-	}
+    public void setSedTestingEndDate(final Date sedTestingEndDate) {
+        this.sedTestingEndDate = sedTestingEndDate;
+    }
 
-	public Product getProduct() {
+    public Product getProduct() {
         return product;
     }
 
@@ -659,29 +669,37 @@ public class CertifiedProductSearchDetails implements Serializable {
     public void setSed(final CertifiedProductSed sed) {
         this.sed = sed;
     }
-    
+
+    /**
+     * Retrieve current status.
+     * @return current status
+     */
     public CertificationStatusEvent getCurrentStatus() {
-        if(this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
+        if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
         }
-        
+
         CertificationStatusEvent newest = this.getCertificationEvents().get(0);
-        for(CertificationStatusEvent event : this.getCertificationEvents()) {
-            if(event.getEventDate() > newest.getEventDate()) {
+        for (CertificationStatusEvent event : this.getCertificationEvents()) {
+            if (event.getEventDate() > newest.getEventDate()) {
                 newest = event;
             }
         }
         return newest;
     }
-    
+
+    /**
+     * Retrieve oldest status.
+     * @return the first status of the Listing
+     */
     public CertificationStatusEvent getOldestStatus() {
-        if(this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
+        if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
             return null;
         }
-        
+
         CertificationStatusEvent oldest = this.getCertificationEvents().get(0);
-        for(CertificationStatusEvent event : this.getCertificationEvents()) {
-            if(event.getEventDate() < oldest.getEventDate()) {
+        for (CertificationStatusEvent event : this.getCertificationEvents()) {
+            if (event.getEventDate() < oldest.getEventDate()) {
                 oldest = event;
             }
         }
