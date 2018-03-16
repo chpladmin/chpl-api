@@ -3,8 +3,6 @@ package gov.healthit.chpl.manager.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +19,7 @@ import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
+import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
@@ -36,13 +35,13 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
@@ -50,6 +49,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
@@ -69,15 +69,21 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
+/**
+ * Certified Product Details Manager service.
+ * @author alarned
+ *
+ */
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
+    //private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
@@ -95,9 +101,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
 
     @Autowired
-    CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
+    private CertifiedProductTestingLabDAO certifiedProductTestingLabDao;
+
     @Autowired
-    CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
+    private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
+
+    @Autowired
+    private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
 
     @Autowired
     private CertificationResultManager certResultManager;
@@ -123,8 +133,13 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
+    /**
+     * Default constructor.
+     * @param cqmCriterionDAO the CQM/Criterion DAO
+     * @param macraDao the Macra measures DAO
+     */
     @Autowired
-    public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO, MacraMeasureDAO macraDao) {
+    public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO, final MacraMeasureDAO macraDao) {
         this.cqmCriterionDAO = cqmCriterionDAO;
         this.macraDao = macraDao;
 
@@ -134,7 +149,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Override
     @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
+    public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
@@ -181,9 +196,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
         searchDetails.setSedTestingEndDate(dto.getSedTestingEnd());
 
-        searchDetails.getTestingLab().put("id", dto.getTestingLabId());
-        searchDetails.getTestingLab().put("name", dto.getTestingLabName());
-        searchDetails.getTestingLab().put("code", dto.getTestingLabCode());
+        // get ATLs
+        List<CertifiedProductTestingLabDTO> testingLabDtos = certifiedProductTestingLabDao
+                .getTestingLabsByCertifiedProductId(dto.getId());
+        List<CertifiedProductTestingLab> testingLabResults = new ArrayList<CertifiedProductTestingLab>();
+        for (CertifiedProductTestingLabDTO testingLabDto : testingLabDtos) {
+            CertifiedProductTestingLab result = new CertifiedProductTestingLab(testingLabDto);
+            testingLabResults.add(result);
+        }
+        searchDetails.setTestingLabs(testingLabResults);
 
         Developer developer = new Developer(dto.getDeveloper());
         searchDetails.setDeveloper(developer);
@@ -238,7 +259,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         // get accessibility standards
         List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos = certifiedProductAsDao
                 .getAccessibilityStandardsByCertifiedProductId(dto.getId());
-        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults = new ArrayList<CertifiedProductAccessibilityStandard>();
+        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults =
+                new ArrayList<CertifiedProductAccessibilityStandard>();
         for (CertifiedProductAccessibilityStandardDTO accessibilityStandardDto : accessibilityStandardDtos) {
             CertifiedProductAccessibilityStandard result = new CertifiedProductAccessibilityStandard(
                     accessibilityStandardDto);
@@ -343,8 +365,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                 List<CertificationResultTestFunctionalityDTO> testFunctionality = certResultManager
                         .getTestFunctionalityForCertificationResult(certResult.getId());
                 for (CertificationResultTestFunctionalityDTO currResult : testFunctionality) {
-                    CertificationResultTestFunctionality testFunctionalityResult = new CertificationResultTestFunctionality(
-                            currResult);
+                    CertificationResultTestFunctionality testFunctionalityResult =
+                            new CertificationResultTestFunctionality(currResult);
                     result.getTestFunctionality().add(testFunctionalityResult);
                 }
             } else {
@@ -547,7 +569,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         this.cqmCriteria = cqmCriteria;
     }
 
-    private List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId)
+    private List<CertificationStatusEvent> getCertificationStatusEvents(final Long certifiedProductId)
             throws EntityRetrievalException {
 
         List<CertificationStatusEvent> certEvents = new ArrayList<CertificationStatusEvent>();
@@ -560,8 +582,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setEventDate(certStatusDto.getEventDate().getTime());
             cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
             cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
-            
-            if(Util.getCurrentUser() != null && 
+
+            if (Util.getCurrentUser() != null && 
                     (Util.isUserRoleAcbAdmin() || Util.isUserRoleAdmin())) {
                 cse.setReason(certStatusDto.getReason());
             }

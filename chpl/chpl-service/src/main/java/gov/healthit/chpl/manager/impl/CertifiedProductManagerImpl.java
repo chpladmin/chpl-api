@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -43,6 +43,7 @@ import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
+import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -100,6 +101,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -122,6 +124,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
@@ -147,7 +150,6 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
@@ -175,6 +177,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     AccessibilityStandardDAO asDao;
     @Autowired
     CertifiedProductQmsStandardDAO cpQmsDao;
+    @Autowired
+    CertifiedProductTestingLabDAO cpTestingLabDao;
     @Autowired
     CertifiedProductTargetedUserDAO cpTargetedUserDao;
     @Autowired
@@ -393,7 +397,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
-    public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(final Long acbId, PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
@@ -416,11 +420,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             throw new EntityCreationException("ACB ID must be specified.");
         }
         toCreate.setCertificationBodyId(pendingCp.getCertificationBodyId());
-
-        if (pendingCp.getTestingLabId() == null) {
-            throw new EntityCreationException("ATL ID must be specified.");
-        }
-        toCreate.setTestingLabId(pendingCp.getTestingLabId());
 
         if (pendingCp.getCertificationEditionId() == null) {
             throw new EntityCreationException(
@@ -487,6 +486,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         toCreate.setCertifiedDateCode(uniqueIdParts[8]);
 
         CertifiedProductDTO newCertifiedProduct = cpDao.create(toCreate);
+
+        // ATLs
+        if (pendingCp.getTestingLabs() != null && pendingCp.getTestingLabs().size() > 0) {
+            for (PendingCertifiedProductTestingLabDTO tl : pendingCp.getTestingLabs()) {
+                CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
+                tlDto.setTestingLabId(tl.getTestingLabId());
+                tlDto.setCertifiedProductId(newCertifiedProduct.getId());
+                cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
+            }
+        } else {
+            throw new EntityCreationException("ATL ID must be specified.");
+        }
 
         // ics
         if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {

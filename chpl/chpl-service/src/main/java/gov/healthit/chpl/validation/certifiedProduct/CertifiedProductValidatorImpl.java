@@ -70,10 +70,9 @@ import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
-import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
-import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
@@ -375,16 +374,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                         .add("The first part of the CHPL ID must match the certification year of the product.");
             }
 
-            if (product.getTestingLabId() == null) {
+            if (product.getTestingLabs() == null) {
                 product.getErrorMessages()
-                        .add("No testing lab was found matching the name '" + product.getTestingLabName() + "'");
-            } else {
-                TestingLabDTO testingLab = atlDao.getById(product.getTestingLabId());
-                if (!testingLab.getTestingLabCode().equals(atlCode)) {
-                    product.getErrorMessages()
-                            .add("The testing lab code provided does not match the assigned testing lab code '"
-                                    + testingLab.getTestingLabCode() + "'.");
-                }
+                        .add("No testing lab was found");
             }
 
             CertificationBodyDTO certificationBody = null;
@@ -1210,8 +1202,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
         addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(), 
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTestingLabName(), 
-                "Testing Lab Name '" + listing.getTestingLabName() + "'");
         addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(), 
                 "Transparency Attestation '" + listing.getTransparencyAttestation() + "'");
         addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(), 
@@ -1388,10 +1378,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     "Version Name '" + listing.getVersion().getVersion() + "'");
         }
         
-        if(listing.getTestingLab() != null && listing.getTestingLab().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getTestingLab().get("name").toString(), 
-                    "Testing Lab Name '" + listing.getTestingLab().get("name").toString() + "'");
-        }
 
         addListingWarningIfNotValid(listing, listing.getReportFileLocation(), 
                 "Report File Location '" + listing.getReportFileLocation() + "'");
