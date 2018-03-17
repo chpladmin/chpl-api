@@ -12,6 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+/**
+ * Entity object representing the participant_gender_statistics table.
+ * @author TYoung
+ *
+ */
 @Entity
 @Table(name = "participant_gender_statistics")
 public class ParticipantGenderStatisticsEntity implements Serializable {
@@ -26,11 +31,11 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "male_count", nullable = false)
     private Long maleCount;
-    
+
     @Basic(optional = false)
     @Column(name = "female_count", nullable = false)
     private Long femaleCount;
-    
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
@@ -47,19 +52,26 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
+    /**
+     * Default constructor.
+     */
     public ParticipantGenderStatisticsEntity() {
         //Default Constructor
     }
-    
-    public ParticipantGenderStatisticsEntity(Long id) {
+
+    /**
+     * Sets the id field upon creation.
+     * @param id The value to set object's id equal to
+     */
+    public ParticipantGenderStatisticsEntity(final Long id) {
         this.id = id;
     }
-    
+
     @Transient
     public Class<?> getClassType() {
-        return SedParticipantStatisticsCountEntity.class;
+        return ParticipantGenderStatisticsEntity.class;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -71,19 +83,19 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
     public Long getMaleCount() {
         return maleCount;
     }
-    
+
     public void setMaleCount(final Long maleCount) {
         this.maleCount = maleCount;
     }
-    
+
     public Long getFemaleCount() {
         return femaleCount;
     }
-    
+
     public void setFemaleCount(final Long femaleCount) {
         this.femaleCount = femaleCount;
     }
-    
+
     public Date getCreationDate() {
         return creationDate;
     }

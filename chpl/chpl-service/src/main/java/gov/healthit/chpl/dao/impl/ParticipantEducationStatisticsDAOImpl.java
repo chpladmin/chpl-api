@@ -11,46 +11,47 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
-import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.dao.ParticipantEducationStatisticsDAO;
+import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
+import gov.healthit.chpl.entity.ParticipantEducationStatisticsEntity;
 
 /**
- * The implementation for ParticipantAgeStatisticsDAO.
+ * The implementation for ParticipantEducationStatisticsDAO.
  * @author TYoung
  *
  */
-@Repository("participantAgeStatisticsDAO")
-public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements ParticipantAgeStatisticsDAO {
+@Repository("participantEducationStatisticsDAO")
+public class ParticipantEducationStatisticsDAOImpl extends BaseDAOImpl implements ParticipantEducationStatisticsDAO {
     private static final long MODIFIED_USER_ID = -3L;
 
     @Override
-    public List<ParticipantAgeStatisticsDTO> findAll() {
-        List<ParticipantAgeStatisticsEntity> result = this.findAllEntities();
-        List<ParticipantAgeStatisticsDTO> dtos = new ArrayList<ParticipantAgeStatisticsDTO>(result.size());
-        for (ParticipantAgeStatisticsEntity entity : result) {
-            dtos.add(new ParticipantAgeStatisticsDTO(entity));
+    public List<ParticipantEducationStatisticsDTO> findAll() {
+        List<ParticipantEducationStatisticsEntity> result = this.findAllEntities();
+        List<ParticipantEducationStatisticsDTO> dtos = new ArrayList<ParticipantEducationStatisticsDTO>(result.size());
+        for (ParticipantEducationStatisticsEntity entity : result) {
+            dtos.add(new ParticipantEducationStatisticsDTO(entity));
         }
         return dtos;
     }
 
     @Override
     public void delete(final Long id) throws EntityRetrievalException {
-        ParticipantAgeStatisticsEntity toDelete = getEntityById(id);
+        ParticipantEducationStatisticsEntity toDelete = getEntityById(id);
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedUser(getUserId());
             entityManager.merge(toDelete);
         }
+
     }
 
     @Override
-    public ParticipantAgeStatisticsEntity create(final ParticipantAgeStatisticsDTO dto)
+    public ParticipantEducationStatisticsEntity create(final ParticipantEducationStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
-        ParticipantAgeStatisticsEntity entity = new ParticipantAgeStatisticsEntity();
-        entity.setAgeCount(dto.getAgeCount());
-        entity.setTestParticipantAgeId(dto.getTestParticipantAgeId());
+        ParticipantEducationStatisticsEntity entity = new ParticipantEducationStatisticsEntity();
+        entity.setEducationCount(dto.getEducationCount());
+        entity.setEducationTypeId(dto.getEducationTypeId());
 
         if (dto.getDeleted() != null) {
             entity.setDeleted(dto.getDeleted());
@@ -79,20 +80,20 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
         return entity;
     }
 
-    private List<ParticipantAgeStatisticsEntity> findAllEntities() {
+    private List<ParticipantEducationStatisticsEntity> findAllEntities() {
         Query query = entityManager
-                .createQuery("SELECT a from ParticipantAgeStatisticsEntity a where (NOT a.deleted = true)");
+                .createQuery("SELECT a from ParticipantEducationStatisticsEntity a where (NOT a.deleted = true)");
         return query.getResultList();
     }
 
-    private ParticipantAgeStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
-        ParticipantAgeStatisticsEntity entity = null;
+    private ParticipantEducationStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
+        ParticipantEducationStatisticsEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from ParticipantAgeStatisticsEntity a where (NOT deleted = true) AND (id = :entityid) ",
-                ParticipantAgeStatisticsEntity.class);
+                "from ParticipantEducationStatisticsEntity a where (NOT deleted = true) AND (id = :entityid) ",
+                ParticipantEducationStatisticsEntity.class);
         query.setParameter("entityid", id);
-        List<ParticipantAgeStatisticsEntity> result = query.getResultList();
+        List<ParticipantEducationStatisticsEntity> result = query.getResultList();
 
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate id in database.");
@@ -112,4 +113,5 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
             return Util.getCurrentUser().getId();
         }
     }
+
 }

@@ -15,13 +15,23 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
+/**
+ * Retrieves all of the 2015 SED Products and their details.  Details are retrieved asynchronously according
+ * to the chartDataExecutor defined in AppConfig.
+ * @author TYoung
+ *
+ */
 public class SedDataCollector {
     private ChartDataApplicationEnvironment appEnvironment;
     private static final Logger LOGGER = LogManager.getLogger(SedDataCollector.class);
     private static final String EDITION_2015 = "2015";
-    
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
-    
+
+    /**
+     * This method runs the data retrieval process for the 2015 SED products and their details.
+     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
+     * @return List of CertifiedProductSearchDetails
+     */
     public List<CertifiedProductSearchDetails> retreiveData(final ChartDataApplicationEnvironment appEnvironment) {
         this.appEnvironment = appEnvironment;
         initialize();
@@ -37,15 +47,15 @@ public class SedDataCollector {
 
         certifiedProductsWithDetails = filterBySed(certifiedProductsWithDetails);
         LOGGER.info("2015/SED Certified Product Count: " + certifiedProductsWithDetails.size());
-        
+
         return certifiedProductsWithDetails;
     }
-    
+
     private void initialize() {
         certifiedProductDetailsManager = (CertifiedProductDetailsManager) appEnvironment
                 .getSpringManagedObject("certifiedProductDetailsManager");
     }
-    
+
     private List<CertifiedProductFlatSearchResult> getCertifiedProducts() {
         CertifiedProductSearchDAO certifiedProductSearchDAO = (CertifiedProductSearchDAO) appEnvironment
                 .getSpringManagedObject("certifiedProductSearchDAO");
@@ -54,7 +64,7 @@ public class SedDataCollector {
 
         return results;
     }
-    
+
     private List<CertifiedProductSearchDetails> getCertifiedProductDetailsForAll(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
 
@@ -97,7 +107,7 @@ public class SedDataCollector {
         }
         return results;
     }
-    
+
     private List<CertifiedProductSearchDetails> filterBySed(
             final List<CertifiedProductSearchDetails> certifiedProductDetails) {
         List<CertifiedProductSearchDetails> results = new ArrayList<CertifiedProductSearchDetails>();
@@ -112,5 +122,4 @@ public class SedDataCollector {
     private Boolean isCertifiedProductAnSed(final CertifiedProductSearchDetails certifiedProductDetail) {
         return certifiedProductDetail.getSed().getTestTasks().size() > 0;
     }
-
 }

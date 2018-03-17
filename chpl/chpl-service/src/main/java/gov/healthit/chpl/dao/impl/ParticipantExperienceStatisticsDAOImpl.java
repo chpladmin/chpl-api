@@ -11,32 +11,33 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
-import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
+import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
+import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
 
 /**
- * The implementation for ParticipantAgeStatisticsDAO.
+ * The implementation for ParticipantExperienceStatisticsDAO.
  * @author TYoung
  *
  */
-@Repository("participantAgeStatisticsDAO")
-public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements ParticipantAgeStatisticsDAO {
+@Repository("ParticipantExperienceStatisticsDAOImpl")
+public class ParticipantExperienceStatisticsDAOImpl extends BaseDAOImpl implements ParticipantExperienceStatisticsDAO {
     private static final long MODIFIED_USER_ID = -3L;
 
     @Override
-    public List<ParticipantAgeStatisticsDTO> findAll() {
-        List<ParticipantAgeStatisticsEntity> result = this.findAllEntities();
-        List<ParticipantAgeStatisticsDTO> dtos = new ArrayList<ParticipantAgeStatisticsDTO>(result.size());
-        for (ParticipantAgeStatisticsEntity entity : result) {
-            dtos.add(new ParticipantAgeStatisticsDTO(entity));
+    public List<ParticipantExperienceStatisticsDTO> findAll(final Long experienceTypeId) {
+        List<ParticipantExperienceStatisticsEntity> result = this.findAllEntities(experienceTypeId);
+        List<ParticipantExperienceStatisticsDTO> dtos =
+                new ArrayList<ParticipantExperienceStatisticsDTO>(result.size());
+        for (ParticipantExperienceStatisticsEntity entity : result) {
+            dtos.add(new ParticipantExperienceStatisticsDTO(entity));
         }
         return dtos;
     }
 
     @Override
     public void delete(final Long id) throws EntityRetrievalException {
-        ParticipantAgeStatisticsEntity toDelete = getEntityById(id);
+        ParticipantExperienceStatisticsEntity toDelete = getEntityById(id);
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
@@ -46,11 +47,13 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
     }
 
     @Override
-    public ParticipantAgeStatisticsEntity create(final ParticipantAgeStatisticsDTO dto)
+    public ParticipantExperienceStatisticsEntity create(final ParticipantExperienceStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
-        ParticipantAgeStatisticsEntity entity = new ParticipantAgeStatisticsEntity();
-        entity.setAgeCount(dto.getAgeCount());
-        entity.setTestParticipantAgeId(dto.getTestParticipantAgeId());
+        ParticipantExperienceStatisticsEntity entity = new ParticipantExperienceStatisticsEntity();
+
+        entity.setParticipantCount(dto.getParticipantCount());
+        entity.setExperienceTypeId(dto.getExperienceTypeId());
+        entity.setExperienceMonths(dto.getExperienceMonths());
 
         if (dto.getDeleted() != null) {
             entity.setDeleted(dto.getDeleted());
@@ -79,20 +82,22 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
         return entity;
     }
 
-    private List<ParticipantAgeStatisticsEntity> findAllEntities() {
-        Query query = entityManager
-                .createQuery("SELECT a from ParticipantAgeStatisticsEntity a where (NOT a.deleted = true)");
+    private List<ParticipantExperienceStatisticsEntity> findAllEntities(final Long experienceTypeId) {
+        Query query = entityManager.createQuery(
+                "from ParticipantExperienceStatisticsEntity a where (NOT deleted = true) "
+                + "AND (experience_type_id = :experienceTypeId)");
+        query.setParameter("experienceTypeId", experienceTypeId);
         return query.getResultList();
     }
 
-    private ParticipantAgeStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
-        ParticipantAgeStatisticsEntity entity = null;
+    private ParticipantExperienceStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
+        ParticipantExperienceStatisticsEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from ParticipantAgeStatisticsEntity a where (NOT deleted = true) AND (id = :entityid) ",
-                ParticipantAgeStatisticsEntity.class);
+                "from ParticipantExperienceStatisticsEntity a where (NOT deleted = true) AND (id = :entityid) ",
+                ParticipantExperienceStatisticsEntity.class);
         query.setParameter("entityid", id);
-        List<ParticipantAgeStatisticsEntity> result = query.getResultList();
+        List<ParticipantExperienceStatisticsEntity> result = query.getResultList();
 
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate id in database.");

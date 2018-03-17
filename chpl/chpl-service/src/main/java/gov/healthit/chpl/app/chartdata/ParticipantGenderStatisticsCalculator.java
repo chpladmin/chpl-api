@@ -21,15 +21,27 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantGenderStatisticsEntity;
 
+/**
+ * Populates the participant_gender_statistics table with summarized count information.
+ * @author TYoung
+ *
+ */
 public class ParticipantGenderStatisticsCalculator {
     private static final Logger LOGGER = LogManager.getLogger(ParticipantGenderStatisticsCalculator.class);
-    
+
     private ChartDataApplicationEnvironment appEnvironment;
     private ParticipantGenderStatisticsDAO participantGenderStatisticsDAO;
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
 
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,  final ChartDataApplicationEnvironment appEnvironment) {
+    /**
+     * This method calculates the participant gender counts and saves them to the
+     * participant_education_statistics table.
+     * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
+     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
+     */
+    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
+            final ChartDataApplicationEnvironment appEnvironment) {
         this.appEnvironment = appEnvironment;
         initialize();
 
@@ -40,44 +52,46 @@ public class ParticipantGenderStatisticsCalculator {
         save(entity);
     }
 
-    private void logCounts(ParticipantGenderStatisticsEntity entity) {
+    private void logCounts(final ParticipantGenderStatisticsEntity entity) {
         LOGGER.info("Total Female Count: " + entity.getFemaleCount());
         LOGGER.info("Total Male Count: " + entity.getMaleCount());
     }
     private void initialize() {
-        participantGenderStatisticsDAO = (ParticipantGenderStatisticsDAO) appEnvironment.getSpringManagedObject("participantGenderStatisticsDAO");
+        participantGenderStatisticsDAO = (ParticipantGenderStatisticsDAO)
+                appEnvironment.getSpringManagedObject("participantGenderStatisticsDAO");
         txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
         txnTemplate = new TransactionTemplate(txnManager);
     }
-    
-    private ParticipantGenderStatisticsEntity getCounts(List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+
+    private ParticipantGenderStatisticsEntity getCounts(
+            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
         ParticipantGenderStatisticsEntity entity = new ParticipantGenderStatisticsEntity();
         entity.setFemaleCount(0L);
         entity.setMaleCount(0L);
-        
+
         List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
         for (TestParticipant participant : uniqueParticipants) {
             if (isParticipantFemale(participant)) {
                 entity.setFemaleCount(entity.getFemaleCount() + 1L);
-            }
-            else if (isParticipantMale(participant)) {
+            } else if (isParticipantMale(participant)) {
                 entity.setMaleCount(entity.getMaleCount() + 1L);
             }
         }
         return entity;
     }
-    
-    private boolean isParticipantFemale(TestParticipant participant) {
-        return participant.getGender().equalsIgnoreCase("F") 
+
+    private boolean isParticipantFemale(final TestParticipant participant) {
+        return participant.getGender().equalsIgnoreCase("F")
                 || participant.getGender().equalsIgnoreCase("Female");
     }
-    
-    private boolean isParticipantMale(TestParticipant participant) {
-        return participant.getGender().equalsIgnoreCase("M") 
+
+    private boolean isParticipantMale(final TestParticipant participant) {
+        return participant.getGender().equalsIgnoreCase("M")
                 || participant.getGender().equalsIgnoreCase("Male");
     }
-    
-    private List<TestParticipant> getUniqueParticipants(List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+
+    private List<TestParticipant> getUniqueParticipants(
+            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
         Map<Long, TestParticipant> participants = new HashMap<Long, TestParticipant>();
         for (CertifiedProductSearchDetails detail : certifiedProductSearchDetails) {
             for (TestTask task : detail.getSed().getTestTasks()) {
@@ -88,9 +102,9 @@ public class ParticipantGenderStatisticsCalculator {
                 }
             }
         }
-        return new ArrayList<TestParticipant>(participants.values()); 
+        return new ArrayList<TestParticipant>(participants.values());
     }
-    
+
     private void save(final ParticipantGenderStatisticsEntity entity) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
@@ -113,8 +127,8 @@ public class ParticipantGenderStatisticsCalculator {
         try {
             ParticipantGenderStatisticsDTO dto = new ParticipantGenderStatisticsDTO(entity);
             participantGenderStatisticsDAO.create(dto);
-            LOGGER.info("Saved ParticipantGenderStatisticsDTO [Female: " + dto.getFemaleCount() + ", Male:" + dto.getMaleCount() + "]");
-            
+            LOGGER.info("Saved ParticipantGenderStatisticsDTO [Female: " + dto.getFemaleCount()
+                    + ", Male:" + dto.getMaleCount() + "]");
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Error occured while inserting counts.", e);
             return;

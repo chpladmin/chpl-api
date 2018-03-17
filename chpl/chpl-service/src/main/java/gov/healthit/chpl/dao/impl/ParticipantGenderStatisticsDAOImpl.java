@@ -15,6 +15,11 @@ import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantGenderStatisticsEntity;
 
+/**
+ * The implementation for ParticipantGenderStatisticsDAO.
+ * @author TYoung
+ *
+ */
 @Repository("participantGenderStatisticsDAO")
 public class ParticipantGenderStatisticsDAOImpl extends BaseDAOImpl implements ParticipantGenderStatisticsDAO {
     private static final long MODIFIED_USER_ID = -3L;
@@ -30,7 +35,7 @@ public class ParticipantGenderStatisticsDAOImpl extends BaseDAOImpl implements P
     }
 
     @Override
-    public void delete(Long id) throws EntityRetrievalException {
+    public void delete(final Long id) throws EntityRetrievalException {
         ParticipantGenderStatisticsEntity toDelete = getEntityById(id);
 
         if (toDelete != null) {
@@ -41,7 +46,7 @@ public class ParticipantGenderStatisticsDAOImpl extends BaseDAOImpl implements P
     }
 
     @Override
-    public ParticipantGenderStatisticsEntity create(ParticipantGenderStatisticsDTO dto)
+    public ParticipantGenderStatisticsEntity create(final ParticipantGenderStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
         ParticipantGenderStatisticsEntity entity = new ParticipantGenderStatisticsEntity();
         entity.setFemaleCount(dto.getFemaleCount());
@@ -80,7 +85,7 @@ public class ParticipantGenderStatisticsDAOImpl extends BaseDAOImpl implements P
                 .createQuery("SELECT a from ParticipantGenderStatisticsEntity a where (NOT a.deleted = true)");
         return query.getResultList();
     }
-    
+
     private ParticipantGenderStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
         ParticipantGenderStatisticsEntity entity = null;
 

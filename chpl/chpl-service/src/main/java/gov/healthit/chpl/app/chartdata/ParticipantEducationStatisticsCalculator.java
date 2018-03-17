@@ -15,28 +15,29 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
+import gov.healthit.chpl.dao.ParticipantEducationStatisticsDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
-import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
+import gov.healthit.chpl.entity.ParticipantEducationStatisticsEntity;
 
 /**
- * Populates the participant_age_statistics table with summarized count information.
+ * Populates the participant_education_statistics table with summarized count information.
  * @author TYoung
  *
  */
-public class ParticipantAgeStatisticsCalculator {
-    private static final Logger LOGGER = LogManager.getLogger(ParticipantAgeStatisticsCalculator.class);
+public class ParticipantEducationStatisticsCalculator {
+    private static final Logger LOGGER = LogManager.getLogger(ParticipantEducationStatisticsCalculator.class);
 
     private ChartDataApplicationEnvironment appEnvironment;
-    private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
+    private ParticipantEducationStatisticsDAO participantEducationStatisticsDAO;
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
 
     /**
-     * This method calculates the participant counts and saves them to the participant_age_statistics table.
+     * This method calculates the participant education counts and saves them to the
+     * participant_education_statistics table.
      * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
      * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
      */
@@ -45,22 +46,22 @@ public class ParticipantAgeStatisticsCalculator {
         this.appEnvironment = appEnvironment;
         initialize();
 
-        Map<Long, Long> ageCounts = getCounts(certifiedProductSearchDetails);
+        Map<Long, Long> educationCounts = getCounts(certifiedProductSearchDetails);
 
-        logCounts(ageCounts);
+        logCounts(educationCounts);
 
-        save(convertAgeCountMapToListOfParticipantAgeStatistics(ageCounts));
+        save(convertEducationCountMapToListOfParticipantEducationStatistics(educationCounts));
     }
 
-    private void logCounts(final Map<Long, Long> ageCounts) {
-        for (Entry<Long, Long> entry : ageCounts.entrySet()) {
-            LOGGER.info("Age Count: [" + entry.getKey() + " : " + entry.getValue() + "]");
+    private void logCounts(final Map<Long, Long> educationCounts) {
+        for (Entry<Long, Long> entry : educationCounts.entrySet()) {
+            LOGGER.info("Education Count: [" + entry.getKey() + " : " + entry.getValue() + "]");
         }
     }
 
     private void initialize() {
-        participantAgeStatisticsDAO = (ParticipantAgeStatisticsDAO)
-                appEnvironment.getSpringManagedObject("participantAgeStatisticsDAO");
+        participantEducationStatisticsDAO = (ParticipantEducationStatisticsDAO)
+                appEnvironment.getSpringManagedObject("participantEducationStatisticsDAO");
         txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
         txnTemplate = new TransactionTemplate(txnManager);
     }
@@ -68,19 +69,17 @@ public class ParticipantAgeStatisticsCalculator {
     private Map<Long, Long> getCounts(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
         //The key = testParticpantAgeId
         //The value = count of participants that fall into the associated testParticipantAgeId
-        Map<Long, Long> ageMap = new HashMap<Long, Long>();
-
+        Map<Long, Long> educationMap = new HashMap<Long, Long>();
         List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
-
         for (TestParticipant participant : uniqueParticipants) {
             Long updatedCount = 1L;
-            if (ageMap.containsKey(participant.getAgeRangeId())) {
-                updatedCount = ageMap.get(participant.getAgeRangeId());
+            if (educationMap.containsKey(participant.getEducationTypeId())) {
+                updatedCount = educationMap.get(participant.getEducationTypeId());
                 updatedCount++;
             }
-            ageMap.put(participant.getAgeRangeId(), updatedCount);
+            educationMap.put(participant.getEducationTypeId(), updatedCount);
         }
-        return ageMap;
+        return educationMap;
     }
 
     private List<TestParticipant> getUniqueParticipants(
@@ -98,53 +97,54 @@ public class ParticipantAgeStatisticsCalculator {
         return new ArrayList<TestParticipant>(participants.values());
     }
 
-    private void save(final List<ParticipantAgeStatisticsEntity> entities) {
+    private void save(final List<ParticipantEducationStatisticsEntity> entities) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
                 try {
-                    deleteExistingPartcipantAgeStatistics();
+                    deleteExistingPartcipantEducationStatistics();
                 } catch (EntityRetrievalException e) {
-                    LOGGER.error("Error occured while deleting existing ParticipantAgeStatistics.", e);
+                    LOGGER.error("Error occured while deleting existing ParticipantEducationStatistics.", e);
                     return;
                 }
 
-                for (ParticipantAgeStatisticsEntity entity : entities) {
-                    saveParticipantAgeStatistic(entity);
+                for (ParticipantEducationStatisticsEntity entity : entities) {
+                    saveParticipantEducationStatistic(entity);
                 }
             }
         });
     }
 
-    private List<ParticipantAgeStatisticsEntity> convertAgeCountMapToListOfParticipantAgeStatistics(
-            final Map<Long, Long> ageCounts) {
-        List<ParticipantAgeStatisticsEntity> entities = new ArrayList<ParticipantAgeStatisticsEntity>();
-        for (Entry<Long, Long> entry : ageCounts.entrySet()) {
-            ParticipantAgeStatisticsEntity entity = new ParticipantAgeStatisticsEntity();
-            entity.setAgeCount(entry.getValue());
-            entity.setTestParticipantAgeId(entry.getKey());
+    private List<ParticipantEducationStatisticsEntity>
+        convertEducationCountMapToListOfParticipantEducationStatistics(
+                final Map<Long, Long> educationCounts) {
+        List<ParticipantEducationStatisticsEntity> entities = new ArrayList<ParticipantEducationStatisticsEntity>();
+        for (Entry<Long, Long> entry : educationCounts.entrySet()) {
+            ParticipantEducationStatisticsEntity entity = new ParticipantEducationStatisticsEntity();
+            entity.setEducationCount(entry.getValue());
+            entity.setEducationTypeId(entry.getKey());
             entities.add(entity);
         }
         return entities;
     }
 
-    private void saveParticipantAgeStatistic(final ParticipantAgeStatisticsEntity entity) {
+    private void saveParticipantEducationStatistic(final ParticipantEducationStatisticsEntity entity) {
         try {
-            ParticipantAgeStatisticsDTO dto = new ParticipantAgeStatisticsDTO(entity);
-            participantAgeStatisticsDAO.create(dto);
-            LOGGER.info("Saved ParticipantAgeStatisticsDTO [Age Id: " + dto.getTestParticipantAgeId()
-                    + ", Count:" + dto.getAgeCount() + "]");
+            ParticipantEducationStatisticsDTO dto = new ParticipantEducationStatisticsDTO(entity);
+            participantEducationStatisticsDAO.create(dto);
+            LOGGER.info("Saved ParticipantEducationStatisticsDTO [Education Type Id: "
+                    + dto.getEducationTypeId() + ", Count:" + dto.getEducationCount() + "]");
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Error occured while inserting counts.", e);
             return;
         }
     }
 
-    private void deleteExistingPartcipantAgeStatistics() throws EntityRetrievalException {
-        List<ParticipantAgeStatisticsDTO> dtos = participantAgeStatisticsDAO.findAll();
-        for (ParticipantAgeStatisticsDTO dto : dtos) {
-            participantAgeStatisticsDAO.delete(dto.getId());
+    private void deleteExistingPartcipantEducationStatistics() throws EntityRetrievalException {
+        List<ParticipantEducationStatisticsDTO> dtos = participantEducationStatisticsDAO.findAll();
+        for (ParticipantEducationStatisticsDTO dto : dtos) {
+            participantEducationStatisticsDAO.delete(dto.getId());
             LOGGER.info("Deleted: " + dto.getId());
         }
     }

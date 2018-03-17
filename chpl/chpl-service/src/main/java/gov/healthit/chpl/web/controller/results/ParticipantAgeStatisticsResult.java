@@ -5,6 +5,11 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 
+/**
+ * Represents a list of ParticipantAgeStatistics domain objects.
+ * @author TYoung
+ *
+ */
 public class ParticipantAgeStatisticsResult {
     private List<ParticipantAgeStatistics> participantAgeStatistics = new ArrayList<ParticipantAgeStatistics>();
 
@@ -12,8 +17,8 @@ public class ParticipantAgeStatisticsResult {
         return participantAgeStatistics;
     }
 
-    public void setParticipantAgeStatistics(List<ParticipantAgeStatistics> participantAgeStatistics) {
+    public void setParticipantAgeStatistics(final List<ParticipantAgeStatistics> participantAgeStatistics) {
         this.participantAgeStatistics = participantAgeStatistics;
     }
-            
+
 }

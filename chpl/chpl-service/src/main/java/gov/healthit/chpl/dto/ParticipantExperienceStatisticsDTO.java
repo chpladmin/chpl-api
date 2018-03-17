@@ -3,18 +3,20 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
 
 /**
- * Represents the participant_age_statistics table.
+ * Represents the participant_experience_statistics table.
  * @author TYoung
  *
  */
-public class ParticipantAgeStatisticsDTO implements Serializable {
-    private static final long serialVersionUID = 4347395413448201963L;
+public class ParticipantExperienceStatisticsDTO implements Serializable {
+    private static final long serialVersionUID = -7077206153838478208L;
+
     private Long id;
-    private Long ageCount;
-    private Long testParticipantAgeId;
+    private Long experienceTypeId;
+    private Long participantCount;
+    private Integer experienceMonths;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -23,18 +25,19 @@ public class ParticipantAgeStatisticsDTO implements Serializable {
     /**
      * Default constructor.
      */
-    public ParticipantAgeStatisticsDTO() {
+    public ParticipantExperienceStatisticsDTO() {
     }
 
     /**
      * Constructor that will populate the created object based on the entity
      * that is passed in as a parameter.
-     * @param entity ParticipantAgeStatisticsEntity entity
+     * @param entity ParticipantExperienceStatisticsEntity entity
      */
-    public ParticipantAgeStatisticsDTO(final ParticipantAgeStatisticsEntity entity) {
+    public ParticipantExperienceStatisticsDTO(final ParticipantExperienceStatisticsEntity entity) {
         this.setId(entity.getId());
-        this.setAgeCount(entity.getAgeCount());
-        this.setTestParticipantAgeId(entity.getTestParticipantAgeId());
+        this.setExperienceTypeId(entity.getExperienceTypeId());
+        this.setParticipantCount(entity.getParticipantCount());
+        this.setExperienceMonths(entity.getExperienceMonths());
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
@@ -49,19 +52,27 @@ public class ParticipantAgeStatisticsDTO implements Serializable {
         this.id = id;
     }
 
-    public Long getAgeCount() {
-        return ageCount;
+    public Long getExperienceTypeId() {
+        return experienceTypeId;
     }
 
-    public void setAgeCount(final Long ageCount) {
-        this.ageCount = ageCount;
-    }
-    public Long getTestParticipantAgeId() {
-        return testParticipantAgeId;
+    public void setExperienceTypeId(final Long experienceTypeId) {
+        this.experienceTypeId = experienceTypeId;
     }
 
-    public void setTestParticipantAgeId(final Long testParticipantAgeId) {
-        this.testParticipantAgeId = testParticipantAgeId;
+    public Long getParticipantCount() {
+        return participantCount;
+    }
+
+    public void setParticipantCount(final Long participantCount) {
+        this.participantCount = participantCount;
+    }
+    public Integer getExperienceMonths() {
+        return experienceMonths;
+    }
+
+    public void setExperienceMonths(final Integer experienceMonths) {
+        this.experienceMonths = experienceMonths;
     }
 
     public Date getCreationDate() {

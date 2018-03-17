@@ -6,13 +6,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.dao.EducationTypeDAO;
+import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
+import gov.healthit.chpl.dao.ParticipantEducationStatisticsDAO;
+import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
+import gov.healthit.chpl.dao.TestParticipantAgeDAO;
+import gov.healthit.chpl.domain.ParticipantAgeStatistics;
+import gov.healthit.chpl.domain.ParticipantEducationStatistics;
+import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
+import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
+import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
+import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
+import gov.healthit.chpl.dto.TestParticipantAgeDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
 
 /**
  * Implementation of the StatisticsManager interface.
@@ -21,34 +36,89 @@ import gov.healthit.chpl.manager.StatisticsManager;
  */
 @Service
 public class StatisticsManagerImpl extends ApplicationObjectSupport implements StatisticsManager {
+
     @Autowired
     private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
 
     @Autowired
     private ParticipantGenderStatisticsDAO participantGenderStatisticsCountDAO;
-    
+
     @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
-    
+
+    @Autowired
+    private TestParticipantAgeDAO testParticipantAgeDAO;
+
+    @Autowired
+    private ParticipantEducationStatisticsDAO participantEducationStatisticsDAO;
+
+    @Autowired
+    private EducationTypeDAO educationTypeDAO;
+
+    @Autowired
+    private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
+
     @Override
     public List<SedParticipantStatisticsCountDTO> getAllSedParticipantCounts() {
         return sedParticipantStatisticsCountDAO.findAll();
     }
-    
+
     @Override
     public ParticipantGenderStatisticsDTO getParticipantGenderStatisticsDTO() {
-        //There sould only ever be one active record.
+        //There should only ever be one active record.
         List<ParticipantGenderStatisticsDTO> stats = participantGenderStatisticsCountDAO.findAll();
-        if (stats != null && stats.size() >0) {
+        if (stats != null && stats.size() > 0) {
             return stats.get(0);
-        }
-        else {
+        } else {
             return new ParticipantGenderStatisticsDTO();
         }
     }
 
     @Override
-    public List<ParticipantAgeStatisticsDTO> getParticipantAgerStatisticsDTO() {
-        return participantAgeStatisticsDAO.findAll();
+    public ParticipantAgeStatisticsResult getParticipantAgeStatisticsResult() {
+        ParticipantAgeStatisticsResult result = new ParticipantAgeStatisticsResult();
+        List<ParticipantAgeStatisticsDTO> dtos = participantAgeStatisticsDAO.findAll();
+
+        for (ParticipantAgeStatisticsDTO dto : dtos) {
+            ParticipantAgeStatistics pas = new ParticipantAgeStatistics(dto);
+            TestParticipantAgeDTO testParticipantAgeDTO = testParticipantAgeDAO.getById(dto.getTestParticipantAgeId());
+            if (testParticipantAgeDTO != null && testParticipantAgeDTO.getAge() != null) {
+                pas.setAgeRange(testParticipantAgeDTO.getAge());
+            }
+            result.getParticipantAgeStatistics().add(pas);
+        }
+        return result;
+    }
+
+    @Override
+    public ParticipantEducationStatisticsResult getParticipantEducationStatisticsResult() {
+        ParticipantEducationStatisticsResult result = new ParticipantEducationStatisticsResult();
+        List<ParticipantEducationStatisticsDTO> dtos = participantEducationStatisticsDAO.findAll();
+
+        for (ParticipantEducationStatisticsDTO dto : dtos) {
+            ParticipantEducationStatistics pes = new ParticipantEducationStatistics(dto);
+            try {
+                EducationTypeDTO educationTypeDTO = educationTypeDAO.getById(dto.getEducationTypeId());
+                if (educationTypeDTO != null && educationTypeDTO.getName() != null) {
+                    pes.setEducation(educationTypeDTO.getName());
+                }
+            } catch (EntityRetrievalException e) {
+                pes.setEducation("Unknown");
+            }
+            result.getParticipantEducationStatistics().add(pes);
+        }
+        return result;
+    }
+
+    @Override
+    public ParticipantExperienceStatisticsResult getParticipantExperienceStatisticsResult(final Long experienceTypeId) {
+        ParticipantExperienceStatisticsResult result = new ParticipantExperienceStatisticsResult();
+        List<ParticipantExperienceStatisticsDTO> dtos = participantExperienceStatisticsDAO.findAll(experienceTypeId);
+
+        for (ParticipantExperienceStatisticsDTO dto : dtos) {
+            ParticipantExperienceStatistics pes = new ParticipantExperienceStatistics(dto);
+            result.getParticipantExperienceStatistics().add(pes);
+        }
+        return result;
     }
 }

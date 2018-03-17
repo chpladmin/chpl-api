@@ -41,6 +41,18 @@ public final class ChartData {
                     new ParticipantAgeStatisticsCalculator();
             participantAgeStatisticsCalculator.run(seds, appEnvironment);
             
+            ParticipantEducationStatisticsCalculator participantEducationStatisticsCalculator =
+                    new ParticipantEducationStatisticsCalculator();
+            participantEducationStatisticsCalculator.run(seds, appEnvironment);
+            
+            ParticipantExperienceStatisticsCalculator participantProfExperienceStatisticsCalculator =
+                    new ParticipantExperienceStatisticsCalculator();
+            
+            participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.COMPUTER_EXPERIENCE, appEnvironment);
+            participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.PRODUCT_EXPERIENCE, appEnvironment);
+            participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.PROFESSIONAL_EXPERIENCE, appEnvironment);
+            
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

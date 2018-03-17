@@ -5,6 +5,11 @@ import java.util.Date;
 
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 
+/**
+ * Domain object that represents participant gender statistics used for creating charts.
+ * @author TYoung
+ *
+ */
 public class ParticipantGenderStatistics implements Serializable {
     private static final long serialVersionUID = -7580335667077396395L;
     private Long id;
@@ -24,7 +29,7 @@ public class ParticipantGenderStatistics implements Serializable {
 
     /**
      * Constructor that populates the new object based on the dto that was passed in as a parameter.
-     * @param dto SedParticipantStatisticsCountDTO object
+     * @param dto ParticipantGenderStatisticsDTO object
      */
     public ParticipantGenderStatistics(final ParticipantGenderStatisticsDTO dto) {
         this.id = dto.getId();

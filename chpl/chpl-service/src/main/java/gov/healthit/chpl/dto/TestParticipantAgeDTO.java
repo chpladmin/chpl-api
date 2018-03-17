@@ -3,95 +3,78 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.entity.TestParticipantAgeEntity;
 
-/**
- * Represents the participant_age_statistics table.
- * @author TYoung
- *
- */
-public class ParticipantAgeStatisticsDTO implements Serializable {
-    private static final long serialVersionUID = 4347395413448201963L;
+public class TestParticipantAgeDTO implements Serializable{
+    private static final long serialVersionUID = -7369729569984688343L;
+    
     private Long id;
-    private Long ageCount;
-    private Long testParticipantAgeId;
+    private String age;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
 
     /**
-     * Default constructor.
+     * Default constructor
      */
-    public ParticipantAgeStatisticsDTO() {
+    public TestParticipantAgeDTO() {
+        
     }
-
-    /**
-     * Constructor that will populate the created object based on the entity
-     * that is passed in as a parameter.
-     * @param entity ParticipantAgeStatisticsEntity entity
-     */
-    public ParticipantAgeStatisticsDTO(final ParticipantAgeStatisticsEntity entity) {
-        this.setId(entity.getId());
-        this.setAgeCount(entity.getAgeCount());
-        this.setTestParticipantAgeId(entity.getTestParticipantAgeId());
+    
+    public TestParticipantAgeDTO(TestParticipantAgeEntity entity) {
+        this.id = entity.getId();
+        this.age = entity.getAge();
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
     }
-
+    
     public Long getId() {
         return id;
     }
-
+    
     public void setId(final Long id) {
         this.id = id;
     }
-
-    public Long getAgeCount() {
-        return ageCount;
+    
+    public String getAge() {
+        return age;
     }
-
-    public void setAgeCount(final Long ageCount) {
-        this.ageCount = ageCount;
+    
+    public void setAge(final String age) {
+        this.age = age;
     }
-    public Long getTestParticipantAgeId() {
-        return testParticipantAgeId;
-    }
-
-    public void setTestParticipantAgeId(final Long testParticipantAgeId) {
-        this.testParticipantAgeId = testParticipantAgeId;
-    }
-
+    
     public Date getCreationDate() {
         return creationDate;
     }
-
+    
     public void setCreationDate(final Date creationDate) {
         this.creationDate = creationDate;
     }
-
+    
     public Boolean getDeleted() {
         return deleted;
     }
-
+    
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
-
+    
     public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
-
+    
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
-
+    
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }
-
+    
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }

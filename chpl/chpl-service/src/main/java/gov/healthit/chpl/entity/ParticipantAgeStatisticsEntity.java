@@ -12,6 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+/**
+ * Entity object representing the participant_age_statistics table.
+ * @author TYoung
+ *
+ */
 @Entity
 @Table(name = "participant_age_statistics")
 public class ParticipantAgeStatisticsEntity implements Serializable {
@@ -26,11 +31,11 @@ public class ParticipantAgeStatisticsEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "age_count", nullable = false)
     private Long ageCount;
-    
+
     @Basic(optional = false)
     @Column(name = "test_participant_age_id", nullable = false)
     private Long testParticipantAgeId;
-    
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
@@ -47,19 +52,26 @@ public class ParticipantAgeStatisticsEntity implements Serializable {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
+    /**
+     * Default constructor.
+     */
     public ParticipantAgeStatisticsEntity() {
         //Default Constructor
     }
-    
-    public ParticipantAgeStatisticsEntity(Long id) {
+
+    /**
+     * Sets the id field upon creation.
+     * @param id The value to set object's id equal to
+     */
+    public ParticipantAgeStatisticsEntity(final Long id) {
         this.id = id;
     }
-    
+
     @Transient
     public Class<?> getClassType() {
-        return SedParticipantStatisticsCountEntity.class;
+        return ParticipantAgeStatisticsEntity.class;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -71,19 +83,19 @@ public class ParticipantAgeStatisticsEntity implements Serializable {
     public Long getAgeCount() {
         return ageCount;
     }
-    
+
     public void setAgeCount(final Long ageCount) {
         this.ageCount = ageCount;
     }
-    
+
     public Long getTestParticipantAgeId() {
         return testParticipantAgeId;
     }
-    
+
     public void setTestParticipantAgeId(final Long testParticipantAgeId) {
         this.testParticipantAgeId = testParticipantAgeId;
     }
-    
+
     public Date getCreationDate() {
         return creationDate;
     }

@@ -6,7 +6,7 @@ import java.util.Date;
 import gov.healthit.chpl.entity.ParticipantGenderStatisticsEntity;
 
 /**
- * Represents the sed_participant_statistics_count table.
+ * Represents the participant_gender_statistics table.
  * @author TYoung
  *
  */
@@ -31,7 +31,7 @@ public class ParticipantGenderStatisticsDTO implements Serializable {
     /**
      * Constructor that will populate the created object based on the entity
      * that is passed in as a parameter.
-     * @param entity SedParticipantStatisticsCount entity
+     * @param entity ParticipantGenderStatisticsEntity entity
      */
     public ParticipantGenderStatisticsDTO(final ParticipantGenderStatisticsEntity entity) {
         this.setId(entity.getId());

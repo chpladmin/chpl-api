@@ -3,19 +3,20 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
+import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
 
 /**
- * Domain object that represents participant age statistics used for creating charts.
+ * Domain object that represents participant education statistics used for creating charts.
  * @author TYoung
  *
  */
-public class ParticipantAgeStatistics implements Serializable {
-    private static final long serialVersionUID = -3740031503734395401L;
+public class ParticipantEducationStatistics implements Serializable {
+    private static final long serialVersionUID = -1648513956784683632L;
+
     private Long id;
-    private Long ageCount;
-    private Long testParticipantAgeId;
-    private String ageRange;
+    private Long educationCount;
+    private Long educationTypeId;
+    private String education;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -24,18 +25,18 @@ public class ParticipantAgeStatistics implements Serializable {
     /**
      * Default constructor.
      */
-    public ParticipantAgeStatistics() {
+    public ParticipantEducationStatistics() {
         // Default Constructor
     }
 
     /**
      * Constructor that populates the new object based on the dto that was passed in as a parameter.
-     * @param dto ParticipantAgeStatisticsDTO object
+     * @param dto ParticipantEducationStatisticsDTO object
      */
-    public ParticipantAgeStatistics(final ParticipantAgeStatisticsDTO dto) {
+    public ParticipantEducationStatistics(final ParticipantEducationStatisticsDTO dto) {
         this.id = dto.getId();
-        this.ageCount = dto.getAgeCount();
-        this.testParticipantAgeId = dto.getTestParticipantAgeId();
+        this.educationCount = dto.getEducationCount();
+        this.educationTypeId = dto.getEducationTypeId();
         this.deleted = dto.getDeleted();
         this.lastModifiedDate = dto.getLastModifiedDate();
         this.lastModifiedUser = dto.getLastModifiedUser();
@@ -50,28 +51,28 @@ public class ParticipantAgeStatistics implements Serializable {
         this.id = id;
     }
 
-    public Long getAgeCount() {
-        return ageCount;
+    public Long getEducationCount() {
+        return educationCount;
     }
 
-    public void setAgeCount(final Long ageCount) {
-        this.ageCount = ageCount;
+    public void setEducationCount(final Long educationCount) {
+        this.educationCount = educationCount;
     }
 
-    public String getAgeRange() {
-        return ageRange;
+    public String getEducation() {
+        return education;
     }
 
-    public void setAgeRange(final String ageRange) {
-        this.ageRange = ageRange;
+    public void setEducation(final String education) {
+        this.education = education;
     }
 
-    public Long getTestParticipantAgeId() {
-        return testParticipantAgeId;
+    public Long getEducationTypeId() {
+        return educationTypeId;
     }
 
-    public void setTestParticipantAgeId(final Long testParticipantAgeId) {
-        this.testParticipantAgeId = testParticipantAgeId;
+    public void setEducationTypeId(final Long educationTypeId) {
+        this.educationTypeId = educationTypeId;
     }
 
     public Date getCreationDate() {
