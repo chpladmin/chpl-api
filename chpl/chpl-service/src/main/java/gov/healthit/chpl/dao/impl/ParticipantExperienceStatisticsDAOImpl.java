@@ -20,7 +20,7 @@ import gov.healthit.chpl.entity.ParticipantExperienceStatisticsEntity;
  * @author TYoung
  *
  */
-@Repository("participantExperienceStatisticsDAOImpl")
+@Repository("participantExperienceStatisticsDAO")
 public class ParticipantExperienceStatisticsDAOImpl extends BaseDAOImpl implements ParticipantExperienceStatisticsDAO {
     private static final long MODIFIED_USER_ID = -3L;
 
