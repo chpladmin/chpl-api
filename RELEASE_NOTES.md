@@ -1,12 +1,14 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 15.7.0
+_12 March 2018_
+
+### Minor features
+* Add endpoint for retrieving SED/Participant counts to be used for charting
+* Add application to generate SED/Participant counts to support charting
 
 ### Bug fixed
 * No longer show errant error messages for missing g1/g2 values if criteria not attested to
-### Minor features
-* Add endpoint for retrieving SED/Participant counts to be used for charting
 
 ---
 
