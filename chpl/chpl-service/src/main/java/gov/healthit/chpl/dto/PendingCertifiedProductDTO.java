@@ -34,7 +34,7 @@ import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 
 /**
@@ -540,9 +540,9 @@ public class PendingCertifiedProductDTO implements Serializable {
 
         this.uploadDate = entity.getCreationDate();
 
-        Set<PendingCertifiedProductTestingLabEntity> testingLabs = entity.getTestingLabs();
+        Set<PendingCertifiedProductTestingLabMapEntity> testingLabs = entity.getTestingLabs();
         if (testingLabs != null && testingLabs.size() > 0) {
-            for (PendingCertifiedProductTestingLabEntity testingLab : testingLabs) {
+            for (PendingCertifiedProductTestingLabMapEntity testingLab : testingLabs) {
                 this.testingLabs.add(new PendingCertifiedProductTestingLabDTO(testingLab));
             }
         }

@@ -20,7 +20,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "pending_certified_product_testing_lab_map")
-public class PendingCertifiedProductTestingLabEntity {
+public class PendingCertifiedProductTestingLabMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

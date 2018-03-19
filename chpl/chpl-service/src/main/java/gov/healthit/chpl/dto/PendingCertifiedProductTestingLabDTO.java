@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 
 /**
  * Pending Certified Product - Testing Lab mapping DTO.
@@ -25,7 +25,7 @@ public class PendingCertifiedProductTestingLabDTO implements Serializable {
      * Constructed from entity.
      * @param entity the entity
      */
-    public PendingCertifiedProductTestingLabDTO(final PendingCertifiedProductTestingLabEntity entity) {
+    public PendingCertifiedProductTestingLabDTO(final PendingCertifiedProductTestingLabMapEntity entity) {
         this.setId(entity.getId());
 
         if (entity.getMappedProduct() != null) {

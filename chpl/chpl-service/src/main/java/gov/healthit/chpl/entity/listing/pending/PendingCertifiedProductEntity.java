@@ -186,7 +186,7 @@ public class PendingCertifiedProductEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
     @Basic(optional = false)
     @Column(name = "pending_certified_product_id", nullable = false)
-    private Set<PendingCertifiedProductTestingLabEntity> testingLabs;
+    private Set<PendingCertifiedProductTestingLabMapEntity> testingLabs;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
     @Basic(optional = false)
@@ -227,7 +227,7 @@ public class PendingCertifiedProductEntity {
      * Default constructor.
      */
     public PendingCertifiedProductEntity() {
-        testingLabs = new HashSet<PendingCertifiedProductTestingLabEntity>();
+        testingLabs = new HashSet<PendingCertifiedProductTestingLabMapEntity>();
         certificationCriterion = new HashSet<PendingCertificationResultEntity>();
         cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
         qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
@@ -610,11 +610,11 @@ public class PendingCertifiedProductEntity {
         this.accessibilityCertified = accessibilityCertified;
     }
 
-    public Set<PendingCertifiedProductTestingLabEntity> getTestingLabs() {
+    public Set<PendingCertifiedProductTestingLabMapEntity> getTestingLabs() {
         return testingLabs;
     }
 
-    public void setTestingLabs(final Set<PendingCertifiedProductTestingLabEntity> testingLabs) {
+    public void setTestingLabs(final Set<PendingCertifiedProductTestingLabMapEntity> testingLabs) {
         this.testingLabs = testingLabs;
     }
 

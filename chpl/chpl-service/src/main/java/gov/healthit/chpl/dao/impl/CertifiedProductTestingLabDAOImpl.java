@@ -14,7 +14,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity;
 
 /**
  * Implementation of Certified Product Testing Lab DAO.
@@ -28,7 +28,7 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
     public CertifiedProductTestingLabDTO createCertifiedProductTestingLab(final CertifiedProductTestingLabDTO toCreate)
             throws EntityCreationException {
 
-        CertifiedProductTestingLabEntity toCreateEntity = new CertifiedProductTestingLabEntity();
+        CertifiedProductTestingLabMapEntity toCreateEntity = new CertifiedProductTestingLabMapEntity();
         toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
         toCreateEntity.setTestingLabId(toCreate.getTestingLabId());
         toCreateEntity.setLastModifiedDate(new Date());
@@ -45,7 +45,7 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
     public CertifiedProductTestingLabDTO deleteCertifiedProductTestingLab(final Long id)
             throws EntityRetrievalException {
 
-        CertifiedProductTestingLabEntity curr = getEntityById(id);
+        CertifiedProductTestingLabMapEntity curr = getEntityById(id);
         if (curr == null) {
             throw new EntityRetrievalException("Could not find mapping with id " + id);
         }
@@ -61,10 +61,10 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
     @Override
     public List<CertifiedProductTestingLabDTO> getTestingLabsByCertifiedProductId(final Long certifiedProductId)
             throws EntityRetrievalException {
-        List<CertifiedProductTestingLabEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
+        List<CertifiedProductTestingLabMapEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
         List<CertifiedProductTestingLabDTO> dtos = new ArrayList<CertifiedProductTestingLabDTO>();
 
-        for (CertifiedProductTestingLabEntity entity : entities) {
+        for (CertifiedProductTestingLabMapEntity entity : entities) {
             dtos.add(new CertifiedProductTestingLabDTO(entity));
         }
         return dtos;
@@ -73,7 +73,7 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
     @Override
     public CertifiedProductTestingLabDTO lookupMapping(final Long certifiedProductId, final Long tlId)
             throws EntityRetrievalException {
-        List<CertifiedProductTestingLabEntity> entities = findSpecificMapping(certifiedProductId, tlId);
+        List<CertifiedProductTestingLabMapEntity> entities = findSpecificMapping(certifiedProductId, tlId);
 
         CertifiedProductTestingLabDTO result = null;
         if (entities != null && entities.size() > 0) {
@@ -82,35 +82,35 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
         return result;
     }
 
-    private CertifiedProductTestingLabEntity getEntityById(final Long id) throws EntityRetrievalException {
-        CertifiedProductTestingLabEntity entity = null;
+    private CertifiedProductTestingLabMapEntity getEntityById(final Long id) throws EntityRetrievalException {
+        CertifiedProductTestingLabMapEntity entity = null;
         Query query = entityManager.createQuery(
                 "SELECT tl from CertifiedProductTestingLabEntity tl " + "LEFT OUTER JOIN FETCH tl.testingLab "
                         + "where (NOT tl.deleted = true) AND (certified_product_testing_lab_id = :entityid) ",
-                CertifiedProductTestingLabEntity.class);
+                CertifiedProductTestingLabMapEntity.class);
 
         query.setParameter("entityid", id);
-        List<CertifiedProductTestingLabEntity> result = query.getResultList();
+        List<CertifiedProductTestingLabMapEntity> result = query.getResultList();
         if (result.size() >= 1) {
             entity = result.get(0);
         }
         return entity;
     }
 
-    private List<CertifiedProductTestingLabEntity> getEntitiesByCertifiedProductId(final Long productId)
+    private List<CertifiedProductTestingLabMapEntity> getEntitiesByCertifiedProductId(final Long productId)
             throws EntityRetrievalException {
         Query query = entityManager.createQuery(
-                "SELECT tl from CertifiedProductTestingLabEntity tl " + "LEFT OUTER JOIN FETCH tl.testingLab "
+                "SELECT tl from CertifiedProductTestingLabMapEntity tl " + "LEFT OUTER JOIN FETCH tl.testingLab "
                         + "where (NOT tl.deleted = true) AND (certified_product_id = :entityid) ",
-                        CertifiedProductTestingLabEntity.class);
+                        CertifiedProductTestingLabMapEntity.class);
 
         query.setParameter("entityid", productId);
-        List<CertifiedProductTestingLabEntity> result = query.getResultList();
+        List<CertifiedProductTestingLabMapEntity> result = query.getResultList();
 
         return result;
     }
 
-    private List<CertifiedProductTestingLabEntity> findSpecificMapping(final Long productId, final Long tlId)
+    private List<CertifiedProductTestingLabMapEntity> findSpecificMapping(final Long productId, final Long tlId)
             throws EntityRetrievalException {
         Query query = entityManager
                 .createQuery(
@@ -121,7 +121,7 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
 
         query.setParameter("productId", productId);
         query.setParameter("tlId", tlId);
-        List<CertifiedProductTestingLabEntity> result = query.getResultList();
+        List<CertifiedProductTestingLabMapEntity> result = query.getResultList();
 
         return result;
     }

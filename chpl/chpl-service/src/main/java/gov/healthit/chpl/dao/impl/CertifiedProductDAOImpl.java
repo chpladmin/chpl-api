@@ -540,7 +540,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
                 + "LEFT OUTER JOIN FETCH deets.product " + "where " + "deets.year = '20' || :yearCode AND "
-                + "deets.testingLabCode = :atlCode AND " + "deets.certificationBodyCode = :acbCode AND "
+//                + "deets.testingLabCode = :atlCode AND " + "deets.certificationBodyCode = :acbCode AND "
+                + "deets.certificationBodyCode = :acbCode AND "
                 + "deets.developerCode = :developerCode AND " + "deets.productCode = :productCode AND "
                 + "deets.versionCode = :versionCode AND " + "deets.icsCode = :icsCode AND "
                 + "deets.additionalSoftwareCode = :additionalSoftwareCode AND "
@@ -548,7 +549,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
                 + "deets.certifiedDateCode = :certifiedDateCode ", CertifiedProductDetailsEntity.class);
 
         query.setParameter("yearCode", yearCode);
-        query.setParameter("atlCode", atlCode);
+//        query.setParameter("atlCode", atlCode);
         query.setParameter("acbCode", acbCode);
         query.setParameter("developerCode", developerCode);
         query.setParameter("productCode", productCode);

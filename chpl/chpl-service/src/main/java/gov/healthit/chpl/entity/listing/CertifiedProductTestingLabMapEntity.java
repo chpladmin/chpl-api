@@ -5,10 +5,15 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.TestingLabEntity;
 
 /**
  * Certified Product - Testing Lab map entity.
@@ -16,8 +21,8 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "certified_product_testing_lab")
-public class CertifiedProductTestingLabEntity {
+@Table(name = "certified_product_testing_lab_map")
+public class CertifiedProductTestingLabMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +37,11 @@ public class CertifiedProductTestingLabEntity {
     @Basic(optional = false)
     @Column(name = "testing_lab_id", nullable = false)
     private Long testingLabId;
+
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "testing_lab_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private TestingLabEntity testingLab;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)

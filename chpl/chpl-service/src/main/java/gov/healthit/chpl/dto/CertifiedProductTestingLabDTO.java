@@ -2,7 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity;
 
 /**
  * Certified Product - Testing Lab mapping DTO.
@@ -25,7 +25,7 @@ public class CertifiedProductTestingLabDTO implements Serializable {
      * Constructor with entity.
      * @param entity the input
      */
-    public CertifiedProductTestingLabDTO(final CertifiedProductTestingLabEntity entity) {
+    public CertifiedProductTestingLabDTO(final CertifiedProductTestingLabMapEntity entity) {
         this.id = entity.getId();
         this.certifiedProductId = entity.getCertifiedProductId();
         this.testingLabId = entity.getTestingLabId();

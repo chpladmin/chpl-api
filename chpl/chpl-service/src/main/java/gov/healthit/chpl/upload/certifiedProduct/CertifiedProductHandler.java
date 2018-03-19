@@ -35,7 +35,7 @@ import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertificationResultEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTargetedUserEntity;
-import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabEntity;
+import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
@@ -213,7 +213,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         String atlName = record.get(getColumnIndexMap().getAtlIndex()).trim();
         if (!StringUtils.isEmpty(atlName)) {
             TestingLabDTO foundAtl = atlDao.getByName(atlName);
-            PendingCertifiedProductTestingLabEntity tlEntity = new PendingCertifiedProductTestingLabEntity();
+            PendingCertifiedProductTestingLabMapEntity tlEntity = new PendingCertifiedProductTestingLabMapEntity();
             tlEntity.setMappedProduct(pendingCertifiedProduct);
             if (foundAtl != null) {
                 tlEntity.setTestingLabId(foundAtl.getId());
