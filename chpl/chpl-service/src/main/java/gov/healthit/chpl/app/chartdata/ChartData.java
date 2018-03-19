@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
  */
 public final class ChartData {
     private static final Logger LOGGER = LogManager.getLogger(ChartData.class);
-    
+
     private ChartData() {
         //Default private constructor
     }
@@ -21,7 +21,7 @@ public final class ChartData {
      * @param args there are no arguments for this method
      */
     public static void main(final String[] args) {
-        ChartDataApplicationEnvironment appEnvironment;
+        ChartDataApplicationEnvironment appEnvironment = null;
         try {
             appEnvironment = new ChartDataApplicationEnvironment();
             SedParticipantsStatisticCount sedParticipantsStatisticCount = new SedParticipantsStatisticCount();
@@ -31,6 +31,8 @@ public final class ChartData {
             
         } catch (Exception e) {
             LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
+        } finally {
+            appEnvironment.closeApplicationContext();
         }
     }
 }
