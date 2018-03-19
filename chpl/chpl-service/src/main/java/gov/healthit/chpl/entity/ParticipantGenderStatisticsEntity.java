@@ -13,14 +13,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * Entity object representing the sed_participants_statistics_count table.
+ * Entity object representing the participant_gender_statistics table.
  * @author TYoung
  *
  */
 @Entity
-@Table(name = "sed_participants_statistics_count")
-public class SedParticipantStatisticsCountEntity implements Serializable {
-    private static final long serialVersionUID = -1724804164709332747L;
+@Table(name = "participant_gender_statistics")
+public class ParticipantGenderStatisticsEntity implements Serializable {
+    private static final long serialVersionUID = 1313677047965534572L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,12 +29,12 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "sed_count", nullable = false)
-    private Long sedCount;
+    @Column(name = "male_count", nullable = false)
+    private Long maleCount;
 
     @Basic(optional = false)
-    @Column(name = "participant_count", nullable = false)
-    private Long participantCount;
+    @Column(name = "female_count", nullable = false)
+    private Long femaleCount;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -55,7 +55,7 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
     /**
      * Default constructor.
      */
-    public SedParticipantStatisticsCountEntity() {
+    public ParticipantGenderStatisticsEntity() {
         //Default Constructor
     }
 
@@ -63,13 +63,13 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
      * Sets the id field upon creation.
      * @param id The value to set object's id equal to
      */
-    public SedParticipantStatisticsCountEntity(final Long id) {
+    public ParticipantGenderStatisticsEntity(final Long id) {
         this.id = id;
     }
 
     @Transient
     public Class<?> getClassType() {
-        return SedParticipantStatisticsCountEntity.class;
+        return ParticipantGenderStatisticsEntity.class;
     }
 
     public Long getId() {
@@ -80,20 +80,20 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
         this.id = id;
     }
 
-    public Long getSedCount() {
-        return sedCount;
+    public Long getMaleCount() {
+        return maleCount;
     }
 
-    public void setSedCount(final Long sedCount) {
-        this.sedCount = sedCount;
+    public void setMaleCount(final Long maleCount) {
+        this.maleCount = maleCount;
     }
 
-    public Long getParticipantCount() {
-        return participantCount;
+    public Long getFemaleCount() {
+        return femaleCount;
     }
 
-    public void setParticipantCount(final Long participantCount) {
-        this.participantCount = participantCount;
+    public void setFemaleCount(final Long femaleCount) {
+        this.femaleCount = femaleCount;
     }
 
     public Date getCreationDate() {
