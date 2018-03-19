@@ -265,12 +265,15 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         //join in testing labs for use in creating the chpl id. left join b/c not all listings have this
         sql +=
                 "LEFT JOIN "
-                       + "(SELECT testing_lab_id, name as \"testing_lab_name\", testing_lab_code "
-                       + "FROM openchpl.testing_lab "
-                       + "JOIN openchpl.certified_product_testing_lab_map "
-                       + "ON testing_lab.testing_lab_id = certified_product_testing_lab_map.testing_lab_id "
-                       + "WHERE certified_product_testing_lab_map.deleted = false) atl "
-                       + "ON cp.product_id = atl.product_id ";
+                        + "(SELECT case "
+                        + "when (select count(*) from openchpl.certified_product_testing_lab_map as a "
+                        + "where a.certified_product_id = input_id) = 1 "
+                        + "then (select b.testing_lab_code from openchpl.testing_lab b, "
+                        + "openchpl.certified_product_testing_lab_map c "
+                        + "where b.testing_lab_id = c.testing_lab_id "
+                        + "and c.certified_product_id = input_id) "
+                        + "else '99' "
+                        + "end) as testing_lab_code";
 
         //certification status
         if (searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0) {
