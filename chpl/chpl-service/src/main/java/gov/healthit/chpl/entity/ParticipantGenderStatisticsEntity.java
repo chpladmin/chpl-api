@@ -37,6 +37,10 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
     private Long femaleCount;
 
     @Basic(optional = false)
+    @Column(name = "unknown_count", nullable = false)
+    private Long unknownCount;
+    
+    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
@@ -96,6 +100,14 @@ public class ParticipantGenderStatisticsEntity implements Serializable {
         this.femaleCount = femaleCount;
     }
 
+    public Long getUnknownCount() {
+        return unknownCount;
+    }
+
+    public void setUnknownCount(final Long unknownCount) {
+        this.unknownCount = unknownCount;
+    }
+    
     public Date getCreationDate() {
         return creationDate;
     }

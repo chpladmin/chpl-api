@@ -15,6 +15,7 @@ public class ParticipantGenderStatistics implements Serializable {
     private Long id;
     private Long maleCount;
     private Long femaleCount;
+    private Long unknownCount;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -35,6 +36,7 @@ public class ParticipantGenderStatistics implements Serializable {
         this.id = dto.getId();
         this.maleCount = dto.getMaleCount();
         this.femaleCount = dto.getFemaleCount();
+        this.unknownCount = dto.getUnknownCount();
         this.deleted = dto.getDeleted();
         this.lastModifiedDate = dto.getLastModifiedDate();
         this.lastModifiedUser = dto.getLastModifiedUser();
@@ -63,6 +65,14 @@ public class ParticipantGenderStatistics implements Serializable {
 
     public void setFemaleCount(final Long femaleCount) {
         this.femaleCount = femaleCount;
+    }
+
+    public Long getUnknownCount() {
+        return unknownCount;
+    }
+
+    public void setUnknownCount(Long unknownCount) {
+        this.unknownCount = unknownCount;
     }
 
     public Date getCreationDate() {

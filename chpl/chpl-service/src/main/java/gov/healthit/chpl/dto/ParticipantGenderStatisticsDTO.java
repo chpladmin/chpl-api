@@ -17,6 +17,7 @@ public class ParticipantGenderStatisticsDTO implements Serializable {
     private Long id;
     private Long maleCount;
     private Long femaleCount;
+    private Long unknownCount;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -37,6 +38,7 @@ public class ParticipantGenderStatisticsDTO implements Serializable {
         this.setId(entity.getId());
         this.setMaleCount(entity.getMaleCount());
         this.setFemaleCount(entity.getFemaleCount());
+        this.setUnknownCount(entity.getUnknownCount());
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
@@ -65,6 +67,14 @@ public class ParticipantGenderStatisticsDTO implements Serializable {
 
     public void setFemaleCount(final Long femaleCount) {
         this.femaleCount = femaleCount;
+    }
+
+    public Long getUnknownCount() {
+        return unknownCount;
+    }
+
+    public void setUnknownCount(Long unknownCount) {
+        this.unknownCount = unknownCount;
     }
 
     public Date getCreationDate() {
