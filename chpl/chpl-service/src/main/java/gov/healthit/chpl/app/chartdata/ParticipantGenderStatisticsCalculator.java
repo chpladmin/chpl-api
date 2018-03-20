@@ -68,6 +68,7 @@ public class ParticipantGenderStatisticsCalculator {
         ParticipantGenderStatisticsEntity entity = new ParticipantGenderStatisticsEntity();
         entity.setFemaleCount(0L);
         entity.setMaleCount(0L);
+        entity.setUnknownCount(0L);
 
         List<TestParticipant> uniqueParticipants = getUniqueParticipants(certifiedProductSearchDetails);
         for (TestParticipant participant : uniqueParticipants) {
@@ -75,7 +76,10 @@ public class ParticipantGenderStatisticsCalculator {
                 entity.setFemaleCount(entity.getFemaleCount() + 1L);
             } else if (isParticipantMale(participant)) {
                 entity.setMaleCount(entity.getMaleCount() + 1L);
+            } else {
+                entity.setUnknownCount(entity.getUnknownCount() + 1L);
             }
+            
         }
         return entity;
     }

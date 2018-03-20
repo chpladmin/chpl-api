@@ -51,6 +51,7 @@ public class ParticipantGenderStatisticsDAOImpl extends BaseDAOImpl implements P
         ParticipantGenderStatisticsEntity entity = new ParticipantGenderStatisticsEntity();
         entity.setFemaleCount(dto.getFemaleCount());
         entity.setMaleCount(dto.getMaleCount());
+        entity.setUnknownCount(dto.getUnknownCount());
 
         if (dto.getDeleted() != null) {
             entity.setDeleted(dto.getDeleted());
