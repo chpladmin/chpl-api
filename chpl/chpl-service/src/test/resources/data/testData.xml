@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE dataset>
 <dataset>
     <address address_id="-1" street_line_1="1 Test Road" city="Baltimore"
         state="MD" zipcode="21220" country="USA" last_modified_user="-2"
