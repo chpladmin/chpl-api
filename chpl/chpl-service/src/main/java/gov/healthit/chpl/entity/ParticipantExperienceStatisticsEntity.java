@@ -13,14 +13,14 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * Entity object representing the sed_participants_statistics_count table.
+ * Entity object representing the participant_experience_statistics table.
  * @author TYoung
  *
  */
 @Entity
-@Table(name = "sed_participants_statistics_count")
-public class SedParticipantStatisticsCountEntity implements Serializable {
-    private static final long serialVersionUID = -1724804164709332747L;
+@Table(name = "participant_experience_statistics")
+public class ParticipantExperienceStatisticsEntity implements Serializable {
+    private static final long serialVersionUID = 1094674270161664550L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,12 +29,16 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "sed_count", nullable = false)
-    private Long sedCount;
+    @Column(name = "experience_type_id", nullable = false)
+    private Long experienceTypeId;
 
     @Basic(optional = false)
     @Column(name = "participant_count", nullable = false)
     private Long participantCount;
+
+    @Basic(optional = false)
+    @Column(name = "experience_months", nullable = false)
+    private Integer experienceMonths;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -55,7 +59,7 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
     /**
      * Default constructor.
      */
-    public SedParticipantStatisticsCountEntity() {
+    public ParticipantExperienceStatisticsEntity() {
         //Default Constructor
     }
 
@@ -63,13 +67,13 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
      * Sets the id field upon creation.
      * @param id The value to set object's id equal to
      */
-    public SedParticipantStatisticsCountEntity(final Long id) {
+    public ParticipantExperienceStatisticsEntity(final Long id) {
         this.id = id;
     }
 
     @Transient
     public Class<?> getClassType() {
-        return SedParticipantStatisticsCountEntity.class;
+        return ParticipantExperienceStatisticsEntity.class;
     }
 
     public Long getId() {
@@ -80,12 +84,12 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
         this.id = id;
     }
 
-    public Long getSedCount() {
-        return sedCount;
+    public Long getExperienceTypeId() {
+        return experienceTypeId;
     }
 
-    public void setSedCount(final Long sedCount) {
-        this.sedCount = sedCount;
+    public void setExperienceTypeId(final Long experienceTypeId) {
+        this.experienceTypeId = experienceTypeId;
     }
 
     public Long getParticipantCount() {
@@ -94,6 +98,14 @@ public class SedParticipantStatisticsCountEntity implements Serializable {
 
     public void setParticipantCount(final Long participantCount) {
         this.participantCount = participantCount;
+    }
+
+    public Integer getExperienceMonths() {
+        return experienceMonths;
+    }
+
+    public void setExperienceMonths(final Integer experienceMonths) {
+        this.experienceMonths = experienceMonths;
     }
 
     public Date getCreationDate() {
