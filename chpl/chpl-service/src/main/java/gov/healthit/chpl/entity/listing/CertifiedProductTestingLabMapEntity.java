@@ -83,6 +83,14 @@ public class CertifiedProductTestingLabMapEntity {
         this.testingLabId = testingLabId;
     }
 
+    public TestingLabEntity getTestingLab() {
+        return testingLab;
+    }
+
+    public void setTestingLab(final TestingLabEntity testingLab) {
+        this.testingLab = testingLab;
+    }
+
     public Date getCreationDate() {
         return creationDate;
     }

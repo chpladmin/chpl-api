@@ -260,16 +260,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
                         "WHERE product_owner_history_map.deleted = false) prev_vendor_owners " + 
                         "ON prev_vendor_owners.history_product_id = product.product_id ";
 
-        //join in testing labs for use in creating the chpl id. left join b/c not all listings have this
-/*        sql +=
-                "LEFT JOIN " +
-                        "(SELECT testing_lab_id, name as \"testing_lab_name\", testing_lab_code " + 
-                        "FROM openchpl.testing_lab) atl " + 
-                        "ON cp.testing_lab_id = atl.testing_lab_id ";
-        sql +=
-                "LEFT JOIN "
-                        + "(SELECT '99') testing_lab_code ";
-*/
         //certification status
         if (searchRequest.getCertificationStatuses() != null && searchRequest.getCertificationStatuses().size() > 0)
         {
@@ -412,8 +402,6 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
                 sql += "AND " +
                         "COALESCE(cp.chpl_product_number, substring(edition.year from 3 for 2)||'.'||"
                         + "openchpl.get_testing_lab_code(cp.certified_product_id)||'.'||acb.certification_body_code||'.'||vendor.vendor_code||"
-//                      + "testing_lab_code||'.'||acb.certification_body_code||'.'||vendor.vendor_code||"
-//                        + "'99.'||acb.certification_body_code||'.'||vendor.vendor_code||"
                         + "'.'||cp.product_code||'.'||cp.version_code||'.'||cp.ics_code||'.'||"
                         + "cp.additional_software_code||'.'||cp.certified_date_code) LIKE :searchTerm";
             } else {
