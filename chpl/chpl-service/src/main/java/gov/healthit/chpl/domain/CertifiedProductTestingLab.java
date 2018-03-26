@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 
 /**
- * The Accredited Testing Labs used to the the Listing.
+ * The Accredited Testing Labs used to test the the Listing.
  *
  */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
@@ -19,7 +19,7 @@ public class CertifiedProductTestingLab implements Serializable {
     private static final long serialVersionUID = -2078691100124619582L;
 
     /**
-     * Targeted user to listing mapping internal ID
+     * Testing Lab to listing mapping internal ID
      */
     @XmlElement(required = true)
     private Long id;
@@ -29,6 +29,18 @@ public class CertifiedProductTestingLab implements Serializable {
      */
     @XmlElement(required = true)
     private Long testingLabId;
+
+    /**
+     * The Testing Lab's public name
+     */
+    @XmlElement(required = true)
+    private String testingLabName;
+
+    /**
+     * The Testing Lab's Code
+     */
+    @XmlElement(required = true)
+    private String testingLabCode;
 
     /**
      * Default constructor.
@@ -44,6 +56,8 @@ public class CertifiedProductTestingLab implements Serializable {
     public CertifiedProductTestingLab(final CertifiedProductTestingLabDTO dto) {
         this.id = dto.getId();
         this.testingLabId = dto.getTestingLabId();
+        this.testingLabName = dto.getTestingLabName();
+        this.testingLabCode = dto.getTestingLabCode();
     }
 
     /**
@@ -73,5 +87,21 @@ public class CertifiedProductTestingLab implements Serializable {
 
     public void setTestingLabId(final Long testingLabId) {
         this.testingLabId = testingLabId;
+    }
+
+    public String getTestingLabName() {
+        return testingLabName;
+    }
+
+    public void setTestingLabName(final String testingLabName) {
+        this.testingLabName = testingLabName;
+    }
+
+    public String getTestingLabCode() {
+        return testingLabCode;
+    }
+
+    public void setTestingLabCode(final String testingLabCode) {
+        this.testingLabCode = testingLabCode;
     }
 }
