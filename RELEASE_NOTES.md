@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 15.8.0
+_26 March 2018_
+
+### Minor features
+* Add endpoint for retrieving Participant/Age counts to be used for charting
+* Add endpoint for retrieving Participant/Education counts to be used for charting
+* Add endpoint for retrieving Participant/Ender counts to be used for charting
+* Add endpoint for retrieving Participant/Professional Experience counts to be used for charting
+* Add endpoint for retrieving Participant/Product Experience counts to be used for charting
+* Add endpoint for retrieving Participant/Computer Experience counts to be used for charting
+* Modified application to generate and store Participant/Age counts to support charting
+* Modified application to generate and store Participant/Education counts to support charting
+* Modified application to generate and store Participant/Gender counts to support charting
+* Modified application to generate and store Participant/Professional Experience counts to support charting
+* Modified application to generate and store Participant/Product Experience counts to support charting
+* Modified application to generate and store Participant/Computer Experience counts to support charting
+
 ## Version 15.7.0
 _12 March 2018_
 

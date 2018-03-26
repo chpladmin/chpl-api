@@ -8,9 +8,7 @@
         <artifactId>chpl</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>gov.healthit.chpl</groupId>
     <artifactId>chpl-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>chpl-service Maven Webapp</name>
     <url>http://maven.apache.org</url>
