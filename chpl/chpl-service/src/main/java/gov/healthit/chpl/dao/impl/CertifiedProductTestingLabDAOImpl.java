@@ -85,8 +85,8 @@ public class CertifiedProductTestingLabDAOImpl extends BaseDAOImpl implements Ce
     private CertifiedProductTestingLabMapEntity getEntityById(final Long id) throws EntityRetrievalException {
         CertifiedProductTestingLabMapEntity entity = null;
         Query query = entityManager.createQuery(
-                "SELECT tl from CertifiedProductTestingLabEntity tl " + "LEFT OUTER JOIN FETCH tl.testingLab "
-                        + "where (NOT tl.deleted = true) AND (certified_product_testing_lab_id = :entityid) ",
+                "SELECT tl from CertifiedProductTestingLabMapEntity tl " + "LEFT OUTER JOIN FETCH tl.testingLab "
+                        + "where (NOT tl.deleted = true) AND (id = :entityid) ",
                 CertifiedProductTestingLabMapEntity.class);
 
         query.setParameter("entityid", id);

@@ -583,8 +583,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
             cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
 
-            if (Util.getCurrentUser() != null && 
-                    (Util.isUserRoleAcbAdmin() || Util.isUserRoleAdmin())) {
+            if (Util.getCurrentUser() != null
+                    && (Util.isUserRoleAcbAdmin() || Util.isUserRoleAdmin())) {
                 cse.setReason(certStatusDto.getReason());
             }
 

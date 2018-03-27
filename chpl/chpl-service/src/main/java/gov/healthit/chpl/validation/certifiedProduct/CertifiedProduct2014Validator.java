@@ -21,35 +21,36 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2014Validator")
 public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl {
-    private static final String[] g1ComplementaryCerts = {
+    private static final String[] G1_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)",
             "170.314 (a)(9)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
             "170.314 (a)(15)", "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
             "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)"
     };
 
-    private static final String[] g2ComplementaryCerts = {
+    private static final String[] G2_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)",
             "170.314 (a)(9)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
             "170.314 (a)(15)", "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
             "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)"
     };
 
-    private static final String[] cqmRequiredCerts = {
-            "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)"
-    };
-    private static final String[] g3ComplementaryCerts = {
+    private static final String[] G3_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(16)",
             "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(3)", "170.314 (b)(4)",
             "170.314 (b)(9)"
     };
 
+    private static final String[] CQM_REQUIRED_CERTS = {
+            "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)"
+    };
+
     public String[] getG1ComplimentaryCerts() {
-        return g1ComplementaryCerts;
+        return G1_COMPLEMENTARY_CERTS;
     }
 
     public String[] getG2ComplimentaryCerts() {
-        return g2ComplementaryCerts;
+        return G2_COMPLEMENTARY_CERTS;
     }
 
     public boolean checkB1B2B8H1(final Object product){
@@ -89,7 +90,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                     }
                 }
             }
-        }else{
+        } else {
             CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
             for (CertificationResult certCriteria : productCasted.getCertificationResults()) {
                 if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.isSuccess()) {
@@ -178,8 +179,8 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
      * @param certs array to check
      * @return true if...wait, what does this do?
      */
-    public boolean certCheck(final PendingCertificationResultDTO certToCompare, String[] certs){
-        for (String cert : certs){
+    public boolean certCheck(final PendingCertificationResultDTO certToCompare, final String[] certs){
+        for (String cert : certs) {
             if (!certToCompare.getNumber().equals(cert)){
                 return false;
             }
@@ -249,8 +250,8 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                     product.getErrorMessages().add(
                             getErrorMessage("listing.criteria.missingG2Success", cert.getNumber()));
                 }
-                for (int i = 0; i < cqmRequiredCerts.length; i++) {
-                    if (cert.getNumber().equals(cqmRequiredCerts[i])) {
+                for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
+                    if (cert.getNumber().equals(CQM_REQUIRED_CERTS[i])) {
                         isCqmRequired = true;
                     }
                 }
@@ -279,8 +280,8 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             if (cert.getNumber().equals("170.314 (g)(3)") && cert.getMeetsCriteria()) {
                 hasG3 = true;
             }
-            for (int i = 0; i < g3ComplementaryCerts.length; i++) {
-                if (cert.getNumber().equals(g3ComplementaryCerts[i]) && cert.getMeetsCriteria()) {
+            for (int i = 0; i < G3_COMPLEMENTARY_CERTS.length; i++) {
+                if (cert.getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.getMeetsCriteria()) {
                     hasG3Complement = true;
                 }
             }
@@ -362,9 +363,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                     if (cert.getSed() == null) {
                         product.getErrorMessages().add(
                                 getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
-                    } else if (cert.getSed() != null && cert.getSed().booleanValue() == true
+                    } else if (cert.getSed() != null && cert.getSed().booleanValue()
                             && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
-                        if (product.getIcs() != null && product.getIcs().booleanValue() == true) {
+                        if (product.getIcs() != null && product.getIcs().booleanValue()) {
                             product.getWarningMessages().add(
                                     getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
@@ -424,15 +425,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         if (StringUtils.isEmpty(product.getReportFileLocation())) {
             product.getErrorMessages().add("Test Report URL is required but was not found.");
         }
-        if (product.getTestingLabs().size() < 1) {
-            product.getErrorMessages().add(getErrorMessage("listing.missingTestingLab"));
-        }
 
         // check cqms
         boolean isCqmRequired = false;
         for (CertificationResult cert : product.getCertificationResults()) {
-            for (int i = 0; i < cqmRequiredCerts.length; i++) {
-                if (cert.getNumber().equals(cqmRequiredCerts[i]) && cert.isSuccess()) {
+            for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
+                if (cert.getNumber().equals(CQM_REQUIRED_CERTS[i]) && cert.isSuccess()) {
                     isCqmRequired = true;
                 }
             }
@@ -441,10 +439,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                     if (cert.isSed() == null) {
                         product.getErrorMessages().add(
                                 getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
-                    } else if (cert.isSed() != null && cert.isSed().booleanValue() == true
+                    } else if (cert.isSed() != null && cert.isSed().booleanValue()
                             && !certHasUcdProcess(cert, product.getSed().getUcdProcesses())) {
                         if (product.getIcs() != null && product.getIcs().getInherits() != null &&
-                                product.getIcs().getInherits().booleanValue() == true) {
+                                product.getIcs().getInherits().booleanValue()) {
                             product.getWarningMessages().add(
                                     getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
@@ -487,8 +485,8 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         }
         boolean hasG3Complement = false;
         for (CertificationResult cert : product.getCertificationResults()) {
-            for (int i = 0; i < g3ComplementaryCerts.length; i++) {
-                if (cert.getNumber().equals(g3ComplementaryCerts[i]) && cert.isSuccess()) {
+            for (int i = 0; i < G3_COMPLEMENTARY_CERTS.length; i++) {
+                if (cert.getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.isSuccess()) {
                     hasG3Complement = true;
                 }
             }

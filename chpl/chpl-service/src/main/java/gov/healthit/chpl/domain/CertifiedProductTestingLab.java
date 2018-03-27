@@ -67,7 +67,11 @@ public class CertifiedProductTestingLab implements Serializable {
      */
     public boolean matches(final CertifiedProductTestingLab other) {
         boolean result = false;
-        if (this.getTestingLabId() != null && other.getTestingLabId() != null) {
+        if (this.getTestingLabId() != null && other.getTestingLabId() != null
+                && this.getTestingLabId().longValue() == other.getTestingLabId().longValue()) {
+            result = true;
+        } else if (this.getTestingLabName() != null && other.getTestingLabName() != null
+                && this.getTestingLabName().equalsIgnoreCase(other.getTestingLabName())) {
             result = true;
         }
         return result;

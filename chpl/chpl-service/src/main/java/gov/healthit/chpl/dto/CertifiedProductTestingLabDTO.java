@@ -31,8 +31,10 @@ public class CertifiedProductTestingLabDTO implements Serializable {
         this.id = entity.getId();
         this.certifiedProductId = entity.getCertifiedProductId();
         this.testingLabId = entity.getTestingLabId();
-        this.testingLabName = entity.getTestingLab().getName();
-        this.testingLabCode = entity.getTestingLab().getTestingLabCode();
+        if (entity.getTestingLab() != null) {
+            this.testingLabName = entity.getTestingLab().getName();
+            this.testingLabCode = entity.getTestingLab().getTestingLabCode();
+        }
     }
 
     public Long getId() {
