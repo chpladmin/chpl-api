@@ -153,6 +153,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
             for (PendingCertifiedProductTestingLabDTO tlDto : tlDtos) {
                 CertifiedProductTestingLab tl = new CertifiedProductTestingLab();
                 tl.setTestingLabId(tlDto.getTestingLabId());
+                tl.setTestingLabName(tlDto.getTestingLabName());
                 this.getTestingLabs().add(tl);
             }
         }

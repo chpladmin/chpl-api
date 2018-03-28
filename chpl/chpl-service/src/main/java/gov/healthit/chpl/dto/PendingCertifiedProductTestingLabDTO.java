@@ -14,6 +14,7 @@ public class PendingCertifiedProductTestingLabDTO implements Serializable {
     private Long id;
     private Long pendingCertifiedProductId;
     private Long testingLabId;
+    private String testingLabName;
 
     /**
      * Default constructor.
@@ -32,6 +33,7 @@ public class PendingCertifiedProductTestingLabDTO implements Serializable {
             this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
         }
         this.setTestingLabId(entity.getTestingLabId());
+        this.setTestingLabName(entity.getTestingLabName());
     }
 
     public Long getId() {
@@ -56,5 +58,13 @@ public class PendingCertifiedProductTestingLabDTO implements Serializable {
 
     public void setTestingLabId(final Long testingLabId) {
         this.testingLabId = testingLabId;
+    }
+
+    public String getTestingLabName() {
+        return testingLabName;
+    }
+
+    public void setTestingLabName(final String testingLabName) {
+        this.testingLabName = testingLabName;
     }
 }

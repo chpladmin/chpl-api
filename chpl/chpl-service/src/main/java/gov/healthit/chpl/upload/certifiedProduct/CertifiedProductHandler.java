@@ -215,8 +215,10 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             TestingLabDTO foundAtl = atlDao.getByName(atlName);
             PendingCertifiedProductTestingLabMapEntity tlEntity = new PendingCertifiedProductTestingLabMapEntity();
             tlEntity.setMappedProduct(pendingCertifiedProduct);
+            tlEntity.setTestingLabName(atlName);
             if (foundAtl != null) {
                 tlEntity.setTestingLabId(foundAtl.getId());
+                tlEntity.setTestingLabName(foundAtl.getName());
             } else {
                 pendingCertifiedProduct.getErrorMessages()
                 .add("No testing lab with name " + atlName + " could be found.");
@@ -225,8 +227,8 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseProductClassification(PendingCertifiedProductEntity pendingCertifiedProduct,
-            CSVRecord record) {
+    protected void parseProductClassification(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         String classification = record.get(getColumnIndexMap().getProductClassificationIndex()).trim();
         pendingCertifiedProduct.setProductClassificationName(classification);
         ProductClassificationTypeDTO foundClassification = classificationDao.getByName(classification);

@@ -31,7 +31,7 @@ public class PendingCertifiedProductTestingLabMapEntity {
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "pending_certified_product_id", unique = true, nullable = true, insertable = false,
-            updatable = false)
+    updatable = false)
     private PendingCertifiedProductEntity mappedProduct;
 
     @Column(name = "pending_certified_product_id")
@@ -39,6 +39,9 @@ public class PendingCertifiedProductTestingLabMapEntity {
 
     @Column(name = "testing_lab_id")
     private Long testingLabId;
+
+    @Column(name = "testing_lab_name")
+    private String testingLabName;
 
     @Basic(optional = false)
     @Column(name = "last_modified_date", nullable = false)
@@ -120,4 +123,11 @@ public class PendingCertifiedProductTestingLabMapEntity {
         this.testingLabId = testingLabId;
     }
 
+    public String getTestingLabName() {
+        return testingLabName;
+    }
+
+    public void setTestingLabName(final String testingLabName) {
+        this.testingLabName = testingLabName;
+    }
 }

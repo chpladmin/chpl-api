@@ -233,7 +233,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         // }
 
         if (product.getHasQms() != null && product.getHasQms() && product.getQmsStandards().isEmpty()) {
-            product.getWarningMessages().add(getErrorMessage("listing.missingQMSStandards"));
+            product.getWarningMessages().add(getMessage("listing.missingQMSStandards"));
         }
 
         // check cqms
@@ -243,12 +243,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS)
                         && cert.getG1Success() == null) {
                     product.getErrorMessages().add(
-                            getErrorMessage("listing.criteria.missingG1Success", cert.getNumber()));
+                            getMessage("listing.criteria.missingG1Success", cert.getNumber()));
                 }
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS)
                         && cert.getG2Success() == null) {
                     product.getErrorMessages().add(
-                            getErrorMessage("listing.criteria.missingG2Success", cert.getNumber()));
+                            getMessage("listing.criteria.missingG2Success", cert.getNumber()));
                 }
                 for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
                     if (cert.getNumber().equals(CQM_REQUIRED_CERTS[i])) {
@@ -265,7 +265,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
             if (!hasOneCqmWithVersion) {
-                product.getErrorMessages().add(getErrorMessage("listing.criteria.missingCQM"));
+                product.getErrorMessages().add(getMessage("listing.criteria.missingCQM"));
             }
         }
 
@@ -287,13 +287,13 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
         }
         if (!hasG4) {
-            product.getErrorMessages().add(getErrorMessage("listing.criteria.missing170314g4"));
+            product.getErrorMessages().add(getMessage("listing.criteria.missing170314g4"));
         }
         if (hasG3 && !hasG3Complement) {
-            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG3complement"));
+            product.getErrorMessages().add(getMessage("listing.criteria.missingG3complement"));
         }
         if (hasG3Complement && !hasG3) {
-            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingComplementG3"));
+            product.getErrorMessages().add(getMessage("listing.criteria.missingComplementG3"));
         }
 
         // check (g)(1)
@@ -315,7 +315,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
 
             if (!hasG1Complement) {
-                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG1Related"));
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -338,12 +338,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
 
             if (!hasG2Complement) {
-                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG2Related"));
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
+            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
         }
     }
 
@@ -362,15 +362,15 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
                     if (cert.getSed() == null) {
                         product.getErrorMessages().add(
-                                getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
+                                getMessage("listing.criteria.SEDRequired", cert.getNumber()));
                     } else if (cert.getSed() != null && cert.getSed().booleanValue()
                             && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
                         if (product.getIcs() != null && product.getIcs().booleanValue()) {
                             product.getWarningMessages().add(
-                                    getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
                             product.getErrorMessages().add(
-                                    getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         }
                     }
                 }
@@ -438,16 +438,16 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
                     if (cert.isSed() == null) {
                         product.getErrorMessages().add(
-                                getErrorMessage("listing.criteria.SEDRequired", cert.getNumber()));
+                                getMessage("listing.criteria.SEDRequired", cert.getNumber()));
                     } else if (cert.isSed() != null && cert.isSed().booleanValue()
                             && !certHasUcdProcess(cert, product.getSed().getUcdProcesses())) {
                         if (product.getIcs() != null && product.getIcs().getInherits() != null &&
                                 product.getIcs().getInherits().booleanValue()) {
                             product.getWarningMessages().add(
-                                    getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
                             product.getErrorMessages().add(
-                                    getErrorMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         }
                     }
                 }
@@ -461,7 +461,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
             if (!hasOneCqmWithVersion) {
-                product.getErrorMessages().add(getErrorMessage("listing.criteria.missingCQM"));
+                product.getErrorMessages().add(getMessage("listing.criteria.missingCQM"));
             }
         }
 
@@ -473,7 +473,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
         }
         if (!hasG4) {
-            product.getErrorMessages().add(getErrorMessage("lisitng.criteria.missingG4"));
+            product.getErrorMessages().add(getMessage("lisitng.criteria.missingG4"));
         }
 
         // g3 check
@@ -493,10 +493,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         }
 
         if (hasG3 && !hasG3Complement) {
-            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingG3complement"));
+            product.getErrorMessages().add(getMessage("listing.criteria.missingG3complement"));
         }
         if (hasG3Complement && !hasG3) {
-            product.getErrorMessages().add(getErrorMessage("listing.criteria.missingComplementG3"));
+            product.getErrorMessages().add(getMessage("listing.criteria.missingComplementG3"));
         }
     }
 

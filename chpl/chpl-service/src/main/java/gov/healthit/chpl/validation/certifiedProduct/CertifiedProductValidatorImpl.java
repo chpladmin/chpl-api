@@ -52,7 +52,6 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
@@ -83,6 +82,11 @@ import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ValidationUtils;
 
+/**
+ * Implementation of basic level Validation of Certified Products.
+ * @author alarned
+ *
+ */
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductValidatorImpl.class);
 
@@ -126,52 +130,54 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         urlRegex = Pattern.compile(URL_PATTERN);
     }
 
-    public void checkField(Object product, Object field, String errorField){
-        if (field instanceof Long){
+    public void checkField(final Object product, final Object field, final String errorField) {
+        if (field instanceof Long) {
             Long fieldCasted = (Long) field;
-            if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)){
-                if (product instanceof PendingCertifiedProductDTO){
+            if (fieldCasted.toString().length() > getMaxLength("maxLength." + errorField)) {
+                if (product instanceof PendingCertifiedProductDTO) {
                     PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
-                    productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
-                }else{
+                    productCasted.getErrorMessages().add(getMessage("listing." + errorField + ".maxlength"));
+                } else {
                     CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
-                    productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
+                    productCasted.getErrorMessages().add(getMessage("listing." + errorField + ".maxlength"));
                 }
             }
-        }else if (field instanceof String){
+        } else if (field instanceof String) {
             String fieldCasted = (String) field;
-            if (fieldCasted.length() > getMaxLength("maxLength." + errorField)){
-                if (product instanceof PendingCertifiedProductDTO){
+            if (fieldCasted.length() > getMaxLength("maxLength." + errorField)) {
+                if (product instanceof PendingCertifiedProductDTO) {
                     PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
-                    productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
-                }else{
+                    productCasted.getErrorMessages().add(getMessage("listing." + errorField + ".maxlength"));
+                } else {
                     CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
-                    productCasted.getErrorMessages().add(getErrorMessage("listing." + errorField + ".maxlength"));
+                    productCasted.getErrorMessages().add(getMessage("listing." + errorField + ".maxlength"));
                 }
             }
         }
     }
 
-    public int getMaxLength(String field){
+    public int getMaxLength(final String field) {
         return Integer.parseInt(String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(field),
                         LocaleContextHolder.getLocale())));
     }
 
-    public String getErrorMessage(String errorField){
+    /** {@inheritDoc} */
+    public String getMessage(final String messageCode) {
         return String.format(
-                messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
+                messageSource.getMessage(new DefaultMessageSourceResolvable(messageCode),
                         LocaleContextHolder.getLocale()));
     }
 
-    public String getErrorMessage(String errorField, String input){
+    /** {@inheritDoc} */
+    public String getMessage(final String messageCode, final String input) {
         return String.format(messageSource.getMessage(
-                new DefaultMessageSourceResolvable(errorField),
+                new DefaultMessageSourceResolvable(messageCode),
                 LocaleContextHolder.getLocale()), input);
     }
 
     @Override
-    public boolean validateUniqueId(String chplProductNumber) {
+    public boolean validateUniqueId(final String chplProductNumber) {
         try {
             CertifiedProductDetailsDTO dup = cpDao.getByChplUniqueId(chplProductNumber);
             if (dup != null) {
@@ -183,7 +189,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     }
 
     @Override
-    public boolean validateProductCodeCharacters(String chplProductNumber) {
+    public boolean validateProductCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 
@@ -198,7 +204,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     }
 
     @Override
-    public boolean validateVersionCodeCharacters(String chplProductNumber) {
+    public boolean validateVersionCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 
@@ -213,7 +219,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     }
 
     @Override
-    public boolean validateIcsCodeCharacters(String chplProductNumber) {
+    public boolean validateIcsCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
@@ -227,7 +233,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     }
 
     @Override
-    public boolean validateAdditionalSoftwareCodeCharacters(String chplProductNumber) {
+    public boolean validateAdditionalSoftwareCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
@@ -240,7 +246,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     }
 
     @Override
-    public boolean validateCertifiedDateCodeCharacters(String chplProductNumber) {
+    public boolean validateCertifiedDateCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
         if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
@@ -253,8 +259,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         return true;
     }
 
-    private void updateChplProductNumber(CertifiedProductSearchDetails product, int productNumberIndex,
-            String newValue) {
+    private void updateChplProductNumber(final CertifiedProductSearchDetails product, final int productNumberIndex,
+            final String newValue) {
         String[] uniqueIdParts = product.getChplProductNumber().split("\\.");
         if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             String newChplProductCode = "";
@@ -273,8 +279,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void validate(PendingCertifiedProductDTO product) {
+    public void validate(final PendingCertifiedProductDTO product) {
         String uniqueId = product.getUniqueId();
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
@@ -297,12 +304,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 if (cert.getUcdProcesses() != null && !cert.getUcdProcesses().isEmpty()){
                     for (PendingCertificationResultUcdProcessDTO ucd : cert.getUcdProcesses()) {
                         String origUcdProcessName = ucd.getUcdProcessName();
-                        String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(origUcdProcessName, FuzzyType.UCD_PROCESS);
+                        String topChoice = fuzzyChoicesManager
+                                .getTopFuzzyChoice(origUcdProcessName, FuzzyType.UCD_PROCESS);
                         if (topChoice != null && !origUcdProcessName.equals(topChoice)) {
                             UcdProcessDTO fuzzyMatchedUcd = null;
                             try {
                                 fuzzyMatchedUcd = ucdDao.findOrCreate(null, topChoice);
-                            } catch(EntityCreationException ex) {
+                            } catch (EntityCreationException ex) {
                                 LOGGER.error("Could not insert ucd process " + topChoice, ex);
                             }
 
@@ -310,11 +318,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                 ucd.setUcdProcessId(fuzzyMatchedUcd.getId());
                                 ucd.setUcdProcessName(fuzzyMatchedUcd.getName());
 
-                                String warningMsg = String.format(
-                                        messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.fuzzyMatch"),
-                                                LocaleContextHolder.getLocale()), FuzzyType.UCD_PROCESS.fuzzyType(), 
-                                        cert.getNumber(), origUcdProcessName, topChoice);
-                                product.getWarningMessages().add(warningMsg);
+                                product.getWarningMessages()
+                                .add(getMessage("listing.criteria.fuzzyMatch", FuzzyType.UCD_PROCESS.fuzzyType()));
                             }
                         }
                     }
@@ -322,14 +327,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             }
         }
 
-        for (PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()){
+        for (PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()) {
             String origQmsName = qms.getName();
             String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(origQmsName, FuzzyType.QMS_STANDARD);
             if (topChoice != null && !origQmsName.equals(topChoice)) {
                 QmsStandardDTO fuzzyMatchedQms = null;
                 try {
                     fuzzyMatchedQms = qmsDao.findOrCreate(null, topChoice);
-                } catch(EntityCreationException ex) {
+                } catch (EntityCreationException ex) {
                     LOGGER.error("Could not insert qms standard " + topChoice, ex);
                 }
 
@@ -339,21 +344,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
                     String warningMsg = String.format(
                             messageSource.getMessage(new DefaultMessageSourceResolvable("listing.fuzzyMatch"),
-                                    LocaleContextHolder.getLocale()), FuzzyType.QMS_STANDARD.fuzzyType(), 
-                            origQmsName, topChoice);
+                                    LocaleContextHolder.getLocale()), FuzzyType.QMS_STANDARD.fuzzyType(),
+                                    origQmsName, topChoice);
                     product.getWarningMessages().add(warningMsg);
                 }
             }
         }
 
-        for (PendingCertifiedProductAccessibilityStandardDTO access : product.getAccessibilityStandards()){
+        for (PendingCertifiedProductAccessibilityStandardDTO access : product.getAccessibilityStandards()) {
             String origAccStd = access.getName();
             String topChoice = fuzzyChoicesManager.getTopFuzzyChoice(origAccStd, FuzzyType.ACCESSIBILITY_STANDARD);
             if (topChoice != null && !origAccStd.equals(topChoice)) {
                 AccessibilityStandardDTO fuzzyMatchedAccStd = null;
                 try {
                     fuzzyMatchedAccStd = accStdDao.findOrCreate(null, topChoice);
-                } catch(EntityCreationException ex) {
+                } catch (EntityCreationException ex) {
                     LOGGER.error("Could not insert accessibility standard " + topChoice, ex);
                 }
 
@@ -363,7 +368,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
                     String warningMsg = String.format(
                             messageSource.getMessage(new DefaultMessageSourceResolvable("listing.fuzzyMatch"),
-                                    LocaleContextHolder.getLocale()), FuzzyType.ACCESSIBILITY_STANDARD.fuzzyType(), 
+                                    LocaleContextHolder.getLocale()), FuzzyType.ACCESSIBILITY_STANDARD.fuzzyType(),
                             origAccStd, topChoice);
                     product.getWarningMessages().add(warningMsg);
                 }
@@ -379,20 +384,18 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             }
 
             List<PendingCertifiedProductTestingLabDTO> testingLabs = null;
-            if (product.getTestingLabs() == null) {
-                product.getErrorMessages()
-                .add("No testing lab was found");
+            if (product.getTestingLabs() == null || product.getTestingLabs().size() == 0) {
+                product.getErrorMessages().add(getMessage("atl.notFound"));
             } else {
                 testingLabs = product.getTestingLabs();
                 if (testingLabs.size() > 1 && !"99".equals(atlCode)) {
                     product.getWarningMessages()
-                    .add("There are more than one Testing Lab but the ATL code is not \"99\"");
+                    .add(getMessage("atl.shouldBe99"));
                 } else {
-                    TestingLabDTO testingLab = atlDao.getById(testingLabs.get(0).getTestingLabId());
+                    TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
                     if (testingLab.getTestingLabCode().equals(atlCode)) {
                         product.getWarningMessages()
-                        .add("The ATL code provided does not match the assigned ATL code '"
-                                + testingLab.getTestingLabCode() + "'.");
+                        .add(getMessage("atl.codeMismatch", testingLab.getTestingLabCode()));
                     }
                 }
             }
@@ -442,14 +445,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                     || (mapping.getTransparencyAttestation() != null
                                     && !mapping.getTransparencyAttestation()
                                     .equals(product.getTransparencyAttestation()))) {
-                                product.getWarningMessages().add(String.format(
-                                        messageSource.getMessage(new DefaultMessageSourceResolvable("transparencyAttestation.save"),
-                                                LocaleContextHolder.getLocale())));
+                                product.getWarningMessages().add(getMessage("transparencyAttestation.save"));
                             }
                         } else if (mapping == null && !StringUtils.isEmpty(product.getTransparencyAttestation())) {
-                            product.getWarningMessages().add(String.format(
-                                    messageSource.getMessage(new DefaultMessageSourceResolvable("transparencyAttestation.save"),
-                                            LocaleContextHolder.getLocale())));
+                            product.getWarningMessages().add(getMessage("transparencyAttestation.save"));
                         }
                     }
                 }
@@ -495,11 +494,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         } else {
             icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
             if (icsCodeInteger != null) {
-                if (icsCodeInteger.intValue() == 0 && product.getIcs() != null && product.getIcs().equals(Boolean.TRUE)) {
+                if (icsCodeInteger.intValue() == 0 && product.getIcs() != null
+                        && product.getIcs().equals(Boolean.TRUE)) {
                     product.getErrorMessages().add(
                             "The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
                     hasIcsConflict = true;
-                } else if (icsCodeInteger.intValue() > 0 && product.getIcs() != null && product.getIcs().equals(Boolean.FALSE)) {
+                } else if (icsCodeInteger.intValue() > 0 && product.getIcs() != null
+                        && product.getIcs().equals(Boolean.FALSE)) {
                     product.getErrorMessages().add(
                             "The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
                     hasIcsConflict = true;
@@ -568,25 +569,25 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if ((cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
-                if (cert.getG1Success() != null && cert.getG1Success().booleanValue() == true) {
+                if (cert.getG1Success() != null && cert.getG1Success().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "G1 Success"));
                 }
-                if (cert.getG2Success() != null && cert.getG2Success().booleanValue() == true) {
+                if (cert.getG2Success() != null && cert.getG2Success().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "G2 Success"));
                 }
-                if (cert.getGap() != null && cert.getGap().booleanValue() == true) {
+                if (cert.getGap() != null && cert.getGap().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "GAP"));
                 }
-                if (cert.getSed() != null && cert.getSed().booleanValue() == true) {
+                if (cert.getSed() != null && cert.getSed().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -690,8 +691,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
+    /** {@inheritDoc} */
     @Override
-    public void validate(CertifiedProductSearchDetails product) {
+    public void validate(final CertifiedProductSearchDetails product) {
         boolean productIdChanged = false;
         // if it's a new product, check the id parts
         String uniqueId = product.getChplProductNumber();
@@ -752,7 +754,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
                     if (product.getIcs() != null && product.getIcs().getParents() != null
                             && product.getIcs().getParents().size() > 0) {
-                        product.getErrorMessages().add(getErrorMessage("listing.ics00"));
+                        product.getErrorMessages().add(getMessage("listing.ics00"));
                     }
 
                     if (product.getIcs() != null && product.getIcs().getInherits() != null
@@ -823,25 +825,25 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         for (CertificationResult cert : product.getCertificationResults()) {
             if ((cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
-                if (cert.isG1Success() != null && cert.isG1Success().booleanValue() == true) {
+                if (cert.isG1Success() != null && cert.isG1Success().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "G1 Success"));
                 }
-                if (cert.isG2Success() != null && cert.isG2Success().booleanValue() == true) {
+                if (cert.isG2Success() != null && cert.isG2Success().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "G2 Success"));
                 }
-                if (cert.isGap() != null && cert.isGap().booleanValue() == true) {
+                if (cert.isGap() != null && cert.isGap().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "GAP"));
                 }
-                if (cert.isSed() != null && cert.isSed().booleanValue() == true) {
+                if (cert.isSed() != null && cert.isSed().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -970,7 +972,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
-    protected void validateDemographics(PendingCertifiedProductDTO product) {
+    protected void validateDemographics(final PendingCertifiedProductDTO product) {
         if (product.getCertificationEditionId() == null && StringUtils.isEmpty(product.getCertificationEdition())) {
             product.getErrorMessages().add("Certification edition is required but was not found.");
         }
@@ -1133,8 +1135,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         CertificationStatusEvent  earliestStatus = product.getOldestStatus();
         if (earliestStatus != null) {
             CertificationStatus earliestStatusInUpdate = product.getOldestStatus().getStatus();
-            if (earliestStatusInUpdate == null ||
-                    !CertificationStatusType.Active.getName().equals(earliestStatusInUpdate.getName())) {
+            if (earliestStatusInUpdate == null
+                    || !CertificationStatusType.Active.getName().equals(earliestStatusInUpdate.getName())) {
                 String msg = String.format(messageSource.getMessage(
                         new DefaultMessageSourceResolvable(
                                 "listing.firstStatusNotActive"),
@@ -1171,62 +1173,62 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
-    protected void weirdCharacterCheck(PendingCertifiedProductDTO listing) {
+    protected void weirdCharacterCheck(final PendingCertifiedProductDTO listing) {
         //check all string fields at the listing level
-        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(), 
+        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),
                 "ACB Certification ID '" + listing.getAcbCertificationId() + "'");
-        addListingWarningIfNotValid(listing, listing.getCertificationBodyName(), 
+        addListingWarningIfNotValid(listing, listing.getCertificationBodyName(),
                 "ACB Name '" + listing.getCertificationBodyName() + "'");
-        addListingWarningIfNotValid(listing, listing.getCertificationEdition(), 
+        addListingWarningIfNotValid(listing, listing.getCertificationEdition(),
                 "Certification Edition '" + listing.getCertificationEdition() + "'");
         if (listing.getDeveloperAddress() != null) {
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineOne(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineOne(),
                     "Developer's Street Address (Line 1) '" + listing.getDeveloperAddress().getStreetLineOne() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineTwo(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getStreetLineTwo(),
                     "Developer's Street Address (Line 2) '" + listing.getDeveloperAddress().getStreetLineTwo() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getCity(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getCity(),
                     "Developer's City '" + listing.getDeveloperAddress().getCity() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getState(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getState(),
                     "Developer's State '" + listing.getDeveloperAddress().getState() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getZipcode(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getZipcode(),
                     "Developer's Zip Code '" + listing.getDeveloperAddress().getZipcode() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getCountry(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperAddress().getCountry(),
                     "Developer's Country '" + listing.getDeveloperAddress().getCountry() + "'");
         } else {
-            addListingWarningIfNotValid(listing, listing.getDeveloperStreetAddress(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperStreetAddress(),
                     "Developer's Street Address '" + listing.getDeveloperStreetAddress() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperCity(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperCity(),
                     "Developer's City '" + listing.getDeveloperCity() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperState(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperState(),
                     "Developer's State '" + listing.getDeveloperState() + "'");
-            addListingWarningIfNotValid(listing, listing.getDeveloperZipCode(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloperZipCode(),
                     "Developer's Zip Code '" + listing.getDeveloperZipCode() + "'");
         }
-        addListingWarningIfNotValid(listing, listing.getDeveloperContactName(), 
+        addListingWarningIfNotValid(listing, listing.getDeveloperContactName(),
                 "Developer's Contact Name '" + listing.getDeveloperContactName() + "'");
-        addListingWarningIfNotValid(listing, listing.getDeveloperEmail(), 
+        addListingWarningIfNotValid(listing, listing.getDeveloperEmail(),
                 "Developer's Email Address '" + listing.getDeveloperEmail() + "'");
-        addListingWarningIfNotValid(listing, listing.getDeveloperPhoneNumber(), 
+        addListingWarningIfNotValid(listing, listing.getDeveloperPhoneNumber(),
                 "Developer's Phone Number '" + listing.getDeveloperPhoneNumber() + "'");
-        addListingWarningIfNotValid(listing, listing.getDeveloperWebsite(), 
+        addListingWarningIfNotValid(listing, listing.getDeveloperWebsite(),
                 "Developer's Website '" + listing.getDeveloperWebsite() + "'");
-        addListingWarningIfNotValid(listing, listing.getPracticeType(), 
+        addListingWarningIfNotValid(listing, listing.getPracticeType(),
                 "Practice Type '" + listing.getPracticeType() + "'");
-        addListingWarningIfNotValid(listing, listing.getProductClassificationName(), 
+        addListingWarningIfNotValid(listing, listing.getProductClassificationName(),
                 "Product Classification '" + listing.getProductClassificationName() + "'");
-        addListingWarningIfNotValid(listing, listing.getProductName(), 
+        addListingWarningIfNotValid(listing, listing.getProductName(),
                 "Product Name '" + listing.getProductName() + "'");
-        addListingWarningIfNotValid(listing, listing.getProductVersion(), 
+        addListingWarningIfNotValid(listing, listing.getProductVersion(),
                 "Version '" + listing.getProductVersion() + "'");
-        addListingWarningIfNotValid(listing, listing.getReportFileLocation(), 
+        addListingWarningIfNotValid(listing, listing.getReportFileLocation(),
                 "Report File Location '" + listing.getReportFileLocation() + "'");
-        addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(), 
+        addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(),
                 "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
-        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(), 
+        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(),
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(), 
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(),
                 "Transparency Attestation '" + listing.getTransparencyAttestation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(), 
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
                 "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
 
         //users can add to accessibility standards so check these
@@ -1237,7 +1239,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         //users can add to qms standards so check these
         for (PendingCertifiedProductQmsStandardDTO qmsStd : listing.getQmsStandards()) {
             addListingWarningIfNotValid(listing, qmsStd.getName(), "QMS Standard '" + qmsStd.getName() + "'");
-            addListingWarningIfNotValid(listing, qmsStd.getModification(), "QMS Modification '" + qmsStd.getModification() + "'");
+            addListingWarningIfNotValid(listing, qmsStd.getModification(),
+                    "QMS Modification '" + qmsStd.getModification() + "'");
         }
 
         //users can add to targeted users so check these
@@ -1251,20 +1254,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 addCriteriaWarningIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
                 if (cert.getAdditionalSoftware() != null) {
                     for (PendingCertificationResultAdditionalSoftwareDTO addSoft : cert.getAdditionalSoftware()) {
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 addSoft.getName(), "Additional Software Name '" + addSoft.getName() + "'");
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 addSoft.getVersion(), "Additional Software Version '" + addSoft.getVersion() + "'");
-                        addCriteriaWarningIfNotValid(listing, cert, 
-                                addSoft.getJustification(), "Additional Software Justification '" + addSoft.getJustification() + "'");
+                        addCriteriaWarningIfNotValid(listing, cert,
+                                addSoft.getJustification(),
+                                "Additional Software Justification '" + addSoft.getJustification() + "'");
                     }
                 }
                 if (cert.getTestData() != null) {
                     for (PendingCertificationResultTestDataDTO testData : cert.getTestData()) {
                         //not checking test data name because it has to match one of the existing names
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 testData.getVersion(), "Test Data Version '" + testData.getVersion() + "'");
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 testData.getAlteration(), "Test Data Alteration '" + testData.getAlteration() + "'");
                     }
                 }
@@ -1274,20 +1278,20 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 if (cert.getTestProcedures() != null) {
                     for (PendingCertificationResultTestProcedureDTO testProc : cert.getTestProcedures()) {
                         //not checking name because it has to match one of the existing options
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 testProc.getVersion(), "Test Procedure Version '" + testProc.getVersion() + "'");
                     }
                 }
                 if (cert.getTestStandards() != null) {
                     for (PendingCertificationResultTestStandardDTO testStd : cert.getTestStandards()) {
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 testStd.getName(), "Test Standard Name '" + testStd.getName() + "'");
                     }
                 }
                 if (cert.getTestTools() != null) {
                     for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
                         //not checking name because it has to match one of the existing options
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 testTool.getVersion(), "Test Tool Version '" + testTool.getVersion() + "'");
                     }
                 }
@@ -1296,10 +1300,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                         PendingTestTaskDTO testTask = crTestTask.getPendingTestTask();
                         if (testTask != null) {
                             //not checking anything converted to a number
-                            addCriteriaWarningIfNotValid(listing, cert, 
-                                    testTask.getDescription() , "Test Task Description '" + testTask.getDescription() + "'");
-                            addCriteriaWarningIfNotValid(listing, cert, 
-                                    testTask.getTaskRatingScale() , "Test Task Rating Scale '" + testTask.getTaskRatingScale() + "'");
+                            addCriteriaWarningIfNotValid(listing, cert,
+                                    testTask.getDescription(),
+                                    "Test Task Description '" + testTask.getDescription() + "'");
+                            addCriteriaWarningIfNotValid(listing, cert,
+                                    testTask.getTaskRatingScale(),
+                                    "Test Task Rating Scale '" + testTask.getTaskRatingScale() + "'");
                         }
                         if (crTestTask.getTaskParticipants() != null) {
                             for (PendingCertificationResultTestTaskParticipantDTO crPart : crTestTask.getTaskParticipants()) {
@@ -1307,14 +1313,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                 if (part != null) {
                                     //not checking age range or education level because they have to map
                                     //to existing values. also not checking anything converted to a number
-                                    addCriteriaWarningIfNotValid(listing, cert, 
-                                            part.getAssistiveTechnologyNeeds() , 
-                                            "Participant Assistive Technology Needs '" + part.getAssistiveTechnologyNeeds() + "'");
-                                    addCriteriaWarningIfNotValid(listing, cert, 
-                                            part.getGender() , 
+                                    addCriteriaWarningIfNotValid(listing, cert,
+                                            part.getAssistiveTechnologyNeeds(),
+                                            "Participant Assistive Technology Needs '"
+                                                    + part.getAssistiveTechnologyNeeds() + "'");
+                                    addCriteriaWarningIfNotValid(listing, cert,
+                                            part.getGender(),
                                             "Participant Gender '" + part.getGender() + "'");
-                                    addCriteriaWarningIfNotValid(listing, cert, 
-                                            part.getOccupation() , 
+                                    addCriteriaWarningIfNotValid(listing, cert,
+                                            part.getOccupation(),
                                             "Participant Occupation '" + part.getOccupation() + "'");
                                 }
                             }
@@ -1323,9 +1330,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 }
                 if (cert.getUcdProcesses() != null) {
                     for (PendingCertificationResultUcdProcessDTO ucd : cert.getUcdProcesses()) {
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 ucd.getUcdProcessName(), "UCD Process Name '" + ucd.getUcdProcessName() + "'");
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 ucd.getUcdProcessDetails(), "UCD Process Details '" + ucd.getUcdProcessDetails() + "'");
                     }
                 }
@@ -1333,102 +1340,102 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
-    protected void weirdCharacterCheck(CertifiedProductSearchDetails listing) {
+    protected void weirdCharacterCheck(final CertifiedProductSearchDetails listing) {
         //check all string fields at the listing level
-        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(), 
+        addListingWarningIfNotValid(listing, listing.getAcbCertificationId(),
                 "ACB Certification ID '" + listing.getAcbCertificationId() + "'");
         if (listing.getCertifyingBody() != null && listing.getCertifyingBody().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getCertifyingBody().get("name").toString(), 
+            addListingWarningIfNotValid(listing, listing.getCertifyingBody().get("name").toString(),
                     "ACB Name '" + listing.getCertifyingBody().get("name").toString() + "'");
         }
         if (listing.getCertificationEdition() != null && listing.getCertificationEdition().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getCertificationEdition().get("name").toString(), 
+            addListingWarningIfNotValid(listing, listing.getCertificationEdition().get("name").toString(),
                     "Certification Edition '" + listing.getCertificationEdition().get("name").toString() + "'");
         }
-        addListingWarningIfNotValid(listing, listing.getProductAdditionalSoftware(), 
+        addListingWarningIfNotValid(listing, listing.getProductAdditionalSoftware(),
                 "Listing-level Additional Software '" + listing.getProductAdditionalSoftware() + "'");
 
         if (listing.getDeveloper() != null && listing.getDeveloper().getAddress() != null) {
             Address address = listing.getDeveloper().getAddress();
-            addListingWarningIfNotValid(listing, address.getLine1(), 
+            addListingWarningIfNotValid(listing, address.getLine1(),
                     "Developer's Street Address (Line 1) '" + address.getLine1() + "'");
-            addListingWarningIfNotValid(listing, address.getLine2(), 
+            addListingWarningIfNotValid(listing, address.getLine2(),
                     "Developer's Street Address (Line 2) '" + address.getLine2() + "'");
-            addListingWarningIfNotValid(listing, address.getCity(), 
+            addListingWarningIfNotValid(listing, address.getCity(),
                     "Developer's City '" + address.getCity() + "'");
-            addListingWarningIfNotValid(listing, address.getState(), 
+            addListingWarningIfNotValid(listing, address.getState(),
                     "Developer's State '" + address.getState() + "'");
-            addListingWarningIfNotValid(listing, address.getZipcode(), 
+            addListingWarningIfNotValid(listing, address.getZipcode(),
                     "Developer's Zip Code '" + address.getZipcode() + "'");
-            addListingWarningIfNotValid(listing, address.getCountry(), 
+            addListingWarningIfNotValid(listing, address.getCountry(),
                     "Developer's Country  '" + address.getCountry() + "'");
         }
 
         if (listing.getDeveloper() != null && listing.getDeveloper().getContact() != null) {
             Contact contact = listing.getDeveloper().getContact();
-            addListingWarningIfNotValid(listing, contact.getFirstName(), 
+            addListingWarningIfNotValid(listing, contact.getFirstName(),
                     "Developer Contact's First Name '" + contact.getFirstName() + "'");
-            addListingWarningIfNotValid(listing, contact.getLastName(), 
+            addListingWarningIfNotValid(listing, contact.getLastName(),
                     "Developer Contact's Last Name '" + contact.getLastName() + "'");
-            addListingWarningIfNotValid(listing, contact.getEmail(), 
+            addListingWarningIfNotValid(listing, contact.getEmail(),
                     "Developer Contact's Email Address '" + contact.getEmail() + "'");
-            addListingWarningIfNotValid(listing, contact.getPhoneNumber(), 
+            addListingWarningIfNotValid(listing, contact.getPhoneNumber(),
                     "Developer Contact's Phone Number '" + contact.getPhoneNumber() + "'");
-            addListingWarningIfNotValid(listing, contact.getTitle(), 
+            addListingWarningIfNotValid(listing, contact.getTitle(),
                     "Developer Contact's Title '" + contact.getTitle() + "'");
         }
 
         if (listing.getDeveloper() != null) {
-            addListingWarningIfNotValid(listing, listing.getDeveloper().getWebsite(), 
+            addListingWarningIfNotValid(listing, listing.getDeveloper().getWebsite(),
                     "Developer's Website '" + listing.getDeveloper().getWebsite() + "'");
         }
 
         if (listing.getPracticeType() != null && listing.getPracticeType().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getPracticeType().get("name").toString(), 
+            addListingWarningIfNotValid(listing, listing.getPracticeType().get("name").toString(),
                     "Practice Type '" + listing.getPracticeType().get("name").toString() + "'");
         }
         if (listing.getClassificationType() != null && listing.getClassificationType().get("name") != null) {
-            addListingWarningIfNotValid(listing, listing.getClassificationType().get("name").toString(), 
+            addListingWarningIfNotValid(listing, listing.getClassificationType().get("name").toString(),
                     "Product Classification '" + listing.getClassificationType().get("name").toString() + "'");
         }
         if (listing.getProduct() != null) {
-            addListingWarningIfNotValid(listing, listing.getProduct().getName(), 
+            addListingWarningIfNotValid(listing, listing.getProduct().getName(),
                     "Product Name '" + listing.getProduct().getName() + "'");
         }
         if (listing.getVersion() != null) {
-            addListingWarningIfNotValid(listing, listing.getVersion().getVersion(), 
+            addListingWarningIfNotValid(listing, listing.getVersion().getVersion(),
                     "Version Name '" + listing.getVersion().getVersion() + "'");
         }
 
 
-        addListingWarningIfNotValid(listing, listing.getReportFileLocation(), 
+        addListingWarningIfNotValid(listing, listing.getReportFileLocation(),
                 "Report File Location '" + listing.getReportFileLocation() + "'");
         addListingWarningIfNotValid(listing, listing.getSedIntendedUserDescription(),
                 "SED Intended User Description '" + listing.getSedIntendedUserDescription() + "'");
-        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(), 
+        addListingWarningIfNotValid(listing, listing.getSedReportFileLocation(),
                 "SED Report File Location '" + listing.getSedReportFileLocation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(), 
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestation(),
                 "Transparency Attestation '" + listing.getTransparencyAttestation() + "'");
-        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(), 
+        addListingWarningIfNotValid(listing, listing.getTransparencyAttestationUrl(),
                 "Transparency Attestation URL '" + listing.getTransparencyAttestationUrl() + "'");
 
         //users can add to accessibility standards so check these
         for (CertifiedProductAccessibilityStandard accStd : listing.getAccessibilityStandards()) {
-            addListingWarningIfNotValid(listing, accStd.getAccessibilityStandardName(), 
+            addListingWarningIfNotValid(listing, accStd.getAccessibilityStandardName(),
                     "Accessibility Standard '" + accStd.getAccessibilityStandardName() + "'");
         }
 
         //users can add to qms standards so check these
         for (CertifiedProductQmsStandard qmsStd : listing.getQmsStandards()) {
-            addListingWarningIfNotValid(listing, qmsStd.getQmsStandardName(), 
+            addListingWarningIfNotValid(listing, qmsStd.getQmsStandardName(),
                     "QMS Standard '" + qmsStd.getQmsStandardName() + "'");
-            addListingWarningIfNotValid(listing, qmsStd.getQmsModification(), 
+            addListingWarningIfNotValid(listing, qmsStd.getQmsModification(),
                     "QMS Modification '" + qmsStd.getQmsModification() + "'");
         }
 
         //users can add to targeted users so check these
         for (CertifiedProductTargetedUser tu : listing.getTargetedUsers()) {
-            addListingWarningIfNotValid(listing, tu.getTargetedUserName(), 
+            addListingWarningIfNotValid(listing, tu.getTargetedUserName(),
                     "Targeted User '" + tu.getTargetedUserName() + "'");
         }
 
@@ -1438,20 +1445,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 addCriteriaWarningIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
                 if (cert.getAdditionalSoftware() != null) {
                     for (CertificationResultAdditionalSoftware addSoft : cert.getAdditionalSoftware()) {
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 addSoft.getName(), "Additional Software Name '" + addSoft.getName() + "'");
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 addSoft.getVersion(), "Additional Software Version '" + addSoft.getVersion() + "'");
-                        addCriteriaWarningIfNotValid(listing, cert, 
-                                addSoft.getJustification(), "Additional Software Justification '" + addSoft.getJustification() + "'");
+                        addCriteriaWarningIfNotValid(listing, cert,
+                                addSoft.getJustification(), "Additional Software Justification '"
+                                        + addSoft.getJustification() + "'");
                     }
                 }
                 if (cert.getTestDataUsed() != null) {
                     for (CertificationResultTestData testData : cert.getTestDataUsed()) {
                         //not checking test data name because it has to match one of the existing names
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 testData.getVersion(), "Test Data Version '" + testData.getVersion() + "'");
-                        addCriteriaWarningIfNotValid(listing, cert, 
+                        addCriteriaWarningIfNotValid(listing, cert,
                                 testData.getAlteration(), "Test Data Alteration '" + testData.getAlteration() + "'");
                     }
                 }
@@ -1461,21 +1469,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 if (cert.getTestProcedures() != null) {
                     for (CertificationResultTestProcedure testProc : cert.getTestProcedures()) {
                         //not checking name because it has to match one of the existing options
-                        addCriteriaWarningIfNotValid(listing, cert, testProc.getTestProcedureVersion(), 
+                        addCriteriaWarningIfNotValid(listing, cert, testProc.getTestProcedureVersion(),
                                 "Test Procedure Version '" + testProc.getTestProcedureVersion() + "'");
                     }
                 }
                 if (cert.getTestStandards() != null) {
                     for (CertificationResultTestStandard testStd : cert.getTestStandards()) {
-                        addCriteriaWarningIfNotValid(listing, cert, 
-                                testStd.getTestStandardName(), 
+                        addCriteriaWarningIfNotValid(listing, cert,
+                                testStd.getTestStandardName(),
                                 "Test Standard Name '" + testStd.getTestStandardName() + "'");
                     }
                 }
                 if (cert.getTestToolsUsed() != null) {
                     for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
                         //not checking name because it has to match one of the existing options
-                        addCriteriaWarningIfNotValid(listing, cert, testTool.getTestToolVersion(), 
+                        addCriteriaWarningIfNotValid(listing, cert, testTool.getTestToolVersion(),
                                 "Test Tool Version '" + testTool.getTestToolVersion() + "'");
                     }
                 }
@@ -1487,9 +1495,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 for (TestTask task : sed.getTestTasks()) {
                     if (task != null) {
                         //not checking anything converted to a number
-                        addListingWarningIfNotValid(listing, task.getDescription(), 
+                        addListingWarningIfNotValid(listing, task.getDescription(),
                                 "Test Task Description '" + task.getDescription() + "'");
-                        addListingWarningIfNotValid(listing, task.getTaskRatingScale() , 
+                        addListingWarningIfNotValid(listing, task.getTaskRatingScale(),
                                 "Test Task Rating Scale '" + task.getTaskRatingScale() + "'");
                     }
                     if (task.getTestParticipants() != null) {
@@ -1497,11 +1505,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             if (participant != null) {
                                 //not checking age range or education level because they have to map
                                 //to existing values. also not checking anything converted to a number
-                                addListingWarningIfNotValid(listing, participant.getAssistiveTechnologyNeeds() , 
-                                        "Participant Assistive Technology Needs '" + participant.getAssistiveTechnologyNeeds() + "'");
-                                addListingWarningIfNotValid(listing, participant.getGender(), 
+                                addListingWarningIfNotValid(listing, participant.getAssistiveTechnologyNeeds(),
+                                        "Participant Assistive Technology Needs '"
+                                                + participant.getAssistiveTechnologyNeeds() + "'");
+                                addListingWarningIfNotValid(listing, participant.getGender(),
                                         "Participant Gender '" + participant.getGender() + "'");
-                                addListingWarningIfNotValid(listing, participant.getOccupation(), 
+                                addListingWarningIfNotValid(listing, participant.getOccupation(),
                                         "Participant Occupation '" + participant.getOccupation() + "'");
                             }
                         }
@@ -1510,16 +1519,17 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             }
             if (sed.getUcdProcesses() != null) {
                 for (UcdProcess ucd : sed.getUcdProcesses()) {
-                    addListingWarningIfNotValid(listing, 
+                    addListingWarningIfNotValid(listing,
                             ucd.getName(), "UCD Process Name '" + ucd.getName() + "'");
-                    addListingWarningIfNotValid(listing, 
+                    addListingWarningIfNotValid(listing,
                             ucd.getDetails(), "UCD Process Details '" + ucd.getDetails() + "'");
                 }
             }
         }
     }
 
-    private void addListingWarningIfNotValid(PendingCertifiedProductDTO listing, String input, String fieldName) {
+    private void addListingWarningIfNotValid(final PendingCertifiedProductDTO listing,
+            final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCharacterFound"),
@@ -1533,8 +1543,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
-    private void addCriteriaWarningIfNotValid(PendingCertifiedProductDTO listing, 
-            PendingCertificationResultDTO criteria, String input, String fieldName) {
+    private void addCriteriaWarningIfNotValid(final PendingCertifiedProductDTO listing,
+            final PendingCertificationResultDTO criteria, final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badCharacterFound"),
@@ -1542,12 +1552,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
         if (ValidationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.newlineCharacterFound"),
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.criteria.newlineCharacterFound"),
                             LocaleContextHolder.getLocale()), criteria.getNumber(), fieldName));
         }
     }
 
-    private void addListingWarningIfNotValid(CertifiedProductSearchDetails listing, String input, String fieldName) {
+    private void addListingWarningIfNotValid(final CertifiedProductSearchDetails listing,
+            final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("listing.badCharacterFound"),
@@ -1560,8 +1572,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
-    private void addCriteriaWarningIfNotValid(CertifiedProductSearchDetails listing, 
-            CertificationResult criteria, String input, String fieldName) {
+    private void addCriteriaWarningIfNotValid(final CertifiedProductSearchDetails listing,
+            final CertificationResult criteria, final String input, final String fieldName) {
         if (!ValidationUtils.isValidUtf8(input)) {
             listing.getWarningMessages().add(String.format(
                     messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.badCharacterFound"),
@@ -1569,7 +1581,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
         if (ValidationUtils.hasNewline(input)) {
             listing.getWarningMessages().add(String.format(
-                    messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.newlineCharacterFound"),
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.criteria.newlineCharacterFound"),
                             LocaleContextHolder.getLocale()), criteria.getNumber(), fieldName));
         }
     }
