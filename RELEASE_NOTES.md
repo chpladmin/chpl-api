@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version TBD
+_Date TBD_
+
+### Minor Features
+* Add ability to add G1/G2 measures for non-attested criteria
+
+---
+
 ## Version 15.8.0
 _26 March 2018_
 
