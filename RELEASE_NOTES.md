@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 15.8.0
+_26 March 2018_
 
 ### Minor features
 * Add endpoint for retrieving Participant/Age counts to be used for charting
