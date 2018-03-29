@@ -7,8 +7,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -147,7 +147,6 @@ import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
@@ -615,8 +614,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 boolean isCertified = (certResultToCreate.getSuccessful() != null
                         && certResultToCreate.getSuccessful().booleanValue() == true);
                 certResultToCreate.setGap(isCertified ? certResult.getGap() : null);
-                certResultToCreate.setG1Success(isCertified ? certResult.getG1Success() : null);
-                certResultToCreate.setG2Success(isCertified ? certResult.getG2Success() : null);
+                certResultToCreate.setG1Success(certResult.getG1Success());
+                certResultToCreate.setG2Success(certResult.getG2Success());
+                
                 if (isCertified && certResult.getSed() == null) {
                     if (certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
                         certResultToCreate.setSed(Boolean.TRUE);
@@ -630,6 +630,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 certResultToCreate
                         .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
+                
+                createdCert = addG1G2MacraMeasures(certResult, createdCert);
+                
                 if (isCertified) {
                     if (certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
                         for (PendingCertificationResultAdditionalSoftwareDTO software : certResult
@@ -806,40 +809,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                         }
                     }
 
-                    if (certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
-                        for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult
-                                .getG1MacraMeasures()) {
-                            // the validator set the macraMeasure value so it's
-                            // definitely filled in
-                            if (pendingMeasure.getMacraMeasure() != null
-                                    && pendingMeasure.getMacraMeasure().getId() != null) {
-                                CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-                                crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-                                crMeasure.setCertificationResultId(createdCert.getId());
-                                certDao.addG1MacraMeasureMapping(crMeasure);
-                            } else {
-                                LOGGER.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
-                            }
-                        }
-                    }
-
-                    if (certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
-                        for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult
-                                .getG2MacraMeasures()) {
-                            // the validator set the macraMeasure value so it's
-                            // definitely filled in
-                            if (pendingMeasure.getMacraMeasure() != null
-                                    && pendingMeasure.getMacraMeasure().getId() != null) {
-                                CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
-                                crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
-                                crMeasure.setCertificationResultId(createdCert.getId());
-                                certDao.addG2MacraMeasureMapping(crMeasure);
-                            } else {
-                                LOGGER.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
-                            }
-                        }
-                    }
-
                     if (certResult.getTestTasks() != null && certResult.getTestTasks().size() > 0) {
                         // Map<Long, Long> pendingTaskToConfirmedTaskMap = new
                         // HashMap<Long, Long>();
@@ -990,6 +959,45 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         statusEventDao.create(certEvent);
         
         return newCertifiedProduct;
+    }
+
+    private CertificationResultDTO addG1G2MacraMeasures(PendingCertificationResultDTO certResult, CertificationResultDTO createdCert)
+            throws EntityCreationException {
+        if (certResult.getG1MacraMeasures() != null && certResult.getG1MacraMeasures().size() > 0) {
+            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult
+                    .getG1MacraMeasures()) {
+                // the validator set the macraMeasure value so it's
+                // definitely filled in
+                if (pendingMeasure.getMacraMeasure() != null
+                        && pendingMeasure.getMacraMeasure().getId() != null) {
+                    CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+                    crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
+                    crMeasure.setCertificationResultId(createdCert.getId());
+                    certDao.addG1MacraMeasureMapping(crMeasure);
+                } else {
+                    LOGGER.error("Found G1 Macra Measure with null value for " + certResult.getNumber());
+                }
+            }
+        }
+
+        if (certResult.getG2MacraMeasures() != null && certResult.getG2MacraMeasures().size() > 0) {
+            for (PendingCertificationResultMacraMeasureDTO pendingMeasure : certResult
+                    .getG2MacraMeasures()) {
+                // the validator set the macraMeasure value so it's
+                // definitely filled in
+                if (pendingMeasure.getMacraMeasure() != null
+                        && pendingMeasure.getMacraMeasure().getId() != null) {
+                    CertificationResultMacraMeasureDTO crMeasure = new CertificationResultMacraMeasureDTO();
+                    crMeasure.setMeasure(pendingMeasure.getMacraMeasure());
+                    crMeasure.setCertificationResultId(createdCert.getId());
+                    certDao.addG2MacraMeasureMapping(crMeasure);
+                } else {
+                    LOGGER.error("Found G2 Macra Measure with null value for " + certResult.getNumber());
+                }
+            }
+        }
+        
+        return createdCert;
     }
 
     @Override
