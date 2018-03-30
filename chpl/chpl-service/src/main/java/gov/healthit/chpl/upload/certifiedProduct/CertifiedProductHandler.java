@@ -71,31 +71,32 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return null;
     }
 
-    protected void parseUniqueId(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
+    protected void parseUniqueId(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
         String uniqueId = record.get(getColumnIndexMap().getUniqueIdIndex()).trim();
         pendingCertifiedProduct.setUniqueId(uniqueId);
     }
 
-    protected void parseRecordStatus(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
+    protected void parseRecordStatus(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         String status = record.get(getColumnIndexMap().getRecordStatusIndex()).trim();
         pendingCertifiedProduct.setRecordStatus(status);
     }
 
-    protected void parsePracticeType(PendingCertifiedProductEntity pendingCertifiedProduct, 
-            CSVRecord record) {
+    protected void parsePracticeType(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         PracticeTypeDTO foundPracticeType = null;
         String practiceType = record.get(getColumnIndexMap().getPracticeTypeIndex()).trim();
         pendingCertifiedProduct.setPracticeType(practiceType);
-        if(!practiceType.equals("")){
+        if (!practiceType.equals("")) {
             foundPracticeType = practiceTypeDao.getByName(practiceType);
         }
         if (foundPracticeType != null) {
             pendingCertifiedProduct.setPracticeTypeId(foundPracticeType.getId());
-        }    
+        }
     }
 
-    protected void parseDeveloperProductVersion(PendingCertifiedProductEntity pendingCertifiedProduct,
-            CSVRecord record) {
+    protected void parseDeveloperProductVersion(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         String developer = record.get(getColumnIndexMap().getDeveloperIndex()).trim();
         String product = record.get(getColumnIndexMap().getProductIndex()).trim();
         String productVersion = record.get(getColumnIndexMap().getVersionIndex()).trim();
@@ -122,8 +123,8 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseDeveloperAddress(PendingCertifiedProductEntity pendingCertifiedProduct,
-            CSVRecord record) {
+    protected void parseDeveloperAddress(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         int devAddressIndex = getColumnIndexMap().getDeveloperAddressStartIndex();
         String developerStreetAddress = record.get(devAddressIndex++).trim();
         String developerState = record.get(devAddressIndex++).trim();
@@ -169,8 +170,8 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseEdition(String expected, PendingCertifiedProductEntity pendingCertifiedProduct,
-            CSVRecord record) {
+    protected void parseEdition(final String expected, final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         String certificaitonYear = record.get(getColumnIndexMap().getEditionIndex()).trim();
         pendingCertifiedProduct.setCertificationEdition(certificaitonYear);
         if (!pendingCertifiedProduct.getCertificationEdition().equals(expected.trim())) {
@@ -185,13 +186,14 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseAcbCertificationId(PendingCertifiedProductEntity pendingCertifiedProduct,
-            CSVRecord record) {
-        pendingCertifiedProduct.setAcbCertificationId(record.get(getColumnIndexMap().getAcbCertificationIdIndex()).trim());
+    protected void parseAcbCertificationId(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
+        pendingCertifiedProduct.setAcbCertificationId(record.get(getColumnIndexMap()
+                .getAcbCertificationIdIndex()).trim());
     }
 
-    protected void parseAcb(PendingCertifiedProductEntity pendingCertifiedProduct,
-            CSVRecord record) {
+    protected void parseAcb(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         String acbName = record.get(getColumnIndexMap().getAcbIndex()).trim();
         pendingCertifiedProduct.setCertificationBodyName(acbName);
         CertificationBodyDTO foundAcb = acbDao.getByName(acbName);
@@ -215,7 +217,6 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
             TestingLabDTO foundAtl = atlDao.getByName(atlName);
             PendingCertifiedProductTestingLabMapEntity tlEntity = new PendingCertifiedProductTestingLabMapEntity();
             tlEntity.setMappedProduct(pendingCertifiedProduct);
-            tlEntity.setTestingLabName(atlName);
             if (foundAtl != null) {
                 tlEntity.setTestingLabId(foundAtl.getId());
                 tlEntity.setTestingLabName(foundAtl.getName());
@@ -237,8 +238,8 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseCertificationDate(PendingCertifiedProductEntity pendingCertifiedProduct,
-            CSVRecord record) {
+    protected void parseCertificationDate(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         String dateStr = record.get(getColumnIndexMap().getCertificationDateIndex()).trim();
         try {
             Date certificationDate = dateFormatter.parse(dateStr);
@@ -248,7 +249,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseHasQms(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
+    protected void parseHasQms(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
         String hasQmsStr = record.get(getColumnIndexMap().getQmsStartIndex());
         Boolean hasQms = asBoolean(hasQmsStr);
         if (hasQms != null) {
@@ -256,12 +257,13 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    protected void parseHasIcs(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
+    protected void parseHasIcs(final PendingCertifiedProductEntity pendingCertifiedProduct, final CSVRecord record) {
         String hasIcsStr = record.get(getColumnIndexMap().getIcsStartIndex()).trim();
         pendingCertifiedProduct.setIcs(asBoolean(hasIcsStr));
     }
 
-    protected void parseTransparencyAttestation(PendingCertifiedProductEntity pendingCertifiedProduct, CSVRecord record) {
+    protected void parseTransparencyAttestation(final PendingCertifiedProductEntity pendingCertifiedProduct,
+            final CSVRecord record) {
         //(k)(1) attestation url
         pendingCertifiedProduct.setTransparencyAttestationUrl(record.get(getColumnIndexMap().getK1Index()).trim());
 
@@ -280,7 +282,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         }
     }
 
-    public List<CQMCriterion> getApplicableCqmCriterion(List<CQMCriterion> allCqms) {
+    public List<CQMCriterion> getApplicableCqmCriterion(final List<CQMCriterion> allCqms) {
         List<CQMCriterion> criteria = new ArrayList<CQMCriterion>();
         for (CQMCriterion criterion : allCqms) {
             if (!StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS")) {
@@ -294,13 +296,14 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
     /**
      * look up the certification criteria by name and throw an error if we can't
      * find it
-     * 
+     *
      * @param criterionName
      * @param column
      * @return
      * @throws InvalidArgumentsException
      */
-    protected PendingCertificationResultEntity getCertificationResult(String criterionName, String columnValue)
+    protected PendingCertificationResultEntity getCertificationResult(final String criterionName,
+            final String columnValue)
             throws InvalidArgumentsException {
         CertificationCriterionEntity certEntity = certDao.getEntityByName(criterionName);
         if (certEntity == null) {
@@ -333,7 +336,7 @@ public abstract class CertifiedProductHandler extends CertifiedProductUploadHand
         return parseBoolean(value);
     }
 
-    protected Boolean parseBoolean(String value){
+    protected Boolean parseBoolean(final String value) {
         // look for a string
         if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
                 || value.equalsIgnoreCase("y")) {

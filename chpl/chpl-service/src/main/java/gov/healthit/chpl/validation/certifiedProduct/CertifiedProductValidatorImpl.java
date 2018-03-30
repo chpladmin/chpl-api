@@ -345,7 +345,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     String warningMsg = String.format(
                             messageSource.getMessage(new DefaultMessageSourceResolvable("listing.fuzzyMatch"),
                                     LocaleContextHolder.getLocale()), FuzzyType.QMS_STANDARD.fuzzyType(),
-                                    origQmsName, topChoice);
+                            origQmsName, topChoice);
                     product.getWarningMessages().add(warningMsg);
                 }
             }
@@ -388,12 +388,17 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 product.getErrorMessages().add(getMessage("atl.notFound"));
             } else {
                 testingLabs = product.getTestingLabs();
-                if (testingLabs.size() > 1 && !"99".equals(atlCode)) {
-                    product.getWarningMessages()
-                    .add(getMessage("atl.shouldBe99"));
+                if (testingLabs.size() > 1) {
+                    if (!"99".equals(atlCode)) {
+                        product.getWarningMessages()
+                        .add(getMessage("atl.shouldBe99"));
+                    }
                 } else {
                     TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
-                    if (testingLab.getTestingLabCode().equals(atlCode)) {
+                    if ("99".equals(atlCode)) {
+                        product.getWarningMessages()
+                        .add(getMessage("atl.shouldNotBe99"));
+                    } else if (!testingLab.getTestingLabCode().equals(atlCode)) {
                         product.getWarningMessages()
                         .add(getMessage("atl.codeMismatch", testingLab.getTestingLabCode()));
                     }
