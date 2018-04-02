@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
@@ -413,6 +414,48 @@ public class ListingQuestionableActivityProvider {
               activity = new QuestionableActivityListingDTO();
               activity.setBefore(null);
               activity.setAfter(null);
+        }
+        return activity;
+    }
+
+    /**
+     * Check to see if activity has any changes in ATLs.
+     * @param origListing original listing
+     * @param newListing new listing
+     * @return activity if it is questionable
+     */
+    public QuestionableActivityListingDTO checkTestingLabChanged(
+            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        List<CertifiedProductTestingLab> origAtls = origListing.getTestingLabs();
+        List<CertifiedProductTestingLab> newAtls = newListing.getTestingLabs();
+        List<String> addedAtls = new ArrayList<String>();
+        List<String> removedAtls = new ArrayList<String>();
+        boolean found = false;
+        for (CertifiedProductTestingLab oa : origAtls) {
+            for (CertifiedProductTestingLab na : newAtls) {
+                if (oa.getTestingLabName().equalsIgnoreCase(na.getTestingLabName())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                removedAtls.add(oa.getTestingLabName());
+            }
+        }
+        for (CertifiedProductTestingLab na : newAtls) {
+            for (CertifiedProductTestingLab oa : origAtls) {
+                if (oa.getTestingLabName().equalsIgnoreCase(na.getTestingLabName())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                addedAtls.add(na.getTestingLabName());
+            }
+        }
+        if (!addedAtls.isEmpty() || !removedAtls.isEmpty()) {
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore("Removed " + StringUtils.collectionToCommaDelimitedString(removedAtls));
+            activity.setAfter("Added " + StringUtils.collectionToCommaDelimitedString(addedAtls));
         }
         return activity;
     }

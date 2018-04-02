@@ -356,6 +356,12 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                 createListingActivity(activity, origListing.getId(), activityDate, activityUser,
                         QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY, activityReason);
             }
+            activity = listingQuestionableActivityProvider.checkTestingLabChanged(
+                    origListing, newListing);
+            if (activity != null) {
+                createListingActivity(activity, origListing.getId(), activityDate, activityUser,
+                        QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED, activityReason);
+            }
             //finally check for other changes that are only questionable
             //outside of the acceptable activity threshold
             if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null

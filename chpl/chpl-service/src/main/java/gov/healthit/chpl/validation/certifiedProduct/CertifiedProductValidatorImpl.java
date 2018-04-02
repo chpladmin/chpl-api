@@ -126,6 +126,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
     Pattern urlRegex;
 
+    private static final int OLD_STYLE_ID_LENGTH = 11;
+
     public CertifiedProductValidatorImpl() {
         urlRegex = Pattern.compile(URL_PATTERN);
     }
@@ -1104,9 +1106,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         } else {
             checkField(product, product.getCertificationEdition().get("id"), "certificationEdition");
         }
-        if (product.getTestingLabs() == null) {
-            product.getWarningMessages()
-            .add("No testing lab was found");
+        if (product.getChplProductNumber().length() > OLD_STYLE_ID_LENGTH
+                && (product.getTestingLabs() == null || product.getTestingLabs().size() == 0)) {
+            product.getErrorMessages()
+            .add(getMessage("atl.notFound"));
         }
         if (StringUtils.isEmpty(product.getAcbCertificationId())) {
             product.getWarningMessages().add("CHPL certification ID was not found.");
