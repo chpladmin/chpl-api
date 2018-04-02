@@ -26,7 +26,6 @@ import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
@@ -40,7 +39,6 @@ import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -63,7 +61,6 @@ import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
@@ -87,8 +84,6 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private TestStandardDAO testStandardDAO;
     @Autowired
     private TestToolDAO testToolDAO;
-    @Autowired
-    private TestProcedureDAO testProcedureDAO;
     @Autowired
     private TestFunctionalityDAO testFunctionalityDAO;
     @Autowired
@@ -140,7 +135,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             }
             toUpdate.setSuccessful(updated.isSuccess());
 
-            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
+            
+            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == false 
+                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success()) 
+                            || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
+                toUpdate.setG1Success(updated.isG1Success());
+                toUpdate.setG2Success(updated.isG2Success());
+            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
                 toUpdate.setApiDocumentation(updated.getApiDocumentation());
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
                 toUpdate.setG1Success(updated.isG1Success());
@@ -150,8 +151,6 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             } else {
                 toUpdate.setApiDocumentation(null);
                 toUpdate.setPrivacySecurityFramework(null);
-                toUpdate.setG1Success(null);
-                toUpdate.setG2Success(null);
                 toUpdate.setGap(null);
                 toUpdate.setSed(null);
             }
@@ -160,11 +159,16 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             numChanges++;
         }
 
+        if (!updated.isSuccess() && 
+                (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures()) || 
+                        haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
+            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
+            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
+        }
+        
         if (updated.isSuccess() == null || updated.isSuccess() == Boolean.FALSE) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
-            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), null, G1_MEASURE);
-            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), null, G2_MEASURE);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
@@ -321,7 +325,19 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         return numChanges;
     }
-
+    
+    private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
+        if (orig == null && updated == null)  {
+            return false;
+        } else if (orig != null && updated == null) {
+            return true;
+        } else if (orig == null && updated != null) {
+            return true;
+        } else {
+            return !orig.equals(updated);
+        }
+    }
+    
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
