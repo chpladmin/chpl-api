@@ -3,6 +3,14 @@
 ## Version TBD
 _Date TBD_
 
+### Minor Features
+* Add ability to add G1/G2 measures for non-attested criteria
+
+---
+
+## Version 15.8.0
+_26 March 2018_
+
 ### Minor features
 * Add endpoint for retrieving Participant/Age counts to be used for charting
 * Add endpoint for retrieving Participant/Education counts to be used for charting

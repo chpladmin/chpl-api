@@ -576,19 +576,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if ((cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
-                if (cert.getG1Success() != null && cert.getG1Success().booleanValue()) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G1 Success"));
-                }
-                if (cert.getG2Success() != null && cert.getG2Success().booleanValue()) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G2 Success"));
-                }
-                if (cert.getGap() != null && cert.getGap().booleanValue()) {
+                if (cert.getGap() != null && cert.getGap().booleanValue() == true) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -619,18 +607,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "Additional Software"));
-                }
-                if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G1 Macra Measures"));
-                }
-                if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G2 Macra Measures"));
                 }
                 if (cert.getTestData() != null && cert.getTestData().size() > 0) {
                     product.getWarningMessages()
@@ -832,19 +808,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         for (CertificationResult cert : product.getCertificationResults()) {
             if ((cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
-                if (cert.isG1Success() != null && cert.isG1Success().booleanValue()) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G1 Success"));
-                }
-                if (cert.isG2Success() != null && cert.isG2Success().booleanValue()) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G2 Success"));
-                }
-                if (cert.isGap() != null && cert.isGap().booleanValue()) {
+                if (cert.isGap() != null && cert.isGap().booleanValue() == true) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -873,18 +837,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
                             LocaleContextHolder.getLocale()), cert.getNumber(), "Additional Software"));
-                }
-                if (cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G1 Macra Measures"));
-                }
-                if (cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    product.getWarningMessages()
-                    .add(String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
-                            LocaleContextHolder.getLocale()), cert.getNumber(), "G2 Macra Measures"));
                 }
                 if (cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     product.getWarningMessages()
