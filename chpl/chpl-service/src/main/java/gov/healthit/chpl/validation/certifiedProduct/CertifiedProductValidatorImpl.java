@@ -78,6 +78,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class CertifiedProductValidatorImpl implements CertifiedProductValidator {
@@ -109,10 +110,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     AccessibilityStandardDAO accStdDao;
     @Autowired
     FuzzyChoicesManager fuzzyChoicesManager;
-
+    
+    @Autowired
+    ChplProductNumberUtil chplProductNumberUtil;
+    
     @Autowired
     protected CertificationResultRules certRules;
-
+    
     protected Boolean hasIcsConflict;
 
     protected Integer icsCodeInteger;
@@ -273,6 +277,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
+        
     @Override
     public void validate(PendingCertifiedProductDTO product) {
         String uniqueId = product.getUniqueId();
@@ -291,6 +296,21 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
         String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
         String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
+        
+        //Ensure the new chpl product number is unique
+        String chplProductNumber = 
+                chplProductNumberUtil.generate(
+                        uniqueId, 
+                        product.getCertificationEdition(), 
+                        product.getTestingLabName(), 
+                        product.getCertificationBodyId(), 
+                        product.getDeveloperId());
+        if (!chplProductNumberUtil.isUnique(chplProductNumber)) {
+            product.getErrorMessages().add(
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.chplProductNumber.notUnique"),
+                                LocaleContextHolder.getLocale()), chplProductNumber));
+        }
         
         if(product.getCertificationCriterion() != null && !product.getCertificationCriterion().isEmpty()){
         	for(PendingCertificationResultDTO cert : product.getCertificationCriterion()){
