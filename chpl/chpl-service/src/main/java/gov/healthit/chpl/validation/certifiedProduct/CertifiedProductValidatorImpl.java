@@ -394,7 +394,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                         .add(getMessage("atl.shouldBe99"));
                     }
                 } else {
-                    TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
+                    TestingLabDTO testingLab = atlDao.getById(testingLabs.get(0).getTestingLabId().longValue());
                     if ("99".equals(atlCode)) {
                         product.getWarningMessages()
                         .add(getMessage("atl.shouldNotBe99"));
