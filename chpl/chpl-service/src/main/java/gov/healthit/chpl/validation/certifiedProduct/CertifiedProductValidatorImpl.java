@@ -80,6 +80,7 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 /**
@@ -116,6 +117,9 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     AccessibilityStandardDAO accStdDao;
     @Autowired
     FuzzyChoicesManager fuzzyChoicesManager;
+
+    @Autowired
+    ChplProductNumberUtil chplProductNumberUtil;
 
     @Autowired
     protected CertificationResultRules certRules;
@@ -301,9 +305,23 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
         String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 
-        if (product.getCertificationCriterion() != null && !product.getCertificationCriterion().isEmpty()){
-            for (PendingCertificationResultDTO cert : product.getCertificationCriterion()){
-                if (cert.getUcdProcesses() != null && !cert.getUcdProcesses().isEmpty()){
+        //Ensure the new chpl product number is unique
+        String chplProductNumber =
+                chplProductNumberUtil.generate(
+                        uniqueId,
+                        product.getCertificationEdition(),
+                        product.getTestingLabs(),
+                        product.getCertificationBodyId(),
+                        product.getDeveloperId());
+        if (!chplProductNumberUtil.isUnique(chplProductNumber)) {
+            product.getErrorMessages().add(
+                    String.format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.chplProductNumber.notUnique"),
+                            LocaleContextHolder.getLocale()), chplProductNumber));
+        }
+        if (product.getCertificationCriterion() != null && !product.getCertificationCriterion().isEmpty()) {
+            for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+                if (cert.getUcdProcesses() != null && !cert.getUcdProcesses().isEmpty()) {
                     for (PendingCertificationResultUcdProcessDTO ucd : cert.getUcdProcesses()) {
                         String origUcdProcessName = ucd.getUcdProcessName();
                         String topChoice = fuzzyChoicesManager

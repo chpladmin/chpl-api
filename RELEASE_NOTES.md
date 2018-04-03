@@ -13,6 +13,7 @@ _Date TBD_
 
 ### Minor Features
 * Add ability to add G1/G2 measures for non-attested criteria
+* Fixed bug that allowed duplicate Chpl Product Numbers during upload
 
 ---
 
