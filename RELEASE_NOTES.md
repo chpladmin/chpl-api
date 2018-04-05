@@ -1,5 +1,13 @@
 # Release Notes
 
+## OCD-1898
+* Add support for Multiple ATLs
+  * Upload / confirm workflow
+  * Edit Listing validation & questionable activity
+* Wide variety of linting changes
+
+---
+
 ## Version TBD
 _Date TBD_
 
@@ -13,18 +21,22 @@ _Date TBD_
 _26 March 2018_
 
 ### Minor features
-* Add endpoint for retrieving Participant/Age counts to be used for charting
-* Add endpoint for retrieving Participant/Education counts to be used for charting
-* Add endpoint for retrieving Participant/Ender counts to be used for charting
-* Add endpoint for retrieving Participant/Professional Experience counts to be used for charting
-* Add endpoint for retrieving Participant/Product Experience counts to be used for charting
-* Add endpoint for retrieving Participant/Computer Experience counts to be used for charting
-* Modified application to generate and store Participant/Age counts to support charting
-* Modified application to generate and store Participant/Education counts to support charting
-* Modified application to generate and store Participant/Gender counts to support charting
-* Modified application to generate and store Participant/Professional Experience counts to support charting
-* Modified application to generate and store Participant/Product Experience counts to support charting
-* Modified application to generate and store Participant/Computer Experience counts to support charting
+* Charting endpoints
+  * Participant/Age counts
+  * Participant/Education counts
+  * Participant/Ender counts
+  * Participant/Professional Experience
+  * Participant/Product Experience
+  * Participant/Computer Experience
+* Charting application updates
+  * Participant/Age counts
+  * Participant/Education counts
+  * Participant/Gender counts
+  * Participant/Professional Experience
+  * Participant/Product Experience
+  * Participant/Computer Experience
+
+---
 
 ## Version 15.7.0
 _12 March 2018_

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -16,6 +15,7 @@ import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
@@ -38,9 +38,9 @@ public class ListingQuestionableActivityProvider {
 
         QuestionableActivityListingDTO activity = null;
         if (origListing.getCertificationEdition().get("name").equals("2011")) {
-              activity = new QuestionableActivityListingDTO();
-              activity.setBefore(null);
-              activity.setAfter(null);
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore(null);
+            activity.setAfter(null);
         }
 
         return activity;
@@ -59,10 +59,10 @@ public class ListingQuestionableActivityProvider {
         CertificationStatusEvent prev = origListing.getCurrentStatus();
         CertificationStatusEvent curr = newListing.getCurrentStatus();
         if (!prev.getStatus().getId().equals(curr.getStatus().getId())) {
-              activity = new QuestionableActivityListingDTO();
-              activity.setBefore(prev.getStatus().getName());
-              activity.setAfter(curr.getStatus().getName());
-              activity.setCertificationStatusChangeReason(curr.getReason());
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore(prev.getStatus().getName());
+            activity.setAfter(curr.getStatus().getName());
+            activity.setCertificationStatusChangeReason(curr.getReason());
         }
 
         return activity;
@@ -175,7 +175,7 @@ public class ListingQuestionableActivityProvider {
     }
 
 
-   /**
+    /**
      * Create questionable activity if the current certification status event date was updated.
      * @param origListing original listing
      * @param newListing new listing
@@ -189,12 +189,12 @@ public class ListingQuestionableActivityProvider {
         CertificationStatusEvent curr = newListing.getCurrentStatus();
         Calendar displayDate = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         if (prev.getEventDate().longValue() != curr.getEventDate().longValue()) {
-              activity = new QuestionableActivityListingDTO();
-              displayDate.setTimeInMillis(prev.getEventDate());
-              activity.setBefore(displayDate.getTime().toString());
-              displayDate.setTimeInMillis(curr.getEventDate());
-              activity.setAfter(displayDate.getTime().toString());
-              activity.setCertificationStatusChangeReason(curr.getReason());
+            activity = new QuestionableActivityListingDTO();
+            displayDate.setTimeInMillis(prev.getEventDate());
+            activity.setBefore(displayDate.getTime().toString());
+            displayDate.setTimeInMillis(curr.getEventDate());
+            activity.setAfter(displayDate.getTime().toString());
+            activity.setCertificationStatusChangeReason(curr.getReason());
         }
 
         return activity;
@@ -215,10 +215,10 @@ public class ListingQuestionableActivityProvider {
         QuestionableActivityListingDTO activity = null;
         if (!origListing.getCurrentStatus().getStatus().getName().equals(updateTo.getName())
                 && newListing.getCurrentStatus().getStatus().getName().equals(updateTo.getName())) {
-              activity = new QuestionableActivityListingDTO();
-              activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
-              activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
-              activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore(origListing.getCurrentStatus().getStatus().getName());
+            activity.setAfter(newListing.getCurrentStatus().getStatus().getName());
+            activity.setCertificationStatusChangeReason(newListing.getCurrentStatus().getReason());
         }
 
         return activity;
@@ -410,9 +410,57 @@ public class ListingQuestionableActivityProvider {
                 && (newListing.getSurveillance() == null
                 || newListing.getSurveillance().size() < origListing.getSurveillance().size())) {
 
-              activity = new QuestionableActivityListingDTO();
-              activity.setBefore(null);
-              activity.setAfter(null);
+            activity = new QuestionableActivityListingDTO();
+            activity.setBefore(null);
+            activity.setAfter(null);
+        }
+        return activity;
+    }
+
+    /**
+     * Check to see if activity has any changes in ATLs.
+     * @param origListing original listing
+     * @param newListing new listing
+     * @return activity if it is questionable
+     */
+    public QuestionableActivityListingDTO checkTestingLabChanged(
+            final CertifiedProductSearchDetails origListing, final CertifiedProductSearchDetails newListing) {
+        QuestionableActivityListingDTO activity = null;
+        List<CertifiedProductTestingLab> origAtls = origListing.getTestingLabs();
+        List<CertifiedProductTestingLab> newAtls = newListing.getTestingLabs();
+        List<String> addedAtls = new ArrayList<String>();
+        List<String> removedAtls = new ArrayList<String>();
+        boolean found;
+        for (CertifiedProductTestingLab oa : origAtls) {
+            found = false;
+            for (CertifiedProductTestingLab na : newAtls) {
+                if (oa.getTestingLabName().equalsIgnoreCase(na.getTestingLabName())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                removedAtls.add(oa.getTestingLabName());
+            }
+        }
+        for (CertifiedProductTestingLab na : newAtls) {
+            found = false;
+            for (CertifiedProductTestingLab oa : origAtls) {
+                if (oa.getTestingLabName().equalsIgnoreCase(na.getTestingLabName())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                addedAtls.add(na.getTestingLabName());
+            }
+        }
+        if (!addedAtls.isEmpty() || !removedAtls.isEmpty()) {
+            activity = new QuestionableActivityListingDTO();
+            if (!removedAtls.isEmpty()) {
+                activity.setBefore("Removed " + StringUtils.collectionToCommaDelimitedString(removedAtls));
+            }
+            if (!addedAtls.isEmpty()) {
+                activity.setAfter("Added " + StringUtils.collectionToCommaDelimitedString(addedAtls));
+            }
         }
         return activity;
     }

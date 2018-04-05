@@ -313,6 +313,14 @@
         name="My Testing Lab" creation_date="2015-08-20 13:14:00"
         last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
         deleted="false" />
+    <testing_lab testing_lab_id="1" testing_lab_code="02"
+        name="ICSA Labs" creation_date="2015-08-20 13:14:00"
+        last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
+        deleted="false" />
+    <testing_lab testing_lab_id="2" testing_lab_code="03"
+        name="Drummond Group" creation_date="2015-08-20 13:14:00"
+        last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
+        deleted="false" />
 
     <certified_product certified_product_id="1"
         certification_edition_id="2" product_version_id="1"
@@ -323,8 +331,8 @@
         last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
         deleted="false" practice_type_id="1"
         product_classification_type_id="1" ics="true" qms="true"
-        testing_lab_id="-1" ics_code="01" additional_software_code="1"
-        product_code="IC08" certified_date_code="160402" version_code="36" />
+        ics_code="01" additional_software_code="1" product_code="IC08"
+        certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="2"
         certification_edition_id="2" product_version_id="3"
         certification_body_id="-1" chpl_product_number="CHP-024051"
@@ -334,7 +342,7 @@
         practice_type_id="1" product_classification_type_id="2"
         ics_code="01" additional_software_code="1" product_code="IC09"
         certified_date_code="160402" version_code="36"
-        acb_certification_id="abcdef" testing_lab_id="-1" />
+        acb_certification_id="abcdef" />
     <certified_product certified_product_id="3"
         certification_edition_id="1" product_version_id="3"
         certification_body_id="-1" chpl_product_number="CHP-024052"
@@ -342,8 +350,8 @@
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
-        testing_lab_id="-1" ics_code="01" additional_software_code="1"
-        product_code="IC10" certified_date_code="160402" version_code="36"
+        ics_code="01" additional_software_code="1" product_code="IC10"
+        certified_date_code="160402" version_code="36"
         acb_certification_id="abcdef" />
     <certified_product certified_product_id="4"
         certification_edition_id="1" product_version_id="9"
@@ -352,8 +360,8 @@
         creation_date="2015-08-20 13:14:00" last_modified_user="-2"
         last_modified_date="2015-08-20 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
-        testing_lab_id="-1" ics_code="01" additional_software_code="1"
-        product_code="IC11" certified_date_code="160402" version_code="36"
+        ics_code="01" additional_software_code="1" product_code="IC11"
+        certified_date_code="160402" version_code="36"
         acb_certification_id="abcdef" />
     <certified_product certified_product_id="5"
         certification_edition_id="3" product_version_id="5"
@@ -363,8 +371,8 @@
         acb_certification_id="abcdef" creation_date="2015-08-20 13:14:00"
         last_modified_user="-2" last_modified_date="2015-08-20 13:15:00"
         deleted="false" practice_type_id="1"
-        product_classification_type_id="1" qms="true" testing_lab_id="-1"
-        ics_code="01" additional_software_code="1" product_code="IC12"
+        product_classification_type_id="1" qms="true" ics_code="01"
+        additional_software_code="1" product_code="IC12"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="6"
         certification_edition_id="3" product_version_id="6"
@@ -373,9 +381,8 @@
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
         last_modified_date="2016-07-15 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
-        meaningful_use_users="12" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="02"
-        additional_software_code="1" product_code="IC13"
+        meaningful_use_users="12" acb_certification_id="abcdef"
+        ics_code="02" additional_software_code="1" product_code="IC13"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="7"
         certification_edition_id="1" product_version_id="7"
@@ -384,9 +391,8 @@
         creation_date="2016-07-15 13:14:00" last_modified_user="-2"
         last_modified_date="2016-07-15 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
-        meaningful_use_users="13" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="01"
-        additional_software_code="1" product_code="IC14"
+        meaningful_use_users="13" acb_certification_id="abcdef"
+        ics_code="01" additional_software_code="1" product_code="IC14"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="8"
         certification_edition_id="2" product_version_id="8"
@@ -395,9 +401,8 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="1" product_classification_type_id="2"
-        meaningful_use_users="14" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="01"
-        additional_software_code="1" product_code="IC15"
+        meaningful_use_users="14" acb_certification_id="abcdef"
+        ics_code="01" additional_software_code="1" product_code="IC15"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="9"
         certification_edition_id="3" product_version_id="4"
@@ -406,9 +411,8 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="15" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="02"
-        additional_software_code="1" product_code="IC16"
+        meaningful_use_users="15" acb_certification_id="abcdef"
+        ics_code="02" additional_software_code="1" product_code="IC16"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="10"
         certification_edition_id="3" product_version_id="1"
@@ -418,8 +422,8 @@
         last_modified_date="2016-08-20 13:15:00" acb_certification_id="abcdef"
         deleted="false" practice_type_id="2"
         product_classification_type_id="1" meaningful_use_users="16"
-        testing_lab_id="-1" ics_code="00" additional_software_code="1"
-        product_code="IC17" certified_date_code="160402" version_code="36" />
+        ics_code="00" additional_software_code="1" product_code="IC17"
+        certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="11"
         certification_edition_id="3" product_version_id="11"
         certification_body_id="-2"
@@ -436,9 +440,8 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="18" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="01"
-        additional_software_code="1" product_code="IC19"
+        meaningful_use_users="18" acb_certification_id="abcdef"
+        ics_code="01" additional_software_code="1" product_code="IC19"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="13"
         certification_edition_id="3" product_version_id="13"
@@ -448,8 +451,8 @@
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
         meaningful_use_users="19" acb_certification_id="abcdef"
-        testing_lab_id="-1" ics_code="01" additional_software_code="1"
-        product_code="IC20" certified_date_code="160402" version_code="36" />
+        ics_code="01" additional_software_code="1" product_code="IC20"
+        certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="14"
         certification_edition_id="3" product_version_id="14"
         certification_body_id="-3"
@@ -457,9 +460,8 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="20" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="01"
-        additional_software_code="1" product_code="IC21"
+        meaningful_use_users="20" acb_certification_id="abcdef"
+        ics_code="01" additional_software_code="1" product_code="IC21"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="15"
         certification_edition_id="3" product_version_id="15"
@@ -468,9 +470,8 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="21" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="01"
-        additional_software_code="1" product_code="IC22"
+        meaningful_use_users="21" acb_certification_id="abcdef"
+        ics_code="01" additional_software_code="1" product_code="IC22"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="16"
         certification_edition_id="3" product_version_id="16"
@@ -479,9 +480,8 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="22" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="01"
-        additional_software_code="1" product_code="IC23"
+        meaningful_use_users="22" acb_certification_id="abcdef"
+        ics_code="01" additional_software_code="1" product_code="IC23"
         certified_date_code="160402" version_code="36" />
     <certified_product certified_product_id="17"
         certification_edition_id="3" product_version_id="16"
@@ -490,10 +490,58 @@
         creation_date="2016-04-01 13:14:00" last_modified_user="-2"
         last_modified_date="2016-08-20 13:15:00" deleted="false"
         practice_type_id="2" product_classification_type_id="1"
-        meaningful_use_users="23" testing_lab_id="-1"
-        acb_certification_id="abcdef" ics_code="01"
-        additional_software_code="1" product_code="IC24"
+        meaningful_use_users="23" acb_certification_id="abcdef"
+        ics_code="01" additional_software_code="1" product_code="IC24"
         certified_date_code="160402" version_code="36" />
+
+    <certified_product_testing_lab_map
+        id="0" certified_product_id="1" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="1" certified_product_id="2" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="2" certified_product_id="4" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="3" certified_product_id="5" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="4" certified_product_id="6" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="5" certified_product_id="7" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="6" certified_product_id="8" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="7" certified_product_id="9" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="8" certified_product_id="10" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="9" certified_product_id="11" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="10" certified_product_id="13" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="11" certified_product_id="14" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="12" certified_product_id="15" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="13" certified_product_id="16" testing_lab_id="-1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="14" certified_product_id="17" testing_lab_id="1"
+        last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="15" certified_product_id="17" testing_lab_id="2"
+        last_modified_user="-2" />
 
     <certified_product_accessibility_standard
         certified_product_accessibility_standard_id="-1"

@@ -25,14 +25,20 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Certified Product DAO.
+ * @author alarned
+ *
+ */
 @Repository(value = "certifiedProductDAO")
 public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedProductDAO {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDAOImpl.class);
+    private static final int CHPL_ID_LENGTH = 9;
     @Autowired
     MessageSource messageSource;
 
     @Transactional(readOnly = false)
-    public CertifiedProductDTO create(CertifiedProductDTO dto) throws EntityCreationException {
+    public CertifiedProductDTO create(final CertifiedProductDTO dto) throws EntityCreationException {
 
         CertifiedProductEntity entity = null;
         try {
@@ -64,7 +70,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             entity.setSedTestingEnd(dto.getSedTestingEnd());
             entity.setSedReportFileLocation(dto.getSedReportFileLocation());
             entity.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
-            entity.setTestingLabId(dto.getTestingLabId());
             entity.setOtherAcb(dto.getOtherAcb());
             entity.setIcs(dto.getIcs());
             entity.setSedTesting(dto.getSedTesting());
@@ -122,7 +127,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = false)
-    public CertifiedProductDTO update(CertifiedProductDTO dto) throws EntityRetrievalException {
+    public CertifiedProductDTO update(final CertifiedProductDTO dto) throws EntityRetrievalException {
 
         CertifiedProductEntity entity = getEntityById(dto.getId());
         entity.setAcbCertificationId(dto.getAcbCertificationId());
@@ -138,7 +143,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         entity.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
         entity.setSedTestingEnd(dto.getSedTestingEnd());
         entity.setProductAdditionalSoftware(dto.getProductAdditionalSoftware());
-        entity.setTestingLabId(dto.getTestingLabId());
         entity.setOtherAcb(dto.getOtherAcb());
         entity.setIcs(dto.getIcs());
         entity.setSedTesting(dto.getSedTesting());
@@ -164,40 +168,38 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = false)
-    public CertifiedProductDTO updateMeaningfulUseUsers(CertifiedProductDTO dto)
+    public CertifiedProductDTO updateMeaningfulUseUsers(final CertifiedProductDTO dto)
             throws EntityRetrievalException, IOException {
         if (dto.getChplProductNumber() == null || dto.getMeaningfulUseUsers() == null) {
             throw new IOException(
                     "Must provide a CertifiedProductDTO with a valid CHPL Product Number and meaningfulUseUsers");
         }
 
-        CertifiedProductEntity cpEntity_legacy = getEntityByChplNumber(dto.getChplProductNumber());
-        if (cpEntity_legacy != null) {
-            cpEntity_legacy.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
-            cpEntity_legacy.setLastModifiedDate(new Date());
-            cpEntity_legacy.setLastModifiedUser(Util.getCurrentUser().getId());
-            update(cpEntity_legacy);
-            return new CertifiedProductDTO(cpEntity_legacy);
+        CertifiedProductEntity cpEntityLegacy = getEntityByChplNumber(dto.getChplProductNumber());
+        if (cpEntityLegacy != null) {
+            cpEntityLegacy.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
+            cpEntityLegacy.setLastModifiedDate(new Date());
+            cpEntityLegacy.setLastModifiedUser(Util.getCurrentUser().getId());
+            update(cpEntityLegacy);
+            return new CertifiedProductDTO(cpEntityLegacy);
         } else {
             CertifiedProductDetailsDTO cpDetails = getByChplUniqueId(dto.getChplProductNumber());
-            CertifiedProductEntity cpEntity_9part = getEntityById(cpDetails.getId());
-            cpEntity_9part.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
-            cpEntity_9part.setLastModifiedDate(new Date());
-            cpEntity_9part.setLastModifiedUser(Util.getCurrentUser().getId());
-            update(cpEntity_9part);
-            return new CertifiedProductDTO(cpEntity_9part);
+            CertifiedProductEntity cpEntity9Part = getEntityById(cpDetails.getId());
+            cpEntity9Part.setMeaningfulUseUsers(dto.getMeaningfulUseUsers());
+            cpEntity9Part.setLastModifiedDate(new Date());
+            cpEntity9Part.setLastModifiedUser(Util.getCurrentUser().getId());
+            update(cpEntity9Part);
+            return new CertifiedProductDTO(cpEntity9Part);
         }
     }
 
     @Transactional(readOnly = false)
-    public void delete(Long productId) {
-
+    public void delete(final Long productId) {
         // TODO: How to delete this without leaving orphans
         Query query = entityManager.createQuery(
                 "UPDATE CertifiedProductEntity SET deleted = true WHERE certified_product_id = :productid");
         query.setParameter("productid", productId);
         query.executeUpdate();
-
     }
 
     @Transactional(readOnly = true)
@@ -217,7 +219,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> findByEdition(String edition) {
+    public List<CertifiedProductDetailsDTO> findByEdition(final String edition) {
         Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "
                 + "WHERE (NOT deleted = true) " + "AND cpd.year = :edition ", CertifiedProductDetailsEntity.class);
         query.setParameter("edition", edition.trim());
@@ -246,7 +248,6 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             products.add(product);
         }
         return products;
-
     }
 
     @Transactional(readOnly = true)
@@ -262,11 +263,10 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
             products.add(product);
         }
         return products;
-
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDTO getById(Long productId) throws EntityRetrievalException {
+    public CertifiedProductDTO getById(final Long productId) throws EntityRetrievalException {
 
         CertifiedProductDTO dto = null;
         CertifiedProductEntity entity = getEntityById(productId);
@@ -278,7 +278,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDTO getByChplNumber(String chplProductNumber) {
+    public CertifiedProductDTO getByChplNumber(final String chplProductNumber) {
         CertifiedProductDTO dto = null;
         CertifiedProductEntity entity = getEntityByChplNumber(chplProductNumber);
 
@@ -289,10 +289,10 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException {
+    public CertifiedProductDetailsDTO getByChplUniqueId(final String chplUniqueId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = null;
         String[] idParts = chplUniqueId.split("\\.");
-        if (idParts.length < 9) {
+        if (idParts.length < CHPL_ID_LENGTH) {
             throw new EntityRetrievalException("CHPL ID must have 9 parts separated by '.'");
         }
         CertifiedProductDetailsEntity entity = getEntityByUniqueIdParts(idParts[0], idParts[1], idParts[2], idParts[3],
@@ -305,7 +305,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDTO> getByVersionIds(List<Long> versionIds) {
+    public List<CertifiedProductDTO> getByVersionIds(final List<Long> versionIds) {
         Query query = entityManager.createQuery(
                 "from CertifiedProductEntity where (NOT deleted = true) and product_version_id IN :idList",
                 CertifiedProductEntity.class);
@@ -321,7 +321,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
     @Override
     @Transactional(readOnly = true)
-    public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(Long developerId) {
+    public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(final Long developerId) {
         Query getCertifiedProductsQuery = entityManager.createQuery(
                 "FROM CertifiedProductEntity cpe, ProductVersionEntity pve," + "ProductEntity pe, DeveloperEntity ve "
                         + "WHERE (NOT cpe.deleted = true) " + "AND cpe.productVersion = pve.id "
@@ -338,7 +338,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDetailsDTO getDetailsById(Long cpId) throws EntityRetrievalException {
+    public CertifiedProductDetailsDTO getDetailsById(final Long cpId) throws EntityRetrievalException {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
                 + "LEFT OUTER JOIN FETCH deets.product " + "where deets.id = :cpId)",
                 CertifiedProductDetailsEntity.class);
@@ -352,9 +352,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByIds(List<Long> productIds) throws EntityRetrievalException {
-        if ((null == productIds) || (productIds.size() == 0))
+    public List<CertifiedProductDetailsDTO> getDetailsByIds(final List<Long> productIds)
+            throws EntityRetrievalException {
+        if ((null == productIds) || (productIds.size() == 0)) {
             return new ArrayList<CertifiedProductDetailsDTO>();
+        }
 
         Query prodQuery = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
                 + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.id in (:productIds)",
@@ -374,9 +376,10 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers) {
-        if ((null == chplProductNumbers) || (chplProductNumbers.size() == 0))
+    public List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(final List<String> chplProductNumbers) {
+        if ((null == chplProductNumbers) || (chplProductNumbers.size() == 0)) {
             return new ArrayList<CertifiedProductDetailsDTO>();
+        }
 
         Query prodQuery = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity deets " + "LEFT OUTER JOIN FETCH deets.product "
@@ -397,7 +400,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId) {
+    public List<CertifiedProductDetailsDTO> getDetailsByVersionId(final Long versionId) {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
                 + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.productVersionId = :versionId)",
                 CertifiedProductDetailsEntity.class);
@@ -412,7 +415,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByProductId(Long productId) {
+    public List<CertifiedProductDetailsDTO> getDetailsByProductId(final Long productId) {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
                 + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.productId = :productId)",
                 CertifiedProductDetailsEntity.class);
@@ -427,7 +430,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(List<Long> acbIds) {
+    public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(final List<Long> acbIds) {
         Query query = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity where (NOT deleted = true) and certification_body_id IN :idList",
                 CertifiedProductDetailsEntity.class);
@@ -442,9 +445,11 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(Long versionId, List<Long> acbIds) {
+    public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(final Long versionId,
+            final List<Long> acbIds) {
         Query query = entityManager.createQuery(
-                "from CertifiedProductDetailsEntity where (NOT deleted = true) and certification_body_id IN :idList and product_version_id = :versionId",
+                "from CertifiedProductDetailsEntity where (NOT deleted = true) and "
+                + "certification_body_id IN :idList and product_version_id = :versionId",
                 CertifiedProductDetailsEntity.class);
         query.setParameter("idList", acbIds);
         query.setParameter("versionId", versionId);
@@ -458,7 +463,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = false)
-    private void create(CertifiedProductEntity product) {
+    private void create(final CertifiedProductEntity product) {
 
         entityManager.persist(product);
         entityManager.flush();
@@ -466,7 +471,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = false)
-    private void update(CertifiedProductEntity product) {
+    private void update(final CertifiedProductEntity product) {
 
         entityManager.merge(product);
         entityManager.flush();
@@ -484,7 +489,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    private CertifiedProductEntity getEntityById(Long entityId) throws EntityRetrievalException {
+    private CertifiedProductEntity getEntityById(final Long entityId) throws EntityRetrievalException {
 
         CertifiedProductEntity entity = null;
 
@@ -509,7 +514,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    private CertifiedProductEntity getEntityByChplNumber(String chplProductNumber) {
+    private CertifiedProductEntity getEntityByChplNumber(final String chplProductNumber) {
 
         CertifiedProductEntity entity = null;
 
@@ -527,15 +532,16 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     }
 
     @Transactional(readOnly = true)
-    private CertifiedProductDetailsEntity getEntityByUniqueIdParts(String yearCode, String atlCode, String acbCode,
-            String developerCode, String productCode, String versionCode, String icsCode, String additionalSoftwareCode,
-            String certifiedDateCode) {
+    private CertifiedProductDetailsEntity getEntityByUniqueIdParts(final String yearCode, final String atlCode,
+            final String acbCode, final String developerCode, final String productCode, final String versionCode,
+            final String icsCode, final String additionalSoftwareCode, final String certifiedDateCode) {
 
         CertifiedProductDetailsEntity entity = null;
 
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
                 + "LEFT OUTER JOIN FETCH deets.product " + "where " + "deets.year = '20' || :yearCode AND "
-                + "deets.testingLabCode = :atlCode AND " + "deets.certificationBodyCode = :acbCode AND "
+//                + "deets.testingLabCode = :atlCode AND " + "deets.certificationBodyCode = :acbCode AND "
+                + "deets.certificationBodyCode = :acbCode AND "
                 + "deets.developerCode = :developerCode AND " + "deets.productCode = :productCode AND "
                 + "deets.versionCode = :versionCode AND " + "deets.icsCode = :icsCode AND "
                 + "deets.additionalSoftwareCode = :additionalSoftwareCode AND "
@@ -543,7 +549,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
                 + "deets.certifiedDateCode = :certifiedDateCode ", CertifiedProductDetailsEntity.class);
 
         query.setParameter("yearCode", yearCode);
-        query.setParameter("atlCode", atlCode);
+//        query.setParameter("atlCode", atlCode);
         query.setParameter("acbCode", acbCode);
         query.setParameter("developerCode", developerCode);
         query.setParameter("productCode", productCode);

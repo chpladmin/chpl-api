@@ -92,7 +92,7 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasG1Complement) {
-                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG1Related"));
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -115,12 +115,12 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasG2Complement) {
-                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG2Related"));
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
+            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
         }
     }
 
@@ -155,7 +155,7 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasAtLeastOneCertPartner) {
-                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG1Related"));
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -178,12 +178,12 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasG2Complement) {
-                product.getWarningMessages().add(getErrorMessage("listing.criteria.missingG2Related"));
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add(getErrorMessage("listing.criteria.G1G2Found"));
+            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
         }
     }
 }

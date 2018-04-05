@@ -27,6 +27,11 @@ import gov.healthit.chpl.entity.CertificationIdAndCertifiedProductEntity;
 import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 
+/**
+ * Certification ID Data Access Object.
+ * @author alarned
+ *
+ */
 @Repository("certificationIdDAO")
 public class CertificationIdDAOImpl extends BaseDAOImpl implements CertificationIdDAO {
 
@@ -38,72 +43,69 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     //
     // The number of possible combinations of IDs within a specific
     // certification year is 10^34.
-    public static String CERT_ID_CHARS_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-    public static String CERT_ID_CHARS_NUMERIC = "0123456789";
-    public static String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
-    public static int CERT_ID_LENGTH = 15;
-    private static long MODIFIED_USER_ID = -4L;
+    private static final String CERT_ID_CHARS_ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    private static final String CERT_ID_CHARS_NUMERIC = "0123456789";
+    private static final String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
+    private static final int CERT_ID_LENGTH = 15;
+    private static final long MODIFIED_USER_ID = -4L;
+    private static final int MAX_COUNT_ALPHAS = 3;
 
-    private static int ENCODED_RADIX = 36; // The radix base for values within
-                                           // the Key
-    private static int ENCODED_PADDED_LENGTH = 8; // The number if digits for
-                                                  // each value in the Key
+    private static final int ENCODED_RADIX = 36; // The radix base for values within
+    // the Key
+    private static final int ENCODED_PADDED_LENGTH = 8; // The number of digits for
+    // each value in the Key
 
     @Override
     @Transactional
-    public CertificationIdDTO create(List<Long> productIds, String year) throws EntityCreationException {
+    public CertificationIdDTO create(final List<Long> productIds, final String year) throws EntityCreationException {
         CertificationIdEntity entity = null;
         CertificationIdDTO newDto = null;
 
-        if (null != entity) {
-            throw new EntityCreationException("An entity with this Certification ID already exists.");
-        } else {
+        // Create a new EHR Certification ID record
+        entity = new CertificationIdEntity();
+        entity.setCertificationId(this.generateCertificationIdString(year));
+        entity.setYear(year);
+        entity.setKey(this.encodeCollectionKey(productIds));
+        entity.setLastModifiedDate(new Date());
+        entity.setCreationDate(new Date());
+        entity.setLastModifiedUser(MODIFIED_USER_ID);
+        entity.setPracticeTypeId(null);
 
-            // Create a new EHR Certification ID record
-            entity = new CertificationIdEntity();
-            entity.setCertificationId(this.generateCertificationIdString(year));
-            entity.setYear(year);
-            entity.setKey(this.encodeCollectionKey(productIds));
-            entity.setLastModifiedDate(new Date());
-            entity.setCreationDate(new Date());
-            entity.setLastModifiedUser(MODIFIED_USER_ID);
-            entity.setPracticeTypeId(null);
-
-            // Store the map entities
-            entityManager.persist(entity);
-            try {
-                entity = getEntityByCertificationId(entity.getCertificationId());
-            } catch (final EntityRetrievalException e) {
-                throw new EntityCreationException("Unable to create Certification ID and Product Map.");
-            }
-            newDto = new CertificationIdDTO(entity);
-
-            // Create map records
-            for (Long prodId : productIds) {
-                CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
-                mapEntity.setCertifiedProductId(prodId);
-                mapEntity.setCertificationIdId(newDto.getId());
-                mapEntity.setLastModifiedDate(new Date());
-                mapEntity.setCreationDate(new Date());
-                mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
-                entityManager.persist(mapEntity);
-            }
-
-            // Store the map entities
-            entityManager.flush();
+        // Store the map entities
+        entityManager.persist(entity);
+        try {
+            entity = getEntityByCertificationId(entity.getCertificationId());
+        } catch (final EntityRetrievalException e) {
+            throw new EntityCreationException("Unable to create Certification ID and Product Map.");
         }
+        newDto = new CertificationIdDTO(entity);
+
+        // Create map records
+        for (Long prodId : productIds) {
+            CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
+            mapEntity.setCertifiedProductId(prodId);
+            mapEntity.setCertificationIdId(newDto.getId());
+            mapEntity.setLastModifiedDate(new Date());
+            mapEntity.setCreationDate(new Date());
+            mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
+            entityManager.persist(mapEntity);
+        }
+
+        // Store the map entities
+        entityManager.flush();
 
         return newDto;
     }
 
     @Override
     @Transactional
-    public CertificationIdDTO create(CertificationIdDTO dto) throws EntityCreationException {
+    public CertificationIdDTO create(final CertificationIdDTO dto) throws EntityCreationException {
 
         CertificationIdEntity entity = null;
         try {
-            if (null != dto.getId())
+            if (null != dto.getId()) {
                 entity = this.getEntityById(dto.getId());
+            }
         } catch (final EntityRetrievalException e) {
             throw new EntityCreationException(e);
         }
@@ -142,12 +144,14 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public List<String> getCriteriaNumbersMetByCertifiedProductIds(List<Long> productIds) {
+    public List<String> getCriteriaNumbersMetByCertifiedProductIds(final List<Long> productIds) {
         List<String> results = new ArrayList<String>();
         if ((null != productIds) && (productIds.size() > 0)) {
             Query query = entityManager.createQuery(
-                    "SELECT number FROM CertificationResultDetailsEntity WHERE success = TRUE AND deleted = FALSE AND certified_product_id IN :productIds GROUP BY number",
-                    String.class);
+                    "SELECT number FROM CertificationResultDetailsEntity "
+                            + "WHERE success = TRUE AND deleted = FALSE AND certified_product_id IN :productIds "
+                            + "GROUP BY number",
+                            String.class);
             query.setParameter("productIds", productIds);
             results = query.getResultList();
         }
@@ -155,11 +159,12 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {
+    public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(final List<Long> productIds) {
         List<CQMMetDTO> dtos = new ArrayList<CQMMetDTO>();
         if ((null != productIds) && (productIds.size() > 0)) {
             Query query = entityManager.createQuery(
-                    "SELECT new gov.healthit.chpl.dto.CQMMetDTO(crde.cmsId, crde.version, crde.domain) FROM CQMResultDetailsEntity AS crde"
+                    "SELECT new gov.healthit.chpl.dto.CQMMetDTO(crde.cmsId, crde.version, crde.domain) "
+                    + "FROM CQMResultDetailsEntity AS crde"
                             + " WHERE success = TRUE AND deleted = FALSE AND certifiedProductId IN :productIds "
                             + " AND crde.cmsId IS NOT NULL" + " GROUP BY crde.cmsId, crde.version, crde.domain");
             query.setParameter("productIds", productIds);
@@ -183,7 +188,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public CertificationIdDTO getById(Long id) throws EntityRetrievalException {
+    public CertificationIdDTO getById(final Long id) throws EntityRetrievalException {
 
         CertificationIdEntity entity = getEntityById(id);
         if (entity == null) {
@@ -195,7 +200,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public CertificationIdDTO getByCertificationId(String certificationId) throws EntityRetrievalException {
+    public CertificationIdDTO getByCertificationId(final String certificationId) throws EntityRetrievalException {
 
         CertificationIdEntity entity = getEntityByCertificationId(certificationId);
         if (entity == null) {
@@ -219,7 +224,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public List<Long> getProductIdsById(Long id) throws EntityRetrievalException {
+    public List<Long> getProductIdsById(final Long id) throws EntityRetrievalException {
 
         Query query = entityManager.createQuery(
                 "select certifiedProductId from CertificationIdProductMapEntity where certificationIdId = :id ",
@@ -231,7 +236,8 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public CertificationIdDTO getByProductIds(List<Long> productIds, String year) throws EntityRetrievalException {
+    public CertificationIdDTO getByProductIds(final List<Long> productIds, final String year)
+            throws EntityRetrievalException {
 
         CertificationIdEntity entity = getEntityByProductIds(productIds, year);
         if (entity == null) {
@@ -243,7 +249,8 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
     }
 
     @Override
-    public Map<String, Boolean> verifyByCertificationId(List<String> certificationIds) throws EntityRetrievalException {
+    public Map<String, Boolean> verifyByCertificationId(final List<String> certificationIds)
+            throws EntityRetrievalException {
         Map<String, Boolean> results = new HashMap<String, Boolean>();
 
         Query query = entityManager.createQuery("from CertificationIdEntity where certification_id IN :certids ",
@@ -266,7 +273,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         return results;
     }
 
-    private void create(CertificationIdEntity entity) {
+    private void create(final CertificationIdEntity entity) {
 
         entityManager.persist(entity);
         entityManager.flush();
@@ -280,7 +287,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
 
     }
 
-    private CertificationIdEntity getEntityById(Long id) throws EntityRetrievalException {
+    private CertificationIdEntity getEntityById(final Long id) throws EntityRetrievalException {
 
         CertificationIdEntity entity = null;
 
@@ -302,7 +309,8 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         return entity;
     }
 
-    private CertificationIdEntity getEntityByCertificationId(String certificationId) throws EntityRetrievalException {
+    private CertificationIdEntity getEntityByCertificationId(final String certificationId)
+            throws EntityRetrievalException {
 
         CertificationIdEntity entity = null;
 
@@ -324,7 +332,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         return entity;
     }
 
-    private CertificationIdEntity getEntityByProductIds(List<Long> productIds, String year)
+    private CertificationIdEntity getEntityByProductIds(final List<Long> productIds, final String year)
             throws EntityRetrievalException {
 
         CertificationIdEntity entity = null;
@@ -341,9 +349,8 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         List<CertificationIdEntity> result = new ArrayList<CertificationIdEntity>();
         Query query = entityManager.createQuery(
 
-                "from CertificationIdEntity " + "where ehr_certification_id_id in (" +
-
-                "select mpx.certificationIdId " + "from CertificationIdProductMapEntity as mpx "
+                "from CertificationIdEntity " + "where ehr_certification_id_id in ("
+                + "select mpx.certificationIdId " + "from CertificationIdProductMapEntity as mpx "
                 + "where mpx.certifiedProductId in :productIds " + "and mpx.certificationIdId not in ( "
                 + "select mpa.certificationIdId " + "from CertificationIdProductMapEntity as mpa "
                 + "where mpa.certificationIdId in ( " + "select mpy.certificationIdId "
@@ -366,7 +373,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
         return entity;
     }
 
-    private static String encodeCollectionKey(List<Long> numbers) {
+    private static String encodeCollectionKey(final List<Long> numbers) {
 
         // Sort the product numbers before we encode them so they are in order
         Collections.sort(numbers);
@@ -390,7 +397,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
                 CertificationIdAndCertifiedProductEntity.class).getResultList();
     }
 
-    private static String generateCertificationIdString(String year) {
+    private static String generateCertificationIdString(final String year) {
         // Form the EHR Certification ID prefix and edition year identifier.
         // The identifier begins with the two-digit year followed by an "E" to
         // indicate
@@ -429,7 +436,7 @@ public class CertificationIdDAOImpl extends BaseDAOImpl implements Certification
                 ++alphaCount;
                 // If we've already had 3 alpha characters in a row, make the
                 // next one numeric
-                if (alphaCount > 3) {
+                if (alphaCount > MAX_COUNT_ALPHAS) {
                     newChar = CERT_ID_CHARS_NUMERIC.charAt(new Random().nextInt(CERT_ID_CHARS_NUMERIC.length()));
                     alphaCount = 0;
                 }
