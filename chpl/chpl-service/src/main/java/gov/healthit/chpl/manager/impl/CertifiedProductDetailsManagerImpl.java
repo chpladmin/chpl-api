@@ -99,10 +99,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private CertifiedProductQmsStandardDAO certifiedProductQmsStandardDao;
 
     @Autowired
-    CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
-    
+    private CertifiedProductTargetedUserDAO certifiedProductTargetedUserDao;
+
     @Autowired
-    CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
+    private CertifiedProductAccessibilityStandardDAO certifiedProductAsDao;
 
     @Autowired
     private CertificationResultManager certResultManager;
@@ -121,7 +121,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Autowired
     private SurveillanceManager survManager;
-    
+
     @Autowired
     private CertifiedProductDetailsManagerAsync async;
 
@@ -132,7 +132,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
     @Autowired
-    public CertifiedProductDetailsManagerImpl(CQMCriterionDAO cqmCriterionDAO, MacraMeasureDAO macraDao) {
+    public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO, final MacraMeasureDAO macraDao) {
         this.cqmCriterionDAO = cqmCriterionDAO;
         this.macraDao = macraDao;
 
@@ -142,24 +142,28 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Override
     @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId)
+    public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
-        
+
         Date overallStart = new Date();
-        
+
         Date start = new Date();
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
         Date end = new Date();
         LOGGER.info("Time to retrieve CertifiedProductDetailsDTO: " + (end.getTime() - start.getTime()));
-        
+
         //Shoot off the async data retrieval...
-        Future<List<CertifiedProductDetailsDTO>> childrenFuture = async.getCertifiedProductChildren(listingGraphDao, dto.getId()); 
-        Future<List<CertifiedProductDetailsDTO>> parentsFuture = async.getCertifiedProductParent(listingGraphDao, dto.getId());
-        Future<List<CertificationResultDetailsDTO>> certificationResultsFuture = async.getCertificationResultDetailsDTOs(certificationResultDetailsDAO, dto.getId());
-        Future<List<CQMResultDetailsDTO>> cqmResultsFuture = async.getCqmResultDetailsDTOs(cqmResultDetailsDAO, dto.getId());
-        
+        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
+                async.getCertifiedProductChildren(listingGraphDao, dto.getId());
+        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
+                async.getCertifiedProductParent(listingGraphDao, dto.getId());
+        Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
+                async.getCertificationResultDetailsDTOs(certificationResultDetailsDAO, dto.getId());
+        Future<List<CQMResultDetailsDTO>> cqmResultsFuture =
+                async.getCqmResultDetailsDTOs(cqmResultDetailsDAO, dto.getId());
+
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
-        
+
         searchDetails.setCertificationResults(
                     getCertificationResults(certificationResultsFuture, searchDetails));
         searchDetails.setCqmResults(
@@ -178,8 +182,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
         } catch (ExecutionException e) {
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
-        } 
-        
+        }
+
         try {
             List<CertifiedProductDetailsDTO> parents = parentsFuture.get();
             if (parents != null && parents.size() > 0) {
@@ -192,7 +196,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } catch (ExecutionException e) {
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
         }
-        
+
         Date overallEnd = new Date();
         LOGGER.info("Time to populate CP Search + Detals: " + (overallEnd.getTime() - overallStart.getTime()));
         return searchDetails;
@@ -205,8 +209,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     public void setCqmCriteria(final List<CQMCriterion> cqmCriteria) {
         this.cqmCriteria = cqmCriteria;
     }
-    
-    private List<CQMResultDetails> getCqmResultDetails(Future<List<CQMResultDetailsDTO>> cqmResultsFuture, String year) throws EntityRetrievalException {        
+
+    private List<CQMResultDetails> getCqmResultDetails(
+            final Future<List<CQMResultDetailsDTO>> cqmResultsFuture, final String year)
+                    throws EntityRetrievalException {
+
         List<CQMResultDetails> details = new ArrayList<CQMResultDetails>();
         try {
             List<CQMResultDetailsDTO> cqmResultDTOs = cqmResultsFuture.get();
@@ -218,12 +225,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
         return details;
     }
-    
-    
-    private List<CertificationResult> getCertificationResults(Future<List<CertificationResultDetailsDTO>> certificationResultsFuture, CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
+
+    private List<CertificationResult> getCertificationResults(
+            final Future<List<CertificationResultDetailsDTO>> certificationResultsFuture,
+            final CertifiedProductSearchDetails searchDetails)
+                    throws EntityRetrievalException {
+
         List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
         try {
-            List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = new ArrayList<CertificationResultDetailsDTO>();
+            List<CertificationResultDetailsDTO> certificationResultDetailsDTOs =
+                    new ArrayList<CertificationResultDetailsDTO>();
             certificationResultDetailsDTOs = certificationResultsFuture.get();
             for (CertificationResultDetailsDTO certResult : certificationResultDetailsDTOs) {
                 certificationResults.add(getCertificationResult(certResult, searchDetails));
@@ -235,8 +246,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
         return certificationResults;
     }
-    
-    private List<CertificationStatusEvent> getCertificationStatusEvents(Long certifiedProductId)
+
+    private List<CertificationStatusEvent> getCertificationStatusEvents(final Long certifiedProductId)
             throws EntityRetrievalException {
 
         List<CertificationStatusEvent> certEvents = new ArrayList<CertificationStatusEvent>();
@@ -249,9 +260,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             cse.setEventDate(certStatusDto.getEventDate().getTime());
             cse.setLastModifiedUser(certStatusDto.getLastModifiedUser());
             cse.setLastModifiedDate(certStatusDto.getLastModifiedDate().getTime());
-            
-            if(Util.getCurrentUser() != null && 
-                    (Util.isUserRoleAcbAdmin() || Util.isUserRoleAdmin())) {
+
+            if (Util.getCurrentUser() != null
+                    && (Util.isUserRoleAcbAdmin()
+                            || Util.isUserRoleAdmin())) {
                 cse.setReason(certStatusDto.getReason());
             }
 
@@ -298,7 +310,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return criteria;
     }
 
-    private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails) {
+    private CertificationResult getCertificationResult(
+            final CertificationResultDetailsDTO certResult,
+            final CertifiedProductSearchDetails searchDetails) {
+
         CertificationResult result = new CertificationResult(certResult);
         // override optional boolean values
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.GAP)) {
@@ -339,7 +354,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } else {
             result.setAdditionalSoftware(null);
         }
-        
+
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.STANDARDS_TESTED)) {
             List<CertificationResultTestStandardDTO> testStandards = certResultManager
                     .getTestStandardsForCertificationResult(certResult.getId());
@@ -351,7 +366,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } else {
             result.setTestStandards(null);
         }
-        
+
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TOOLS_USED)) {
             List<CertificationResultTestToolDTO> testTools = certResultManager
                     .getTestToolsForCertificationResult(certResult.getId());
@@ -362,7 +377,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } else {
             result.setTestToolsUsed(null);
         }
-        
+
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_DATA)) {
             List<CertificationResultTestDataDTO> testData = certResultManager
                     .getTestDataForCertificationResult(certResult.getId());
@@ -373,7 +388,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } else {
             result.setTestDataUsed(null);
         }
-        
+
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_PROCEDURE)) {
             List<CertificationResultTestProcedureDTO> testProcedure = certResultManager
                     .getTestProceduresForCertificationResult(certResult.getId());
@@ -385,7 +400,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } else {
             result.setTestProcedures(null);
         }
-        
+
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             List<CertificationResultTestFunctionalityDTO> testFunctionality = certResultManager
                     .getTestFunctionalityForCertificationResult(certResult.getId());
@@ -397,7 +412,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } else {
             result.setTestFunctionality(null);
         }
-        
+
         if (!certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G1_MACRA)
                 && !certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.G2_MACRA)) {
             result.setAllowedMacraMeasures(null);
@@ -426,7 +441,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                 result.setG2MacraMeasures(null);
             }
         }
-        
+
         // get all SED data for the listing
         // ucd processes and test tasks with participants
         CertificationCriterion criteria = new CertificationCriterion();
@@ -453,7 +468,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         } else {
             result.setSed(null);
         }
-        
+
         if (certRules.hasCertOption(certResult.getNumber(), CertificationResultRules.TEST_TASK)) {
             List<CertificationResultTestTaskDTO> testTask = certResultManager
                     .getTestTasksForCertificationResult(certResult.getId());
@@ -472,18 +487,20 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                 }
             }
         }
-        
+
         // set allowed macra measures (if any)
         for (MacraMeasure measure : macraMeasures) {
             if (measure.getCriteria().getNumber().equals(result.getNumber())) {
                 result.getAllowedMacraMeasures().add(measure);
             }
         }
-        
+
         return result;
     }
-    
-    private CertifiedProductSearchDetails getCertifiedProductSearchDetails(CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
+
+    private CertifiedProductSearchDetails getCertifiedProductSearchDetails(
+            final CertifiedProductDetailsDTO dto) throws EntityRetrievalException {
+
         CertifiedProductSearchDetails searchDetails = new CertifiedProductSearchDetails();
         searchDetails.setId(dto.getId());
         searchDetails.setAcbCertificationId(dto.getAcbCertificationId());
@@ -526,16 +543,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
         searchDetails.setTargetedUsers(getListertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
-        
+
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(dto.getIcs());
         searchDetails.setIcs(ics);
-        
+
         return searchDetails;
     }
-    
+
     //This should probably be refactored to use ChplProductNumberUtil
-    private String getChplProductNumber(CertifiedProductDetailsDTO dto) {
+    private String getChplProductNumber(final CertifiedProductDetailsDTO dto) {
         if (!StringUtils.isEmpty(dto.getChplProductNumber())) {
             return dto.getChplProductNumber();
         } else {
@@ -545,48 +562,50 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
                     + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode();
         }
     }
-    
-    private Map<String, Object> getCertifificationEdition(CertifiedProductDetailsDTO dto) {
+
+    private Map<String, Object> getCertifificationEdition(final CertifiedProductDetailsDTO dto) {
         Map<String, Object> certificationEdition = new HashMap<String, Object>();
         certificationEdition.put("id", dto.getCertificationEditionId());
         certificationEdition.put("name", dto.getYear());
         return certificationEdition;
     }
-    
-    private Map<String, Object> getCertifyingBody(CertifiedProductDetailsDTO dto) {
+
+    private Map<String, Object> getCertifyingBody(final CertifiedProductDetailsDTO dto) {
         Map<String, Object> certifyingBody = new HashMap<String, Object>();
         certifyingBody.put("id", dto.getCertificationBodyId());
         certifyingBody.put("name", dto.getCertificationBodyName());
         certifyingBody.put("code", dto.getCertificationBodyCode());
         return certifyingBody;
     }
-    
-    private Map<String, Object> getClassificationType(CertifiedProductDetailsDTO dto) {
+
+    private Map<String, Object> getClassificationType(final CertifiedProductDetailsDTO dto) {
         Map<String, Object> classificationType = new HashMap<String, Object>();
         classificationType.put("id", dto.getProductClassificationTypeId());
         classificationType.put("name", dto.getProductClassificationName());
         return classificationType;
     }
-    
-    private Map<String, Object> getPracticeType(CertifiedProductDetailsDTO dto) {
+
+    private Map<String, Object> getPracticeType(final CertifiedProductDetailsDTO dto) {
         Map<String, Object> practiceType = new HashMap<String, Object>();
         practiceType.put("id", dto.getPracticeTypeId());
         practiceType.put("name", dto.getPracticeTypeName());
         return practiceType;
     }
-    
-    private Map<String, Object> getTestingLab(CertifiedProductDetailsDTO dto) {
+
+    private Map<String, Object> getTestingLab(final CertifiedProductDetailsDTO dto) {
         Map<String, Object> testingLab = new HashMap<String, Object>();
         testingLab.put("id", dto.getTestingLabId());
         testingLab.put("name", dto.getTestingLabName());
         testingLab.put("code", dto.getTestingLabCode());
         return testingLab;
     }
-    
-    private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(Long id) throws EntityRetrievalException{
+
+    private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(final Long id)
+            throws EntityRetrievalException {
+
       List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
       qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
-      
+
       List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
       for (CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
           CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
@@ -594,8 +613,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
       }
       return qmsStandardResults;
     }
-    
-    private List<CertifiedProductTargetedUser> getListertifiedProductTargetedUsers(Long id) throws EntityRetrievalException {
+
+    private List<CertifiedProductTargetedUser> getListertifiedProductTargetedUsers(final Long id)
+            throws EntityRetrievalException {
         List<CertifiedProductTargetedUserDTO> targetedUserDtos = new ArrayList<CertifiedProductTargetedUserDTO>();
         targetedUserDtos = certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(id);
 
@@ -606,12 +626,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
         return targetedUserResults;
     }
-    
-    private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(Long id) throws EntityRetrievalException {
-        List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos = new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+
+    private List<CertifiedProductAccessibilityStandard> getCertifiedProductAccessibilityStandards(
+            final Long id) throws EntityRetrievalException {
+
+        List<CertifiedProductAccessibilityStandardDTO> accessibilityStandardDtos =
+                new ArrayList<CertifiedProductAccessibilityStandardDTO>();
+
         accessibilityStandardDtos = certifiedProductAsDao.getAccessibilityStandardsByCertifiedProductId(id);
-        
-        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults = new ArrayList<CertifiedProductAccessibilityStandard>();
+
+        List<CertifiedProductAccessibilityStandard> accessibilityStandardResults =
+                new ArrayList<CertifiedProductAccessibilityStandard>();
+
         for (CertifiedProductAccessibilityStandardDTO accessibilityStandardDto : accessibilityStandardDtos) {
             CertifiedProductAccessibilityStandard result = new CertifiedProductAccessibilityStandard(
                     accessibilityStandardDto);
@@ -619,8 +645,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
         return accessibilityStandardResults;
     }
-    
-    private List<CQMResultDetails> getCqmResultDetails(List<CQMResultDetailsDTO> cqmResultDTOs, String year) {
+
+    private List<CQMResultDetails> getCqmResultDetails(
+            final List<CQMResultDetailsDTO> cqmResultDTOs, final String year) {
+
         List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
         for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) {
             boolean existingCms = false;
@@ -686,8 +714,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         }
         return cqmResults;
     }
-    
-    private List<CQMResultCertification> getCqmCriteriaMapping(CQMResultDetails cqmResult) {
+
+    private List<CQMResultCertification> getCqmCriteriaMapping(final CQMResultDetails cqmResult) {
         List<CQMResultCertification> cqmResultCertifications = new ArrayList<CQMResultCertification>();
         if (cqmResult.isSuccess() && cqmResult.getId() != null) {
             List<CQMResultCriteriaDTO> criteria = cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
