@@ -9,25 +9,32 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
+/**
+ * Implementation of Listing Statistics DAO.
+ * @author alarned
+ *
+ */
 @Repository("listingStatisticsDAO")
 public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStatisticsDAO {
     /**
      * Total # of unique products. Any parameter can be null.
      */
     @Override
-    public Long getTotalUniqueProductsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses) {
+    public Long getTotalUniqueProductsByEditionAndStatus(final DateRange dateRange,
+            final String edition, final List<String> statuses) {
         String hql = "SELECT DISTINCT UPPER(productName) || UPPER(developerName) "
                 + "FROM CertifiedProductDetailsEntity ";
-        
+
         boolean hasWhere = false;
-        if(edition != null) {
+        if (edition != null) {
             hql += " WHERE year = :edition ";
             hasWhere = true;
         }
-        if(statuses != null && statuses.size() > 0) {
-            if(!hasWhere) {
+        if (statuses != null && statuses.size() > 0) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -35,8 +42,8 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             }
             hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
-        if(dateRange == null) {
-            if(!hasWhere) {
+        if (dateRange == null) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -44,7 +51,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             }
             hql += " deleted = false ";
         } else {
-            if(!hasWhere) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -55,13 +62,13 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
         Query query = entityManager.createQuery(hql);
-        if(edition != null) {
+        if (edition != null) {
             query.setParameter("edition", edition);
         }
-        if(statuses != null && statuses.size() > 0) {
+        if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if(dateRange != null) {
+        if (dateRange != null) {
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (long) query.getResultList().size();
@@ -69,29 +76,30 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 
     /**
      * Total # of unique Products by certified product with Listings in each
-     * year
+     * year.
      */
     @Override
-    public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange) {
+    public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(final DateRange dateRange) {
         String sql = "SELECT t.certification_body_name, t.year, count(DISTINCT t.products) "
                 + "FROM( "
-                +   "SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), UPPER(vendor_Name)) AS products "
+                +   "SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), "
+                +   "UPPER(vendor_Name)) AS products "
                 +   "FROM openchpl.certified_product_details "
                 +   "WHERE ";
-        if(dateRange == null) {
+        if (dateRange == null) {
             sql += " deleted = false ";
         } else {
             sql += " ((deleted = false AND creation_date <= :endDate) "
                     + " OR "
                     + "(deleted = true AND creation_date <= :endDate AND last_modified_date > :startDate)) ";
         }
-        sql += ") t " 
-                + " GROUP BY certification_body_name, year " 
+        sql += ") t "
+                + " GROUP BY certification_body_name, year "
                 + " ORDER BY t.certification_body_name ";
 
         Query query = entityManager.createNativeQuery(sql);
-        
-        if(dateRange != null) {
+
+        if (dateRange != null) {
             query.setParameter("startDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
@@ -111,29 +119,31 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 
     /**
      * Total # of unique Products by certified product with Listings in each
-     * year
+     * year.
      */
     @Override
     public List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
-            DateRange dateRange) {
-        String sql = "SELECT t.certification_body_name, t.year, count(DISTINCT t.products), t.certification_status_name "
+            final DateRange dateRange) {
+        String sql = "SELECT t.certification_body_name, t.year, count(DISTINCT t.products), "
+                + "t.certification_status_name "
                 + "FROM( "
-                +   "SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), UPPER(vendor_Name)) AS products, certification_status_name "
+                +   "SELECT DISTINCT certification_body_name, year, CONCAT(UPPER(product_Name), "
+                +   "UPPER(vendor_Name)) AS products, certification_status_name "
                 +   "FROM openchpl.certified_product_details "
                 +   "WHERE ";
-        if(dateRange == null) {
+        if (dateRange == null) {
             sql += " deleted = false ";
         } else {
             sql += " ((deleted = false AND creation_date <= :endDate) "
                     + " OR "
                     + "(deleted = true AND creation_date <= :endDate AND last_modified_date > :startDate)) ";
         }
-        sql += ") t " 
+        sql += ") t "
                 + " GROUP BY certification_body_name, year, certification_status_name "
                 + " ORDER BY t.certification_body_name ";
 
         Query query = entityManager.createNativeQuery(sql);
-        if(dateRange != null) {
+        if (dateRange != null) {
             query.setParameter("startDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
@@ -155,16 +165,17 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
      * Total # of Listings. Any parameter can be null.
      */
     @Override
-    public Long getTotalListingsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses) {
+    public Long getTotalListingsByEditionAndStatus(final DateRange dateRange,
+            final String edition, final List<String> statuses) {
         String hql = "SELECT COUNT(*) "
                 + "FROM CertifiedProductDetailsEntity ";
         boolean hasWhere = false;
-        if(edition != null) {
+        if (edition != null) {
             hql += " WHERE year = :edition ";
             hasWhere = true;
         }
-        if(statuses != null && statuses.size() > 0) {
-            if(!hasWhere) {
+        if (statuses != null && statuses.size() > 0) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -172,8 +183,8 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             }
             hql += " UPPER(certificationStatusName) IN (:statuses) ";
         }
-        if(dateRange == null) {
-            if(!hasWhere) {
+        if (dateRange == null) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -181,7 +192,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             }
             hql += " deleted = false ";
         } else {
-            if(!hasWhere) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -191,15 +202,15 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
-        
+
         Query query = entityManager.createQuery(hql);
-        if(edition != null) {
+        if (edition != null) {
             query.setParameter("edition", edition);
         }
-        if(statuses != null && statuses.size() > 0) {
+        if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if(dateRange != null) {
+        if (dateRange != null) {
             query.setParameter("endDate", dateRange.getEndDate());
         }
 
@@ -207,14 +218,14 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
     }
 
     /**
-     * Total # of Active Listings in each year
+     * Total # of Active Listings in each year.
      */
     @Override
-    public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange) {
+    public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(final DateRange dateRange) {
         String hql = "SELECT certificationBodyName, year, count(*) "
-                        + "FROM CertifiedProductDetailsEntity "
-                        + "WHERE UPPER(certificationStatusName) = 'ACTIVE' ";
-        if(dateRange == null) {
+                + "FROM CertifiedProductDetailsEntity "
+                + "WHERE UPPER(certificationStatusName) = 'ACTIVE' ";
+        if (dateRange == null) {
             hql += " AND deleted = false ";
         } else {
             hql += " AND "
@@ -222,15 +233,15 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :startDate)) ";
         }
-        hql += " GROUP BY certificationBodyName, year " 
+        hql += " GROUP BY certificationBodyName, year "
                 + " ORDER BY certificationBodyName ";
-        
+
         Query query = entityManager.createQuery(hql);
-        if(dateRange != null) {
+        if (dateRange != null) {
             query.setParameter("startDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
-        
+
         List<Object[]> results = query.getResultList();
         List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
         for (Object[] obj : results) {
@@ -241,6 +252,16 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
             stat.setCertificationStatusName(null);
             cbStats.add(stat);
         }
+        return cbStats;
+    }
+
+    @Override
+    public Long getTotalListingsWithAlternateTestMethods() {
+        return -1L;
+    }
+    @Override
+    public List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods() {
+        List<CertifiedBodyAltTestStatistics> cbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
         return cbStats;
     }
 }

@@ -31,6 +31,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
@@ -406,7 +407,6 @@ public class SummaryStatistics {
         }
         ret.append("</ul>");
 
-        uniqueAcbList.clear();
         ret.append("<li>Total # of Unique Products with Active 2014 Listings - "
                 + stats.getTotalCPsActive2014Listings() + "</li>");
         ret.append("<ul>");
@@ -458,17 +458,7 @@ public class SummaryStatistics {
             }
         }
         ret.append("</ul>");
-        return ret.toString();
-    }
 
-    private String createListingSection(final Statistics stats) {
-        final int edition2014 = 2014;
-        final int edition2015 = 2015;
-        List<String> uniqueAcbList = new ArrayList<String>();
-        Boolean hasSuspended = false;
-        StringBuilder ret = new StringBuilder();
-
-        uniqueAcbList.clear();
         ret.append("<li>Total # of Unique Products with Active 2015 Listings -  "
                 + stats.getTotalCPsActive2015Listings() + "</li>");
         ret.append("<ul>");
@@ -487,9 +477,7 @@ public class SummaryStatistics {
         ret.append("</ul>");
 
         uniqueAcbList.clear();
-        hasSuspended = false;
-        ret
-        .append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings -  "
+        ret.append("<li>Total # of Unique Products with Suspended by ONC-ACB/Suspended by ONC 2015 Listings -  "
                 + stats.getTotalCPsSuspended2015Listings() + "</li>");
         ret.append("<ul>");
         for (CertifiedBodyStatistics cbStat : stats.getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus()) {
@@ -510,10 +498,19 @@ public class SummaryStatistics {
             ret.append("<ul><li>No certified bodies have suspended listings</li></ul>");
         }
 
-        uniqueAcbList.clear();
+
         ret.append("<li>Total # of Unique Products with Active Listings (Regardless of Edition) - "
                 + stats.getTotalCPsActiveListings() + "</ul></li>");
         ret.append("</ul>");
+        return ret.toString();
+    }
+
+    private String createListingSection(final Statistics stats) {
+        final int edition2014 = 2014;
+        final int edition2015 = 2015;
+//        List<String> uniqueAcbList = new ArrayList<String>();
+        StringBuilder ret = new StringBuilder();
+
         ret.append(
                 "<h4>Total # of Listings (Regardless of Status or Edition) -  " + stats.getTotalListings() + "</h4>");
         ret.append("<ul><li>Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) - "
@@ -538,6 +535,23 @@ public class SummaryStatistics {
             }
         }
         ret.append("</ul>");
+        Boolean hasOtherTest = false;
+        ret.append("<li>Total # of 2015 Listings with Alternative Test Methods -  "
+                + stats.getTotalListingsWithAlternativeTestMethods() + "</li>");
+        ret.append("<ul>");
+        for (CertifiedBodyAltTestStatistics cbStat
+                : stats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods()) {
+            if (cbStat.getTotalListings() > 0) {
+                ret.append("<li>Certified by " + cbStat.getName() + " - "
+                        + cbStat.getTotalListings()
+                        + "</li>");
+                hasOtherTest = true;
+            }
+        }
+        ret.append("</ul>");
+        if (!hasOtherTest) {
+            ret.append("<ul><li>No listings have Alternative Test Methods</li></ul>");
+        }
 
         ret.append(
                 "<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
