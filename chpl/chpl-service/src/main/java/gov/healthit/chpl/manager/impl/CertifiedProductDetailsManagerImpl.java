@@ -82,6 +82,11 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
+/**
+ * Certified Product Details Manager implementation.
+ * @author alarned
+ *
+ */
 @Service("certifiedProductDetailsManager")
 public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetailsManager {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDetailsManagerImpl.class);
@@ -121,7 +126,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Autowired
     private ListingGraphDAO listingGraphDao;
-    
+
     @Autowired
     private CertifiedProductTestingLabDAO certifiedProductTestingLabDao;
 
@@ -137,6 +142,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
 
+    /**
+     * Default constructor.
+     * @param cqmCriterionDAO DAO for CQMs
+     * @param macraDao DAO for Macra Measures
+     */
     @Autowired
     public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO, final MacraMeasureDAO macraDao) {
         this.cqmCriterionDAO = cqmCriterionDAO;
@@ -190,7 +200,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
         }
 
-        List<CertifiedProductTestingLabDTO> testingLabDtos = 
+        List<CertifiedProductTestingLabDTO> testingLabDtos =
                 certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(dto.getId());
         List<CertifiedProductTestingLab> testingLabResults = new ArrayList<CertifiedProductTestingLab>();
         for (CertifiedProductTestingLabDTO testingLabDto : testingLabDtos) {
@@ -198,7 +208,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             testingLabResults.add(result);
         }
         searchDetails.setTestingLabs(testingLabResults);
-                
+
         try {
             List<CertifiedProductDetailsDTO> parents = parentsFuture.get();
             if (parents != null && parents.size() > 0) {
@@ -538,7 +548,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setSedReportFileLocation(dto.getSedReportFileLocation());
         searchDetails.setSedIntendedUserDescription(dto.getSedIntendedUserDescription());
         searchDetails.setSedTestingEndDate(dto.getSedTestingEnd());
-        searchDetails.setTestingLab(getTestingLab(dto));
+        searchDetails.setTestingLabs(getTestingLabs(dto.getId()));
         searchDetails.setDeveloper(new Developer(dto.getDeveloper()));
         searchDetails.setProduct(new Product(dto.getProduct()));
         searchDetails.setVersion(new ProductVersion(dto.getVersion()));
@@ -556,7 +566,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails.setNumMeaningfulUse(dto.getNumMeaningfulUse());
         searchDetails.setSurveillance(survManager.getByCertifiedProduct(dto.getId()));
         searchDetails.setQmsStandards(getCertifiedProductQmsStandards(dto.getId()));
-        searchDetails.setTargetedUsers(getListertifiedProductTargetedUsers(dto.getId()));
+        searchDetails.setTargetedUsers(getCertifiedProductTargetedUsers(dto.getId()));
         searchDetails.setAccessibilityStandards(getCertifiedProductAccessibilityStandards(dto.getId()));
 
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
@@ -607,12 +617,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return practiceType;
     }
 
-    private Map<String, Object> getTestingLab(final CertifiedProductDetailsDTO dto) {
-        Map<String, Object> testingLab = new HashMap<String, Object>();
-        testingLab.put("id", dto.getTestingLabId());
-        testingLab.put("name", dto.getTestingLabName());
-        testingLab.put("code", dto.getTestingLabCode());
-        return testingLab;
+    private List<CertifiedProductTestingLab> getTestingLabs(final Long id) throws EntityRetrievalException {
+        List<CertifiedProductTestingLabDTO> testingLabDtos = new ArrayList<CertifiedProductTestingLabDTO>();
+        testingLabDtos = certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(id);
+
+        List<CertifiedProductTestingLab> testingLabResults = new ArrayList<CertifiedProductTestingLab>();
+        for (CertifiedProductTestingLabDTO testingLabDto : testingLabDtos) {
+            CertifiedProductTestingLab result = new CertifiedProductTestingLab(testingLabDto);
+            testingLabResults.add(result);
+        }
+        return testingLabResults;
     }
 
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(final Long id)
@@ -629,7 +643,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
       return qmsStandardResults;
     }
 
-    private List<CertifiedProductTargetedUser> getListertifiedProductTargetedUsers(final Long id)
+    private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(final Long id)
             throws EntityRetrievalException {
         List<CertifiedProductTargetedUserDTO> targetedUserDtos = new ArrayList<CertifiedProductTargetedUserDTO>();
         targetedUserDtos = certifiedProductTargetedUserDao.getTargetedUsersByCertifiedProductId(id);
