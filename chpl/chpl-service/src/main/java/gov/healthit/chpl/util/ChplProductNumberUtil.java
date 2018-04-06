@@ -70,35 +70,6 @@ public class ChplProductNumberUtil {
     }
 
     /**
-     * Determines what the derived CHPL Product Number will be based on the values passed.
-     * @param uniqueId - Unique ID from the product
-     * @param certificationEdition - 4 character year, i.e. "20015"
-     * @param testingLabName - the lab name used for the certification
-     * @param certificationBodyId - Id (not code) for the certification body
-     * @param developerId - Id (not code) for the developer
-     * @return String representing the derived CHPL Product Number
-     */
-    public String generate(final String uniqueId, final String certificationEdition,
-            final String testingLabName, final Long certificationBodyId,
-            final Long developerId) {
-
-        String[] uniqueIdParts = splitUniqueIdParts(uniqueId);
-        ChplProductNumberParts parts = new ChplProductNumberParts();
-        parts.editionCode = certificationEdition.
-                substring(CERTIFICATION_EDITION_BEGIN_INDEX, CERTIFICATION_EDITION_END_INDEX);
-        parts.atlCode = getTestingLabCode(testingLabName);
-        parts.acbCode = getCertificationBodyCode(certificationBodyId);
-        parts.developerCode = getDeveloperCode(developerId);
-        parts.productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
-        parts.versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
-        parts.icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
-        parts.additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
-        parts.certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
-
-        return concatParts(parts);
-    }
-
-    /**
      * Determines if a CHPL Product Number already exists in the database.
      * @param chplProductNumber - String representing the CHPL Product Number to check
      * @return Boolean - true if the value does not exist, false if the value exists
@@ -133,15 +104,6 @@ public class ChplProductNumberUtil {
         .append(chplProductNumberParts.additionalSoftwareCode).append(".")
         .append(chplProductNumberParts.certifiedDateCode);
         return chplProductNumber.toString();
-    }
-
-    private String getTestingLabCode(final String testingLabName) {
-        TestingLabDTO dto = testingLabDAO.getByName(testingLabName);
-        if (dto != null) {
-            return dto.getTestingLabCode();
-        } else {
-            return null; //Throw excepotion?
-        }
     }
 
     private String getTestingLabCode(final List<PendingCertifiedProductTestingLabDTO> testingLabs) {
