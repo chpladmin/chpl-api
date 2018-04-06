@@ -5,6 +5,7 @@
   * Upload / confirm workflow
   * Edit Listing validation & questionable activity
 * Wide variety of linting changes
+* Enhanced performance when retrieving Certified Product Details
 
 ---
 
