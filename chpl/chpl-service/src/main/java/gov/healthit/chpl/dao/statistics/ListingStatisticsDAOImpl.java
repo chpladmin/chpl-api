@@ -257,8 +257,29 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 
     @Override
     public Long getTotalListingsWithAlternateTestMethods() {
-        return -1L;
+        String sql = "select"
+                + "    distinct"
+                + "    cp.id, cb.name"
+                + " from CertificationResultTestProcedureEntity crtp,"
+                + "    TestProcedureEntity tp,"
+                + "    CertificationResultEntity cr,"
+                + "    CertifiedProductEntity cp,"
+                + "    CertificationBodyEntity cb"
+                + " where tp.name != 'ONC Test Method'"
+                + "    and crtp.testProcedureId = tp.id"
+                + "    and crtp.certificationResultId = cr.id"
+                + "    and cr.certifiedProductId = cp.id"
+                + "    and cp.certificationBodyId = cb.id"
+                + "    and cp.certificationEditionId = 3"
+                + "    and tp.deleted = false"
+                + "    and crtp.deleted = false"
+                + "    and cr.deleted = false"
+                + "    and cp.deleted = false";
+        Query query = entityManager.createQuery(sql);
+
+        return (long) query.getResultList().size();
     }
+
     @Override
     public List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods() {
         List<CertifiedBodyAltTestStatistics> cbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
