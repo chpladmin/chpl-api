@@ -10,7 +10,7 @@ import org.hibernate.annotations.Immutable;
 
 /**
  * Represents one row of one listing's search result data.
- * Will need to be combined with mutliple other rows to make a complete listing.
+ * Will need to be combined with multiple other rows to make a complete listing.
  * @author kekey
  *
  */
@@ -18,11 +18,11 @@ import org.hibernate.annotations.Immutable;
 @Immutable
 public class CertifiedProductListingSearchResultEntity {
     private static final long serialVersionUID = -2928445796550377509L;
-    
+
     @Id
     @Column(name = "unique_id")
     private int uniqueId;
-    
+
     @Column(name = "certified_product_id", nullable = false)
     private Long id;
 
@@ -31,18 +31,15 @@ public class CertifiedProductListingSearchResultEntity {
 
     @Column(name = "certification_status_name")
     private String certificationStatus;
-    
+
     @Column(name = "meaningful_use_users")
     private Long meaningfulUseUserCount;
-    
+
     @Column(name = "transparency_attestation_url")
     private String transparencyAttestationUrl;
-    
+
     @Column(name = "year")
     private String edition;
-
-    @Column(name = "testing_lab_name")
-    private String atlName;
 
     @Column(name = "certification_body_name")
     private String acbName;
@@ -73,19 +70,22 @@ public class CertifiedProductListingSearchResultEntity {
 
     @Column(name = "count_surveillance_activities")
     private Integer countSurveillance;
-    
+
     @Column(name = "count_open_nonconformities")
     private Integer countOpenNonconformities;
-    
+
     @Column(name = "count_closed_nonconformities")
     private Integer countClosedNonconformities;
-    
+
     @Column(name = "cert_number")
     private String cert;
 
     @Column(name = "cqm_number")
     private String cqm;
 
+    /**
+     * Default constructor.
+     */
     public CertifiedProductListingSearchResultEntity() {
     }
 
@@ -111,14 +111,6 @@ public class CertifiedProductListingSearchResultEntity {
 
     public void setEdition(final String edition) {
         this.edition = edition;
-    }
-
-    public String getAtlName() {
-        return atlName;
-    }
-
-    public void setAtlName(final String atlName) {
-        this.atlName = atlName;
     }
 
     public String getAcbName() {
@@ -213,7 +205,7 @@ public class CertifiedProductListingSearchResultEntity {
         return previousDeveloperOwner;
     }
 
-    public void setPreviousDeveloperOwner(String previousDeveloperOwner) {
+    public void setPreviousDeveloperOwner(final String previousDeveloperOwner) {
         this.previousDeveloperOwner = previousDeveloperOwner;
     }
 
@@ -221,7 +213,7 @@ public class CertifiedProductListingSearchResultEntity {
         return cert;
     }
 
-    public void setCert(String cert) {
+    public void setCert(final String cert) {
         this.cert = cert;
     }
 
@@ -229,7 +221,7 @@ public class CertifiedProductListingSearchResultEntity {
         return cqm;
     }
 
-    public void setCqm(String cqm) {
+    public void setCqm(final String cqm) {
         this.cqm = cqm;
     }
 
@@ -237,7 +229,7 @@ public class CertifiedProductListingSearchResultEntity {
         return countSurveillance;
     }
 
-    public void setCountSurveillance(Integer countSurveillance) {
+    public void setCountSurveillance(final Integer countSurveillance) {
         this.countSurveillance = countSurveillance;
     }
 
@@ -245,7 +237,7 @@ public class CertifiedProductListingSearchResultEntity {
         return countOpenNonconformities;
     }
 
-    public void setCountOpenNonconformities(Integer countOpenNonconformities) {
+    public void setCountOpenNonconformities(final Integer countOpenNonconformities) {
         this.countOpenNonconformities = countOpenNonconformities;
     }
 
@@ -253,7 +245,7 @@ public class CertifiedProductListingSearchResultEntity {
         return countClosedNonconformities;
     }
 
-    public void setCountClosedNonconformities(Integer countClosedNonconformities) {
+    public void setCountClosedNonconformities(final Integer countClosedNonconformities) {
         this.countClosedNonconformities = countClosedNonconformities;
     }
 }

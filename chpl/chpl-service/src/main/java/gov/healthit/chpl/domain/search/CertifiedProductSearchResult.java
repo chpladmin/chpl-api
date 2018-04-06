@@ -4,96 +4,102 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+/**
+ * Certified Product search result domain object.
+ * @author alarned
+ *
+ */
 public class CertifiedProductSearchResult implements Serializable {
     private static final long serialVersionUID = -2547390525592841034L;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected Long id;
+    private Long id;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String chplProductNumber;
+    private String chplProductNumber;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String edition;
+    private String edition;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String atl;
+    private String acb;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String acb;
+    private String acbCertificationId;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String acbCertificationId;
+    private String practiceType;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String practiceType;
+    private String developer;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String developer;
+    private String product;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String product;
+    private String version;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String version;
+    private Long certificationDate;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected Long certificationDate;
+    private String certificationStatus;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected String certificationStatus;
+    private Long surveillanceCount;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected Long surveillanceCount;
+    private Long openNonconformityCount;
 
     @JsonView({
             SearchViews.Default.class
     })
-    protected Long openNonconformityCount;
+    private Long closedNonconformityCount;
 
-    @JsonView({
-            SearchViews.Default.class
-    })
-    protected Long closedNonconformityCount;
+    private Long decertificationDate;
+    private Long numMeaningfulUse;
+    private String transparencyAttestationUrl;
 
-    protected Long decertificationDate;
-    protected Long numMeaningfulUse;
-    protected String transparencyAttestationUrl;
-
+    /**
+     * Default constructor.
+     */
     public CertifiedProductSearchResult() {
     }
 
+    /**
+     * Constructed from other search result.
+     * @param other the other search result
+     */
     public CertifiedProductSearchResult(CertifiedProductSearchResult other) {
         this.id = other.getId();
         this.chplProductNumber = other.getChplProductNumber();
         this.edition = other.getEdition();
-        this.atl = other.getAtl();
         this.acb = other.getAcb();
         this.acbCertificationId = other.getAcbCertificationId();
         this.practiceType = other.getPracticeType();
@@ -132,14 +138,6 @@ public class CertifiedProductSearchResult implements Serializable {
 
     public void setEdition(final String edition) {
         this.edition = edition;
-    }
-
-    public String getAtl() {
-        return atl;
-    }
-
-    public void setAtl(final String atl) {
-        this.atl = atl;
     }
 
     public String getAcb() {

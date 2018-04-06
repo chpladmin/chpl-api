@@ -15,8 +15,8 @@ public interface CertifiedProductSearchResultDAO {
      * Retrieves the matching certified_product_details record as a CertifiedProductDetailsDTO
      * objects.
      * @param productId Id of the product to retrieve
+     * @throws EntityRetrievalException if unable to retrieve the entity
      * @return CertifiedProductDetailsDTO
-     * @throws EntityRetrievalException
      */
     CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException;
 
@@ -25,8 +25,8 @@ public interface CertifiedProductSearchResultDAO {
      * that match the chplProductNumber parameter.
      * There should only be one item returned.
      * @param chplProductNumber String
+     * @throws EntityRetrievalException if unable to retrieve the entity
      * @return List<CertifiedProductDetailsDTO>
-     * @throws EntityRetrievalException
      */
     List<CertifiedProductDetailsDTO> getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException;
 

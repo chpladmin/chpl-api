@@ -22,9 +22,6 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "year")
     private String edition;
 
-    @Column(name = "testing_lab_name")
-    private String atlName;
-
     @Column(name = "certification_body_name")
     private String acbName;
 
@@ -87,6 +84,9 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "child")
     private String child; // comma-separated list of all children
 
+    /**
+     * Default constructor.
+     */
     public CertifiedProductBasicSearchResultEntity() {
     }
 
@@ -128,14 +128,6 @@ public class CertifiedProductBasicSearchResultEntity {
 
     public void setEdition(final String edition) {
         this.edition = edition;
-    }
-
-    public String getAtlName() {
-        return atlName;
-    }
-
-    public void setAtlName(final String atlName) {
-        this.atlName = atlName;
     }
 
     public String getAcbName() {

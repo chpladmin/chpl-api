@@ -26,6 +26,7 @@ import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
+import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
@@ -47,6 +48,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
@@ -73,6 +75,7 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -118,6 +121,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Autowired
     private ListingGraphDAO listingGraphDao;
+    
+    @Autowired
+    private CertifiedProductTestingLabDAO certifiedProductTestingLabDao;
 
     @Autowired
     private SurveillanceManager survManager;
@@ -184,6 +190,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
         }
 
+        List<CertifiedProductTestingLabDTO> testingLabDtos = 
+                certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(dto.getId());
+        List<CertifiedProductTestingLab> testingLabResults = new ArrayList<CertifiedProductTestingLab>();
+        for (CertifiedProductTestingLabDTO testingLabDto : testingLabDtos) {
+            CertifiedProductTestingLab result = new CertifiedProductTestingLab(testingLabDto);
+            testingLabResults.add(result);
+        }
+        searchDetails.setTestingLabs(testingLabResults);
+                
         try {
             List<CertifiedProductDetailsDTO> parents = parentsFuture.get();
             if (parents != null && parents.size() > 0) {

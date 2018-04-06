@@ -76,9 +76,6 @@ public class PendingCertifiedProductEntity {
     @Column(name = "product_classification_id")
     private Long productClassificationId;
 
-    @Column(name = "testing_lab_id")
-    private Long testingLabId;
-
     @Basic(optional = false)
     @Column(name = "certification_status_id", nullable = false)
     private Long status;
@@ -94,9 +91,6 @@ public class PendingCertifiedProductEntity {
 
     @Column(name = "practice_type")
     private String practiceType;
-
-    @Column(name = "testing_lab_name")
-    private String testingLabName;
 
     @Column(name = "vendor_name")
     private String developerName;
@@ -192,6 +186,11 @@ public class PendingCertifiedProductEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
     @Basic(optional = false)
     @Column(name = "pending_certified_product_id", nullable = false)
+    private Set<PendingCertifiedProductTestingLabMapEntity> testingLabs;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
+    @Basic(optional = false)
+    @Column(name = "pending_certified_product_id", nullable = false)
     private Set<PendingCertifiedProductTargetedUserEntity> targetedUsers;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pendingCertifiedProductId")
@@ -203,7 +202,7 @@ public class PendingCertifiedProductEntity {
     @Basic(optional = false)
     @Column(name = "pending_certified_product_id", nullable = false)
     private Set<PendingCertifiedProductParentListingEntity> parentListings;
-    
+
     @Basic(optional = false)
     @Column(name = "has_qms", nullable = false)
     private Boolean hasQms;
@@ -224,7 +223,11 @@ public class PendingCertifiedProductEntity {
     @Column(name = "deleted", nullable = false)
     private Boolean deleted;
 
+    /**
+     * Default constructor.
+     */
     public PendingCertifiedProductEntity() {
+        testingLabs = new HashSet<PendingCertifiedProductTestingLabMapEntity>();
         certificationCriterion = new HashSet<PendingCertificationResultEntity>();
         cqmCriterion = new HashSet<PendingCqmCriterionEntity>();
         qmsStandards = new HashSet<PendingCertifiedProductQmsStandardEntity>();
@@ -233,7 +236,11 @@ public class PendingCertifiedProductEntity {
         parentListings = new HashSet<PendingCertifiedProductParentListingEntity>();
     }
 
-    public PendingCertifiedProductEntity(Long id) {
+    /**
+     * Constructor with id.
+     * @param id the id
+     */
+    public PendingCertifiedProductEntity(final Long id) {
         this();
         this.id = id;
     }
@@ -523,22 +530,6 @@ public class PendingCertifiedProductEntity {
         this.ics = ics;
     }
 
-    public Long getTestingLabId() {
-        return testingLabId;
-    }
-
-    public void setTestingLabId(final Long testingLabId) {
-        this.testingLabId = testingLabId;
-    }
-
-    public String getTestingLabName() {
-        return testingLabName;
-    }
-
-    public void setTestingLabName(final String testingLabName) {
-        this.testingLabName = testingLabName;
-    }
-
     public String getDeveloperContactName() {
         return developerContactName;
     }
@@ -619,6 +610,14 @@ public class PendingCertifiedProductEntity {
         this.accessibilityCertified = accessibilityCertified;
     }
 
+    public Set<PendingCertifiedProductTestingLabMapEntity> getTestingLabs() {
+        return testingLabs;
+    }
+
+    public void setTestingLabs(final Set<PendingCertifiedProductTestingLabMapEntity> testingLabs) {
+        this.testingLabs = testingLabs;
+    }
+
     public Set<PendingCertifiedProductTargetedUserEntity> getTargetedUsers() {
         return targetedUsers;
     }
@@ -631,7 +630,7 @@ public class PendingCertifiedProductEntity {
         return accessibilityStandards;
     }
 
-    public void setAccessibilityStandards(final 
+    public void setAccessibilityStandards(final
             Set<PendingCertifiedProductAccessibilityStandardEntity> accessibilityStandards) {
         this.accessibilityStandards = accessibilityStandards;
     }
@@ -656,7 +655,7 @@ public class PendingCertifiedProductEntity {
         return parentListings;
     }
 
-    public void setParentListings(Set<PendingCertifiedProductParentListingEntity> parentListings) {
+    public void setParentListings(final Set<PendingCertifiedProductParentListingEntity> parentListings) {
         this.parentListings = parentListings;
     }
 }

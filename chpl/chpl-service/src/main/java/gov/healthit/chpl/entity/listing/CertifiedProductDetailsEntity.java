@@ -16,6 +16,11 @@ import org.hibernate.annotations.Type;
 import gov.healthit.chpl.entity.AttestationType;
 import gov.healthit.chpl.entity.ProductEntity;
 
+/**
+ * Entity containing entirety of a Certified Product.
+ * @author alarned
+ *
+ */
 @Entity
 @Table(name = "certified_product_details")
 public class CertifiedProductDetailsEntity {
@@ -27,9 +32,6 @@ public class CertifiedProductDetailsEntity {
     @Basic(optional = false)
     @Column(name = "certified_product_id", nullable = false)
     private Long id;
-
-    @Column(name = "testing_lab_code")
-    private String testingLabCode;
 
     @Column(name = "product_code")
     private String productCode;
@@ -45,12 +47,6 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "certified_date_code")
     private String certifiedDateCode;
-
-    @Column(name = "testing_lab_id")
-    private Long testingLabId;
-
-    @Column(name = "testing_lab_name")
-    private String testingLabName;
 
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
@@ -264,14 +260,6 @@ public class CertifiedProductDetailsEntity {
         this.id = id;
     }
 
-    public Long getTestingLabId() {
-        return testingLabId;
-    }
-
-    public void setTestingLabId(final Long testingLabId) {
-        this.testingLabId = testingLabId;
-    }
-
     public String getChplProductNumber() {
         return chplProductNumber;
     }
@@ -480,32 +468,6 @@ public class CertifiedProductDetailsEntity {
         this.certificationStatusName = certificationStatusName;
     }
 
-    // public Set<CertificationResultDetailsEntity> getCertResults() {
-    // return certResults;
-    // }
-    //
-    // public void setCertResults(final Set<CertificationResultDetailsEntity>
-    // certResults) {
-    // this.certResults = certResults;
-    // }
-    //
-    // public Set<CQMResultDetailsEntity> getCqmResults() {
-    // return cqmResults;
-    // }
-    //
-    // public void setCqmResults(final Set<CQMResultDetailsEntity> cqmResults) {
-    // this.cqmResults = cqmResults;
-    // }
-    //
-    // public Set<AdditionalSoftwareEntity> getAdditionalSoftware() {
-    // return additionalSoftware;
-    // }
-    //
-    // public void setAdditionalSoftware(final Set<AdditionalSoftwareEntity>
-    // additionalSoftware) {
-    // this.additionalSoftware = additionalSoftware;
-    // }
-
     public String getProductCode() {
         return productCode;
     }
@@ -568,22 +530,6 @@ public class CertifiedProductDetailsEntity {
 
     public void setTransparencyAttestation(final AttestationType transparencyAttestation) {
         this.transparencyAttestation = transparencyAttestation;
-    }
-
-    public String getTestingLabCode() {
-        return testingLabCode;
-    }
-
-    public void setTestingLabCode(final String testingLabCode) {
-        this.testingLabCode = testingLabCode;
-    }
-
-    public String getTestingLabName() {
-        return testingLabName;
-    }
-
-    public void setTestingLabName(final String testingLabName) {
-        this.testingLabName = testingLabName;
     }
 
     public Boolean getIcs() {
@@ -873,5 +819,4 @@ public class CertifiedProductDetailsEntity {
     public void setDeleted(final Boolean deleted) {
         this.deleted = deleted;
     }
-
 }
