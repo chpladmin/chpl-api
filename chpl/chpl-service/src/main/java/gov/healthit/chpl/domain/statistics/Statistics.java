@@ -5,6 +5,11 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.DateRange;
 
+/**
+ * Class to hold all of the statistics needed for summary data of CHPL.
+ * @author alarned
+ *
+ */
 public class Statistics implements Serializable {
     private static final long serialVersionUID = 6977674702447513779L;
     private DateRange dateRange;

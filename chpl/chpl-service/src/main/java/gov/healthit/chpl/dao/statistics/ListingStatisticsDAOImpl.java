@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.statistics;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -282,7 +283,41 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
 
     @Override
     public List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods() {
-        List<CertifiedBodyAltTestStatistics> cbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
+        String sql = "select"
+                + "    distinct"
+                + "    cp.id, cb.name"
+                + " from CertificationResultTestProcedureEntity crtp,"
+                + "    TestProcedureEntity tp,"
+                + "    CertificationResultEntity cr,"
+                + "    CertifiedProductEntity cp,"
+                + "    CertificationBodyEntity cb"
+                + " where tp.name != 'ONC Test Method'"
+                + "    and crtp.testProcedureId = tp.id"
+                + "    and crtp.certificationResultId = cr.id"
+                + "    and cr.certifiedProductId = cp.id"
+                + "    and cp.certificationBodyId = cb.id"
+                + "    and cp.certificationEditionId = 3"
+                + "    and tp.deleted = false"
+                + "    and crtp.deleted = false"
+                + "    and cr.deleted = false"
+                + "    and cp.deleted = false";
+        Query query = entityManager.createQuery(sql);
+        List<Object[]> results = query.getResultList();
+        HashMap<String, Integer> listings = new HashMap<String, Integer>();
+        for (Object[] obj : results) {
+            if (!listings.containsKey(obj[1].toString())) {
+                listings.put(obj[1].toString(), 0);
+            }
+            listings.put(obj[1].toString(), listings.get(obj[1].toString()) + 1);
+        }
+
+       List<CertifiedBodyAltTestStatistics> cbStats = new ArrayList<CertifiedBodyAltTestStatistics>();
+       for (String val : listings.keySet()) {
+           CertifiedBodyAltTestStatistics stat = new CertifiedBodyAltTestStatistics();
+           stat.setName(val.toString());
+           stat.setTotalListings(Long.valueOf(listings.get(val.toString())));
+           cbStats.add(stat);
+       }
         return cbStats;
     }
 }

@@ -18,6 +18,11 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 
+/**
+ * Initializes statistics retrieval.
+ * @author alarned
+ *
+ */
 @Repository("asynchronousStatisticsInitializor")
 @EnableAsync
 public class AsynchronousStatisticsInitializor {
@@ -25,6 +30,13 @@ public class AsynchronousStatisticsInitializor {
     @Autowired
     private AsynchronousStatistics asyncStats;
 
+    /**
+     * Actual call to get the statistics.
+     * @param dateRange range to find statistics in
+     * @return a Future of type Statistics
+     * @throws InterruptedException if retrieval is interrupted
+     * @throws ExecutionException if execution fails
+     */
     @Transactional
     @Async
     public Future<Statistics> getStatistics(final DateRange dateRange)

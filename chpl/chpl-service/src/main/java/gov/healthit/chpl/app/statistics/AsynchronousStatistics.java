@@ -19,15 +19,20 @@ import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
+/**
+ * Component that handles getting statistics data and return Futures of that data.
+ * @author alarned
+ *
+ */
 @Component
 @EnableAsync
 public class AsynchronousStatistics {
     @Autowired
-    DeveloperStatisticsDAO developerStatisticsDAO;
+    private DeveloperStatisticsDAO developerStatisticsDAO;
     @Autowired
-    ListingStatisticsDAO listingStatisticsDAO;
+    private ListingStatisticsDAO listingStatisticsDAO;
     @Autowired
-    SurveillanceStatisticsDAO surveillanceStatisticsDAO;
+    private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
 
     /**
      * Total # of Unique Developers (Regardless of Edition).
@@ -436,5 +441,4 @@ public class AsynchronousStatistics {
     public Future<Long> getTotalClosedNonconformities(final DateRange dateRange) {
         return new AsyncResult<>(surveillanceStatisticsDAO.getTotalClosedNonconformities(dateRange));
     }
-
 }

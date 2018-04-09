@@ -1,5 +1,8 @@
 # Release Notes
 
+## OCD-2074
+* Add counts of 2015 Listings with Alternate Test methods to Summary email
+
 ## OCD-1898
 * Add support for Multiple ATLs
   * Upload / confirm workflow

@@ -71,8 +71,7 @@ public class SummaryStatistics {
      */
     public static void main(final String[] args) throws Exception {
         SummaryStatistics summaryStats = new SummaryStatistics();
-        summaryStats.parseCommandLineArgs(args); // sets startDate, endDate,
-        // numDaysInPeriod
+        summaryStats.parseCommandLineArgs(args); // sets startDate, endDate, numDaysInPeriod
         InputStream in = SummaryStatistics.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
         Properties props = summaryStats.loadProperties(in);
         LocalContext ctx = LocalContextFactory.createLocalContext(summaryStats.props.getProperty("dbDriverClass"));
@@ -105,8 +104,8 @@ public class SummaryStatistics {
                         .getStatistics(csvRange);
                 historyStat = futureEmailCsvStats.get();
                 csvStats.add(historyStat);
-                LOGGER.info("Finished getting csvRecord for start date " +
-                        startDateCal.getTime().toString() + " end date "
+                LOGGER.info("Finished getting csvRecord for start date "
+                        + startDateCal.getTime().toString() + " end date "
                         + endDateCal.getTime().toString());
 
                 startDateCal.add(Calendar.DATE, numDaysInPeriod);
@@ -508,7 +507,6 @@ public class SummaryStatistics {
     private String createListingSection(final Statistics stats) {
         final int edition2014 = 2014;
         final int edition2015 = 2015;
-//        List<String> uniqueAcbList = new ArrayList<String>();
         StringBuilder ret = new StringBuilder();
 
         ret.append(
@@ -535,6 +533,7 @@ public class SummaryStatistics {
             }
         }
         ret.append("</ul>");
+
         Boolean hasOtherTest = false;
         ret.append("<li>Total # of 2015 Listings with Alternative Test Methods -  "
                 + stats.getTotalListingsWithAlternativeTestMethods() + "</li>");
@@ -548,10 +547,10 @@ public class SummaryStatistics {
                 hasOtherTest = true;
             }
         }
-        ret.append("</ul>");
         if (!hasOtherTest) {
-            ret.append("<ul><li>No listings have Alternative Test Methods</li></ul>");
+            ret.append("<li>No listings have Alternative Test Methods</li>");
         }
+        ret.append("</ul>");
 
         ret.append(
                 "<li>Total # of 2014 Listings (Regardless of Status) - " + stats.getTotal2014Listings() + "</li>");
@@ -622,5 +621,4 @@ public class SummaryStatistics {
     public void setNotificationDao(final NotificationDAO notificationDao) {
         this.notificationDao = notificationDao;
     }
-
 }
