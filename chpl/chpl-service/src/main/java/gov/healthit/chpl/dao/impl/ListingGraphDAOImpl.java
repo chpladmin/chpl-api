@@ -13,6 +13,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -28,6 +29,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
     @Autowired
     MessageSource messageSource;
 
+    @Override
     public ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException {
         ListingToListingMapEntity entity = new ListingToListingMapEntity();
         entity.setChildId(toCreate.getChildId());
@@ -49,6 +51,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         return new ListingToListingMapDTO(entity);
     }
 
+    @Override
     public void deleteListingMap(ListingToListingMapDTO toDelete) {
         ListingToListingMapEntity entity = null;
 
@@ -73,6 +76,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
      *            proposed parent nodes
      * @return largest ICS value
      */
+    @Override
     public Integer getLargestIcs(List<Long> listingIds) {
         Query query = entityManager
                 .createQuery(
@@ -94,6 +98,8 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
      *            Listing to find the parents of
      * @return The first-level parents (can have multiple)
      */
+    @Override
+    @Transactional
     public List<CertifiedProductDetailsDTO> getParents(Long listingId) {
         Query query = entityManager.createQuery(
                 "SELECT listingMap.parent " + "FROM ListingToListingMapEntity listingMap "
@@ -116,6 +122,8 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
      *            Listing to find the children of
      * @return The first-level children (can have multiple)
      */
+    @Override
+    @Transactional
     public List<CertifiedProductDetailsDTO> getChildren(Long listingId) {
         Query query = entityManager.createQuery(
                 "SELECT listingMap.child " + "FROM ListingToListingMapEntity listingMap "
@@ -131,6 +139,7 @@ public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO 
         return result;
     }
 
+    @Override
     public ListingToListingMapDTO getListingMap(Long childId, Long parentId) {
         ListingToListingMapEntity mapEntity = getListingMapEntity(childId, parentId);
 
