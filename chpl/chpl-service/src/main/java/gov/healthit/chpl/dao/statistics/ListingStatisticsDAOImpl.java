@@ -225,7 +225,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
     public List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(final DateRange dateRange) {
         String hql = "SELECT certificationBodyName, year, count(*) "
                 + "FROM CertifiedProductDetailsEntity "
-                + "WHERE UPPER(certificationStatusName) = 'ACTIVE' ";
+                + "WHERE UPPER(certificationStatusName) in ('ACTIVE', 'SUSPENDED BY ONC-ACB', 'SUSPENDED BY ONC') ";
         if (dateRange == null) {
             hql += " AND deleted = false ";
         } else {
