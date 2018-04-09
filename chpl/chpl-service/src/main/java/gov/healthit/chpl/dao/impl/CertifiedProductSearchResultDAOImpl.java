@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -9,18 +10,24 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 
+/**
+ * The implementation for CertifiedProductSearchResultDAO.
+ * @author TYoung
+ *
+ */
 @Repository(value = "certifiedProductSearchResultDAO")
 public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements CertifiedProductSearchResultDAO {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchResultDAOImpl.class);
 
     @Override
-    public CertifiedProductDetailsDTO getById(Long productId) throws EntityRetrievalException {
+    public CertifiedProductDetailsDTO getById(final Long productId) throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = null;
         CertifiedProductDetailsEntity entity = getEntityById(productId);
@@ -36,7 +43,38 @@ public class CertifiedProductSearchResultDAOImpl extends BaseDAOImpl implements 
         return dto;
     }
 
-    private CertifiedProductDetailsEntity getEntityById(Long entityId) throws EntityRetrievalException {
+    @Override
+    @Transactional
+    public List<CertifiedProductDetailsDTO> getByChplProductNumber(final String chplProductNumber)
+            throws EntityRetrievalException {
+
+        List<CertifiedProductDetailsDTO> dtos = new ArrayList<CertifiedProductDetailsDTO>();
+        List<CertifiedProductDetailsEntity> entities = getEntityByChplProductNumber(chplProductNumber);
+        if (entities != null) {
+            for (CertifiedProductDetailsEntity entity : entities) {
+                dtos.add(new CertifiedProductDetailsDTO(entity));
+            }
+        }
+
+        return dtos;
+    }
+
+    private List<CertifiedProductDetailsEntity> getEntityByChplProductNumber(final String chplProductNumber)
+            throws EntityRetrievalException {
+        //List<CertifiedProductDetailsEntity> entity = new ArrayList<CertifiedProductDetailsEntity>();
+        Query query = entityManager.createQuery(
+                "SELECT deets " + "FROM CertifiedProductDetailsEntity deets " + "LEFT OUTER JOIN FETCH deets.product "
+                        + "WHERE (deets.chplProductNumber = :chplProductNumber) " + "AND deets.deleted <> true",
+                CertifiedProductDetailsEntity.class);
+        query.setParameter("chplProductNumber", chplProductNumber);
+
+        List<CertifiedProductDetailsEntity> result = query.getResultList();
+
+        return result;
+
+    }
+
+    private CertifiedProductDetailsEntity getEntityById(final Long entityId) throws EntityRetrievalException {
         CertifiedProductDetailsEntity entity = null;
         Query query = entityManager.createQuery(
                 "SELECT deets " + "FROM CertifiedProductDetailsEntity deets " + "LEFT OUTER JOIN FETCH deets.product "
