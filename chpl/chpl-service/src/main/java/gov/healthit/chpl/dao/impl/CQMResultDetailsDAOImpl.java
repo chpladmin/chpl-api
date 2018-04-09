@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -15,6 +16,8 @@ import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
 @Repository(value = "cqmResultDetailsDAO")
 public class CQMResultDetailsDAOImpl extends BaseDAOImpl implements CQMResultDetailsDAO {
 
+    @Override
+    @Transactional
     public List<CQMResultDetailsDTO> getCQMResultDetailsByCertifiedProductId(Long certifiedProductId)
             throws EntityRetrievalException {
 
