@@ -1,7 +1,7 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
+## Version 15.9.0
+_9 April 2018_
 
 ### Minor Features
 * Add ability to add G1/G2 measures for non-attested criteria
@@ -25,6 +25,8 @@ _26 March 2018_
 * Modified application to generate and store Participant/Professional Experience counts to support charting
 * Modified application to generate and store Participant/Product Experience counts to support charting
 * Modified application to generate and store Participant/Computer Experience counts to support charting
+
+---
 
 ## Version 15.7.0
 _12 March 2018_
