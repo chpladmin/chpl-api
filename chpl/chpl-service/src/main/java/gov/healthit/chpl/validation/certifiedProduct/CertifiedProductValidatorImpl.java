@@ -182,6 +182,12 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 LocaleContextHolder.getLocale()), input);
     }
 
+    /** {@inheritDoc} */
+    public String getMessage(final String messageCode, final String input, final String input2) {
+        return String.format(messageSource.getMessage(
+                new DefaultMessageSourceResolvable(messageCode),
+                LocaleContextHolder.getLocale()), input, input2);
+    }
     @Override
     public boolean validateUniqueId(final String chplProductNumber) {
         try {
@@ -420,7 +426,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                         .add(getMessage("atl.shouldNotBe99"));
                     } else if (!testingLab.getTestingLabCode().equals(atlCode)) {
                         product.getWarningMessages()
-                        .add(getMessage("atl.codeMismatch", testingLab.getTestingLabCode()));
+                        .add(getMessage("atl.codeMismatch", testingLab.getName(), atlCode));
                     }
                 }
             }
