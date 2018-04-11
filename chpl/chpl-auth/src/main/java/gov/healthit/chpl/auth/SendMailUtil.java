@@ -32,389 +32,251 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
- * Utility class for email sending
- * 
+ * Utility class for email sending.
+ *
  * @author dlucas
  *
  */
 @Service("SendMailUtil")
 public class SendMailUtil {
 
-	private static final Logger logger = LogManager.getLogger(SendMailUtil.class);
-	@Autowired
-	private Environment env;
+    private static final Logger LOGGER = LogManager.getLogger(SendMailUtil.class);
+    @Autowired
+    private Environment env;
 
-	/**
-	 * create and send an email with the provided string[] toEmails, subject and
-	 * html message
-	 * 
-	 * @param invitation
-	 */
-	public void sendEmail(String[] toEmail, String[] bccEmail, String subject, String htmlMessage)
-			throws AddressException, MessagingException {
-		// do not attempt to send email if we are in a dev environment
-		String mailHost = env.getProperty("smtpHost");
-		if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
-				|| "dev".equalsIgnoreCase(mailHost)) {
-			return;
-		}
+    /**
+     * Create and send an email with the provided string[] toEmails, subject and
+     * HTML message.
+     *
+     * @param toEmail addresses to send To
+     * @param bccEmail addresses to send BCC
+     * @param subject subject of email
+     * @param htmlMessage  message
+     * @throws AddressException if address fails
+     * @throws MessagingException if messaging fails
+     */
+    public void sendEmail(final String[] toEmail, final String[] bccEmail, final String subject,
+            final String htmlMessage) throws AddressException, MessagingException {
+        // do not attempt to send email if we are in a dev environment
+        String mailHost = env.getProperty("smtpHost");
+        if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
+                || "dev".equalsIgnoreCase(mailHost)) {
+            return;
+        }
 
-		// sets SMTP server properties
-		Properties properties = new Properties();
-		properties.put("mail.smtp.host", env.getProperty("smtpHost"));
-		properties.put("mail.smtp.port", env.getProperty("smtpPort"));
-		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.starttls.enable", "true");
-		properties.put("smtpUsername", env.getProperty("smtpUsername"));
-		properties.put("smtpPassword", env.getProperty("smtpPassword"));
-		properties.put("smtpFrom", env.getProperty("smtpFrom"));
+        // sets SMTP server properties
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", env.getProperty("smtpHost"));
+        properties.put("mail.smtp.port", env.getProperty("smtpPort"));
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("smtpUsername", env.getProperty("smtpUsername"));
+        properties.put("smtpPassword", env.getProperty("smtpPassword"));
+        properties.put("smtpFrom", env.getProperty("smtpFrom"));
 
-		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
-		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
+        LOGGER.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
+        LOGGER.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
+        LOGGER.debug("Mail Username :" + env.getProperty("smtpUsername"));
 
-		sendEmail(toEmail, bccEmail, subject, htmlMessage, properties);
-	}
+        sendEmail(toEmail, bccEmail, subject, htmlMessage, properties);
+    }
 
-	/**
-	 * Send an email with the given properties, as well as the string[] toEmail,
-	 * subject, and html message
-	 * 
-	 * @param toEmail
-	 * @param subject
-	 * @param htmlMessage
-	 * @param properties
-	 * @throws AddressException
-	 * @throws MessagingException
-	 */
-	public void sendEmail(String[] toEmail, String[] bccEmail, String subject, String htmlMessage, Properties properties)
-			throws AddressException, MessagingException {
-		// creates a new session with an authenticator
-		javax.mail.Authenticator auth = new javax.mail.Authenticator() {
-			@Override
-			public PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(properties.getProperty("smtpUsername"),
-						properties.getProperty("smtpPassword"));
-			}
-		};
+    /**
+     * Create and send an email with the provided string[] toEmails, subject and
+     * HTML message.
+     *
+     * @param toEmail addresses to send To
+     * @param bccEmail addresses to send BCC
+     * @param subject subject of email
+     * @param htmlMessage message
+     * @param properties properties object to pull authentication from
+     * @throws AddressException if address fails
+     * @throws MessagingException if messaging fails
+     */
+    public void sendEmail(final String[] toEmail, final String[] bccEmail, final String subject,
+            final String htmlMessage, final Properties properties) throws AddressException, MessagingException {
+        // creates a new session with an authenticator
+        javax.mail.Authenticator auth = new javax.mail.Authenticator() {
+            @Override
+            public PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(properties.getProperty("smtpUsername"),
+                        properties.getProperty("smtpPassword"));
+            }
+        };
 
-		Session session = Session.getInstance(properties, auth);
+        Session session = Session.getInstance(properties, auth);
 
-		// creates a new e-mail message
-		Message msg = new MimeMessage(session);
+        // creates a new e-mail message
+        Message msg = new MimeMessage(session);
 
-		try {
-			InternetAddress fromEmail = new InternetAddress(properties.getProperty("smtpFrom"));
-			msg.setFrom(fromEmail);
-			logger.debug("Sending email from " + properties.getProperty("smtpFrom"));
-		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + properties.getProperty("smtpFrom"), ex);
-			throw ex;
-		}
+        try {
+            InternetAddress fromEmail = new InternetAddress(properties.getProperty("smtpFrom"));
+            msg.setFrom(fromEmail);
+            LOGGER.debug("Sending email from " + properties.getProperty("smtpFrom"));
+        } catch (MessagingException ex) {
+            LOGGER.fatal("Invalid Email Address: " + properties.getProperty("smtpFrom"), ex);
+            throw ex;
+        }
 
-		try {
-			if(toEmail != null && toEmail.length > 0) {
-				InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
-				for (int i = 0; i < toEmail.length; i++) {
-					InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
-					toAddresses[i] = toEmailaddress;
-				}
-				msg.setRecipients(Message.RecipientType.TO, toAddresses);
-				logger.debug("Sending email to " + Arrays.toString(toEmail));
-			} else if(bccEmail != null && bccEmail.length > 0) {
-				InternetAddress[] bccAddresses = new InternetAddress[bccEmail.length];
-				for (int i = 0; i < bccEmail.length; i++) {
-					InternetAddress bccAddress = new InternetAddress(bccEmail[i]);
-					bccAddresses[i] = bccAddress;
-				}
-				msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
-				logger.debug("Sending email to " + Arrays.toString(bccEmail));
-			}
-		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
-			throw ex;
-		}
+        try {
+            if (toEmail != null && toEmail.length > 0) {
+                InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
+                for (int i = 0; i < toEmail.length; i++) {
+                    InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
+                    toAddresses[i] = toEmailaddress;
+                }
+                msg.setRecipients(Message.RecipientType.TO, toAddresses);
+                LOGGER.debug("Sending email to " + Arrays.toString(toEmail));
+            } else if (bccEmail != null && bccEmail.length > 0) {
+                InternetAddress[] bccAddresses = new InternetAddress[bccEmail.length];
+                for (int i = 0; i < bccEmail.length; i++) {
+                    InternetAddress bccAddress = new InternetAddress(bccEmail[i]);
+                    bccAddresses[i] = bccAddress;
+                }
+                msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
+                LOGGER.debug("Sending email to " + Arrays.toString(bccEmail));
+            }
+        } catch (MessagingException ex) {
+            LOGGER.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
+            throw ex;
+        }
 
-		msg.setSubject(subject);
-		msg.setSentDate(new Date());
-		// set plain text message
-		msg.setContent(htmlMessage, "text/html");
+        msg.setSubject(subject);
+        msg.setSentDate(new Date());
+        // set plain text message
+        msg.setContent(htmlMessage, "text/html");
 
-		// sends the e-mail
-		Transport.send(msg);
-	}
+        // sends the e-mail
+        Transport.send(msg);
+    }
 
-	/**
-	 * Send an email with files, in addition to the toEmail, subject, and html
-	 * message
-	 * 
-	 * @param toEmail
-	 * @param subject
-	 * @param htmlMessage
-	 * @param files
-	 * @throws AddressException
-	 * @throws MessagingException
-	 */
-	public void sendEmail(String[] toEmail, String subject, String htmlMessage, List<File> files)
-			throws AddressException, MessagingException {
-		// do not attempt to send email if we are in a dev environment
-		String mailHost = env.getProperty("smtpHost");
-		if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
-				|| "dev".equalsIgnoreCase(mailHost)) {
-			return;
-		}
+    /**
+     * Send an email using the given properties and list of files to attach.
+     * Uses the toEmail if non-null or the bccEmail if non-null. Also uses the
+     * subject and htmlMessage
+     *
+     * @param toEmail addresses to send To
+     * @param bccEmail addresses to send BCC
+     * @param subject subject of email
+     * @param htmlMessage message
+     * @param files files to attach to the message
+     * @param props properties object to pull authentication from
+     * @throws AddressException if address fails
+     * @throws MessagingException if messaging fails
+     */
+    public void sendEmail(final String[] toEmail, final String[] bccEmail, final String subject,
+            final String htmlMessage, final List<File> files, final Properties props)
+                    throws AddressException, MessagingException {
+        // do not attempt to send email if we are in a dev environment
+        String mailHost = props.getProperty("smtpHost");
+        if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
+                || "dev".equalsIgnoreCase(mailHost)) {
+            return;
+        }
 
-		// sets SMTP server properties
-		Properties properties = new Properties();
-		properties.put("mail.smtp.host", env.getProperty("smtpHost"));
-		properties.put("mail.smtp.port", env.getProperty("smtpPort"));
-		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.starttls.enable", "true");
+        // sets SMTP server properties
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", props.getProperty("smtpHost"));
+        properties.put("mail.smtp.port", props.getProperty("smtpPort"));
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
 
-		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
-		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-		logger.debug("Mail Username :" + env.getProperty("smtpUsername"));
+        LOGGER.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
+        LOGGER.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
+        LOGGER.debug("Mail Username :" + props.getProperty("smtpUsername"));
 
-		sendEmail(toEmail, subject, htmlMessage, files, properties);
-	}
+        // creates a new session with an authenticator
+        javax.mail.Authenticator auth = new javax.mail.Authenticator() {
+            @Override
+            public PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(props.getProperty("smtpUsername"), props.getProperty("smtpPassword"));
+            }
+        };
 
-	/**
-	 * Send an email using the given properties and list of files to attach.
-	 * Also uses the toEmail, subject and htmlMessage
-	 * 
-	 * @param toEmail
-	 * @param subject
-	 * @param htmlMessage
-	 * @param files
-	 * @param props
-	 * @throws AddressException
-	 * @throws MessagingException
-	 */
-	public void sendEmail(String[] toEmail, String subject, String htmlMessage, List<File> files, Properties props)
-			throws AddressException, MessagingException {
-		// do not attempt to send email if we are in a dev environment
-		String mailHost = props.getProperty("smtpHost");
-		if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
-				|| "dev".equalsIgnoreCase(mailHost)) {
-			return;
-		}
+        Session session = Session.getInstance(properties, auth);
 
-		// sets SMTP server properties
-		Properties properties = new Properties();
-		properties.put("mail.smtp.host", props.getProperty("smtpHost"));
-		properties.put("mail.smtp.port", props.getProperty("smtpPort"));
-		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.starttls.enable", "true");
+        // creates a new e-mail message
+        Message msg = new MimeMessage(session);
 
-		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
-		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-		logger.debug("Mail Username :" + props.getProperty("smtpUsername"));
+        try {
+            InternetAddress fromEmail = new InternetAddress(props.getProperty("smtpFrom"));
+            msg.setFrom(fromEmail);
+            LOGGER.debug("Sending email from " + props.getProperty("smtpFrom"));
+        } catch (MessagingException ex) {
+            LOGGER.fatal("Invalid Email Address: " + props.getProperty("smtpFrom"), ex);
+            throw ex;
+        }
 
-		// creates a new session with an authenticator
-		javax.mail.Authenticator auth = new javax.mail.Authenticator() {
-			@Override
-			public PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(props.getProperty("smtpUsername"), props.getProperty("smtpPassword"));
-			}
-		};
+        if (toEmail != null) {
+            try {
+                InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
+                for (int i = 0; i < toEmail.length; i++) {
+                    InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
+                    toAddresses[i] = toEmailaddress;
+                }
+                msg.setRecipients(Message.RecipientType.TO, toAddresses);
+                LOGGER.debug("Sending email to " + Arrays.toString(toEmail));
+            } catch (MessagingException ex) {
+                LOGGER.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
+                throw ex;
+            }
+        }
 
-		Session session = Session.getInstance(properties, auth);
+        if (bccEmail != null) {
+            try {
+                InternetAddress[] bccAddresses = new InternetAddress[bccEmail.length];
+                for (int i = 0; i < bccEmail.length; i++) {
+                    InternetAddress bccEmailaddress = new InternetAddress(bccEmail[i]);
+                    bccAddresses[i] = bccEmailaddress;
+                }
+                msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
+                LOGGER.debug("Sending email bcc to " + Arrays.toString(bccEmail));
+            } catch (MessagingException ex) {
+                LOGGER.fatal("Invalid Email Address: " + Arrays.toString(bccEmail), ex);
+                throw ex;
+            }
+        }
 
-		// creates a new e-mail message
-		Message msg = new MimeMessage(session);
+        msg.setSubject(subject);
+        msg.setSentDate(new Date());
 
-		try {
-			InternetAddress fromEmail = new InternetAddress(props.getProperty("smtpFrom"));
-			msg.setFrom(fromEmail);
-			logger.debug("Sending email from " + props.getProperty("smtpFrom"));
-		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + props.getProperty("smtpFrom"), ex);
-			throw ex;
-		}
+        BodyPart messageBodyPartWithMessage = new MimeBodyPart();
+        messageBodyPartWithMessage.setContent(htmlMessage, "text/html");
 
-		try {
-			InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
-			for (int i = 0; i < toEmail.length; i++) {
-				InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
-				toAddresses[i] = toEmailaddress;
-			}
-			msg.setRecipients(Message.RecipientType.TO, toAddresses);
-			logger.debug("Sending email to " + Arrays.toString(toEmail));
-		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
-			throw ex;
-		}
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(messageBodyPartWithMessage);
 
-		msg.setSubject(subject);
-		msg.setSentDate(new Date());
+        if (files != null) {
+            // Add file attachments to email
+            for (File file : files) {
+                MimeBodyPart messageBodyPart = new MimeBodyPart();
+                DataSource source = new FileDataSource(file);
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(file.getName());
 
-		BodyPart messageBodyPartWithMessage = new MimeBodyPart();
-		messageBodyPartWithMessage.setContent(htmlMessage, "text/html");
+                multipart.addBodyPart(messageBodyPart);
+            }
+        }
+        msg.setContent(multipart, "text/html");
 
-		Multipart multipart = new MimeMultipart();
-		multipart.addBodyPart(messageBodyPartWithMessage);
+        // sends the e-mail
+        Boolean emailSentSuccessfully = false;
+        try {
+            Transport.send(msg);
+            emailSentSuccessfully = true;
+            LOGGER.info("email sent successfully");
+        } catch (SendFailedException e) {
+            LOGGER.info("SendFailedException. " + e.getMessage());
+        } catch (AuthenticationFailedException e) {
+            LOGGER.info("AuthenticationFailedException. " + e.getMessage());
+        } catch (MessagingException e) {
+            LOGGER.info("MessagingException. " + e.getMessage());
+        } catch (Exception e) {
+            LOGGER.info("Exception while sending email. " + e.getMessage());
+        }
 
-		// Add file attachments to email
-		for (File file : files) {
-			MimeBodyPart messageBodyPart = new MimeBodyPart();
-			DataSource source = new FileDataSource(file);
-			messageBodyPart.setDataHandler(new DataHandler(source));
-			messageBodyPart.setFileName(file.getName());
-
-			multipart.addBodyPart(messageBodyPart);
-		}
-
-		msg.setContent(multipart, "text/html");
-
-		// sends the e-mail
-		Boolean emailSentSuccessfully = false;
-		try {
-			Transport.send(msg);
-			emailSentSuccessfully = true;
-			logger.info("email sent successfully");
-		} catch (SendFailedException e) {
-			logger.info("SendFailedException. " + e.getMessage());
-		} catch (AuthenticationFailedException e) {
-			logger.info("AuthenticationFailedException. " + e.getMessage());
-		} catch (MessagingException e) {
-			logger.info("MessagingException. " + e.getMessage());
-		} catch (Exception e) {
-			logger.info("Exception while sending email. " + e.getMessage());
-		}
-
-		if (!emailSentSuccessfully) {
-			logger.info("Email did not send successfully.");
-		}
-
-	}
-
-	/**
-	 * Send an email using the given properties and list of files to attach.
-	 * Uses the toEmail if non-null or the bccEmail if non-null. Also uses the
-	 * subject and htmlMessage
-	 * 
-	 * @param toEmail
-	 * @param bccEmail
-	 * @param subject
-	 * @param htmlMessage
-	 * @param files
-	 * @param props
-	 * @throws AddressException
-	 * @throws MessagingException
-	 */
-	public void sendEmail(String[] toEmail, String[] bccEmail, String subject, String htmlMessage, List<File> files,
-			Properties props) throws AddressException, MessagingException {
-		// do not attempt to send email if we are in a dev environment
-		String mailHost = props.getProperty("smtpHost");
-		if (StringUtils.isEmpty(mailHost) || "development".equalsIgnoreCase(mailHost)
-				|| "dev".equalsIgnoreCase(mailHost)) {
-			return;
-		}
-
-		// sets SMTP server properties
-		Properties properties = new Properties();
-		properties.put("mail.smtp.host", props.getProperty("smtpHost"));
-		properties.put("mail.smtp.port", props.getProperty("smtpPort"));
-		properties.put("mail.smtp.auth", "true");
-		properties.put("mail.smtp.starttls.enable", "true");
-
-		logger.debug("Mail Host: " + properties.getProperty("mail.smtp.host"));
-		logger.debug("Mail Port: " + properties.getProperty("mail.smtp.port"));
-		logger.debug("Mail Username :" + props.getProperty("smtpUsername"));
-
-		// creates a new session with an authenticator
-		javax.mail.Authenticator auth = new javax.mail.Authenticator() {
-			@Override
-			public PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(props.getProperty("smtpUsername"), props.getProperty("smtpPassword"));
-			}
-		};
-
-		Session session = Session.getInstance(properties, auth);
-
-		// creates a new e-mail message
-		Message msg = new MimeMessage(session);
-
-		try {
-			InternetAddress fromEmail = new InternetAddress(props.getProperty("smtpFrom"));
-			msg.setFrom(fromEmail);
-			logger.debug("Sending email from " + props.getProperty("smtpFrom"));
-		} catch (MessagingException ex) {
-			logger.fatal("Invalid Email Address: " + props.getProperty("smtpFrom"), ex);
-			throw ex;
-		}
-
-		if (toEmail != null) {
-			try {
-				InternetAddress[] toAddresses = new InternetAddress[toEmail.length];
-				for (int i = 0; i < toEmail.length; i++) {
-					InternetAddress toEmailaddress = new InternetAddress(toEmail[i]);
-					toAddresses[i] = toEmailaddress;
-				}
-				msg.setRecipients(Message.RecipientType.TO, toAddresses);
-				logger.debug("Sending email to " + Arrays.toString(toEmail));
-			} catch (MessagingException ex) {
-				logger.fatal("Invalid Email Address: " + Arrays.toString(toEmail), ex);
-				throw ex;
-			}
-		}
-
-		if (bccEmail != null) {
-			try {
-				InternetAddress[] bccAddresses = new InternetAddress[bccEmail.length];
-				for (int i = 0; i < bccEmail.length; i++) {
-					InternetAddress bccEmailaddress = new InternetAddress(bccEmail[i]);
-					bccAddresses[i] = bccEmailaddress;
-				}
-				msg.setRecipients(Message.RecipientType.BCC, bccAddresses);
-				logger.debug("Sending email bcc to " + Arrays.toString(bccEmail));
-			} catch (MessagingException ex) {
-				logger.fatal("Invalid Email Address: " + Arrays.toString(bccEmail), ex);
-				throw ex;
-			}
-		}
-
-		msg.setSubject(subject);
-		msg.setSentDate(new Date());
-
-		BodyPart messageBodyPartWithMessage = new MimeBodyPart();
-		messageBodyPartWithMessage.setContent(htmlMessage, "text/html");
-
-		Multipart multipart = new MimeMultipart();
-		multipart.addBodyPart(messageBodyPartWithMessage);
-
-		// Add file attachments to email
-		for (File file : files) {
-			MimeBodyPart messageBodyPart = new MimeBodyPart();
-			DataSource source = new FileDataSource(file);
-			messageBodyPart.setDataHandler(new DataHandler(source));
-			messageBodyPart.setFileName(file.getName());
-
-			multipart.addBodyPart(messageBodyPart);
-		}
-
-		msg.setContent(multipart, "text/html");
-
-		// sends the e-mail
-		Boolean emailSentSuccessfully = false;
-		try {
-			Transport.send(msg);
-			emailSentSuccessfully = true;
-			logger.info("email sent successfully");
-		} catch (SendFailedException e) {
-			logger.info("SendFailedException. " + e.getMessage());
-		} catch (AuthenticationFailedException e) {
-			logger.info("AuthenticationFailedException. " + e.getMessage());
-		} catch (MessagingException e) {
-			logger.info("MessagingException. " + e.getMessage());
-		} catch (Exception e) {
-			logger.info("Exception while sending email. " + e.getMessage());
-		}
-
-		if (!emailSentSuccessfully) {
-			logger.info("Email did not send successfully.");
-		}
-
-	}
-
+        if (!emailSentSuccessfully) {
+            LOGGER.info("Email did not send successfully.");
+        }
+    }
 }

@@ -65,6 +65,10 @@ inheritanceReportEmailWeeklyFileName=inheritance-validation-weekly-report.csv
 inheritanceReportEmailWeeklyNoContent=<p>No listings were found that do not meet ICS requirements.</p>
 inheritanceReportEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly ICS Validation Report</h3>
 
+#cache status maximum age email properties
+cacheStatusMaxAge=3600000
+cacheStatusMaxAgeSubject=Listing Cache Maximum Age Reached (LOCAL)
+
 #schema download file properties
 schemaXmlName=listingSchema.xsd
 schemaCsv2014Name=listing2014Schema.csv

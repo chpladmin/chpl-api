@@ -5,17 +5,23 @@
 ## OCD-2074
 * Add counts of 2015 Listings with Alternate Test methods to Summary email
 
-## OCD-1898
+## Version TBD
+_Date TBD_
+
+### Major Features
 * Add support for Multiple ATLs
   * Upload / confirm workflow
   * Edit Listing validation & questionable activity
+
+### Minor Features
+* Add counts of 2015 Listings with Alternate Test methods to Summary email
 * Wide variety of linting changes
 * Enhanced performance when retrieving Certified Product Details
 
 ---
 
-## Version TBD
-_Date TBD_
+## Version 15.9.0
+_9 April 2018_
 
 ### Minor Features
 * Add ability to add G1/G2 measures for non-attested criteria
