@@ -88,6 +88,8 @@ public class CacheStatusAgeApp extends NotificationEmailerReportApp {
             return (duration > Long.parseLong(props.getProperty("cacheStatusMaxAge")));
         } catch (FileNotFoundException e) {
             LOGGER.info("Error getting status; message: " + e.getMessage());
+        } catch (IOException e) {
+            LOGGER.info("Error getting status; message: " + e.getMessage());
         }
         return false;
     }
