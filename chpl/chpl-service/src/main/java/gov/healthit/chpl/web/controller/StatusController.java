@@ -51,7 +51,7 @@ public class StatusController {
                     + "{ status: 'INITIALIZING' } is returned if not. "
                     + "Age indicates the number of miliseconds since the cache "
                     + "was last refreshed.",
-            notes = "")
+                    notes = "")
     @RequestMapping(value = "/cache_status", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody String getCacheStatus() {
         CacheManager manager = cacheUtil.getMyCacheManager();
@@ -59,7 +59,11 @@ public class StatusController {
         if (basicCache == null || basicCache.getKeysNoDuplicateCheck().size() == 0) {
             return "{\"status\": \"" + CacheStatus.INITIALIZING + "\"}";
         }
-        long age = (new Date()).getTime() - (long) basicCache.get("CACHE_GENERATION_TIME").getObjectValue();
-        return "{\"status\": \"" + CacheStatus.OK + "\",\"age\": " + age + "}";
+        if (basicCache.get("CACHE_GENERATION_TIME") != null) {
+            long age = (new Date()).getTime() - (long) basicCache.get("CACHE_GENERATION_TIME").getObjectValue();
+            return "{\"status\": \"" + CacheStatus.OK + "\",\"age\": " + age + "}";
+        } else {
+            return "{\"status\": \"" + CacheStatus.OK + "\",\"age\": -1}";
+        }
     }
 }
