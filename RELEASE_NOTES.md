@@ -1,4 +1,9 @@
 # Release Notes
+## OCD-2133
+* Fixed counts for Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) in the Summary email
+ 
+## OCD-2074
+* Add counts of 2015 Listings with Alternate Test methods to Summary email
 
 ## Version TBD
 _Date TBD_
