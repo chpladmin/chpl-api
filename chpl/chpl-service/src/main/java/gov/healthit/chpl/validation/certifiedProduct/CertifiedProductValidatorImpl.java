@@ -312,18 +312,23 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 
         //Ensure the new chpl product number is unique
-        String chplProductNumber =
-                chplProductNumberUtil.generate(
-                        uniqueId,
-                        product.getCertificationEdition(),
-                        product.getTestingLabs(),
-                        product.getCertificationBodyId(),
-                        product.getDeveloperId());
-        if (!chplProductNumberUtil.isUnique(chplProductNumber)) {
-            product.getErrorMessages().add(
-                    String.format(messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.chplProductNumber.notUnique"),
-                            LocaleContextHolder.getLocale()), chplProductNumber));
+        String chplProductNumber;
+        try {
+            chplProductNumber =
+                    chplProductNumberUtil.generate(
+                            uniqueId,
+                            product.getCertificationEdition(),
+                            product.getTestingLabs(),
+                            product.getCertificationBodyId(),
+                            product.getDeveloperId());
+            if (!chplProductNumberUtil.isUnique(chplProductNumber)) {
+                product.getErrorMessages().add(
+                        String.format(messageSource.getMessage(
+                                new DefaultMessageSourceResolvable("listing.chplProductNumber.notUnique"),
+                                LocaleContextHolder.getLocale()), chplProductNumber));
+            }
+        } catch (IndexOutOfBoundsException e) {
+            product.getErrorMessages().add(getMessage("atl.notFound"));
         }
         if (product.getCertificationCriterion() != null && !product.getCertificationCriterion().isEmpty()) {
             for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -343,9 +348,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             if (fuzzyMatchedUcd != null) {
                                 ucd.setUcdProcessId(fuzzyMatchedUcd.getId());
                                 ucd.setUcdProcessName(fuzzyMatchedUcd.getName());
+                                String warningMsg = String.format(
+                                        messageSource.getMessage(new DefaultMessageSourceResolvable(
+                                                "listing.criteria.fuzzyMatch"),
+                                                LocaleContextHolder.getLocale()), FuzzyType.UCD_PROCESS.fuzzyType(),
+                                        cert.getNumber(), origUcdProcessName, topChoice);
+                                product.getWarningMessages().add(warningMsg);
 
-                                product.getWarningMessages()
-                                .add(getMessage("listing.criteria.fuzzyMatch", FuzzyType.UCD_PROCESS.fuzzyType()));
                             }
                         }
                     }
@@ -420,7 +429,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                         .add(getMessage("atl.shouldBe99"));
                     }
                 } else {
-                    TestingLabDTO testingLab = atlDao.getById(testingLabs.get(0).getTestingLabId().longValue());
+                    TestingLabDTO testingLab = atlDao.getByName(testingLabs.get(0).getTestingLabName());
                     if ("99".equals(atlCode)) {
                         product.getWarningMessages()
                         .add(getMessage("atl.shouldNotBe99"));

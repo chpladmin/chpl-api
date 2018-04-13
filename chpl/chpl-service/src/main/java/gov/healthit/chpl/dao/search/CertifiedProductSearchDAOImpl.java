@@ -400,11 +400,8 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
             String searchTerm = searchRequest.getSearchTerm();
             if (searchTerm.startsWith("CHP-") || searchTerm.split("\\.").length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
                 sql += "AND " +
-                        "COALESCE(cp.chpl_product_number, substring(edition.year from 3 for 2)||'.'||"
-                        + "openchpl.get_testing_lab_code(cp.certified_product_id)||'.'||acb.certification_body_code||'.'||vendor.vendor_code||"
-                        + "'.'||cp.product_code||'.'||cp.version_code||'.'||cp.ics_code||'.'||"
-                        + "cp.additional_software_code||'.'||cp.certified_date_code) LIKE :searchTerm";
-            } else {
+                        "openchpl.get_chpl_product_number_as_text(cp.certified_product_id) LIKE :searchTerm";
+                } else {
                 sql += "AND " + 
                         "(UPPER(vendor_name) LIKE :searchTerm OR "
                         + "UPPER(history_vendor_name) LIKE :searchTerm OR "

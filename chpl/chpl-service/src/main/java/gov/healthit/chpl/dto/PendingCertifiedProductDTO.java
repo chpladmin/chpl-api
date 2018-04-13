@@ -225,7 +225,12 @@ public class PendingCertifiedProductDTO implements Serializable {
         if (testingLabs != null && testingLabs.size() > 0) {
             for (CertifiedProductTestingLab tl : testingLabs) {
                 PendingCertifiedProductTestingLabDTO tlDto = new PendingCertifiedProductTestingLabDTO();
-                tlDto.setTestingLabId(tl.getTestingLabId());
+                if (tl.getTestingLabId() != null) {
+                    tlDto.setTestingLabId(tl.getTestingLabId());
+                }
+                if (tl.getTestingLabName() != null) {
+                    tlDto.setTestingLabName(tl.getTestingLabName());
+                }
                 this.testingLabs.add(tlDto);
             }
         }

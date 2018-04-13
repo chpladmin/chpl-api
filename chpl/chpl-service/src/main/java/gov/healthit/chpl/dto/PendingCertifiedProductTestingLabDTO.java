@@ -32,8 +32,12 @@ public class PendingCertifiedProductTestingLabDTO implements Serializable {
         if (entity.getMappedProduct() != null) {
             this.setPendingCertifiedProductId(entity.getMappedProduct().getId());
         }
-        this.setTestingLabId(entity.getTestingLabId());
-        this.setTestingLabName(entity.getTestingLabName());
+        if (entity.getTestingLabId() != null) {
+            this.setTestingLabId(entity.getTestingLabId());
+        }
+        if (entity.getTestingLabName() != null) {
+            this.setTestingLabName(entity.getTestingLabName());
+        }
     }
 
     public Long getId() {
