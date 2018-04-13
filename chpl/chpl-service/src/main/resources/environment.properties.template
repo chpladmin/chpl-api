@@ -68,6 +68,7 @@ inheritanceReportEmailAcbWeeklyHtmlMessage=<h3>ONC-ACB Weekly ICS Validation Rep
 #cache status maximum age email properties
 cacheStatusMaxAge=3600000
 cacheStatusMaxAgeSubject=Listing Cache Maximum Age Reached (LOCAL)
+cacheStatusMaxAgeUrl=http://localhost:8080/chpl-service/cache_status
 
 #schema download file properties
 schemaXmlName=listingSchema.xsd

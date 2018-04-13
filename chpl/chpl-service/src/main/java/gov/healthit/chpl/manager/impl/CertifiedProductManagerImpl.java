@@ -402,7 +402,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
-    public CertifiedProductDTO createFromPending(final Long acbId, PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(final Long acbId, final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
@@ -496,7 +496,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         if (pendingCp.getTestingLabs() != null && pendingCp.getTestingLabs().size() > 0) {
             for (PendingCertifiedProductTestingLabDTO tl : pendingCp.getTestingLabs()) {
                 CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
-                tlDto.setTestingLabId(tl.getTestingLabId());
+                tlDto.setTestingLabId(atlDao.getByName(tl.getTestingLabName()).getId());
+                tlDto.setTestingLabName(tl.getTestingLabName());
                 tlDto.setCertifiedProductId(newCertifiedProduct.getId());
                 cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
             }

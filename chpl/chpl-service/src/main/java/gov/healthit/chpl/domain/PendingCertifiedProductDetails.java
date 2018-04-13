@@ -152,8 +152,12 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         if (tlDtos != null && tlDtos.size() > 0) {
             for (PendingCertifiedProductTestingLabDTO tlDto : tlDtos) {
                 CertifiedProductTestingLab tl = new CertifiedProductTestingLab();
-                tl.setTestingLabId(tlDto.getTestingLabId());
-                tl.setTestingLabName(tlDto.getTestingLabName());
+                if (tlDto.getTestingLabId() != null) {
+                    tl.setTestingLabId(tlDto.getTestingLabId());
+                }
+                if (tlDto.getTestingLabName() != null) {
+                    tl.setTestingLabName(tlDto.getTestingLabName());
+                }
                 this.getTestingLabs().add(tl);
             }
         }
