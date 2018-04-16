@@ -311,7 +311,7 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
+        assertEquals("Tue Oct 20 13:14:00 EDT 2015", activity.getBefore());
         assertEquals("[Withdrawn by Developer (Sun Sep 20 13:13:59 EDT 2015)]", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
@@ -353,7 +353,7 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
+        assertEquals("Active", activity.getBefore());
         assertEquals("[Withdrawn by ONC-ACB (Sun Sep 20 13:14:00 EDT 2015)]", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
