@@ -542,6 +542,9 @@
     <certified_product_testing_lab_map
         id="15" certified_product_id="17" testing_lab_id="2"
         last_modified_user="-2" />
+    <certified_product_testing_lab_map
+        id="16" certified_product_id="12" testing_lab_id="2"
+        last_modified_user="-2" />
 
     <certified_product_accessibility_standard
         certified_product_accessibility_standard_id="-1"

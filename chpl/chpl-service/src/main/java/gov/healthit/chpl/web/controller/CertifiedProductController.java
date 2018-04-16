@@ -86,27 +86,27 @@ public class CertifiedProductController {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductController.class);
 
     @Autowired
-    CertifiedProductUploadHandlerFactory uploadHandlerFactory;
+    private CertifiedProductUploadHandlerFactory uploadHandlerFactory;
     @Autowired
-    CertifiedProductDetailsManager cpdManager;
+    private CertifiedProductDetailsManager cpdManager;
     @Autowired
-    CertifiedProductManager cpManager;
+    private CertifiedProductManager cpManager;
+//    @Autowired
+//    private CertifiedProductSearchManager searchManager;
     @Autowired
-    CertifiedProductSearchManager searchManager;
+    private PendingCertifiedProductManager pcpManager;
     @Autowired
-    PendingCertifiedProductManager pcpManager;
+    private CertificationBodyManager acbManager;
     @Autowired
-    CertificationBodyManager acbManager;
+    private ActivityManager activityManager;
     @Autowired
-    ActivityManager activityManager;
+    private CertifiedProductValidatorFactory validatorFactory;
+//    @Autowired
+//    private CertifiedProductDAO cpDao;
     @Autowired
-    CertifiedProductValidatorFactory validatorFactory;
+    private MeaningfulUseController meaningfulUseController;
     @Autowired
-    CertifiedProductDAO cpDao;
-    @Autowired
-    MeaningfulUseController meaningfulUseController;
-    @Autowired
-    Environment env;
+    private Environment env;
 
     @ApiOperation(value = "List all certified products",
             notes = "Default behavior is to return all certified products in the system. "
@@ -117,8 +117,9 @@ public class CertifiedProductController {
                     + " every certified product is returned. Call the /details service for more information.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
-            @RequestParam(required = true) Long versionId,
-            @RequestParam(required = false, defaultValue = "false") boolean editable) throws EntityRetrievalException {
+            @RequestParam(required = true) final Long versionId,
+            @RequestParam(required = false, defaultValue = "false") final boolean editable)
+                    throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> certifiedProductList = null;
 
         if (editable) {
@@ -142,7 +143,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId}/details", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
-            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
@@ -155,7 +156,8 @@ public class CertifiedProductController {
     @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
             notes = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
-    public void streamSEDDetailsDocumentContents(HttpServletResponse response) throws EntityRetrievalException, IOException {
+    public void streamSEDDetailsDocumentContents(final HttpServletResponse response)
+            throws EntityRetrievalException, IOException {
         Path path = Paths.get(env.getProperty("downloadFolderPath"), env.getProperty("SEDDownloadName"));
         File downloadFile = new File(path.toUri());
         byte[] data = Files.readAllBytes(path);
@@ -194,7 +196,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
-            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
 
         return familyTree;
@@ -208,8 +210,8 @@ public class CertifiedProductController {
                     + " user must have ROLE_ADMIN.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
-            @RequestBody(required = true) ListingUpdateRequest updateRequest) throws EntityCreationException,
-    EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, 
+            @RequestBody(required = true) final ListingUpdateRequest updateRequest) throws EntityCreationException,
+    EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
     IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
@@ -228,7 +230,9 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
 
         // make sure the old and new certification statuses aren't ONC bans
-        if (existingListing.getCurrentStatus() != null && updatedListing.getCurrentStatus() != null && !existingListing.getCurrentStatus().getStatus().getId()
+        if (existingListing.getCurrentStatus() != null
+                && updatedListing.getCurrentStatus() != null
+                && !existingListing.getCurrentStatus().getStatus().getId()
                 .equals(updatedListing.getCurrentStatus().getStatus().getId())) {
             // if the status is to or from suspended by onc make sure the user
             // has admin
@@ -335,7 +339,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductDetails getPendingCertifiedProductById(
-            @PathVariable("pcpId") Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
+            @PathVariable("pcpId") final Long pcpId) throws EntityRetrievalException, EntityNotFoundException,
     AccessDeniedException, ObjectMissingValidationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         PendingCertifiedProductDetails details = pcpManager.getById(acbs, pcpId);
@@ -347,7 +351,7 @@ public class CertifiedProductController {
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/{pcpId}/reject", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") Long id)
+    public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
@@ -360,7 +364,7 @@ public class CertifiedProductController {
                     + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
-    public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody IdListContainer idList)
+    public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
@@ -393,10 +397,10 @@ public class CertifiedProductController {
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
-            @RequestBody(required = true) PendingCertifiedProductDetails pendingCp)
-                    throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
+            @RequestBody(required = true) final PendingCertifiedProductDetails pendingCp)
+                    throws InvalidArgumentsException, ValidationException,
+                    EntityCreationException, EntityRetrievalException,
                     ObjectMissingValidationException, IOException {
-
         String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
         if (StringUtils.isEmpty(acbIdStr)) {
             throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
@@ -432,7 +436,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/meaningful_use_users/upload", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     @Deprecated
-    public @ResponseBody ResponseEntity<Job> uploadMeaningfulUseUsers(@RequestParam("file") MultipartFile file)
+    public @ResponseBody ResponseEntity<Job> uploadMeaningfulUseUsers(@RequestParam("file") final MultipartFile file)
             throws EntityCreationException, EntityRetrievalException, ValidationException,
             MaxUploadSizeExceededException {
         return meaningfulUseController.uploadMeaningfulUseUsers(file);
@@ -443,7 +447,7 @@ public class CertifiedProductController {
                     + " The user uploading the file must have ROLE_ACB "
                     + " and administrative authority on the ACB(s) specified in the file.")
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") MultipartFile file)
+    public ResponseEntity<PendingCertifiedProductResults> upload(@RequestParam("file") final MultipartFile file)
             throws ValidationException, MaxUploadSizeExceededException {
         if (file.isEmpty()) {
             throw new ValidationException("You cannot upload an empty file!");
@@ -502,9 +506,10 @@ public class CertifiedProductController {
                                     try {
                                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading,
                                                 rows);
-                                        if(handler.getUploadTemplateVersion() != null && 
-                                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
-                                            responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
+                                        if (handler.getUploadTemplateVersion() != null
+                                                && handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                                            responseHeaders.set(
+                                                    HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
                                         }
                                         PendingCertifiedProductEntity pendingCp = handler.handle();
                                         cpsToAdd.add(pendingCp);
@@ -526,8 +531,8 @@ public class CertifiedProductController {
                 if (i == records.size() - 1 && !rows.isEmpty()) {
                     try {
                         CertifiedProductUploadHandler handler = uploadHandlerFactory.getHandler(heading, rows);
-                        if(handler.getUploadTemplateVersion() != null && 
-                                handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
+                        if (handler.getUploadTemplateVersion() != null
+                                && handler.getUploadTemplateVersion().getDeprecated() == Boolean.TRUE) {
                             responseHeaders.set(HttpHeaders.WARNING, "299 - \"Deprecated upload template\"");
                         }
                         PendingCertifiedProductEntity pendingCp = handler.handle();
