@@ -1898,7 +1898,7 @@ public class CertifiedProductManagerTest extends TestCase {
     JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
+        Long acbId = -1L;
         Long listingId = 5L;
         String cqmToUpdate = "CMS163";
 
@@ -1942,7 +1942,7 @@ public class CertifiedProductManagerTest extends TestCase {
     JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
+        Long acbId = -1L;
         Long listingId = 5L;
         String cqmToUpdate = "CMS163";
 
@@ -1999,7 +1999,7 @@ public class CertifiedProductManagerTest extends TestCase {
     JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
+        Long acbId = -1L;
         Long listingId = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2027,7 +2027,7 @@ public class CertifiedProductManagerTest extends TestCase {
     }
 
     /*********************
-     * Certification Result test participant tests
+     * Certification Result test participant tests.
      * *************************/
 
     @Test
