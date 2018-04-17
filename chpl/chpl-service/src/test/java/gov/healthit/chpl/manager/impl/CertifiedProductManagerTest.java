@@ -92,18 +92,21 @@ public class CertifiedProductManagerTest extends TestCase {
     private static JWTAuthenticatedUser adminUser;
     private static JWTAuthenticatedUser testUser3;
 
+    private static final long ADMIN_ID = -2L;
+    private static final long USER_ID = -3L;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         adminUser = new JWTAuthenticatedUser();
         adminUser.setFirstName("Administrator");
-        adminUser.setId(-2L);
+        adminUser.setId(ADMIN_ID);
         adminUser.setLastName("Administrator");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
 
         testUser3 = new JWTAuthenticatedUser();
         testUser3.setFirstName("Test");
-        testUser3.setId(3L);
+        testUser3.setId(USER_ID);
         testUser3.setLastName("User3");
         testUser3.setSubjectName("testUser3");
         testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
@@ -113,15 +116,21 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional
     public void testIcsFamilyTree() throws EntityRetrievalException {
-        List<IcsFamilyTreeNode> tree = cpManager.getIcsFamilyTree(5L);
+        final long listingId = 5L;
+        final int expectedFamilySize = 4;
+
+        List<IcsFamilyTreeNode> tree = cpManager.getIcsFamilyTree(listingId);
         assertNotNull(tree);
-        assertEquals(5, tree.size());
+        assertEquals(expectedFamilySize, tree.size());
     }
 
     @Test
     @Transactional
     public void testGet2015CertifiedProduct() throws EntityRetrievalException {
-        CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(5L);
+        final long listingId = 5L;
+        final int expectedParticipants = 10;
+
+        CertifiedProductSearchDetails details = cpdManager.getCertifiedProductDetails(listingId);
         assertNotNull(details);
         List<CertificationResult> certs = details.getCertificationResults();
         assertNotNull(certs);
@@ -140,7 +149,7 @@ public class CertifiedProductManagerTest extends TestCase {
         }
         assertTrue(foundExpectedCert);
         assertNotNull(task.getTestParticipants());
-        assertEquals(10, task.getTestParticipants().size());
+        assertEquals(expectedParticipants, task.getTestParticipants().size());
     }
 
     @Test
@@ -269,7 +278,7 @@ public class CertifiedProductManagerTest extends TestCase {
         boolean success = true;
         try {
             updateListingStatus(acbId, listingId, stat, null);
-        } catch(AccessDeniedException adEx) {
+        } catch (AccessDeniedException adEx) {
             success = false;
         }
         assertFalse(success);
@@ -287,10 +296,12 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback(true)
-    public void testNonAdminUserNotAllowedToChangeStatusToWithdrawnByDeveloperUnderReview() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    public void testNonAdminUserNotAllowedToChangeStatusToWithdrawnByDeveloperUnderReview()
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+            InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(testUser3);
-        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(
+                CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
         assertNotNull(stat);
         Long acbId = 1L;
         Long listingId = 1L;
@@ -298,7 +309,7 @@ public class CertifiedProductManagerTest extends TestCase {
         boolean success = true;
         try {
             updateListingStatus(acbId, listingId, stat, null);
-        } catch(AccessDeniedException adEx) {
+        } catch (AccessDeniedException adEx) {
             success = false;
         }
         assertFalse(success);
@@ -316,10 +327,12 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback(true)
-    public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithDeveloperBan() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithDeveloperBan()
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+            InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(
+                CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
         assertNotNull(stat);
         Long acbId = 1L;
         Long listingId = 1L;
@@ -349,10 +362,12 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback(true)
-    public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithoutDeveloperBan() throws EntityRetrievalException,
-    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
+    public void testAdminUserChangeStatusToWithdrawnByDeveloperUnderReviewWithoutDeveloperBan()
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+            InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
+        CertificationStatusDTO stat = certStatusDao.getByStatusName(
+                CertificationStatusType.WithdrawnByDeveloperUnderReview.getName());
         assertNotNull(stat);
 
         DeveloperDTO beforeDev = devManager.getById(-1L);
@@ -381,8 +396,8 @@ public class CertifiedProductManagerTest extends TestCase {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
         assertNotNull(stat);
-        Long acbId = 1L;
-        Long listingId = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
         updateListingStatus(acbId, listingId, stat, null);
 
         DeveloperDTO dev = devManager.getById(-1L);
@@ -404,8 +419,8 @@ public class CertifiedProductManagerTest extends TestCase {
         CertificationStatusDTO stat = certStatusDao.getByStatusName(CertificationStatusType.TerminatedByOnc.getName());
         assertNotNull(stat);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
 
         boolean success = true;
         try {
@@ -431,14 +446,13 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddExistingQmsStandard() 
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+    public void testAddExistingQmsStandard() throws EntityRetrievalException,
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long qmsToAdd = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long qmsToAdd = 1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origQmsLength = existingListing.getQmsStandards().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -468,13 +482,12 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddNonExistingQmsStandard() 
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+    public void testAddNonExistingQmsStandard() throws EntityRetrievalException,
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origQmsLength = existingListing.getQmsStandards().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -505,14 +518,13 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testDeleteQmsStandard() 
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+    public void testDeleteQmsStandard() throws EntityRetrievalException,
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long qmsToAdd = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long qmsToAdd = 1L;
 
         //add a qms
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -552,9 +564,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long qmsToAdd = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long qmsToAdd = 1L;
 
         //add a qms
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -594,14 +606,13 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddExistingTargetedUser() 
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+    public void testAddExistingTargetedUser() throws EntityRetrievalException,
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long targetedUserToAdd = -1L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long targetedUserToAdd = -1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origTuLength = existingListing.getTargetedUsers().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -628,13 +639,12 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddNonExistingTargetedUser() 
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
-            InvalidArgumentsException, IOException {
+    public void testAddNonExistingTargetedUser() throws EntityRetrievalException, 
+    EntityCreationException, JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origTuLength = existingListing.getTargetedUsers().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -665,9 +675,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long targetedUserToAdd = -1L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long targetedUserToAdd = -1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origTuLength = existingListing.getTargetedUsers().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -702,14 +712,14 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddExistingAccessibilityStandard() 
+    public void testAddExistingAccessibilityStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long accStdIdToAdd = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long accStdIdToAdd = 1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origAccStdLength = existingListing.getAccessibilityStandards().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -736,13 +746,13 @@ public class CertifiedProductManagerTest extends TestCase {
     @Test
     @Transactional(readOnly = false)
     @Rollback
-    public void testAddNonExistingAccessibilityStandard() 
+    public void testAddNonExistingAccessibilityStandard()
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origStdLength = existingListing.getAccessibilityStandards().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -773,9 +783,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long accStdIdToAdd = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long accStdIdToAdd = 1L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         int origAccStdLength = existingListing.getAccessibilityStandards().size();
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -814,9 +824,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 4L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 4L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -854,9 +864,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -899,9 +909,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -943,9 +953,10 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
+        final int expectedSwCount = 3;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -979,7 +990,7 @@ public class CertifiedProductManagerTest extends TestCase {
         for (CertificationResult cert : updatedListing.getCertificationResults()) {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
                 foundCert = true;
-                assertEquals(3, cert.getAdditionalSoftware().size());
+                assertEquals(expectedSwCount, cert.getAdditionalSoftware().size());
             }
         }
         assertTrue(foundCert);
@@ -993,9 +1004,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1051,9 +1062,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 1L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 1L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1091,9 +1102,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 7L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 7L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1130,9 +1141,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 7L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 7L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1183,9 +1194,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1224,9 +1235,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1272,9 +1283,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1320,9 +1331,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1359,9 +1370,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1401,9 +1412,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 1L;
-        Long certIdToUpdate = 2L;
+        final Long acbId = 1L;
+        final Long listingId = 1L;
+        final Long certIdToUpdate = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1454,9 +1465,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1493,9 +1504,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1546,9 +1557,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1593,9 +1604,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1649,9 +1660,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1706,9 +1717,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1751,9 +1762,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1807,9 +1818,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1846,9 +1857,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certIdToUpdate = 11L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1898,9 +1909,9 @@ public class CertifiedProductManagerTest extends TestCase {
     JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = -1L;
-        Long listingId = 5L;
-        String cqmToUpdate = "CMS163";
+        final Long acbId = -1L;
+        final Long listingId = 5L;
+        final String cqmToUpdate = "CMS163";
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1942,9 +1953,9 @@ public class CertifiedProductManagerTest extends TestCase {
     JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = -1L;
-        Long listingId = 5L;
-        String cqmToUpdate = "CMS163";
+        final Long acbId = -1L;
+        final Long listingId = 5L;
+        final String cqmToUpdate = "CMS163";
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -1999,8 +2010,8 @@ public class CertifiedProductManagerTest extends TestCase {
     JsonProcessingException, InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = -1L;
-        Long listingId = 2L;
+        final Long acbId = -1L;
+        final Long listingId = 2L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
         CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2038,9 +2049,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certResultId = 7L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certResultId = 7L;
 
         TestTask toAdd = new TestTask();
         toAdd.setId(-700L);
@@ -2100,9 +2111,8 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long acbId = 1L;
-        Long listingId = 5L;
-        Long certResultId = 7L;
+        final Long acbId = 1L;
+        final Long listingId = 5L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2143,9 +2153,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long listingId = 5L;
-        Long acbId = -1L;
-        Long certResultId = 7L;
+        final Long listingId = 5L;
+        final Long acbId = -1L;
+        final Long certResultId = 7L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2182,7 +2192,7 @@ public class CertifiedProductManagerTest extends TestCase {
         assertEquals(10, taskParts.size());
         for (TestParticipant part : taskParts) {
             assertEquals("Teacher", part.getOccupation());
-        }		
+        }
     }
 
     @Test
@@ -2193,9 +2203,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long listingId = 5L;
-        Long acbId = -1L;
-        Long certResultId = 7L;
+        final Long listingId = 5L;
+        final Long acbId = -1L;
+        final Long certResultId = 7L;
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
@@ -2236,8 +2246,6 @@ public class CertifiedProductManagerTest extends TestCase {
         }
     }
 
-
-
     @Test
     @Transactional(readOnly = false)
     @Rollback
@@ -2246,9 +2254,9 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long listingId = 5L;
-        Long acbId = -1L;
-        Long certResultId = 7L;
+        final Long listingId = 5L;
+        final Long acbId = -1L;
+        final Long certResultId = 7L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2300,8 +2308,8 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long listingId = 3L;
-        Long acbId = -1L;
+        final Long listingId = 3L;
+        final Long acbId = -1L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2343,8 +2351,8 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long listingId = 3L;
-        Long acbId = -1L;
+        final Long listingId = 3L;
+        final Long acbId = -1L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
@@ -2384,8 +2392,8 @@ public class CertifiedProductManagerTest extends TestCase {
             InvalidArgumentsException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        Long listingId = 3L;
-        Long acbId = -1L;
+        final Long listingId = 3L;
+        final Long acbId = -1L;
 
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
 
