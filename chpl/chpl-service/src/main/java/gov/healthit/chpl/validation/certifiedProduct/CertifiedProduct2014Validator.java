@@ -232,10 +232,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         // valid URL format.");
         // }
 
-        if (product.getHasQms() != null && product.getHasQms() && product.getQmsStandards().isEmpty()) {
-            product.getWarningMessages().add(getMessage("listing.missingQMSStandards"));
-        }
-
         // check cqms
         boolean isCqmRequired = false;
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
@@ -350,6 +346,13 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     @Override
     protected void validateDemographics(final PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
+        
+        if (product.getHasQms() != null && product.getHasQms() && (product.getQmsStandards() == null || product.getQmsStandards().isEmpty())) {
+            product.getErrorMessages().add(getMessage("listing.missingQMSStandards"));
+        }
+        if (product.getHasQms() != null && !product.getHasQms() && !product.getQmsStandards().isEmpty()) {
+            product.getErrorMessages().add(getMessage("listing.missingQMSBoolean"));
+        }
 
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
