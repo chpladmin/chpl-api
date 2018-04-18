@@ -13,6 +13,8 @@ _Date TBD_
 * Wide variety of linting changes
 * Enhanced performance when retrieving Certified Product Details
 * Fixed counts for Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) in the Summary email
+* Added error on upload for qms to be true but have empty standards and vice versa
+* Fixed bug on cp inspection that looked for qms standards length instead of qms boolean value
 
 ---
 
