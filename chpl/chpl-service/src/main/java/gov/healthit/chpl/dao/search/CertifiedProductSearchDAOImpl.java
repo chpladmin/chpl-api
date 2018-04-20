@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
@@ -391,19 +392,20 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
 
         //everything else is not joined in
         //but instead gets added after there WHERE
-        sql += 
+        sql +=
                 " WHERE cp.deleted != true ";
 
         //search term is supplied and treated differently if it looks
         //like a chpl id or not
         if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
             String searchTerm = searchRequest.getSearchTerm();
-            if (searchTerm.startsWith("CHP-") || searchTerm.split("\\.").length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-                sql += "AND " +
-                        "openchpl.get_chpl_product_number_as_text(cp.certified_product_id) LIKE :searchTerm";
-                } else {
-                sql += "AND " + 
-                        "(UPPER(vendor_name) LIKE :searchTerm OR "
+            if (searchTerm.startsWith("CHP-")
+                    || Pattern.matches(CertifiedProductDTO.CHPL_PRODUCT_ID_SEARCH_REGEX, searchTerm.trim())) {
+                sql += "AND "
+                        + "UPPER(openchpl.get_chpl_product_number_as_text(cp.certified_product_id)) LIKE :searchTerm";
+            } else {
+                sql += "AND"
+                        + "(UPPER(vendor_name) LIKE :searchTerm OR "
                         + "UPPER(history_vendor_name) LIKE :searchTerm OR "
                         + "UPPER(product_name) LIKE :searchTerm OR "
                         + "UPPER(acb_certification_id) LIKE :searchTerm)";

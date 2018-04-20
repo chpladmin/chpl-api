@@ -80,6 +80,14 @@ public class CertifiedProductDTO implements Serializable {
      */
     public static final int CERTIFIED_DATE_CODE_LENGTH = 6;
 
+    /**
+     * REGEX that matches a CHPL Product ID for searching.
+     * Requires first four components (Edition, ATL, ACB, Developer Code).
+     * Optional for remaining parts.
+     */
+    public static final String CHPL_PRODUCT_ID_SEARCH_REGEX =
+            "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
+
     private Long id;
     private String productCode;
     private String versionCode;
