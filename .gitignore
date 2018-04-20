@@ -260,3 +260,4 @@ pip-log.txt
 /chpl/chpl-service/logs/
 /chpl/deploy-webapp.sh
 /chpl/.recommenders/
+prod-api.sh
