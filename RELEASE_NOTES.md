@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 15.10.0
+_23 April 2018_
+
+### Major Features
+* Add support for Multiple ATLs
+  * Upload / confirm workflow
+  * Edit Listing validation & questionable activity
+
+### Minor Features
+* Add counts of 2015 Listings with Alternate Test methods to Summary email
+* Wide variety of linting changes
+* Enhanced performance when retrieving Certified Product Details
+* Fixed counts for Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) in the Summary email
+
+---
+
 ## Version 15.9.0
 _9 April 2018_
 
@@ -13,18 +29,20 @@ _9 April 2018_
 _26 March 2018_
 
 ### Minor features
-* Add endpoint for retrieving Participant/Age counts to be used for charting
-* Add endpoint for retrieving Participant/Education counts to be used for charting
-* Add endpoint for retrieving Participant/Ender counts to be used for charting
-* Add endpoint for retrieving Participant/Professional Experience counts to be used for charting
-* Add endpoint for retrieving Participant/Product Experience counts to be used for charting
-* Add endpoint for retrieving Participant/Computer Experience counts to be used for charting
-* Modified application to generate and store Participant/Age counts to support charting
-* Modified application to generate and store Participant/Education counts to support charting
-* Modified application to generate and store Participant/Gender counts to support charting
-* Modified application to generate and store Participant/Professional Experience counts to support charting
-* Modified application to generate and store Participant/Product Experience counts to support charting
-* Modified application to generate and store Participant/Computer Experience counts to support charting
+* Charting endpoints
+  * Participant/Age counts
+  * Participant/Education counts
+  * Participant/Ender counts
+  * Participant/Professional Experience
+  * Participant/Product Experience
+  * Participant/Computer Experience
+* Charting application updates
+  * Participant/Age counts
+  * Participant/Education counts
+  * Participant/Gender counts
+  * Participant/Professional Experience
+  * Participant/Product Experience
+  * Participant/Computer Experience
 
 ---
 

@@ -14,6 +14,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
 
 /**
@@ -40,23 +41,23 @@ public class ChplProductNumberUtil {
     private static final int CERTIFICATION_EDITION_END_INDEX = 4;
 
     /**
-     * Determines what the derived Chpl Product Number will be based on the values passed.
+     * Determines what the derived CHPL Product Number will be based on the values passed.
      * @param uniqueId - Unique ID from the product
-     * @param certificationEdition - 4 character year, i.e. "20015"
-     * @param testingLabName - the lab name used for the certification
-     * @param certificationBodyId - Id (not code) for the certification body
-     * @param developerId - Id (not code) for the developer
-     * @return String representing the derived Chpl Product Number
+     * @param certificationEdition 4 character year, i.e. "2015"
+     * @param testingLabs the testing Labs used for the Listing
+     * @param certificationBodyId Id (not code) for the certification body
+     * @param developerId Id (not code) for the developer
+     * @return String representing the derived CHPL Product Number
      */
     public String generate(final String uniqueId, final String certificationEdition,
-            final String testingLabName, final Long certificationBodyId,
+            final List<PendingCertifiedProductTestingLabDTO> testingLabs, final Long certificationBodyId,
             final Long developerId) {
 
         String[] uniqueIdParts = splitUniqueIdParts(uniqueId);
         ChplProductNumberParts parts = new ChplProductNumberParts();
         parts.editionCode = certificationEdition.
                 substring(CERTIFICATION_EDITION_BEGIN_INDEX, CERTIFICATION_EDITION_END_INDEX);
-        parts.atlCode = getTestingLabCode(testingLabName);
+        parts.atlCode = getTestingLabCode(testingLabs);
         parts.acbCode = getCertificationBodyCode(certificationBodyId);
         parts.developerCode = getDeveloperCode(developerId);
         parts.productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
@@ -69,8 +70,8 @@ public class ChplProductNumberUtil {
     }
 
     /**
-     * Determines if a Chpl Product Number already exists in the database.
-     * @param chplProductNumber - String representing the Chpl Product Number to check
+     * Determines if a CHPL Product Number already exists in the database.
+     * @param chplProductNumber - String representing the CHPL Product Number to check
      * @return Boolean - true if the value does not exist, false if the value exists
      */
     public Boolean isUnique(final String chplProductNumber) {
@@ -94,23 +95,27 @@ public class ChplProductNumberUtil {
     private String concatParts(final ChplProductNumberParts chplProductNumberParts) {
         StringBuilder chplProductNumber = new StringBuilder();
         chplProductNumber.append(chplProductNumberParts.editionCode).append(".")
-                .append(chplProductNumberParts.atlCode).append(".")
-                .append(chplProductNumberParts.acbCode).append(".")
-                .append(chplProductNumberParts.developerCode).append(".")
-                .append(chplProductNumberParts.productCode).append(".")
-                .append(chplProductNumberParts.versionCode).append(".")
-                .append(chplProductNumberParts.icsCode).append(".")
-                .append(chplProductNumberParts.additionalSoftwareCode).append(".")
-                .append(chplProductNumberParts.certifiedDateCode);
+        .append(chplProductNumberParts.atlCode).append(".")
+        .append(chplProductNumberParts.acbCode).append(".")
+        .append(chplProductNumberParts.developerCode).append(".")
+        .append(chplProductNumberParts.productCode).append(".")
+        .append(chplProductNumberParts.versionCode).append(".")
+        .append(chplProductNumberParts.icsCode).append(".")
+        .append(chplProductNumberParts.additionalSoftwareCode).append(".")
+        .append(chplProductNumberParts.certifiedDateCode);
         return chplProductNumber.toString();
     }
 
-    private String getTestingLabCode(final String testingLabName) {
-        TestingLabDTO dto = testingLabDAO.getByName(testingLabName);
-        if (dto != null) {
-            return dto.getTestingLabCode();
+    private String getTestingLabCode(final List<PendingCertifiedProductTestingLabDTO> testingLabs) {
+        if (testingLabs.size() > 1) {
+            return "99";
         } else {
-            return null; //Throw excepotion?
+            TestingLabDTO dto = testingLabDAO.getByName(testingLabs.get(0).getTestingLabName());
+            if (dto != null) {
+                return dto.getTestingLabCode();
+            } else {
+                return null; //Throw excepotion?
+            }
         }
     }
 

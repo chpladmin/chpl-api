@@ -113,6 +113,10 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
      */
     PRODUCT_OWNER_HISTORY_REMOVED("Product Owner History Removed"),
     /**
+     * Testing Lab Changed.
+     */
+    TESTING_LAB_CHANGED("Testing Lab Changed"),
+    /**
      * Version Name Edited.
      */
     VERSION_NAME_EDITED("Version Name Edited");

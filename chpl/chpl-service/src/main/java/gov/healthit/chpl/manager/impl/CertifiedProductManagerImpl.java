@@ -43,6 +43,7 @@ import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
+import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -59,6 +60,7 @@ import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -71,6 +73,7 @@ import gov.healthit.chpl.domain.CertifiedProductAccessibilityStandard;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -100,6 +103,7 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -122,6 +126,7 @@ import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
@@ -137,6 +142,7 @@ import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
@@ -175,6 +181,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @Autowired
     CertifiedProductQmsStandardDAO cpQmsDao;
     @Autowired
+    CertifiedProductTestingLabDAO cpTestingLabDao;
+    @Autowired
     CertifiedProductTargetedUserDAO cpTargetedUserDao;
     @Autowired
     CertifiedProductAccessibilityStandardDAO cpAccStdDao;
@@ -184,6 +192,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     CQMCriterionDAO cqmCriterionDao;
     @Autowired
     CertificationBodyDAO acbDao;
+    @Autowired
+    TestingLabDAO atlDao;
     @Autowired
     DeveloperDAO developerDao;
     @Autowired
@@ -392,7 +402,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.DEVELOPER_NAMES, CacheNames.PRODUCT_NAMES
     }, allEntries = true)
-    public CertifiedProductDTO createFromPending(Long acbId, PendingCertifiedProductDTO pendingCp)
+    public CertifiedProductDTO createFromPending(final Long acbId, final PendingCertifiedProductDTO pendingCp)
             throws EntityRetrievalException, EntityCreationException, IOException {
 
         CertifiedProductDTO toCreate = new CertifiedProductDTO();
@@ -415,11 +425,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             throw new EntityCreationException("ACB ID must be specified.");
         }
         toCreate.setCertificationBodyId(pendingCp.getCertificationBodyId());
-
-        if (pendingCp.getTestingLabId() == null) {
-            throw new EntityCreationException("ATL ID must be specified.");
-        }
-        toCreate.setTestingLabId(pendingCp.getTestingLabId());
 
         if (pendingCp.getCertificationEditionId() == null) {
             throw new EntityCreationException(
@@ -487,6 +492,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
         CertifiedProductDTO newCertifiedProduct = cpDao.create(toCreate);
 
+        // ATLs
+        if (pendingCp.getTestingLabs() != null && pendingCp.getTestingLabs().size() > 0) {
+            for (PendingCertifiedProductTestingLabDTO tl : pendingCp.getTestingLabs()) {
+                CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
+                tlDto.setTestingLabId(atlDao.getByName(tl.getTestingLabName()).getId());
+                tlDto.setTestingLabName(tl.getTestingLabName());
+                tlDto.setCertifiedProductId(newCertifiedProduct.getId());
+                cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
+            }
+        } else {
+            throw new EntityCreationException("ATL ID must be specified.");
+        }
+
         // ics
         if (pendingCp.getIcsParents() != null && pendingCp.getIcsParents().size() > 0) {
             for (CertifiedProductDetailsDTO parentCpDto : pendingCp.getIcsParents()) {
@@ -510,19 +528,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
             }
         }
-        
+
         List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
-        
+
         // qms
         if (pendingCp.getQmsStandards() != null && pendingCp.getQmsStandards().size() > 0) {
             for (PendingCertifiedProductQmsStandardDTO pendingQms : pendingCp.getQmsStandards()) {
-            	if(!fuzzyQmsChoices.contains(pendingQms.getName())){
-    				fuzzyQmsChoices.add(pendingQms.getName());
-    				FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-    				dto.setFuzzyType(FuzzyType.QMS_STANDARD);
-    				dto.setChoices(fuzzyQmsChoices);
-    				fuzzyChoicesDao.update(dto);
-    			}
+                if(!fuzzyQmsChoices.contains(pendingQms.getName())){
+                    fuzzyQmsChoices.add(pendingQms.getName());
+                    FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                    dto.setFuzzyType(FuzzyType.QMS_STANDARD);
+                    dto.setChoices(fuzzyQmsChoices);
+                    fuzzyChoicesDao.update(dto);
+                }
                 CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
                 QmsStandardDTO qms = qmsDao.findOrCreate(pendingQms.getQmsStandardId(), pendingQms.getName());
                 qmsDto.setQmsStandardId(qms.getId());
@@ -549,21 +567,21 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 cpTargetedUserDao.createCertifiedProductTargetedUser(tuDto);
             }
         }
-        
+
         List<String> fuzzyAsChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
-        
+
         // accessibility standards
         if (pendingCp.getAccessibilityStandards() != null && pendingCp.getAccessibilityStandards().size() > 0) {
             for (PendingCertifiedProductAccessibilityStandardDTO as : pendingCp.getAccessibilityStandards()) {
                 CertifiedProductAccessibilityStandardDTO asDto = new CertifiedProductAccessibilityStandardDTO();
                 asDto.setCertifiedProductId(newCertifiedProduct.getId());
                 if(!fuzzyAsChoices.contains(as.getName())){
-    				fuzzyAsChoices.add(as.getName());
-    				FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-    				dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
-    				dto.setChoices(fuzzyAsChoices);
-    				fuzzyChoicesDao.update(dto);
-    			}
+                    fuzzyAsChoices.add(as.getName());
+                    FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                    dto.setFuzzyType(FuzzyType.ACCESSIBILITY_STANDARD);
+                    dto.setChoices(fuzzyAsChoices);
+                    fuzzyChoicesDao.update(dto);
+                }
                 if (as.getAccessibilityStandardId() != null) {
                     asDto.setAccessibilityStandardName(as.getName());
                     asDto.setAccessibilityStandardId(as.getAccessibilityStandardId());
@@ -628,7 +646,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
                 certResultToCreate.setApiDocumentation(isCertified ? certResult.getApiDocumentation() : null);
                 certResultToCreate
-                        .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
+                .setPrivacySecurityFramework(isCertified ? certResult.getPrivacySecurityFramework() : null);
                 CertificationResultDTO createdCert = certDao.create(certResultToCreate);
                 
                 createdCert = addG1G2MacraMeasures(certResult, createdCert);
@@ -647,18 +665,18 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             certDao.addAdditionalSoftwareMapping(as);
                         }
                     }
-                    
+
                     List<String> fuzzyUcdChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
-                    
+
                     if (certResult.getUcdProcesses() != null && certResult.getUcdProcesses().size() > 0) {
                         for (PendingCertificationResultUcdProcessDTO pendingUcd : certResult.getUcdProcesses()) {
-                        	if(!fuzzyUcdChoices.contains(pendingUcd.getUcdProcessName())){
-                        		fuzzyUcdChoices.add(pendingUcd.getUcdProcessName());
-                				FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
-                				dto.setFuzzyType(FuzzyType.UCD_PROCESS);
-                				dto.setChoices(fuzzyUcdChoices);
-                				fuzzyChoicesDao.update(dto);
-                			}
+                            if(!fuzzyUcdChoices.contains(pendingUcd.getUcdProcessName())){
+                                fuzzyUcdChoices.add(pendingUcd.getUcdProcessName());
+                                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                                dto.setFuzzyType(FuzzyType.UCD_PROCESS);
+                                dto.setChoices(fuzzyUcdChoices);
+                                fuzzyChoicesDao.update(dto);
+                            }
                             CertificationResultUcdProcessDTO ucdDto = new CertificationResultUcdProcessDTO();
                             UcdProcessDTO ucd = ucdDao.findOrCreate(pendingUcd.getUcdProcessId(), pendingUcd.getUcdProcessName());
                             ucdDto.setUcdProcessId(ucd.getId());
@@ -944,7 +962,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
             }
         }
-        
+
         // if all this was successful, insert a certification status event for
         // the certification date
         CertificationStatusDTO activeCertStatus = certStatusDao
@@ -957,7 +975,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         certEvent.setStatus(activeCertStatus);
         certEvent.setCertifiedProductId(newCertifiedProduct.getId());
         statusEventDao.create(certEvent);
-        
+
         return newCertifiedProduct;
     }
 
@@ -1027,7 +1045,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             for (CertifiedProduct parent : listing.getIcs().getParents()) {
                 if (parent.getId() == null && !StringUtils.isEmpty(parent.getChplProductNumber())) {
                     try {
-                    CertifiedProduct found = searchDao.getByChplProductNumber(parent.getChplProductNumber());
+                        CertifiedProduct found = searchDao.getByChplProductNumber(parent.getChplProductNumber());
                         if (found != null) {
                             parent.setId(found.getId());
                         }
@@ -1068,8 +1086,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     }, allEntries = true)
     public CertifiedProductDTO update(Long acbId, ListingUpdateRequest updateRequest,
             CertifiedProductSearchDetails existingListing) throws AccessDeniedException, EntityRetrievalException,
-            JsonProcessingException, EntityCreationException, InvalidArgumentsException,
-            IOException {
+    JsonProcessingException, EntityCreationException, InvalidArgumentsException,
+    IOException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
         Long listingId = updatedListing.getId();
@@ -1099,8 +1117,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 }
             } else if (!Util.isUserRoleAdmin()) {
                 LOGGER.error("User " + Util.getUsername()
-                        + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
-                        + listingId);
+                + " does not have ROLE_ADMIN and cannot change the status of developer for certified product with id "
+                + listingId);
                 throw new AccessDeniedException(
                         "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
             }
@@ -1115,19 +1133,19 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     newDevStatusDto = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                 } else {
                     LOGGER.info("Request was made to update listing status to " + updatedStatusDto.getStatus()
-                            + " but not ban the developer.");
+                    + " but not ban the developer.");
                 }
             } else if (!Util.isUserRoleAdmin() && !Util.isUserRoleAcbAdmin()) {
                 LOGGER.error("User " + Util.getUsername()
-                        + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of developer for certified product with id "
-                        + listingId);
+                + " does not have ROLE_ADMIN or ROLE_ACB and cannot change the status of developer for certified product with id "
+                + listingId);
                 throw new AccessDeniedException(
                         "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
             }
             break;
         default:
             LOGGER.info("New listing status is " + updatedStatusDto.getStatus()
-                    + " which does not trigger a developer ban.");
+            + " which does not trigger a developer ban.");
             break;
         }
         if (newDevStatusDto != null) {
@@ -1142,6 +1160,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         CertifiedProductDTO dtoToUpdate = new CertifiedProductDTO(updatedListing);
         CertifiedProductDTO result = cpDao.update(dtoToUpdate);
         if (updatedListing != null) {
+            updateTestingLabs(listingId, existingListing.getTestingLabs(), updatedListing.getTestingLabs());
             updateIcsChildren(listingId, existingListing.getIcs(), updatedListing.getIcs());
             updateIcsParents(listingId, existingListing.getIcs(), updatedListing.getIcs());
             updateQmsStandards(listingId, existingListing.getQmsStandards(), updatedListing.getQmsStandards());
@@ -1150,7 +1169,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     updatedListing.getAccessibilityStandards());
             updateCertificationDate(listingId, new Date(existingListing.getCertificationDate()),
                     new Date(updatedListing.getCertificationDate()));
-            
+
             updateCertificationStatusEvents(listingId, existingListing.getCertificationEvents(),
                     updatedListing.getCertificationEvents());
             updateCertifications(result.getCertificationBodyId(), existingListing, updatedListing,
@@ -1158,6 +1177,74 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             updateCqms(result, existingListing.getCqmResults(), updatedListing.getCqmResults());
         }
         return result;
+    }
+
+    private int updateTestingLabs(Long listingId, List<CertifiedProductTestingLab> existingTestingLabs,
+            List<CertifiedProductTestingLab> updatedTestingLabs)
+                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+
+        int numChanges = 0;
+        List<CertifiedProductTestingLab> tlsToAdd = new ArrayList<CertifiedProductTestingLab>();
+        List<Long> idsToRemove = new ArrayList<Long>();
+
+        // figure out which testing labs to add
+        if (updatedTestingLabs != null && updatedTestingLabs.size() > 0) {
+            if (existingTestingLabs == null || existingTestingLabs.size() == 0) {
+                // existing listing has none, add all from the update
+                for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
+                    tlsToAdd.add(updatedItem);
+                }
+            } else if (existingTestingLabs.size() > 0) {
+                // existing listing has some, compare to the update to see if
+                // any are different
+                for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
+                    boolean inExistingListing = false;
+                    for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
+                        inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
+                    }
+
+                    if (!inExistingListing) {
+                        tlsToAdd.add(updatedItem);
+                    }
+                }
+            }
+        }
+
+        // figure out which testing labs to remove
+        if (existingTestingLabs != null && existingTestingLabs.size() > 0) {
+            // if the updated listing has none, remove them all from existing
+            if (updatedTestingLabs == null || updatedTestingLabs.size() == 0) {
+                for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
+                    idsToRemove.add(existingItem.getId());
+                }
+            } else if (updatedTestingLabs.size() > 0) {
+                for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
+                    boolean inUpdatedListing = false;
+                    for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
+                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
+                    }
+                    if (!inUpdatedListing) {
+                        idsToRemove.add(existingItem.getId());
+                    }
+                }
+            }
+        }
+
+        numChanges = tlsToAdd.size() + idsToRemove.size();
+        for (CertifiedProductTestingLab toAdd : tlsToAdd) {
+            TestingLabDTO item = atlDao.getByName(toAdd.getTestingLabName());
+            CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
+            tlDto.setTestingLabId(item.getId());
+            tlDto.setTestingLabName(item.getName());
+            tlDto.setTestingLabCode(item.getTestingLabCode());
+            tlDto.setCertifiedProductId(listingId);
+            cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
+        }
+
+        for (Long idToRemove : idsToRemove) {
+            cpTestingLabDao.deleteCertifiedProductTestingLab(idToRemove);
+        }
+        return numChanges;
     }
 
     /**
@@ -1317,8 +1404,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private int updateQmsStandards(Long listingId, List<CertifiedProductQmsStandard> existingQmsStandards,
             List<CertifiedProductQmsStandard> updatedQmsStandards)
-            throws EntityCreationException, EntityRetrievalException, 
-            JsonProcessingException, IOException {
+                    throws EntityCreationException, EntityRetrievalException, 
+                    JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
@@ -1372,7 +1459,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         numChanges = qmsToAdd.size() + idsToRemove.size();
-        
+
         List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.QMS_STANDARD).getChoices();
         for (CertifiedProductQmsStandard toAdd : qmsToAdd) {
             if(!fuzzyQmsChoices.contains(toAdd.getQmsStandardName())){
@@ -1425,7 +1512,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private int updateTargetedUsers(Long listingId, List<CertifiedProductTargetedUser> existingTargetedUsers,
             List<CertifiedProductTargetedUser> updatedTargetedUsers)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertifiedProductTargetedUser> tusToAdd = new ArrayList<CertifiedProductTargetedUser>();
@@ -1493,8 +1580,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateAccessibilityStandards(Long listingId,
             List<CertifiedProductAccessibilityStandard> existingAccessibilityStandards,
             List<CertifiedProductAccessibilityStandard> updatedAccessibilityStandards)
-            throws EntityCreationException, EntityRetrievalException, 
-            JsonProcessingException, IOException {
+                    throws EntityCreationException, EntityRetrievalException, 
+                    JsonProcessingException, IOException {
 
         int numChanges = 0;
         List<CertifiedProductAccessibilityStandard> accStdsToAdd = new ArrayList<CertifiedProductAccessibilityStandard>();
@@ -1544,7 +1631,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
         numChanges = accStdsToAdd.size() + idsToRemove.size();
-        
+
         List<String> fuzzyAsChoices = fuzzyChoicesDao.getByType(FuzzyType.ACCESSIBILITY_STANDARD).getChoices();
         for (CertifiedProductAccessibilityStandard toAdd : accStdsToAdd) {
             if(!fuzzyAsChoices.contains(toAdd.getAccessibilityStandardName())){
@@ -1554,7 +1641,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                 dto.setChoices(fuzzyAsChoices);
                 fuzzyChoicesDao.update(dto);
             }
-                
+
             AccessibilityStandardDTO item = asDao.findOrCreate(toAdd.getAccessibilityStandardId(),
                     toAdd.getAccessibilityStandardName());
             CertifiedProductAccessibilityStandardDTO toAddStd = new CertifiedProductAccessibilityStandardDTO();
@@ -1585,8 +1672,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateCertificationStatusEvents(Long listingId, 
             List<CertificationStatusEvent> existingStatusEvents,
             List<CertificationStatusEvent> updatedStatusEvents)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        
+                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+
         int numChanges = 0;
         List<CertificationStatusEvent> statusEventsToAdd = new ArrayList<CertificationStatusEvent>();
         List<CertificationStatusEventPair> statusEventsToUpdate = new ArrayList<CertificationStatusEventPair>();
@@ -1646,17 +1733,17 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             statusEventDto.setReason(toAdd.getReason());
             if(toAdd.getStatus() == null) {
                 String msg = String.format(messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "listing.missingCertificationStatus"),
-                                LocaleContextHolder.getLocale()));
+                        new DefaultMessageSourceResolvable(
+                                "listing.missingCertificationStatus"),
+                        LocaleContextHolder.getLocale()));
                 throw new EntityRetrievalException(msg);
             } else if(toAdd.getStatus().getId() != null) {
                 CertificationStatusDTO statusDto = certStatusDao.getById(toAdd.getStatus().getId());
                 if(statusDto == null) {
                     String msg = String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "listing.badCertificationStatusId"),
-                                    LocaleContextHolder.getLocale()), toAdd.getStatus().getId());
+                            new DefaultMessageSourceResolvable(
+                                    "listing.badCertificationStatusId"),
+                            LocaleContextHolder.getLocale()), toAdd.getStatus().getId());
                     throw new EntityRetrievalException(msg);
                 }
                 statusEventDto.setStatus(statusDto);
@@ -1735,8 +1822,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private int updateCertifications(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, List<CertificationResult> existingCertifications,
             List<CertificationResult> updatedCertifications)
-            throws EntityCreationException, EntityRetrievalException, 
-            JsonProcessingException, IOException {
+                    throws EntityCreationException, EntityRetrievalException, 
+                    JsonProcessingException, IOException {
 
         int numChanges = 0;
 
@@ -1761,7 +1848,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     private int updateCqms(CertifiedProductDTO listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+                    throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         // convert to CQMResultDetailsDTO since CMS CQMs can have multiple
         // entries
         // per success version. work with these objects instead of the passed-in
@@ -2021,12 +2108,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                     // continue
                     if ((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())) {
                         muu.setError("Line " + muu.getCsvLineNumber()
-                                + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber()
-                                + "\".");
+                        + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber()
+                        + "\".");
                     } else if (muu.getNumberOfUsers() == null) {
                         muu.setError("Line " + muu.getCsvLineNumber()
-                                + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers()
-                                + "\".");
+                        + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers()
+                        + "\".");
                     } else {
                         CertifiedProductDTO dto = new CertifiedProductDTO();
                         // check if 2014 edition CHPL Product Number exists
@@ -2050,8 +2137,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                             results.add(muu);
                         } catch (final EntityRetrievalException e) {
                             muu.setError("Line " + muu.getCsvLineNumber()
-                                    + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber()
-                                    + "\" is invalid. " + "The provided \"chpl_product_number\" does not exist.");
+                            + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber()
+                            + "\" is invalid. " + "The provided \"chpl_product_number\" does not exist.");
                             errors.add(muu);
                         }
                     }
@@ -2100,7 +2187,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         }
 
     }
-    
+
     private class QmsStandardPair {
         CertifiedProductQmsStandard orig;
         CertifiedProductQmsStandard updated;

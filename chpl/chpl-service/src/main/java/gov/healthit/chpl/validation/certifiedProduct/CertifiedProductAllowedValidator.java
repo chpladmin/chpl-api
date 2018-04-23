@@ -111,14 +111,14 @@ public class CertifiedProductAllowedValidator implements CertifiedProductValidat
     }
     
     @Override
-    public String getErrorMessage(String errorField){
+    public String getMessage(String errorField){
     		return String.format(
     				messageSource.getMessage(new DefaultMessageSourceResolvable(errorField),
     				LocaleContextHolder.getLocale()));
     }
     
     @Override
-    public String getErrorMessage(String errorField, String input){
+    public String getMessage(String errorField, String input){
     	return String.format(messageSource.getMessage(
                 new DefaultMessageSourceResolvable(errorField),
                 LocaleContextHolder.getLocale()), input);

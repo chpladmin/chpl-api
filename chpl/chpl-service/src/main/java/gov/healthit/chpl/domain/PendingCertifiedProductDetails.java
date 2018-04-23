@@ -26,20 +26,33 @@ import gov.healthit.chpl.dto.PendingCertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductTargetedUserDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
 import gov.healthit.chpl.dto.PendingTestParticipantDTO;
 import gov.healthit.chpl.dto.PendingTestTaskDTO;
 
+/**
+ * Pending Certified Product Details domain object.
+ * @author alarned
+ *
+ */
 public class PendingCertifiedProductDetails extends CertifiedProductSearchDetails implements Serializable {
     private static final long serialVersionUID = -461584179489619328L;
     private String recordStatus;
     private Boolean hasQms;
 
+    /**
+     * Default constructor.
+     */
     public PendingCertifiedProductDetails() {
     }
 
-    public PendingCertifiedProductDetails(PendingCertifiedProductDTO dto) {
+    /**
+     * Constructor from DTO.
+     * @param dto the DTO
+     */
+    public PendingCertifiedProductDetails(final PendingCertifiedProductDTO dto) {
         this.setId(dto.getId());
         this.setErrorMessages(dto.getErrorMessages());
         this.setWarningMessages(dto.getWarningMessages());
@@ -135,14 +148,19 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         certifyingBodyMap.put("name", dto.getCertificationBodyName());
         this.setCertifyingBody(certifyingBodyMap);
 
-        Map<String, Object> testingLabMap = new HashMap<String, Object>();
-        if (dto.getTestingLabId() == null) {
-            testingLabMap.put("id", null);
-        } else {
-            testingLabMap.put("id", dto.getTestingLabId());
+        List<PendingCertifiedProductTestingLabDTO> tlDtos = dto.getTestingLabs();
+        if (tlDtos != null && tlDtos.size() > 0) {
+            for (PendingCertifiedProductTestingLabDTO tlDto : tlDtos) {
+                CertifiedProductTestingLab tl = new CertifiedProductTestingLab();
+                if (tlDto.getTestingLabId() != null) {
+                    tl.setTestingLabId(tlDto.getTestingLabId());
+                }
+                if (tlDto.getTestingLabName() != null) {
+                    tl.setTestingLabName(tlDto.getTestingLabName());
+                }
+                this.getTestingLabs().add(tl);
+            }
         }
-        testingLabMap.put("name", dto.getTestingLabName());
-        this.setTestingLab(testingLabMap);
 
         if (dto.getCertificationDate() != null) {
             this.setCertificationDate(dto.getCertificationDate().getTime());
@@ -210,13 +228,13 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         }
 
         List<CertifiedProductDetailsDTO> parentListings = dto.getIcsParents();
-        if(parentListings != null && parentListings.size() > 0) {
-            for(CertifiedProductDetailsDTO parentListing : parentListings) {
+        if (parentListings != null && parentListings.size() > 0) {
+            for (CertifiedProductDetailsDTO parentListing : parentListings) {
                 CertifiedProduct cp = new CertifiedProduct(parentListing);
                 this.getIcs().getParents().add(cp);
             }
         }
-        
+
         List<CertificationResult> certList = new ArrayList<CertificationResult>();
         for (PendingCertificationResultDTO certCriterion : dto.getCertificationCriterion()) {
             CertificationCriterion criteria = new CertificationCriterion();
@@ -253,7 +271,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                 for (PendingCertificationResultTestDataDTO td : certCriterion.getTestData()) {
                     CertificationResultTestData certResultTestData = new CertificationResultTestData();
                     TestData testData = new TestData();
-                    if(td.getTestData() != null) {
+                    if (td.getTestData() != null) {
                         testData.setId(td.getTestData().getId());
                         testData.setName(td.getTestData().getName());
                     } else {
@@ -296,7 +314,7 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
                 for (PendingCertificationResultTestProcedureDTO tp : certCriterion.getTestProcedures()) {
                     CertificationResultTestProcedure certResultTestProc = new CertificationResultTestProcedure();
                     TestProcedure testProc = new TestProcedure();
-                    if(tp.getTestProcedure() != null) {
+                    if (tp.getTestProcedure() != null) {
                         testProc.setId(tp.getTestProcedure().getId());
                         testProc.setName(tp.getTestProcedure().getName());
                     } else {
@@ -501,11 +519,11 @@ public class PendingCertifiedProductDetails extends CertifiedProductSearchDetail
         this.recordStatus = recordStatus;
     }
 
-	public Boolean getHasQms() {
-		return hasQms;
-	}
+    public Boolean getHasQms() {
+        return hasQms;
+    }
 
-	public void setHasQms(Boolean hasQms) {
-		this.hasQms = hasQms;
-	}
+    public void setHasQms(final Boolean hasQms) {
+        this.hasQms = hasQms;
+    }
 }
