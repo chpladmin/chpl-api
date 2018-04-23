@@ -85,7 +85,7 @@ public class CertifiedProductDTO implements Serializable {
      * Requires first four components (Edition, ATL, ACB, Developer Code).
      * Optional for remaining parts.
      */
-    public static final String CHPL_PRODUCT_ID_SEARCH_REGEX =
+    public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX =
             "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
 
     private Long id;

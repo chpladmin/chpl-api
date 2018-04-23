@@ -402,7 +402,7 @@ public class CertifiedProductSearchDAOImpl extends BaseDAOImpl implements Certif
         if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
             String searchTerm = searchRequest.getSearchTerm();
             if (searchTerm.startsWith("CHP-")
-                    || Pattern.matches(CertifiedProductDTO.CHPL_PRODUCT_ID_SEARCH_REGEX, searchTerm.trim())) {
+                    || Pattern.matches(CertifiedProductDTO.CHPL_PRODUCT_NUMBER_SEARCH_REGEX, searchTerm.trim())) {
                 sql += "AND "
                         + "UPPER(openchpl.get_chpl_product_number_as_text(cp.certified_product_id)) LIKE :searchTerm";
             } else {
