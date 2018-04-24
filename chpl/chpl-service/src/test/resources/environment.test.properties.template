@@ -20,3 +20,6 @@ questionableActivityThresholdDays=30
 #fuzzy choice options
 fuzzyChoiceThreshold=80
 fuzzyChoiceLimit=1
+
+#Asynchronous - should always be false for jUnits to properly work in our environment 
+asyncEnabled=false
