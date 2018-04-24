@@ -25,6 +25,11 @@ public class CertifiedProductDetailsManagerAsync {
     @Async
     public Future<List<CertifiedProductDetailsDTO>> getCertifiedProductChildren(
             final ListingGraphDAO listingGraphDao, final Long id) {
+        return getFutureCertifiedProductChildren(listingGraphDao, id);
+    }
+    
+    public Future<List<CertifiedProductDetailsDTO>> getFutureCertifiedProductChildren(
+            final ListingGraphDAO listingGraphDao, final Long id) {
 
         LOGGER.info("Starting the retrieval of the Children");
         Date start = new Date();
@@ -37,6 +42,11 @@ public class CertifiedProductDetailsManagerAsync {
     @Async
     public Future<List<CertifiedProductDetailsDTO>> getCertifiedProductParent(
             final ListingGraphDAO listingGraphDao, final Long id) {
+        return getFutureCertifiedProductParent(listingGraphDao, id);
+    }
+    
+    public Future<List<CertifiedProductDetailsDTO>> getFutureCertifiedProductParent(
+            final ListingGraphDAO listingGraphDao, final Long id) {
         LOGGER.info("Starting the retrieval of the Parents");
         Date start = new Date();
         List<CertifiedProductDetailsDTO> children = listingGraphDao.getParents(id);
@@ -47,6 +57,11 @@ public class CertifiedProductDetailsManagerAsync {
 
     @Async
     public Future<List<CertificationResultDetailsDTO>> getCertificationResultDetailsDTOs(
+            final CertificationResultDetailsDAO certificationResultDetailsDAO, final Long id) {
+        return getFutureCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
+    }
+    
+    public Future<List<CertificationResultDetailsDTO>> getFutureCertificationResultDetailsDTOs(
             final CertificationResultDetailsDAO certificationResultDetailsDAO, final Long id) {
 
         LOGGER.info("Starting the retrieval of the Certification Result Details");
@@ -66,6 +81,11 @@ public class CertifiedProductDetailsManagerAsync {
 
     @Async
     public Future<List<CQMResultDetailsDTO>> getCqmResultDetailsDTOs(
+            final CQMResultDetailsDAO cqmResultDetailsDAO, final Long id) {
+        return getFutureCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
+    }
+    
+    public Future<List<CQMResultDetailsDTO>> getFutureCqmResultDetailsDTOs(
             final CQMResultDetailsDAO cqmResultDetailsDAO, final Long id) {
 
         LOGGER.info("Starting the retrieval of the CQM Result Details");

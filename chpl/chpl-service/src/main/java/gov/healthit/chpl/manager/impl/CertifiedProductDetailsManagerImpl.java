@@ -11,6 +11,7 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -135,6 +136,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Autowired
     private CertifiedProductDetailsManagerAsync async;
+    
+    @Autowired
+    private Environment env;
 
     private CQMCriterionDAO cqmCriterionDAO;
     private MacraMeasureDAO macraDao;
@@ -160,7 +164,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     @Transactional
     public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
-
+        
+        return getCertifiedProductDetails(certifiedProductId, areAsyncCallsEnabled());
+    }
+    
+    
+    @Override
+    @Transactional
+    public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId,
+            Boolean retrieveAsynchronously) throws EntityRetrievalException {
+        
         Date overallStart = new Date();
 
         Date start = new Date();
@@ -168,15 +181,10 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         Date end = new Date();
         LOGGER.info("Time to retrieve CertifiedProductDetailsDTO: " + (end.getTime() - start.getTime()));
 
-        //Shoot off the async data retrieval...
-        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
-                async.getCertifiedProductChildren(listingGraphDao, dto.getId());
-        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
-                async.getCertifiedProductParent(listingGraphDao, dto.getId());
-        Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
-                async.getCertificationResultDetailsDTOs(certificationResultDetailsDAO, dto.getId());
-        Future<List<CQMResultDetailsDTO>> cqmResultsFuture =
-                async.getCqmResultDetailsDTOs(cqmResultDetailsDAO, dto.getId());
+        Future<List<CertifiedProductDetailsDTO>> childrenFuture = getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
+        Future<List<CertifiedProductDetailsDTO>> parentsFuture = getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
+        Future<List<CertificationResultDetailsDTO>> certificationResultsFuture = getCertificationResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
+        Future<List<CQMResultDetailsDTO>> cqmResultsFuture = getCqmResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
 
@@ -761,5 +769,45 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             }
         }
         return cqmResultCertifications;
+    }
+    
+    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductChildren(Long id, Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCertifiedProductChildren(listingGraphDao, id);
+        } else {
+            return async.getFutureCertifiedProductChildren(listingGraphDao, id);
+        }
+         
+    }
+    
+    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductParents(Long id, Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCertifiedProductParent(listingGraphDao, id);
+        } else {
+            return async.getFutureCertifiedProductParent(listingGraphDao, id);
+        }
+         
+    }
+    
+    private Future<List<CertificationResultDetailsDTO>> getCertificationResultDetailsDTOs(Long id, Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
+        } else {
+            return async.getFutureCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
+        }
+         
+    }
+    
+    private Future<List<CQMResultDetailsDTO>> getCqmResultDetailsDTOs(Long id, Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
+        } else {
+            return async.getFutureCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
+        }
+         
+    }
+    
+    private Boolean areAsyncCallsEnabled() {
+        return Boolean.getBoolean(env.getProperty("asyncEnabled"));
     }
 }

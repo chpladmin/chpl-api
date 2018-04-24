@@ -102,3 +102,6 @@ smtpUsername=intranet/chpladmin
 smtpPassword=
 
 chplUrlBegin=http://localhost:8000/app
+
+#Asynchronous - should always be true 
+asyncEnabled=true
