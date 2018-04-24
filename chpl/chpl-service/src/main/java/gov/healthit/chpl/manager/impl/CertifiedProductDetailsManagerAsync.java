@@ -27,7 +27,7 @@ public class CertifiedProductDetailsManagerAsync {
             final ListingGraphDAO listingGraphDao, final Long id) {
         return getFutureCertifiedProductChildren(listingGraphDao, id);
     }
-    
+
     public Future<List<CertifiedProductDetailsDTO>> getFutureCertifiedProductChildren(
             final ListingGraphDAO listingGraphDao, final Long id) {
 
@@ -44,7 +44,7 @@ public class CertifiedProductDetailsManagerAsync {
             final ListingGraphDAO listingGraphDao, final Long id) {
         return getFutureCertifiedProductParent(listingGraphDao, id);
     }
-    
+
     public Future<List<CertifiedProductDetailsDTO>> getFutureCertifiedProductParent(
             final ListingGraphDAO listingGraphDao, final Long id) {
         LOGGER.info("Starting the retrieval of the Parents");
@@ -60,7 +60,7 @@ public class CertifiedProductDetailsManagerAsync {
             final CertificationResultDetailsDAO certificationResultDetailsDAO, final Long id) {
         return getFutureCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
     }
-    
+
     public Future<List<CertificationResultDetailsDTO>> getFutureCertificationResultDetailsDTOs(
             final CertificationResultDetailsDAO certificationResultDetailsDAO, final Long id) {
 
@@ -84,7 +84,7 @@ public class CertifiedProductDetailsManagerAsync {
             final CQMResultDetailsDAO cqmResultDetailsDAO, final Long id) {
         return getFutureCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
     }
-    
+
     public Future<List<CQMResultDetailsDTO>> getFutureCqmResultDetailsDTOs(
             final CQMResultDetailsDAO cqmResultDetailsDAO, final Long id) {
 

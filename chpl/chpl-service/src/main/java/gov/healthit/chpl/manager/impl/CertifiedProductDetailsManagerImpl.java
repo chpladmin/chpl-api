@@ -136,7 +136,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Autowired
     private CertifiedProductDetailsManagerAsync async;
-    
+
     @Autowired
     private Environment env;
 
@@ -164,16 +164,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     @Transactional
     public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
-        
+
         return getCertifiedProductDetails(certifiedProductId, areAsyncCallsEnabled());
     }
-    
-    
+
+
     @Override
     @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetails(Long certifiedProductId,
-            Boolean retrieveAsynchronously) throws EntityRetrievalException {
-        
+    public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId,
+            final Boolean retrieveAsynchronously) throws EntityRetrievalException {
+
         Date overallStart = new Date();
 
         Date start = new Date();
@@ -181,10 +181,14 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         Date end = new Date();
         LOGGER.info("Time to retrieve CertifiedProductDetailsDTO: " + (end.getTime() - start.getTime()));
 
-        Future<List<CertifiedProductDetailsDTO>> childrenFuture = getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
-        Future<List<CertifiedProductDetailsDTO>> parentsFuture = getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
-        Future<List<CertificationResultDetailsDTO>> certificationResultsFuture = getCertificationResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
-        Future<List<CQMResultDetailsDTO>> cqmResultsFuture = getCqmResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
+        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
+                getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
+        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
+                getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
+        Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
+                getCertificationResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
+        Future<List<CQMResultDetailsDTO>> cqmResultsFuture =
+                getCqmResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
 
