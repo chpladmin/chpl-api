@@ -8,5 +8,6 @@ _Date TBD_
 
 ### Bugs Fixed
 * Fixed bug with searching for Listings with lower case CHPL ID values
+* Fix bug where uploaded Listings file with bad B1 cell isn't treated correctly
 
 ---
