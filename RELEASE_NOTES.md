@@ -1,13 +1,5 @@
 # Release Notes
 
-## Version TBD
-_Date TBD_
-
-### Minor Features
-* added error on upload for qms to be true but have empty standards and vice versa
-
----
-
 ## Version 15.10.0
 _23 April 2018_
 
