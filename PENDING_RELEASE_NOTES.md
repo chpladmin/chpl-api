@@ -8,5 +8,7 @@ _Date TBD_
 
 ### Bugs Fixed
 * Fixed bug with searching for Listings with lower case CHPL ID values
-
+* Added endpoint /certified_product to return basic information about a certified product
+* Added endpoint /certified_product/cqm_results to return CQM results information about a certified product
+* Added endpoint /certified_product/certifiection_results to return certification results information about a certified product
 ---

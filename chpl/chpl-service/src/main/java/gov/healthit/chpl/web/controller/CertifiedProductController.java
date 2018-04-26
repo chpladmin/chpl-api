@@ -43,7 +43,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -64,7 +63,6 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
@@ -74,6 +72,8 @@ import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
+import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
+import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -144,6 +144,7 @@ public class CertifiedProductController {
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
@@ -151,6 +152,50 @@ public class CertifiedProductController {
         }
 
         return certifiedProduct;
+    }
+
+    @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
+                            + "the CQM results and certification results.",
+            notes = "Returns basic information in the CHPL related to the specified certified product.  "
+                    + "The results will not include the CQM results and certification results.")
+    @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
+        CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasic(certifiedProductId);
+        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
+        if (validator != null) {
+            validator.validate(certifiedProduct);
+       }
+
+        return certifiedProduct;
+    }
+
+    @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
+            notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
+    @RequestMapping(value = "/{certifiedProductId}/cqm_results", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
+        CQMResultDetailResults results =
+                new CQMResultDetailResults(cpdManager.getCertifiedProductCqms(certifiedProductId));
+
+        return results;
+    }
+
+    @ApiOperation(value = "Get all of the certification results for a specified certified product.",
+            notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
+    @RequestMapping(value = "/{certifiedProductId}/certification_results", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
+        CertificationResults results =
+                new CertificationResults(cpdManager.getCertifiedProductCertificationResults(certifiedProductId));
+
+        return results;
     }
 
     @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
@@ -168,7 +213,7 @@ public class CertifiedProductController {
             String mimeType = "text/csv";
             // set content attributes for the response
             response.setContentType(mimeType);
-            response.setContentLength((int) data.length);
+            response.setContentLength(data.length);
 
             // set headers for the response
             String headerKey = "Content-Disposition";
