@@ -42,6 +42,7 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -244,6 +245,9 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     @Autowired
     public CertificationBodyManager acbManager;
 
+    @Autowired
+    private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
+    
     public CertifiedProductManagerImpl() {
     }
 
@@ -349,6 +353,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
     }
 
+    @Override
+    @Transactional
+    public List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
+        
+        CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
+        
+        return getIcsFamilyTree(dto.getId());
+    }
+    
     @Override
     @Transactional
     public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
@@ -2158,6 +2171,14 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         return meaningfulUseUserResults;
     }
 
+    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(final String chplProductNumber) throws EntityRetrievalException {
+        List<CertifiedProductDetailsDTO> dtos = certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
+        if (dtos.size() == 0) {
+            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
+        }
+        return dtos.get(0);
+    }
+    
     private class CertificationStatusEventPair {
         CertificationStatusEvent orig;
         CertificationStatusEvent updated;

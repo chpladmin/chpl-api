@@ -83,6 +83,32 @@ public class ChplProductNumberUtil {
         }
         return !(details != null && details.size() > 0);
     }
+    
+    public String getChplProductNumber( final String year, final String testingLab, final String certBody,
+            final String vendorCode, final String productCode, final String versionCode, final String icsCode,
+            final String addlSoftwareCode, final String certDateCode) {
+        
+        ChplProductNumberParts parts = new ChplProductNumberParts();
+        parts.setEditionCode(year);
+        parts.setAtlCode(testingLab);
+        parts.setAcbCode(certBody);
+        parts.setDeveloperCode(vendorCode);
+        parts.setProductCode(productCode);
+        parts.setVersionCode(versionCode);
+        parts.setIcsCode(icsCode);
+        parts.setAdditionalSoftwareCode(addlSoftwareCode);
+        parts.setCertifiedDateCode(certDateCode);
+        
+        return concatParts(parts);
+    }
+    
+    public String getChplProductNumber(final String chplPrefix, final String identifier) {
+        StringBuffer chplProductNumber = new StringBuffer();
+        chplProductNumber.append(chplPrefix)
+            .append("-").append(identifier);
+        
+        return chplProductNumber.toString();
+    }
 
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
@@ -95,14 +121,14 @@ public class ChplProductNumberUtil {
     private String concatParts(final ChplProductNumberParts chplProductNumberParts) {
         StringBuilder chplProductNumber = new StringBuilder();
         chplProductNumber.append(chplProductNumberParts.editionCode).append(".")
-        .append(chplProductNumberParts.atlCode).append(".")
-        .append(chplProductNumberParts.acbCode).append(".")
-        .append(chplProductNumberParts.developerCode).append(".")
-        .append(chplProductNumberParts.productCode).append(".")
-        .append(chplProductNumberParts.versionCode).append(".")
-        .append(chplProductNumberParts.icsCode).append(".")
-        .append(chplProductNumberParts.additionalSoftwareCode).append(".")
-        .append(chplProductNumberParts.certifiedDateCode);
+            .append(chplProductNumberParts.atlCode).append(".")
+            .append(chplProductNumberParts.acbCode).append(".")
+            .append(chplProductNumberParts.developerCode).append(".")
+            .append(chplProductNumberParts.productCode).append(".")
+            .append(chplProductNumberParts.versionCode).append(".")
+            .append(chplProductNumberParts.icsCode).append(".")
+            .append(chplProductNumberParts.additionalSoftwareCode).append(".")
+            .append(chplProductNumberParts.certifiedDateCode);
         return chplProductNumber.toString();
     }
 
