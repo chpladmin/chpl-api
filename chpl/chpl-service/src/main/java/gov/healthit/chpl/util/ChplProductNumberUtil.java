@@ -83,11 +83,25 @@ public class ChplProductNumberUtil {
         }
         return !(details != null && details.size() > 0);
     }
-    
+
+
+    /**
+     * Properly concats all of the parts of a CHPL Product Number.
+     * @param year
+     * @param testingLab
+     * @param certBody
+     * @param vendorCode
+     * @param productCode
+     * @param versionCode
+     * @param icsCode
+     * @param addlSoftwareCode
+     * @param certDateCode
+     * @return String
+     */
     public String getChplProductNumber( final String year, final String testingLab, final String certBody,
             final String vendorCode, final String productCode, final String versionCode, final String icsCode,
             final String addlSoftwareCode, final String certDateCode) {
-        
+
         ChplProductNumberParts parts = new ChplProductNumberParts();
         parts.setEditionCode(year);
         parts.setAtlCode(testingLab);
@@ -98,15 +112,21 @@ public class ChplProductNumberUtil {
         parts.setIcsCode(icsCode);
         parts.setAdditionalSoftwareCode(addlSoftwareCode);
         parts.setCertifiedDateCode(certDateCode);
-        
+
         return concatParts(parts);
     }
-    
+
+    /**
+     * Properly concats the parts of a legacy CHPL Product number.
+     * @param chplPrefix
+     * @param identifier
+     * @return
+     */
     public String getChplProductNumber(final String chplPrefix, final String identifier) {
         StringBuffer chplProductNumber = new StringBuffer();
         chplProductNumber.append(chplPrefix)
             .append("-").append(identifier);
-        
+
         return chplProductNumber.toString();
     }
 

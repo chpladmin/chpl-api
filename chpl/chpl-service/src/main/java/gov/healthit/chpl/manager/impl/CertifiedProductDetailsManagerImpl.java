@@ -161,7 +161,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Override
     @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetailsByChplProductNumber(final String chplProductNumber) 
+    public CertifiedProductSearchDetails getCertifiedProductDetailsByChplProductNumber(final String chplProductNumber)
             throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
@@ -177,12 +177,12 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return createCertifiedSearchDetails(dto, retrieveAsynchronously);
     }
 
-    
+
     @Override
     @Transactional
     public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
-        
+
         return getCertifiedProductDetails(certifiedProductId, areAsyncCallsEnabled());
     }
 
@@ -195,12 +195,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
         return createCertifiedSearchDetails(dto, retrieveAsynchronously);
     }
-    
-        
+
     @Override
     @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(final String chplProductNumber)
-            throws EntityRetrievalException {
+    public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(
+            final String chplProductNumber) throws EntityRetrievalException {
 
         return getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber, areAsyncCallsEnabled());
     }
@@ -208,8 +207,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     @Override
     @Transactional
-    public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(final String chplProductNumber,
-            final Boolean retrieveAsynchronously) throws EntityRetrievalException {
+    public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(
+            final String chplProductNumber, final Boolean retrieveAsynchronously)
+                    throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
         return createCertifiedProductDetailsBasic(dto, retrieveAsynchronously);
@@ -230,7 +230,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
         return createCertifiedProductDetailsBasic(dto, retrieveAsynchronously);
-       
+
     }
 
     @Override
@@ -244,7 +244,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return getCqmResultDetails(cqmResultsFuture, dto.getYear());
     }
 
-    
+
     @Override
     @Transactional
     public List<CQMResultDetails> getCertifiedProductCqms(final String chplProductNumber)
@@ -256,17 +256,16 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return getCqmResultDetails(cqmResultsFuture, dto.getYear());
     }
 
-    
     @Override
     @Transactional
     public List<CertificationResult> getCertifiedProductCertificationResults(final Long certifiedProductId)
             throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
-        
+
         Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
                 getCertificationResultDetailsDTOs(dto.getId(), true);
-        
+
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
 
         return getCertificationResults(certificationResultsFuture, searchDetails);
@@ -279,18 +278,18 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             throws EntityRetrievalException {
 
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        
+
         Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
                 getCertificationResultDetailsDTOs(dto.getId(), true);
-        
+
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
 
         return getCertificationResults(certificationResultsFuture, searchDetails);
     }
 
-    private CertifiedProductSearchDetails createCertifiedSearchDetails(CertifiedProductDetailsDTO dto, 
+    private CertifiedProductSearchDetails createCertifiedSearchDetails(final CertifiedProductDetailsDTO dto,
             final Boolean retrieveAsynchronously) throws EntityRetrievalException {
-        
+
         Future<List<CertifiedProductDetailsDTO>> childrenFuture =
                 getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
         Future<List<CertifiedProductDetailsDTO>> parentsFuture =
@@ -315,10 +314,8 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         searchDetails = populateTestingLab(dto, searchDetails);
 
         return searchDetails;
-    
     }
 
-    
     private CertifiedProductSearchDetails createCertifiedProductDetailsBasic(final CertifiedProductDetailsDTO dto,
             final Boolean retrieveAsynchronously) throws EntityRetrievalException {
 
@@ -340,14 +337,17 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         return searchDetails;
     }
 
-    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(final String chplProductNumber) throws EntityRetrievalException {
-        List<CertifiedProductDetailsDTO> dtos = certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
+    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(final String chplProductNumber)
+            throws EntityRetrievalException {
+
+        List<CertifiedProductDetailsDTO> dtos =
+                certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
         return dtos.get(0);
     }
-        
+
     private CertifiedProductSearchDetails populateTestingLab(final CertifiedProductDetailsDTO dto,
             final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         List<CertifiedProductTestingLabDTO> testingLabDtos =
