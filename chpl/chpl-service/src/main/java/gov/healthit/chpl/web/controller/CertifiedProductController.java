@@ -175,7 +175,7 @@ public class CertifiedProductController {
                     method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
-            @PathVariable("certifiedProductId") final String certifiedProductId) throws EntityRetrievalException {
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
         
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(Long.valueOf(certifiedProductId));
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
