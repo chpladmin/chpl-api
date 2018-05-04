@@ -84,6 +84,52 @@ public class ChplProductNumberUtil {
         return !(details != null && details.size() > 0);
     }
 
+
+    /**
+     * Properly concats all of the parts of a CHPL Product Number.
+     * @param year
+     * @param testingLab
+     * @param certBody
+     * @param vendorCode
+     * @param productCode
+     * @param versionCode
+     * @param icsCode
+     * @param addlSoftwareCode
+     * @param certDateCode
+     * @return String
+     */
+    public String getChplProductNumber( final String year, final String testingLab, final String certBody,
+            final String vendorCode, final String productCode, final String versionCode, final String icsCode,
+            final String addlSoftwareCode, final String certDateCode) {
+
+        ChplProductNumberParts parts = new ChplProductNumberParts();
+        parts.setEditionCode(year);
+        parts.setAtlCode(testingLab);
+        parts.setAcbCode(certBody);
+        parts.setDeveloperCode(vendorCode);
+        parts.setProductCode(productCode);
+        parts.setVersionCode(versionCode);
+        parts.setIcsCode(icsCode);
+        parts.setAdditionalSoftwareCode(addlSoftwareCode);
+        parts.setCertifiedDateCode(certDateCode);
+
+        return concatParts(parts);
+    }
+
+    /**
+     * Properly concats the parts of a legacy CHPL Product number.
+     * @param chplPrefix
+     * @param identifier
+     * @return
+     */
+    public String getChplProductNumber(final String chplPrefix, final String identifier) {
+        StringBuffer chplProductNumber = new StringBuffer();
+        chplProductNumber.append(chplPrefix)
+            .append("-").append(identifier);
+
+        return chplProductNumber.toString();
+    }
+
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
@@ -95,14 +141,14 @@ public class ChplProductNumberUtil {
     private String concatParts(final ChplProductNumberParts chplProductNumberParts) {
         StringBuilder chplProductNumber = new StringBuilder();
         chplProductNumber.append(chplProductNumberParts.editionCode).append(".")
-        .append(chplProductNumberParts.atlCode).append(".")
-        .append(chplProductNumberParts.acbCode).append(".")
-        .append(chplProductNumberParts.developerCode).append(".")
-        .append(chplProductNumberParts.productCode).append(".")
-        .append(chplProductNumberParts.versionCode).append(".")
-        .append(chplProductNumberParts.icsCode).append(".")
-        .append(chplProductNumberParts.additionalSoftwareCode).append(".")
-        .append(chplProductNumberParts.certifiedDateCode);
+            .append(chplProductNumberParts.atlCode).append(".")
+            .append(chplProductNumberParts.acbCode).append(".")
+            .append(chplProductNumberParts.developerCode).append(".")
+            .append(chplProductNumberParts.productCode).append(".")
+            .append(chplProductNumberParts.versionCode).append(".")
+            .append(chplProductNumberParts.icsCode).append(".")
+            .append(chplProductNumberParts.additionalSoftwareCode).append(".")
+            .append(chplProductNumberParts.certifiedDateCode);
         return chplProductNumber.toString();
     }
 

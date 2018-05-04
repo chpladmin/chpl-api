@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,16 +30,19 @@ import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationIdManager;
+import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.manager.TestingLabManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,6 +79,12 @@ public class ActivityController {
     @Autowired
     private UserManager userManager;
 
+    @Autowired
+    private CertifiedProductDetailsManager cpdManager;
+    
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
+    
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true. "
@@ -307,27 +313,66 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific certified product",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified certified product across all dates.")
-    @RequestMapping(value = "/certified_products/{id}", method = RequestMethod.GET,
+    @RequestMapping(value = "/certified_products/{id:\\d+}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         cpManager.getById(id); // throws 404 if bad id
 
-        if (start == null && end == null) {
-            return getActivityEventsForCertifiedProducts(id);
-        } else {
-            Date startDate = null;
-            Date endDate = null;
-            if (start != null) {
-                startDate = new Date(start);
-            }
-            if (end != null) {
-                endDate = new Date(end);
-            }
-            validateActivityDates(start, end);
-            return getActivityEventsForCertifiedProducts(id, startDate, endDate);
-        }
+        return getActivityForCertifiedProduct(start, end, id);
+    }
+
+    @ApiOperation(value = "Get auditable data for a specific certified product based on CHPL Product Number.",
+            notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "The default behavior is to return activity for the specified certified product across all dates.  "
+                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
+                    + "represents a valid CHPL Product Number.  A valid call to this service would look like "
+                    + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD.")
+    @RequestMapping(value = "/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}", 
+                    method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public List<ActivityEvent> activityForCertifiedProductByChplProductNumber(
+            @PathVariable("year") final String year,
+            @PathVariable("testingLab") final String testingLab,
+            @PathVariable("certBody") final String certBody,
+            @PathVariable("vendorCode") final String vendorCode,
+            @PathVariable("productCode") final String productCode,
+            @PathVariable("versionCode") final String versionCode,
+            @PathVariable("icsCode") final String icsCode,
+            @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
+            @PathVariable("certDateCode") final String certDateCode,
+            @RequestParam(required = false) final Long start, 
+            @RequestParam(required = false) final Long end) throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+        
+        String chplProductNumber = 
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
+                        versionCode, icsCode, addlSoftwareCode, certDateCode);
+        
+        CertifiedProductDTO dto = cpManager.getByChplProductNumber(chplProductNumber); // throws 404 if bad id
+
+        return getActivityForCertifiedProduct(start, end, dto.getId());
+    }
+
+    @ApiOperation(value = "Get auditable data for a specific certified product based on a legacy CHPL Product Number.",
+            notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "The default behavior is to return activity for the specified certified product across all dates.  "
+                    + "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  A valid call to this service "
+                    + "would look like activity/certified_products/CHP-999999.")
+    @RequestMapping(value = "/certified_products/{chplPrefix}-{identifier}", 
+                    method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public List<ActivityEvent> activityForCertifiedProductByChplProductNumber(
+            @PathVariable("chplPrefix") final String chplPrefix,
+            @PathVariable("identifier") final String identifier,
+            @RequestParam(required = false) final Long start, 
+            @RequestParam(required = false) final Long end) throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+        
+        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
+        
+        CertifiedProductDTO dto = cpManager.getByChplProductNumber(chplProductNumber); // throws 404 if bad id
+
+        return getActivityForCertifiedProduct(start, end, dto.getId());
     }
 
     @ApiOperation(value = "Get auditable data for all certifications",
@@ -708,7 +753,7 @@ public class ActivityController {
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForCertifiedProducts(Long id) throws JsonParseException, IOException {
+    private List<ActivityEvent> getActivityEventsForCertifiedProductsById(Long id) throws JsonParseException, IOException {
 
         List<ActivityEvent> events = null;
         ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
@@ -805,7 +850,7 @@ public class ActivityController {
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForCertifiedProducts(Long id, Date startDate, Date endDate)
+    private List<ActivityEvent> getActivityEventsForCertifiedProductsByIdAndDateRange(Long id, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
         List<ActivityEvent> events = null;
@@ -814,6 +859,24 @@ public class ActivityController {
         return events;
     }
 
+    private List<ActivityEvent> getActivityForCertifiedProduct(final Long start, final Long end,
+            final Long certifiedProductId) throws JsonParseException, IOException, ValidationException {
+        if (start == null && end == null) {
+            return getActivityEventsForCertifiedProductsById(certifiedProductId);
+        } else {
+            Date startDate = null;
+            Date endDate = null;
+            if (start != null) {
+                startDate = new Date(start);
+            }
+            if (end != null) {
+                endDate = new Date(end);
+            }
+            validateActivityDates(start, end);
+            return getActivityEventsForCertifiedProductsByIdAndDateRange(certifiedProductId, startDate, endDate);
+        }
+    }
+    
     private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Long id, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
@@ -1156,4 +1219,5 @@ public class ActivityController {
         }
     }
 
+    
 }
