@@ -34,7 +34,6 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
@@ -660,6 +659,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 // product.getErrorMessages().add("Functionality Tested is
                 // required for certification " + cert.getNumber() + ".");
                 // }
+                
+                //a test tool is required to exist if the criteria is not gap
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
@@ -669,6 +670,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                         cert.getNumber()));
                 }
 
+                //check all the supplied test tools for validity and completeness
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                     for (PendingCertificationResultTestToolDTO pendingTestTool : cert.getTestTools()) {
@@ -837,10 +839,8 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     }
                 }
 
-                // g1 and g2 are the only criteria that ONC supplies test data
-                // for
-                // other criteria probably should have test data but do not have
-                // to
+                // g1 and g2 are the only criteria that ONC supplies test data for
+                // other criteria probably should have test data but do not have to
                 if (!gapEligibleAndTrue
                         && (cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)"))
                         && (cert.getTestData() == null || cert.getTestData().size() == 0)) {
@@ -1580,32 +1580,6 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
     }
 
     /**
-     * Returns true if any of the passed in certs are present
-     * @param toCheck
-     * @param allCerts
-     * @return
-     */
-    private boolean hasAnyCert(List<String> certsToCheck, List<String> allCerts) {
-        boolean result = false;
-        for(String currCertToCheck : certsToCheck) {
-            if(hasCert(currCertToCheck, allCerts)) {
-                result = true;
-            }
-        }
-        return result;
-    }
-    
-    private boolean hasCert(String toCheck, List<String> allCerts) {
-        boolean hasCert = false;
-        for (int i = 0; i < allCerts.size() && !hasCert; i++) {
-            if (allCerts.get(i).equals(toCheck)) {
-                hasCert = true;
-            }
-        }
-        return hasCert;
-    }
-
-    /**
      * look for required complimentary certs when one of the criteria met is a
      * certain class of cert... such as 170.315 (a)(*)
      * 
@@ -1636,78 +1610,6 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                     errors.add("Certification criterion " + criterionNumberStart + "(*) was found " + "so "
                             + currRequiredCriteria + " is required but was not found.");
                 }
-            }
-        }
-        return errors;
-    }
-
-    /**
-     * Look for required complimentary criteria 
-     * 
-     * @param criterionNumbers
-     * @param allCriteriaMet
-     * @param complimentaryCertNumbers
-     * @return
-     */
-    private List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck, 
-            List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
-        List<String> errors = new ArrayList<String>();
-        boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
-        if (hasAnyCert) {
-            for (String complimentaryCert : complimentaryCertNumbers) {
-                boolean hasComplimentaryCert = hasCert(complimentaryCert, allCriteriaMet);
-                
-                if (!hasComplimentaryCert) {
-                    String criterionErrorString = "";
-                    for(int i = 0; i < criterionToCheck.size(); i++) {
-                        String checkedCriteria = criterionToCheck.get(i);
-                        if(i > 0) {
-                            criterionErrorString += " or ";
-                        }
-                        criterionErrorString += checkedCriteria;
-                    }
-                    errors.add("Certification criterion " + criterionErrorString + " was found so "
-                            + complimentaryCert + " is required but was not found.");
-                }
-            }
-        }
-        return errors;
-    }
-    
-    /**
-     * Look for required complimentary criteria 
-     * 
-     * @param criterionNumbers
-     * @param allCriteriaMet
-     * @param complimentaryCertNumbers
-     * @return
-     */
-    private List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck, 
-            List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
-        List<String> errors = new ArrayList<String>();
-        boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
-        if (hasAnyCert) {
-            boolean hasAnyComplimentaryCert = hasAnyCert(complimentaryCertNumbers, allCriteriaMet);
-            if (!hasAnyComplimentaryCert) {
-                String criterionErrorString = "";
-                for(int i = 0; i < criterionToCheck.size(); i++) {
-                    String checkedCriteria = criterionToCheck.get(i);
-                    if(i > 0) {
-                        criterionErrorString += " or ";
-                    }
-                    criterionErrorString += checkedCriteria;
-                }
-                
-                String complimentaryCriterionErrorString = "";
-                for(int i = 0; i < complimentaryCertNumbers.size(); i++) {
-                    String complimentaryCriteria = complimentaryCertNumbers.get(i);
-                    if(i > 0) {
-                        complimentaryCriterionErrorString += " or ";
-                    }
-                    complimentaryCriterionErrorString += complimentaryCriteria;
-                }
-                errors.add("Certification criterion " + criterionErrorString + " was found so "
-                        + complimentaryCriterionErrorString + " is required but was not found.");
             }
         }
         return errors;
