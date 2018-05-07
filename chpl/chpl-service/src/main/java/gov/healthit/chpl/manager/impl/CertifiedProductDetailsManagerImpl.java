@@ -187,7 +187,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
 
         searchDetails.setCertificationResults(
-                    getCertificationResults(certificationResultsFuture, searchDetails));
+                getCertificationResults(certificationResultsFuture, searchDetails));
         searchDetails.setCqmResults(
                 getCqmResultDetails(cqmResultsFuture, dto.getYear()));
         searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
@@ -713,15 +713,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(final Long id)
             throws EntityRetrievalException {
 
-      List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
-      qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
+        List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
+        qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
 
-      List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
-      for (CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
-          CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
-          qmsStandardResults.add(result);
-      }
-      return qmsStandardResults;
+        List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
+        for (CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
+            CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
+            qmsStandardResults.add(result);
+        }
+        return qmsStandardResults;
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(final Long id)
@@ -881,6 +881,11 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     }
 
     private Boolean areAsyncCallsEnabled() {
-        return env.getProperty("asyncEnabled").equalsIgnoreCase("true");
+        try {
+            return env.getProperty("asyncEnabled").equalsIgnoreCase("true");
+        } catch (java.lang.NullPointerException e) {
+            LOGGER.debug("Unable to read asyncEnabled property flag");
+            return true;
+        }
     }
 }
