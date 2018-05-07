@@ -1397,7 +1397,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                 if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
                                     if (super.hasIcsConflict) {
                                         //the ics code is 0 but we can't be sure that's what the user meant
-                                        //because the ICS value in the file is 1 (hence the conflict), 
+                                        //because the ICS value of the listing is TRUE (hence the conflict), 
                                         //so issue a warning since the listing may or may not truly have ICS
                                         product.getWarningMessages().add(String.format(messageSource.getMessage(
                                                 new DefaultMessageSourceResolvable(
