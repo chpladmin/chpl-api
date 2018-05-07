@@ -682,7 +682,15 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                                 "listing.criteria.invalidTestToolName"),
                                         LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getName()));
                             } else {
-                             // Allow retired test tool only if listing ICS = true
+                                //require test tool version
+                                if(StringUtils.isEmpty(pendingTestTool.getVersion())) {
+                                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                            new DefaultMessageSourceResolvable(
+                                                    "listing.criteria.missingTestToolVersion"),
+                                            LocaleContextHolder.getLocale()), pendingTestTool.getName(), cert.getNumber()));
+                                }
+                                
+                                // Allow retired test tool only if listing ICS = true
                                 if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
                                     if (super.hasIcsConflict) {
                                         //the ics code is 0 but we can't be sure that's what the user meant
@@ -1377,6 +1385,14 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                                 "listing.criteria.invalidTestToolName"),
                                         LocaleContextHolder.getLocale()), cert.getNumber(), testTool.getTestToolName()));
                             } else {
+                                //require test tool version
+                                if(StringUtils.isEmpty(testTool.getTestToolVersion())) {
+                                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                            new DefaultMessageSourceResolvable(
+                                                    "listing.criteria.missingTestToolVersion"),
+                                            LocaleContextHolder.getLocale()), testTool.getTestToolName(), cert.getNumber()));
+                                }
+                                
                                 //Allow retired test tool only if listing ICS = true
                                 if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
                                     if (super.hasIcsConflict) {

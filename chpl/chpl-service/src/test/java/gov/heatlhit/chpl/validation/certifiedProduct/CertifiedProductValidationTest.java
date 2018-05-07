@@ -58,6 +58,8 @@ public class CertifiedProductValidationTest {
     private static final String B4_RETIRED_TEST_TOOL_NOT_ALLOWED = "Test Tool 'Transport Testing Tool' can not "
             + "be used for criteria '170.315 (b)(4)', as it is a retired tool, and this "
             + "Certified Product does not carry ICS.";
+    private static final String B4_MISSING_TEST_TOOL_VERSION_ERROR = "There was no version found for test tool "
+            + "Cypress and certification 170.315 (b)(4).";
     private static final String E2E3_D1_MISSING_ERROR = "Certification criterion 170.315 (e)(2) or 170.315 (e)(3) "
             + "was found so 170.315 (d)(1) is required but was not found.";
     private static final String E2E3_D2_MISSING_ERROR = "Certification criterion 170.315 (e)(2) or 170.315 (e)(3) "
@@ -96,6 +98,51 @@ public class CertifiedProductValidationTest {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
 
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingMissingTestToolVersionHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
+        existingTestTool.setName("Cypress");
+        pendingCertResult.getTestTools().add(existingTestTool);
+        pendingCertResults.add(pendingCertResult);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertTrue(pendingListing.getErrorMessages().contains(B4_MISSING_TEST_TOOL_VERSION_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingWithTestToolVersionNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
+        PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
+        existingTestTool.setName("Cypress");
+        existingTestTool.setVersion("1.0.0");
+        pendingCertResult.getTestTools().add(existingTestTool);
+        pendingCertResults.add(pendingCertResult);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertFalse(pendingListing.getErrorMessages().contains(B4_MISSING_TEST_TOOL_VERSION_ERROR));
+    }
+    
     @Transactional
     @Rollback(true)
     @Test
@@ -472,6 +519,51 @@ public class CertifiedProductValidationTest {
     @Transactional
     @Rollback(true)
     @Test
+    public void validateMissingTestToolVersionHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing();
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (b)(4)");
+        CertificationResultTestTool existingTestTool = new CertificationResultTestTool();
+        existingTestTool.setTestToolName("Cypress");
+        certResult.getTestToolsUsed().add(existingTestTool);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertTrue(listing.getErrorMessages().contains(B4_MISSING_TEST_TOOL_VERSION_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateWithTestToolVersionNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing();
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (b)(4)");
+        CertificationResultTestTool existingTestTool = new CertificationResultTestTool();
+        existingTestTool.setTestToolName("Cypress");
+        existingTestTool.setTestToolVersion("1.0.0");
+        certResult.getTestToolsUsed().add(existingTestTool);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertFalse(listing.getErrorMessages().contains(B4_MISSING_TEST_TOOL_VERSION_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
     public void validateBadTestToolNameHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertifiedProductSearchDetails listing = createListing();
@@ -519,9 +611,6 @@ public class CertifiedProductValidationTest {
     public void validateRetiredTestToolNoIcsHasError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         CertifiedProductSearchDetails listing = createListing();
-        InheritedCertificationStatus ics = new InheritedCertificationStatus();
-        ics.setInherits(Boolean.FALSE);
-        listing.setIcs(ics);
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (b)(4)");
         CertificationResultTestTool existingTestTool = new CertificationResultTestTool();
