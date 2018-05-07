@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +10,7 @@ import java.util.concurrent.Future;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -136,6 +136,9 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     @Autowired
     private CertifiedProductDetailsManagerAsync async;
 
+    @Autowired
+    private Environment env;
+
     private CQMCriterionDAO cqmCriterionDAO;
     private MacraMeasureDAO macraDao;
 
@@ -161,45 +164,103 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId)
             throws EntityRetrievalException {
 
-        Date overallStart = new Date();
+        return getCertifiedProductDetails(certifiedProductId, areAsyncCallsEnabled());
+    }
 
-        Date start = new Date();
+
+    @Override
+    @Transactional
+    public CertifiedProductSearchDetails getCertifiedProductDetails(final Long certifiedProductId,
+            final Boolean retrieveAsynchronously) throws EntityRetrievalException {
+
         CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
-        Date end = new Date();
-        LOGGER.info("Time to retrieve CertifiedProductDetailsDTO: " + (end.getTime() - start.getTime()));
 
-        //Shoot off the async data retrieval...
         Future<List<CertifiedProductDetailsDTO>> childrenFuture =
-                async.getCertifiedProductChildren(listingGraphDao, dto.getId());
+                getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
         Future<List<CertifiedProductDetailsDTO>> parentsFuture =
-                async.getCertifiedProductParent(listingGraphDao, dto.getId());
+                getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
         Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
-                async.getCertificationResultDetailsDTOs(certificationResultDetailsDAO, dto.getId());
+                getCertificationResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
         Future<List<CQMResultDetailsDTO>> cqmResultsFuture =
-                async.getCqmResultDetailsDTOs(cqmResultDetailsDAO, dto.getId());
+                getCqmResultDetailsDTOs(dto.getId(), retrieveAsynchronously);
 
         CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
 
         searchDetails.setCertificationResults(
-                    getCertificationResults(certificationResultsFuture, searchDetails));
+                getCertificationResults(certificationResultsFuture, searchDetails));
         searchDetails.setCqmResults(
                 getCqmResultDetails(cqmResultsFuture, dto.getYear()));
         searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
 
         // get first-level parents and children
-        try {
-            List<CertifiedProductDetailsDTO> children = childrenFuture.get();
-            if (children != null && children.size() > 0) {
-                for (CertifiedProductDetailsDTO child : children) {
-                    searchDetails.getIcs().getChildren().add(new CertifiedProduct(child));
-                }
-            }
-        } catch (InterruptedException e) {
-            throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
-        } catch (ExecutionException e) {
-            throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
-        }
+        searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
+        searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
 
+        searchDetails = populateTestingLab(dto, searchDetails);
+
+        return searchDetails;
+    }
+
+    @Override
+    @Transactional
+    public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(final Long certifiedProductId)
+            throws EntityRetrievalException {
+
+        return getCertifiedProductDetailsBasic(certifiedProductId, areAsyncCallsEnabled());
+    }
+
+
+    @Override
+    @Transactional
+    public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(final Long certifiedProductId,
+            final Boolean retrieveAsynchronously) throws EntityRetrievalException {
+
+        CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
+
+        Future<List<CertifiedProductDetailsDTO>> childrenFuture =
+                getCertifiedProductChildren(dto.getId(), retrieveAsynchronously);
+        Future<List<CertifiedProductDetailsDTO>> parentsFuture =
+                getCertifiedProductParents(dto.getId(), retrieveAsynchronously);
+
+        CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+
+        searchDetails.setCertificationEvents(getCertificationStatusEvents(dto.getId()));
+
+        // get first-level parents and children
+        searchDetails.getIcs().setParents(populateParents(parentsFuture, searchDetails));
+        searchDetails.getIcs().setChildren(populateChildren(childrenFuture, searchDetails));
+
+        searchDetails = populateTestingLab(dto, searchDetails);
+
+        return searchDetails;
+    }
+
+    @Override
+    @Transactional
+    public List<CQMResultDetails> getCertifiedProductCqms(final Long certifiedProductId)
+            throws EntityRetrievalException {
+
+        CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
+        Future<List<CQMResultDetailsDTO>> cqmResultsFuture = getCqmResultDetailsDTOs(certifiedProductId, false);
+
+        return getCqmResultDetails(cqmResultsFuture, dto.getYear());
+    }
+
+    @Override
+    @Transactional
+    public List<CertificationResult> getCertifiedProductCertificationResults(final Long certifiedProductId)
+            throws EntityRetrievalException {
+
+        Future<List<CertificationResultDetailsDTO>> certificationResultsFuture =
+                getCertificationResultDetailsDTOs(certifiedProductId, true);
+        CertifiedProductDetailsDTO dto = certifiedProductSearchResultDAO.getById(certifiedProductId);
+        CertifiedProductSearchDetails searchDetails = getCertifiedProductSearchDetails(dto);
+
+        return getCertificationResults(certificationResultsFuture, searchDetails);
+    }
+
+    private CertifiedProductSearchDetails populateTestingLab(final CertifiedProductDetailsDTO dto,
+            final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         List<CertifiedProductTestingLabDTO> testingLabDtos =
                 certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(dto.getId());
         List<CertifiedProductTestingLab> testingLabResults = new ArrayList<CertifiedProductTestingLab>();
@@ -208,23 +269,43 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             testingLabResults.add(result);
         }
         searchDetails.setTestingLabs(testingLabResults);
+        return searchDetails;
+    }
 
+    private List<CertifiedProduct> populateParents(final Future<List<CertifiedProductDetailsDTO>> parentsFuture,
+            final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         try {
-            List<CertifiedProductDetailsDTO> parents = parentsFuture.get();
-            if (parents != null && parents.size() > 0) {
-                for (CertifiedProductDetailsDTO parent : parents) {
-                    searchDetails.getIcs().getParents().add(new CertifiedProduct(parent));
+            List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
+            List<CertifiedProductDetailsDTO> parentDTOs = parentsFuture.get();
+            if (parentDTOs != null && parentDTOs.size() > 0) {
+                for (CertifiedProductDetailsDTO parentDTO : parentDTOs) {
+                    parents.add(new CertifiedProduct(parentDTO));
                 }
             }
+            return parents;
         } catch (InterruptedException e) {
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
         } catch (ExecutionException e) {
             throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
         }
+    }
 
-        Date overallEnd = new Date();
-        LOGGER.info("Time to populate CP Search + Detals: " + (overallEnd.getTime() - overallStart.getTime()));
-        return searchDetails;
+    private List<CertifiedProduct> populateChildren(final Future<List<CertifiedProductDetailsDTO>> childrenFuture,
+            final CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
+        try {
+            List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
+            List<CertifiedProductDetailsDTO> childrenDTOs = childrenFuture.get();
+            if (childrenDTOs != null && childrenDTOs.size() > 0) {
+                for (CertifiedProductDetailsDTO childDTO : childrenDTOs) {
+                    children.add(new CertifiedProduct(childDTO));
+                }
+            }
+            return children;
+        } catch (InterruptedException e) {
+            throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
+        } catch (ExecutionException e) {
+            throw new EntityRetrievalException("Error retrieving Parent Listings: " + e.getMessage());
+        }
     }
 
     public List<CQMCriterion> getCqmCriteria() {
@@ -632,15 +713,15 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private List<CertifiedProductQmsStandard> getCertifiedProductQmsStandards(final Long id)
             throws EntityRetrievalException {
 
-      List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
-      qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
+        List<CertifiedProductQmsStandardDTO> qmsStandardDTOs = new ArrayList<CertifiedProductQmsStandardDTO>();
+        qmsStandardDTOs = certifiedProductQmsStandardDao.getQmsStandardsByCertifiedProductId(id);
 
-      List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
-      for (CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
-          CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
-          qmsStandardResults.add(result);
-      }
-      return qmsStandardResults;
+        List<CertifiedProductQmsStandard> qmsStandardResults = new ArrayList<CertifiedProductQmsStandard>();
+        for (CertifiedProductQmsStandardDTO qmsStandardResult : qmsStandardDTOs) {
+            CertifiedProductQmsStandard result = new CertifiedProductQmsStandard(qmsStandardResult);
+            qmsStandardResults.add(result);
+        }
+        return qmsStandardResults;
     }
 
     private List<CertifiedProductTargetedUser> getCertifiedProductTargetedUsers(final Long id)
@@ -761,5 +842,50 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             }
         }
         return cqmResultCertifications;
+    }
+
+    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductChildren(final Long id,
+            final Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCertifiedProductChildren(listingGraphDao, id);
+        } else {
+            return async.getFutureCertifiedProductChildren(listingGraphDao, id);
+        }
+    }
+
+    private Future<List<CertifiedProductDetailsDTO>> getCertifiedProductParents(final Long id,
+            final Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCertifiedProductParent(listingGraphDao, id);
+        } else {
+            return async.getFutureCertifiedProductParent(listingGraphDao, id);
+        }
+    }
+
+    private Future<List<CertificationResultDetailsDTO>> getCertificationResultDetailsDTOs(final Long id,
+            final Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
+        } else {
+            return async.getFutureCertificationResultDetailsDTOs(certificationResultDetailsDAO, id);
+        }
+    }
+
+    private Future<List<CQMResultDetailsDTO>> getCqmResultDetailsDTOs(final Long id,
+            final Boolean retrieveAsynchronously) {
+        if (retrieveAsynchronously) {
+            return async.getCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
+        } else {
+            return async.getFutureCqmResultDetailsDTOs(cqmResultDetailsDAO, id);
+        }
+    }
+
+    private Boolean areAsyncCallsEnabled() {
+        try {
+            return env.getProperty("asyncEnabled").equalsIgnoreCase("true");
+        } catch (java.lang.NullPointerException e) {
+            LOGGER.debug("Unable to read asyncEnabled property flag");
+            return true;
+        }
     }
 }

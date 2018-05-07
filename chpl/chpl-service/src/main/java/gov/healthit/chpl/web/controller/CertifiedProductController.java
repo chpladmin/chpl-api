@@ -23,6 +23,9 @@ import org.apache.commons.csv.CSVRecord;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -43,7 +46,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -64,7 +66,6 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.CertifiedProductSearchManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandler;
 import gov.healthit.chpl.upload.certifiedProduct.CertifiedProductUploadHandlerFactory;
@@ -74,10 +75,17 @@ import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
+import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
+import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * Certified Product Controller.
+ * @author alarned
+ *
+ */
 @Api(value = "certified-products")
 @RestController
 @RequestMapping("/certified_products")
@@ -91,8 +99,6 @@ public class CertifiedProductController {
     private CertifiedProductDetailsManager cpdManager;
     @Autowired
     private CertifiedProductManager cpManager;
-//    @Autowired
-//    private CertifiedProductSearchManager searchManager;
     @Autowired
     private PendingCertifiedProductManager pcpManager;
     @Autowired
@@ -101,13 +107,20 @@ public class CertifiedProductController {
     private ActivityManager activityManager;
     @Autowired
     private CertifiedProductValidatorFactory validatorFactory;
-//    @Autowired
-//    private CertifiedProductDAO cpDao;
     @Autowired
     private MeaningfulUseController meaningfulUseController;
     @Autowired
     private Environment env;
+    @Autowired
+    private MessageSource messageSource;
 
+    /**
+     * List all certified products.
+     * @param versionId if entered, filters list to only listings under given version
+     * @param editable if true, returns only those user has ability to edit
+     * @return list of certified products
+     * @throws EntityRetrievalException if unable to retrieve entity
+     */
     @ApiOperation(value = "List all certified products",
             notes = "Default behavior is to return all certified products in the system. "
                     + " The optional 'versionId' parameter filters the certified products to those"
@@ -138,12 +151,19 @@ public class CertifiedProductController {
         return products;
     }
 
+    /**
+     * Get all details for a specified certified product.
+     * @param certifiedProductId database id of listing
+     * @return Listing Details domain object
+     * @throws EntityRetrievalException if cannot retrieve Listing
+     */
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId}/details", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
         CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
@@ -153,6 +173,56 @@ public class CertifiedProductController {
         return certifiedProduct;
     }
 
+    @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
+                            + "the CQM results and certification results.",
+            notes = "Returns basic information in the CHPL related to the specified certified product.  "
+                    + "The results will not include the CQM results and certification results.")
+    @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
+        CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasic(certifiedProductId);
+        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
+        if (validator != null) {
+            validator.validate(certifiedProduct);
+       }
+
+        return certifiedProduct;
+    }
+
+    @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
+            notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
+    @RequestMapping(value = "/{certifiedProductId}/cqm_results", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
+        CQMResultDetailResults results =
+                new CQMResultDetailResults(cpdManager.getCertifiedProductCqms(certifiedProductId));
+
+        return results;
+    }
+
+    @ApiOperation(value = "Get all of the certification results for a specified certified product.",
+            notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
+    @RequestMapping(value = "/{certifiedProductId}/certification_results", method = RequestMethod.GET,
+    produces = "application/json; charset=utf-8")
+    public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
+            @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
+
+        CertificationResults results =
+                new CertificationResults(cpdManager.getCertifiedProductCertificationResults(certifiedProductId));
+
+        return results;
+    }
+
+  /**
+     * Download all SED details that are certified to 170.315(g)(3).
+     * @param response http response
+     * @throws EntityRetrievalException if cannot retrieve entity
+     * @throws IOException if IO Exception
+     */
     @ApiOperation(value = "Download all SED details that are certified to 170.315(g)(3).",
             notes = "Download a specific file that is generated overnight.")
     @RequestMapping(value = "/sed_details", method = RequestMethod.GET)
@@ -160,6 +230,7 @@ public class CertifiedProductController {
             throws EntityRetrievalException, IOException {
         Path path = Paths.get(env.getProperty("downloadFolderPath"), env.getProperty("SEDDownloadName"));
         File downloadFile = new File(path.toUri());
+        final int bufferSize = 1024;
         byte[] data = Files.readAllBytes(path);
 
         if (data != null && data.length > 0) {
@@ -168,7 +239,7 @@ public class CertifiedProductController {
             String mimeType = "text/csv";
             // set content attributes for the response
             response.setContentType(mimeType);
-            response.setContentLength((int) data.length);
+            response.setContentLength(data.length);
 
             // set headers for the response
             String headerKey = "Content-Disposition";
@@ -178,7 +249,7 @@ public class CertifiedProductController {
             // get output stream of the response
             OutputStream outStream = response.getOutputStream();
 
-            byte[] buffer = new byte[1024];
+            byte[] buffer = new byte[bufferSize];
             int bytesRead = -1;
 
             // write bytes read from the input stream into the output stream
@@ -191,6 +262,12 @@ public class CertifiedProductController {
         }
     }
 
+    /**
+     * Get the ICS family tree for the specified certified product.
+     * @param certifiedProductId specified product
+     * @return list of ICS Family Tree nodes
+     * @throws EntityRetrievalException if cannot retrieve entity
+     */
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
             notes = "Returns all member of the family tree conected to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId}/ics_relationships", method = RequestMethod.GET,
@@ -202,6 +279,18 @@ public class CertifiedProductController {
         return familyTree;
     }
 
+    /**
+     * Update an existing certified product.
+     * @param updateRequest the update request
+     * @return the updated listing
+     * @throws EntityCreationException if cannot create entity
+     * @throws EntityRetrievalException if cannot retrieve entity
+     * @throws InvalidArgumentsException if invalid arguments
+     * @throws JsonProcessingException if cannot parse JSON
+     * @throws IOException if IO Exception
+     * @throws ValidationException if invalid update
+     * @throws MissingReasonException if missing reason for change
+     */
     @ApiOperation(value = "Update an existing certified product.",
             notes = "Updates the certified product after first validating the request. The logged in"
                     + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
@@ -260,9 +349,10 @@ public class CertifiedProductController {
                 boolean isDup = cpManager.chplIdExists(updatedListing.getChplProductNumber());
                 if (isDup) {
                     updatedListing.getErrorMessages()
-                    .add("The CHPL Product Number has changed. The new CHPL Product Number "
-                            + updatedListing.getChplProductNumber()
-                            + " must be unique among all other certified products but one already exists with the same ID. Edit a part of the CHPL product number (e.g. the version code) to make it unique.");
+                    .add(String
+                            .format(messageSource.getMessage(
+                                    new DefaultMessageSourceResolvable("listing.upload.changedNotUnique"),
+                                    LocaleContextHolder.getLocale()), updatedListing.getChplProductNumber()));
                 }
             } catch (final EntityRetrievalException ex) {
             }
@@ -302,6 +392,11 @@ public class CertifiedProductController {
         return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
     }
 
+    /**
+     * Get all pending Certified Products.
+     * @return list of pending Listings
+     * @throws EntityRetrievalException if cannot retrieve entity
+     */
     @ApiOperation(value = "List pending certified products.",
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and approved by an appropriate ACB administrator.")
@@ -335,6 +430,15 @@ public class CertifiedProductController {
         return results;
     }
 
+    /**
+     * Get a specific pending Listing.
+     * @param pcpId the listing's id
+     * @return the pending listing
+     * @throws EntityRetrievalException if entity could not be retrieved
+     * @throws EntityNotFoundException if entity could not be found
+     * @throws AccessDeniedException if user does not have access to listing
+     * @throws ObjectMissingValidationException if validation is missing
+     */
     @ApiOperation(value = "List a specific pending certified product.", notes = "")
     @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
@@ -346,6 +450,17 @@ public class CertifiedProductController {
         return details;
     }
 
+    /**
+     * Reject a pending Listing.
+     * @param id the listing to reject
+     * @return status of request
+     * @throws EntityRetrievalException if entity can not be retrieved
+     * @throws JsonProcessingException if JSON cannot be processed
+     * @throws EntityCreationException if entity cannot be created
+     * @throws EntityNotFoundException if entity not found
+     * @throws AccessDeniedException if user does not have access
+     * @throws ObjectMissingValidationException if missing validation
+     */
     @ApiOperation(value = "Reject a pending certified product.",
             notes = "Essentially deletes a pending certified product. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
@@ -359,6 +474,18 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
+    /**
+     * Reject several pending listings.
+     * @param idList list of ids
+     * @return status of request
+     * @throws EntityRetrievalException if entity can not be retrieved
+     * @throws JsonProcessingException if JSON cannot be processed
+     * @throws EntityCreationException if entity cannot be created
+     * @throws EntityNotFoundException if entity not found
+     * @throws AccessDeniedException if user does not have access
+     * @throws InvalidArgumentsException if arguments are invalid
+     * @throws ObjectsMissingValidationException if missing validation
+     */
     @ApiOperation(value = "Reject several pending certified products.",
             notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.")
@@ -387,6 +514,17 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
+    /**
+     * Confirm a pending listing.
+     * @param pendingCp the listing's id
+     * @return the created listing
+     * @throws InvalidArgumentsException if arguments are invalid
+     * @throws ValidationException if validation fails
+     * @throws EntityCreationException if entity can not be created
+     * @throws EntityRetrievalException if entity can not be retrieved
+     * @throws ObjectMissingValidationException if object is missing validation
+     * @throws IOException if IO Exception occurs
+     */
     @ApiOperation(value = "Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + " passed in on the request. This information may differ from what was previously "
@@ -429,9 +567,19 @@ public class CertifiedProductController {
         return null;
     }
 
-    @ApiOperation(
-            value = "DEPRECATED. Upload a file to update the number of meaningful use users for each CHPL Product Number",
-            notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users to update the number of meaningful use users for each CHPL Product Number."
+    /**
+     * Upload a file to update number of MUU for each Listing.
+     * @param file the file to upload
+     * @return status of the action
+     * @throws EntityCreationException if entity can not be created
+     * @throws EntityRetrievalException if entity can not be retrieved
+     * @throws ValidationException if validation fails
+     * @throws MaxUploadSizeExceededException if file is too large
+     */
+    @ApiOperation(value = "DEPRECATED. Upload a file to update the number "
+            + "of meaningful use users for each CHPL Product Number",
+            notes = "Accepts a CSV file with chpl_product_number and num_meaningful_use_users "
+                    + "to update the number of meaningful use users for each CHPL Product Number."
                     + " The user uploading the file must have ROLE_ADMIN or ROLE_ONC_STAFF ")
     @RequestMapping(value = "/meaningful_use_users/upload", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
@@ -442,6 +590,13 @@ public class CertifiedProductController {
         return meaningfulUseController.uploadMeaningfulUseUsers(file);
     }
 
+    /**
+     * Upload a file with certified products.
+     * @param file the file
+     * @return the list of pending listings
+     * @throws ValidationException if validation fails
+     * @throws MaxUploadSizeExceededException if the file is too large
+     */
     @ApiOperation(value = "Upload a file with certified products",
             notes = "Accepts a CSV file with very specific fields to create pending certified products. "
                     + " The user uploading the file must have ROLE_ACB "
@@ -468,8 +623,9 @@ public class CertifiedProductController {
 
             List<CSVRecord> records = parser.getRecords();
             if (records.size() <= 1) {
-                throw new ValidationException(
-                        "The file appears to have a header line with no other information. Please make sure there are at least two rows in the CSV file.");
+                throw new ValidationException(String
+                        .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.emptyRows"),
+                                LocaleContextHolder.getLocale())));
             }
 
             Set<String> handlerErrors = new HashSet<String>();
@@ -484,11 +640,9 @@ public class CertifiedProductController {
             for (int i = 0; i < records.size(); i++) {
                 CSVRecord currRecord = records.get(i);
 
-                if (heading == null && !StringUtils.isEmpty(currRecord.get(1))
-                        && currRecord.get(1).equals("RECORD_STATUS__C")) {
-                    // have to find the heading first
+                if (heading == null) {
                     heading = currRecord;
-                } else if (heading != null) {
+                } else {
                     if (!StringUtils.isEmpty(currRecord.get(0))) {
                         String currUniqueId = currRecord.get(0);
                         String currStatus = currRecord.get(1);
@@ -576,7 +730,9 @@ public class CertifiedProductController {
             }
         } catch (final IOException ioEx) {
             LOGGER.error("Could not get input stream for uploaded file " + file.getName());
-            throw new ValidationException("Could not get input stream for uploaded file " + file.getName());
+            throw new ValidationException(String
+                    .format(messageSource.getMessage(new DefaultMessageSourceResolvable("listing.upload.couldNotParse"),
+                            LocaleContextHolder.getLocale()), file.getName()));
         } finally {
             try {
                 parser.close();
@@ -587,7 +743,6 @@ public class CertifiedProductController {
             } catch (Exception ignore) {
             }
         }
-
 
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
         results.getPendingCertifiedProducts().addAll(uploadedProducts);

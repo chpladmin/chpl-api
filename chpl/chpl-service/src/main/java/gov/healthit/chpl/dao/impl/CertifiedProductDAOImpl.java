@@ -359,7 +359,8 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         }
 
         Query prodQuery = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
-                + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.id in (:productIds)",
+                + "LEFT OUTER JOIN FETCH deets.product " + "WHERE deets.id in (:productIds) "
+                + " AND deets.deleted = false",
                 CertifiedProductDetailsEntity.class);
         prodQuery.setParameter("productIds", productIds);
         List<CertifiedProductDetailsEntity> results = prodQuery.getResultList();

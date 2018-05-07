@@ -36,6 +36,11 @@ import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 
+/**
+ * Tests for Certified Product basic DAO.
+ * @author alarned
+ *
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = gov.healthit.chpl.CHPLTestConfig.class)
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
@@ -45,116 +50,173 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductDaoTest {
 
-	@Autowired
-	private CertifiedProductDAO productDao;
-	static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
-	
-	@Rule
+    @Autowired
+    private CertifiedProductDAO productDao;
+    private static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})"
+            + "(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
+    private static final long ADMIN_ID = -2L;
+    private static final int LISTING_COUNT = 16;
+    private static final long BASIC_LISTING_ID = 1L;
+    private static final long ANOTHER_LISTING_ID = 2L;
+    private static final long DELETED_LISTING_ID = 11L;
+
+    @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
-	private static JWTAuthenticatedUser authUser;
-	private static Pattern urlPattern = Pattern.compile(URL_PATTERN);
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		authUser = new JWTAuthenticatedUser();
-		authUser.setFirstName("Admin");
-		authUser.setId(-2L);
-		authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
+    private static JWTAuthenticatedUser authUser;
+    private static Pattern urlPattern = Pattern.compile(URL_PATTERN);
 
-	@Test
-	public void testUrlPattern() {
-		String badUrl = "www.google.com";
-		
-		assertEquals(false, urlPattern.matcher(badUrl).matches());
-		
-		String goodUrl = "http://www.google.com";
-		assertEquals(true, urlPattern.matcher(goodUrl).matches());
-	}
-	
-	@Test
-	@Transactional(readOnly = true)
-	public void getAllCertifiedProducts() {
-		List<CertifiedProductDetailsDTO> results = productDao.findAll();
-		assertNotNull(results);
-		assertEquals(16, results.size());
-	}
-	
-	@Test
-	@Transactional(readOnly = true)
-	public void getById() {
-		Long productId = 1L;
-		CertifiedProductDTO product = null;
-		try {
-			product = productDao.getById(productId);
-		} catch(EntityRetrievalException ex) {
-			fail("Could not find version with id " + productId);
-		}
-		assertNotNull(product);
-		assertEquals(1, product.getId().longValue());
-	}
-	
-	@Test
-	@Transactional(readOnly = true)
-	public void getProductsByVersion() {
-		Long versionId = 1L;
-		List<CertifiedProductDetailsDTO> products = null;
-		products = productDao.getDetailsByVersionId(versionId);
-		assertNotNull(products);
-		assertEquals(2, products.size());
-	}
-	
-	@Test
-	@Transactional(readOnly = true)
-	public void getDetailsByChplNumbers() {
-		List<String> chplProductNumbers = new ArrayList<String>();
-		chplProductNumbers.add("CHP-024050");
-		chplProductNumbers.add("CHP-024051");
-		chplProductNumbers.add("CHP-024052");
-		List<CertifiedProductDetailsDTO> products = null;
-		products = productDao.getDetailsByChplNumbers(chplProductNumbers);
-		assertNotNull(products);
-		assertEquals(3, products.size());
-	}
-	
-	/**
-	 * Given that I am ROLE_ONC_STAFF or ROLE_ADMIN
-	 * When I update a CHPL Product Number's count of meaningfulUseUsers
-	 * Then the database shows the change for only the CHPL Product Number's meaningfulUseUsers
-	 * @throws EntityRetrievalException
-	 * @throws IOException 
-	 */
-	@Test
-	@Transactional(readOnly = true)
-	@Rollback
-	public void updateMeaningfulUseUsers() throws EntityRetrievalException, IOException {
-		SecurityContextHolder.getContext().setAuthentication(authUser);
-		CertifiedProductDTO dto = new CertifiedProductDTO();
-		dto.setChplProductNumber("CHP-024050");
-		dto.setMeaningfulUseUsers(11L);
-		CertifiedProductDTO dtoResponse = new CertifiedProductDTO();
-		dtoResponse = productDao.updateMeaningfulUseUsers(dto);
-		assertNotNull(dtoResponse);
-		assertTrue(dtoResponse.getChplProductNumber().equalsIgnoreCase("CHP-024050"));
-		assertTrue(dtoResponse.getMeaningfulUseUsers() == 11L);
-		assertTrue(dtoResponse.getCertificationEditionId() != null);
-	}
-	
-	/**
-	 * Given that I am authenticated as an admin
-	 * When I delete a certified product
-	 * Then that certified product no longer exists in the database
-	 * @throws EntityRetrievalException 
-	 */
-	@Test
-	@Transactional(readOnly = false)
-	@Rollback
-	public void delete() throws EntityRetrievalException {
-		SecurityContextHolder.getContext().setAuthentication(authUser);
-		Long productId = 1L;
-		productDao.delete(productId);
-		CertifiedProductDTO deletedProduct = productDao.getById(productId);
-		assertTrue(deletedProduct.getDeleted());
-	}
+    /**
+     * Set up steps.
+     */
+    @BeforeClass
+    public static void setUpClass() {
+        authUser = new JWTAuthenticatedUser();
+        authUser.setFirstName("Admin");
+        authUser.setId(ADMIN_ID);
+        authUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
+
+    /**
+     * Test good vs bad URLs.
+     */
+    @Test
+    public void testUrlPattern() {
+        String badUrl = "www.google.com";
+
+        assertEquals(false, urlPattern.matcher(badUrl).matches());
+
+        String goodUrl = "http://www.google.com";
+        assertEquals(true, urlPattern.matcher(goodUrl).matches());
+    }
+
+    /**
+     * Test we can get all Listings.
+     */
+    @Test
+    @Transactional(readOnly = true)
+    public void getAllCertifiedProducts() {
+        List<CertifiedProductDetailsDTO> results = productDao.findAll();
+        assertNotNull(results);
+        assertEquals(LISTING_COUNT, results.size());
+    }
+
+    /**
+     * Test that we can get a Listing.
+     */
+    @Test
+    @Transactional(readOnly = true)
+    public void getById() {
+        Long productId = BASIC_LISTING_ID;
+        CertifiedProductDTO product = null;
+        try {
+            product = productDao.getById(productId);
+        } catch (EntityRetrievalException ex) {
+            fail("Could not find version with id " + productId);
+        }
+        assertNotNull(product);
+        assertEquals(1, product.getId().longValue());
+    }
+
+    /**
+     * Test that we can get Listings under a Version.
+     */
+    @Test
+    @Transactional(readOnly = true)
+    public void getProductsByVersion() {
+        final int expectedListings = 2;
+        Long versionId = BASIC_LISTING_ID;
+        List<CertifiedProductDetailsDTO> products = null;
+        products = productDao.getDetailsByVersionId(versionId);
+        assertNotNull(products);
+        assertEquals(expectedListings, products.size());
+    }
+
+    /**
+     * Test that we can get Listings based on CHPL Product Numbers.
+     */
+    @Test
+    @Transactional(readOnly = true)
+    public void getDetailsByChplNumbers() {
+        final int expectedCount = 3;
+        List<String> chplProductNumbers = new ArrayList<String>();
+        chplProductNumbers.add("CHP-024050");
+        chplProductNumbers.add("CHP-024051");
+        chplProductNumbers.add("CHP-024052");
+        List<CertifiedProductDetailsDTO> products = null;
+        products = productDao.getDetailsByChplNumbers(chplProductNumbers);
+        assertNotNull(products);
+        assertEquals(expectedCount, products.size());
+    }
+
+    /**
+     * Given that I am ROLE_ONC_STAFF or ROLE_ADMIN
+     * when I update a CHPL Product Number's count of meaningfulUseUsers
+     * then the database shows the change for only the CHPL Product Number's meaningfulUseUsers.
+     * @throws EntityRetrievalException if cannot retrieve entity
+     * @throws IOException if IO Exception
+     */
+    @Test
+    @Transactional(readOnly = true)
+    @Rollback
+    public void updateMeaningfulUseUsers() throws EntityRetrievalException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
+        CertifiedProductDTO dto = new CertifiedProductDTO();
+        dto.setChplProductNumber("CHP-024050");
+        dto.setMeaningfulUseUsers(DELETED_LISTING_ID);
+        CertifiedProductDTO dtoResponse = new CertifiedProductDTO();
+        dtoResponse = productDao.updateMeaningfulUseUsers(dto);
+        assertNotNull(dtoResponse);
+        assertTrue(dtoResponse.getChplProductNumber().equalsIgnoreCase("CHP-024050"));
+        assertTrue(dtoResponse.getMeaningfulUseUsers() == DELETED_LISTING_ID);
+        assertTrue(dtoResponse.getCertificationEditionId() != null);
+    }
+
+    /**
+     * Given that I am authenticated as an admin
+     * when I delete a certified product
+     * then that certified product no longer exists in the database.
+     * @throws EntityRetrievalException if cannot retrieve entity
+     */
+    @Test
+    @Transactional(readOnly = false)
+    @Rollback
+    public void delete() throws EntityRetrievalException {
+        SecurityContextHolder.getContext().setAuthentication(authUser);
+        Long productId = BASIC_LISTING_ID;
+        productDao.delete(productId);
+        CertifiedProductDTO deletedProduct = productDao.getById(productId);
+        assertTrue(deletedProduct.getDeleted());
+    }
+
+    /**
+     * Test that we can get Listings by array list of IDs.
+     * @throws EntityRetrievalException if cannot retrieve listings
+     */
+    @Test
+    @Transactional(readOnly = true)
+    @Rollback
+    public void getDetailsByIdsWorks() throws EntityRetrievalException {
+        final int expectedCount = 2;
+        List<Long> ids = new ArrayList<Long>();
+        ids.add(BASIC_LISTING_ID);
+        ids.add(ANOTHER_LISTING_ID);
+        assertEquals(expectedCount, productDao.getDetailsByIds(ids).size());
+    }
+
+    /**
+     * Test that we don't get deleted listings by array list of IDs.
+     * @throws EntityRetrievalException if cannot retrieve listing
+     */
+    @Test
+    @Transactional(readOnly = true)
+    @Rollback
+    public void getDetailsByIdsWithDeletedItem() throws EntityRetrievalException {
+        final int expectedCount = 1;
+        List<Long> ids = new ArrayList<Long>();
+        ids.add(BASIC_LISTING_ID);
+        ids.add(DELETED_LISTING_ID);
+        assertEquals(expectedCount, productDao.getDetailsByIds(ids).size());
+    }
 }

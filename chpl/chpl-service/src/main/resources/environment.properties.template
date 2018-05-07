@@ -10,7 +10,7 @@ questionableActivityThresholdDays=0
 # job properties
 #
 #display jobs that are currently running or have completed within the last jobThresholdDays days
-jobThresholdDays=7 
+jobThresholdDays=7
 #how many surveillances should be in a file before it's turned into a job?
 surveillanceThresholdToProcessAsJob=50
 
@@ -25,7 +25,7 @@ enableCacheInitialization=true
 cacheClearTimeoutSecs=15
 cacheInitializeTimeoutSecs=300
 #how long to wait before first loading the prefetched listing cache
-listingCacheRefreshInitialDelayMillis=300000
+listingCacheRefreshInitialDelayMillis=5000
 #how to long to wait after prefetched listing cache has loaded before starting to load it again
 listingCacheRefreshDelayMillis=60000
 
@@ -102,3 +102,6 @@ smtpUsername=intranet/chpladmin
 smtpPassword=
 
 chplUrlBegin=http://localhost:8000/app
+
+#Asynchronous - should always be true
+asyncEnabled=true
