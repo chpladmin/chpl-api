@@ -101,7 +101,10 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
             "170.315 (b)(1)", "170.315 (b)(2)", "170.315 (b)(4)", "170.315 (b)(6)", "170.315 (b)(9)", "170.315 (e)(1)",
             "170.315 (g)(9)"
     };
-
+    private List<String> e2e3Criterion = new ArrayList<String>();
+    private List<String> g7g8g9Criterion = new ArrayList<String>();
+    private List<String> d2d10Criterion = new ArrayList<String>();
+    
     @Autowired
     TestToolDAO testToolDao;
     @Autowired
@@ -119,6 +122,18 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
     @Autowired
     CertifiedProductSearchDAO searchDao;
 
+    public CertifiedProduct2015Validator() {
+        e2e3Criterion.add("170.315 (e)(2)");
+        e2e3Criterion.add("170.315 (e)(3)");    
+    
+        g7g8g9Criterion.add("170.315 (g)(7)");
+        g7g8g9Criterion.add("170.315 (g)(8)");
+        g7g8g9Criterion.add("170.315 (g)(9)");
+        
+        d2d10Criterion.add("170.315 (d)(2)");
+        d2d10Criterion.add("170.315 (d)(10)");
+    }
+    
     @Override
     public void validate(PendingCertifiedProductDTO product) {
         super.validate(product);
@@ -198,26 +213,16 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
         }
 
         // check for (e)(2) or (e)(3) required complimentary certs
-        List<String> e2e3Criterion = new ArrayList<String>();
-        e2e3Criterion.add("170.315 (e)(2)");
-        e2e3Criterion.add("170.315 (e)(3)");
         List<String> e2e3ComplimentaryErrors = 
                 checkComplimentaryCriteriaAllRequired(e2e3Criterion, Arrays.asList(e2Ore3ComplimentaryCerts), allMetCerts);
         product.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
-        List<String> g7g8g9Criterion = new ArrayList<String>();
-        g7g8g9Criterion.add("170.315 (g)(7)");
-        g7g8g9Criterion.add("170.315 (g)(8)");
-        g7g8g9Criterion.add("170.315 (g)(9)");
         List<String> g7g8g9ComplimentaryErrors = 
                 checkComplimentaryCriteriaAllRequired(g7g8g9Criterion, Arrays.asList(g7Org8Org9ComplimentaryCerts), allMetCerts);
         product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
         
         //if g7, g8, or g9 is found then one of d2 or d10 is required
-        List<String> d2d10Criterion = new ArrayList<String>();
-        d2d10Criterion.add("170.315 (d)(2)");
-        d2d10Criterion.add("170.315 (d)(10)");
         g7g8g9ComplimentaryErrors = 
                 checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, allMetCerts);
         product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
@@ -968,26 +973,16 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
         }
 
         // check for (e)(2) or (e)(3) certs
-        List<String> e2e3Criterion = new ArrayList<String>();
-        e2e3Criterion.add("170.315 (e)(2)");
-        e2e3Criterion.add("170.315 (e)(3)");
         List<String> e2e3ComplimentaryErrors = 
                 checkComplimentaryCriteriaAllRequired(e2e3Criterion, Arrays.asList(e2Ore3ComplimentaryCerts), allMetCerts);
         product.getErrorMessages().addAll(e2e3ComplimentaryErrors);
 
         // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
-        List<String> g7g8g9Criterion = new ArrayList<String>();
-        g7g8g9Criterion.add("170.315 (g)(7)");
-        g7g8g9Criterion.add("170.315 (g)(8)");
-        g7g8g9Criterion.add("170.315 (g)(9)");
         List<String> g7g8g9ComplimentaryErrors = 
                 checkComplimentaryCriteriaAllRequired(g7g8g9Criterion, Arrays.asList(g7Org8Org9ComplimentaryCerts), allMetCerts);
         product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
         
         //if g7, g8, or g9 is found then one of d2 or d10 is required
-        List<String> d2d10Criterion = new ArrayList<String>();
-        d2d10Criterion.add("170.315 (d)(2)");
-        d2d10Criterion.add("170.315 (d)(10)");
         g7g8g9ComplimentaryErrors = 
                 checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, allMetCerts);
         product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
