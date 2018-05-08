@@ -173,7 +173,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
      * @param complimentaryCertNumbers
      * @return a list of error messages
      */
-    public List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck, 
+    protected List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck, 
             List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
@@ -208,7 +208,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
      * @param complimentaryCertNumbers
      * @return a list of error messages
      */
-    public List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck, 
+    protected List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck, 
             List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
@@ -245,7 +245,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
      * @param allCerts
      * @return
      */
-    public boolean hasAnyCert(List<String> certsToCheck, List<String> allCerts) {
+    protected boolean hasAnyCert(List<String> certsToCheck, List<String> allCerts) {
         boolean result = false;
         for(String currCertToCheck : certsToCheck) {
             if(hasCert(currCertToCheck, allCerts)) {
@@ -255,7 +255,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         return result;
     }
     
-    public boolean hasCert(String toCheck, List<String> allCerts) {
+    protected boolean hasCert(String toCheck, List<String> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
             if (allCerts.get(i).equals(toCheck)) {
