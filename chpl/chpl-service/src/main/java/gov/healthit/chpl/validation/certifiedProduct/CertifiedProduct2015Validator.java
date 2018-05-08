@@ -674,41 +674,52 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
                     for (PendingCertificationResultTestToolDTO pendingTestTool : cert.getTestTools()) {
+                        TestToolDTO foundTestTool = null;
                         //no new test tools are allowed to be added 
                         //so make sure a test tool by this name exists
                         if (pendingTestTool.getTestToolId() == null) {
-                            TestToolDTO foundTestTool = testToolDao.getByName(pendingTestTool.getName());
+                            foundTestTool = testToolDao.getByName(pendingTestTool.getName());
                             if (foundTestTool == null || foundTestTool.getId() == null) {
                                 product.getErrorMessages().add(String.format(messageSource.getMessage(
                                         new DefaultMessageSourceResolvable(
                                                 "listing.criteria.invalidTestToolName"),
                                         LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getName()));
-                            } else {
-                                //require test tool version
-                                if(StringUtils.isEmpty(pendingTestTool.getVersion())) {
+                            }
+                        } else {
+                            foundTestTool = testToolDao.getById(pendingTestTool.getId());
+                            if (foundTestTool == null || foundTestTool.getId() == null) {
+                                product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.invalidTestToolId"),
+                                        LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getId()));
+                            }
+                        }
+                        
+                        if(foundTestTool != null) {
+                            //require test tool version
+                            if(StringUtils.isEmpty(pendingTestTool.getVersion())) {
+                                product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.missingTestToolVersion"),
+                                        LocaleContextHolder.getLocale()), pendingTestTool.getName(), cert.getNumber()));
+                            }
+                            
+                            // Allow retired test tool only if listing ICS = true
+                            if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
+                                if (super.hasIcsConflict) {
+                                    //the ics code is 0 but we can't be sure that's what the user meant
+                                    //because the ICS value in the file is 1 (hence the conflict), 
+                                    //so issue a warning since the listing may or may not truly have ICS
+                                    product.getWarningMessages().add(String.format(messageSource.getMessage(
+                                            new DefaultMessageSourceResolvable(
+                                                    "listing.criteria.retiredTestToolNotAllowed"),
+                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
+                                } else {
+                                    //the listing does not have ICS so retired tools are definitely not allowed - error
                                     product.getErrorMessages().add(String.format(messageSource.getMessage(
                                             new DefaultMessageSourceResolvable(
-                                                    "listing.criteria.missingTestToolVersion"),
-                                            LocaleContextHolder.getLocale()), pendingTestTool.getName(), cert.getNumber()));
-                                }
-                                
-                                // Allow retired test tool only if listing ICS = true
-                                if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
-                                    if (super.hasIcsConflict) {
-                                        //the ics code is 0 but we can't be sure that's what the user meant
-                                        //because the ICS value in the file is 1 (hence the conflict), 
-                                        //so issue a warning since the listing may or may not truly have ICS
-                                        product.getWarningMessages().add(String.format(messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "listing.criteria.retiredTestToolNotAllowed"),
-                                                LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
-                                    } else {
-                                        //the listing does not have ICS so retired tools are definitely not allowed - error
-                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "listing.criteria.retiredTestToolNotAllowed"),
-                                                LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
-                                    }
+                                                    "listing.criteria.retiredTestToolNotAllowed"),
+                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
                                 }
                             }
                         }
@@ -1375,41 +1386,52 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
                         && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                     for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+                        TestToolDTO foundTestTool = null;
                         //no new test tools are allowed to be added 
                         //so make sure a test tool by this name exists
                         if (testTool.getTestToolId() == null) {
-                            TestToolDTO foundTestTool = testToolDao.getByName(testTool.getTestToolName());
+                            foundTestTool = testToolDao.getByName(testTool.getTestToolName());
                             if (foundTestTool == null || foundTestTool.getId() == null) {
                                 product.getErrorMessages().add(String.format(messageSource.getMessage(
                                         new DefaultMessageSourceResolvable(
                                                 "listing.criteria.invalidTestToolName"),
                                         LocaleContextHolder.getLocale()), cert.getNumber(), testTool.getTestToolName()));
-                            } else {
-                                //require test tool version
-                                if(StringUtils.isEmpty(testTool.getTestToolVersion())) {
+                            }
+                        } else {
+                            foundTestTool = testToolDao.getById(testTool.getTestToolId());
+                            if (foundTestTool == null || foundTestTool.getId() == null) {
+                                product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.invalidTestToolId"),
+                                        LocaleContextHolder.getLocale()), cert.getNumber(), testTool.getTestToolId()));
+                            }
+                        }
+                        
+                        if(foundTestTool != null) {
+                            //require test tool version
+                            if(StringUtils.isEmpty(testTool.getTestToolVersion())) {
+                                product.getErrorMessages().add(String.format(messageSource.getMessage(
+                                        new DefaultMessageSourceResolvable(
+                                                "listing.criteria.missingTestToolVersion"),
+                                        LocaleContextHolder.getLocale()), testTool.getTestToolName(), cert.getNumber()));
+                            }
+                            
+                            //Allow retired test tool only if listing ICS = true
+                            if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
+                                if (super.hasIcsConflict) {
+                                    //the ics code is 0 but we can't be sure that's what the user meant
+                                    //because the ICS value of the listing is TRUE (hence the conflict), 
+                                    //so issue a warning since the listing may or may not truly have ICS
+                                    product.getWarningMessages().add(String.format(messageSource.getMessage(
+                                            new DefaultMessageSourceResolvable(
+                                                    "listing.criteria.retiredTestToolNotAllowed"),
+                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
+                                } else {
+                                    //the listing does not have ICS so retired tools are definitely not allowed - error
                                     product.getErrorMessages().add(String.format(messageSource.getMessage(
                                             new DefaultMessageSourceResolvable(
-                                                    "listing.criteria.missingTestToolVersion"),
-                                            LocaleContextHolder.getLocale()), testTool.getTestToolName(), cert.getNumber()));
-                                }
-                                
-                                //Allow retired test tool only if listing ICS = true
-                                if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
-                                    if (super.hasIcsConflict) {
-                                        //the ics code is 0 but we can't be sure that's what the user meant
-                                        //because the ICS value of the listing is TRUE (hence the conflict), 
-                                        //so issue a warning since the listing may or may not truly have ICS
-                                        product.getWarningMessages().add(String.format(messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "listing.criteria.retiredTestToolNotAllowed"),
-                                                LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
-                                    } else {
-                                        //the listing does not have ICS so retired tools are definitely not allowed - error
-                                        product.getErrorMessages().add(String.format(messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "listing.criteria.retiredTestToolNotAllowed"),
-                                                LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
-                                    }
+                                                    "listing.criteria.retiredTestToolNotAllowed"),
+                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
                                 }
                             }
                         }
