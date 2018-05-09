@@ -691,12 +691,12 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                         LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getName()));
                             }
                         } else {
-                            foundTestTool = testToolDao.getById(pendingTestTool.getId());
+                            foundTestTool = testToolDao.getById(pendingTestTool.getTestToolId());
                             if (foundTestTool == null || foundTestTool.getId() == null) {
                                 product.getErrorMessages().add(String.format(messageSource.getMessage(
                                         new DefaultMessageSourceResolvable(
                                                 "listing.criteria.invalidTestToolId"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getId()));
+                                        LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getTestToolId()));
                             }
                         }
                         
