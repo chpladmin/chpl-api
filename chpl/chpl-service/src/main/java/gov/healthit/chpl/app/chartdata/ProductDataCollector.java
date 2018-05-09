@@ -16,14 +16,15 @@ import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 /**
- * Retrieves all of the 2015 SED Products and their details.  Details are retrieved asynchronously according
+ * Retrieves all of the 2014 and 2015 Listings and their details.  Details are retrieved asynchronously according
  * to the chartDataExecutor defined in AppConfig.
- * @author TYoung
+ * @author alarned
  *
  */
-public class SedDataCollector {
+public class ProductDataCollector {
     private ChartDataApplicationEnvironment appEnvironment;
-    private static final Logger LOGGER = LogManager.getLogger(SedDataCollector.class);
+    private static final Logger LOGGER = LogManager.getLogger(ProductDataCollector.class);
+    private static final String EDITION_2014 = "2014";
     private static final String EDITION_2015 = "2015";
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
@@ -39,21 +40,26 @@ public class SedDataCollector {
         List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-        certifiedProducts = filterByEdition(certifiedProducts, EDITION_2015);
-        LOGGER.info("2015 Certified Product Count: " + certifiedProducts.size());
+        certifiedProducts = filterByEditions(certifiedProducts, EDITION_2014, EDITION_2015);
+        LOGGER.info("2014/2015 Certified Product Count: " + certifiedProducts.size());
 
         List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
                 certifiedProducts);
 
-        certifiedProductsWithDetails = filterBySed(certifiedProductsWithDetails);
-        LOGGER.info("2015/SED Certified Product Count: " + certifiedProductsWithDetails.size());
-
         return certifiedProductsWithDetails;
     }
 
-    private void initialize() {
-        certifiedProductDetailsManager = (CertifiedProductDetailsManager) appEnvironment
-                .getSpringManagedObject("certifiedProductDetailsManager");
+    private List<CertifiedProductFlatSearchResult> filterByEditions(
+            final List<CertifiedProductFlatSearchResult> certifiedProducts,
+            final String edition1, final String edition2) {
+        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
+        for (CertifiedProductFlatSearchResult result : certifiedProducts) {
+            if ((result.getEdition().equals(edition1) || result.getEdition().equals(edition2))
+                    && result.getId() > 9350) {
+                results.add(result);
+            }
+        }
+        return results;
     }
 
     private List<CertifiedProductFlatSearchResult> getCertifiedProducts() {
@@ -97,29 +103,8 @@ public class SedDataCollector {
         return details;
     }
 
-    private List<CertifiedProductFlatSearchResult> filterByEdition(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts, final String edition) {
-        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
-        for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if (result.getEdition().equals(edition)) {
-                results.add(result);
-            }
-        }
-        return results;
-    }
-
-    private List<CertifiedProductSearchDetails> filterBySed(
-            final List<CertifiedProductSearchDetails> certifiedProductDetails) {
-        List<CertifiedProductSearchDetails> results = new ArrayList<CertifiedProductSearchDetails>();
-        for (CertifiedProductSearchDetails detail : certifiedProductDetails) {
-            if (isCertifiedProductAnSed(detail)) {
-                results.add(detail);
-            }
-        }
-        return results;
-    }
-
-    private Boolean isCertifiedProductAnSed(final CertifiedProductSearchDetails certifiedProductDetail) {
-        return certifiedProductDetail.getSed().getTestTasks().size() > 0;
+    private void initialize() {
+        certifiedProductDetailsManager = (CertifiedProductDetailsManager) appEnvironment
+                .getSpringManagedObject("certifiedProductDetailsManager");
     }
 }
