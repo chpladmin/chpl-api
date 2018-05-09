@@ -218,10 +218,10 @@ public class CertifiedProductControllerTest {
         cr.setG1Success(false);
         cr.setG2Success(false);
         cr.setGap(null);
-        cr.setNumber("170.314 (b)(6)");
+        cr.setNumber("170.315 (b)(6)");
         cr.setPrivacySecurityFramework(null);
         cr.setSed(null);
-        cr.setSuccess(false);
+        cr.setSuccess(true);
         cr.setTestDataUsed(null);
         cr.setTestFunctionality(null);
         cr.setTestProcedures(null);
@@ -230,7 +230,6 @@ public class CertifiedProductControllerTest {
         CertificationResultTestTool crtt = new CertificationResultTestTool();
         crtt.setId(2L);
         crtt.setRetired(true);
-        crtt.setTestToolId(2L);
         crtt.setTestToolName("Transport Test Tool");
         crttList.add(crtt);
         cr.setTestToolsUsed(crttList);
@@ -282,11 +281,13 @@ public class CertifiedProductControllerTest {
         } catch (ValidationException e) {
             assertNotNull(e);
             // ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-            assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+            assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
                     + "as it is a retired tool, and this Certified Product does not carry ICS."));
         }
 
         ics.setInherits(true);
+        updateRequest.getErrorMessages().clear();
+        updateRequest.getWarningMessages().clear();
         try {
             ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
             listingUpdateRequest.setListing(updateRequest);
@@ -295,7 +296,7 @@ public class CertifiedProductControllerTest {
             e.printStackTrace();
         } catch (ValidationException e) {
             assertNotNull(e);
-            // ICS is true, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. Mismatch = warning message
+            // ICS is true, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. Mismatch = warning message
             assertTrue(e.getErrorMessages().contains("The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true."));
         }
         Map<String, Object> classificationType = new HashMap<String, Object>();
@@ -318,11 +319,13 @@ public class CertifiedProductControllerTest {
         } catch (ValidationException e) {
             assertNotNull(e);
             // 2014 certEdition; ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-            assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+            assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
                     + "as it is a retired tool, and this Certified Product does not carry ICS."));
         }
 
         ics.setInherits(true);
+        updateRequest.getErrorMessages().clear();
+        updateRequest.getWarningMessages().clear();
         try {
             ListingUpdateRequest listingUpdateRequest = new ListingUpdateRequest();
             listingUpdateRequest.setListing(updateRequest);
@@ -388,13 +391,6 @@ public class CertifiedProductControllerTest {
         Date inputDate = dateFormat.parse(certDateString);
         pcpDTO.setCertificationDate(inputDate);
         pcpDTO.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
-        List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
-        CertificationResultTestTool crtt = new CertificationResultTestTool();
-        crtt.setId(1L);
-        crtt.setRetired(true);
-        crtt.setTestToolId(2L);
-        crtt.setTestToolName("Transport Test Tool");
-        crttList.add(crtt);
         List<PendingCertificationResultDTO> pcrDTOs = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pcpCertResultDTO1 = new PendingCertificationResultDTO();
         pcpCertResultDTO1.setPendingCertifiedProductId(1L);
@@ -404,7 +400,7 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO1.setG1Success(false);
         pcpCertResultDTO1.setG2Success(false);
         pcpCertResultDTO1.setGap(null);
-        pcpCertResultDTO1.setNumber("170.314 (b)(6)");
+        pcpCertResultDTO1.setNumber("170.315 (b)(6)");
         pcpCertResultDTO1.setPrivacySecurityFramework(null);
         pcpCertResultDTO1.setSed(null);
         pcpCertResultDTO1.setG1Success(false);
@@ -420,16 +416,8 @@ public class CertifiedProductControllerTest {
         pcprttdto1.setId(2L);
         pcprttdto1.setName("Transport Test Tool");
         pcprttdto1.setPendingCertificationResultId(1L);
-        pcprttdto1.setTestToolId(2L);
         pcprttdto1.setVersion(null);
-        PendingCertificationResultTestToolDTO pcprttdto2 = new PendingCertificationResultTestToolDTO();
-        pcprttdto2.setId(3L);
-        pcprttdto2.setName("Transport Test Tool");
-        pcprttdto2.setPendingCertificationResultId(1L);
-        pcprttdto2.setTestToolId(3L);
-        pcprttdto2.setVersion(null);
         pcprttdtoList.add(pcprttdto1);
-        pcprttdtoList.add(pcprttdto2);
         pcpCertResultDTO1.setTestTools(pcprttdtoList);
         pcrDTOs.add(pcpCertResultDTO1);
         PendingCertificationResultDTO pcpCertResultDTO2 = new PendingCertificationResultDTO();
@@ -439,7 +427,7 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO2.setG1Success(false);
         pcpCertResultDTO2.setG2Success(false);
         pcpCertResultDTO2.setGap(null);
-        pcpCertResultDTO2.setNumber("170.314 (b)(6)");
+        pcpCertResultDTO2.setNumber("170.315 (b)(6)");
         pcpCertResultDTO2.setPrivacySecurityFramework(null);
         pcpCertResultDTO2.setSed(null);
         pcpCertResultDTO2.setG1Success(false);
@@ -478,24 +466,27 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // test 1
-        // ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
+        // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
         assertTrue(pcpDTO.getErrorMessages().contains(
-                "Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+                "Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 2
+        pcpDTO.getWarningMessages().clear();
+        pcpDTO.getErrorMessages().clear();
         pcpDTO.setIcs(true); // Inherited Status = product.getIcs();
         validator = validatorFactory.getValidator(pcpDTO);
         if (validator != null) {
             validator.validate(pcpDTO);
         }
-        // ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+        // ICS is true, 15.07.07.2642.IC04.36.00.1.160402 shows true ICS. ICS Mismatch = warning message
+        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 3
-        certEdition = "2014";
-        pcpDTO.setCertificationEdition(certEdition);
+        pcpDTO.getWarningMessages().clear();
+        pcpDTO.getErrorMessages().clear();
+        pcpDTO.setCertificationEdition("2015");
         pcpDTO.setIcs(false); // Inherited Status = product.getIcs();
         pcpDTO.setPracticeType("AMBULATORY");
         pcpDTO.setProductClassificationName("Modular EHR");
@@ -503,8 +494,8 @@ public class CertifiedProductControllerTest {
         if (validator != null) {
             validator.validate(pcpDTO);
         }
-        // ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+        // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
+        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 4
@@ -513,8 +504,8 @@ public class CertifiedProductControllerTest {
         if (validator != null) {
             validator.validate(pcpDTO);
         }
-        // ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.314 (b)(6)', "
+        // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
+        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
     }
 
