@@ -611,7 +611,7 @@ public class CertifiedProductController {
                     updatedListing.getErrorMessages()
                     .add(String
                             .format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable("listing.upload.changedNotUnique"),
+                                    new DefaultMessageSourceResolvable("listing.chplProductNumber.changedNotUnique"),
                                     LocaleContextHolder.getLocale()), updatedListing.getChplProductNumber()));
                 }
             } catch (final EntityRetrievalException ex) {
