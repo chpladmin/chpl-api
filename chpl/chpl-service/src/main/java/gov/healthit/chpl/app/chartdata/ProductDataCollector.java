@@ -54,8 +54,7 @@ public class ProductDataCollector {
             final String edition1, final String edition2) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if ((result.getEdition().equals(edition1) || result.getEdition().equals(edition2))
-                    && result.getId() > 9350) {
+            if (result.getEdition().equals(edition1) || result.getEdition().equals(edition2)) {
                 results.add(result);
             }
         }
