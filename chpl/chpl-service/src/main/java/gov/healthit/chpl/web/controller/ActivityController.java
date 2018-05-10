@@ -25,12 +25,13 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.AnnouncementManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -84,6 +85,9 @@ public class ActivityController {
     
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
+    
+    @Autowired
+    private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
@@ -313,7 +317,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific certified product",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified certified product across all dates.")
-    @RequestMapping(value = "/certified_products/{id:\\d+}", method = RequestMethod.GET,
+    @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
@@ -349,9 +353,13 @@ public class ActivityController {
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
         
-        CertifiedProductDTO dto = cpManager.getByChplProductNumber(chplProductNumber); // throws 404 if bad id
-
-        return getActivityForCertifiedProduct(start, end, dto.getId());
+        List<CertifiedProductDetailsDTO> dtos =
+                certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
+        if (dtos.size() == 0) {
+            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
+        }
+        
+        return getActivityForCertifiedProduct(start, end, dtos.get(0).getId());
     }
 
     @ApiOperation(value = "Get auditable data for a specific certified product based on a legacy CHPL Product Number.",
@@ -370,9 +378,13 @@ public class ActivityController {
         
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
         
-        CertifiedProductDTO dto = cpManager.getByChplProductNumber(chplProductNumber); // throws 404 if bad id
-
-        return getActivityForCertifiedProduct(start, end, dto.getId());
+        List<CertifiedProductDetailsDTO> dtos =
+                certifiedProductSearchResultDAO.getByChplProductNumber(chplProductNumber);
+        if (dtos.size() == 0) {
+            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
+        }
+        
+        return getActivityForCertifiedProduct(start, end, dtos.get(0).getId());
     }
 
     @ApiOperation(value = "Get auditable data for all certifications",
