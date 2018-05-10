@@ -458,6 +458,8 @@ public class SummaryStatistics {
         }
         ret.append("</ul>");
 
+        uniqueAcbList.clear();
+        
         ret.append("<li>Total # of Unique Products with Active 2015 Listings -  "
                 + stats.getTotalCPsActive2015Listings() + "</li>");
         ret.append("<ul>");

@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.certifiedProduct;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -162,6 +163,108 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
     }
 
+    /**
+     * Look for required complimentary criteria; if any one of the
+     * criterionToCheck is present in allCriteriaMet then all of the
+     * complimentaryCertNumbers must be present in allCriteriaMet.
+     * 
+     * @param criterionToCheck
+     * @param allCriteriaMet
+     * @param complimentaryCertNumbers
+     * @return a list of error messages
+     */
+    protected List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck, 
+            List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
+        List<String> errors = new ArrayList<String>();
+        boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
+        if (hasAnyCert) {
+            for (String complimentaryCert : complimentaryCertNumbers) {
+                boolean hasComplimentaryCert = hasCert(complimentaryCert, allCriteriaMet);
+                
+                if (!hasComplimentaryCert) {
+                    String criterionErrorString = "";
+                    for(int i = 0; i < criterionToCheck.size(); i++) {
+                        String checkedCriteria = criterionToCheck.get(i);
+                        if(i > 0) {
+                            criterionErrorString += " or ";
+                        }
+                        criterionErrorString += checkedCriteria;
+                    }
+                    errors.add("Certification criterion " + criterionErrorString + " was found so "
+                            + complimentaryCert + " is required but was not found.");
+                }
+            }
+        }
+        return errors;
+    }
+    
+    /**
+     * Look for required complimentary criteria; if any one of the
+     * criterionToCheck is present in allCriteriaMet, then any one
+     * of the complimentaryCertNumbers must also be present in allCriteriaMet
+     * 
+     * @param criterionToCheck
+     * @param allCriteriaMet
+     * @param complimentaryCertNumbers
+     * @return a list of error messages
+     */
+    protected List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck, 
+            List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
+        List<String> errors = new ArrayList<String>();
+        boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
+        if (hasAnyCert) {
+            boolean hasAnyComplimentaryCert = hasAnyCert(complimentaryCertNumbers, allCriteriaMet);
+            if (!hasAnyComplimentaryCert) {
+                String criterionErrorString = "";
+                for(int i = 0; i < criterionToCheck.size(); i++) {
+                    String checkedCriteria = criterionToCheck.get(i);
+                    if(i > 0) {
+                        criterionErrorString += " or ";
+                    }
+                    criterionErrorString += checkedCriteria;
+                }
+                
+                String complimentaryCriterionErrorString = "";
+                for(int i = 0; i < complimentaryCertNumbers.size(); i++) {
+                    String complimentaryCriteria = complimentaryCertNumbers.get(i);
+                    if(i > 0) {
+                        complimentaryCriterionErrorString += " or ";
+                    }
+                    complimentaryCriterionErrorString += complimentaryCriteria;
+                }
+                errors.add("Certification criterion " + criterionErrorString + " was found so "
+                        + complimentaryCriterionErrorString + " is required but was not found.");
+            }
+        }
+        return errors;
+    }
+    
+    /**
+     * Returns true if any of the passed in certs are present
+     * @param toCheck
+     * @param allCerts
+     * @return
+     */
+    protected boolean hasAnyCert(List<String> certsToCheck, List<String> allCerts) {
+        boolean result = false;
+        for(String currCertToCheck : certsToCheck) {
+            if(hasCert(currCertToCheck, allCerts)) {
+                result = true;
+            }
+        }
+        return result;
+    }
+    
+    protected boolean hasCert(String toCheck, List<String> allCerts) {
+        boolean hasCert = false;
+        for (int i = 0; i < allCerts.size() && !hasCert; i++) {
+            if (allCerts.get(i).equals(toCheck)) {
+                hasCert = true;
+            }
+        }
+        return hasCert;
+    }
+    
     public int getMaxLength(final String field) {
         return Integer.parseInt(String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(field),
