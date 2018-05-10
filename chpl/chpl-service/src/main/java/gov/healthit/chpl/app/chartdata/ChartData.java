@@ -29,7 +29,7 @@ public final class ChartData {
         try {
             appEnvironment = new ChartDataApplicationEnvironment();
 
-            //analyzeSed(appEnvironment);
+            analyzeSed(appEnvironment);
             analyzeProducts(appEnvironment);
 
         } catch (Exception e) {
