@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -37,6 +38,18 @@ public class StatisticsController {
 
     @Autowired
     private StatisticsManager statisticsManager;
+
+    /**
+     * Retrieves and returns the Criterion/Product counts.
+     * @return a JSON representation of a CriterionProductStatisticsResult object
+     */
+    @ApiOperation(value = "Get count of Criteria certified to by unique Product.",
+            notes = "Retrieves and returns the Criterion/Product counts.")
+    @RequestMapping(value = "/criterion_product", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
+        return statisticsManager.getCriterionProductStatisticsResult();
+    }
 
     /**
      * Retrieves and returns the SED/Participant counts.
