@@ -1,7 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.io.IOException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import junit.framework.TestCase;
@@ -36,7 +32,7 @@ public class StatisticsManagerTest extends TestCase {
 
     @Test
     @Transactional
-    public void testFuzzyChoice() throws EntityCreationException, EntityRetrievalException, IOException{
+    public void testStatisticsManagerCanRetrieveStats() {
         CriterionProductStatisticsResult stats = statisticsManager.getCriterionProductStatisticsResult();
         assertNotNull(stats);
         assertEquals("170.315 (d)(10)", stats.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
