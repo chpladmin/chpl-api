@@ -16,6 +16,7 @@ public class CriterionProductStatisticsDTO implements Serializable {
     private Long id;
     private Long productCount;
     private Long certificationCriterionId;
+    private CertificationCriterionDTO criteria;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -36,6 +37,9 @@ public class CriterionProductStatisticsDTO implements Serializable {
         this.setId(entity.getId());
         this.setProductCount(entity.getProductCount());
         this.setCertificationCriterionId(entity.getCertificationCriterionId());
+        if (entity.getCertificationCriterion() != null) {
+            this.criteria = new CertificationCriterionDTO(entity.getCertificationCriterion());
+        }
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
@@ -64,6 +68,14 @@ public class CriterionProductStatisticsDTO implements Serializable {
 
     public void setCertificationCriterionId(final Long certificationCriterionId) {
         this.certificationCriterionId = certificationCriterionId;
+    }
+
+    public CertificationCriterionDTO getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(final CertificationCriterionDTO criteria) {
+        this.criteria = criteria;
     }
 
     public Date getCreationDate() {

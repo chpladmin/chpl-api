@@ -1,4 +1,4 @@
-    package gov.healthit.chpl.entity;
+package gov.healthit.chpl.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -6,9 +6,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -35,6 +38,10 @@ public class CriterionProductStatisticsEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "certification_criterion_id", nullable = false)
     private Long certificationCriterionId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity certificationCriterion;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -78,6 +85,14 @@ public class CriterionProductStatisticsEntity implements Serializable {
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    public CertificationCriterionEntity getCertificationCriterion() {
+        return certificationCriterion;
+    }
+
+    public void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
+        this.certificationCriterion = certificationCriterion;
     }
 
     public Long getProductCount() {

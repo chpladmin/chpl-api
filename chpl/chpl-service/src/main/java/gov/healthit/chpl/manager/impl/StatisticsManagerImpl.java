@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -20,7 +19,6 @@ import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
@@ -43,8 +41,8 @@ import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsR
 @Service
 public class StatisticsManagerImpl extends ApplicationObjectSupport implements StatisticsManager {
 
-    @Autowired
-    private CertificationCriterionDAO certificationCriterionDAO;
+//    @Autowired
+//    private CertificationCriterionDAO certificationCriterionDAO;
 
     @Autowired
     private CriterionProductStatisticsDAO criterionProductStatisticsDAO;
@@ -82,16 +80,6 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
         for (CriterionProductStatisticsDTO dto : dtos) {
             CriterionProductStatistics cps = new CriterionProductStatistics(dto);
-            CertificationCriterionDTO certificationCriterionDTO;
-            try {
-                certificationCriterionDTO = certificationCriterionDAO
-                        .getById(dto.getCertificationCriterionId());
-                if (certificationCriterionDTO != null && certificationCriterionDTO.getNumber() != null) {
-                    cps.setCriterion(certificationCriterionDTO.getNumber());
-                }
-            } catch (EntityRetrievalException e) {
-                cps.setCriterion("Unknown");
-            }
             result.getCriterionProductStatisticsResult().add(cps);
         }
         return result;
