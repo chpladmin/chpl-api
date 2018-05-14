@@ -19,6 +19,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -39,13 +40,12 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
     @Autowired
     private CriterionProductStatisticsDAO cpsDao;
 
+    @Autowired
+    private CertificationCriterionDAO ccDao;
+
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-    }
 
     @Test
     @Transactional
@@ -53,8 +53,8 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
         List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
         assertNotNull(results);
         assertEquals(STAT_LENGTH, results.size());
-        assertEquals("170.315 (d)(10)", results.get(0).getCriteria().getNumber());
-        assertEquals("2015", results.get(0).getCriteria().getCertificationEdition());
+        assertEquals("170.314 (a)(14)", results.get(0).getCriteria().getNumber());
+        assertEquals("2014", results.get(0).getCriteria().getCertificationEdition());
     }
 
     @Test
@@ -72,6 +72,7 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
         CriterionProductStatisticsDTO dto = new CriterionProductStatisticsDTO();
         dto.setCertificationCriterionId(2L);
         dto.setProductCount(1L);
+        dto.setCriteria(ccDao.getById(2L));
         cpsDao.create(dto);
         List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
         assertNotNull(results);

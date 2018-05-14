@@ -35,6 +35,6 @@ public class StatisticsManagerTest extends TestCase {
     public void testStatisticsManagerCanRetrieveStats() {
         CriterionProductStatisticsResult stats = statisticsManager.getCriterionProductStatisticsResult();
         assertNotNull(stats);
-        assertEquals("170.315 (d)(10)", stats.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
+        assertEquals("170.314 (a)(14)", stats.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
     }
 }

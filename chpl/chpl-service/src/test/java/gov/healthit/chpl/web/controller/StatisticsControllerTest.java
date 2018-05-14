@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import junit.framework.TestCase;
@@ -35,28 +32,12 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
 public class StatisticsControllerTest extends TestCase {
-    @Autowired StatisticsController statisticsController;
+    @Autowired
+    private StatisticsController statisticsController;
 
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
-
-    private static JWTAuthenticatedUser adminUser;
-    private static final long ADMIN_ID = -2L;
-
-    /**
-     * Set up user as Admin.
-     * @throws Exception if permission cannot be added
-     */
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        adminUser = new JWTAuthenticatedUser();
-        adminUser.setFirstName("Administrator");
-        adminUser.setId(ADMIN_ID);
-        adminUser.setLastName("Administrator");
-        adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-    }
 
     /**
      * Get statistics for criterion-product data.
@@ -70,6 +51,6 @@ public class StatisticsControllerTest extends TestCase {
         assertNotNull(resp);
         assertNotNull(resp.getCriterionProductStatisticsResult());
         assertEquals(expectedCount, resp.getCriterionProductStatisticsResult().size());
-        assertEquals("170.315 (d)(10)", resp.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
+        assertEquals("170.314 (a)(14)", resp.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
     }
 }

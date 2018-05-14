@@ -35,7 +35,7 @@ public class CertifiedProductDetailsManagerAsync {
         Date start = new Date();
         List<CertifiedProductDetailsDTO> children = listingGraphDao.getChildren(id);
         Date end = new Date();
-        LOGGER.info("Time to retreieve Children: " + (end.getTime() - start.getTime()));
+        LOGGER.info("Time to retrieve Children: " + (end.getTime() - start.getTime()));
         return new AsyncResult<List<CertifiedProductDetailsDTO>>(children);
     }
 
@@ -51,7 +51,7 @@ public class CertifiedProductDetailsManagerAsync {
         Date start = new Date();
         List<CertifiedProductDetailsDTO> children = listingGraphDao.getParents(id);
         Date end = new Date();
-        LOGGER.info("Time to retreieve Parents: " + (end.getTime() - start.getTime()));
+        LOGGER.info("Time to retrieve Parents: " + (end.getTime() - start.getTime()));
         return new AsyncResult<List<CertifiedProductDetailsDTO>>(children);
     }
 
