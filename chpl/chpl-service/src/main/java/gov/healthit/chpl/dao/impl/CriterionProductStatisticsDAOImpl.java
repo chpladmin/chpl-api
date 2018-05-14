@@ -9,9 +9,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
 
@@ -43,7 +43,6 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
             toDelete.setLastModifiedUser(getUserId());
             entityManager.merge(toDelete);
         }
-
     }
 
     @Override
@@ -58,7 +57,6 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
         } else {
             entity.setDeleted(false);
         }
-
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
@@ -81,24 +79,29 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
     }
 
     private List<CriterionProductStatisticsEntity> findAllEntities() {
-        Query query = entityManager
-                .createQuery("SELECT a from CriterionProductStatisticsEntity a where (NOT a.deleted = true)");
+        Query query = entityManager.createQuery("from CriterionProductStatisticsEntity cpse "
+                + "LEFT OUTER JOIN FETCH cpse.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "WHERE (cpse.deleted = false)",
+                CriterionProductStatisticsEntity.class);
         return query.getResultList();
     }
 
     private CriterionProductStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
         CriterionProductStatisticsEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "from CriterionProductStatisticsEntity a where (NOT deleted = true) AND (id = :entityid) ",
+        Query query = entityManager.createQuery("from CriterionProductStatisticsEntity cpse "
+                + "LEFT OUTER JOIN FETCH cpse.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "WHERE (cpse.deleted = false) AND (id = :entityid)",
                 CriterionProductStatisticsEntity.class);
         query.setParameter("entityid", id);
         List<CriterionProductStatisticsEntity> result = query.getResultList();
 
-        if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate id in database.");
-        } else if (result.size() == 1) {
+        if (result.size() == 1) {
             entity = result.get(0);
+        } else {
+            throw new EntityRetrievalException("Data error. Did not find only one entity.");
         }
 
         return entity;
@@ -113,5 +116,4 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
             return Util.getCurrentUser().getId();
         }
     }
-
 }

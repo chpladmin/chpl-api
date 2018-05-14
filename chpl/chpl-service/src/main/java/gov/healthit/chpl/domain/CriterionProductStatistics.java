@@ -16,7 +16,7 @@ public class CriterionProductStatistics implements Serializable {
     private Long id;
     private Long productCount;
     private Long certificationCriterionId;
-    private String criterion;
+    private CertificationCriterion criterion;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -37,6 +37,7 @@ public class CriterionProductStatistics implements Serializable {
         this.id = dto.getId();
         this.productCount = dto.getProductCount();
         this.certificationCriterionId = dto.getCertificationCriterionId();
+        this.criterion = new CertificationCriterion(dto.getCriteria());
         this.deleted = dto.getDeleted();
         this.lastModifiedDate = dto.getLastModifiedDate();
         this.lastModifiedUser = dto.getLastModifiedUser();
@@ -59,11 +60,11 @@ public class CriterionProductStatistics implements Serializable {
         this.productCount = productCount;
     }
 
-    public String getCriterion() {
+    public CertificationCriterion getCriterion() {
         return criterion;
     }
 
-    public void setCriterion(final String criterion) {
+    public void setCriterion(final CertificationCriterion criterion) {
         this.criterion = criterion;
     }
 

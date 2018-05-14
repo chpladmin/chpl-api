@@ -1,0 +1,80 @@
+package gov.healthit.chpl.dao.impl;
+
+import java.util.List;
+
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+
+import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
+import junit.framework.TestCase;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
+@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
+    DirtiesContextTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class })
+@DatabaseSetup("classpath:data/testData.xml")
+public class CriterionProductStatisticsDAOTest extends TestCase {
+
+    private static final int STAT_LENGTH = 2;
+
+    @Autowired
+    private CriterionProductStatisticsDAO cpsDao;
+
+    @Rule
+    @Autowired
+    public UnitTestRules cacheInvalidationRule;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+    }
+
+    @Test
+    @Transactional
+    public void getAllStatistics() {
+        List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
+        assertNotNull(results);
+        assertEquals(STAT_LENGTH, results.size());
+        assertEquals("170.315 (d)(10)", results.get(0).getCriteria().getNumber());
+        assertEquals("2015", results.get(0).getCriteria().getCertificationEdition());
+    }
+
+    @Test
+    @Transactional
+    public void deleteOneStat() throws EntityRetrievalException {
+        cpsDao.delete(1L);
+        List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
+        assertNotNull(results);
+        assertEquals(STAT_LENGTH - 1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void createOneStat() throws EntityCreationException, EntityRetrievalException {
+        CriterionProductStatisticsDTO dto = new CriterionProductStatisticsDTO();
+        dto.setCertificationCriterionId(2L);
+        dto.setProductCount(1L);
+        cpsDao.create(dto);
+        List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
+        assertNotNull(results);
+        assertEquals(STAT_LENGTH + 1, results.size());
+    }
+}

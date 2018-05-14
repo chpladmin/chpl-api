@@ -29,7 +29,7 @@ public class ProductDataCollector {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
     /**
-     * This method runs the data retrieval process for the 2015 SED products and their details.
+     * This method runs the data retrieval process for the 2014/2015 Criterion - Product count.
      * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
      * @return List of CertifiedProductSearchDetails
      */
