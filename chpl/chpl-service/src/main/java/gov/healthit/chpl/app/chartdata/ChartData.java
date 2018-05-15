@@ -40,11 +40,11 @@ public final class ChartData {
     }
 
     private static void analyzeProducts(final ChartDataApplicationEnvironment appEnvironment) {
-        ProductDataCollector productDataCollector = new ProductDataCollector();
-        List<CertifiedProductSearchDetails> products = productDataCollector.retreiveData(appEnvironment);
+        ProductDataCollector productDataCollector = new ProductDataCollector(appEnvironment);
+        List<CertifiedProductSearchDetails> products = productDataCollector.retreiveData();
         CriterionProductStatisticsCalculator criterionProductStatisticsCalculator =
-                new CriterionProductStatisticsCalculator();
-        criterionProductStatisticsCalculator.run(products, appEnvironment);
+                new CriterionProductStatisticsCalculator(appEnvironment);
+        criterionProductStatisticsCalculator.run(products);
 
     }
 

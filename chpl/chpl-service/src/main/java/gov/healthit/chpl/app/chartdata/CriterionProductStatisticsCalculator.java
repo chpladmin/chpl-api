@@ -37,17 +37,17 @@ public class CriterionProductStatisticsCalculator {
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
 
+    CriterionProductStatisticsCalculator(final ChartDataApplicationEnvironment appEnvironment) {
+        this.appEnvironment = appEnvironment;
+        initialize();
+    }
+
     /**
      * This method calculates the criterion-product counts and saves them to the
      * criterion_product_statistics table.
      * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails,
-            final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
-
+    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
         Map<String, Long> productCounts = getCounts(certifiedProductSearchDetails);
 
         logCounts(productCounts);
