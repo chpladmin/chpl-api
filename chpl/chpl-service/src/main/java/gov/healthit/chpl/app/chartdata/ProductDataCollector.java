@@ -28,15 +28,16 @@ public class ProductDataCollector {
     private static final String EDITION_2015 = "2015";
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
-    /**
-     * This method runs the data retrieval process for the 2014/2015 Criterion - Product count.
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
-     * @return List of CertifiedProductSearchDetails
-     */
-    public List<CertifiedProductSearchDetails> retreiveData(final ChartDataApplicationEnvironment appEnvironment) {
+    ProductDataCollector(final ChartDataApplicationEnvironment appEnvironment) {
         this.appEnvironment = appEnvironment;
         initialize();
+    }
 
+    /**
+     * This method runs the data retrieval process for the 2014/2015 Criterion - Product count.
+     * @return List of CertifiedProductSearchDetails
+     */
+    public List<CertifiedProductSearchDetails> retreiveData() {
         List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts();
         LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
