@@ -15,6 +15,7 @@ _Date TBD_
 
 ### Bugs Fixed
 * Fix Summary Statistics Report missing ISCA count under the Total # of Unique Products with Active 2015 Listings section
+* Respect configured questionable activity window to allow a user to make edits that do not get logged as questionable activity for a short amount of time after a listing's certification date.
 * Fix bug restricting add/edit of Versions of Test Data
 
 ---
