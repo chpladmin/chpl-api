@@ -70,10 +70,12 @@ public class CertificationResultTestTool implements Serializable {
     public boolean matches(CertificationResultTestTool anotherTool) {
         boolean result = false;
         if (this.getTestToolId() != null && anotherTool.getTestToolId() != null
-                && this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()) {
+                && this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()
+                && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())) {
             result = true;
         } else if (!StringUtils.isEmpty(this.getTestToolName()) && !StringUtils.isEmpty(anotherTool.getTestToolName())
-                && this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())) {
+                && this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())
+                && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())) {
             result = true;
         }
         return result;
