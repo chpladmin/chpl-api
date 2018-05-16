@@ -171,7 +171,7 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.")
-    @RequestMapping(value = "/{certifiedProductId:\\d+}/details", 
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details", 
                     method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
@@ -243,7 +243,7 @@ public class CertifiedProductController {
                             + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.")
-    @RequestMapping(value = "/{certifiedProductId:\\d+}", 
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}", 
                     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
@@ -314,7 +314,7 @@ public class CertifiedProductController {
         
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
             notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
-    @RequestMapping(value = "/{certifiedProductId:\\d+}/cqm_results", method = RequestMethod.GET,
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/cqm_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
@@ -371,7 +371,7 @@ public class CertifiedProductController {
        
     @ApiOperation(value = "Get all of the certification results for a specified certified product.",
             notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
-    @RequestMapping(value = "/{certifiedProductId:\\d+}/certification_results", method = RequestMethod.GET,
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
@@ -488,7 +488,7 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "Get the ICS family tree for the specified certified product.",
             notes = "Returns all member of the family tree conected to the specified certified product.")
-    @RequestMapping(value = "/{certifiedProductId:\\d+}/ics_relationships", method = RequestMethod.GET,
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
