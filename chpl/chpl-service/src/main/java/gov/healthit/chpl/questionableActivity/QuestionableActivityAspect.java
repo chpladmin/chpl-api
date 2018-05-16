@@ -64,7 +64,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         this.env = e;
         String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
         int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY * -1;
+        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
 
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
