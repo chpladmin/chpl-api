@@ -79,9 +79,6 @@ public class ActivityController {
     private ProductVersionManager versionManager;
     @Autowired
     private UserManager userManager;
-
-    @Autowired
-    private CertifiedProductDetailsManager cpdManager;
     
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
@@ -314,6 +311,30 @@ public class ActivityController {
         }
     }
 
+    @ApiOperation(value = "Get auditable data for corrective action plans",
+            notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
+                    + "The default behavior is to return corrective action plan activity across all dates.")
+    @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public List<ActivityEvent> activityForCorrectiveActionPlans(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end) throws JsonParseException, IOException, ValidationException {
+
+        if (start == null && end == null) {
+            return getActivityEventsForCorrectiveActionPlans();
+        } else {
+            Date startDate = null;
+            Date endDate = null;
+            if (start != null) {
+                startDate = new Date(start);
+            }
+            if (end != null) {
+                endDate = new Date(end);
+            }
+            validateActivityDates(start, end);
+            return getActivityEventsForCertifiedProducts(startDate, endDate);
+        }
+    }
+    
     @ApiOperation(value = "Get auditable data for a specific certified product",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified certified product across all dates.")
@@ -981,6 +1002,17 @@ public class ActivityController {
         return events;
     }
 
+    private List<ActivityEvent> getActivityEventsForCorrectiveActionPlans(Date startDate, Date endDate)
+            throws JsonParseException, IOException {
+        LOGGER.info("User " + Util.getUsername() + " requested corrective action plan activity between " + startDate
+                + " and " + endDate);
+
+        List<ActivityEvent> events = null;
+        events = getActivityEventsForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CORRECTIVE_ACTION_PLAN, startDate, endDate);
+
+        return events;
+    }
+    
     private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Date startDate, Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info("User " + Util.getUsername() + " requested pending certified product activity between " + startDate
@@ -1092,6 +1124,16 @@ public class ActivityController {
         return events;
     }
 
+    private List<ActivityEvent> getActivityEventsForCorrectiveActionPlans()
+            throws JsonParseException, IOException {
+        LOGGER.info("User " + Util.getUsername() + " requested all corrective action plan activity");
+
+        List<ActivityEvent> events = null;
+        events = getActivityEventsForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CORRECTIVE_ACTION_PLAN);
+
+        return events;
+    }
+    
     private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts() throws JsonParseException, IOException {
         LOGGER.info("User " + Util.getUsername() + " requested all pending certified product activity");
 
