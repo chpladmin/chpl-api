@@ -1475,6 +1475,7 @@ public class CertifiedProductManagerTest extends TestCase {
             if (cert.getId().longValue() == certIdToUpdate.longValue()) {
                 CertificationResultTestTool toolToAdd = new CertificationResultTestTool();
                 toolToAdd.setTestToolId(1L);
+                toolToAdd.setTestToolVersion("Version");
                 cert.getTestToolsUsed().add(toolToAdd);
             }
         }
@@ -1491,6 +1492,64 @@ public class CertifiedProductManagerTest extends TestCase {
                 assertEquals(1, cert.getTestToolsUsed().size());
                 CertificationResultTestTool added = cert.getTestToolsUsed().get(0);
                 assertEquals(1, added.getTestToolId().longValue());
+                assertEquals("Version", added.getTestToolVersion());
+            }
+        }
+        assertTrue(foundCert);
+    }
+
+    @Test
+    @Transactional(readOnly = false)
+    @Rollback
+    public void testUpdateCertificationResultTestTool()
+            throws EntityRetrievalException, EntityCreationException, JsonProcessingException,
+            InvalidArgumentsException, IOException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+        final Long acbId = 1L;
+        final Long listingId = 5L;
+        final Long certIdToUpdate = 11L;
+
+        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(listingId);
+        CertifiedProductSearchDetails toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+        for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
+            if (cert.getId().longValue() == certIdToUpdate.longValue()) {
+                CertificationResultTestTool toolToAdd = new CertificationResultTestTool();
+                toolToAdd.setTestToolId(1L);
+                toolToAdd.setTestToolVersion("Version 1");
+                cert.getTestToolsUsed().add(toolToAdd);
+            }
+        }
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(toUpdateListing);
+        cpManager.update(acbId, updateRequest, existingListing);
+
+        // update a tool
+        existingListing = cpdManager.getCertifiedProductDetails(listingId);
+        toUpdateListing = cpdManager.getCertifiedProductDetails(listingId);
+        for (CertificationResult cert : toUpdateListing.getCertificationResults()) {
+            if (cert.getId().longValue() == certIdToUpdate.longValue()) {
+                for (CertificationResultTestTool tool : cert.getTestToolsUsed()) {
+                    if (tool.getTestToolId() == 1L) {
+                        tool.setTestToolVersion("Version 2");
+                    }
+                }
+            }
+        }
+        updateRequest = new ListingUpdateRequest();
+        updateRequest.setListing(toUpdateListing);
+        cpManager.update(acbId, updateRequest, existingListing);
+
+        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(listingId);
+        assertNotNull(updatedListing);
+        boolean foundCert = false;
+        for (CertificationResult cert : updatedListing.getCertificationResults()) {
+            if (cert.getId().longValue() == certIdToUpdate.longValue()) {
+                foundCert = true;
+                assertEquals(1, cert.getTestToolsUsed().size());
+                CertificationResultTestTool updated = cert.getTestToolsUsed().get(0);
+                assertEquals(1, updated.getTestToolId().longValue());
+                assertEquals("Version 2", updated.getTestToolVersion());
             }
         }
         assertTrue(foundCert);
