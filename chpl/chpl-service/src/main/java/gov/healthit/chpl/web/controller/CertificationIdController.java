@@ -101,6 +101,7 @@ public class CertificationIdController {
     // Creates a new CMS EHR Certification ID for a collection of products if
     // one does not already exist.
     // **********************************************************************************************************
+    @Deprecated
     @ApiOperation(
             value = "Creates a new CMS EHR Certification ID for a collection of products if one does not already exist.",
             notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one if one does not already exist. "
@@ -110,11 +111,32 @@ public class CertificationIdController {
             produces = {
                     MediaType.APPLICATION_JSON_VALUE
             })
+    public @ResponseBody CertificationIdResults createCertificationIdDeprecated(@RequestParam(required = true) List<Long> ids)
+            throws InvalidArgumentsException, CertificationIdException {
+        return create(ids);
+    }
+
+    @ApiOperation(
+            value = "Creates a new CMS EHR Certification ID for a collection of products if one does not already exist.",
+            notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one if one does not already exist. "
+                    + "Returns a list of basic product information, "
+                    + "Criteria and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = {
+                    MediaType.APPLICATION_JSON_VALUE
+            })
     public @ResponseBody CertificationIdResults createCertificationId(@RequestParam(required = true) List<Long> ids)
+            throws InvalidArgumentsException, CertificationIdException {
+        return create(ids);
+    }
+    
+    private CertificationIdResults create(List<Long> ids)
             throws InvalidArgumentsException, CertificationIdException {
         return this.findCertificationByProductIds(ids, true);
     }
-
+    
+    
+    
     // **********************************************************************************************************
     // getCertificationId
     //
@@ -148,6 +170,7 @@ public class CertificationIdController {
     //
     // Verify whether one or more specific EHR Certification ID is valid or not.
     // **********************************************************************************************************
+    @Deprecated
     @ApiOperation(value = "Verify whether one or more specific EHR Certification IDs are valid or not.",
             notes = "Returns a boolean value for each EHR Certification ID specified.")
     @RequestMapping(value = "/verify", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
