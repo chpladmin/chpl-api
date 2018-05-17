@@ -9,10 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,6 +28,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -811,11 +811,31 @@ public class SearchViewController {
         return searchMenuManager.getFuzzyChoices();
     }
 
+    @Deprecated
     @ApiOperation(value = "Change existing fuzzy matching choices.",
             notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
     @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoices(@RequestBody FuzzyChoices fuzzyChoices) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+    public FuzzyChoices updateFuzzyChoicesDeprecated(@RequestBody FuzzyChoices fuzzyChoices) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+        
+        return updateFuzzyChoices(fuzzyChoices);
+    }
+    
+    @ApiOperation(value = "Change existing fuzzy matching choices.",
+            notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
+    @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT, 
+                    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody FuzzyChoices fuzzyChoices) 
+            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, 
+            EntityCreationException, IOException {
+        
+        return updateFuzzyChoices(fuzzyChoices);
+    }
+
+    private FuzzyChoices updateFuzzyChoices(FuzzyChoices fuzzyChoices) 
+                throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, 
+                EntityCreationException, IOException {
+        
         FuzzyChoicesDTO toUpdate = new FuzzyChoicesDTO();
         toUpdate.setId(fuzzyChoices.getId());
         toUpdate.setFuzzyType(FuzzyType.getValue(fuzzyChoices.getFuzzyType()));
