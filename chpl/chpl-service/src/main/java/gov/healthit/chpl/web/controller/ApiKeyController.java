@@ -44,6 +44,7 @@ public class ApiKeyController {
     @Autowired
     private Environment env;
 
+    @Deprecated
     @ApiOperation(value = "Sign up for a new API key.",
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
                     + " will auto-generate a key and send it to the supplied email address. It must be included "
@@ -51,14 +52,33 @@ public class ApiKeyController {
                     + " named 'api_key'.")
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
+    public String registerDeprecated(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
+            AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
+
+        return create(registration);
+    }
+
+    @ApiOperation(value = "Sign up for a new API key.",
+            notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
+                    + " will auto-generate a key and send it to the supplied email address. It must be included "
+                    + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
+                    + " named 'api_key'.")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public String register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
             AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
-        Date now = new Date();
+        return create(registration);
+    }
 
+    private String create(ApiKeyRegistration registration) throws EntityCreationException,
+            AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
+        
+        Date now = new Date();
+        
         String apiKey = gov.healthit.chpl.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
         ApiKeyDTO toCreate = new ApiKeyDTO();
-
+        
         toCreate.setApiKey(apiKey);
         toCreate.setEmail(registration.getEmail());
         toCreate.setNameOrganization(registration.getName());
@@ -66,19 +86,35 @@ public class ApiKeyController {
         toCreate.setLastModifiedDate(now);
         toCreate.setLastModifiedUser(-3L);
         toCreate.setDeleted(false);
-
+        
         apiKeyManager.createKey(toCreate);
-
+        
         sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
-
+        
         return "{\"keyRegistered\" : \"" + apiKey + "\"}";
     }
 
+    
+    @Deprecated
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/revoke", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
+    public String revokeDeprecated(@RequestBody ApiKey key, @RequestHeader(value = "API-Key", required = false) String userApiKey,
+            @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
+
+        return delete(key, userApiKey, userApiKeyParam);
+    }
+
+    @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
+    @RequestMapping(value = "/{apiKey}", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public String revoke(@RequestBody ApiKey key, @RequestHeader(value = "API-Key", required = false) String userApiKey,
             @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
+
+        return delete(key, userApiKey, userApiKeyParam);
+    }
+
+    private String delete(ApiKey key, String userApiKey, String userApiKeyParam) throws Exception {
 
         String keyToRevoke = key.getKey();
         if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)) {
