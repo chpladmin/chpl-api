@@ -106,6 +106,7 @@ public class ProductController {
         return results;
     }
 
+    @Deprecated
     @ApiOperation(value = "Update a product or merge products.",
             notes = "This method serves two purposes: to update a single product's information and to merge two products into one. "
                     + " A user of this service should pass in a single productId to update just that product. "
@@ -116,7 +117,31 @@ public class ProductController {
                     + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
+    public ResponseEntity<Product> updateProductDeprecated(@RequestBody(required = true) UpdateProductsRequest productInfo)
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
+
+        return update(productInfo); 
+    }
+
+    @ApiOperation(value = "Update a product or merge products.",
+            notes = "This method serves two purposes: to update a single product's information and to merge two products into one. "
+                    + " A user of this service should pass in a single productId to update just that product. "
+                    + " If multiple product IDs are passed in, the service performs a merge meaning that a new product "
+                    + " is created with all of the information provided and all of the versions "
+                    + " previously assigned to the productIds specified are reassigned to the newly created product. The "
+                    + " old products are then deleted. "
+                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+    @RequestMapping(value = "/{productId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public ResponseEntity<Product> updateProduct(@RequestBody(required = true) UpdateProductsRequest productInfo)
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
+
+        return update(productInfo); 
+    }
+
+    private ResponseEntity<Product> update(UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException {
 
