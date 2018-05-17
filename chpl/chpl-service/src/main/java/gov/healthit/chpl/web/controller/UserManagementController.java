@@ -77,11 +77,11 @@ public class UserManagementController {
     private SendMailUtil sendMailService;
     @Autowired
     private Environment env;
-
     private static final Logger LOGGER = LogManager.getLogger(UserManagementController.class);
     private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
     private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
 
+    @Deprecated
     @ApiOperation(value = "Create a new user account from an invitation.",
             notes = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
                     + "That user key along with all the information needed to create a new user's account "
@@ -90,7 +90,29 @@ public class UserManagementController {
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
+    public User createUserDeprecated(@RequestBody CreateUserFromInvitationRequest userInfo)
+            throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
+            MessagingException, JsonProcessingException, EntityCreationException {
+
+        return create(userInfo);
+    }
+    
+    @ApiOperation(value = "Create a new user account from an invitation.",
+            notes = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
+                    + "That user key along with all the information needed to create a new user's account "
+                    + "can be passed in here. The account is created but cannot be used until that user "
+                    + "confirms that their email address is valid. The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
+            throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
+            MessagingException, JsonProcessingException, EntityCreationException {
+
+        return create(userInfo);
+    }
+    
+    private User create(CreateUserFromInvitationRequest userInfo)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
             MessagingException, JsonProcessingException, EntityCreationException {
 
@@ -157,13 +179,32 @@ public class UserManagementController {
         return new User(createdUser);
     }
 
+    @Deprecated
     @ApiOperation(value = "Update an existing user account with new permissions.",
             notes = "Adds all permissions from the invitation identified by the user key "
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
     @RequestMapping(value = "/authorize", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
+    public String authorizeUserDeprecated(@RequestBody AuthorizeCredentials credentials)
+            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
+
+        return authorize(credentials);
+    }
+
+    @ApiOperation(value = "Update an existing user account with new permissions.",
+            notes = "Adds all permissions from the invitation identified by the user key "
+                    + "to the appropriate existing user account." + "The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
+    @RequestMapping(value = "/{userId}/authorize", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public String authorizeUser(@RequestBody AuthorizeCredentials credentials)
+            throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
+
+        return authorize(credentials);
+    }
+
+    private String authorize(AuthorizeCredentials credentials)
             throws InvalidArgumentsException, JWTCreationException, UserRetrievalException, EntityRetrievalException {
         if (StringUtils.isEmpty(credentials.getHash())) {
             throw new InvalidArgumentsException("User key is required.");
@@ -258,10 +299,28 @@ public class UserManagementController {
         return result;
     }
 
+    @Deprecated
     @ApiOperation(value = "Modify user information.", notes = "")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
+    public User updateUserDetailsDeprecated(@RequestBody User userInfo)
+            throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
+            EntityCreationException, EntityRetrievalException {
+
+        return update(userInfo);
+    }
+    
+    @ApiOperation(value = "Modify user information.", notes = "")
+    @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
+            throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
+            EntityCreationException, EntityRetrievalException {
+
+        return update(userInfo);
+    }
+
+    private User update(User userInfo)
             throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException {
 
@@ -279,12 +338,32 @@ public class UserManagementController {
         return new User(updated);
     }
 
+    @Deprecated
     @ApiOperation(value = "Delete a user.",
             notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
                     + "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{userId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
+    public String deleteUserDeprecated(@PathVariable("userId") Long userId)
+            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
+            JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        
+        return delete(userId);
+    }
+
+    @ApiOperation(value = "Delete a user.",
+            notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
+                    + "The logged in user must have ROLE_ADMIN.")
+    @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
+            produces = "application/json; charset=utf-8")
     public String deleteUser(@PathVariable("userId") Long userId)
+            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
+            JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        
+        return delete(userId);
+    }
+    
+    private String delete(Long userId)
             throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
             JsonProcessingException, EntityCreationException, EntityRetrievalException {
         if (userId <= 0) {
@@ -310,21 +389,44 @@ public class UserManagementController {
         return "{\"deletedUser\" : true}";
     }
 
+    @Deprecated
     @ApiOperation(value = "Give additional roles to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/grant_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public String grantUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
+    public String grantUserRoleDeprecated(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
             UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException {
+        
+        return grant(grantRoleObj);
+    }
+
+    @ApiOperation(value = "Give additional roles to a user.",
+            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
+                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+    @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public String grantUserRole(@PathVariable("userName") String userName, @PathVariable("roleName") String roleName) 
+            throws InvalidArgumentsException, UserRetrievalException, UserManagementException, UserPermissionRetrievalException, 
+            JsonProcessingException, EntityCreationException, EntityRetrievalException {
+        
+        GrantRoleJSONObject grantRole = new GrantRoleJSONObject();
+        grantRole.setSubjectName(userName);
+        grantRole.setRole(roleName);
+        return grant(grantRole);
+    }
+    
+    private String grant(GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
+                UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
+                EntityCreationException, EntityRetrievalException {
 
         UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
         if (user == null) {
             throw new InvalidArgumentsException(
                     "No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
         }
-
+        
         if (grantRoleObj.getRole().equals("ROLE_ADMIN")) {
             try {
                 userManager.grantAdmin(user.getSubjectName());
@@ -335,34 +437,59 @@ public class UserManagementController {
         } else {
             userManager.grantRole(user.getSubjectName(), grantRoleObj.getRole());
         }
-
+        
         UserDTO updated = userManager.getByName(grantRoleObj.getSubjectName());
-
+        
         String activityDescription = "User " + user.getSubjectName() + " was granted role " + grantRoleObj.getRole()
                 + ".";
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user,
                 updated);
-
+        
         return "{\"roleAdded\" : true}";
-
     }
 
+    
+    @Deprecated
     @ApiOperation(value = "Remove roles previously granted to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/revoke_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public String revokeUserRole(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
+    public String revokeUserRoleDeprecated(@RequestBody GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
             UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
             EntityCreationException, EntityRetrievalException {
 
+        return revoke(grantRoleObj);
+    }
+    
+    @ApiOperation(value = "Remove roles previously granted to a user.",
+            notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
+                    + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
+    @RequestMapping(value = "/{userName/roles/{roleName}", method = RequestMethod.DELETE, 
+                    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public String revokeUserRole(@PathVariable("userName") String userName,
+            @PathVariable("roleName") String roleName) throws InvalidArgumentsException, UserRetrievalException, 
+            UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException,
+            EntityRetrievalException {
+
+        GrantRoleJSONObject grantRole = new GrantRoleJSONObject();
+        grantRole.setSubjectName(userName);
+        grantRole.setRole(roleName);
+        return revoke(grantRole);
+    }
+
+
+    private String revoke(GrantRoleJSONObject grantRoleObj) throws InvalidArgumentsException,
+            UserRetrievalException, UserManagementException, UserPermissionRetrievalException, JsonProcessingException,
+            EntityCreationException, EntityRetrievalException {
+        
         String isSuccess = String.valueOf(false);
         UserDTO user = userManager.getByName(grantRoleObj.getSubjectName());
         if (user == null) {
             throw new InvalidArgumentsException(
                     "No user with name " + grantRoleObj.getSubjectName() + " exists in the system.");
         }
-
+        
         if (grantRoleObj.getRole().equals(Authority.ROLE_ADMIN)) {
             try {
                 userManager.removeAdmin(user.getSubjectName());
@@ -372,7 +499,7 @@ public class UserManagementController {
         } else if (grantRoleObj.getRole().equals(Authority.ROLE_ACB)) {
             try {
                 userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
-
+        
                 // if they were an acb admin then they need to have all ACB
                 // access removed
                 List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
@@ -386,17 +513,16 @@ public class UserManagementController {
         } else {
             userManager.removeRole(grantRoleObj.getSubjectName(), grantRoleObj.getRole());
         }
-
+        
         UserDTO updated = userManager.getByName(grantRoleObj.getSubjectName());
-
+        
         String activityDescription = "User " + user.getSubjectName() + " was removed from role "
                 + grantRoleObj.getRole() + ".";
         activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_USER, user.getId(), activityDescription, user,
                 updated);
-
+        
         isSuccess = String.valueOf(true);
-        return "{\"roleRemoved\" : " + isSuccess + "}";
-
+        return "{\"roleRemoved\" : " + isSuccess + "}";   
     }
 
     @ApiOperation(value = "View users of the system.", notes = "Only ROLE_ADMIN will be able to see all users.")
