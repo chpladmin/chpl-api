@@ -144,9 +144,24 @@ public class ApiKeyController {
         return keys;
     }
 
+    @Deprecated
     @ApiOperation(value = "View the calls made per API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public List<ApiKeyActivity> listActivityDeprecated(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize,
+            @RequestParam(value = "filter", required = false) String apiKeyFilter,
+            @RequestParam(value = "dateAscending", required = false) boolean dateAscending,
+            @RequestParam(value = "start", required = false) Long startDateMilli,
+            @RequestParam(value = "end", required = false) Long endDateMilli) throws EntityRetrievalException {
+
+        return getActivity(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
+    }
+
+    @ApiOperation(value = "View the calls made per API key.",
+            notes = "This service is only available to CHPL users with ROLE_ADMIN.")
+    @RequestMapping(value = "/activity", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivity(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize,
@@ -154,6 +169,12 @@ public class ApiKeyController {
             @RequestParam(value = "dateAscending", required = false) boolean dateAscending,
             @RequestParam(value = "start", required = false) Long startDateMilli,
             @RequestParam(value = "end", required = false) Long endDateMilli) throws EntityRetrievalException {
+
+        return getActivity(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
+    }
+
+    private List<ApiKeyActivity> getActivity(Integer pageNumber, Integer pageSize, String apiKeyFilter, boolean dateAscending,
+            Long startDateMilli, Long endDateMilli) throws EntityRetrievalException {
         if (pageNumber == null) {
             pageNumber = 0;
         }
@@ -172,11 +193,32 @@ public class ApiKeyController {
         return apiKeyActivitiesList;
     }
 
+
+    @Deprecated
     @ApiOperation(value = "View the calls made by a specific API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public List<ApiKeyActivity> listActivityByKeyDeprecated(@PathVariable("apiKey") String apiKey,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {
+
+        return getActivityByKey(apiKey, pageNumber, pageSize);
+    }
+
+    @ApiOperation(value = "View the calls made by a specific API key.",
+            notes = "This service is only available to CHPL users with ROLE_ADMIN.")
+    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") String apiKey,
+            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {
+
+        return getActivityByKey(apiKey, pageNumber, pageSize);
+    }
+
+    
+    private List<ApiKeyActivity> getActivityByKey(@PathVariable("apiKey") String apiKey,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {
         if (pageNumber == null) {
