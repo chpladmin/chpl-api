@@ -551,6 +551,7 @@ public class CertifiedProductController {
      * @throws ValidationException if invalid update
      * @throws MissingReasonException if missing reason for change
      */
+    @Deprecated
     @ApiOperation(value = "Update an existing certified product.",
             notes = "Updates the certified product after first validating the request. The logged in"
                     + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
@@ -558,10 +559,34 @@ public class CertifiedProductController {
                     + " as part of the request, an ownership change will take place and the logged in "
                     + " user must have ROLE_ADMIN.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProductDeprecated(
+            @RequestBody(required = true) final ListingUpdateRequest updateRequest) 
+                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+                    JsonProcessingException, IOException, ValidationException, MissingReasonException {
+
+
+        return update(updateRequest);
+    }
+
+    @ApiOperation(value = "Update an existing certified product.",
+            notes = "Updates the certified product after first validating the request. The logged in"
+                    + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
+                    + " authority on the ACB that certified the product. If a different ACB is passed in"
+                    + " as part of the request, an ownership change will take place and the logged in "
+                    + " user must have ROLE_ADMIN.")
+    @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
-            @RequestBody(required = true) final ListingUpdateRequest updateRequest) throws EntityCreationException,
-    EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
-    IOException, ValidationException, MissingReasonException {
+            @RequestBody(required = true) final ListingUpdateRequest updateRequest) 
+                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+                    JsonProcessingException, IOException, ValidationException, MissingReasonException {
+
+
+        return update(updateRequest);
+    }
+
+    private ResponseEntity<CertifiedProductSearchDetails> update(final ListingUpdateRequest updateRequest)
+            throws EntityCreationException,EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
+                IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
 
@@ -721,14 +746,35 @@ public class CertifiedProductController {
      * @throws AccessDeniedException if user does not have access
      * @throws ObjectMissingValidationException if missing validation
      */
+    @Deprecated
     @ApiOperation(value = "Reject a pending certified product.",
             notes = "Essentially deletes a pending certified product. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/{pcpId}/reject", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
+    public @ResponseBody String rejectPendingCertifiedProductDeprecated(@PathVariable("pcpId") final Long id)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, ObjectMissingValidationException {
+        
+        return deletePendingCertifiedProduct(id);
+    }
+    
+    @ApiOperation(value = "Reject a pending certified product.",
+            notes = "Essentially deletes a pending certified product. ROLE_ACB "
+                    + " and administrative authority on the ACB is required.")
+    @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.DELETE,
+                    produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
+        
+        return deletePendingCertifiedProduct(id);
+    }
+    
+    private String deletePendingCertifiedProduct(final Long id)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, ObjectMissingValidationException {
+        
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.deletePendingCertifiedProduct(acbs, id);
         return "{\"success\" : true}";
@@ -746,12 +792,32 @@ public class CertifiedProductController {
      * @throws InvalidArgumentsException if arguments are invalid
      * @throws ObjectsMissingValidationException if missing validation
      */
+    @Deprecated
     @ApiOperation(value = "Reject several pending certified products.",
             notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
+    public @ResponseBody String rejectPendingCertifiedProductsDeprecated(@RequestBody final IdListContainer idList)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
+        
+        return deletePendingCertifiedProducts(idList);
+    }
+    
+    @ApiOperation(value = "Reject several pending certified products.",
+            notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
+                    + " and administrative authority on the ACB for each pending certified product is required.")
+    @RequestMapping(value = "/pending", method = RequestMethod.DELETE,
+    produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody final IdListContainer idList)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
+        
+        return deletePendingCertifiedProducts(idList);
+    }
+
+    private String deletePendingCertifiedProducts(final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
@@ -774,6 +840,7 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
+    
     /**
      * Confirm a pending listing.
      * @param pendingCp the listing's id
@@ -785,6 +852,7 @@ public class CertifiedProductController {
      * @throws ObjectMissingValidationException if object is missing validation
      * @throws IOException if IO Exception occurs
      */
+    @Deprecated
     @ApiOperation(value = "Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + " passed in on the request. This information may differ from what was previously "
@@ -794,11 +862,38 @@ public class CertifiedProductController {
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
+    public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProductDprecated(
+            @RequestBody(required = true) final PendingCertifiedProductDetails pendingCp)
+                    throws InvalidArgumentsException, ValidationException,
+                    EntityCreationException, EntityRetrievalException,
+                    ObjectMissingValidationException, IOException {
+        
+        return addPendingCertifiedProduct(pendingCp);
+    }
+    
+    @ApiOperation(value = "Confirm a pending certified product.",
+            notes = "Creates a new certified product in the system based on all of the information "
+                    + " passed in on the request. This information may differ from what was previously "
+                    + " entered for the pending certified product during upload. It will first be validated "
+                    + " to check for errors, then a new certified product is created, and the old pending certified"
+                    + " product will be removed. ROLE_ACB "
+                    + " and administrative authority on the ACB is required.")
+    @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.POST,
+    produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) final PendingCertifiedProductDetails pendingCp)
                     throws InvalidArgumentsException, ValidationException,
                     EntityCreationException, EntityRetrievalException,
                     ObjectMissingValidationException, IOException {
+        
+        return addPendingCertifiedProduct(pendingCp);
+    }
+    
+    private synchronized ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(
+            final PendingCertifiedProductDetails pendingCp) throws InvalidArgumentsException, ValidationException,
+                    EntityCreationException, EntityRetrievalException, ObjectMissingValidationException, 
+                    IOException {
+        
         String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
         if (StringUtils.isEmpty(acbIdStr)) {
             throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
