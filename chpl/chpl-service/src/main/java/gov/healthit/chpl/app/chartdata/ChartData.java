@@ -29,14 +29,26 @@ public final class ChartData {
         try {
             appEnvironment = new ChartDataApplicationEnvironment();
 
+            ListingCollector listingCollector = new ListingCollector(appEnvironment);
+            List<CertifiedProductSearchDetails> listings = listingCollector.retreiveData();
+
             analyzeSed(appEnvironment);
             analyzeProducts(appEnvironment);
+            analyzeDevelopers(appEnvironment, listings);
 
         } catch (Exception e) {
             LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
         } finally {
             appEnvironment.closeApplicationContext();
         }
+    }
+
+    private static void analyzeDevelopers(final ChartDataApplicationEnvironment appEnvironment,
+            final List<CertifiedProductSearchDetails> listings) {
+        IncumbentDevelopersStatisticsCalculator incumbentDevelopersStatisticsCalculator =
+                new IncumbentDevelopersStatisticsCalculator(appEnvironment);
+        incumbentDevelopersStatisticsCalculator.run(listings);
+
     }
 
     private static void analyzeProducts(final ChartDataApplicationEnvironment appEnvironment) {
