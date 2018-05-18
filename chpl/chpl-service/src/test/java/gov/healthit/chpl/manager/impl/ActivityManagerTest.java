@@ -233,6 +233,8 @@ public class ActivityManagerTest extends TestCase {
 		List<ActivityEvent> events3 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
 		assertEquals(0, events3.size());
 		
+		List<ActivityEvent> capEvents = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CORRECTIVE_ACTION_PLAN);
+        assertEquals(0, capEvents.size());
 	}
 	
 	@Test

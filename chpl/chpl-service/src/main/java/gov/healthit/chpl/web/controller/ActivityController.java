@@ -314,7 +314,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for corrective action plans",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return corrective action plan activity across all dates.")
-    @RequestMapping(value = "/certified_products", method = RequestMethod.GET,
+    @RequestMapping(value = "/corrective_action_plans", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCorrectiveActionPlans(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end) throws JsonParseException, IOException, ValidationException {
@@ -331,7 +331,7 @@ public class ActivityController {
                 endDate = new Date(end);
             }
             validateActivityDates(start, end);
-            return getActivityEventsForCertifiedProducts(startDate, endDate);
+            return getActivityEventsForCorrectiveActionPlans(startDate, endDate);
         }
     }
     
