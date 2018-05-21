@@ -2,8 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,7 +16,6 @@ import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
-import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -35,8 +32,6 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/statistics")
 public class StatisticsController {
-
-    private static final Logger LOGGER = LogManager.getLogger(StatisticsController.class);
 
     @Autowired
     private StatisticsManager statisticsManager;

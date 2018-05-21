@@ -18,8 +18,7 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
 
@@ -45,10 +44,10 @@ public class CriterionProductStatisticsCalculator {
     /**
      * This method calculates the criterion-product counts and saves them to the
      * criterion_product_statistics table.
-     * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
+     * @param listings List of CertifiedProductFlatSearchResult objects
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
-        Map<String, Long> productCounts = getCounts(certifiedProductSearchDetails);
+    public void run(final List<CertifiedProductFlatSearchResult> listings) {
+        Map<String, Long> productCounts = getCounts(listings);
 
         logCounts(productCounts);
 
@@ -76,24 +75,24 @@ public class CriterionProductStatisticsCalculator {
         }
     }
 
-    private Map<String, Long> getCounts(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+    private Map<String, Long> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
         /**
          * criterionMap maps the certification criterion to the count of unique Products that
          * certify to that criterion.
          *
-         * uniqueProductSet contains strings of the form "<CriterionNumber>-<ProductID>" iff
+         * uniqueProductSet contains strings of the form "<CriterionNumber>-<DeveloperName>-<ProductName>" iff
          * that combination of criterion and product have already been counted in the criterion map
          */
         Map<String, Long> criterionMap = new HashMap<String, Long>();
         HashSet<String> uniqueProductSet = new HashSet<String>();
-        for (CertifiedProductSearchDetails listing: certifiedProductSearchDetails) {
-            for (CertificationResult cert : listing.getCertificationResults()) {
-                String key = cert.getNumber() + "-" + listing.getProduct().getProductId();
-                if (cert.isSuccess() && !uniqueProductSet.contains(key)) {
-                    if (!criterionMap.containsKey(cert.getNumber())) {
-                        criterionMap.put(cert.getNumber(), 0L);
+        for (CertifiedProductFlatSearchResult listing: listings) {
+            for (String cert : listing.getCriteriaMet().split("☺")) {
+                String key = cert + "-" + listing.getDeveloper() + '-' + listing.getProduct();
+                if (!uniqueProductSet.contains(key)) {
+                    if (!criterionMap.containsKey(cert)) {
+                        criterionMap.put(cert, 0L);
                     }
-                    criterionMap.put(cert.getNumber(), criterionMap.get(cert.getNumber()) + 1);
+                    criterionMap.put(cert, criterionMap.get(cert) + 1);
                     uniqueProductSet.add(key);
                 }
             }

@@ -13,7 +13,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.entity.IncumbentDevelopersStatisticsEntity;
 
@@ -38,10 +38,10 @@ public class IncumbentDevelopersStatisticsCalculator {
     /**
      * This method calculates the criterion-product counts and saves them to the
      * criterion_product_statistics table.
-     * @param certifiedProductSearchDetails List of CertifiedProductSearchDetails objects
+     * @param certifiedProducts List of CertifiedProductFlatSearchResult objects
      */
-    public void run(final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
-        IncumbentDevelopersStatisticsEntity entity = getCounts(certifiedProductSearchDetails);
+    public void run(final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+        IncumbentDevelopersStatisticsEntity entity = getCounts(certifiedProducts);
 
         logCounts(entity);
 
@@ -57,30 +57,30 @@ public class IncumbentDevelopersStatisticsCalculator {
     }
 
     private IncumbentDevelopersStatisticsEntity getCounts(
-            final List<CertifiedProductSearchDetails> certifiedProductSearchDetails) {
+            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
 
         /**
-         * Loop through every Listing. For each Listing, add that Listing's Developer ID to
-         * an edition specific set of IDs depending on which edition that Listing is.
+         * Loop through every Listing. For each Listing, add that Listing's Developer Name to
+         * an edition specific set of Names depending on which edition that Listing is.
          *
          * Then, loop through each "later" set, comparing to each "earlier" set. If the "later"
-         * ID is not found in the "earlier" set, add it to the "new" component of the entity,
+         * name is not found in the "earlier" set, add it to the "new" component of the entity,
          * otherwise add it to the "incumbent" component.
          */
-        HashSet<Long> developers2011 = new HashSet<Long>();
-        HashSet<Long> developers2014 = new HashSet<Long>();
-        HashSet<Long> developers2015 = new HashSet<Long>();
+        HashSet<String> developers2011 = new HashSet<String>();
+        HashSet<String> developers2014 = new HashSet<String>();
+        HashSet<String> developers2015 = new HashSet<String>();
         IncumbentDevelopersStatisticsEntity result = new IncumbentDevelopersStatisticsEntity();
-        for (CertifiedProductSearchDetails listing: certifiedProductSearchDetails) {
-            switch (listing.getCertificationEdition().get("name").toString()) {
+        for (CertifiedProductFlatSearchResult listing: certifiedProducts) {
+            switch (listing.getEdition()) {
             case "2011":
-                developers2011.add(listing.getDeveloper().getDeveloperId());
+                developers2011.add(listing.getDeveloper());
                 break;
             case "2014":
-                developers2014.add(listing.getDeveloper().getDeveloperId());
+                developers2014.add(listing.getDeveloper());
                 break;
             case "2015":
-                developers2015.add(listing.getDeveloper().getDeveloperId());
+                developers2015.add(listing.getDeveloper());
                 break;
             default:
                 LOGGER.info("Listing has no edition");
@@ -90,20 +90,20 @@ public class IncumbentDevelopersStatisticsCalculator {
         LOGGER.info("Total 2011 Developers: " + developers2011.size());
         LOGGER.info("Total 2014 Developers: " + developers2014.size());
         LOGGER.info("Total 2015 Developers: " + developers2015.size());
-        for (Long id : developers2014) {
-            if (developers2011.contains(id)) {
+        for (String name : developers2014) {
+            if (developers2011.contains(name)) {
                 result.setIncumbent2011To2014(result.getIncumbent2011To2014() + 1);
             } else {
                 result.setNew2011To2014(result.getNew2011To2014() + 1);
             }
         }
-        for (Long id : developers2015) {
-            if (developers2011.contains(id)) {
+        for (String name : developers2015) {
+            if (developers2011.contains(name)) {
                 result.setIncumbent2011To2015(result.getIncumbent2011To2015() + 1);
             } else {
                 result.setNew2011To2015(result.getNew2011To2015() + 1);
             }
-            if (developers2014.contains(id)) {
+            if (developers2014.contains(name)) {
                 result.setIncumbent2014To2015(result.getIncumbent2014To2015() + 1);
             } else {
                 result.setNew2014To2015(result.getNew2014To2015() + 1);

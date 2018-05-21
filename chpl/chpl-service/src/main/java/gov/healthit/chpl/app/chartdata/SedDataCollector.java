@@ -10,39 +10,36 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 /**
- * Retrieves all of the 2014 and 2015 Listings and their details.  Details are retrieved asynchronously according
+ * Retrieves all of the 2015 SED Products and their details.  Details are retrieved asynchronously according
  * to the chartDataExecutor defined in AppConfig.
- * @author alarned
+ * @author TYoung
  *
  */
-public class ProductDataCollector {
+public class SedDataCollector {
     private ChartDataApplicationEnvironment appEnvironment;
-    private static final Logger LOGGER = LogManager.getLogger(ProductDataCollector.class);
-    private static final String EDITION_2014 = "2014";
+    private static final Logger LOGGER = LogManager.getLogger(SedDataCollector.class);
     private static final String EDITION_2015 = "2015";
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
-    ProductDataCollector(final ChartDataApplicationEnvironment appEnvironment) {
+    SedDataCollector(final ChartDataApplicationEnvironment appEnvironment) {
         this.appEnvironment = appEnvironment;
         initialize();
     }
 
     /**
-     * This method runs the data retrieval process for the 2014/2015 Criterion - Product count.
+     * This method runs the data retrieval process for the 2015 SED products and their details.
+     * @param listings initial set of Listings
      * @return List of CertifiedProductSearchDetails
      */
-    public List<CertifiedProductSearchDetails> retreiveData() {
-        List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts();
-        LOGGER.info("Certified Product Count: " + certifiedProducts.size());
+    public List<CertifiedProductSearchDetails> retreiveData(final List<CertifiedProductFlatSearchResult> listings) {
 
-        certifiedProducts = filterByEditions(certifiedProducts, EDITION_2014, EDITION_2015);
-        LOGGER.info("2014/2015 Certified Product Count: " + certifiedProducts.size());
+        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
+        LOGGER.info("2015/SED Certified Product Count: " + certifiedProducts.size());
 
         List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
                 certifiedProducts);
@@ -50,24 +47,15 @@ public class ProductDataCollector {
         return certifiedProductsWithDetails;
     }
 
-    private List<CertifiedProductFlatSearchResult> filterByEditions(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts,
-            final String edition1, final String edition2) {
+    private List<CertifiedProductFlatSearchResult> filterData(
+            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if (result.getEdition().equals(edition1) || result.getEdition().equals(edition2)) {
+            if (result.getEdition().equalsIgnoreCase(EDITION_2015)
+                    && result.getCriteriaMet().contains("170.315 (g)(3)")) {
                 results.add(result);
             }
         }
-        return results;
-    }
-
-    private List<CertifiedProductFlatSearchResult> getCertifiedProducts() {
-        CertifiedProductSearchDAO certifiedProductSearchDAO = (CertifiedProductSearchDAO) appEnvironment
-                .getSpringManagedObject("certifiedProductSearchDAO");
-
-        List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDAO.getAllCertifiedProducts();
-
         return results;
     }
 
