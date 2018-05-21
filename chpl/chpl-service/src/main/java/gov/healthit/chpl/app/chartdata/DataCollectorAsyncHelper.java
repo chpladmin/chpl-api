@@ -13,13 +13,13 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 /**
- * Provides asynchronous support to SedParticipantsStatisticsCount class for retrieving certified product details.
+ * Provides asynchronous support for retrieving certified product details.
  * @author TYoung
  *
  */
-@Service("sedDataCollectorAsyncHelper")
-public class SedDataCollectorAsyncHelper {
-    private static final Logger LOGGER = LogManager.getLogger(SedDataCollectorAsyncHelper.class);
+@Service("dataCollectorAsyncHelper")
+public class DataCollectorAsyncHelper {
+    private static final Logger LOGGER = LogManager.getLogger(DataCollectorAsyncHelper.class);
 
     /**
      * Retrieves the associated CertifiedProductionSearchDetails object as a Future<>.
@@ -33,7 +33,7 @@ public class SedDataCollectorAsyncHelper {
             final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
                 throws EntityRetrievalException {
         CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetails(id);
-        LOGGER.info("Finishing Details for: " + id);
+        LOGGER.info("Finishing retrieving Details for: " + id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
     }
 }

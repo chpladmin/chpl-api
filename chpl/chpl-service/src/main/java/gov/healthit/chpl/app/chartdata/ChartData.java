@@ -28,38 +28,54 @@ public final class ChartData {
         ChartDataApplicationEnvironment appEnvironment = null;
         try {
             appEnvironment = new ChartDataApplicationEnvironment();
-            
-            SedDataCollector sedDataCollector = new SedDataCollector();
-            
-            List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(appEnvironment);
-            
-            SedParticipantsStatisticCountCalculator sedParticipantsStatisticCountCalculator = 
-                    new SedParticipantsStatisticCountCalculator();
-            sedParticipantsStatisticCountCalculator.run(seds, appEnvironment);
-            
-            ParticipantGenderStatisticsCalculator participantGenderStatisticsCalculator = 
-                    new ParticipantGenderStatisticsCalculator();
-            participantGenderStatisticsCalculator.run(seds, appEnvironment);
-            
-            ParticipantAgeStatisticsCalculator participantAgeStatisticsCalculator =
-                    new ParticipantAgeStatisticsCalculator();
-            participantAgeStatisticsCalculator.run(seds, appEnvironment);
-            
-            ParticipantEducationStatisticsCalculator participantEducationStatisticsCalculator =
-                    new ParticipantEducationStatisticsCalculator();
-            participantEducationStatisticsCalculator.run(seds, appEnvironment);
-            
-            ParticipantExperienceStatisticsCalculator participantProfExperienceStatisticsCalculator =
-                    new ParticipantExperienceStatisticsCalculator();
-            
-            participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.COMPUTER_EXPERIENCE, appEnvironment);
-            participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.PRODUCT_EXPERIENCE, appEnvironment);
-            participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.PROFESSIONAL_EXPERIENCE, appEnvironment);
+
+            analyzeSed(appEnvironment);
+            analyzeProducts(appEnvironment);
 
         } catch (Exception e) {
             LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
         } finally {
             appEnvironment.closeApplicationContext();
         }
+    }
+
+    private static void analyzeProducts(final ChartDataApplicationEnvironment appEnvironment) {
+        ProductDataCollector productDataCollector = new ProductDataCollector(appEnvironment);
+        List<CertifiedProductSearchDetails> products = productDataCollector.retreiveData();
+        CriterionProductStatisticsCalculator criterionProductStatisticsCalculator =
+                new CriterionProductStatisticsCalculator(appEnvironment);
+        criterionProductStatisticsCalculator.run(products);
+
+    }
+
+    private static void analyzeSed(final ChartDataApplicationEnvironment appEnvironment) {
+        // Get Certified Products
+        SedDataCollector sedDataCollector = new SedDataCollector();
+        List<CertifiedProductSearchDetails> seds = sedDataCollector.retreiveData(appEnvironment);
+
+        // Extract SED Statistics
+        SedParticipantsStatisticCountCalculator sedParticipantsStatisticCountCalculator =
+                new SedParticipantsStatisticCountCalculator();
+        sedParticipantsStatisticCountCalculator.run(seds, appEnvironment);
+
+        ParticipantGenderStatisticsCalculator participantGenderStatisticsCalculator =
+                new ParticipantGenderStatisticsCalculator();
+        participantGenderStatisticsCalculator.run(seds, appEnvironment);
+
+        ParticipantAgeStatisticsCalculator participantAgeStatisticsCalculator =
+                new ParticipantAgeStatisticsCalculator();
+        participantAgeStatisticsCalculator.run(seds, appEnvironment);
+
+        ParticipantEducationStatisticsCalculator participantEducationStatisticsCalculator =
+                new ParticipantEducationStatisticsCalculator();
+        participantEducationStatisticsCalculator.run(seds, appEnvironment);
+
+        ParticipantExperienceStatisticsCalculator participantProfExperienceStatisticsCalculator =
+                new ParticipantExperienceStatisticsCalculator();
+
+        participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.COMPUTER_EXPERIENCE, appEnvironment);
+        participantProfExperienceStatisticsCalculator.run(seds, ExperienceType.PRODUCT_EXPERIENCE, appEnvironment);
+        participantProfExperienceStatisticsCalculator.run(seds,
+                ExperienceType.PROFESSIONAL_EXPERIENCE, appEnvironment);
     }
 }

@@ -64,7 +64,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
         this.env = e;
         String activityThresholdDaysStr = env.getProperty("questionableActivityThresholdDays");
         int activityThresholdDays = new Integer(activityThresholdDaysStr).intValue();
-        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY * -1;
+        listingActivityThresholdMillis = activityThresholdDays * MILLIS_PER_DAY;
 
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
@@ -158,17 +158,24 @@ public class QuestionableActivityAspect implements EnvironmentAware {
             //look for any of the listing questionable activity
             checkListingQuestionableActivity(origListing, newListing, activityDate, activityUser, reason);
 
-            //look for certification result questionable activity
-            if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
-                newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
+            //check for cert result questionable activity
+            //outside of the acceptable activity threshold
+            if (origListing.getCertificationDate() != null && newListing.getCertificationDate() != null
+                    && (newListing.getLastModifiedDate().longValue()
+                            - origListing.getCertificationDate().longValue() > listingActivityThresholdMillis)) {
                 
-                //all cert results are in the details so find matches based on the 
-                //original and new criteira number fields
-                for (CertificationResult origCertResult : origListing.getCertificationResults()) {
-                    for (CertificationResult newCertResult : newListing.getCertificationResults()) {
-                        if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
-                            checkCertificationResultQuestionableActivity(origCertResult, newCertResult, 
-                                    activityDate, activityUser, reason);
+                //look for certification result questionable activity
+                if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0 && 
+                        newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
+
+                    //all cert results are in the details so find matches based on the 
+                    //original and new criteira number fields
+                    for (CertificationResult origCertResult : origListing.getCertificationResults()) {
+                        for (CertificationResult newCertResult : newListing.getCertificationResults()) {
+                            if (origCertResult.getNumber().equals(newCertResult.getNumber())) {
+                                checkCertificationResultQuestionableActivity(origCertResult, newCertResult, 
+                                        activityDate, activityUser, reason);
+                            }
                         }
                     }
                 }

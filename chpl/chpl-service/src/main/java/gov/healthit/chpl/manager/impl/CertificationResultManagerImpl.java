@@ -727,6 +727,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                                 + certResult.getId() + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestToolId(foundTool.getId());
+                        updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
                     }
                 }
             }
@@ -738,6 +739,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                         CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
                         toAdd.setCertificationResultId(certResult.getId());
                         toAdd.setTestToolId(updatedItem.getTestToolId());
+                        toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
                         testToolsToAdd.add(toAdd);
                     }
                 }
@@ -755,6 +757,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                             CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
                             toAdd.setCertificationResultId(certResult.getId());
                             toAdd.setTestToolId(updatedItem.getTestToolId());
+                            toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
                             testToolsToAdd.add(toAdd);
                         }
                     }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
@@ -14,9 +15,11 @@ import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dao.TestParticipantAgeDAO;
+import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
+import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
@@ -25,6 +28,7 @@ import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.dto.TestParticipantAgeDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -36,6 +40,12 @@ import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsR
  */
 @Service
 public class StatisticsManagerImpl extends ApplicationObjectSupport implements StatisticsManager {
+
+//    @Autowired
+//    private CertificationCriterionDAO certificationCriterionDAO;
+
+    @Autowired
+    private CriterionProductStatisticsDAO criterionProductStatisticsDAO;
 
     @Autowired
     private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
@@ -61,6 +71,18 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     @Override
     public List<SedParticipantStatisticsCountDTO> getAllSedParticipantCounts() {
         return sedParticipantStatisticsCountDAO.findAll();
+    }
+
+    @Override
+    public CriterionProductStatisticsResult getCriterionProductStatisticsResult() {
+        CriterionProductStatisticsResult result = new CriterionProductStatisticsResult();
+        List<CriterionProductStatisticsDTO> dtos = criterionProductStatisticsDAO.findAll();
+
+        for (CriterionProductStatisticsDTO dto : dtos) {
+            CriterionProductStatistics cps = new CriterionProductStatistics(dto);
+            result.getCriterionProductStatisticsResult().add(cps);
+        }
+        return result;
     }
 
     @Override

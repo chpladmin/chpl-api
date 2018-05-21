@@ -1,21 +1,41 @@
 # Release Notes
 
+## Version 15.12.0
+_21 May 2018_
+
+### Minor Features
+* Add endpoint /certified_product/{chpl_product_number} to return basic information about a certified product
+* Add endpoint /certified_product/{chpl_product_number}/cqm_results to return CQM results information about a certified product based on a CHPL Product Number
+* Add endpoint /certified_product/{chpl_product_number}certificationtion_results to return certification results information about a certified product based on a CHPL Product Number
+* Add endpoint /certified_product/{chpl_product_number}/certificationtion_results to return certification results information about a certified product based on a CHPL Product Number
+* Add endpoint /certified_product/{chpl_product_number}/ics_relationships to return relationship tree information about a certified product based on a CHPL Product Number
+* Add endpoint /activity/certified_product/{chpl_product_number} to return activity information about a certified product based on a CHPL Product Number
+* Add new chart: Criterion / Product statistics
+  * Update chart data generation application
+  * Add API endpoint to retrieve chart data
+
+### Bugs Fixed
+* Fix Summary Statistics Report missing ISCA count under the Total # of Unique Products with Active 2015 Listings section
+* Respect configured questionable activity window to allow a user to make edits that do not get logged as questionable activity for a short amount of time after a listing's certification date.
+* Fix bug restricting add/edit of Versions of Test Data
+
+---
+
 ## Version 15.11.0
 _7 May 2018_
 
 ### Minor Features
 * Added error on upload for qms to be true but have empty standards and vice versa
 * Restrict CMS IDs from using deleted Listings for /search or /create
-* Added endpoint /certified_product to return basic information about a certified product
-* Added endpoint /certified_product/cqm_results to return CQM results information about a certified product
-* Added endpoint /certified_product/certifiection_results to return certification results information about a certified product
+* Added endpoint /certified_product/{certified_product} to return basic information about a certified product
+* Added endpoint /certified_product/{certified_product}/cqm_results to return CQM results information about a certified product
+* Added endpoint /certified_product/{certified_product}/certification_results to return certification results information about a certified product
 
 ### Bugs Fixed
 * Fixed bug with searching for Listings with lower case CHPL ID values
 * Fix bug where uploaded Listings file with bad B1 cell isn't treated correctly
 
 ---
-
 
 ## Version 15.10.0
 _23 April 2018_
