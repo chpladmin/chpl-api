@@ -34,8 +34,8 @@ public final class ChartData {
             List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts(appEnvironment);
             LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-            analyzeSed(appEnvironment, certifiedProducts);
-            analyzeProducts(appEnvironment, certifiedProducts);
+//            analyzeSed(appEnvironment, certifiedProducts);
+//            analyzeProducts(appEnvironment, certifiedProducts);
             analyzeDevelopers(appEnvironment, certifiedProducts);
 
         } catch (Exception e) {

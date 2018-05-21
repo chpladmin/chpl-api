@@ -49,12 +49,10 @@ public class IncumbentDevelopersStatisticsDAOImpl extends BaseDAOImpl implements
     public IncumbentDevelopersStatisticsEntity create(final IncumbentDevelopersStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
         IncumbentDevelopersStatisticsEntity entity = new IncumbentDevelopersStatisticsEntity();
-        entity.setNew2011To2014(dto.getNew2011To2014());
-        entity.setNew2011To2015(dto.getNew2011To2015());
-        entity.setNew2014To2015(dto.getNew2014To2015());
-        entity.setIncumbent2011To2014(dto.getIncumbent2011To2014());
-        entity.setIncumbent2011To2015(dto.getIncumbent2011To2015());
-        entity.setIncumbent2014To2015(dto.getIncumbent2014To2015());
+        entity.setNewCount(dto.getNewCount());
+        entity.setIncumbentCount(dto.getIncumbentCount());
+        entity.setOldCertificationEditionId(dto.getOldCertificationEditionId());
+        entity.setNewCertificationEditionId(dto.getNewCertificationEditionId());
 
         if (dto.getDeleted() != null) {
             entity.setDeleted(dto.getDeleted());

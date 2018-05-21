@@ -34,7 +34,7 @@ import junit.framework.TestCase;
 public class IncumbentDevelopersStatisticsDAOTest extends TestCase {
 
     private static final int STAT_LENGTH = 1;
-    private static final Long COUNT_2011_TO_2014 = 6L;
+    private static final Long COUNT_2011_TO_2014 = 4L;
 
     @Autowired
     private IncumbentDevelopersStatisticsDAO idDao;
@@ -49,7 +49,7 @@ public class IncumbentDevelopersStatisticsDAOTest extends TestCase {
         List<IncumbentDevelopersStatisticsDTO> results = idDao.findAll();
         assertNotNull(results);
         assertEquals(STAT_LENGTH, results.size());
-        assertEquals(COUNT_2011_TO_2014, results.get(0).getIncumbent2011To2014());
+        assertEquals(COUNT_2011_TO_2014, results.get(0).getIncumbentCount());
     }
 
     @Test
@@ -65,12 +65,10 @@ public class IncumbentDevelopersStatisticsDAOTest extends TestCase {
     @Transactional
     public void createOneStat() throws EntityCreationException, EntityRetrievalException {
         IncumbentDevelopersStatisticsDTO dto = new IncumbentDevelopersStatisticsDTO();
-        dto.setIncumbent2011To2014(1L);
-        dto.setIncumbent2011To2015(1L);
-        dto.setIncumbent2014To2015(1L);
-        dto.setNew2011To2014(1L);
-        dto.setNew2011To2015(1L);
-        dto.setNew2014To2015(1L);
+        dto.setIncumbentCount(2L);
+        dto.setNewCount(3L);
+        dto.setOldCertificationEditionId(1L);
+        dto.setNewCertificationEditionId(2L);
         idDao.create(dto);
         List<IncumbentDevelopersStatisticsDTO> results = idDao.findAll();
         assertNotNull(results);

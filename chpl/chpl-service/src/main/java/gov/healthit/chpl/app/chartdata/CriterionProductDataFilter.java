@@ -27,7 +27,8 @@ public class CriterionProductDataFilter {
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
         List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if (result.getEdition().equalsIgnoreCase(EDITION_2014) || result.getEdition().equalsIgnoreCase(EDITION_2015)) {
+            if (result.getEdition().equalsIgnoreCase(EDITION_2014)
+                    || result.getEdition().equalsIgnoreCase(EDITION_2015)) {
                 results.add(result);
             }
         }

@@ -15,12 +15,12 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
     private static final long serialVersionUID = -1536844909545189801L;
 
     private Long id;
-    private Long new2011To2014;
-    private Long new2011To2015;
-    private Long new2014To2015;
-    private Long incumbent2011To2014;
-    private Long incumbent2011To2015;
-    private Long incumbent2014To2015;
+    private Long newCount;
+    private Long incumbentCount;
+    private Long oldCertificationEditionId;
+    private Long newCertificationEditionId;
+    private CertificationEditionDTO oldCertificationEdition;
+    private CertificationEditionDTO newCertificationEdition;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -38,13 +38,17 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
      * @param entity IncumbentDevelopersStatisticsEntity entity
      */
     public IncumbentDevelopersStatisticsDTO(final IncumbentDevelopersStatisticsEntity entity) {
-        this.setId(entity.getId());
-        this.setNew2011To2014(entity.getNew2011To2014());
-        this.setNew2011To2015(entity.getNew2011To2015());
-        this.setNew2014To2015(entity.getNew2014To2015());
-        this.setIncumbent2011To2014(entity.getIncumbent2011To2014());
-        this.setIncumbent2011To2015(entity.getIncumbent2011To2015());
-        this.setIncumbent2014To2015(entity.getIncumbent2014To2015());
+        this.id = entity.getId();
+        this.newCount = entity.getNewCount();
+        this.incumbentCount = entity.getIncumbentCount();
+        this.oldCertificationEditionId = entity.getOldCertificationEditionId();
+        this.newCertificationEditionId = entity.getNewCertificationEditionId();
+        if (entity.getOldCertificationEdition() != null) {
+            this.oldCertificationEdition = new CertificationEditionDTO(entity.getOldCertificationEdition());
+        }
+        if (entity.getNewCertificationEdition() != null) {
+            this.newCertificationEdition = new CertificationEditionDTO(entity.getNewCertificationEdition());
+        }
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
@@ -57,54 +61,6 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public Long getNew2011To2014() {
-        return new2011To2014;
-    }
-
-    public void setNew2011To2014(final Long new2011To2014) {
-        this.new2011To2014 = new2011To2014;
-    }
-
-    public Long getNew2011To2015() {
-        return new2011To2015;
-    }
-
-    public void setNew2011To2015(final Long new2011To2015) {
-        this.new2011To2015 = new2011To2015;
-    }
-
-    public Long getNew2014To2015() {
-        return new2014To2015;
-    }
-
-    public void setNew2014To2015(final Long new2014To2015) {
-        this.new2014To2015 = new2014To2015;
-    }
-
-    public Long getIncumbent2011To2014() {
-        return incumbent2011To2014;
-    }
-
-    public void setIncumbent2011To2014(final Long incumbent2011To2014) {
-        this.incumbent2011To2014 = incumbent2011To2014;
-    }
-
-    public Long getIncumbent2011To2015() {
-        return incumbent2011To2015;
-    }
-
-    public void setIncumbent2011To2015(final Long incumbent2011To2015) {
-        this.incumbent2011To2015 = incumbent2011To2015;
-    }
-
-    public Long getIncumbent2014To2015() {
-        return incumbent2014To2015;
-    }
-
-    public void setIncumbent2014To2015(final Long incumbent2014To2015) {
-        this.incumbent2014To2015 = incumbent2014To2015;
     }
 
     public Date getCreationDate() {
@@ -141,12 +97,58 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
     @Override
     public String toString() {
         return "Incumbent Developers Statistics DTO ["
-                + "[New 2011 to 2014: " + this.new2011To2014 + "]"
-                + "[New 2011 to 2015: " + this.new2011To2015 + "]"
-                + "[New 2014 to 2015: " + this.new2014To2015 + "]"
-                + "[Incumbent 2011 to 2014: " + this.incumbent2011To2014 + "]"
-                + "[Incumbent 2011 to 2015: " + this.incumbent2011To2015 + "]"
-                + "[Incumbent 2014 to 2015: " + this.incumbent2014To2015 + "]"
+                + "[New: " + this.newCount + "]"
+                + "[Incumbent: " + this.incumbentCount + "]"
+                + "[Old Edition: " + this.oldCertificationEditionId.toString() + "]"
+                + "[New Edition: " + this.newCertificationEditionId.toString() + "]"
                 + "]";
+    }
+
+    public Long getNewCount() {
+        return newCount;
+    }
+
+    public void setNewCount(final Long newCount) {
+        this.newCount = newCount;
+    }
+
+    public Long getIncumbentCount() {
+        return incumbentCount;
+    }
+
+    public void setIncumbentCount(final Long incumbentCount) {
+        this.incumbentCount = incumbentCount;
+    }
+
+    public Long getOldCertificationEditionId() {
+        return oldCertificationEditionId;
+    }
+
+    public void setOldCertificationEditionId(final Long oldCertificationEditionId) {
+        this.oldCertificationEditionId = oldCertificationEditionId;
+    }
+
+    public Long getNewCertificationEditionId() {
+        return newCertificationEditionId;
+    }
+
+    public void setNewCertificationEditionId(final Long newCertificationEditionId) {
+        this.newCertificationEditionId = newCertificationEditionId;
+    }
+
+    public CertificationEditionDTO getOldCertificationEdition() {
+        return oldCertificationEdition;
+    }
+
+    public void setOldCertificationEdition(final CertificationEditionDTO oldCertificationEdition) {
+        this.oldCertificationEdition = oldCertificationEdition;
+    }
+
+    public CertificationEditionDTO getNewCertificationEdition() {
+        return newCertificationEdition;
+    }
+
+    public void setNewCertificationEdition(final CertificationEditionDTO newCertificationEdition) {
+        this.newCertificationEdition = newCertificationEdition;
     }
 }

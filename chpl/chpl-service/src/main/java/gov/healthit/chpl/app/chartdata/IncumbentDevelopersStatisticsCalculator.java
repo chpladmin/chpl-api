@@ -1,5 +1,6 @@
 package gov.healthit.chpl.app.chartdata;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,11 +42,11 @@ public class IncumbentDevelopersStatisticsCalculator {
      * @param certifiedProducts List of CertifiedProductFlatSearchResult objects
      */
     public void run(final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-        IncumbentDevelopersStatisticsEntity entity = getCounts(certifiedProducts);
+        List<IncumbentDevelopersStatisticsEntity> entities = getCounts(certifiedProducts);
 
-        logCounts(entity);
+        logCounts(entities);
 
-        save(entity);
+        save(entities);
     }
 
     private void deleteExistingIncumbentDevelopersStatistics() throws EntityRetrievalException {
@@ -56,7 +57,7 @@ public class IncumbentDevelopersStatisticsCalculator {
         }
     }
 
-    private IncumbentDevelopersStatisticsEntity getCounts(
+    private List<IncumbentDevelopersStatisticsEntity> getCounts(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
 
         /**
@@ -70,7 +71,6 @@ public class IncumbentDevelopersStatisticsCalculator {
         HashSet<String> developers2011 = new HashSet<String>();
         HashSet<String> developers2014 = new HashSet<String>();
         HashSet<String> developers2015 = new HashSet<String>();
-        IncumbentDevelopersStatisticsEntity result = new IncumbentDevelopersStatisticsEntity();
         for (CertifiedProductFlatSearchResult listing: certifiedProducts) {
             switch (listing.getEdition()) {
             case "2011":
@@ -87,28 +87,41 @@ public class IncumbentDevelopersStatisticsCalculator {
             }
         }
 
+        IncumbentDevelopersStatisticsEntity from2011To2014 = new IncumbentDevelopersStatisticsEntity();
+        from2011To2014.setOldCertificationEditionId(1L);
+        from2011To2014.setNewCertificationEditionId(2L);
+        IncumbentDevelopersStatisticsEntity from2011To2015 = new IncumbentDevelopersStatisticsEntity();
+        from2011To2015.setOldCertificationEditionId(1L);
+        from2011To2015.setNewCertificationEditionId(3L);
+        IncumbentDevelopersStatisticsEntity from2014To2015 = new IncumbentDevelopersStatisticsEntity();
+        from2014To2015.setOldCertificationEditionId(2L);
+        from2014To2015.setNewCertificationEditionId(3L);
         LOGGER.info("Total 2011 Developers: " + developers2011.size());
         LOGGER.info("Total 2014 Developers: " + developers2014.size());
         LOGGER.info("Total 2015 Developers: " + developers2015.size());
         for (String name : developers2014) {
             if (developers2011.contains(name)) {
-                result.setIncumbent2011To2014(result.getIncumbent2011To2014() + 1);
+                from2011To2014.setIncumbentCount(from2011To2014.getIncumbentCount() + 1);
             } else {
-                result.setNew2011To2014(result.getNew2011To2014() + 1);
+                from2011To2014.setNewCount(from2011To2014.getNewCount() + 1);
             }
         }
         for (String name : developers2015) {
             if (developers2011.contains(name)) {
-                result.setIncumbent2011To2015(result.getIncumbent2011To2015() + 1);
+                from2011To2015.setIncumbentCount(from2011To2015.getIncumbentCount() + 1);
             } else {
-                result.setNew2011To2015(result.getNew2011To2015() + 1);
+                from2011To2015.setNewCount(from2011To2015.getNewCount() + 1);
             }
             if (developers2014.contains(name)) {
-                result.setIncumbent2014To2015(result.getIncumbent2014To2015() + 1);
+                from2014To2015.setIncumbentCount(from2014To2015.getIncumbentCount() + 1);
             } else {
-                result.setNew2014To2015(result.getNew2014To2015() + 1);
+                from2014To2015.setNewCount(from2014To2015.getNewCount() + 1);
             }
         }
+        ArrayList<IncumbentDevelopersStatisticsEntity> result = new ArrayList<IncumbentDevelopersStatisticsEntity>();
+        result.add(from2011To2015);
+        result.add(from2014To2015);
+        result.add(from2011To2014);
         return result;
     }
 
@@ -119,11 +132,13 @@ public class IncumbentDevelopersStatisticsCalculator {
         txnTemplate = new TransactionTemplate(txnManager);
     }
 
-    private void logCounts(final IncumbentDevelopersStatisticsEntity entity) {
-        LOGGER.info("Incumbent Developer statistics: [" + entity.toString() + "]");
+    private void logCounts(final List<IncumbentDevelopersStatisticsEntity> entities) {
+        for (IncumbentDevelopersStatisticsEntity entity : entities) {
+            LOGGER.info("Incumbent Developer statistics: [" + entity.toString() + "]");
+        }
     }
 
-    private void save(final IncumbentDevelopersStatisticsEntity entity) {
+    private void save(final List<IncumbentDevelopersStatisticsEntity> entities) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -135,10 +150,12 @@ public class IncumbentDevelopersStatisticsCalculator {
                     return;
                 }
                 try {
-                    IncumbentDevelopersStatisticsDTO dto = new IncumbentDevelopersStatisticsDTO(entity);
-                    incumbentDevelopersStatisticsDAO.create(dto);
-                    LOGGER.info("Saved IncumbentDevelopersStatisticsDTO"
-                            + dto.toString());
+                    for (IncumbentDevelopersStatisticsEntity entity : entities) {
+                        IncumbentDevelopersStatisticsDTO dto = new IncumbentDevelopersStatisticsDTO(entity);
+                        incumbentDevelopersStatisticsDAO.create(dto);
+                        LOGGER.info("Saved IncumbentDevelopersStatisticsDTO"
+                                + dto.toString());
+                    }
                 } catch (EntityCreationException | EntityRetrievalException e) {
                     LOGGER.error("Error occured while inserting counts.", e);
                     return;

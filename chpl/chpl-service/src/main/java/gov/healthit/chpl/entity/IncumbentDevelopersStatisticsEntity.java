@@ -6,9 +6,12 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -29,28 +32,28 @@ public class IncumbentDevelopersStatisticsEntity implements Serializable {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "new_2011_to_2014", nullable = false)
-    private Long new2011To2014;
+    @Column(name = "new_count", nullable = false)
+    private Long newCount;
 
     @Basic(optional = false)
-    @Column(name = "new_2011_to_2015", nullable = false)
-    private Long new2011To2015;
+    @Column(name = "incumbent_count", nullable = false)
+    private Long incumbentCount;
 
     @Basic(optional = false)
-    @Column(name = "new_2014_to_2015", nullable = false)
-    private Long new2014To2015;
+    @Column(name = "old_certification_edition_id", nullable = false)
+    private Long oldCertificationEditionId;
 
     @Basic(optional = false)
-    @Column(name = "incumbent_2011_to_2014", nullable = false)
-    private Long incumbent2011To2014;
+    @Column(name = "new_certification_edition_id", nullable = false)
+    private Long newCertificationEditionId;
 
-    @Basic(optional = false)
-    @Column(name = "incumbent_2011_to_2015", nullable = false)
-    private Long incumbent2011To2015;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "old_certification_edition_id", insertable = false, updatable = false)
+    private CertificationEditionEntity oldCertificationEdition;
 
-    @Basic(optional = false)
-    @Column(name = "incumbent_2014_to_2015", nullable = false)
-    private Long incumbent2014To2015;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "new_certification_edition_id", insertable = false, updatable = false)
+    private CertificationEditionEntity newCertificationEdition;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -72,12 +75,8 @@ public class IncumbentDevelopersStatisticsEntity implements Serializable {
      * Default constructor.
      */
     public IncumbentDevelopersStatisticsEntity() {
-        this.new2011To2014 = 0L;
-        this.new2011To2015 = 0L;
-        this.new2014To2015 = 0L;
-        this.incumbent2011To2014 = 0L;
-        this.incumbent2011To2015 = 0L;
-        this.incumbent2014To2015 = 0L;
+        this.newCount = 0L;
+        this.incumbentCount = 0L;
     }
 
     /**
@@ -101,52 +100,52 @@ public class IncumbentDevelopersStatisticsEntity implements Serializable {
         this.id = id;
     }
 
-    public Long getNew2011To2014() {
-        return new2011To2014;
+    public Long getNewCount() {
+        return newCount;
     }
 
-    public void setNew2011To2014(final Long new2011To2014) {
-        this.new2011To2014 = new2011To2014;
+    public void setNewCount(final Long newCount) {
+        this.newCount = newCount;
     }
 
-    public Long getNew2011To2015() {
-        return new2011To2015;
+    public Long getIncumbentCount() {
+        return incumbentCount;
     }
 
-    public void setNew2011To2015(final Long new2011To2015) {
-        this.new2011To2015 = new2011To2015;
+    public void setIncumbentCount(final Long incumbentCount) {
+        this.incumbentCount = incumbentCount;
     }
 
-    public Long getNew2014To2015() {
-        return new2014To2015;
+    public Long getOldCertificationEditionId() {
+        return oldCertificationEditionId;
     }
 
-    public void setNew2014To2015(final Long new2014To2015) {
-        this.new2014To2015 = new2014To2015;
+    public void setOldCertificationEditionId(final Long oldCertificationEditionId) {
+        this.oldCertificationEditionId = oldCertificationEditionId;
     }
 
-    public Long getIncumbent2011To2014() {
-        return incumbent2011To2014;
+    public Long getNewCertificationEditionId() {
+        return newCertificationEditionId;
     }
 
-    public void setIncumbent2011To2014(final Long incumbent2011To2014) {
-        this.incumbent2011To2014 = incumbent2011To2014;
+    public void setNewCertificationEditionId(final Long newCertificationEditionId) {
+        this.newCertificationEditionId = newCertificationEditionId;
     }
 
-    public Long getIncumbent2011To2015() {
-        return incumbent2011To2015;
+    public CertificationEditionEntity getOldCertificationEdition() {
+        return oldCertificationEdition;
     }
 
-    public void setIncumbent2011To2015(final Long incumbent2011To2015) {
-        this.incumbent2011To2015 = incumbent2011To2015;
+    public void setOldCertificationEdition(final CertificationEditionEntity oldCertificationEdition) {
+        this.oldCertificationEdition = oldCertificationEdition;
     }
 
-    public Long getIncumbent2014To2015() {
-        return incumbent2014To2015;
+    public CertificationEditionEntity getNewCertificationEdition() {
+        return newCertificationEdition;
     }
 
-    public void setIncumbent2014To2015(final Long incumbent2014To2015) {
-        this.incumbent2014To2015 = incumbent2014To2015;
+    public void setNewCertificationEdition(final CertificationEditionEntity newCertificationEdition) {
+        this.newCertificationEdition = newCertificationEdition;
     }
 
     public Date getCreationDate() {
@@ -184,12 +183,10 @@ public class IncumbentDevelopersStatisticsEntity implements Serializable {
     @Override
     public String toString() {
         return "Incumbent Developers Statistics Entity ["
-                + "[New 2011 to 2014: " + this.new2011To2014 + "]"
-                + "[New 2011 to 2015: " + this.new2011To2015 + "]"
-                + "[New 2014 to 2015: " + this.new2014To2015 + "]"
-                + "[Incumbent 2011 to 2014: " + this.incumbent2011To2014 + "]"
-                + "[Incumbent 2011 to 2015: " + this.incumbent2011To2015 + "]"
-                + "[Incumbent 2014 to 2015: " + this.incumbent2014To2015 + "]"
+                + "[New: " + this.newCount + "]"
+                + "[Incumbent: " + this.incumbentCount + "]"
+                + "[Old Edition: " + this.oldCertificationEditionId.toString() + "]"
+                + "[New Edition: " + this.newCertificationEditionId.toString() + "]"
                 + "]";
     }
 }
