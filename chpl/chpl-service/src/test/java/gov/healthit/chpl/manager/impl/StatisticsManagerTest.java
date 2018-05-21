@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
-import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -49,9 +49,8 @@ public class StatisticsManagerTest extends TestCase {
     @Transactional
     public void retrieveNewVsIncumbentDeveloperStats() {
         final Long expectedCount = 3L;
-        IncumbentDevelopersStatisticsResult stats = statisticsManager.getIncumbentDevelopersStatisticsResult();
-        assertNotNull(stats);
-        assertEquals(expectedCount, stats.getIncumbentDevelopersStatisticsResult()
-                .get(0).getNew2011To2014());
+        IncumbentDevelopersStatisticsDTO dto = statisticsManager.getIncumbentDevelopersStatisticsDTO();
+        assertNotNull(dto);
+        assertEquals(expectedCount, dto.getNew2011To2014());
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.app.chartdata.ExperienceType;
+import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
 import gov.healthit.chpl.domain.ParticipantGenderStatistics;
 import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
@@ -60,8 +61,8 @@ public class StatisticsController {
             notes = "Retrieves and returns counts grouped by Edition.")
     @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
-        return statisticsManager.getIncumbentDevelopersStatisticsResult();
+    public @ResponseBody IncumbentDevelopersStatistics getIncumbentDevelopersStatistics() {
+        return new IncumbentDevelopersStatistics(statisticsManager.getIncumbentDevelopersStatisticsDTO());
     }
 
     /**

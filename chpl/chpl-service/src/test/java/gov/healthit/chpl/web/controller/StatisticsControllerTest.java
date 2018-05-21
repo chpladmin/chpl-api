@@ -16,6 +16,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import junit.framework.TestCase;
@@ -61,10 +62,9 @@ public class StatisticsControllerTest extends TestCase {
     @Test
     @Transactional
     public void retrieveNewVsIncumbentDeveloperStats() {
-        final Long expectedCount = 3L;
-        IncumbentDevelopersStatisticsResult resp = statisticsController.getIncumbentDevelopersStatistics();
+        final Long expectedCount = 6L;
+        IncumbentDevelopersStatistics resp = statisticsController.getIncumbentDevelopersStatistics();
         assertNotNull(resp);
-        assertEquals(expectedCount, resp.getIncumbentDevelopersStatisticsResult()
-                .get(0).getNew2011To2014());
+        assertEquals(expectedCount, resp.getIncumbent2011To2014());
     }
 }

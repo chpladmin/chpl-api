@@ -93,15 +93,10 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     }
 
     @Override
-    public IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatisticsResult() {
-        IncumbentDevelopersStatisticsResult result = new IncumbentDevelopersStatisticsResult();
+    public IncumbentDevelopersStatisticsDTO getIncumbentDevelopersStatisticsDTO() {
         List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsDAO.findAll();
 
-        for (IncumbentDevelopersStatisticsDTO dto : dtos) {
-            IncumbentDevelopersStatistics ids = new IncumbentDevelopersStatistics(dto);
-            result.getIncumbentDevelopersStatisticsResult().add(ids);
-        }
-        return result;
+        return dtos.get(0);
     }
 
     @Override
