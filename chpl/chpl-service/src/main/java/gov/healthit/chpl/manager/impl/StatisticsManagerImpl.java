@@ -17,6 +17,7 @@ import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dao.TestParticipantAgeDAO;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
+import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
@@ -31,6 +32,7 @@ import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.dto.TestParticipantAgeDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -91,10 +93,16 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     }
 
     @Override
-    public IncumbentDevelopersStatisticsDTO getIncumbentDevelopersStatisticsDTO() {
+    public IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatisticsResult() {
+        IncumbentDevelopersStatisticsResult result = new IncumbentDevelopersStatisticsResult();
         List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsDAO.findAll();
 
-        return dtos.get(0);
+        for (IncumbentDevelopersStatisticsDTO dto : dtos) {
+            IncumbentDevelopersStatistics ids = new IncumbentDevelopersStatistics(dto);
+            result.getIncumbentDevelopersStatisticsResult().add(ids);
+        }
+
+        return result;
     }
 
     @Override

@@ -83,16 +83,21 @@ public class IncumbentDevelopersStatisticsDAOImpl extends BaseDAOImpl implements
     }
 
     private List<IncumbentDevelopersStatisticsEntity> findAllEntities() {
-        Query query = entityManager
-                .createQuery("SELECT a from IncumbentDevelopersStatisticsEntity a where (NOT a.deleted = true)");
+        Query query = entityManager.createQuery("from IncumbentDevelopersStatisticsEntity idse "
+                + "LEFT OUTER JOIN FETCH idse.oldCertificationEdition "
+                + "LEFT OUTER JOIN FETCH idse.newCertificationEdition "
+                + "where (idse.deleted = false)",
+                IncumbentDevelopersStatisticsEntity.class);
         return query.getResultList();
     }
 
     private IncumbentDevelopersStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
         IncumbentDevelopersStatisticsEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "from IncumbentDevelopersStatisticsEntity a where (NOT deleted = true) AND (id = :entityid) ",
+        Query query = entityManager.createQuery("from IncumbentDevelopersStatisticsEntity idse "
+                + "LEFT OUTER JOIN FETCH idse.oldCertificationEdition "
+                + "LEFT OUTER JOIN FETCH idse.newCertificationEdition "
+                + "where (idse.deleted = false) AND (idse.id = :entityid) ",
                 IncumbentDevelopersStatisticsEntity.class);
         query.setParameter("entityid", id);
         List<IncumbentDevelopersStatisticsEntity> result = query.getResultList();

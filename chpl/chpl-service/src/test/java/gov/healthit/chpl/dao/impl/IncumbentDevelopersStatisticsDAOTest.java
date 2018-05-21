@@ -50,6 +50,7 @@ public class IncumbentDevelopersStatisticsDAOTest extends TestCase {
         assertNotNull(results);
         assertEquals(STAT_LENGTH, results.size());
         assertEquals(COUNT_2011_TO_2014, results.get(0).getIncumbentCount());
+        assertEquals("2014", results.get(0).getOldCertificationEdition().getYear());
     }
 
     @Test

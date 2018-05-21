@@ -2,10 +2,10 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
-import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -32,7 +32,7 @@ public interface StatisticsManager {
      * Retrieves data used for Incumbent Developers count chart.
      * @return object with data
      */
-    IncumbentDevelopersStatisticsDTO getIncumbentDevelopersStatisticsDTO();
+    IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatisticsResult();
 
     /**
      * Retrieves that data that will be used for the SED/participant/gender counts chart.

@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 
 /**
@@ -14,12 +15,12 @@ public class IncumbentDevelopersStatistics implements Serializable {
     private static final long serialVersionUID = -1648513956784683632L;
 
     private Long id;
-    private Long new2011To2014;
-    private Long new2011To2015;
-    private Long new2014To2015;
-    private Long incumbent2011To2014;
-    private Long incumbent2011To2015;
-    private Long incumbent2014To2015;
+    private Long newCount;
+    private Long incumbentCount;
+    private Long oldCertificationEditionId;
+    private Long newCertificationEditionId;
+    private CertificationEditionConcept oldCertificationEdition;
+    private CertificationEditionConcept newCertificationEdition;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -38,12 +39,12 @@ public class IncumbentDevelopersStatistics implements Serializable {
      */
     public IncumbentDevelopersStatistics(final IncumbentDevelopersStatisticsDTO dto) {
         this.id = dto.getId();
-        this.setNew2011To2014(dto.getNew2011To2014());
-        this.setNew2011To2015(dto.getNew2011To2015());
-        this.setNew2014To2015(dto.getNew2014To2015());
-        this.setIncumbent2011To2014(dto.getIncumbent2011To2014());
-        this.setIncumbent2011To2015(dto.getIncumbent2011To2015());
-        this.setIncumbent2014To2015(dto.getIncumbent2014To2015());
+        this.setNewCount(dto.getNewCount());
+        this.setIncumbentCount(dto.getIncumbentCount());
+        this.setOldCertificationEditionId(dto.getOldCertificationEditionId());
+        this.setNewCertificationEditionId(dto.getNewCertificationEditionId());
+//        this.setOldCertificationEdition(dto.getOldCertificationEdition());
+//        this.setNewCertificationEdition(dto.getNewCertificationEdition());
         this.deleted = dto.getDeleted();
         this.lastModifiedDate = dto.getLastModifiedDate();
         this.lastModifiedUser = dto.getLastModifiedUser();
@@ -56,54 +57,6 @@ public class IncumbentDevelopersStatistics implements Serializable {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public Long getNew2011To2014() {
-        return new2011To2014;
-    }
-
-    public void setNew2011To2014(final Long new2011To2014) {
-        this.new2011To2014 = new2011To2014;
-    }
-
-    public Long getNew2011To2015() {
-        return new2011To2015;
-    }
-
-    public void setNew2011To2015(final Long new2011To2015) {
-        this.new2011To2015 = new2011To2015;
-    }
-
-    public Long getNew2014To2015() {
-        return new2014To2015;
-    }
-
-    public void setNew2014To2015(final Long new2014To2015) {
-        this.new2014To2015 = new2014To2015;
-    }
-
-    public Long getIncumbent2011To2014() {
-        return incumbent2011To2014;
-    }
-
-    public void setIncumbent2011To2014(final Long incumbent2011To2014) {
-        this.incumbent2011To2014 = incumbent2011To2014;
-    }
-
-    public Long getIncumbent2011To2015() {
-        return incumbent2011To2015;
-    }
-
-    public void setIncumbent2011To2015(final Long incumbent2011To2015) {
-        this.incumbent2011To2015 = incumbent2011To2015;
-    }
-
-    public Long getIncumbent2014To2015() {
-        return incumbent2014To2015;
-    }
-
-    public void setIncumbent2014To2015(final Long incumbent2014To2015) {
-        this.incumbent2014To2015 = incumbent2014To2015;
     }
 
     public Date getCreationDate() {
@@ -136,6 +89,54 @@ public class IncumbentDevelopersStatistics implements Serializable {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getNewCount() {
+        return newCount;
+    }
+
+    public void setNewCount(final Long newCount) {
+        this.newCount = newCount;
+    }
+
+    public Long getIncumbentCount() {
+        return incumbentCount;
+    }
+
+    public void setIncumbentCount(final Long incumbentCount) {
+        this.incumbentCount = incumbentCount;
+    }
+
+    public Long getOldCertificationEditionId() {
+        return oldCertificationEditionId;
+    }
+
+    public void setOldCertificationEditionId(final Long oldCertificationEditionId) {
+        this.oldCertificationEditionId = oldCertificationEditionId;
+    }
+
+    public Long getNewCertificationEditionId() {
+        return newCertificationEditionId;
+    }
+
+    public void setNewCertificationEditionId(final Long newCertificationEditionId) {
+        this.newCertificationEditionId = newCertificationEditionId;
+    }
+
+    public CertificationEditionConcept getOldCertificationEdition() {
+        return oldCertificationEdition;
+    }
+
+    public void setOldCertificationEdition(final CertificationEditionConcept oldCertificationEdition) {
+        this.oldCertificationEdition = oldCertificationEdition;
+    }
+
+    public CertificationEditionConcept getNewCertificationEdition() {
+        return newCertificationEdition;
+    }
+
+    public void setNewCertificationEdition(final CertificationEditionConcept newCertificationEdition) {
+        this.newCertificationEdition = newCertificationEdition;
     }
 
 }
