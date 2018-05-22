@@ -37,12 +37,23 @@ public final class ChartData {
             analyzeSed(appEnvironment, certifiedProducts);
             analyzeProducts(appEnvironment, certifiedProducts);
             analyzeDevelopers(appEnvironment, certifiedProducts);
+            analyzeActiveListings(appEnvironment, certifiedProducts);
 
         } catch (Exception e) {
             LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
         } finally {
             appEnvironment.closeApplicationContext();
         }
+    }
+
+    private static void analyzeActiveListings(final ChartDataApplicationEnvironment appEnvironment,
+            final List<CertifiedProductFlatSearchResult> listings) {
+        ActiveListingsDataFilter activeListingsDataFilter = new ActiveListingsDataFilter();
+        List<CertifiedProductFlatSearchResult> filteredListings = activeListingsDataFilter.filterData(listings);
+        ActiveListingsStatisticsCalculator activeListingsStatisticsCalculator =
+                new ActiveListingsStatisticsCalculator(appEnvironment);
+        activeListingsStatisticsCalculator.run(filteredListings);
+
     }
 
     private static void analyzeDevelopers(final ChartDataApplicationEnvironment appEnvironment,

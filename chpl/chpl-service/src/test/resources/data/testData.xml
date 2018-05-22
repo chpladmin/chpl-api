@@ -1784,4 +1784,8 @@
         last_modified_date="2017-08-22 13:12:23.525" last_modified_user="-3"
         deleted="false" />
 
+    <active_listings_statistics id="1"
+        developer_count="4" product_count="3" certification_edition_id="2"
+        creation_date="2017-08-28 13:13:24.528" last_modified_date="2017-08-22 13:12:23.525"
+        last_modified_user="-3" deleted="false" />
 </dataset>
