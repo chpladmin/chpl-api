@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -27,41 +26,36 @@ public class SedDataCollector {
     private static final String EDITION_2015 = "2015";
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
-    /**
-     * This method runs the data retrieval process for the 2015 SED products and their details.
-     * @param appEnvironment the ChartDataApplicationEnvironment (provides access to Spring managed beans)
-     * @return List of CertifiedProductSearchDetails
-     */
-    public List<CertifiedProductSearchDetails> retreiveData(final ChartDataApplicationEnvironment appEnvironment) {
+    SedDataCollector(final ChartDataApplicationEnvironment appEnvironment) {
         this.appEnvironment = appEnvironment;
         initialize();
+    }
 
-        List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts();
-        LOGGER.info("Certified Product Count: " + certifiedProducts.size());
+    /**
+     * This method runs the data retrieval process for the 2015 SED products and their details.
+     * @param listings initial set of Listings
+     * @return List of CertifiedProductSearchDetails
+     */
+    public List<CertifiedProductSearchDetails> retreiveData(final List<CertifiedProductFlatSearchResult> listings) {
 
-        certifiedProducts = filterByEdition(certifiedProducts, EDITION_2015);
-        LOGGER.info("2015 Certified Product Count: " + certifiedProducts.size());
+        List<CertifiedProductFlatSearchResult> certifiedProducts = filterData(listings);
+        LOGGER.info("2015/SED Certified Product Count: " + certifiedProducts.size());
 
         List<CertifiedProductSearchDetails> certifiedProductsWithDetails = getCertifiedProductDetailsForAll(
                 certifiedProducts);
 
-        certifiedProductsWithDetails = filterBySed(certifiedProductsWithDetails);
-        LOGGER.info("2015/SED Certified Product Count: " + certifiedProductsWithDetails.size());
-
         return certifiedProductsWithDetails;
     }
 
-    private void initialize() {
-        certifiedProductDetailsManager = (CertifiedProductDetailsManager) appEnvironment
-                .getSpringManagedObject("certifiedProductDetailsManager");
-    }
-
-    private List<CertifiedProductFlatSearchResult> getCertifiedProducts() {
-        CertifiedProductSearchDAO certifiedProductSearchDAO = (CertifiedProductSearchDAO) appEnvironment
-                .getSpringManagedObject("certifiedProductSearchDAO");
-
-        List<CertifiedProductFlatSearchResult> results = certifiedProductSearchDAO.getAllCertifiedProducts();
-
+    private List<CertifiedProductFlatSearchResult> filterData(
+            final List<CertifiedProductFlatSearchResult> certifiedProducts) {
+        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
+        for (CertifiedProductFlatSearchResult result : certifiedProducts) {
+            if (result.getEdition().equalsIgnoreCase(EDITION_2015)
+                    && result.getCriteriaMet().contains("170.315 (g)(3)")) {
+                results.add(result);
+            }
+        }
         return results;
     }
 
@@ -97,29 +91,8 @@ public class SedDataCollector {
         return details;
     }
 
-    private List<CertifiedProductFlatSearchResult> filterByEdition(
-            final List<CertifiedProductFlatSearchResult> certifiedProducts, final String edition) {
-        List<CertifiedProductFlatSearchResult> results = new ArrayList<CertifiedProductFlatSearchResult>();
-        for (CertifiedProductFlatSearchResult result : certifiedProducts) {
-            if (result.getEdition().equals(edition)) {
-                results.add(result);
-            }
-        }
-        return results;
-    }
-
-    private List<CertifiedProductSearchDetails> filterBySed(
-            final List<CertifiedProductSearchDetails> certifiedProductDetails) {
-        List<CertifiedProductSearchDetails> results = new ArrayList<CertifiedProductSearchDetails>();
-        for (CertifiedProductSearchDetails detail : certifiedProductDetails) {
-            if (isCertifiedProductAnSed(detail)) {
-                results.add(detail);
-            }
-        }
-        return results;
-    }
-
-    private Boolean isCertifiedProductAnSed(final CertifiedProductSearchDetails certifiedProductDetail) {
-        return certifiedProductDetail.getSed().getTestTasks().size() > 0;
+    private void initialize() {
+        certifiedProductDetailsManager = (CertifiedProductDetailsManager) appEnvironment
+                .getSpringManagedObject("certifiedProductDetailsManager");
     }
 }
