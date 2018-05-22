@@ -15,6 +15,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.ActiveListingsStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import junit.framework.TestCase;
@@ -43,7 +44,7 @@ public class StatisticsManagerTest extends TestCase {
     }
 
     /**
-     * Test to ensure the statistics manage can retrieve new vs. incumbent developer statistics.
+     * Test to ensure the statistics manager can retrieve new vs. incumbent developer statistics.
      */
     @Test
     @Transactional
@@ -52,5 +53,17 @@ public class StatisticsManagerTest extends TestCase {
         IncumbentDevelopersStatisticsResult stats = statisticsManager.getIncumbentDevelopersStatisticsResult();
         assertNotNull(stats);
         assertEquals(expectedCount, stats.getIncumbentDevelopersStatisticsResult().get(0).getNewCount());
+    }
+
+    /**
+     * Test to ensure the statistics manager can retrieve active product/developer stats.
+     */
+    @Test
+    @Transactional
+    public void retrieveActiveProductDeveloperStats() {
+        final Long expectedCount = 3L;
+        ActiveListingsStatisticsResult stats = statisticsManager.getActiveListingsStatisticsResult();
+        assertNotNull(stats);
+        assertEquals(expectedCount, stats.getActiveListingsStatisticsResult().get(0).getProductCount());
     }
 }

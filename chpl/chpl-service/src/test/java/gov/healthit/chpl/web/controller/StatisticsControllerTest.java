@@ -16,6 +16,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.web.controller.results.ActiveListingsStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import junit.framework.TestCase;
@@ -67,5 +68,19 @@ public class StatisticsControllerTest extends TestCase {
         assertNotNull(resp);
         assertEquals(expectedSize, resp.getIncumbentDevelopersStatisticsResult().size());
         assertEquals(expectedCount, resp.getIncumbentDevelopersStatisticsResult().get(0).getIncumbentCount());
+    }
+
+    /**
+     * Get statistics for active listings data.
+     */
+    @Test
+    @Transactional
+    public void retrieveActiveListingsStats() {
+        final int expectedSize = 1;
+        final Long expectedCount = 4L;
+        ActiveListingsStatisticsResult resp = statisticsController.getActiveListingsStatistics();
+        assertNotNull(resp);
+        assertEquals(expectedSize, resp.getActiveListingsStatisticsResult().size());
+        assertEquals(expectedCount, resp.getActiveListingsStatisticsResult().get(0).getDeveloperCount());
     }
 }

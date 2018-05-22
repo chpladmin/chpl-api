@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.ActiveListingsStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
@@ -35,6 +36,18 @@ public class StatisticsController {
 
     @Autowired
     private StatisticsManager statisticsManager;
+
+    /**
+     * Retrieves and returns the Active Listing counts.
+     * @return a JSON representation of an ActiveListingsStatisticsResult object
+     */
+    @ApiOperation(value = "Get count of Developers and Products with Active listings.",
+            notes = "Retrieves and returns the counts.")
+    @RequestMapping(value = "/active_listings", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActiveListingsStatisticsResult getActiveListingsStatistics() {
+        return statisticsManager.getActiveListingsStatisticsResult();
+    }
 
     /**
      * Retrieves and returns the Criterion/Product counts.
