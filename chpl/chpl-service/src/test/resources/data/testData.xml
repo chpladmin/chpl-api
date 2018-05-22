@@ -1777,4 +1777,11 @@
         product_count="31" certification_criterion_id="38"
         creation_date="2016-08-28 13:13:24.528" last_modified_date="2016-08-22 13:12:23.525"
         last_modified_user="-3" deleted="false" />
+
+    <incumbent_developers_statistics id="1"
+        new_count="3" incumbent_count="4" new_certification_edition_id="1"
+        old_certification_edition_id="2" creation_date="2017-08-28 13:13:24.528"
+        last_modified_date="2017-08-22 13:12:23.525" last_modified_user="-3"
+        deleted="false" />
+
 </dataset>
