@@ -11,12 +11,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
-import gov.healthit.chpl.entity.IncumbentDevelopersStatisticsEntity;
 
 /**
  * Populates the criterion_product_statistics table with summarized count information.
@@ -28,6 +28,7 @@ public class IncumbentDevelopersStatisticsCalculator {
 
     private ChartDataApplicationEnvironment appEnvironment;
     private IncumbentDevelopersStatisticsDAO incumbentDevelopersStatisticsDAO;
+    private CertificationEditionDAO certificationEditionDAO;
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
 
@@ -42,7 +43,7 @@ public class IncumbentDevelopersStatisticsCalculator {
      * @param certifiedProducts List of CertifiedProductFlatSearchResult objects
      */
     public void run(final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-        List<IncumbentDevelopersStatisticsEntity> entities = getCounts(certifiedProducts);
+        List<IncumbentDevelopersStatisticsDTO> entities = getCounts(certifiedProducts);
 
         logCounts(entities);
 
@@ -57,7 +58,7 @@ public class IncumbentDevelopersStatisticsCalculator {
         }
     }
 
-    private List<IncumbentDevelopersStatisticsEntity> getCounts(
+    private List<IncumbentDevelopersStatisticsDTO> getCounts(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
 
         /**
@@ -87,15 +88,21 @@ public class IncumbentDevelopersStatisticsCalculator {
             }
         }
 
-        IncumbentDevelopersStatisticsEntity from2011To2014 = new IncumbentDevelopersStatisticsEntity();
-        from2011To2014.setOldCertificationEditionId(1L);
-        from2011To2014.setNewCertificationEditionId(2L);
-        IncumbentDevelopersStatisticsEntity from2011To2015 = new IncumbentDevelopersStatisticsEntity();
-        from2011To2015.setOldCertificationEditionId(1L);
-        from2011To2015.setNewCertificationEditionId(3L);
-        IncumbentDevelopersStatisticsEntity from2014To2015 = new IncumbentDevelopersStatisticsEntity();
-        from2014To2015.setOldCertificationEditionId(2L);
-        from2014To2015.setNewCertificationEditionId(3L);
+        IncumbentDevelopersStatisticsDTO from2011To2014 = new IncumbentDevelopersStatisticsDTO();
+        IncumbentDevelopersStatisticsDTO from2011To2015 = new IncumbentDevelopersStatisticsDTO();
+        IncumbentDevelopersStatisticsDTO from2014To2015 = new IncumbentDevelopersStatisticsDTO();
+        from2011To2014.setNewCount(0L);
+        from2011To2014.setIncumbentCount(0L);
+        from2011To2014.setOldCertificationEditionId(certificationEditionDAO.getByYear("2011").getId());
+        from2011To2014.setNewCertificationEditionId(certificationEditionDAO.getByYear("2014").getId());
+        from2011To2015.setNewCount(0L);
+        from2011To2015.setIncumbentCount(0L);
+        from2011To2015.setOldCertificationEditionId(certificationEditionDAO.getByYear("2011").getId());
+        from2011To2015.setNewCertificationEditionId(certificationEditionDAO.getByYear("2015").getId());
+        from2014To2015.setNewCount(0L);
+        from2014To2015.setIncumbentCount(0L);
+        from2014To2015.setOldCertificationEditionId(certificationEditionDAO.getByYear("2014").getId());
+        from2014To2015.setNewCertificationEditionId(certificationEditionDAO.getByYear("2015").getId());
         LOGGER.info("Total 2011 Developers: " + developers2011.size());
         LOGGER.info("Total 2014 Developers: " + developers2014.size());
         LOGGER.info("Total 2015 Developers: " + developers2015.size());
@@ -118,7 +125,7 @@ public class IncumbentDevelopersStatisticsCalculator {
                 from2014To2015.setNewCount(from2014To2015.getNewCount() + 1);
             }
         }
-        ArrayList<IncumbentDevelopersStatisticsEntity> result = new ArrayList<IncumbentDevelopersStatisticsEntity>();
+        ArrayList<IncumbentDevelopersStatisticsDTO> result = new ArrayList<IncumbentDevelopersStatisticsDTO>();
         result.add(from2011To2015);
         result.add(from2014To2015);
         result.add(from2011To2014);
@@ -128,17 +135,19 @@ public class IncumbentDevelopersStatisticsCalculator {
     private void initialize() {
         incumbentDevelopersStatisticsDAO = (IncumbentDevelopersStatisticsDAO)
                 appEnvironment.getSpringManagedObject("incumbentDevelopersStatisticsDAO");
+        certificationEditionDAO = (CertificationEditionDAO)
+                appEnvironment.getSpringManagedObject("certificationEditionDAO");
         txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
         txnTemplate = new TransactionTemplate(txnManager);
     }
 
-    private void logCounts(final List<IncumbentDevelopersStatisticsEntity> entities) {
-        for (IncumbentDevelopersStatisticsEntity entity : entities) {
-            LOGGER.info("Incumbent Developer statistics: [" + entity.toString() + "]");
+    private void logCounts(final List<IncumbentDevelopersStatisticsDTO> dtos) {
+        for (IncumbentDevelopersStatisticsDTO dto : dtos) {
+            LOGGER.info("Incumbent Developer statistics: [" + dto.toString() + "]");
         }
     }
 
-    private void save(final List<IncumbentDevelopersStatisticsEntity> entities) {
+    private void save(final List<IncumbentDevelopersStatisticsDTO> dtos) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -150,8 +159,7 @@ public class IncumbentDevelopersStatisticsCalculator {
                     return;
                 }
                 try {
-                    for (IncumbentDevelopersStatisticsEntity entity : entities) {
-                        IncumbentDevelopersStatisticsDTO dto = new IncumbentDevelopersStatisticsDTO(entity);
+                    for (IncumbentDevelopersStatisticsDTO dto : dtos) {
                         incumbentDevelopersStatisticsDAO.create(dto);
                         LOGGER.info("Saved IncumbentDevelopersStatisticsDTO"
                                 + dto.toString());
