@@ -1,9 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 
 /**
@@ -17,14 +15,8 @@ public class IncumbentDevelopersStatistics implements Serializable {
     private Long id;
     private Long newCount;
     private Long incumbentCount;
-    private Long oldCertificationEditionId;
-    private Long newCertificationEditionId;
-    private CertificationEditionConcept oldCertificationEdition;
-    private CertificationEditionConcept newCertificationEdition;
-    private Date creationDate;
-    private Boolean deleted;
-    private Date lastModifiedDate;
-    private Long lastModifiedUser;
+    private CertificationEdition oldCertificationEdition;
+    private CertificationEdition newCertificationEdition;
 
     /**
      * Default constructor.
@@ -34,21 +26,20 @@ public class IncumbentDevelopersStatistics implements Serializable {
     }
 
     /**
-     * Constructor that populates the new object based on the dto that was passed in as a parameter.
+     * Constructor that populates the new object based on the DTO that was passed in as a parameter.
      * @param dto IncumbentDevelopersStatisticsDTO object
      */
     public IncumbentDevelopersStatistics(final IncumbentDevelopersStatisticsDTO dto) {
         this.id = dto.getId();
         this.setNewCount(dto.getNewCount());
         this.setIncumbentCount(dto.getIncumbentCount());
-        this.setOldCertificationEditionId(dto.getOldCertificationEditionId());
-        this.setNewCertificationEditionId(dto.getNewCertificationEditionId());
-//        this.setOldCertificationEdition(dto.getOldCertificationEdition());
-//        this.setNewCertificationEdition(dto.getNewCertificationEdition());
-        this.deleted = dto.getDeleted();
-        this.lastModifiedDate = dto.getLastModifiedDate();
-        this.lastModifiedUser = dto.getLastModifiedUser();
-        this.creationDate = dto.getCreationDate();
+        if (dto.getOldCertificationEdition() != null) {
+            this.oldCertificationEdition = new CertificationEdition(dto.getOldCertificationEdition());
+        }
+        if (dto.getNewCertificationEdition() != null) {
+            this.newCertificationEdition = new CertificationEdition(dto.getNewCertificationEdition());
+        }
+
     }
 
     public Long getId() {
@@ -57,38 +48,6 @@ public class IncumbentDevelopersStatistics implements Serializable {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
     }
 
     public Long getNewCount() {
@@ -107,36 +66,29 @@ public class IncumbentDevelopersStatistics implements Serializable {
         this.incumbentCount = incumbentCount;
     }
 
-    public Long getOldCertificationEditionId() {
-        return oldCertificationEditionId;
-    }
-
-    public void setOldCertificationEditionId(final Long oldCertificationEditionId) {
-        this.oldCertificationEditionId = oldCertificationEditionId;
-    }
-
-    public Long getNewCertificationEditionId() {
-        return newCertificationEditionId;
-    }
-
-    public void setNewCertificationEditionId(final Long newCertificationEditionId) {
-        this.newCertificationEditionId = newCertificationEditionId;
-    }
-
-    public CertificationEditionConcept getOldCertificationEdition() {
+    public CertificationEdition getOldCertificationEdition() {
         return oldCertificationEdition;
     }
 
-    public void setOldCertificationEdition(final CertificationEditionConcept oldCertificationEdition) {
+    public void setOldCertificationEdition(final CertificationEdition oldCertificationEdition) {
         this.oldCertificationEdition = oldCertificationEdition;
     }
 
-    public CertificationEditionConcept getNewCertificationEdition() {
+    public CertificationEdition getNewCertificationEdition() {
         return newCertificationEdition;
     }
 
-    public void setNewCertificationEdition(final CertificationEditionConcept newCertificationEdition) {
+    public void setNewCertificationEdition(final CertificationEdition newCertificationEdition) {
         this.newCertificationEdition = newCertificationEdition;
     }
 
+    @Override
+    public String toString() {
+        return "Incumbent Developers Statistics Domain object ["
+                + "[New: " + this.newCount + "]"
+                + "[Incumbent: " + this.incumbentCount + "]"
+                + "[Old Edition: " + this.oldCertificationEdition.getYear() + "]"
+                + "[New Edition: " + this.newCertificationEdition.getYear() + "]"
+                + "]";
+    }
 }

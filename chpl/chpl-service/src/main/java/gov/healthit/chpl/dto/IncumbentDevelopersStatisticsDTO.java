@@ -94,15 +94,6 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
     }
-    @Override
-    public String toString() {
-        return "Incumbent Developers Statistics DTO ["
-                + "[New: " + this.newCount + "]"
-                + "[Incumbent: " + this.incumbentCount + "]"
-                + "[Old Edition: " + this.oldCertificationEditionId.toString() + "]"
-                + "[New Edition: " + this.newCertificationEditionId.toString() + "]"
-                + "]";
-    }
 
     public Long getNewCount() {
         return newCount;
@@ -150,5 +141,15 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
 
     public void setNewCertificationEdition(final CertificationEditionDTO newCertificationEdition) {
         this.newCertificationEdition = newCertificationEdition;
+    }
+
+    @Override
+    public String toString() {
+        return "Incumbent Developers Statistics DTO ["
+                + "[New: " + this.newCount + "]"
+                + "[Incumbent: " + this.incumbentCount + "]"
+                + "[Old Edition: " + this.oldCertificationEditionId.toString() + "]"
+                + "[New Edition: " + this.newCertificationEditionId.toString() + "]"
+                + "]";
     }
 }

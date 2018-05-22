@@ -45,9 +45,6 @@ import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsR
 @Service
 public class StatisticsManagerImpl extends ApplicationObjectSupport implements StatisticsManager {
 
-    //    @Autowired
-    //    private CertificationCriterionDAO certificationCriterionDAO;
-
     @Autowired
     private CriterionProductStatisticsDAO criterionProductStatisticsDAO;
 
