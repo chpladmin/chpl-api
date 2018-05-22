@@ -812,7 +812,7 @@ public class SearchViewController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Change existing fuzzy matching choices.",
+    @ApiOperation(value = "DEPRECATED.  Change existing fuzzy matching choices.",
             notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
     @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")

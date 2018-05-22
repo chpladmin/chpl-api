@@ -93,7 +93,7 @@ public class DeveloperController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Update a developer or merge developers.",
+    @ApiOperation(value = "DEPRECATED.  Update a developer or merge developers.",
             notes = "This method serves two purposes: to update a single developer's information and to merge two developers into one. "
                     + " A user of this service should pass in a single developerId to update just that developer. "
                     + " If multiple developer IDs are passed in, the service performs a merge meaning that a new developer "

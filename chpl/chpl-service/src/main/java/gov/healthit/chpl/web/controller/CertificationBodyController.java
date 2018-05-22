@@ -96,7 +96,7 @@ public class CertificationBodyController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Create a new ACB.", notes = "The logged in user must have ROLE_ADMIN to create a new ACB.")
+    @ApiOperation(value = "DEPRECATED.  Create a new ACB.", notes = "The logged in user must have ROLE_ADMIN to create a new ACB.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public CertificationBody createAcbDeprecated(@RequestBody CertificationBody acbInfo) throws InvalidArgumentsException,
@@ -143,7 +143,7 @@ public class CertificationBodyController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Update an existing ACB.",
+    @ApiOperation(value = "DEPRECATED.  Update an existing ACB.",
             notes = "The logged in user must either have ROLE_ADMIN or have ROLE_ACB "
                     + " to update an existing ACB.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -194,7 +194,7 @@ public class CertificationBodyController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
+    @ApiOperation(value = "DEPRECATED.  Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{acbId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public String deleteAcbDeprecated(@PathVariable("acbId") Long acbId)
@@ -224,7 +224,7 @@ public class CertificationBodyController {
     
     
     @Deprecated
-    @ApiOperation(value = "Restore a deleted ACB.",
+    @ApiOperation(value = "DEPRECATED.  Restore a deleted ACB.",
             notes = "ACBs are unique in the CHPL in that they can be restored after a delete."
                     + " The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{acbId}/undelete", method = RequestMethod.POST,
@@ -238,7 +238,7 @@ public class CertificationBodyController {
     @ApiOperation(value = "Restore a deleted ACB.",
             notes = "ACBs are unique in the CHPL in that they can be restored after a delete."
                     + " The logged in user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{acbId}/undelete", method = RequestMethod.POST,
+    @RequestMapping(value = "/{acbId}/undelete", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
     public String undeleteAcb(@PathVariable("acbId") Long acbId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
@@ -257,7 +257,7 @@ public class CertificationBodyController {
     
     
     @Deprecated
-    @ApiOperation(value = "Add a user to an ACB.",
+    @ApiOperation(value = "DEPRECATED.  Add a user to an ACB.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ACB. It is recommended to pass 'ADMIN' in as the 'authority' field"
                     + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
@@ -308,7 +308,7 @@ public class CertificationBodyController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Remove user permissions from an ACB.",
+    @ApiOperation(value = "DEPRECATED.  Remove user permissions from an ACB.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB and have administrative authority on the "
                     + " specified ACB. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ACB.")

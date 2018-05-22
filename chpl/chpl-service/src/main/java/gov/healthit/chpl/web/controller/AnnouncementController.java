@@ -76,7 +76,7 @@ public class AnnouncementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Create a new announcement.",
+    @ApiOperation(value = "DEPRECATED.  Create a new announcement.",
             notes = "Only CHPL users with ROLE_ADMIN are able to create announcements.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -122,7 +122,7 @@ public class AnnouncementController {
     }
     
     @Deprecated
-    @ApiOperation(value = "Change an existing announcement.",
+    @ApiOperation(value = "DEPRECATED.  Change an existing announcement.",
             notes = "Only CHPL users with ROLE_ADMIN are able to update announcements.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -157,7 +157,7 @@ public class AnnouncementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Delete an existing announcement.",
+    @ApiOperation(value = "DEPRECATED.  Delete an existing announcement.",
             notes = "Only CHPL users with ROLE_ADMIN are able to delete announcements.")
     @RequestMapping(value = "/{announcementId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")

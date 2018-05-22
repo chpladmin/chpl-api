@@ -62,7 +62,7 @@ public class NotificationController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Update the email address and associated subscriptions of the recipient specified.")
+    @ApiOperation(value = "DEPRECATED.  Update the email address and associated subscriptions of the recipient specified.")
     @RequestMapping(value = "/recipients/{recipientId}/update", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Recipient updateRecipientDeprecated(@PathVariable("recipientId") Long recipientId,
@@ -164,7 +164,7 @@ public class NotificationController {
 
     @Deprecated
     @ApiOperation(
-            value = "Creates a new recipient with any subscriptions included in the request body. At least 1 subscription is required.")
+            value = "DEPRECATED.  Creates a new recipient with any subscriptions included in the request body. At least 1 subscription is required.")
     @RequestMapping(value = "/recipients/create", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Recipient createRecipientDeprecated(@RequestBody Recipient recipientToAdd)
@@ -235,7 +235,7 @@ public class NotificationController {
     }
     
     @Deprecated
-    @ApiOperation(value = "Remove subscription(s) for a recipient.")
+    @ApiOperation(value = "DEPRECATED.  Remove subscription(s) for a recipient.")
     @RequestMapping(value = "/recipients/{recipientId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public @ResponseBody void deleteRecipientDeprecated(@PathVariable("recipientId") Long recipientId)

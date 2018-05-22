@@ -170,7 +170,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @Deprecated
-    @ApiOperation(value = "Create a new surveillance activity for a certified product.",
+    @ApiOperation(value = "DEPRECATED.  Create a new surveillance activity for a certified product.",
             notes = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system and associates them with the certified product indicated in the "
                     + "request body. The surveillance passed into this request will first be validated "
@@ -254,7 +254,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @Deprecated
-    @ApiOperation(value = "Add documentation to an existing nonconformity.",
+    @ApiOperation(value = "DEPRECATED.  Add documentation to an existing nonconformity.",
             notes = "Upload a file of any kind (current size limit 5MB) as supporting "
                     + " documentation to an existing nonconformity. The logged in user uploading the file "
                     + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
@@ -323,7 +323,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @Deprecated
-    @ApiOperation(value = "Update a surveillance activity for a certified product.",
+    @ApiOperation(value = "DEPRECATED.  Update a surveillance activity for a certified product.",
             notes = "Updates an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system. The surveillance passed into this request will first be validated "
                     + " to check for errors. " + "ROLE_ACB "
@@ -398,7 +398,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @Deprecated
-    @ApiOperation(value = "Delete a surveillance activity for a certified product.",
+    @ApiOperation(value = "DEPRECATED.  Delete a surveillance activity for a certified product.",
             notes = "Deletes an existing surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system. " + "ROLE_ACB "
                     + " and administrative authority on the ACB associated with the certified product is required.")
@@ -472,7 +472,7 @@ public class SurveillanceController implements MessageSourceAware {
     }
 
     @Deprecated
-    @ApiOperation(value = "Remove documentation from a nonconformity.",
+    @ApiOperation(value = "DEPRECATED.  Remove documentation from a nonconformity.",
             notes = "The logged in user" + " must have either ROLE_ADMIN or ROLE_ACB and administrative "
                     + " authority on the associated ACB.")
     @RequestMapping(value = "/{surveillanceId}/document/{docId}/delete", method = RequestMethod.POST,

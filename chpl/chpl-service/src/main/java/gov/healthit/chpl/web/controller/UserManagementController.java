@@ -81,7 +81,6 @@ public class UserManagementController {
     private static final long VALID_INVITATION_LENGTH = 3L * 24L * 60L * 60L * 1000L;
     private static final long VALID_CONFIRMATION_LENGTH = 30L * 24L * 60L * 60L * 1000L;
 
-    @Deprecated
     @ApiOperation(value = "Create a new user account from an invitation.",
             notes = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
                     + "That user key along with all the information needed to create a new user's account "
@@ -91,21 +90,6 @@ public class UserManagementController {
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User createUserDeprecated(@RequestBody CreateUserFromInvitationRequest userInfo)
-            throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
-            MessagingException, JsonProcessingException, EntityCreationException {
-
-        return create(userInfo);
-    }
-    
-    @ApiOperation(value = "Create a new user account from an invitation.",
-            notes = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
-                    + "That user key along with all the information needed to create a new user's account "
-                    + "can be passed in here. The account is created but cannot be used until that user "
-                    + "confirms that their email address is valid. The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
             throws InvalidArgumentsException, UserCreationException, UserRetrievalException, EntityRetrievalException,
             MessagingException, JsonProcessingException, EntityCreationException {
 
@@ -180,7 +164,7 @@ public class UserManagementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Update an existing user account with new permissions.",
+    @ApiOperation(value = "DEPRECATED.  Update an existing user account with new permissions.",
             notes = "Adds all permissions from the invitation identified by the user key "
                     + "to the appropriate existing user account." + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm ")
@@ -300,7 +284,7 @@ public class UserManagementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Modify user information.", notes = "")
+    @ApiOperation(value = "DEPRECATED.  Modify user information.", notes = "")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User updateUserDetailsDeprecated(@RequestBody User userInfo)
@@ -339,7 +323,7 @@ public class UserManagementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Delete a user.",
+    @ApiOperation(value = "DEPRECATED.  Delete a user.",
             notes = "Deletes a user account and all associated authorities on ACBs and ATLs. "
                     + "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{userId}/delete", method = RequestMethod.POST,
@@ -390,7 +374,7 @@ public class UserManagementController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Give additional roles to a user.",
+    @ApiOperation(value = "DEPRECATED.  Give additional roles to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/grant_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -450,7 +434,7 @@ public class UserManagementController {
 
     
     @Deprecated
-    @ApiOperation(value = "Remove roles previously granted to a user.",
+    @ApiOperation(value = "DEPRECATED.  Remove roles previously granted to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
     @RequestMapping(value = "/revoke_role", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -465,8 +449,8 @@ public class UserManagementController {
     @ApiOperation(value = "Remove roles previously granted to a user.",
             notes = "Users may be given ROLE_ADMIN, ROLE_ACB, "
                     + "ROLE_ATL, or ROLE_ONC_STAFF roles within the system.")
-    @RequestMapping(value = "/{userName/roles/{roleName}", method = RequestMethod.DELETE, 
-                    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{userName}/roles/{roleName}", method = RequestMethod.DELETE, 
+                    produces = "application/json; charset=utf-8")
     public String revokeUserRole(@PathVariable("userName") String userName,
             @PathVariable("roleName") String roleName) throws InvalidArgumentsException, UserRetrievalException, 
             UserManagementException, UserPermissionRetrievalException, JsonProcessingException, EntityCreationException,

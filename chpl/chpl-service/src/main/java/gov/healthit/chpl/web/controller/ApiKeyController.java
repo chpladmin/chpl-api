@@ -45,7 +45,7 @@ public class ApiKeyController {
     private Environment env;
 
     @Deprecated
-    @ApiOperation(value = "Sign up for a new API key.",
+    @ApiOperation(value = "DEPRECATED.  Sign up for a new API key.",
             notes = "Anyone wishing to access the methods listed in this API must have an API key. This service "
                     + " will auto-generate a key and send it to the supplied email address. It must be included "
                     + " in subsequent API calls via either a header with the name 'API-Key' or as a URL parameter"
@@ -96,7 +96,7 @@ public class ApiKeyController {
 
     
     @Deprecated
-    @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
+    @ApiOperation(value = "DEPRECATED.  Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/revoke", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public String revokeDeprecated(@RequestBody ApiKey key, @RequestHeader(value = "API-Key", required = false) String userApiKey,
@@ -145,7 +145,7 @@ public class ApiKeyController {
     }
 
     @Deprecated
-    @ApiOperation(value = "View the calls made per API key.",
+    @ApiOperation(value = "DEPRECATED.  View the calls made per API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -161,8 +161,7 @@ public class ApiKeyController {
 
     @ApiOperation(value = "View the calls made per API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/activity", method = RequestMethod.GET, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivity(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize,
             @RequestParam(value = "filter", required = false) String apiKeyFilter,
@@ -195,7 +194,7 @@ public class ApiKeyController {
 
 
     @Deprecated
-    @ApiOperation(value = "View the calls made by a specific API key.",
+    @ApiOperation(value = "DEPRECATED.  View the calls made by a specific API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
@@ -208,8 +207,8 @@ public class ApiKeyController {
 
     @ApiOperation(value = "View the calls made by a specific API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET, 
+                    produces = "application/json; charset=utf-8")
     public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") String apiKey,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
             @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {

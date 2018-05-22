@@ -552,7 +552,7 @@ public class CertifiedProductController {
      * @throws MissingReasonException if missing reason for change
      */
     @Deprecated
-    @ApiOperation(value = "Update an existing certified product.",
+    @ApiOperation(value = "DEPRECATED.  Update an existing certified product.",
             notes = "Updates the certified product after first validating the request. The logged in"
                     + " user must have ROLE_ADMIN or ROLE_ACB and have administrative "
                     + " authority on the ACB that certified the product. If a different ACB is passed in"
@@ -747,7 +747,7 @@ public class CertifiedProductController {
      * @throws ObjectMissingValidationException if missing validation
      */
     @Deprecated
-    @ApiOperation(value = "Reject a pending certified product.",
+    @ApiOperation(value = "DEPRECATED.  Reject a pending certified product.",
             notes = "Essentially deletes a pending certified product. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
     @RequestMapping(value = "/pending/{pcpId}/reject", method = RequestMethod.POST,
@@ -793,7 +793,7 @@ public class CertifiedProductController {
      * @throws ObjectsMissingValidationException if missing validation
      */
     @Deprecated
-    @ApiOperation(value = "Reject several pending certified products.",
+    @ApiOperation(value = "DEPRECATED.  Reject several pending certified products.",
             notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
@@ -853,7 +853,7 @@ public class CertifiedProductController {
      * @throws IOException if IO Exception occurs
      */
     @Deprecated
-    @ApiOperation(value = "Confirm a pending certified product.",
+    @ApiOperation(value = "DEPRECATED.  Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + " passed in on the request. This information may differ from what was previously "
                     + " entered for the pending certified product during upload. It will first be validated "
@@ -878,7 +878,7 @@ public class CertifiedProductController {
                     + " to check for errors, then a new certified product is created, and the old pending certified"
                     + " product will be removed. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
-    @RequestMapping(value = "/pending/{pcpId}", method = RequestMethod.POST,
+    @RequestMapping(value = "/pending/{pcpId}/confirm", method = RequestMethod.POST,
     produces = "application/json; charset=utf-8")
     public synchronized ResponseEntity<CertifiedProductSearchDetails> confirmPendingCertifiedProduct(
             @RequestBody(required = true) final PendingCertifiedProductDetails pendingCp)

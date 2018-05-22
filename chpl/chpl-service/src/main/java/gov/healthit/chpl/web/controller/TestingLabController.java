@@ -99,7 +99,7 @@ public class TestingLabController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Create a new testing lab.",
+    @ApiOperation(value = "DEPRECATED.  Create a new testing lab.",
             notes = "The logged in user must have ROLE_ADMIN to create a new testing lab.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
@@ -147,7 +147,7 @@ public class TestingLabController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Update an existing ATL.",
+    @ApiOperation(value = "DEPRECATED.  Update an existing ATL.",
             notes = "The logged in user must either have ROLE_ADMIN or have administrative "
                     + "authority on the testing lab whose data is being updated.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -202,7 +202,7 @@ public class TestingLabController {
     }
     
     @Deprecated
-    @ApiOperation(value = "Delete an ATL.", notes = "The logged in user must have ROLE_ADMIN.")
+    @ApiOperation(value = "DEPRECATED.  Delete an ATL.", notes = "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{atlId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public String deleteAtlDeprecated(@PathVariable("atlId") Long atlId)
@@ -244,7 +244,7 @@ public class TestingLabController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Add a user to an ATL.",
+    @ApiOperation(value = "DEPRECATED.  Add a user to an ATL.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
                     + " specified ATL. It is recommended to pass 'ADMIN' in as the 'authority' field"
                     + " to guarantee maximum compatibility although 'READ' and 'DELETE' are also valid choices. "
@@ -295,7 +295,7 @@ public class TestingLabController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Remove user permissions from an ATL.",
+    @ApiOperation(value = "DEPRECATED.  Remove user permissions from an ATL.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
                     + " specified ATL. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ATL.")
@@ -311,7 +311,7 @@ public class TestingLabController {
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ATL and have administrative authority on the "
                     + " specified ATL. The user specified in the request will have all authorities "
                     + " removed that are associated with the specified ATL.")
-    @RequestMapping(value = "{atlId}/remove_user/{userId}", method = RequestMethod.DELETE,
+    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public String deleteUserFromAtl(@PathVariable Long atlId, @PathVariable Long userId)
             throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException {

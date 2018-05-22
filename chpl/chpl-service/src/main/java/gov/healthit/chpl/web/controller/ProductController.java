@@ -107,7 +107,7 @@ public class ProductController {
     }
 
     @Deprecated
-    @ApiOperation(value = "Update a product or merge products.",
+    @ApiOperation(value = "DEPRECATED.  Update a product or merge products.",
             notes = "This method serves two purposes: to update a single product's information and to merge two products into one. "
                     + " A user of this service should pass in a single productId to update just that product. "
                     + " If multiple product IDs are passed in, the service performs a merge meaning that a new product "

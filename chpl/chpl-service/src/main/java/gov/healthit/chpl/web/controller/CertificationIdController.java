@@ -103,7 +103,7 @@ public class CertificationIdController {
     // **********************************************************************************************************
     @Deprecated
     @ApiOperation(
-            value = "Creates a new CMS EHR Certification ID for a collection of products if one does not already exist.",
+            value = "DEPRECATED.  Creates a new CMS EHR Certification ID for a collection of products if one does not already exist.",
             notes = "Retrieves a CMS EHR Certification ID for a collection of products or creates a new one if one does not already exist. "
                     + "Returns a list of basic product information, "
                     + "Criteria and CQM calculations, and the associated CMS EHR Certification ID if one exists.")
@@ -171,7 +171,7 @@ public class CertificationIdController {
     // Verify whether one or more specific EHR Certification ID is valid or not.
     // **********************************************************************************************************
     @Deprecated
-    @ApiOperation(value = "Verify whether one or more specific EHR Certification IDs are valid or not.",
+    @ApiOperation(value = "DEPRECATED.  Verify whether one or more specific EHR Certification IDs are valid or not.",
             notes = "Returns a boolean value for each EHR Certification ID specified.")
     @RequestMapping(value = "/verify", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = {
