@@ -17,6 +17,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import junit.framework.TestCase;
 
 /**
@@ -52,5 +53,19 @@ public class StatisticsControllerTest extends TestCase {
         assertNotNull(resp.getCriterionProductStatisticsResult());
         assertEquals(expectedCount, resp.getCriterionProductStatisticsResult().size());
         assertEquals("170.314 (a)(14)", resp.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
+    }
+
+    /**
+     * Get statistics for incumbent developers data.
+     */
+    @Test
+    @Transactional
+    public void retrieveNewVsIncumbentDeveloperStats() {
+        final int expectedSize = 1;
+        final Long expectedCount = 4L;
+        IncumbentDevelopersStatisticsResult resp = statisticsController.getIncumbentDevelopersStatistics();
+        assertNotNull(resp);
+        assertEquals(expectedSize, resp.getIncumbentDevelopersStatisticsResult().size());
+        assertEquals(expectedCount, resp.getIncumbentDevelopersStatisticsResult().get(0).getIncumbentCount());
     }
 }
