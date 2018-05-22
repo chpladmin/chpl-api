@@ -86,7 +86,7 @@ public class CriterionProductStatisticsCalculator {
         Map<String, Long> criterionMap = new HashMap<String, Long>();
         HashSet<String> uniqueProductSet = new HashSet<String>();
         for (CertifiedProductFlatSearchResult listing: listings) {
-            for (String cert : listing.getCriteriaMet().split("☺")) {
+            for (String cert : listing.getCriteriaMet().split("\u263A")) {
                 String key = cert + "-" + listing.getDeveloper() + '-' + listing.getProduct();
                 if (!uniqueProductSet.contains(key)) {
                     if (!criterionMap.containsKey(cert)) {
