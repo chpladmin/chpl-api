@@ -55,11 +55,18 @@ public class CertificationResultTestTool implements Serializable {
     @XmlElement(required = false, nillable = true)
     private boolean retired;
 
+    /**
+     * Default constructor.
+     */
     public CertificationResultTestTool() {
         super();
     }
 
-    public CertificationResultTestTool(CertificationResultTestToolDTO dto) {
+    /**
+     * Constructor using DTO.
+     * @param dto input data transfer object
+     */
+    public CertificationResultTestTool(final CertificationResultTestToolDTO dto) {
         this.id = dto.getId();
         this.testToolId = dto.getTestToolId();
         this.testToolName = dto.getTestToolName();
@@ -67,13 +74,20 @@ public class CertificationResultTestTool implements Serializable {
         this.retired = dto.isRetired();
     }
 
-    public boolean matches(CertificationResultTestTool anotherTool) {
+    /**
+     * Indicate if this test tool matches another one.
+     * @param anotherTool the other tool
+     * @return true iff (id or name equal) and version equals
+     */
+    public boolean matches(final CertificationResultTestTool anotherTool) {
         boolean result = false;
         if (this.getTestToolId() != null && anotherTool.getTestToolId() != null
-                && this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()) {
+                && this.getTestToolId().longValue() == anotherTool.getTestToolId().longValue()
+                && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())) {
             result = true;
         } else if (!StringUtils.isEmpty(this.getTestToolName()) && !StringUtils.isEmpty(anotherTool.getTestToolName())
-                && this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())) {
+                && this.getTestToolName().equalsIgnoreCase(anotherTool.getTestToolName())
+                && this.getTestToolVersion().equalsIgnoreCase(anotherTool.getTestToolVersion())) {
             result = true;
         }
         return result;
