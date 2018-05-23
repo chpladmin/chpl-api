@@ -18,10 +18,10 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.ActiveListingsStatisticsDAO;
+import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.ActiveListingsStatisticsDTO;
+import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -31,10 +31,10 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-public class ActiveListingsStatisticsDAOTest extends TestCase {
+public class ListingCountStatisticsDAOTest extends TestCase {
 
     @Autowired
-    private ActiveListingsStatisticsDAO alDao;
+    private ListingCountStatisticsDAO lcDao;
 
     @Rule
     @Autowired
@@ -46,19 +46,21 @@ public class ActiveListingsStatisticsDAOTest extends TestCase {
         final int expectedCount = 1;
         final Long expectedDeveloperCount = 4L;
         final String expectedEdition = "2014";
-        List<ActiveListingsStatisticsDTO> results = alDao.findAll();
+        final String expectedStatus = "Active";
+        List<ListingCountStatisticsDTO> results = lcDao.findAll();
         assertNotNull(results);
         assertEquals(expectedCount, results.size());
         assertEquals(expectedDeveloperCount, results.get(0).getDeveloperCount());
         assertEquals(expectedEdition, results.get(0).getCertificationEdition().getYear());
+        assertEquals(expectedStatus, results.get(0).getCertificationStatus().getStatus());
     }
 
     @Test
     @Transactional
     public void deleteOneStat() throws EntityRetrievalException {
         final int expectedCount = 0;
-        alDao.delete(1L);
-        List<ActiveListingsStatisticsDTO> results = alDao.findAll();
+        lcDao.delete(1L);
+        List<ListingCountStatisticsDTO> results = lcDao.findAll();
         assertNotNull(results);
         assertEquals(expectedCount, results.size());
     }
@@ -67,12 +69,13 @@ public class ActiveListingsStatisticsDAOTest extends TestCase {
     @Transactional
     public void createOneStat() throws EntityCreationException, EntityRetrievalException {
         final int expectedCount = 2;
-        ActiveListingsStatisticsDTO dto = new ActiveListingsStatisticsDTO();
+        ListingCountStatisticsDTO dto = new ListingCountStatisticsDTO();
         dto.setProductCount(1L);
         dto.setDeveloperCount(1L);
         dto.setCertificationEditionId(2L);
-        alDao.create(dto);
-        List<ActiveListingsStatisticsDTO> results = alDao.findAll();
+        dto.setCertificationStatusId(1L);
+        lcDao.create(dto);
+        List<ListingCountStatisticsDTO> results = lcDao.findAll();
         assertNotNull(results);
         assertEquals(expectedCount, results.size());
     }

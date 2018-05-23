@@ -4,7 +4,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
-import gov.healthit.chpl.web.controller.results.ActiveListingsStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
@@ -18,10 +18,10 @@ import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsR
  */
 public interface StatisticsManager {
     /**
-     * Retrieves the data used for populating Active Developers & Products charts.
+     * Retrieves the data used for populating Developers & Products charts.
      * @return object with data
      */
-    ActiveListingsStatisticsResult getActiveListingsStatisticsResult();
+    ListingCountStatisticsResult getListingCountStatisticsResult();
 
     /**
      * Retrieves that data that will be used for the SED and participant counts chart.

@@ -9,20 +9,20 @@ import org.apache.logging.log4j.Logger;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 
 /**
- * Filters Listings to those needed for Active Listings chart.
+ * Filters Listings to those needed for Listing Count chart.
  * @author alarned
  *
  */
-public class ActiveListingsDataFilter {
-    private static final Logger LOGGER = LogManager.getLogger(ActiveListingsDataFilter.class);
+public class ListingCountDataFilter {
+    private static final Logger LOGGER = LogManager.getLogger(ListingCountDataFilter.class);
     private static final String EDITION_2014 = "2014";
     private static final String EDITION_2015 = "2015";
-    private static final String ACTIVE_STATUS = "Active";
+    private static final String BAD_STATUS = "Retired";
 
     /**
      * Filter listings down to those needed for charts.
      * @param certifiedProducts initial set of listings
-     * @return filtered list (2014 & 2015 edition only, only status Active)
+     * @return filtered list (2014 & 2015 edition and not Retired)
      */
     public List<CertifiedProductFlatSearchResult> filterData(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
@@ -30,7 +30,7 @@ public class ActiveListingsDataFilter {
         for (CertifiedProductFlatSearchResult result : certifiedProducts) {
             if ((result.getEdition().equalsIgnoreCase(EDITION_2014)
                     || result.getEdition().equalsIgnoreCase(EDITION_2015))
-                    && result.getCertificationStatus().equalsIgnoreCase(ACTIVE_STATUS)) {
+                    && !result.getCertificationStatus().equalsIgnoreCase(BAD_STATUS)) {
                 results.add(result);
             }
         }

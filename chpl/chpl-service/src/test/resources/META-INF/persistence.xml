@@ -16,7 +16,6 @@
         <class>gov.healthit.chpl.auth.entity.UserPermissionUserMappingEntity</class>
         <class>gov.healthit.chpl.entity.AccessibilityStandardEntity</class>
         <class>gov.healthit.chpl.entity.ActivityEntity</class>
-        <class>gov.healthit.chpl.entity.ActiveListingsStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.AddressEntity</class>
         <class>gov.healthit.chpl.entity.AgeRangeEntity</class>
         <class>gov.healthit.chpl.entity.AnnouncementEntity</class>
@@ -39,6 +38,7 @@
         <class>gov.healthit.chpl.entity.EducationTypeEntity</class>
         <class>gov.healthit.chpl.entity.FuzzyChoicesEntity</class>
         <class>gov.healthit.chpl.entity.IncumbentDevelopersStatisticsEntity</class>
+        <class>gov.healthit.chpl.entity.ListingCountStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
         <class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
         <class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>

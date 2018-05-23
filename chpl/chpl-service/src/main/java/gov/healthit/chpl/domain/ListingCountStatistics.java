@@ -2,39 +2,42 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.dto.ActiveListingsStatisticsDTO;
-import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 
 /**
- * Domain object that represents active listings statistics used for creating charts.
+ * Domain object that represents listings count statistics used for creating charts.
  * @author alarned
  *
  */
-public class ActiveListingsStatistics implements Serializable {
+public class ListingCountStatistics implements Serializable {
     private static final long serialVersionUID = -1648513956784683632L;
 
     private Long id;
     private Long developerCount;
     private Long productCount;
     private CertificationEdition certificationEdition;
+    private CertificationStatus certificationStatus;
 
     /**
      * Default constructor.
      */
-    public ActiveListingsStatistics() {
+    public ListingCountStatistics() {
         // Default Constructor
     }
 
     /**
      * Constructor that populates the new object based on the DTO that was passed in as a parameter.
-     * @param dto ActiveListingsStatisticsDTO object
+     * @param dto ListingCountStatisticsDTO object
      */
-    public ActiveListingsStatistics(final ActiveListingsStatisticsDTO dto) {
+    public ListingCountStatistics(final ListingCountStatisticsDTO dto) {
         this.id = dto.getId();
         this.developerCount = dto.getDeveloperCount();
         this.productCount = dto.getProductCount();
         if (dto.getCertificationEdition() != null) {
             this.certificationEdition = new CertificationEdition(dto.getCertificationEdition());
+        }
+        if (dto.getCertificationStatus() != null) {
+            this.certificationStatus = new CertificationStatus(dto.getCertificationStatus());
         }
     }
 
@@ -66,8 +69,16 @@ public class ActiveListingsStatistics implements Serializable {
         return certificationEdition;
     }
 
-    public void setOldCertificationEdition(final CertificationEdition certificationEdition) {
+    public void setCertificationEdition(final CertificationEdition certificationEdition) {
         this.certificationEdition = certificationEdition;
+    }
+
+    public CertificationStatus getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(final CertificationStatus certificationStatus) {
+        this.certificationStatus = certificationStatus;
     }
 
     @Override
@@ -76,6 +87,7 @@ public class ActiveListingsStatistics implements Serializable {
                 + "[Developers: " + this.developerCount + "]"
                 + "[Products: " + this.productCount + "]"
                 + "[Edition: " + this.certificationEdition.getYear() + "]"
+                + "[Status: " + this.certificationStatus.getName() + "]"
                 + "]";
     }
 }

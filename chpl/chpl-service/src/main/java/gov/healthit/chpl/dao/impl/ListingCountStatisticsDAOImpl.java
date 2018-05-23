@@ -11,32 +11,32 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dao.ActiveListingsStatisticsDAO;
-import gov.healthit.chpl.dto.ActiveListingsStatisticsDTO;
-import gov.healthit.chpl.entity.ActiveListingsStatisticsEntity;
+import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
+import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
+import gov.healthit.chpl.entity.ListingCountStatisticsEntity;
 
 /**
- * The implementation for ActiveListingsStatisticsDAO.
+ * The implementation for ListingCountStatisticsDAO.
  * @author alarned
  *
  */
-@Repository("activeListingsStatisticsDAO")
-public class ActiveListingsStatisticsDAOImpl extends BaseDAOImpl implements ActiveListingsStatisticsDAO {
+@Repository("listingCountStatisticsDAO")
+public class ListingCountStatisticsDAOImpl extends BaseDAOImpl implements ListingCountStatisticsDAO {
     private static final long MODIFIED_USER_ID = -3L;
 
     @Override
-    public List<ActiveListingsStatisticsDTO> findAll() {
-        List<ActiveListingsStatisticsEntity> result = this.findAllEntities();
-        List<ActiveListingsStatisticsDTO> dtos = new ArrayList<ActiveListingsStatisticsDTO>(result.size());
-        for (ActiveListingsStatisticsEntity entity : result) {
-            dtos.add(new ActiveListingsStatisticsDTO(entity));
+    public List<ListingCountStatisticsDTO> findAll() {
+        List<ListingCountStatisticsEntity> result = this.findAllEntities();
+        List<ListingCountStatisticsDTO> dtos = new ArrayList<ListingCountStatisticsDTO>(result.size());
+        for (ListingCountStatisticsEntity entity : result) {
+            dtos.add(new ListingCountStatisticsDTO(entity));
         }
         return dtos;
     }
 
     @Override
     public void delete(final Long id) throws EntityRetrievalException {
-        ActiveListingsStatisticsEntity toDelete = getEntityById(id);
+        ListingCountStatisticsEntity toDelete = getEntityById(id);
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
@@ -46,12 +46,13 @@ public class ActiveListingsStatisticsDAOImpl extends BaseDAOImpl implements Acti
     }
 
     @Override
-    public ActiveListingsStatisticsEntity create(final ActiveListingsStatisticsDTO dto)
+    public ListingCountStatisticsEntity create(final ListingCountStatisticsDTO dto)
             throws EntityCreationException, EntityRetrievalException {
-        ActiveListingsStatisticsEntity entity = new ActiveListingsStatisticsEntity();
+        ListingCountStatisticsEntity entity = new ListingCountStatisticsEntity();
         entity.setDeveloperCount(dto.getDeveloperCount());
         entity.setProductCount(dto.getProductCount());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
+        entity.setCertificationStatusId(dto.getCertificationStatusId());
 
         if (dto.getDeleted() != null) {
             entity.setDeleted(dto.getDeleted());
@@ -80,23 +81,25 @@ public class ActiveListingsStatisticsDAOImpl extends BaseDAOImpl implements Acti
 
     }
 
-    private List<ActiveListingsStatisticsEntity> findAllEntities() {
-        Query query = entityManager.createQuery("from ActiveListingsStatisticsEntity alse "
-                + "LEFT OUTER JOIN FETCH alse.certificationEdition "
-                + "where (alse.deleted = false)",
-                ActiveListingsStatisticsEntity.class);
+    private List<ListingCountStatisticsEntity> findAllEntities() {
+        Query query = entityManager.createQuery("from ListingCountStatisticsEntity lcse "
+                + "LEFT OUTER JOIN FETCH lcse.certificationEdition "
+                + "LEFT OUTER JOIN FETCH lcse.certificationStatus "
+                + "where (lcse.deleted = false)",
+                ListingCountStatisticsEntity.class);
         return query.getResultList();
     }
 
-    private ActiveListingsStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
-        ActiveListingsStatisticsEntity entity = null;
+    private ListingCountStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
+        ListingCountStatisticsEntity entity = null;
 
-        Query query = entityManager.createQuery("from ActiveListingsStatisticsEntity alse "
-                + "LEFT OUTER JOIN FETCH alse.certificationEdition "
-                + "where (alse.deleted = false) AND (alse.id = :entityid) ",
-                ActiveListingsStatisticsEntity.class);
+        Query query = entityManager.createQuery("from ListingCountStatisticsEntity lcse "
+                + "LEFT OUTER JOIN FETCH lcse.certificationEdition "
+                + "LEFT OUTER JOIN FETCH lcse.certificationStatus "
+                + "where (lcse.deleted = false) AND (lcse.id = :entityid) ",
+                ListingCountStatisticsEntity.class);
         query.setParameter("entityid", id);
-        List<ActiveListingsStatisticsEntity> result = query.getResultList();
+        List<ListingCountStatisticsEntity> result = query.getResultList();
 
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate address id in database.");

@@ -16,13 +16,13 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
- * Entity object representing the active_listings_statistics table.
+ * Entity object representing the listing_count_statistics table.
  * @author alarned
  *
  */
 @Entity
-@Table(name = "active_listings_statistics")
-public class ActiveListingsStatisticsEntity implements Serializable {
+@Table(name = "listing_count_statistics")
+public class ListingCountStatisticsEntity implements Serializable {
     private static final long serialVersionUID = 1313677047965534572L;
 
     @Id
@@ -48,6 +48,14 @@ public class ActiveListingsStatisticsEntity implements Serializable {
     private CertificationEditionEntity certificationEdition;
 
     @Basic(optional = false)
+    @Column(name = "certification_status_id", nullable = false)
+    private Long certificationStatusId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_status_id", insertable = false, updatable = false)
+    private CertificationStatusEntity certificationStatus;
+
+   @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
     private Date creationDate;
 
@@ -66,7 +74,7 @@ public class ActiveListingsStatisticsEntity implements Serializable {
     /**
      * Default constructor.
      */
-    public ActiveListingsStatisticsEntity() {
+    public ListingCountStatisticsEntity() {
         this.developerCount = 0L;
         this.productCount = 0L;
     }
@@ -75,13 +83,13 @@ public class ActiveListingsStatisticsEntity implements Serializable {
      * Sets the id field upon creation.
      * @param id The value to set object's id equal to
      */
-    public ActiveListingsStatisticsEntity(final Long id) {
+    public ListingCountStatisticsEntity(final Long id) {
         this.id = id;
     }
 
     @Transient
     public Class<?> getClassType() {
-        return ActiveListingsStatisticsEntity.class;
+        return ListingCountStatisticsEntity.class;
     }
 
     public Long getId() {
@@ -124,6 +132,22 @@ public class ActiveListingsStatisticsEntity implements Serializable {
         this.certificationEdition = certificationEdition;
     }
 
+    public Long getCertificationStatusId() {
+        return certificationStatusId;
+    }
+
+    public void setCertificationStatusId(final Long certificationStatusId) {
+        this.certificationStatusId = certificationStatusId;
+    }
+
+    public CertificationStatusEntity getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(final CertificationStatusEntity certificationStatus) {
+        this.certificationStatus = certificationStatus;
+    }
+
     public Date getCreationDate() {
         return creationDate;
     }
@@ -162,6 +186,7 @@ public class ActiveListingsStatisticsEntity implements Serializable {
                 + "[Developer: " + this.developerCount + "]"
                 + "[Product: " + this.productCount + "]"
                 + "[Edition: " + this.certificationEdition.getYear() + "]"
+                + "[Status: " + this.certificationStatus.getStatus() + "]"
                 + "]";
     }
 }

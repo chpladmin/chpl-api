@@ -3,14 +3,14 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
-import gov.healthit.chpl.entity.ActiveListingsStatisticsEntity;
+import gov.healthit.chpl.entity.ListingCountStatisticsEntity;
 
 /**
- * Active Listings data transfer object.
+ * Listing Count data transfer object.
  * @author alarned
  *
  */
-public class ActiveListingsStatisticsDTO implements Serializable {
+public class ListingCountStatisticsDTO implements Serializable {
 
     private static final long serialVersionUID = -1536844909545189801L;
 
@@ -19,6 +19,8 @@ public class ActiveListingsStatisticsDTO implements Serializable {
     private Long productCount;
     private Long certificationEditionId;
     private CertificationEditionDTO certificationEdition;
+    private Long certificationStatusId;
+    private CertificationStatusDTO certificationStatus;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -27,7 +29,7 @@ public class ActiveListingsStatisticsDTO implements Serializable {
     /**
      * Default constructor.
      */
-    public ActiveListingsStatisticsDTO() {
+    public ListingCountStatisticsDTO() {
     }
 
     /**
@@ -35,7 +37,7 @@ public class ActiveListingsStatisticsDTO implements Serializable {
      * that is passed in as a parameter.
      * @param entity IncumbentDevelopersStatisticsEntity entity
      */
-    public ActiveListingsStatisticsDTO(final ActiveListingsStatisticsEntity entity) {
+    public ListingCountStatisticsDTO(final ListingCountStatisticsEntity entity) {
         this.id = entity.getId();
         this.developerCount = entity.getDeveloperCount();
         this.productCount = entity.getProductCount();
@@ -43,10 +45,26 @@ public class ActiveListingsStatisticsDTO implements Serializable {
         if (entity.getCertificationEdition() != null) {
             this.certificationEdition = new CertificationEditionDTO(entity.getCertificationEdition());
         }
+        this.certificationStatusId = entity.getCertificationStatusId();
+        if (entity.getCertificationStatus() != null) {
+            this.certificationStatus = new CertificationStatusDTO(entity.getCertificationStatus());
+        }
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
+    }
+
+    /**
+     * New DTO with edition and status; sets counts to 0.
+     * @param edition the edition
+     * @param status the status
+     */
+    public ListingCountStatisticsDTO(final CertificationEditionDTO edition, final CertificationStatusDTO status) {
+        this.developerCount = 0L;
+        this.productCount = 0L;
+        this.certificationEditionId = edition.getId();
+        this.certificationStatusId = status.getId();
     }
 
     public Long getId() {
@@ -121,12 +139,29 @@ public class ActiveListingsStatisticsDTO implements Serializable {
         this.certificationEdition = certificationEdition;
     }
 
+    public Long getCertificationStatusId() {
+        return certificationStatusId;
+    }
+
+    public void setCertificationStatusId(final Long certificationStatusId) {
+        this.certificationStatusId = certificationStatusId;
+    }
+
+    public CertificationStatusDTO getCertificationStatus() {
+        return certificationStatus;
+    }
+
+    public void setCertificationStatus(final CertificationStatusDTO certificationStatus) {
+        this.certificationStatus = certificationStatus;
+    }
+
     @Override
     public String toString() {
         return "Incumbent Developers Statistics DTO ["
                 + "[Developer: " + this.developerCount + "]"
                 + "[Product: " + this.productCount + "]"
                 + "[Edition: " + this.certificationEditionId.longValue() + "]"
+                + "[Status: " + this.certificationStatusId.longValue() + "]"
                 + "]";
     }
 }
