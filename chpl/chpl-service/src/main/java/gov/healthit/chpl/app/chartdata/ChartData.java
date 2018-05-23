@@ -37,6 +37,7 @@ public final class ChartData {
             analyzeSed(appEnvironment, certifiedProducts);
             analyzeProducts(appEnvironment, certifiedProducts);
             analyzeDevelopers(appEnvironment, certifiedProducts);
+            analyzeListingCounts(appEnvironment, certifiedProducts);
 
         } catch (Exception e) {
             LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
@@ -51,6 +52,15 @@ public final class ChartData {
                 new IncumbentDevelopersStatisticsCalculator(appEnvironment);
         incumbentDevelopersStatisticsCalculator.run(listings);
 
+    }
+
+    private static void analyzeListingCounts(final ChartDataApplicationEnvironment appEnvironment,
+            final List<CertifiedProductFlatSearchResult> listings) {
+        ListingCountDataFilter listingCountDataFilter = new ListingCountDataFilter();
+        List<CertifiedProductFlatSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
+        ListingCountStatisticsCalculator listingCountStatisticsCalculator =
+                new ListingCountStatisticsCalculator(appEnvironment);
+        listingCountStatisticsCalculator.run(filteredListings);
     }
 
     private static void analyzeProducts(final ChartDataApplicationEnvironment appEnvironment,

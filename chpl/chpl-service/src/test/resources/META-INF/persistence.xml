@@ -38,6 +38,7 @@
         <class>gov.healthit.chpl.entity.EducationTypeEntity</class>
         <class>gov.healthit.chpl.entity.FuzzyChoicesEntity</class>
         <class>gov.healthit.chpl.entity.IncumbentDevelopersStatisticsEntity</class>
+        <class>gov.healthit.chpl.entity.ListingCountStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.MacraMeasureEntity</class>
         <class>gov.healthit.chpl.entity.MeaningfulUseAccurateAsOfEntity</class>
         <class>gov.healthit.chpl.entity.NonconformityStatusEntity</class>
