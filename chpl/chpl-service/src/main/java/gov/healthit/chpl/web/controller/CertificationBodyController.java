@@ -212,7 +212,7 @@ public class CertificationBodyController {
     @ApiOperation(value = "Delete an ACB.", notes = "The logged in user must have ROLE_ADMIN.")
     @RequestMapping(value = "/{acbId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public String deleteAcbd(@PathVariable("acbId") final Long acbId)
+    public String deleteAcb(@PathVariable("acbId") final Long acbId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
         return delete(acbId);
