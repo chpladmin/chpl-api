@@ -107,7 +107,7 @@ public class ListingCountStatisticsCalculator {
                             certificationEditionDAO.getByYear(edition),
                             certificationStatusDAO.getByStatusName(status)));
                 }
-                results.get(key).setProductCount(results.get(key).getDeveloperCount() + 1L);
+                results.get(key).setProductCount(results.get(key).getProductCount() + 1L);
             }
         }
         ArrayList<ListingCountStatisticsDTO> ret = new ArrayList<ListingCountStatisticsDTO>();

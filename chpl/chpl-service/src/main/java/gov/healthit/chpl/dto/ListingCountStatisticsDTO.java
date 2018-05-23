@@ -157,7 +157,7 @@ public class ListingCountStatisticsDTO implements Serializable {
 
     @Override
     public String toString() {
-        return "Incumbent Developers Statistics DTO ["
+        return "Listing Count Statistics DTO ["
                 + "[Developer: " + this.developerCount + "]"
                 + "[Product: " + this.productCount + "]"
                 + "[Edition: " + this.certificationEditionId.longValue() + "]"
