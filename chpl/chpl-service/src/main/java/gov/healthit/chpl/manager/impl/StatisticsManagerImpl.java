@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -16,11 +17,13 @@ import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dao.TestParticipantAgeDAO;
+import gov.healthit.chpl.domain.ListingCountStatistics;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
+import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
@@ -31,6 +34,7 @@ import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.dto.TestParticipantAgeDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
@@ -49,28 +53,31 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     private CriterionProductStatisticsDAO criterionProductStatisticsDAO;
 
     @Autowired
-    private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
+    private EducationTypeDAO educationTypeDAO;
 
     @Autowired
-    private ParticipantGenderStatisticsDAO participantGenderStatisticsCountDAO;
+    private IncumbentDevelopersStatisticsDAO incumbentDevelopersStatisticsDAO;
+
+    @Autowired
+    private ListingCountStatisticsDAO listingCountStatisticsDAO;
 
     @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
 
     @Autowired
-    private TestParticipantAgeDAO testParticipantAgeDAO;
-
-    @Autowired
     private ParticipantEducationStatisticsDAO participantEducationStatisticsDAO;
-
-    @Autowired
-    private EducationTypeDAO educationTypeDAO;
 
     @Autowired
     private ParticipantExperienceStatisticsDAO participantExperienceStatisticsDAO;
 
     @Autowired
-    private IncumbentDevelopersStatisticsDAO incumbentDevelopersStatisticsDAO;
+    private ParticipantGenderStatisticsDAO participantGenderStatisticsCountDAO;
+
+    @Autowired
+    private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
+
+    @Autowired
+    private TestParticipantAgeDAO testParticipantAgeDAO;
 
     @Override
     public List<SedParticipantStatisticsCountDTO> getAllSedParticipantCounts() {
@@ -99,6 +106,18 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
             result.getIncumbentDevelopersStatisticsResult().add(ids);
         }
 
+        return result;
+    }
+
+    @Override
+    public ListingCountStatisticsResult getListingCountStatisticsResult() {
+        ListingCountStatisticsResult result = new ListingCountStatisticsResult();
+        List<ListingCountStatisticsDTO> dtos = listingCountStatisticsDAO.findAll();
+
+        for (ListingCountStatisticsDTO dto : dtos) {
+            ListingCountStatistics cps = new ListingCountStatistics(dto);
+            result.getStatisticsResult().add(cps);
+        }
         return result;
     }
 
