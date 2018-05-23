@@ -99,30 +99,31 @@ public class CertifiedProductController {
 
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
-    
+
     @Autowired
     private CertifiedProductManager cpManager;
-    
+
     @Autowired
     private PendingCertifiedProductManager pcpManager;
-    
+
     @Autowired
     private CertificationBodyManager acbManager;
-    
+
     @Autowired
     private ActivityManager activityManager;
-    
+
     @Autowired
     private CertifiedProductValidatorFactory validatorFactory;
-    
+
     @Autowired
     private MeaningfulUseController meaningfulUseController;
-    
+
     @Autowired
     private Environment env;
+
     @Autowired
     private MessageSource messageSource;
-    
+
     @Autowired
     private ChplProductNumberUtil chplProductNumberUtil;
 
@@ -171,24 +172,27 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.")
-    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details", 
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/details",
                     method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductById(
             @PathVariable("certifiedProductId") final Long certifiedProductId) throws EntityRetrievalException {
-        
-        CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(Long.valueOf(certifiedProductId));
+
+        CertifiedProductSearchDetails certifiedProduct = 
+                cpdManager.getCertifiedProductDetails(Long.valueOf(certifiedProductId));
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
-        
+
         return certifiedProduct;
     }
-    
+
     @ApiOperation(value = "Get all details for a specified certified product.",
             notes = "Returns all information in the CHPL related to the specified certified product.  "
-                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
-                    + "represents a valid CHPL Product Number.  A valid call to this service would look like "
+                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call "
+                    + "to this service would look like "
                     + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/details")
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/details",
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+            + "{addlSoftwareCode}.{certDateCode}/details",
                     method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber(
@@ -201,49 +205,48 @@ public class CertifiedProductController {
             @PathVariable("icsCode") final String icsCode,
             @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
             @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
-        
-        String chplProductNumber = 
-                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
+
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
-        
-        CertifiedProductSearchDetails certifiedProduct = 
+
+        CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber.toString());
-        
-        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);  
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
             validator.validate(certifiedProduct);
         }
 
         return certifiedProduct;
     }
-    
+
     @ApiOperation(value = "Get all details for a specified certified product.",
-            notes = "Returns all information in the CHPL related to the specified certified product.  "                    
-                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this service would "
-                    + "look like /certified_products/CHP-999999.")
+            notes = "Returns all information in the CHPL related to the specified certified product.  "
+                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
+                    + "to this service would look like /certified_products/CHP-999999.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/details",
                     method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumber2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
-        
+
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-        
-        CertifiedProductSearchDetails certifiedProduct = 
+
+        CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber.toString());
-        
+
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
         return certifiedProduct;
     }
-    
-    
+
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
                             + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.")
-    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}", 
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}",
                     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByIdBasic(
@@ -259,10 +262,12 @@ public class CertifiedProductController {
                         + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                         + "The results will not include the CQM results and certification results.  "
-                        + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
-                        + "represents a valid CHPL Product Number.  A valid call to this service would look like "
-                        + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD.")
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
+                        + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+                        + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid "
+                        + "call to this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
+                        + "YYMMDD.")
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+            + "{addlSoftwareCode}.{certDateCode}",
                     method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic(
@@ -275,43 +280,42 @@ public class CertifiedProductController {
             @PathVariable("icsCode") final String icsCode,
             @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
             @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
-        
-        
-        String chplProductNumber = 
-                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
+
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
-        
-        CertifiedProductSearchDetails certifiedProduct = 
+
+        CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber.toString());
-        
+
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
         return certifiedProduct;
     }
-    
+
     @ApiOperation(value = "Get all basic information for a specified certified product.  Does not include "
                         + "the CQM results and certification results.",
             notes = "Returns basic information in the CHPL related to the specified certified product.  "
                     + "The results will not include the CQM results and certification results.  "
-                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this service would "
-                    + "look like /certified_products/CHP-999999.")
+                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to "
+                    + "this service would look like /certified_products/CHP-999999.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}",
                     method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
     public @ResponseBody CertifiedProductSearchDetails getCertifiedProductByChplProductNumberBasic2(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException {
-        
+
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-        
-        CertifiedProductSearchDetails certifiedProduct = 
+
+        CertifiedProductSearchDetails certifiedProduct =
                 cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber.toString());
-        
+
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
 
         return certifiedProduct;
     }
-        
+
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
             notes = "Returns all of the CQM results in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/cqm_results", method = RequestMethod.GET,
@@ -327,11 +331,13 @@ public class CertifiedProductController {
 
     @ApiOperation(value = "Get all of the CQM results for a specified certified product.",
             notes = "Returns all of the CQM results in the CHPL related to the specified certified product.  "
-                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
-                    + "represents a valid CHPL Product Number.  A valid call to this service would look like "
-                    + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/cqm_results.")
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/cqm_results", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to "
+                    + "this service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/"
+                    + "cqm_results.")
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+            + "{addlSoftwareCode}.{certDateCode}/cqm_results", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -343,8 +349,8 @@ public class CertifiedProductController {
             @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
             @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
 
-        String chplProductNumber = 
-                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
         CQMResultDetailResults results =
                 new CQMResultDetailResults(cpdManager.getCertifiedProductCqms(chplProductNumber));
@@ -352,10 +358,11 @@ public class CertifiedProductController {
         return results;
     }
 
-    @ApiOperation(value = "Get all of the CQM results for a specified certified product based on a legacy CHPL Product Number.",
+    @ApiOperation(value = "Get all of the CQM results for a specified certified product based on a legacy "
+            + "CHPL Product Number.",
             notes = "\"Returns all of the CQM results in the CHPL related to the specified certified product.  "
-                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this service would "
-                    + "look like /certified_products/CHP-999999/cqm_results.")
+                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call "
+                    + "to this service would look like /certified_products/CHP-999999/cqm_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/cqm_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CQMResultDetailResults getCqmsByCertifiedProductId(
@@ -368,7 +375,7 @@ public class CertifiedProductController {
 
         return results;
     }
-       
+
     @ApiOperation(value = "Get all of the certification results for a specified certified product.",
             notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.")
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/certification_results", method = RequestMethod.GET,
@@ -390,10 +397,11 @@ public class CertifiedProductController {
      */
     @ApiOperation(value = "Get all of the certification results for a specified certified product based on a CHPL Product Number.",
             notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.  "
-                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
-                    + "represents a valid CHPL Product Number.  A valid call to this service would look like "
+                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}."
+                    + "{certDateCode} represents a valid CHPL Product Number.  A valid call to this service would look like "
                     + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/certification_results.")
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/certification_results", method = RequestMethod.GET,
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}"
+            + ".{certDateCode}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
             @PathVariable("year") final String year,
@@ -406,20 +414,21 @@ public class CertifiedProductController {
             @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
             @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
 
-        String chplProductNumber = 
-                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
                         versionCode, icsCode, addlSoftwareCode, certDateCode);
-        
+
         CertificationResults results =
                 new CertificationResults(cpdManager.getCertifiedProductCertificationResults(chplProductNumber));
 
         return results;
     }
 
-    @ApiOperation(value = "Get all of the certification results for a specified certified product based on a legacy CHPL Product Number.",
+    @ApiOperation(value = "Get all of the certification results for a specified certified product based on a legacy "
+            + "CHPL Product Number.",
             notes = "Returns all of the certifiection results in the CHPL related to the specified certified product.  "
-                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this service would "
-                    + "look like /certified_products/CHP-999999/certification_results.")
+                    + "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
+                    + "service would look like /certified_products/CHP-999999/certification_results.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/certification_results", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationResults getCertificationResultssByCertifiedProductId(
@@ -427,15 +436,14 @@ public class CertifiedProductController {
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-        
+
         CertificationResults results =
                 new CertificationResults(cpdManager.getCertifiedProductCertificationResults(chplProductNumber));
 
         return results;
     }
-    
-    
-	/**
+
+    /**
      * Download all SED details that are certified to 170.315(g)(3).
      * @param response http response
      * @throws EntityRetrievalException if cannot retrieve entity
@@ -498,10 +506,12 @@ public class CertifiedProductController {
     }
 
     @ApiOperation(value = "Get the ICS family tree for the specified certified product based on a CHPL Product Number.",
-            notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
-                    + "represents a valid CHPL Product Number.  A valid call to this service would look like "
-                    + "/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD/ics_relationships.")
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/ics_relationships", 
+            notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to this "
+                    + "service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
+                    + "YYMMDD/ics_relationships.")
+    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
+            + "{addlSoftwareCode}.{certDateCode}/ics_relationships",
                     method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
@@ -514,32 +524,32 @@ public class CertifiedProductController {
             @PathVariable("icsCode") final String icsCode,
             @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
             @PathVariable("certDateCode") final String certDateCode) throws EntityRetrievalException  {
-        
-        String chplProductNumber = 
-                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
-                        versionCode, icsCode, addlSoftwareCode, certDateCode); 
-        
+
+        String chplProductNumber =
+                chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
+                        versionCode, icsCode, addlSoftwareCode, certDateCode);
+
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(chplProductNumber);
 
         return familyTree;
     }
 
     @ApiOperation(value = "Get the ICS family tree for the specified certified product based on a legacy CHPL Product Number",
-            notes = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this service would "  
-                    + "look like /certified_products/CHP-999999/ics_relationships.")
+            notes = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
+                    + "service would look like /certified_products/CHP-999999/ics_relationships.")
     @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
     produces = "application/json; charset=utf-8")
     public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier) throws EntityRetrievalException  {
-        
+
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
         List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(chplProductNumber);
 
         return familyTree;
     }
 
-	/**
+    /**
      * Update an existing certified product.
      * @param updateRequest the update request
      * @return the updated listing
@@ -560,7 +570,7 @@ public class CertifiedProductController {
                     + " user must have ROLE_ADMIN.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProductDeprecated(
-            @RequestBody(required = true) final ListingUpdateRequest updateRequest) 
+            @RequestBody(required = true) final ListingUpdateRequest updateRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
                     JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
@@ -574,9 +584,10 @@ public class CertifiedProductController {
                     + " authority on the ACB that certified the product. If a different ACB is passed in"
                     + " as part of the request, an ownership change will take place and the logged in "
                     + " user must have ROLE_ADMIN.")
-    @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{certifiedProductId}", method = RequestMethod.PUT, 
+                    produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
-            @RequestBody(required = true) final ListingUpdateRequest updateRequest) 
+            @RequestBody(required = true) final ListingUpdateRequest updateRequest)
                     throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
                     JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
@@ -585,8 +596,8 @@ public class CertifiedProductController {
     }
 
     private ResponseEntity<CertifiedProductSearchDetails> update(final ListingUpdateRequest updateRequest)
-            throws EntityCreationException,EntityRetrievalException, InvalidArgumentsException, JsonProcessingException,
-                IOException, ValidationException, MissingReasonException {
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException, IOException, ValidationException, MissingReasonException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
 
@@ -755,10 +766,10 @@ public class CertifiedProductController {
     public @ResponseBody String rejectPendingCertifiedProductDeprecated(@PathVariable("pcpId") final Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
-        
+
         return deletePendingCertifiedProduct(id);
     }
-    
+
     @ApiOperation(value = "Reject a pending certified product.",
             notes = "Essentially deletes a pending certified product. ROLE_ACB "
                     + " and administrative authority on the ACB is required.")
@@ -767,14 +778,14 @@ public class CertifiedProductController {
     public @ResponseBody String rejectPendingCertifiedProduct(@PathVariable("pcpId") final Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
-        
+
         return deletePendingCertifiedProduct(id);
     }
-    
+
     private String deletePendingCertifiedProduct(final Long id)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, ObjectMissingValidationException {
-        
+
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.deletePendingCertifiedProduct(acbs, id);
         return "{\"success\" : true}";
@@ -801,10 +812,10 @@ public class CertifiedProductController {
     public @ResponseBody String rejectPendingCertifiedProductsDeprecated(@RequestBody final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
-        
+
         return deletePendingCertifiedProducts(idList);
     }
-    
+
     @ApiOperation(value = "Reject several pending certified products.",
             notes = "Marks a list of pending certified products as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending certified product is required.")
@@ -813,7 +824,7 @@ public class CertifiedProductController {
     public @ResponseBody String rejectPendingCertifiedProducts(@RequestBody final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
-        
+
         return deletePendingCertifiedProducts(idList);
     }
 
@@ -840,7 +851,7 @@ public class CertifiedProductController {
         return "{\"success\" : true}";
     }
 
-    
+
     /**
      * Confirm a pending listing.
      * @param pendingCp the listing's id
@@ -867,10 +878,10 @@ public class CertifiedProductController {
                     throws InvalidArgumentsException, ValidationException,
                     EntityCreationException, EntityRetrievalException,
                     ObjectMissingValidationException, IOException {
-        
+
         return addPendingCertifiedProduct(pendingCp);
     }
-    
+
     @ApiOperation(value = "Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + " passed in on the request. This information may differ from what was previously "
@@ -885,15 +896,15 @@ public class CertifiedProductController {
                     throws InvalidArgumentsException, ValidationException,
                     EntityCreationException, EntityRetrievalException,
                     ObjectMissingValidationException, IOException {
-        
+
         return addPendingCertifiedProduct(pendingCp);
     }
-    
+
     private synchronized ResponseEntity<CertifiedProductSearchDetails> addPendingCertifiedProduct(
             final PendingCertifiedProductDetails pendingCp) throws InvalidArgumentsException, ValidationException,
-                    EntityCreationException, EntityRetrievalException, ObjectMissingValidationException, 
+                    EntityCreationException, EntityRetrievalException, ObjectMissingValidationException,
                     IOException {
-        
+
         String acbIdStr = pendingCp.getCertifyingBody().get("id").toString();
         if (StringUtils.isEmpty(acbIdStr)) {
             throw new InvalidArgumentsException("An ACB ID must be supplied in the request body");
@@ -1103,13 +1114,14 @@ public class CertifiedProductController {
         results.getPendingCertifiedProducts().addAll(uploadedProducts);
         return new ResponseEntity<PendingCertifiedProductResults>(results, responseHeaders, HttpStatus.OK);
     }
-    
-    private CertifiedProductSearchDetails validateCertifiedProduct(CertifiedProductSearchDetails certifiedProduct) {
-        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);  
+
+    private CertifiedProductSearchDetails validateCertifiedProduct(
+            final CertifiedProductSearchDetails certifiedProduct) {
+        CertifiedProductValidator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
             validator.validate(certifiedProduct);
         }
-        
+
         return certifiedProduct;
     }
 }

@@ -68,9 +68,10 @@ import io.swagger.annotations.ApiOperation;
 public class SearchViewController {
 
     @Autowired
-    Environment env;
+    private Environment env;
+    
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
 
     @Autowired
     private SearchMenuManager searchMenuManager;
@@ -91,8 +92,8 @@ public class SearchViewController {
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "application/xml")
     public void download(@RequestParam(value = "edition", required = false) String edition,
             @RequestParam(value = "format", defaultValue = "xml", required = false) String format,
-            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException {
+            @RequestParam(value = "definition", defaultValue = "false", required = false) final Boolean isDefinition,
+            final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         String downloadFileLocation = env.getProperty("downloadFolderPath");
         File downloadFile = new File(downloadFileLocation);
         if (!downloadFile.exists() || !downloadFile.canRead()) {
@@ -383,10 +384,10 @@ public class SearchViewController {
                         certificationCriterion.add(certCriteriaParam);
                     }
                     searchRequest.setCertificationCriteria(certificationCriterion);
-                    
-                    if(!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
+                    if (!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
                         certificationCriteriaOperatorStr = certificationCriteriaOperatorStr.trim();
-                        SearchSetOperator certificationCriteriaOperator = validateSearchSetOperator(certificationCriteriaOperatorStr);
+                        SearchSetOperator certificationCriteriaOperator =
+                                validateSearchSetOperator(certificationCriteriaOperatorStr);
                         searchRequest.setCertificationCriteriaOperator(certificationCriteriaOperator);
                     }
                 }
@@ -407,8 +408,8 @@ public class SearchViewController {
                         cqms.add(cqmParam.trim());
                     }
                     searchRequest.setCqms(cqms);
-                    
-                    if(!StringUtils.isEmpty(cqmsOperatorStr)) {
+
+                    if (!StringUtils.isEmpty(cqmsOperatorStr)) {
                         cqmsOperatorStr = cqmsOperatorStr.trim();
                         SearchSetOperator cqmOperator = validateSearchSetOperator(cqmsOperatorStr);
                         searchRequest.setCqmsOperator(cqmOperator);

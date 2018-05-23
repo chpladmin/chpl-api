@@ -35,9 +35,7 @@ import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,16 +46,12 @@ import io.swagger.annotations.ApiOperation;
 public class DeveloperController {
 
     @Autowired
-    DeveloperManager developerManager;
-    @Autowired
-    ProductManager productManager;
-    @Autowired
-    CertifiedProductManager cpManager;
+    private DeveloperManager developerManager;
 
     @ApiOperation(value = "List all developers in the system.", notes = "")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperResults getDevelopers(
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
+            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") final boolean showDeleted) {
         List<DeveloperDTO> developerList = null;
         if (showDeleted) {
             developerList = developerManager.getAllIncludingDeleted();
@@ -81,7 +75,7 @@ public class DeveloperController {
     @ApiOperation(value = "Get information about a specific developer.", notes = "")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") Long developerId)
+    public @ResponseBody Developer getDeveloperById(@PathVariable("developerId") final Long developerId)
             throws EntityRetrievalException {
         DeveloperDTO developer = developerManager.getById(developerId);
 
@@ -94,40 +88,40 @@ public class DeveloperController {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Update a developer or merge developers.",
-            notes = "This method serves two purposes: to update a single developer's information and to merge two developers into one. "
-                    + " A user of this service should pass in a single developerId to update just that developer. "
-                    + " If multiple developer IDs are passed in, the service performs a merge meaning that a new developer "
-                    + " is created with all of the information provided (name, address, etc.) and all of the prodcuts "
-                    + " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
-                    + " old developers are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+            notes = "This method serves two purposes: to update a single developer's information and to merge "
+                    + "two developers into one.  A user of this service should pass in a single developerId to "
+                    + "update just that developer.  If multiple developer IDs are passed in, the service performs "
+                    + "a merge meaning that a new developer is created with all of the information provided (name, "
+                    + "address, etc.) and all of the prodcuts previously assigned to the developerId's specified "
+                    + "are reassigned to the newly created developer. The old developers are then deleted.  The "
+                    + "logged in user must have ROLE_ADMIN or ROLE_ACB. ")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloperDeprecated(
-            @RequestBody(required = true) UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        return update(developerInfo);
-    }
-    
-    @ApiOperation(value = "Update a developer or merge developers.",
-            notes = "This method serves two purposes: to update a single developer's information and to merge two developers into one. "
-                    + " A user of this service should pass in a single developerId to update just that developer. "
-                    + " If multiple developer IDs are passed in, the service performs a merge meaning that a new developer "
-                    + " is created with all of the information provided (name, address, etc.) and all of the prodcuts "
-                    + " previously assigned to the developerId's specified are reassigned to the newly created developer. The "
-                    + " old developers are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
-    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public ResponseEntity<Developer> updateDeveloper(
-            @RequestBody(required = true) UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
+            @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
             EntityCreationException, EntityRetrievalException, JsonProcessingException {
         return update(developerInfo);
     }
 
-    private ResponseEntity<Developer> update(UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
+    @ApiOperation(value = "Update a developer or merge developers.",
+            notes = "This method serves two purposes: to update a single developer's information and to merge two "
+                    + "developers into one.   A user of this service should pass in a single developerId to update "
+                    + "just that developer.  If multiple developer IDs are passed in, the service performs a merge "
+                    + "meaning that a new developer is created with all of the information provided (name, address, "
+                    + "etc.) and all of the prodcuts previously assigned to the developerId's specified are "
+                    + "reassigned to the newly created developer. The old developers are then deleted. "
+                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public ResponseEntity<Developer> updateDeveloper(
+            @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
             EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        
+        return update(developerInfo);
+    }
+
+    private ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+
         DeveloperDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
 
@@ -261,7 +255,7 @@ public class DeveloperController {
         return new ResponseEntity<Developer>(restResult, responseHeaders, HttpStatus.OK);
     }
 
-    private List<String> validateDeveloperStatusEvents(List<DeveloperStatusEvent> statusEvents) {
+    private List<String> validateDeveloperStatusEvents(final List<DeveloperStatusEvent> statusEvents) {
         List<String> errors = new ArrayList<String>();
         if (statusEvents == null || statusEvents.size() == 0) {
             errors.add("The developer must have at least a current status specified.");
@@ -270,7 +264,7 @@ public class DeveloperController {
             statusEvents.sort(new Comparator<DeveloperStatusEvent>() {
 
                 @Override
-                public int compare(DeveloperStatusEvent o1, DeveloperStatusEvent o2) {
+                public int compare(final DeveloperStatusEvent o1, final DeveloperStatusEvent o2) {
                     if (o1 == null && o2 != null) {
                         return -1;
                     } else if (o1 != null && o2 == null) {

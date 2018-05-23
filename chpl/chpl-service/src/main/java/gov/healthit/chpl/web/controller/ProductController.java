@@ -36,7 +36,6 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.annotations.Api;
@@ -48,16 +47,15 @@ import io.swagger.annotations.ApiOperation;
 public class ProductController {
 
     @Autowired
-    ProductManager productManager;
+    private ProductManager productManager;
+
     @Autowired
-    ProductVersionManager versionManager;
-    @Autowired
-    CertifiedProductManager cpManager;
+    private CertifiedProductManager cpManager;
 
     @ApiOperation(value = "List all products",
             notes = "Either list all products or optionally just all products belonging to a specific developer.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) Long developerId) {
+    public @ResponseBody ProductResults getAllProducts(@RequestParam(required = false) final Long developerId) {
 
         List<ProductDTO> productList = null;
 
@@ -82,7 +80,7 @@ public class ProductController {
 
     @ApiOperation(value = "Get information about a specific product.", notes = "")
     @RequestMapping(value = "/{productId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody Product getProductById(@PathVariable("productId") Long productId)
+    public @ResponseBody Product getProductById(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
         ProductDTO product = productManager.getById(productId);
 
@@ -96,7 +94,7 @@ public class ProductController {
     @ApiOperation(value = "Get all listings owned by the specified product.", notes = "")
     @RequestMapping(value = "/{productId}/listings", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") Long productId)
+    public @ResponseBody List<CertifiedProduct> getListingsForProduct(@PathVariable("productId") final Long productId)
             throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> listings = cpManager.getByProduct(productId);
         List<CertifiedProduct> results = new ArrayList<CertifiedProduct>();
@@ -108,40 +106,42 @@ public class ProductController {
 
     @Deprecated
     @ApiOperation(value = "DEPRECATED.  Update a product or merge products.",
-            notes = "This method serves two purposes: to update a single product's information and to merge two products into one. "
-                    + " A user of this service should pass in a single productId to update just that product. "
-                    + " If multiple product IDs are passed in, the service performs a merge meaning that a new product "
-                    + " is created with all of the information provided and all of the versions "
-                    + " previously assigned to the productIds specified are reassigned to the newly created product. The "
-                    + " old products are then deleted. "
-                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+            notes = "This method serves two purposes: to update a single product's information and to merge two "
+                    + "products into one.  A user of this service should pass in a single productId to update just "
+                    + "that product. If multiple product IDs are passed in, the service performs a merge meaning "
+                    + "that a new product is created with all of the information provided and all of the versions "
+                    + "previously assigned to the productIds specified are reassigned to the newly created product. "
+                    + "The old products are then deleted. "
+                    + "The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<Product> updateProductDeprecated(@RequestBody(required = true) UpdateProductsRequest productInfo)
+    public ResponseEntity<Product> updateProductDeprecated(
+            @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException {
 
-        return update(productInfo); 
+        return update(productInfo);
     }
 
     @ApiOperation(value = "Update a product or merge products.",
-            notes = "This method serves two purposes: to update a single product's information and to merge two products into one. "
-                    + " A user of this service should pass in a single productId to update just that product. "
-                    + " If multiple product IDs are passed in, the service performs a merge meaning that a new product "
-                    + " is created with all of the information provided and all of the versions "
-                    + " previously assigned to the productIds specified are reassigned to the newly created product. The "
-                    + " old products are then deleted. "
+            notes = "This method serves two purposes: to update a single product's information and to merge two "
+                    + "products into one. A user of this service should pass in a single productId to update just "
+                    + "that product.  If multiple product IDs are passed in, the service performs a merge meaning "
+                    + "that a new product is created with all of the information provided and all of the versions "
+                    + " previously assigned to the productIds specified are reassigned to the newly created product. "
+                    + "The old products are then deleted. "
                     + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
     @RequestMapping(value = "/{productId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<Product> updateProduct(@RequestBody(required = true) UpdateProductsRequest productInfo)
+    public ResponseEntity<Product> updateProduct(
+            @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException {
 
-        return update(productInfo); 
+        return update(productInfo);
     }
 
-    private ResponseEntity<Product> update(UpdateProductsRequest productInfo)
+    private ResponseEntity<Product> update(final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException {
 
@@ -238,13 +238,15 @@ public class ProductController {
     }
 
     @ApiOperation(
-            value = "Split a product - some versions stay with the existing product and some versions are moved to a new product.",
+            value = "Split a product - some versions stay with the existing product and some versions are moved "
+                    + "to a new product.",
             notes = "The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") Long productId,
-            @RequestBody(required = true) SplitProductsRequest splitRequest) throws EntityCreationException,
-            EntityRetrievalException, InvalidArgumentsException, JsonProcessingException {
+    public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
+            @RequestBody(required = true) final SplitProductsRequest splitRequest)
+                    throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+                    JsonProcessingException {
 
         if (splitRequest.getNewProductCode() != null) {
             splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());

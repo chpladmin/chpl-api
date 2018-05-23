@@ -40,7 +40,8 @@ public class ApiKeyController {
     private ApiKeyManager apiKeyManager;
 
     @Autowired
-    SendMailUtil sendMailService;
+    private SendMailUtil sendMailService;
+
     @Autowired
     private Environment env;
 
@@ -52,8 +53,9 @@ public class ApiKeyController {
                     + " named 'api_key'.")
     @RequestMapping(value = "/register", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public String registerDeprecated(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
-            AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
+    public String registerDeprecated(@RequestBody final ApiKeyRegistration registration) 
+            throws EntityCreationException, AddressException, MessagingException, JsonProcessingException,
+            EntityRetrievalException {
 
         return create(registration);
     }
@@ -65,20 +67,20 @@ public class ApiKeyController {
                     + " named 'api_key'.")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public String register(@RequestBody ApiKeyRegistration registration) throws EntityCreationException,
+    public String register(@RequestBody final ApiKeyRegistration registration) throws EntityCreationException,
             AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
 
         return create(registration);
     }
 
-    private String create(ApiKeyRegistration registration) throws EntityCreationException,
+    private String create(final ApiKeyRegistration registration) throws EntityCreationException,
             AddressException, MessagingException, JsonProcessingException, EntityRetrievalException {
-        
+
         Date now = new Date();
-        
+
         String apiKey = gov.healthit.chpl.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
         ApiKeyDTO toCreate = new ApiKeyDTO();
-        
+
         toCreate.setApiKey(apiKey);
         toCreate.setEmail(registration.getEmail());
         toCreate.setNameOrganization(registration.getName());
@@ -86,21 +88,23 @@ public class ApiKeyController {
         toCreate.setLastModifiedDate(now);
         toCreate.setLastModifiedUser(-3L);
         toCreate.setDeleted(false);
-        
+
         apiKeyManager.createKey(toCreate);
-        
+
         sendRegistrationEmail(registration.getEmail(), registration.getName(), apiKey);
-        
+
         return "{\"keyRegistered\" : \"" + apiKey + "\"}";
     }
 
-    
+
     @Deprecated
-    @ApiOperation(value = "DEPRECATED.  Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
+    @ApiOperation(value = "DEPRECATED.  Remove an API key.", notes = "This service is only available to CHPL users "
+            + "with ROLE_ADMIN.")
     @RequestMapping(value = "/revoke", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public String revokeDeprecated(@RequestBody ApiKey key, @RequestHeader(value = "API-Key", required = false) String userApiKey,
-            @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
+    public String revokeDeprecated(@RequestBody final ApiKey key,
+            @RequestHeader(value = "API-Key", required = false) final String userApiKey,
+            @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
 
         return delete(key, userApiKey, userApiKeyParam);
     }
@@ -108,13 +112,14 @@ public class ApiKeyController {
     @ApiOperation(value = "Remove an API key.", notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/{apiKey}", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public String revoke(@RequestBody ApiKey key, @RequestHeader(value = "API-Key", required = false) String userApiKey,
-            @RequestParam(value = "apiKey", required = false) String userApiKeyParam) throws Exception {
+    public String revoke(@RequestBody final ApiKey key,
+            @RequestHeader(value = "API-Key", required = false) final String userApiKey,
+            @RequestParam(value = "apiKey", required = false) final String userApiKeyParam) throws Exception {
 
         return delete(key, userApiKey, userApiKeyParam);
     }
 
-    private String delete(ApiKey key, String userApiKey, String userApiKeyParam) throws Exception {
+    private String delete(final ApiKey key, final String userApiKey, final String userApiKeyParam) throws Exception {
 
         String keyToRevoke = key.getKey();
         if (keyToRevoke.equals(userApiKey) || keyToRevoke.equals(userApiKeyParam)) {
@@ -149,12 +154,13 @@ public class ApiKeyController {
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public List<ApiKeyActivity> listActivityDeprecated(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize,
-            @RequestParam(value = "filter", required = false) String apiKeyFilter,
-            @RequestParam(value = "dateAscending", required = false) boolean dateAscending,
-            @RequestParam(value = "start", required = false) Long startDateMilli,
-            @RequestParam(value = "end", required = false) Long endDateMilli) throws EntityRetrievalException {
+    public List<ApiKeyActivity> listActivityDeprecated(
+            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+            @RequestParam(value = "filter", required = false) final String apiKeyFilter,
+            @RequestParam(value = "dateAscending", required = false) final boolean dateAscending,
+            @RequestParam(value = "start", required = false) final Long startDateMilli,
+            @RequestParam(value = "end", required = false) final Long endDateMilli) throws EntityRetrievalException {
 
         return getActivity(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
     }
@@ -162,18 +168,20 @@ public class ApiKeyController {
     @ApiOperation(value = "View the calls made per API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ApiKeyActivity> listActivity(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize,
-            @RequestParam(value = "filter", required = false) String apiKeyFilter,
-            @RequestParam(value = "dateAscending", required = false) boolean dateAscending,
-            @RequestParam(value = "start", required = false) Long startDateMilli,
-            @RequestParam(value = "end", required = false) Long endDateMilli) throws EntityRetrievalException {
+    public List<ApiKeyActivity> listActivity(
+            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+            @RequestParam(value = "filter", required = false) final String apiKeyFilter,
+            @RequestParam(value = "dateAscending", required = false) final boolean dateAscending,
+            @RequestParam(value = "start", required = false) final Long startDateMilli,
+            @RequestParam(value = "end", required = false) final Long endDateMilli) throws EntityRetrievalException {
 
         return getActivity(pageNumber, pageSize, apiKeyFilter, dateAscending, startDateMilli, endDateMilli);
     }
 
-    private List<ApiKeyActivity> getActivity(Integer pageNumber, Integer pageSize, String apiKeyFilter, boolean dateAscending,
-            Long startDateMilli, Long endDateMilli) throws EntityRetrievalException {
+    private List<ApiKeyActivity> getActivity(Integer pageNumber, Integer pageSize,
+            String apiKeyFilter, final boolean dateAscending, final Long startDateMilli,
+            final Long endDateMilli) throws EntityRetrievalException {
         if (pageNumber == null) {
             pageNumber = 0;
         }
@@ -198,28 +206,30 @@ public class ApiKeyController {
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
     @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public List<ApiKeyActivity> listActivityByKeyDeprecated(@PathVariable("apiKey") String apiKey,
-            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {
+    public List<ApiKeyActivity> listActivityByKeyDeprecated(@PathVariable("apiKey") final String apiKey,
+            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize)
+                    throws EntityRetrievalException {
 
         return getActivityByKey(apiKey, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "View the calls made by a specific API key.",
             notes = "This service is only available to CHPL users with ROLE_ADMIN.")
-    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET, 
+    @RequestMapping(value = "/activity/{apiKey}", method = RequestMethod.GET,
                     produces = "application/json; charset=utf-8")
-    public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") String apiKey,
-            @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {
+    public List<ApiKeyActivity> listActivityByKey(@PathVariable("apiKey") final String apiKey,
+            @RequestParam(value = "pageNumber", required = false) final Integer pageNumber,
+            @RequestParam(value = "pageSize", required = false) final Integer pageSize)
+                    throws EntityRetrievalException {
 
         return getActivityByKey(apiKey, pageNumber, pageSize);
     }
 
-    
-    private List<ApiKeyActivity> getActivityByKey(@PathVariable("apiKey") String apiKey,
+    private List<ApiKeyActivity> getActivityByKey(@PathVariable("apiKey") final String apiKey,
             @RequestParam(value = "pageNumber", required = false) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize) throws EntityRetrievalException {
+            @RequestParam(value = "pageSize", required = false) Integer pageSize)
+                    throws EntityRetrievalException {
         if (pageNumber == null) {
             pageNumber = 0;
         }
@@ -234,7 +244,7 @@ public class ApiKeyController {
 
     }
 
-    private void sendRegistrationEmail(String email, String orgName, String apiKey)
+    private void sendRegistrationEmail(final String email, final String orgName, final String apiKey)
             throws AddressException, MessagingException {
 
         String subject = "CHPL API Key";
