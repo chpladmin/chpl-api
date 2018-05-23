@@ -9,10 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,6 +28,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.EntityCreationException;
@@ -68,9 +68,10 @@ import io.swagger.annotations.ApiOperation;
 public class SearchViewController {
 
     @Autowired
-    Environment env;
+    private Environment env;
+    
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
 
     @Autowired
     private SearchMenuManager searchMenuManager;
@@ -91,8 +92,8 @@ public class SearchViewController {
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "application/xml")
     public void download(@RequestParam(value = "edition", required = false) String edition,
             @RequestParam(value = "format", defaultValue = "xml", required = false) String format,
-            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException {
+            @RequestParam(value = "definition", defaultValue = "false", required = false) final Boolean isDefinition,
+            final HttpServletRequest request, final HttpServletResponse response) throws IOException {
         String downloadFileLocation = env.getProperty("downloadFolderPath");
         File downloadFile = new File(downloadFileLocation);
         if (!downloadFile.exists() || !downloadFile.canRead()) {
@@ -383,10 +384,10 @@ public class SearchViewController {
                         certificationCriterion.add(certCriteriaParam);
                     }
                     searchRequest.setCertificationCriteria(certificationCriterion);
-                    
-                    if(!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
+                    if (!StringUtils.isEmpty(certificationCriteriaOperatorStr)) {
                         certificationCriteriaOperatorStr = certificationCriteriaOperatorStr.trim();
-                        SearchSetOperator certificationCriteriaOperator = validateSearchSetOperator(certificationCriteriaOperatorStr);
+                        SearchSetOperator certificationCriteriaOperator =
+                                validateSearchSetOperator(certificationCriteriaOperatorStr);
                         searchRequest.setCertificationCriteriaOperator(certificationCriteriaOperator);
                     }
                 }
@@ -407,8 +408,8 @@ public class SearchViewController {
                         cqms.add(cqmParam.trim());
                     }
                     searchRequest.setCqms(cqms);
-                    
-                    if(!StringUtils.isEmpty(cqmsOperatorStr)) {
+
+                    if (!StringUtils.isEmpty(cqmsOperatorStr)) {
                         cqmsOperatorStr = cqmsOperatorStr.trim();
                         SearchSetOperator cqmOperator = validateSearchSetOperator(cqmsOperatorStr);
                         searchRequest.setCqmsOperator(cqmOperator);
@@ -811,11 +812,31 @@ public class SearchViewController {
         return searchMenuManager.getFuzzyChoices();
     }
 
-    @ApiOperation(value = "Change existing fuzzy matching choices.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED.  Change existing fuzzy matching choices.",
             notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
     @RequestMapping(value = "/data/fuzzy_choices/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoices(@RequestBody FuzzyChoices fuzzyChoices) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+    public FuzzyChoices updateFuzzyChoicesDeprecated(@RequestBody FuzzyChoices fuzzyChoices) throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+        
+        return updateFuzzyChoices(fuzzyChoices);
+    }
+    
+    @ApiOperation(value = "Change existing fuzzy matching choices.",
+            notes = "Only CHPL users with ROLE_ADMIN are able to update fuzzy matching choices.")
+    @RequestMapping(value = "/data/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT, 
+                    consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody FuzzyChoices fuzzyChoices) 
+            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, 
+            EntityCreationException, IOException {
+        
+        return updateFuzzyChoices(fuzzyChoices);
+    }
+
+    private FuzzyChoices updateFuzzyChoices(FuzzyChoices fuzzyChoices) 
+                throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, 
+                EntityCreationException, IOException {
+        
         FuzzyChoicesDTO toUpdate = new FuzzyChoicesDTO();
         toUpdate.setId(fuzzyChoices.getId());
         toUpdate.setFuzzyType(FuzzyType.getValue(fuzzyChoices.getFuzzyType()));
