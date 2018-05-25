@@ -882,6 +882,8 @@ public class CertifiedProductController {
         return addPendingCertifiedProduct(pendingCp);
     }
 
+    //TODO - We might want to take a look at reworking this.  Maybe should be a PUT and the parameters
+    //  should be re-evaluated 
     @ApiOperation(value = "Confirm a pending certified product.",
             notes = "Creates a new certified product in the system based on all of the information "
                     + " passed in on the request. This information may differ from what was previously "

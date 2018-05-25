@@ -1,6 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,7 +64,6 @@ import gov.healthit.chpl.web.controller.exception.MissingReasonException;
 import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
-import gov.healthit.chpl.web.controller.results.SurveillanceResults;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -1880,7 +1884,7 @@ public class SurveillanceControllerTest {
 		}
 		
 		// delete list of pending surveillances
-		String result = surveillanceController.deletePendingSurveillance(idList);
+		String result = surveillanceController.rejectPendingSurveillance(idList);
 		assertNotNull(result);
 		assertTrue(result.contains("true"));
 		
@@ -1936,7 +1940,7 @@ public class SurveillanceControllerTest {
 		}
 		
 		// delete list of pending surveillances
-		String result = surveillanceController.deletePendingSurveillance(idList);
+		String result = surveillanceController.rejectPendingSurveillance(idList);
 		assertNotNull(result);
 		assertTrue(result.contains("true"));
 		
@@ -1956,7 +1960,7 @@ public class SurveillanceControllerTest {
 		
 		// try to delete already deleted pending surveillances
 		try{
-			result = surveillanceController.deletePendingSurveillance(idList);
+			result = surveillanceController.rejectPendingSurveillance(idList);
 		} catch(ObjectsMissingValidationException ex){
 			for(ObjectMissingValidationException e : ex.getExceptions()){
 				assertTrue(e.getObjectId() != null); // CHPL Product ID
@@ -1965,7 +1969,7 @@ public class SurveillanceControllerTest {
 				assertTrue(e.getEndDate() != null); // Pending Surveillance end date
 			}
 		}
-		result = surveillanceController.deletePendingSurveillance(idList); // this should cause expected exception for ObjectsMissingValidationException
+		result = surveillanceController.rejectPendingSurveillance(idList); // this should cause expected exception for ObjectsMissingValidationException
 	}
 	
 	/** 
@@ -1991,7 +1995,7 @@ public class SurveillanceControllerTest {
 		assertTrue(survResult.getId() == id);
 		
 		// delete pending surveillance
-		String result = surveillanceController.deletePendingSurveillance(id);
+		String result = surveillanceController.rejectPendingSurveillance(id);
 		assertNotNull(result);
 		assertTrue(result.contains("true"));
 		
@@ -2001,14 +2005,14 @@ public class SurveillanceControllerTest {
 		
 		// try to delete already deleted pending surveillance
 		try{
-			result = surveillanceController.deletePendingSurveillance(id);
+			result = surveillanceController.rejectPendingSurveillance(id);
 		} catch(ObjectMissingValidationException ex){
 			assertTrue(ex.getObjectId() != null); // CHPL Product ID
 			assertTrue(ex.getContact() != null); // contact info of last modified user
 			assertTrue(ex.getStartDate() != null); // Pending Surveillance start date
 			assertTrue(ex.getEndDate() != null); // Pending Surveillance end date
 		}
-		result = surveillanceController.deletePendingSurveillance(id); // this should cause expected exception for ObjectsMissingValidationException
+		result = surveillanceController.rejectPendingSurveillance(id); // this should cause expected exception for ObjectsMissingValidationException
 	}
 	
 }
