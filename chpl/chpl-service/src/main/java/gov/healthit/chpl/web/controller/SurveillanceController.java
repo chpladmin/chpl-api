@@ -545,10 +545,26 @@ public class SurveillanceController implements MessageSourceAware {
         return "{\"success\": \"true\"}";
     }
 
-    @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED.  Reject (effectively delete) a pending surveillance item.")
     @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody String deletePendingSurveillance(@PathVariable("pendingSurvId") final Long id)
+    public @ResponseBody String rejectPendingSurveillanceDeprecated(@PathVariable("pendingSurvId") final Long id)
+            throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
+            JsonProcessingException, EntityRetrievalException, EntityCreationException {
+        return deletePendingSurveillance(id);
+    }
+
+    @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
+    @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.DELETE,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") final Long id)
+            throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
+            JsonProcessingException, EntityRetrievalException, EntityCreationException {
+        return deletePendingSurveillance(id);
+    }
+
+    private @ResponseBody String deletePendingSurveillance(final Long id)
             throws EntityNotFoundException, AccessDeniedException, ObjectMissingValidationException,
             JsonProcessingException, EntityRetrievalException, EntityCreationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
@@ -556,12 +572,30 @@ public class SurveillanceController implements MessageSourceAware {
         return "{\"success\" : true}";
     }
 
-    @ApiOperation(value = "Reject several pending surveillance.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED.  Reject several pending surveillance.",
             notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
                     + " and administrative authority on the ACB for each pending surveillance is required.")
     @RequestMapping(value = "/pending/reject", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody String deletePendingSurveillance(@RequestBody final IdListContainer idList)
+    public @ResponseBody String rejectPendingSurveillanceDeprecated(@RequestBody final IdListContainer idList)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
+        return deletePendingSurveillance(idList);
+    }
+
+    @ApiOperation(value = "Reject several pending surveillance.",
+            notes = "Marks a list of pending surveillance as deleted. ROLE_ACB "
+                    + " and administrative authority on the ACB for each pending surveillance is required.")
+    @RequestMapping(value = "/pending/reject", method = RequestMethod.DELETE,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody String rejectPendingSurveillance(@RequestBody final IdListContainer idList)
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
+            AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
+        return deletePendingSurveillance(idList);
+    }
+
+    private @ResponseBody String deletePendingSurveillance(final IdListContainer idList)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
             AccessDeniedException, InvalidArgumentsException, ObjectsMissingValidationException {
         if (idList == null || idList.getIds() == null || idList.getIds().size() == 0) {
