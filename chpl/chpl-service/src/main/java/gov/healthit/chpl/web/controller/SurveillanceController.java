@@ -555,7 +555,7 @@ public class SurveillanceController implements MessageSourceAware {
         return deletePendingSurveillance(id);
     }
 
-    @ApiOperation(value = "DEPRECATED.  Reject (effectively delete) a pending surveillance item.")
+    @ApiOperation(value = "Reject (effectively delete) a pending surveillance item.")
     @RequestMapping(value = "/pending/{pendingSurvId}/reject", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody String rejectPendingSurveillance(@PathVariable("pendingSurvId") final Long id)
