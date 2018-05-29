@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
@@ -26,39 +27,40 @@ import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 public class IncumbentDevelopersStatisticsCalculator {
     private static final Logger LOGGER = LogManager.getLogger(IncumbentDevelopersStatisticsCalculator.class);
 
-    private ChartDataApplicationEnvironment appEnvironment;
     private IncumbentDevelopersStatisticsDAO incumbentDevelopersStatisticsDAO;
     private CertificationEditionDAO certificationEditionDAO;
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
 
     IncumbentDevelopersStatisticsCalculator(final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
+        incumbentDevelopersStatisticsDAO = (IncumbentDevelopersStatisticsDAO)
+                appEnvironment.getSpringManagedObject("incumbentDevelopersStatisticsDAO");
+        certificationEditionDAO = (CertificationEditionDAO)
+                appEnvironment.getSpringManagedObject("certificationEditionDAO");
+        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
+        txnTemplate = new TransactionTemplate(txnManager);
+    }
+
+    IncumbentDevelopersStatisticsCalculator(final IncumbentDevelopersStatisticsDAO statisticsDAO,
+            final CertificationEditionDAO certificationEditionDAO, final CertificationStatusDAO certificationStatusDAO,
+            final JpaTransactionManager txnManager) {
+        this.incumbentDevelopersStatisticsDAO = statisticsDAO;
+        this.certificationEditionDAO = certificationEditionDAO;
+        this.txnManager = txnManager;
+        this.txnTemplate = new TransactionTemplate(txnManager);
     }
 
     /**
-     * This method calculates the criterion-product counts and saves them to the
-     * criterion_product_statistics table.
-     * @param certifiedProducts List of CertifiedProductFlatSearchResult objects
+     * Loop through every Listing. For each Listing, add that Listing's Developer Name to
+     * an edition specific set of Names depending on which edition that Listing is.
+     *
+     * Then, loop through each "later" set, comparing to each "earlier" set. If the "later"
+     * name is not found in the "earlier" set, add it to the "new" component of the entity,
+     * otherwise add it to the "incumbent" component.
+     * @param certifiedProducts incoming data
+     * @return statistics objects
      */
-    public void run(final List<CertifiedProductFlatSearchResult> certifiedProducts) {
-        List<IncumbentDevelopersStatisticsDTO> entities = getCounts(certifiedProducts);
-
-        logCounts(entities);
-
-        save(entities);
-    }
-
-    private void deleteExistingIncumbentDevelopersStatistics() throws EntityRetrievalException {
-        List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsDAO.findAll();
-        for (IncumbentDevelopersStatisticsDTO dto : dtos) {
-            incumbentDevelopersStatisticsDAO.delete(dto.getId());
-            LOGGER.info("Deleted: " + dto.getId());
-        }
-    }
-
-    private List<IncumbentDevelopersStatisticsDTO> getCounts(
+    public List<IncumbentDevelopersStatisticsDTO> getCounts(
             final List<CertifiedProductFlatSearchResult> certifiedProducts) {
 
         /**
@@ -132,22 +134,21 @@ public class IncumbentDevelopersStatisticsCalculator {
         return result;
     }
 
-    private void initialize() {
-        incumbentDevelopersStatisticsDAO = (IncumbentDevelopersStatisticsDAO)
-                appEnvironment.getSpringManagedObject("incumbentDevelopersStatisticsDAO");
-        certificationEditionDAO = (CertificationEditionDAO)
-                appEnvironment.getSpringManagedObject("certificationEditionDAO");
-        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
-        txnTemplate = new TransactionTemplate(txnManager);
-    }
-
-    private void logCounts(final List<IncumbentDevelopersStatisticsDTO> dtos) {
+    /**
+     * Log DTO statistics to LOGGER.
+     * @param dtos statistics objects
+     */
+    public void logCounts(final List<IncumbentDevelopersStatisticsDTO> dtos) {
         for (IncumbentDevelopersStatisticsDTO dto : dtos) {
             LOGGER.info("Incumbent Developer statistics: [" + dto.toString() + "]");
         }
     }
 
-    private void save(final List<IncumbentDevelopersStatisticsDTO> dtos) {
+    /**
+     * Save statistics objects to database.
+     * @param dtos statistics objects
+     */
+    public void save(final List<IncumbentDevelopersStatisticsDTO> dtos) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -170,5 +171,13 @@ public class IncumbentDevelopersStatisticsCalculator {
                 }
             }
         });
+    }
+
+    private void deleteExistingIncumbentDevelopersStatistics() throws EntityRetrievalException {
+        List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsDAO.findAll();
+        for (IncumbentDevelopersStatisticsDTO dto : dtos) {
+            incumbentDevelopersStatisticsDAO.delete(dto.getId());
+            LOGGER.info("Deleted: " + dto.getId());
+        }
     }
 }

@@ -30,77 +30,12 @@ import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
 public class CriterionProductStatisticsCalculator {
     private static final Logger LOGGER = LogManager.getLogger(CriterionProductStatisticsCalculator.class);
 
-    private ChartDataApplicationEnvironment appEnvironment;
     private CertificationCriterionDAO certificationCriterionDAO;
     private CriterionProductStatisticsDAO criterionProductStatisticsDAO;
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
 
     CriterionProductStatisticsCalculator(final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
-    }
-
-    /**
-     * This method calculates the criterion-product counts and saves them to the
-     * criterion_product_statistics table.
-     * @param listings List of CertifiedProductFlatSearchResult objects
-     */
-    public void run(final List<CertifiedProductFlatSearchResult> listings) {
-        Map<String, Long> productCounts = getCounts(listings);
-
-        logCounts(productCounts);
-
-        save(convertProductCountMapToListOfCriterionProductStatistics(productCounts));
-    }
-
-    private List<CriterionProductStatisticsEntity>
-        convertProductCountMapToListOfCriterionProductStatistics(
-                final Map<String, Long> productCounts) {
-        List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
-        for (Entry<String, Long> entry : productCounts.entrySet()) {
-            CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
-            entity.setProductCount(entry.getValue());
-            entity.setCertificationCriterionId(certificationCriterionDAO.getByName(entry.getKey()).getId());
-            entities.add(entity);
-        }
-        return entities;
-    }
-
-    private void deleteExistingCriterionProductStatistics() throws EntityRetrievalException {
-        List<CriterionProductStatisticsDTO> dtos = criterionProductStatisticsDAO.findAll();
-        for (CriterionProductStatisticsDTO dto : dtos) {
-            criterionProductStatisticsDAO.delete(dto.getId());
-            LOGGER.info("Deleted: " + dto.getId());
-        }
-    }
-
-    private Map<String, Long> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
-        /**
-         * criterionMap maps the certification criterion to the count of unique Products that
-         * certify to that criterion.
-         *
-         * uniqueProductSet contains strings of the form "<CriterionNumber>-<DeveloperName>-<ProductName>" iff
-         * that combination of criterion and product have already been counted in the criterion map
-         */
-        Map<String, Long> criterionMap = new HashMap<String, Long>();
-        HashSet<String> uniqueProductSet = new HashSet<String>();
-        for (CertifiedProductFlatSearchResult listing: listings) {
-            for (String cert : listing.getCriteriaMet().split("\u263A")) {
-                String key = cert + "-" + listing.getDeveloper() + '-' + listing.getProduct();
-                if (!uniqueProductSet.contains(key)) {
-                    if (!criterionMap.containsKey(cert)) {
-                        criterionMap.put(cert, 0L);
-                    }
-                    criterionMap.put(cert, criterionMap.get(cert) + 1);
-                    uniqueProductSet.add(key);
-                }
-            }
-        }
-        return criterionMap;
-    }
-
-    private void initialize() {
         certificationCriterionDAO = (CertificationCriterionDAO)
                 appEnvironment.getSpringManagedObject("certificationCriterionDAO");
         criterionProductStatisticsDAO = (CriterionProductStatisticsDAO)
@@ -109,13 +44,61 @@ public class CriterionProductStatisticsCalculator {
         txnTemplate = new TransactionTemplate(txnManager);
     }
 
-    private void logCounts(final Map<String, Long> productCounts) {
+    CriterionProductStatisticsCalculator(final CriterionProductStatisticsDAO statisticsDAO,
+            final CertificationCriterionDAO certificationCriterionDAO, final JpaTransactionManager txnManager) {
+        this.criterionProductStatisticsDAO = statisticsDAO;
+        this.certificationCriterionDAO = certificationCriterionDAO;
+        this.txnManager = txnManager;
+        this.txnTemplate = new TransactionTemplate(this.txnManager);
+    }
+
+
+    /**
+     * criterionMap maps the certification criterion to the count of unique Products that
+     * certify to that criterion.
+     *
+     * uniqueProductSet contains strings of the form "<CriterionNumber>-<DeveloperName>-<ProductName>" iff
+     * that combination of criterion and product have already been counted in the criterion map
+     * @param listings listings to parse
+     * @return map of criteria to counts
+     */
+    public Map<String, Long> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
+        Map<String, Long> criterionMap = new HashMap<String, Long>();
+        HashSet<String> uniqueProductSet = new HashSet<String>();
+        for (CertifiedProductFlatSearchResult listing: listings) {
+            if (listing.getCriteriaMet() != null && !listing.getCriteriaMet().isEmpty()) {
+                for (String cert : listing.getCriteriaMet().split("\u263A")) {
+                    String key = cert + "-" + listing.getDeveloper() + '-' + listing.getProduct();
+                    if (!uniqueProductSet.contains(key)) {
+                        if (!criterionMap.containsKey(cert)) {
+                            criterionMap.put(cert, 0L);
+                        }
+                        criterionMap.put(cert, criterionMap.get(cert) + 1);
+                        uniqueProductSet.add(key);
+                    }
+                }
+            }
+        }
+        return criterionMap;
+    }
+
+    /**
+     * Log count data to LOGGER.
+     * @param productCounts count data
+     */
+    public void logCounts(final Map<String, Long> productCounts) {
         for (Entry<String, Long> entry : productCounts.entrySet()) {
             LOGGER.info("Certification Criteria count: [" + entry.getKey() + " : " + entry.getValue() + "]");
         }
     }
 
-    private void save(final List<CriterionProductStatisticsEntity> entities) {
+    /**
+     * Save count data to system.
+     * @param productCounts count data
+     */
+    public void save(final Map<String, Long> productCounts) {
+        List<CriterionProductStatisticsEntity> entities =
+                convertProductCountMapToListOfCriterionProductStatistics(productCounts);
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -132,6 +115,27 @@ public class CriterionProductStatisticsCalculator {
                 }
             }
         });
+    }
+
+    private List<CriterionProductStatisticsEntity>
+    convertProductCountMapToListOfCriterionProductStatistics(
+            final Map<String, Long> productCounts) {
+        List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
+        for (Entry<String, Long> entry : productCounts.entrySet()) {
+            CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
+            entity.setProductCount(entry.getValue());
+            entity.setCertificationCriterionId(certificationCriterionDAO.getByName(entry.getKey()).getId());
+            entities.add(entity);
+        }
+        return entities;
+    }
+
+    private void deleteExistingCriterionProductStatistics() throws EntityRetrievalException {
+        List<CriterionProductStatisticsDTO> dtos = criterionProductStatisticsDAO.findAll();
+        for (CriterionProductStatisticsDTO dto : dtos) {
+            criterionProductStatisticsDAO.delete(dto.getId());
+            LOGGER.info("Deleted: " + dto.getId());
+        }
     }
 
     private void saveCriterionProductStatistic(final CriterionProductStatisticsEntity entity) {

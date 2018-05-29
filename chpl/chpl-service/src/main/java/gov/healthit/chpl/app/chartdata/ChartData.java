@@ -1,6 +1,7 @@
 package gov.healthit.chpl.app.chartdata;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +9,8 @@ import org.apache.logging.log4j.Logger;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 
 /**
  * This is the starting point for populating statistics tables that will be used for the
@@ -50,8 +53,9 @@ public final class ChartData {
             final List<CertifiedProductFlatSearchResult> listings) {
         IncumbentDevelopersStatisticsCalculator incumbentDevelopersStatisticsCalculator =
                 new IncumbentDevelopersStatisticsCalculator(appEnvironment);
-        incumbentDevelopersStatisticsCalculator.run(listings);
-
+        List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsCalculator.getCounts(listings);
+        incumbentDevelopersStatisticsCalculator.logCounts(dtos);
+        incumbentDevelopersStatisticsCalculator.save(dtos);
     }
 
     private static void analyzeListingCounts(final ChartDataApplicationEnvironment appEnvironment,
@@ -60,7 +64,9 @@ public final class ChartData {
         List<CertifiedProductFlatSearchResult> filteredListings = listingCountDataFilter.filterData(listings);
         ListingCountStatisticsCalculator listingCountStatisticsCalculator =
                 new ListingCountStatisticsCalculator(appEnvironment);
-        listingCountStatisticsCalculator.run(filteredListings);
+        List<ListingCountStatisticsDTO> dtos = listingCountStatisticsCalculator.getCounts(filteredListings);
+        listingCountStatisticsCalculator.logCounts(dtos);
+        listingCountStatisticsCalculator.save(dtos);
     }
 
     private static void analyzeProducts(final ChartDataApplicationEnvironment appEnvironment,
@@ -69,7 +75,9 @@ public final class ChartData {
         List<CertifiedProductFlatSearchResult> filteredListings = criterionProductDataFilter.filterData(listings);
         CriterionProductStatisticsCalculator criterionProductStatisticsCalculator =
                 new CriterionProductStatisticsCalculator(appEnvironment);
-        criterionProductStatisticsCalculator.run(filteredListings);
+        Map<String, Long> productCounts = criterionProductStatisticsCalculator.getCounts(filteredListings);
+        criterionProductStatisticsCalculator.logCounts(productCounts);
+        criterionProductStatisticsCalculator.save(productCounts);
 
     }
 

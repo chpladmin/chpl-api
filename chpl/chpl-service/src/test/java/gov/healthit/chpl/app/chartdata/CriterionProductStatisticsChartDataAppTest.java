@@ -1,11 +1,13 @@
 package gov.healthit.chpl.app.chartdata;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,8 +20,10 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
-import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
+import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
+import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,13 +33,23 @@ import junit.framework.TestCase;
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml")
-public class ChartDataAppTest extends TestCase {
+public class CriterionProductStatisticsChartDataAppTest extends TestCase {
 
-    private static final int STAT_LENGTH = 1;
-    private static final Long COUNT_2011_TO_2014 = 4L;
+    private static final int EXPECTED_LENGTH = 12;
+    private static final Long EXPECTED_PRODUCT_COUNT = 2L;
+    private static final String CRITERIA = "170.315 (a)(1)";
 
     @Autowired
-    private IncumbentDevelopersStatisticsDAO idDao;
+    private CriterionProductStatisticsDAO statisticsDAO;
+
+    @Autowired
+    private CertificationCriterionDAO certificationCriterionDAO;
+
+    @Autowired
+    private CertifiedProductSearchDAO certifiedProductSearchDAO;
+
+    @Autowired
+    private JpaTransactionManager txnManager;
 
     @Rule
     @Autowired
@@ -43,19 +57,15 @@ public class ChartDataAppTest extends TestCase {
 
     @Test
     @Transactional
-    public void buildIncumbentStatistics() {
-        List<IncumbentDevelopersStatisticsDTO> results = idDao.findAll();
-        assertNotNull(results);
-        assertEquals(STAT_LENGTH, results.size());
-        assertEquals(COUNT_2011_TO_2014, results.get(0).getIncumbentCount());
-        assertEquals("2014", results.get(0).getOldCertificationEdition().getYear());
+    public void buildListingCountStatistics() {
+        CriterionProductStatisticsCalculator calc = new CriterionProductStatisticsCalculator(
+                statisticsDAO, certificationCriterionDAO, txnManager);
 
-        ChartData.main(null);
+        List<CertifiedProductFlatSearchResult> allResults = certifiedProductSearchDAO.getAllCertifiedProducts();
+        Map<String, Long> results = calc.getCounts(allResults);
 
-        results = idDao.findAll();
         assertNotNull(results);
-        assertEquals(STAT_LENGTH, results.size());
-        assertEquals(COUNT_2011_TO_2014, results.get(0).getIncumbentCount());
-        assertEquals("2014", results.get(0).getOldCertificationEdition().getYear());
+        assertEquals(EXPECTED_LENGTH, results.size());
+        assertEquals(EXPECTED_PRODUCT_COUNT, results.get(CRITERIA));
     }
 }
