@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,7 +38,10 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.annotations.Api;
@@ -51,6 +57,15 @@ public class ProductController {
 
     @Autowired
     private CertifiedProductManager cpManager;
+
+    @Autowired
+    private DeveloperManager developerManager;
+
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @ApiOperation(value = "List all products",
             notes = "Either list all products or optionally just all products belonging to a specific developer.")
@@ -156,6 +171,13 @@ public class ProductController {
             // no new product is specified, so we just need to update the
             // developer id
             for (Long productId : productInfo.getProductIds()) {
+                List<DuplicateChplProdNumber> duplicateChplProdNbrs =
+                        getDuplcateChplProdNumbersCasuedByDeveloperChange(productId, productInfo.newDeveloperId());
+
+                if (duplicateChplProdNbrs.size() != 0) {
+                    throw new EntityCreationException(getDuplicateChplProductNumberErrorMessage(duplicateChplProdNbrs));
+                }
+
                 ProductDTO toUpdate = productManager.getById(productId);
                 toUpdate.setDeveloperId(productInfo.newDeveloperId());
                 result = productManager.update(toUpdate);
@@ -188,6 +210,13 @@ public class ProductController {
                 result = productManager.merge(productInfo.getProductIds(), newProduct);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             } else if (productInfo.getProductIds().size() == 1) {
+                List<DuplicateChplProdNumber> duplicateChplProdNbrs =
+                        getDuplcateChplProdNumbersCasuedByDeveloperChange(
+                                productInfo.getProductIds().get(0), productInfo.newDeveloperId());
+
+                if (duplicateChplProdNbrs.size() != 0) {
+                    throw new EntityCreationException(getDuplicateChplProductNumberErrorMessage(duplicateChplProdNbrs));
+                }
                 // update the given product id with new data
                 ProductDTO toUpdate = new ProductDTO();
                 toUpdate.setId(productInfo.getProductIds().get(0));
@@ -235,6 +264,83 @@ public class ProductController {
         // this point
         ProductDTO updatedProduct = productManager.getById(result.getId());
         return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
+    }
+
+    private String getDuplicateChplProductNumberErrorMessage(
+            final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
+        String message = "";
+
+        for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
+            message += "\n" + dup.toString();
+        }
+
+        return String.format(
+                messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs"),
+                        LocaleContextHolder.getLocale()),
+                message);
+    }
+
+    private List<DuplicateChplProdNumber> getDuplcateChplProdNumbersCasuedByDeveloperChange(
+            final Long productId, final long newDeveloperId) throws EntityRetrievalException {
+
+        List<DuplicateChplProdNumber> duplicateChplProductNumbers = new ArrayList<DuplicateChplProdNumber>();
+        DeveloperDTO newDeveloper = developerManager.getById(newDeveloperId);
+
+        //cpManager.getByProduct(productId)
+        List<CertifiedProductDetailsDTO> newDeveloperCertifiedProducts =
+                cpManager.getByDeveloperId(newDeveloperId);
+
+        //Get the CPs, for the current product - the CHPL Prod Nbr will be changing
+        List<CertifiedProductDetailsDTO> certifiedProducts = cpManager.getByProduct(productId);
+
+        for (CertifiedProductDetailsDTO cpDTO : certifiedProducts) {
+            String newChplProductNumber = "";
+            if (cpDTO.getChplProductNumber().startsWith("CHP")) {
+                newChplProductNumber = cpDTO.getChplProductNumber();
+            } else {
+              //Calculate the new CHPL Prod Nbr
+                newChplProductNumber = chplProductNumberUtil.getChplProductNumber(
+                        cpDTO.getYear(),
+                        getTestingLabCode(cpDTO.getChplProductNumber()),
+                        cpDTO.getCertificationBodyCode(),
+                        newDeveloper.getDeveloperCode(),
+                        cpDTO.getProductCode(),
+                        cpDTO.getVersionCode(),
+                        cpDTO.getIcsCode(),
+                        cpDTO.getAdditionalSoftwareCode(),
+                        cpDTO.getCertifiedDateCode());
+            }
+
+            //Does this CHPL prod number already exist for the new developer?
+            List<CertifiedProductDetailsDTO> filteredResults =
+                    filterByChplProductNumber(newDeveloperCertifiedProducts, newChplProductNumber);
+
+            for (CertifiedProductDetailsDTO filterCp : filteredResults) {
+                //Add it to the list of duplicates
+                duplicateChplProductNumbers.add(new DuplicateChplProdNumber(
+                    cpDTO.getChplProductNumber(), filterCp.getChplProductNumber(), filterCp.getChplProductNumber()));
+            }
+        }
+
+        return duplicateChplProductNumbers;
+    }
+
+    private String getTestingLabCode(final String chplProductNumber) throws EntityRetrievalException {
+        ChplProductNumberParts parts = chplProductNumberUtil.parseChplProductNumber(chplProductNumber);
+        return parts.getAtlCode();
+    }
+
+    private List<CertifiedProductDetailsDTO> filterByChplProductNumber(
+            final List<CertifiedProductDetailsDTO> certifiedProducts, final String chplProuctNumber) {
+        List<CertifiedProductDetailsDTO> results = new ArrayList<CertifiedProductDetailsDTO>();
+
+        for (CertifiedProductDetailsDTO cp : certifiedProducts) {
+            if (cp.getChplProductNumber().equals(chplProuctNumber)) {
+                results.add(cp);
+            }
+        }
+        return results;
     }
 
     @ApiOperation(
@@ -316,4 +422,53 @@ public class ProductController {
         }
         return new ResponseEntity<SplitProductResponse>(response, responseHeaders, HttpStatus.OK);
     }
+
+    private class DuplicateChplProdNumber {
+        private String origChplProductNumberA;
+        private String origChplProductNumberB;
+        private String newChplProductNumber;
+
+        public DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
+                final String newChplProductNumber) {
+            super();
+            this.origChplProductNumberA = origChplProductNumberA;
+            this.origChplProductNumberB = origChplProductNumberB;
+            this.newChplProductNumber = newChplProductNumber;
+        }
+
+        public String getOrigChplProductNumberA() {
+            return origChplProductNumberA;
+        }
+
+        public void setOrigChplProductNumberA(final String origChplProductNumberA) {
+            this.origChplProductNumberA = origChplProductNumberA;
+        }
+
+        public String getOrigChplProductNumberB() {
+            return origChplProductNumberB;
+        }
+
+        public void setOrigChplProductNumberB(final String origChplProductNumberB) {
+            this.origChplProductNumberB = origChplProductNumberB;
+        }
+
+        public String getNewChplProductNumber() {
+            return newChplProductNumber;
+        }
+
+        public void setNewChplProductNumber(final String newChplProductNumber) {
+            this.newChplProductNumber = newChplProductNumber;
+        }
+
+        @Override
+        public String toString() {
+            return String.format(
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs.duplicate"),
+                                LocaleContextHolder.getLocale()),
+                    origChplProductNumberA,
+                    origChplProductNumberB);
+        }
+    }
+
 }

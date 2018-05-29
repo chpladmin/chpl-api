@@ -10,6 +10,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -28,6 +32,7 @@ import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.DecertifiedDeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -40,6 +45,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
@@ -47,16 +53,28 @@ public class DeveloperManagerImpl implements DeveloperManager {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperManagerImpl.class);
 
     @Autowired
-    DeveloperDAO developerDao;
-    @Autowired
-    ProductManager productManager;
-    @Autowired
-    CertificationBodyManager acbManager;
-    @Autowired
-    CertificationBodyDAO certificationBodyDao;
+    private DeveloperDAO developerDao;
 
     @Autowired
-    ActivityManager activityManager;
+    private ProductManager productManager;
+
+    @Autowired
+    private CertificationBodyManager acbManager;
+
+    @Autowired
+    private CertificationBodyDAO certificationBodyDao;
+
+    @Autowired
+    private CertifiedProductDAO certifiedProductDAO;
+
+    @Autowired
+    private ChplProductNumberUtil chplProductNumberUtil;
+
+    @Autowired
+    private ActivityManager activityManager;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     @Transactional(readOnly = true)
@@ -79,7 +97,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
     @Override
     @Transactional(readOnly = true)
-    public DeveloperDTO getById(Long id) throws EntityRetrievalException {
+    public DeveloperDTO getById(final Long id) throws EntityRetrievalException {
         DeveloperDTO developer = developerDao.getById(id);
         List<CertificationBodyDTO> availableAcbs = acbManager.getAllForUser(false);
         if (availableAcbs == null || availableAcbs.size() == 0) {
@@ -113,13 +131,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return developerDao.getAllDevelopersWithTransparencies();
     }
 
+    @Override
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    public DeveloperDTO update(DeveloperDTO developer)
+    public DeveloperDTO update(final DeveloperDTO developer)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
         DeveloperDTO beforeDev = getById(developer.getId());
@@ -216,7 +235,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                         for (DeveloperACBMapDTO attMap : developer.getTransparencyAttestationMappings()) {
                             if (attMap.getAcbName().equals(acb.getName())) {
                                 developerMappingToCreate
-                                        .setTransparencyAttestation(attMap.getTransparencyAttestation());;
+                                        .setTransparencyAttestation(attMap.getTransparencyAttestation());
                                 developerDao.createTransparencyMapping(developerMappingToCreate);
                             }
                         }
@@ -238,13 +257,14 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return after;
     }
 
+    @Override
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
             CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public DeveloperDTO create(DeveloperDTO dto)
+    public DeveloperDTO create(final DeveloperDTO dto)
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
 
         DeveloperDTO created = developerDao.create(dto);
@@ -273,12 +293,20 @@ public class DeveloperManagerImpl implements DeveloperManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED, CacheNames.DEVELOPER_NAMES,
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
-    public DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
+    public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
 
         List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
         for (Long developerId : developerIdsToMerge) {
             beforeDevelopers.add(developerDao.getById(developerId));
+        }
+
+        //Check to see if the merge will create any duplicate chplProductNumbers
+        List<DuplicateChplProdNumber> duplicateChplProdNumbers =
+                getDuplicateChplProductNumbersBasedOnDevMerge(developerIdsToMerge,
+                        developerToCreate.getDeveloperCode());
+        if (duplicateChplProdNumbers.size() != 0) {
+            throw new EntityCreationException(getDuplicateChplProductNumberErrorMessage(duplicateChplProdNumbers));
         }
 
         // check for any non-active developers and throw an error if any are
@@ -362,6 +390,71 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return createdDeveloper;
     }
 
+    private String getDuplicateChplProductNumberErrorMessage(
+            final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
+
+        String message = "";
+
+        for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
+            message += "\n" + dup.toString();
+        }
+
+        return String.format(
+                messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs"),
+                        LocaleContextHolder.getLocale()),
+                message);
+    }
+
+    private List<DuplicateChplProdNumber> getDuplicateChplProductNumbersBasedOnDevMerge(
+            final List<Long> developerIds, final String newDeveloperCode) {
+
+        //key = new chpl prod nbr, value = orig chpl prod nbr
+        HashMap<String, String> newChplProductNumbers = new HashMap<String, String>();
+
+        String newChplProductNumber = "";
+
+        //Hold the list of duplicate chpl prod nbrs {new, origA, origB} where "origA" and "origB" are the
+        //original chpl prod nbrs that would be duplicated during merge and "new" is chpl prod nbr that
+        // "origA" and "origB" would be updated to
+        List<DuplicateChplProdNumber> duplicatedChplProductNumbers =
+                new ArrayList<DuplicateChplProdNumber>();
+
+        for (Long developerId : developerIds) {
+            List<CertifiedProductDetailsDTO> certifiedProducts =
+                    certifiedProductDAO.findByDeveloperId(developerId);
+
+            for (CertifiedProductDetailsDTO certifiedProduct : certifiedProducts) {
+                newChplProductNumber = "";
+                if (certifiedProduct.getChplProductNumber().startsWith("CHP")) {
+                    newChplProductNumber = certifiedProduct.getChplProductNumber();
+                } else {
+                    newChplProductNumber = chplProductNumberUtil.getChplProductNumber(certifiedProduct.getYear(),
+                            chplProductNumberUtil.parseChplProductNumber(
+                                    certifiedProduct.getChplProductNumber()).getAtlCode(),
+                            certifiedProduct.getCertificationBodyCode(),
+                            newDeveloperCode,
+                            certifiedProduct.getProductCode(),
+                            certifiedProduct.getVersionCode(),
+                            certifiedProduct.getIcsCode(),
+                            certifiedProduct.getAdditionalSoftwareCode(),
+                            certifiedProduct.getCertifiedDateCode());
+                }
+                if (newChplProductNumbers.containsKey(newChplProductNumber)) {
+                    duplicatedChplProductNumbers.add(
+                            new DuplicateChplProdNumber(
+                                    newChplProductNumbers.get(newChplProductNumber),
+                                    certifiedProduct.getChplProductNumber(),
+                                    newChplProductNumber));
+                } else {
+                    newChplProductNumbers.put(newChplProductNumber, certifiedProduct.getChplProductNumber());
+                }
+            }
+        }
+        return duplicatedChplProductNumbers;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
     public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
@@ -388,7 +481,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return ddr;
     }
 
-    private boolean isStatusHistoryUpdated(DeveloperDTO original, DeveloperDTO changed) {
+    private boolean isStatusHistoryUpdated(final DeveloperDTO original, final DeveloperDTO changed) {
         boolean hasChanged = false;
         if ((original.getStatusEvents() != null && changed.getStatusEvents() == null)
                 || (original.getStatusEvents() == null && changed.getStatusEvents() != null)
@@ -414,7 +507,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return hasChanged;
     }
 
-    private List<DeveloperDTO> addTransparencyMappings(List<DeveloperDTO> developers) {
+    private List<DeveloperDTO> addTransparencyMappings(final List<DeveloperDTO> developers) {
         List<DeveloperACBMapDTO> transparencyMaps = developerDao.getAllTransparencyMappings();
         Map<Long, DeveloperDTO> mappedDevelopers = new HashMap<Long, DeveloperDTO>();
         for (DeveloperDTO dev : developers) {
@@ -430,5 +523,53 @@ public class DeveloperManagerImpl implements DeveloperManager {
             ret.add(dev);
         }
         return ret;
+    }
+
+    private class DuplicateChplProdNumber {
+        private String origChplProductNumberA;
+        private String origChplProductNumberB;
+        private String newChplProductNumber;
+
+        public DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
+                final String newChplProductNumber) {
+            super();
+            this.origChplProductNumberA = origChplProductNumberA;
+            this.origChplProductNumberB = origChplProductNumberB;
+            this.newChplProductNumber = newChplProductNumber;
+        }
+
+        public String getOrigChplProductNumberA() {
+            return origChplProductNumberA;
+        }
+
+        public void setOrigChplProductNumberA(final String origChplProductNumberA) {
+            this.origChplProductNumberA = origChplProductNumberA;
+        }
+
+        public String getOrigChplProductNumberB() {
+            return origChplProductNumberB;
+        }
+
+        public void setOrigChplProductNumberB(final String origChplProductNumberB) {
+            this.origChplProductNumberB = origChplProductNumberB;
+        }
+
+        public String getNewChplProductNumber() {
+            return newChplProductNumber;
+        }
+
+        public void setNewChplProductNumber(final String newChplProductNumber) {
+            this.newChplProductNumber = newChplProductNumber;
+        }
+
+        @Override
+        public String toString() {
+            return String.format(
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs.duplicate"),
+                                LocaleContextHolder.getLocale()),
+                    origChplProductNumberA,
+                    origChplProductNumberB);
+        }
     }
 }

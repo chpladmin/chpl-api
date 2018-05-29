@@ -19,6 +19,8 @@ public interface CertifiedProductDAO {
 
     List<CertifiedProductDetailsDTO> findAll();
 
+    List<CertifiedProductDetailsDTO> findByDeveloperId(Long developerId);
+    
     List<CertifiedProductDetailsDTO> findByEdition(String edition);
 
     List<CertifiedProductDetailsDTO> findWithSurveillance();
