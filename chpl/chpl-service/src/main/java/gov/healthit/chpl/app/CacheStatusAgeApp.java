@@ -15,6 +15,9 @@ import java.util.regex.Pattern;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.stereotype.Component;
@@ -29,13 +32,17 @@ import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
  *
  */
 @Component("cacheStatusAgeApp")
-public class CacheStatusAgeApp extends NotificationEmailerReportApp {
-
+public class CacheStatusAgeApp extends NotificationEmailerReportApp implements Job {
+private AbstractApplicationContext context;
     /**
      * Default constructor.
+     * @throws Exception 
      */
-    public CacheStatusAgeApp() {
-    }
+    public CacheStatusAgeApp() throws Exception {
+        this.setLocalContext();
+        context = new AnnotationConfigApplicationContext(AppConfig.class);
+        initiateSpringBeans(context);
+  }
 
     /**
      * Main method. Checks to see if the cache is old, then, if it is,
@@ -43,26 +50,45 @@ public class CacheStatusAgeApp extends NotificationEmailerReportApp {
      * @param args none expected
      * @throws Exception if necessary
      */
-    public static void main(final String[] args) throws Exception {
-        CacheStatusAgeApp app = new CacheStatusAgeApp();
-        app.setLocalContext();
-        AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        app.initiateSpringBeans(context);
+
+    @Override
+    public void execute(JobExecutionContext arg0) throws JobExecutionException {
+        // TODO Auto-generated method stub
+        
+//    }
+//    public static void main(final String[] args) throws Exception {
+//        CacheStatusAgeApp app = new CacheStatusAgeApp();
+//        app.setLocalContext();
+//        AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+//        app.initiateSpringBeans(context);
 
         // Check cache status
-        if (app.isCacheOld()) {
-            // Get recipients
-            Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-            permissions.add(new GrantedPermission("ROLE_ADMIN"));
-            List<RecipientWithSubscriptionsDTO> recipientSubscriptions = app.getNotificationDAO()
-                    .getAllNotificationMappingsForType(permissions,
-                            NotificationTypeConcept.CACHE_STATUS_AGE_NOTIFICATION,
-                            null);
-            if (recipientSubscriptions.size() > 0) {
-                // send emails
-                app.sendEmail(recipientSubscriptions);
+//        if (app.isCacheOld()) {
+            try {
+                if (isCacheOld()) {
+                // Get recipients
+                Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+                permissions.add(new GrantedPermission("ROLE_ADMIN"));
+//            List<RecipientWithSubscriptionsDTO> recipientSubscriptions = app.getNotificationDAO()
+                List<RecipientWithSubscriptionsDTO> recipientSubscriptions = getNotificationDAO()
+                        .getAllNotificationMappingsForType(permissions,
+                                NotificationTypeConcept.CACHE_STATUS_AGE_NOTIFICATION,
+                                null);
+                if (recipientSubscriptions.size() > 0) {
+                    // send emails
+//                app.sendEmail(recipientSubscriptions);
+                    try {
+                        sendEmail(recipientSubscriptions);
+                    } catch (IOException | MessagingException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+      }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-        }
         context.close();
     }
 
