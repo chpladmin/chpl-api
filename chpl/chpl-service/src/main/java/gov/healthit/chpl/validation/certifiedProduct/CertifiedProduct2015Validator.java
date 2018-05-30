@@ -1038,6 +1038,48 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, allMetCerts);
         product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
+        //g1 macra check
+        if(hasCert(G1, allMetCerts)) {
+            //must have at least one criteria with g1 macras listed
+            boolean hasG1Macra = false;
+            for(int i = 0; i < product.getCertificationResults().size() && !hasG1Macra; i++) {
+                CertificationResult cert = product.getCertificationResults().get(i);
+                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) && 
+                        cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+                    hasG1Macra = true;
+                }
+            }
+            
+            if(!hasG1Macra) {
+                product.getErrorMessages().add(String.format(
+                        messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "listing.missingG1Macras"),
+                                LocaleContextHolder.getLocale())));
+            }
+        }
+        
+        //g2 macra check
+        if(hasCert(G2, allMetCerts)) {
+          //must have at least one criteria with g2 macras listed
+            boolean hasG2Macra = false;
+            for(int i = 0; i < product.getCertificationResults().size() && !hasG2Macra; i++) {
+                CertificationResult cert = product.getCertificationResults().get(i);
+                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) && 
+                        cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+                    hasG2Macra = true;
+                }
+            }
+            
+            if(!hasG2Macra) {
+                product.getErrorMessages().add(String.format(
+                        messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "listing.missingG2Macras"),
+                                LocaleContextHolder.getLocale())));
+            }
+        }
+        
         // g3 checks
         boolean needsG3 = false;
         for (int i = 0; i < ucdRequiredCerts.length; i++) {
