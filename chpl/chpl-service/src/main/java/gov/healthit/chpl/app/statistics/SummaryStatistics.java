@@ -66,7 +66,7 @@ public class SummaryStatistics {
     /**
      * This application generates a weekly summary email with an attached CSV.
      * providing CHPL statistics
-     * @param args startDate, endDate, numDaysInPeriod
+     * @param args startDate, endDate, numDaysInPeriod, whether or not to generate the CSV
      * @throws Exception some exception
      */
     public static void main(final String[] args) throws Exception {
