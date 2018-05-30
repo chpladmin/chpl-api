@@ -2,8 +2,10 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +48,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
@@ -294,7 +297,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
             CacheNames.COLLECTIONS_DEVELOPERS, CacheNames.GET_DECERTIFIED_DEVELOPERS
     }, allEntries = true)
     public DeveloperDTO merge(final List<Long> developerIdsToMerge, final DeveloperDTO developerToCreate)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
 
         List<DeveloperDTO> beforeDevelopers = new ArrayList<DeveloperDTO>();
         for (Long developerId : developerIdsToMerge) {
@@ -306,7 +309,8 @@ public class DeveloperManagerImpl implements DeveloperManager {
                 getDuplicateChplProductNumbersBasedOnDevMerge(developerIdsToMerge,
                         developerToCreate.getDeveloperCode());
         if (duplicateChplProdNumbers.size() != 0) {
-            throw new EntityCreationException(getDuplicateChplProductNumberErrorMessage(duplicateChplProdNumbers));
+            throw new ValidationException(
+                    getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
         }
 
         // check for any non-active developers and throw an error if any are
@@ -390,20 +394,19 @@ public class DeveloperManagerImpl implements DeveloperManager {
         return createdDeveloper;
     }
 
-    private String getDuplicateChplProductNumberErrorMessage(
+    private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
-
-        String message = "";
+        
+        Set<String> messages = new HashSet<String>();
 
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
-            message += "\n" + dup.toString();
+            messages.add(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs"),
+                    LocaleContextHolder.getLocale()),
+                    dup.getOrigChplProductNumberA(),
+                    dup.getOrigChplProductNumberB()));
         }
-
-        return String.format(
-                messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs"),
-                        LocaleContextHolder.getLocale()),
-                message);
+        return messages;
     }
 
     private List<DuplicateChplProdNumber> getDuplicateChplProductNumbersBasedOnDevMerge(

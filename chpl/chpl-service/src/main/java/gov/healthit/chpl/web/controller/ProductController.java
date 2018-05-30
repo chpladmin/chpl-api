@@ -1,7 +1,9 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -42,6 +44,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.ProductResults;
 import gov.healthit.chpl.web.controller.results.SplitProductResponse;
 import io.swagger.annotations.Api;
@@ -133,7 +136,7 @@ public class ProductController {
     public ResponseEntity<Product> updateProductDeprecated(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
+            JsonProcessingException, ValidationException {
 
         return update(productInfo);
     }
@@ -151,14 +154,14 @@ public class ProductController {
     public ResponseEntity<Product> updateProduct(
             @RequestBody(required = true) final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
+            JsonProcessingException, ValidationException {
 
         return update(productInfo);
     }
 
     private ResponseEntity<Product> update(final UpdateProductsRequest productInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
+            JsonProcessingException, ValidationException {
 
         ProductDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -175,7 +178,8 @@ public class ProductController {
                         getDuplcateChplProdNumbersCasuedByDeveloperChange(productId, productInfo.newDeveloperId());
 
                 if (duplicateChplProdNbrs.size() != 0) {
-                    throw new EntityCreationException(getDuplicateChplProductNumberErrorMessage(duplicateChplProdNbrs));
+                    throw new ValidationException(
+                            getDuplicateChplProductNumberErrorMessages(duplicateChplProdNbrs), null);
                 }
 
                 ProductDTO toUpdate = productManager.getById(productId);
@@ -215,7 +219,8 @@ public class ProductController {
                                 productInfo.getProductIds().get(0), productInfo.newDeveloperId());
 
                 if (duplicateChplProdNbrs.size() != 0) {
-                    throw new EntityCreationException(getDuplicateChplProductNumberErrorMessage(duplicateChplProdNbrs));
+                    throw new ValidationException(
+                            getDuplicateChplProductNumberErrorMessages(duplicateChplProdNbrs), null);
                 }
                 // update the given product id with new data
                 ProductDTO toUpdate = new ProductDTO();
@@ -266,19 +271,19 @@ public class ProductController {
         return new ResponseEntity<Product>(new Product(updatedProduct), responseHeaders, HttpStatus.OK);
     }
 
-    private String getDuplicateChplProductNumberErrorMessage(
+    private Set<String> getDuplicateChplProductNumberErrorMessages(
             final List<DuplicateChplProdNumber> duplicateChplProdNumbers) {
-        String message = "";
+        
+        Set<String> messages = new HashSet<String>();
 
         for (DuplicateChplProdNumber dup : duplicateChplProdNumbers) {
-            message += "\n" + dup.toString();
+            messages.add(String.format(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("developer.update.dupChplProdNbrs"),
+                    LocaleContextHolder.getLocale()),
+                    dup.getOrigChplProductNumberA(),
+                    dup.getOrigChplProductNumberB()));
         }
-
-        return String.format(
-                messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("developer.merge.dupChplProdNbrs"),
-                        LocaleContextHolder.getLocale()),
-                message);
+        return messages;
     }
 
     private List<DuplicateChplProdNumber> getDuplcateChplProdNumbersCasuedByDeveloperChange(

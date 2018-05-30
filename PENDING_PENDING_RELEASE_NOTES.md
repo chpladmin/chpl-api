@@ -13,6 +13,6 @@ _Date TBD_
 * Add new chart: Count of Developers & Products by Edition & Status
   * Update chart data generation application
   * Add API endpoint to retrieve chart data
-
+* Fixed duplicate CHPL Product Number issue when editing a product and merging developers
 
 ---
