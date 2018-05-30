@@ -535,7 +535,6 @@ public class DeveloperManagerImpl implements DeveloperManager {
 
         public DuplicateChplProdNumber(final String origChplProductNumberA, final String origChplProductNumberB,
                 final String newChplProductNumber) {
-            super();
             this.origChplProductNumberA = origChplProductNumberA;
             this.origChplProductNumberB = origChplProductNumberB;
             this.newChplProductNumber = newChplProductNumber;
