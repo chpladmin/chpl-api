@@ -14,5 +14,7 @@ _Date TBD_
   * Update chart data generation application
   * Add API endpoint to retrieve chart data
 
+### Bug Fixes
+* Handle SED boolean parsing and UCD Process existence mistmatch for 2014 upload.
 
 ---
