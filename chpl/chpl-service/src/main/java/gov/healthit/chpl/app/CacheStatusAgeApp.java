@@ -27,68 +27,53 @@ import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
 /**
- * Application to check the listing cache age and notify if it's "too old".
+ * Job run by Scheduler to send emails when the cache is "too old".
  * @author alarned
  *
  */
 @Component("cacheStatusAgeApp")
 public class CacheStatusAgeApp extends NotificationEmailerReportApp implements Job {
-private AbstractApplicationContext context;
+    private AbstractApplicationContext context;
     /**
      * Default constructor.
-     * @throws Exception 
+     * @throws Exception if context can't be configured
      */
     public CacheStatusAgeApp() throws Exception {
         this.setLocalContext();
         context = new AnnotationConfigApplicationContext(AppConfig.class);
         initiateSpringBeans(context);
-  }
+    }
 
     /**
      * Main method. Checks to see if the cache is old, then, if it is,
      * sends email messages to subscribers of that notification.
-     * @param args none expected
-     * @throws Exception if necessary
+     * @param jobContext for context of the job
+     * @throws JobExecutionException if necessary
      */
 
     @Override
-    public void execute(JobExecutionContext arg0) throws JobExecutionException {
-        // TODO Auto-generated method stub
-        
-//    }
-//    public static void main(final String[] args) throws Exception {
-//        CacheStatusAgeApp app = new CacheStatusAgeApp();
-//        app.setLocalContext();
-//        AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-//        app.initiateSpringBeans(context);
-
-        // Check cache status
-//        if (app.isCacheOld()) {
-            try {
-                if (isCacheOld()) {
+    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
+        try {
+            if (isCacheOld()) {
                 // Get recipients
                 Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
                 permissions.add(new GrantedPermission("ROLE_ADMIN"));
-//            List<RecipientWithSubscriptionsDTO> recipientSubscriptions = app.getNotificationDAO()
                 List<RecipientWithSubscriptionsDTO> recipientSubscriptions = getNotificationDAO()
                         .getAllNotificationMappingsForType(permissions,
                                 NotificationTypeConcept.CACHE_STATUS_AGE_NOTIFICATION,
                                 null);
                 if (recipientSubscriptions.size() > 0) {
                     // send emails
-//                app.sendEmail(recipientSubscriptions);
                     try {
                         sendEmail(recipientSubscriptions);
                     } catch (IOException | MessagingException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
-      }
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         context.close();
     }
 
