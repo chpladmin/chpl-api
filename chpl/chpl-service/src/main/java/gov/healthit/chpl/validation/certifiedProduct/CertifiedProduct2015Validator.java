@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.security.acls.model.PermissionGrantingStrategy;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
@@ -84,6 +85,9 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(7)"
     };
 
+    private static final String G1 = "170.315 (g)(1)";
+    private static final String G2 = "170.315 (g)(2)";
+    
     private static final String[] g7Org8Org9ComplimentaryCerts = {
             "170.315 (d)(1)", "170.315 (d)(9)"
     };
@@ -227,6 +231,48 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, allMetCerts);
         product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
 
+        //g1 macra check
+        if(hasCert(G1, allMetCerts)) {
+            //must have at least one criteria with g1 macras listed
+            boolean hasG1Macra = false;
+            for(int i = 0; i < product.getCertificationCriterion().size() && !hasG1Macra; i++) {
+                PendingCertificationResultDTO cert = product.getCertificationCriterion().get(i);
+                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) && 
+                        cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+                    hasG1Macra = true;
+                }
+            }
+            
+            if(!hasG1Macra) {
+                product.getErrorMessages().add(String.format(
+                        messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "listing.missingG1Macras"),
+                                LocaleContextHolder.getLocale())));
+            }
+        }
+        
+        //g2 macra check
+        if(hasCert(G2, allMetCerts)) {
+          //must have at least one criteria with g2 macras listed
+            boolean hasG2Macra = false;
+            for(int i = 0; i < product.getCertificationCriterion().size() && !hasG2Macra; i++) {
+                PendingCertificationResultDTO cert = product.getCertificationCriterion().get(i);
+                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) && 
+                        cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+                    hasG2Macra = true;
+                }
+            }
+            
+            if(!hasG2Macra) {
+                product.getErrorMessages().add(String.format(
+                        messageSource.getMessage(
+                                new DefaultMessageSourceResolvable(
+                                        "listing.missingG2Macras"),
+                                LocaleContextHolder.getLocale())));
+            }
+        }
+        
         // g3 checks
         boolean needsG3 = false;
         for (int i = 0; i < ucdRequiredCerts.length; i++) {
@@ -472,6 +518,7 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                 }
             }
         }
+        
         if (needsG3) {
             boolean hasG3 = hasCert("170.315 (g)(3)", allMetCerts);
             if (!hasG3) {
@@ -827,9 +874,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                     pendingMeasureMap.getEnteredValue());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 product.getErrorMessages()
-                                        .add("Certification " + cert.getNumber()
-                                                + " contains invalid G1 Macra Measure: '"
-                                                + pendingMeasureMap.getEnteredValue() + "'.");
+                                        .add(String.format(messageSource.getMessage(
+                                                new DefaultMessageSourceResolvable(
+                                                        "listing.criteria.invalidG1MacraMeasure"),
+                                                LocaleContextHolder.getLocale()), 
+                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
@@ -845,9 +894,11 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
                                     pendingMeasureMap.getEnteredValue());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
                                 product.getErrorMessages()
-                                        .add("Certification " + cert.getNumber()
-                                                + " contains invalid G2 Macra Measure: '"
-                                                + pendingMeasureMap.getEnteredValue() + "'.");
+                                        .add(String.format(messageSource.getMessage(
+                                                new DefaultMessageSourceResolvable(
+                                                        "listing.criteria.invalidG2MacraMeasure"),
+                                                LocaleContextHolder.getLocale()), 
+                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else {
                                 pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
