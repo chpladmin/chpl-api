@@ -1,7 +1,8 @@
 package gov.healthit.chpl.app.scheduler;
 
-import static org.quartz.JobBuilder.newJob;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,8 +12,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
-
-import gov.healthit.chpl.app.CacheStatusAgeApp;
 
 public final class ChplScheduler {
     private static final Logger LOGGER = LogManager.getLogger(ChplScheduler.class);
@@ -26,18 +25,21 @@ public final class ChplScheduler {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
 
-            JobDetail cacheStatusAgeAppJob = newJob(CacheStatusAgeApp.class)
-                    .withIdentity("cacheStatusAgeAppJob", "group1")
+            JobDetail cacheStatusAgeJob = newJob(CacheStatusAgeJob.class)
+                    .withIdentity("cacheStatusAgeJob", "group1")
+                    .storeDurably()
                     .build();
+            scheduler.addJob(cacheStatusAgeJob, true);
 
-            Trigger cacheStatusAgeAppTrigger = newTrigger()
-                    .withIdentity("cacheStatusAgeAppTrigger", "group1")
+            Trigger cacheStatusAgeTrigger = newTrigger()
+                    .withIdentity("cacheStatusAgeTrigger-alarned@ainq.com", "group1")
                     .startNow()
-                    .withSchedule(cronSchedule("0 13 * * * *"))
+                    .forJob(jobKey("cacheStatusAgeJob", "group1"))
+                    .usingJobData("email", "alarned@ainq.com")
+                    .withSchedule(cronSchedule("0 13 * * * ?"))
                     .build();
 
-            // Tell quartz to schedule the job using our trigger
-            scheduler.scheduleJob(cacheStatusAgeAppJob, cacheStatusAgeAppTrigger);
+            scheduler.scheduleJob(cacheStatusAgeTrigger);
 
         } catch (SchedulerException se) {
             se.printStackTrace();

@@ -428,7 +428,8 @@
               <version>3.0.5</version>
               <configuration>
                 <effort>Max</effort>
-                <threshold>Low</threshold>
+                <!--<threshold>Low</threshold>-->
+                <threshold>High</threshold>
                 <xmlOutput>true</xmlOutput>
                 <failOnError>false</failOnError>
               </configuration>
