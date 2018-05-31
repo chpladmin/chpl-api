@@ -25,21 +25,21 @@ public final class ChplScheduler {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
             scheduler.start();
 
-            JobDetail cacheStatusAgeJob = newJob(CacheStatusAgeJob.class)
-                    .withIdentity("cacheStatusAgeJob", "group1")
-                    .storeDurably()
-                    .build();
-            scheduler.addJob(cacheStatusAgeJob, true);
-
-            Trigger cacheStatusAgeTrigger = newTrigger()
-                    .withIdentity("cacheStatusAgeTrigger-alarned@ainq.com", "group1")
-                    .startNow()
-                    .forJob(jobKey("cacheStatusAgeJob", "group1"))
-                    .usingJobData("email", "alarned@ainq.com")
-                    .withSchedule(cronSchedule("0 13 * * * ?"))
-                    .build();
-
-            scheduler.scheduleJob(cacheStatusAgeTrigger);
+//            JobDetail cacheStatusAgeJob = newJob(CacheStatusAgeJob.class)
+//                    .withIdentity("cacheStatusAgeJob", "group1")
+//                    .storeDurably()
+//                    .build();
+//            scheduler.addJob(cacheStatusAgeJob, true);
+//
+//            Trigger cacheStatusAgeTrigger = newTrigger()
+//                    .withIdentity("cacheStatusAgeTrigger-alarned@ainq.com", "group1")
+//                    .startNow()
+//                    .forJob(jobKey("cacheStatusAgeJob", "group1"))
+//                    .usingJobData("email", "alarned@ainq.com")
+//                    .withSchedule(cronSchedule("0 13 * * * ?"))
+//                    .build();
+//
+//            scheduler.scheduleJob(cacheStatusAgeTrigger);
 
         } catch (SchedulerException se) {
             se.printStackTrace();
