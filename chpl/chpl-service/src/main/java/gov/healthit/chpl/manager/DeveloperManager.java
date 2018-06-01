@@ -8,6 +8,7 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperDTO;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 public interface DeveloperManager {
@@ -26,7 +27,7 @@ public interface DeveloperManager {
             throws EntityRetrievalException, EntityCreationException, JsonProcessingException;
 
     DeveloperDTO merge(List<Long> developerIdsToMerge, DeveloperDTO developerToCreate)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException;
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException;
 
     DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException;
 }

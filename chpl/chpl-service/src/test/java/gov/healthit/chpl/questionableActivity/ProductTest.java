@@ -44,6 +44,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 import gov.healthit.chpl.web.controller.ProductController;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
 
@@ -208,7 +209,11 @@ public class ProductTest extends TestCase {
         List<Long> updateProductIds = new ArrayList<Long>();
         updateProductIds.add(toEdit.getProductId());
         updateProductsRequest.setProductIds(updateProductIds);
-        productController.updateProduct(updateProductsRequest);
+        try {
+            productController.updateProduct(updateProductsRequest);
+        } catch(ValidationException ex) {
+            fail(ex.getMessage());
+        }
         Date afterActivity = new Date();
         
         List<QuestionableActivityProductDTO> activities = 

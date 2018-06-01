@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -21,14 +23,17 @@ import org.springframework.test.context.support.DirtiesContextTestExecutionListe
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -90,4 +95,19 @@ public class ProductControllerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		productController.getListingsForProduct(-100L);
 	}
+	
+	@Transactional
+    @Test(expected=ValidationException.class)
+	@Rollback(true)
+    public void testUpdateDuplicateChplProductNumberValidationException() throws JsonProcessingException, EntityCreationException, EntityRetrievalException, InvalidArgumentsException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<Long> productIds = new ArrayList<Long>();
+        productIds.add(-4L);
+        
+        UpdateProductsRequest request = new UpdateProductsRequest();
+        request.setNewDeveloperId(-1L);
+        request.setProductIds(productIds);
+        
+        productController.updateProduct(request);
+    }
 }

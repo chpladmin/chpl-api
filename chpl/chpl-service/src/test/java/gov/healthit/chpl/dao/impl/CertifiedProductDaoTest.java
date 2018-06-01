@@ -55,7 +55,7 @@ public class CertifiedProductDaoTest {
     private static final String URL_PATTERN = "^https?://([\\da-z\\.-]+)\\.([a-z\\.]{2,6})"
             + "(:[0-9]+)?([\\/\\w \\.\\-\\,=&%#]*)*(\\?([\\/\\w \\.\\-\\,=&%#]*)*)?";
     private static final long ADMIN_ID = -2L;
-    private static final int LISTING_COUNT = 16;
+    private static final int LISTING_COUNT = 18;
     private static final long BASIC_LISTING_ID = 1L;
     private static final long ANOTHER_LISTING_ID = 2L;
     private static final long DELETED_LISTING_ID = 11L;
@@ -125,7 +125,7 @@ public class CertifiedProductDaoTest {
     @Test
     @Transactional(readOnly = true)
     public void getProductsByVersion() {
-        final int expectedListings = 2;
+        final int expectedListings = 3;
         Long versionId = BASIC_LISTING_ID;
         List<CertifiedProductDetailsDTO> products = null;
         products = productDao.getDetailsByVersionId(versionId);

@@ -51,7 +51,7 @@ public class CollectionsControllerTest extends TestCase {
 
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
-    private static final int EXPECTED_LISTING_COUNT = 16;
+    private static final int EXPECTED_LISTING_COUNT = 18;
     private static final Set<Long> LISTINGS_WITH_PREV_DEVS = new HashSet<Long>(Arrays.asList(1L, 2L, 3L, 9L));
     private static final Set<Long> LISTINGS_WITH_CRITERIA = new HashSet<Long>(Arrays.asList(1L, 2L, 3L, 5L, 10L));
 

@@ -65,7 +65,7 @@ public class SearchViewControllerTest extends TestCase {
 				0, 10, SearchRequest.ORDER_BY_DEVELOPER, true);
 		assertNotNull(searchResponse);
 		assertNotNull(searchResponse.getRecordCount());
-		assertEquals(16, searchResponse.getRecordCount().intValue());
+		assertEquals(18, searchResponse.getRecordCount().intValue());
 		assertNotNull(searchResponse.getResults());
 		assertEquals(10, searchResponse.getResults().size());
 	}

@@ -51,7 +51,6 @@ import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
-import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestDataDAO;
@@ -148,10 +147,8 @@ import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.FuzzyType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
-import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -257,32 +254,20 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     private TestTaskDAO testTaskDao;
 
     @Autowired
-    private MacraMeasureDAO macraDao;
-
-    @Autowired
     private CertificationStatusDAO certStatusDao;
 
     @Autowired
     private ListingGraphDAO listingGraphDao;
 
     @Autowired
-    private CertificationResultDAO certResultDao;
-
-    @Autowired
     private FuzzyChoicesDAO fuzzyChoicesDao;
 
     @Autowired
-    public ActivityManager activityManager;
-
-    @Autowired
-    public CertifiedProductDetailsManager detailsManager;
-
-    @Autowired
-    public CertificationBodyManager acbManager;
+    private CertificationBodyManager acbManager;
 
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
-    
+
     public CertifiedProductManagerImpl() {
     }
 
@@ -298,6 +283,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
     public CertifiedProductDTO getByChplProductNumber(final String chplProductNumber) throws EntityRetrievalException {
         CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
         return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getByDeveloperId(final Long developerId) throws EntityRetrievalException {
+        return cpDao.findByDeveloperId(developerId);
     }
 
     @Override
@@ -753,8 +744,8 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 TestDataDTO foundTestData = testDataDao.getByCriteriaNumberAndValue(
                                         certResult.getNumber(), testData.getTestData().getName());
                                 if (foundTestData == null) {
-                                    LOGGER.error("Could not find test data for " + certResult.getNumber() +
-                                            " and test data name " + testData.getTestData().getName());
+                                    LOGGER.error("Could not find test data for " + certResult.getNumber()
+                                        + " and test data name " + testData.getTestData().getName());
                                 } else {
                                     testDto.setTestData(foundTestData);
                                     testDto.setTestDataId(foundTestData.getId());
@@ -807,15 +798,15 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                                 procDto.setTestProcedureId(proc.getTestProcedureId());
                                 procDto.setTestProcedure(proc.getTestProcedure());
                                 certDao.addTestProcedureMapping(procDto);
-                            } else if (proc.getTestProcedure() != null){
+                            } else if (proc.getTestProcedure() != null) {
                                 // check again for a matching test procedure because
                                 // the user could have edited it since upload
                                 TestProcedureDTO foundTp =
                                         testProcDao.getByCriteriaNumberAndValue(certResult.getNumber(),
                                                 proc.getTestProcedure().getName());
                                 if (foundTp == null) {
-                                    LOGGER.error("Could not find test procedure for " + certResult.getNumber() +
-                                            " and test procedure name " + proc.getTestProcedure().getName());
+                                    LOGGER.error("Could not find test procedure for " + certResult.getNumber()
+                                        + " and test procedure name " + proc.getTestProcedure().getName());
                                 } else {
                                     procDto.setTestProcedure(foundTp);
                                     procDto.setTestProcedureId(foundTp.getId());
@@ -2179,14 +2170,12 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
                         if (cpDao.getByChplNumber(muu.getProductNumber()) != null) {
                             dto.setChplProductNumber(muu.getProductNumber());
                             dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
-                        }
-                        // check if 2015 edition CHPL Product Number exists
-                        else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null) {
+                        } else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null) {
+                            // check if 2015 edition CHPL Product Number exists
                             dto.setChplProductNumber(muu.getProductNumber());
                             dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
-                        }
-                        // If neither exist, add error
-                        else {
+                        } else {
+                            // If neither exist, add error
                             throw new EntityRetrievalException();
                         }
 
@@ -2233,8 +2222,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
         private CertificationStatusEvent orig;
         private CertificationStatusEvent updated;
 
-        public CertificationStatusEventPair() {
-        }
+        public CertificationStatusEventPair() { }
 
         public CertificationStatusEventPair(final CertificationStatusEvent orig,
                 final CertificationStatusEvent updated) {
