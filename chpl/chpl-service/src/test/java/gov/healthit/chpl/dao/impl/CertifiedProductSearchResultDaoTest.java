@@ -85,11 +85,11 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test");
 		int countProducts = searchDao.getTotalResultCount(searchRequest);
-		assertEquals(10, countProducts);
+		assertEquals(12, countProducts);
 		
 		searchRequest.setVersion("1.0.0");
 		int countProductsVersionSpecific = searchDao.getTotalResultCount(searchRequest);
-		assertEquals(2, countProductsVersionSpecific);
+		assertEquals(3, countProductsVersionSpecific);
 	}
 	
 	@Test
@@ -133,7 +133,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
-		assertEquals(9, products.size());
+		assertEquals(10, products.size());
 		
 		for (CertifiedProductBasicSearchResult dto : products ){
 			assertTrue(dto.getDeveloper().startsWith("Test Developer 1"));
@@ -147,7 +147,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
         searchRequest.setDeveloper("Test Developer 1");
         searchRequest.setOrderBy(SearchRequest.ORDER_BY_DEVELOPER);
         Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
-        assertEquals(9, products.size());
+        assertEquals(10, products.size());
 	}
 	
 	@Test
@@ -158,7 +158,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		searchRequest.setProduct("Test Product 1");
 		Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
-		assertEquals(5, products.size());
+		assertEquals(6, products.size());
 		
 		for (CertifiedProductBasicSearchResult dto : products ){
 			assertTrue(dto.getProduct().startsWith("Test Product 1"));
@@ -231,7 +231,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
-		assertEquals(16, products.size());
+		assertEquals(18, products.size());
 	}
 	
 	@Test
@@ -279,7 +279,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		survFilter.setHasHadSurveillance(Boolean.FALSE);
 		searchRequest.setSurveillance(survFilter);
 		products = searchDao.search(searchRequest);
-		assertEquals(7, products.size());
+		assertEquals(9, products.size());
 		
 		searchRequest = new SearchRequest();
 		survFilter = new SurveillanceSearchFilter();
