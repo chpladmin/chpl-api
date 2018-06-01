@@ -62,4 +62,6 @@ public interface CertifiedProductManager {
     List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException;
 
     CertifiedProductDetailsDTO getDetailsById(Long ids) throws EntityRetrievalException;
+
+    List<CertifiedProductDetailsDTO> getByDeveloperId(Long developerId) throws EntityRetrievalException;
 }
