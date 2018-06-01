@@ -15,4 +15,7 @@ _Date TBD_
   * Add API endpoint to retrieve chart data
 * Fixed duplicate CHPL Product Number issue when editing a product and merging developers
 
+### Bug Fixes
+* Handle SED boolean parsing and UCD Process existence mistmatch for 2014 upload.
+
 ---
