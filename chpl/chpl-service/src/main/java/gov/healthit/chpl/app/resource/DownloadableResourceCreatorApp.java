@@ -1,10 +1,7 @@
 package gov.healthit.chpl.app.resource;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,10 +12,6 @@ import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public abstract class DownloadableResourceCreatorApp extends App {
@@ -30,19 +23,24 @@ public abstract class DownloadableResourceCreatorApp extends App {
     protected CertificationCriterionDAO criteriaDao;
     protected CertificationResultDAO certificationResultDao;
     protected CertificationResultDetailsDAO certificationResultDetailsDAO;
+    private AbstractApplicationContext applicationContext;
 
     public DownloadableResourceCreatorApp() {
         timestampFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
     }
 
-    protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
+    @Override
+    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
         this.setCpdManager((CertifiedProductDetailsManager) context.getBean("certifiedProductDetailsManager"));
         this.setCertifiedProductDao((CertifiedProductDAO) context.getBean("certifiedProductDAO"));
         this.setCriteriaDao((CertificationCriterionDAO) context.getBean("certificationCriterionDAO"));
         this.setCertificationResultDao((CertificationResultDAO) context.getBean("certificationResultDAO"));
-        this.setCertificationResultDetailsDao((CertificationResultDetailsDAO) context.getBean("certificationResultDetailsDAO"));
+        this.setCertificationResultDetailsDao((CertificationResultDetailsDAO) 
+                context.getBean("certificationResultDetailsDAO"));
+
+        setApplicationContext(context);
     }
-    
+
     protected abstract void runJob(String[] args) throws Exception;
 
     public CertifiedProductDAO getCertifiedProductDao() {
@@ -77,21 +75,30 @@ public abstract class DownloadableResourceCreatorApp extends App {
         this.criteriaDao = criteriaDao;
     }
 
-	public CertificationResultDAO getCertificationResultDao() {
-		return certificationResultDao;
-	}
+    public CertificationResultDAO getCertificationResultDao() {
+        return certificationResultDao;
+    }
 
-	public void setCertificationResultDao(
+    public void setCertificationResultDao(
 			CertificationResultDAO certificationResultDao) {
 		this.certificationResultDao = certificationResultDao;
-	}
+    }
 
-	public CertificationResultDetailsDAO getCertificationResultDetailsDao() {
+    public CertificationResultDetailsDAO getCertificationResultDetailsDao() {
 		return certificationResultDetailsDAO;
-	}
+    }
 
-	public void setCertificationResultDetailsDao(
+    public void setCertificationResultDetailsDao(
 			CertificationResultDetailsDAO certificationResultDetailsDAO) {
 		this.certificationResultDetailsDAO = certificationResultDetailsDAO;
-	}
+    }
+
+	public AbstractApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    public void setApplicationContext(final AbstractApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
 }
