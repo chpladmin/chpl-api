@@ -17,7 +17,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.app.AppConfig;
 import gov.healthit.chpl.app.NotificationEmailerReportApp;
@@ -27,7 +26,6 @@ import gov.healthit.chpl.app.NotificationEmailerReportApp;
  * @author alarned
  *
  */
-@Component("cacheStatusAgeJob")
 public class CacheStatusAgeJob extends NotificationEmailerReportApp implements Job {
     private AbstractApplicationContext context;
     /**

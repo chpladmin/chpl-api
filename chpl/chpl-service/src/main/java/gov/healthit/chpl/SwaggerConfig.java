@@ -67,7 +67,7 @@ public class SwaggerConfig implements EnvironmentAware {
                 regex("/collections.*"), regex("/corrective_action_plan.*"), regex("/data/.*"), regex("/download.*"),
                 regex("/jobs.*"), regex("/key.*"), regex("/notifications.*"), regex("/products.*"), regex("/search.*"),
                 regex("/surveillance.*"), regex("/status"), regex("/cache_status"), regex("/users.*"),
-                regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"));
+                regex("/developers.*"), regex("/versions.*"), regex("/decertifications/.*"), regex("/schedules.*"));
     }
 
     private class AbsolutePathProvider extends RelativePathProvider {
