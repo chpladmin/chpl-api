@@ -34,71 +34,11 @@ public class ListingsByEditionResourceCreatorApp extends CertifiedProductDownloa
         this.edition = edition;
     }
 
-    protected List<CertifiedProductDetailsDTO> getRelevantListings() {
-        LOGGER.info("Finding all listings for edition " + getEdition() + ".");
-        Date start = new Date();
-        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findByEdition(getEdition());
-        Date end = new Date();
-        LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + getEdition() + " in "
-                + (end.getTime() - start.getTime()) / 1000 + " seconds");
-        return listingsForEdition;
-    }
-
-    protected void writeToFile(File downloadFolder, CertifiedProductDownloadResponse results) throws IOException {
-        Date now = new Date();
-        // write out a download file for this edition
-        String xmlFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-" + getEdition() + "-"
-                + getTimestampFormat().format(now) + ".xml";
-        File xmlFile = new File(xmlFilename);
-        if (!xmlFile.exists()) {
-            xmlFile.createNewFile();
-        } else {
-            xmlFile.delete();
-        }
-        CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-        LOGGER.info("Writing " + getEdition() + " XML file");
-        Date start = new Date();
-        xmlPresenter.presentAsFile(xmlFile, results);
-        Date end = new Date();
-        LOGGER.info("Wrote " + getEdition() + " XML file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
-
-        // present as csv
-        String csvFilename = downloadFolder.getAbsolutePath() + File.separator + "chpl-" + getEdition() + "-"
-                + getTimestampFormat().format(now) + ".csv";
-        File csvFile = new File(csvFilename);
-        if (!csvFile.exists()) {
-            csvFile.createNewFile();
-        } else {
-            csvFile.delete();
-        }
-        CertifiedProductCsvPresenter csvPresenter = null;
-        if (getEdition().equals("2014")) {
-            csvPresenter = new CertifiedProduct2014CsvPresenter();
-        } else {
-            csvPresenter = new CertifiedProductCsvPresenter();
-        }
-        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(getEdition());
-        csvPresenter.setApplicableCriteria(criteria);
-
-        LOGGER.info("Writing " + getEdition() + " CSV file");
-        start = new Date();
-        csvPresenter.presentAsFile(csvFile, results);
-        end = new Date();
-        LOGGER.info("Wrote " + getEdition() + " CSV file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
-    }
-
-    public String getEdition() {
-        return edition;
-    }
-
-    public void setEdition(final String edition) {
-        this.edition = edition;
-    }
-
     public static void main(String[] args) throws Exception {
         if (args == null || args.length < 1) {
             LOGGER.error("ListingsByEditionResourceCreatorApp HELP: \n" + "\tListingsByEditionResourceCreatorApp 2014\n"
-                    + "\tListingsByEditionResourceCreatorApp expects an argument that is the edition (2011, 2014, or 2015)");
+                    + "\tListingsByEditionResourceCreatorApp expects an argument that is "
+                    + "the edition (2011, 2014, or 2015)");
             return;
         }
 
@@ -110,4 +50,81 @@ public class ListingsByEditionResourceCreatorApp extends CertifiedProductDownloa
         app.runJob(args);
         context.close();
     }
+
+    @Override
+    protected List<CertifiedProductDetailsDTO> getRelevantListings() {
+        LOGGER.info("Finding all listings for edition " + getEdition() + ".");
+        Date start = new Date();
+        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findByEdition(getEdition());
+        Date end = new Date();
+        LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + getEdition() + " in "
+                + ((end.getTime() - start.getTime()) / 1000) + " seconds");
+        return listingsForEdition;
+    }
+
+    @Override
+    protected void writeToFile(final File downloadFolder, final CertifiedProductDownloadResponse results)
+            throws IOException {
+        writeToCsv(downloadFolder, results);
+        writeToXml(downloadFolder, results);
+    }
+
+    private void writeToXml(final File downloadFolder, final CertifiedProductDownloadResponse results)
+            throws IOException {
+        Date start = new Date();
+        String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
+                getTimestampFormat().format(new Date()), "csv");
+        File xmlFile = getFile(xmlFilename);
+        CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
+        xmlPresenter.presentAsFile(xmlFile, results);
+        Date end = new Date();
+        LOGGER.info("Wrote " + getEdition() + " XML file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
+    }
+
+    private void writeToCsv(final File downloadFolder, final CertifiedProductDownloadResponse results)
+            throws IOException {
+        Date start = new Date();
+        String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
+                getTimestampFormat().format(new Date()), "csv");
+        File csvFile = getFile(csvFilename);
+        CertifiedProductCsvPresenter csvPresenter = getCsvPresenter(getEdition());
+        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(getEdition());
+        csvPresenter.setApplicableCriteria(criteria);
+        csvPresenter.presentAsFile(csvFile, results);
+        Date end = new Date();
+        LOGGER.info("Wrote " + getEdition() + " CSV file in " + (end.getTime() - start.getTime()) / 1000 + " seconds");
+    }
+
+    private CertifiedProductCsvPresenter getCsvPresenter(final String edition) {
+        CertifiedProductCsvPresenter csvPresenter = null;
+        if (edition.equals("2014")) {
+            csvPresenter = new CertifiedProduct2014CsvPresenter();
+        } else {
+            csvPresenter = new CertifiedProductCsvPresenter();
+        }
+        return csvPresenter;
+    }
+
+    private String getFileName(final String path, final String timeStamp, final String extension) {
+        return path + File.separator + "chpl-" + getEdition() + "-" + timeStamp + "." + extension;
+    }
+
+    private File getFile(final String fileName) throws IOException {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+        } else {
+            file.delete();
+        }
+        return file;
+    }
+
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(final String edition) {
+        this.edition = edition;
+    }
+
 }
