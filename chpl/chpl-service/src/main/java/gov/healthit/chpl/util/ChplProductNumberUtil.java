@@ -130,6 +130,23 @@ public class ChplProductNumberUtil {
         return chplProductNumber.toString();
     }
 
+    public ChplProductNumberParts parseChplProductNumber(String chplProductNumber) {
+        String[] cpnParts = splitUniqueIdParts(chplProductNumber);
+
+        ChplProductNumberParts parts = new ChplProductNumberParts();
+        parts.setEditionCode(cpnParts[0]);
+        parts.setAtlCode(cpnParts[1]);
+        parts.setAcbCode(cpnParts[2]);
+        parts.setDeveloperCode(cpnParts[3]);
+        parts.setProductCode(cpnParts[4]);
+        parts.setVersionCode(cpnParts[5]);
+        parts.setIcsCode(cpnParts[6]);
+        parts.setAdditionalSoftwareCode(cpnParts[7]);
+        parts.setCertifiedDateCode(cpnParts[8]);
+
+        return parts;
+    }
+
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
@@ -140,7 +157,7 @@ public class ChplProductNumberUtil {
 
     private String concatParts(final ChplProductNumberParts chplProductNumberParts) {
         StringBuilder chplProductNumber = new StringBuilder();
-        chplProductNumber.append(chplProductNumberParts.editionCode).append(".")
+        chplProductNumber.append(formatEdition(chplProductNumberParts.editionCode)).append(".")
             .append(chplProductNumberParts.atlCode).append(".")
             .append(chplProductNumberParts.acbCode).append(".")
             .append(chplProductNumberParts.developerCode).append(".")
@@ -150,6 +167,14 @@ public class ChplProductNumberUtil {
             .append(chplProductNumberParts.additionalSoftwareCode).append(".")
             .append(chplProductNumberParts.certifiedDateCode);
         return chplProductNumber.toString();
+    }
+
+    private String formatEdition(final String year) {
+        if (year.length() == 2) {
+            return year;
+        } else {
+            return year.substring(2);
+        }
     }
 
     private String getTestingLabCode(final List<PendingCertifiedProductTestingLabDTO> testingLabs) {
@@ -193,7 +218,7 @@ public class ChplProductNumberUtil {
         }
     }
 
-    class ChplProductNumberParts {
+    public class ChplProductNumberParts {
         private String editionCode = null;
         private String atlCode = null;
         private String acbCode = null;

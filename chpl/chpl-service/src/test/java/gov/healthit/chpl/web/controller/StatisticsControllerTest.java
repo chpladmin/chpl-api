@@ -1,5 +1,8 @@
 package gov.healthit.chpl.web.controller;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,9 +19,10 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
+import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import junit.framework.TestCase;
 
 /**
@@ -52,8 +56,16 @@ public class StatisticsControllerTest extends TestCase {
 
         assertNotNull(resp);
         assertNotNull(resp.getCriterionProductStatisticsResult());
+        
+        //Sort so test works consistently
+        Collections.sort(resp.getCriterionProductStatisticsResult(), new Comparator<CriterionProductStatistics>() {
+            @Override
+            public int compare(CriterionProductStatistics one, CriterionProductStatistics other) {
+                return one.getCertificationCriterionId().compareTo(other.getCertificationCriterionId());
+            }
+        });
         assertEquals(expectedCount, resp.getCriterionProductStatisticsResult().size());
-        assertEquals("170.314 (a)(14)", resp.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
+        assertEquals("170.315 (d)(10)", resp.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
     }
 
     /**

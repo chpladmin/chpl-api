@@ -36,6 +36,7 @@ import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -99,7 +100,7 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloperDeprecated(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
         return update(developerInfo);
     }
 
@@ -115,12 +116,13 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Developer> updateDeveloper(
             @RequestBody(required = true) final UpdateDevelopersRequest developerInfo) throws InvalidArgumentsException,
-            EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
         return update(developerInfo);
     }
 
     private ResponseEntity<Developer> update(final UpdateDevelopersRequest developerInfo)
-            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, JsonProcessingException,
+            ValidationException {
 
         DeveloperDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();

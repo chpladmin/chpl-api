@@ -39,6 +39,7 @@ import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
+import gov.healthit.chpl.web.controller.exception.ValidationException;
 import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import junit.framework.TestCase;
 
@@ -187,7 +188,7 @@ public class DeveloperManagerTest extends TestCase {
 		DeveloperDTO merged = null;
 		try {
 			merged = developerManager.merge(idsToMerge, toCreate);
-		} catch(EntityCreationException | JsonProcessingException | EntityRetrievalException ex) {
+		} catch(EntityCreationException | JsonProcessingException | EntityRetrievalException | ValidationException ex) {
 			fail(ex.getMessage());
 		}
 		
@@ -224,9 +225,27 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	@Test
+	@Test(expected = ValidationException.class) 
 	@Transactional
 	@Rollback
+	public void testMergeDeveloperDuplicateChplProductNumberValidatioError() throws JsonProcessingException, EntityRetrievalException, EntityCreationException, ValidationException {
+	    SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+	    List<Long> idsToMerge = new ArrayList<Long>();
+        idsToMerge.add(-1L);
+        idsToMerge.add(-2L);
+        
+        DeveloperDTO toCreate = new DeveloperDTO();
+        toCreate.setName("dev name");
+        
+        DeveloperDTO merged = null;
+        merged = developerManager.merge(idsToMerge, toCreate);
+        
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive() 
 			throws EntityRetrievalException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
