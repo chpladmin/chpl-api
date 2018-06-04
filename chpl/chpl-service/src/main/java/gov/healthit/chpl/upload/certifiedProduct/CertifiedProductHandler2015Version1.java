@@ -546,6 +546,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
                         String ucdDetails = firstRow.get(currIndex + 1).trim();
 
                         if (!StringUtils.isEmpty(ucdName)) {
+                            cert.setSed(Boolean.TRUE);
                             ucd.setUcdProcessName(ucdName);
                             ucd.setUcdProcessDetails(ucdDetails);
                             UcdProcessDTO dto = ucdDao.getByName(ucd.getUcdProcessName());
@@ -792,6 +793,7 @@ public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler
         for (CSVRecord row : getRecord()) {
             String taskUniqueId = row.get(taskColumnBegin).trim();
             if (!StringUtils.isEmpty(taskUniqueId)) {
+                cert.setSed(Boolean.TRUE);
                 PendingTestTaskEntity taskEntity = null;
                 for (PendingTestTaskEntity task : this.tasks) {
                     if (task.getUniqueId().equals(taskUniqueId)) {

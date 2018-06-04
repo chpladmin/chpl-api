@@ -6,8 +6,8 @@ import java.util.Date;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 
 /**
- * Domain object that represents participant education statistics used for creating charts.
- * @author TYoung
+ * Domain object that represents criterion / product statistics used for creating charts.
+ * @author alarned
  *
  */
 public class CriterionProductStatistics implements Serializable {

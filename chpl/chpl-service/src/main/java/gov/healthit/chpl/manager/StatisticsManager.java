@@ -4,7 +4,9 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -16,6 +18,12 @@ import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsR
  */
 public interface StatisticsManager {
     /**
+     * Retrieves the data used for populating Developers & Products charts.
+     * @return object with data
+     */
+    ListingCountStatisticsResult getListingCountStatisticsResult();
+
+    /**
      * Retrieves that data that will be used for the SED and participant counts chart.
      * @return List of SedParticipantStatisticsCountDTO objects
      */
@@ -26,6 +34,12 @@ public interface StatisticsManager {
      * @return object with data
      */
     CriterionProductStatisticsResult getCriterionProductStatisticsResult();
+
+    /**
+     * Retrieves data used for Incumbent Developers count chart.
+     * @return object with data
+     */
+    IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatisticsResult();
 
     /**
      * Retrieves that data that will be used for the SED/participant/gender counts chart.

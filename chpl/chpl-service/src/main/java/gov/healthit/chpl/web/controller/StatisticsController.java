@@ -2,8 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -16,7 +14,9 @@ import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
+import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -34,10 +34,20 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/statistics")
 public class StatisticsController {
 
-    private static final Logger LOGGER = LogManager.getLogger(StatisticsController.class);
-
     @Autowired
     private StatisticsManager statisticsManager;
+
+    /**
+     * Retrieves and returns the Listing counts.
+     * @return a JSON representation of an ListingCountStatisticsResult object
+     */
+    @ApiOperation(value = "Get count of Developers and Products with listings.",
+            notes = "Retrieves and returns the counts.")
+    @RequestMapping(value = "/listing_count", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ListingCountStatisticsResult getListingCountStatistics() {
+        return statisticsManager.getListingCountStatisticsResult();
+    }
 
     /**
      * Retrieves and returns the Criterion/Product counts.
@@ -49,6 +59,18 @@ public class StatisticsController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
         return statisticsManager.getCriterionProductStatisticsResult();
+    }
+
+    /**
+     * Retrieves and returns the Incumbent Developer counts.
+     * @return a JSON representation of an IncumbentDevelopersStatisticsResult object
+     */
+    @ApiOperation(value = "Get count of new vs. incumbent Developers.",
+            notes = "Retrieves and returns counts grouped by Edition.")
+    @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
+        return statisticsManager.getIncumbentDevelopersStatisticsResult();
     }
 
     /**

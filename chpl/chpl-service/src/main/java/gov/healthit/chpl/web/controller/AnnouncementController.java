@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
@@ -35,21 +34,20 @@ import io.swagger.annotations.ApiOperation;
 public class AnnouncementController {
 
     @Autowired
-    AnnouncementManager announcementManager;
-    @Autowired
-    UserManager userManager;
+    private AnnouncementManager announcementManager;
 
     private static final Logger LOGGER = LogManager.getLogger(AnnouncementController.class);
 
     @ApiOperation(value = "Get all announcements.",
-            notes = "The announcement listing is open to anyone, however announcements may be both public and private and "
-                    + " only public announcements will be returned if a non-authenticated user calls this method. "
-                    + " Both public and private announcements will be returned to an authenticated user."
-                    + " Scheduled future announcements can be retrieved by setting the 'future' flag to true "
-                    + " and only CHPL users with ROLE_ADMIN will be granted access to that data.")
+            notes = "The announcement listing is open to anyone, however announcements may be both public and "
+                    + "private and only public announcements will be returned if a non-authenticated user "
+                    + "calls this method. Both public and private announcements will be returned to an "
+                    + "authenticated user.  Scheduled future announcements can be retrieved by setting the "
+                    + "'future' flag to true and only CHPL users with ROLE_ADMIN will be granted access to "
+                    + "that data.")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody AnnouncementResults getAnnouncements(
-            @RequestParam(required = false, defaultValue = "false") boolean future) {
+            @RequestParam(required = false, defaultValue = "false") final boolean future) {
         AnnouncementResults results = new AnnouncementResults();
         List<AnnouncementDTO> announcements = null;
         if (!future) {
@@ -68,19 +66,38 @@ public class AnnouncementController {
     @ApiOperation(value = "Get a specific announcement.")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") Long announcementId)
+    public @ResponseBody Announcement getAnnouncementById(@PathVariable("announcementId") final Long announcementId)
             throws EntityRetrievalException {
         AnnouncementDTO announcement = announcementManager.getById(announcementId);
 
         return new Announcement(announcement);
     }
 
-    @ApiOperation(value = "Create a new announcement.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED.  Create a new announcement.",
             notes = "Only CHPL users with ROLE_ADMIN are able to create announcements.")
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public Announcement createAnnouncement(@RequestBody Announcement announcementInfo) throws InvalidArgumentsException,
+    public Announcement createDeprecated(@RequestBody final Announcement announcementInfo)
+            throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
+            EntityCreationException, JsonProcessingException {
+
+        return createAnnouncement(announcementInfo);
+    }
+
+    @ApiOperation(value = "Create a new announcement.",
+            notes = "Only CHPL users with ROLE_ADMIN are able to create announcements.")
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public Announcement create(@RequestBody final Announcement announcementInfo) throws InvalidArgumentsException,
             UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+
+        return createAnnouncement(announcementInfo);
+    }
+
+    public Announcement createAnnouncement(Announcement announcementInfo) throws InvalidArgumentsException,
+        UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+
         AnnouncementDTO toCreate = new AnnouncementDTO();
         if (StringUtils.isEmpty(announcementInfo.getTitle())) {
             throw new InvalidArgumentsException("A title is required for a new announcement");
@@ -103,11 +120,31 @@ public class AnnouncementController {
         return new Announcement(toCreate);
     }
 
-    @ApiOperation(value = "Change an existing announcement.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED.  Change an existing announcement.",
             notes = "Only CHPL users with ROLE_ADMIN are able to update announcements.")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public Announcement updateAnnouncement(@RequestBody Announcement announcementInfo) throws InvalidArgumentsException,
+    public Announcement updateDeprecated(@RequestBody final Announcement announcementInfo)
+            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, UpdateCertifiedBodyException {
+
+        return update(announcementInfo);
+    }
+
+    @ApiOperation(value = "Change an existing announcement.",
+            notes = "Only CHPL users with ROLE_ADMIN are able to update announcements.")
+    @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public Announcement updateAnnouncement(@RequestBody final Announcement announcementInfo)
+            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
+            EntityCreationException, UpdateCertifiedBodyException {
+
+        return update(announcementInfo);
+    }
+
+    public Announcement update(final Announcement announcementInfo) throws InvalidArgumentsException,
             EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException {
         AnnouncementDTO toUpdate = new AnnouncementDTO();
         toUpdate.setId(announcementInfo.getId());
@@ -121,11 +158,28 @@ public class AnnouncementController {
         return new Announcement(result);
     }
 
-    @ApiOperation(value = "Delete an existing announcement.",
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED.  Delete an existing announcement.",
             notes = "Only CHPL users with ROLE_ADMIN are able to delete announcements.")
     @RequestMapping(value = "/{announcementId}/delete", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId)
+    public String deleteDeprecated(@PathVariable("announcementId") final Long announcementId)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+
+        return delete(announcementId);
+    }
+
+    @ApiOperation(value = "Delete an existing announcement.",
+            notes = "Only CHPL users with ROLE_ADMIN are able to delete announcements.")
+    @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
+            produces = "application/json; charset=utf-8")
+    public String deleteAnnouncement(@PathVariable("announcementId") final Long announcementId)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+
+        return delete(announcementId);
+    }
+
+    private String delete(final Long announcementId)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
 
         AnnouncementDTO toDelete = announcementManager.getById(announcementId, false);

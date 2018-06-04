@@ -72,7 +72,7 @@ public class ProductVersionController {
     public @ResponseBody ProductVersion getProductVersionById(@PathVariable("versionId") Long versionId)
             throws EntityRetrievalException {
         ProductVersionDTO version = pvManager.getById(versionId);
-        
+
         ProductVersion result = null;
         if (version != null) {
             result = new ProductVersion(version);
@@ -80,17 +80,44 @@ public class ProductVersionController {
         return result;
     }
 
-    @ApiOperation(value = "Update a version or merge versions.",
-            notes = "This method serves two purposes: to update a single version's information and to merge two versions into one. "
-                    + " A user of this service should pass in a single versionId to update just that version. "
-                    + " If multiple version IDs are passed in, the service performs a merge meaning that a new version "
-                    + " is created with all of the information provided and all of the certified products "
-                    + " previously assigned to the old versionIds are reassigned to the newly created version. The "
-                    + " old versions are then deleted. "
+    @Deprecated
+    @ApiOperation(value = "DEPRECATED.  Update a version or merge versions.",
+            notes = "This method serves two purposes: to update a single version's information and to merge two "
+                    + "versions into one.  A user of this service should pass in a single versionId to update just "
+                    + "that version.  If multiple version IDs are passed in, the service performs a merge meaning "
+                    + "that a new version is created with all of the information provided and all of the certified "
+                    + "products previously assigned to the old versionIds are reassigned to the newly created version."
+                    + "  The old versions are then deleted. "
                     + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
     @RequestMapping(value = "/update", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<ProductVersion> updateVersion(@RequestBody(required = true) UpdateVersionsRequest versionInfo)
+    public ResponseEntity<ProductVersion> updateVersionDeprecated(
+            @RequestBody(required = true) final UpdateVersionsRequest versionInfo)
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
+
+        return update(versionInfo);
+    }
+
+    @ApiOperation(value = "Update a version or merge versions.",
+            notes = "This method serves two purposes: to update a single version's information and to merge two "
+                    + "versions into one.  A user of this service should pass in a single versionId to update just "
+                    + "that version.  If multiple version IDs are passed in, the service performs a merge meaning "
+                    + "that a new version is created with all of the information provided and all of the certified "
+                    + "products previously assigned to the old versionIds are reassigned to the newly created version."
+                    + "  The old versions are then deleted. "
+                    + " The logged in user must have ROLE_ADMIN or ROLE_ACB. ")
+    @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public ResponseEntity<ProductVersion> updateVersion(
+            @RequestBody(required = true) final UpdateVersionsRequest versionInfo)
+            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
+            JsonProcessingException {
+
+        return update(versionInfo);
+    }
+
+    private ResponseEntity<ProductVersion> update(final UpdateVersionsRequest versionInfo)
             throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
             JsonProcessingException {
 
@@ -145,4 +172,5 @@ public class ProductVersionController {
         }
         return new ResponseEntity<ProductVersion>(new ProductVersion(result), responseHeaders, HttpStatus.OK);
     }
+
 }
