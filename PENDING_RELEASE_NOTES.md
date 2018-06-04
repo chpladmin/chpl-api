@@ -14,7 +14,6 @@ _Date TBD_
   * Update chart data generation application
   * Add API endpoint to retrieve chart data
 * Fixed duplicate CHPL Product Number issue when editing a product and merging developers
-* Updated the XML and CSV file creation batch process to retrieve data asynchronously
 
 ### Bug Fixes
 * Handle SED boolean parsing and UCD Process existence mistmatch for 2014 upload.
