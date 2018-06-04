@@ -27,7 +27,7 @@ import gov.healthit.chpl.app.NotificationEmailerReportApp;
  * @author alarned
  *
  */
-@Component("cacheStatusAgeApp")
+@Component("cacheStatusAgeJob")
 public class CacheStatusAgeJob extends NotificationEmailerReportApp implements Job {
     private AbstractApplicationContext context;
     /**
