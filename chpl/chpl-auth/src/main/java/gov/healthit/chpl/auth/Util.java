@@ -36,11 +36,6 @@ public class Util {
 		}
 		return false;
 	}
-	
-	public static boolean isUserOnlyRoleAdmin() {
-		User user = getCurrentUser();
-		return isUserRoleAdmin() && user.getPermissions().size() == 1;
-	}
 
 	public static boolean isUserRoleOncStaff() {
 		User user = getCurrentUser();
