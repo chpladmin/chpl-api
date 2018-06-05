@@ -86,8 +86,8 @@ public class CertifiedProductValidationTest {
             + "or 170.315 (g)(9) was found so 170.315 (d)(2) or 170.315 (d)(10) is required but was not found.";
     private static final String MISSING_G1_MACRA_ERROR = "Listing has attested to G1, but no measures have been successfully tested for G1.";
     private static final String MISSING_G2_MACRA_ERROR = "Listing has attested to G2, but no measures have been successfully tested for G2.";
-    private static final String SED_UCD_MISMATCH_ERROR = "Criteria 170.314 (a)(1) has SED set to false but contains UCD Process(es).";
-
+    private static final String SED_UCD_MISMATCH_ERROR = "We changed your pending listing to set the SED boolean to be true for criteria 170.314 (a)(1) because UCD processes were included for that criteria.";
+    
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -551,7 +551,7 @@ public class CertifiedProductValidationTest {
             validator.validate(pendingListing);
         }
 
-        assertTrue(pendingListing.getErrorMessages().contains(SED_UCD_MISMATCH_ERROR));
+        assertTrue(pendingListing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
     }
     
     @Transactional
@@ -582,7 +582,7 @@ public class CertifiedProductValidationTest {
             validator.validate(listing);
         }
 
-        assertTrue(listing.getErrorMessages().contains(SED_UCD_MISMATCH_ERROR));
+        assertTrue(listing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
     }
     
     @Transactional
