@@ -697,7 +697,12 @@ public class CertifiedProductController {
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and approved by an appropriate ACB administrator.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException {
+    public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException, AccessDeniedException {
+    	
+    	if(Util.isUserRoleAdmin()){
+    		throw new AccessDeniedException("Pending products may only be viewed by the ACB Administrators that manage them.");
+    	}
+    	
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         List<PendingCertifiedProductDTO> allProductDtos = new ArrayList<PendingCertifiedProductDTO>();
 
