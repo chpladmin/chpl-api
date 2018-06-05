@@ -699,7 +699,7 @@ public class CertifiedProductController {
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException, AccessDeniedException {
     	
-    	if(Util.isUserRoleAdmin()){
+    	if(Util.isUserOnlyRoleAdmin()){
     		throw new AccessDeniedException("Pending products may only be viewed by the ACB Administrators that manage them.");
     	}
     	

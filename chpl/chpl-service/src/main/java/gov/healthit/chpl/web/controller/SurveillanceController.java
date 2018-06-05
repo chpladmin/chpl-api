@@ -110,7 +110,7 @@ public class SurveillanceController implements MessageSourceAware {
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SurveillanceResults getAllPendingSurveillanceForAcbUser() throws AccessDeniedException {
     	
-    	if(Util.isUserRoleAdmin()){
+    	if(Util.isUserOnlyRoleAdmin()){
     		throw new AccessDeniedException("Pending surveillances may only be viewed by the ACB Administrators that manage them.");
     	}
     	

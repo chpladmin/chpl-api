@@ -1,5 +1,8 @@
 package gov.healthit.chpl.auth;
 
+import java.util.ArrayList;
+import java.util.Set;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,6 +35,11 @@ public class Util {
 			}
 		}
 		return false;
+	}
+	
+	public static boolean isUserOnlyRoleAdmin() {
+		User user = getCurrentUser();
+		return isUserRoleAdmin() && user.getPermissions().size() == 1;
 	}
 
 	public static boolean isUserRoleOncStaff() {
