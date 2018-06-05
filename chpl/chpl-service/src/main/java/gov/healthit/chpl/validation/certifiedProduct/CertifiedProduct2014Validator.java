@@ -377,7 +377,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                         }
                     } else if(cert.getSed() != null && cert.getSed().booleanValue() == false && 
                             cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
-                        product.getErrorMessages().add(
+                        product.getWarningMessages().add(
                                 getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
                     }
                 }
@@ -458,7 +458,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                         }
                     } else if(cert.isSed() != null && cert.isSed().booleanValue() == false && 
                             certHasUcdProcess(cert, product.getSed().getUcdProcesses())) {
-                        product.getErrorMessages().add(
+                        product.getWarningMessages().add(
                                 getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
                     }
                 }

@@ -35,14 +35,18 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
@@ -80,12 +84,17 @@ public class CertifiedProductValidationTest {
             + "or 170.315 (g)(9) was found so 170.315 (d)(9) is required but was not found.";
     private static final String G7G8G9_D2D10_MISSING_ERROR = "Certification criterion 170.315 (g)(7) or 170.315 (g)(8) "
             + "or 170.315 (g)(9) was found so 170.315 (d)(2) or 170.315 (d)(10) is required but was not found.";
-    private static final String SED_UCD_MISMATCH_ERROR = "Criteria 170.314 (a)(1) has SED set to false but contains UCD Process(es).";
+    private static final String MISSING_G1_MACRA_ERROR = "Listing has attested to G1, but no measures have been successfully tested for G1.";
+    private static final String MISSING_G2_MACRA_ERROR = "Listing has attested to G2, but no measures have been successfully tested for G2.";
+    private static final String SED_UCD_MISMATCH_ERROR = "We changed your pending listing to set the SED boolean to be true for criteria 170.314 (a)(1) because UCD processes were included for that criteria.";
     
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
+    @Autowired
+    MacraMeasureDAO mmDao;
+    
     @Autowired
     CertifiedProductValidatorFactory validatorFactory;
 
@@ -542,7 +551,7 @@ public class CertifiedProductValidationTest {
             validator.validate(pendingListing);
         }
 
-        assertTrue(pendingListing.getErrorMessages().contains(SED_UCD_MISMATCH_ERROR));
+        assertTrue(pendingListing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
     }
     
     @Transactional
@@ -573,7 +582,7 @@ public class CertifiedProductValidationTest {
             validator.validate(listing);
         }
 
-        assertTrue(listing.getErrorMessages().contains(SED_UCD_MISMATCH_ERROR));
+        assertTrue(listing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
     }
     
     @Transactional
@@ -995,6 +1004,198 @@ public class CertifiedProductValidationTest {
         assertFalse(listing.getErrorMessages().contains(G7G8G9_D1_MISSING_ERROR));
         assertFalse(listing.getErrorMessages().contains(G7G8G9_D9_MISSING_ERROR));
         assertFalse(listing.getErrorMessages().contains(G7G8G9_D2D10_MISSING_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG1MissingG1MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(1)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertTrue(pendingListing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG2MissingG2MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(2)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertTrue(pendingListing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG1HasG1MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(1)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        pendingCertResult2.getG1MacraMeasures().add(crmm);
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertFalse(pendingListing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG2HasG2MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(2)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        pendingCertResult2.getG2MacraMeasures().add(crmm);
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertFalse(pendingListing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG1MissingG1MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(1)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertTrue(listing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG2MissingG2MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(2)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertTrue(listing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG1HasG1MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(1)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(certResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        certResult2.getG1MacraMeasures().add(new MacraMeasure(mmDto));
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertFalse(listing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG2HasG2MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(2)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(certResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        certResult2.getG2MacraMeasures().add(new MacraMeasure(mmDto));
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertFalse(listing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
     }
     
     private PendingCertifiedProductDTO createPendingListing(String year) {
