@@ -1,6 +1,6 @@
 package gov.healthit.chpl.domain.schedule;
 
-import org.quartz.Trigger;
+import org.quartz.CronTrigger;
 
 import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
 
@@ -9,22 +9,41 @@ import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
  * @author alarned
  *
  */
-public abstract class ChplTrigger {
+public class ChplTrigger {
     private String name;
     private String group;
     private String jobName;
     private String jobGroup;
     private ScheduleTypeConcept scheduleType;
+    private String cronSchedule;
+    private String email;
+
+    ChplTrigger() { }
+
+    /**
+     * Constructor based on CHPL trigger.
+     * @param chplTrigger the quartz trigger
+     */
+    ChplTrigger(final ChplTrigger chplTrigger) {
+        this.name = chplTrigger.getName();
+        this.group = chplTrigger.getGroup();
+        this.jobName = chplTrigger.getJobName();
+        this.jobGroup = chplTrigger.getJobGroup();
+        this.cronSchedule = chplTrigger.getCronSchedule();
+        this.email = chplTrigger.getEmail();
+    }
 
     /**
      * Constructor based on Quartz trigger.
      * @param quartzTrigger the quartz trigger
      */
-    ChplTrigger(final Trigger quartzTrigger) {
+    public ChplTrigger(final CronTrigger quartzTrigger) {
         this.name = quartzTrigger.getKey().getName();
         this.group = quartzTrigger.getKey().getGroup();
         this.jobName = quartzTrigger.getJobKey().getName();
         this.jobGroup = quartzTrigger.getJobKey().getName();
+        this.cronSchedule = quartzTrigger.getCronExpression();
+        this.email = quartzTrigger.getJobDataMap().getString("email");
     }
 
     public String getName() {
@@ -65,5 +84,21 @@ public abstract class ChplTrigger {
 
     public void setScheduleType(final ScheduleTypeConcept scheduleType) {
         this.scheduleType = scheduleType;
+    }
+
+    public String getCronSchedule() {
+        return cronSchedule;
+    }
+
+    public void setCronSchedule(final String cronSchedule) {
+        this.cronSchedule = cronSchedule;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(final String email) {
+        this.email = email;
     }
 }
