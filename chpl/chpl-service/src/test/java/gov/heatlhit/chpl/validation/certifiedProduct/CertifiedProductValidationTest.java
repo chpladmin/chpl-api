@@ -35,12 +35,20 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidator;
 import gov.healthit.chpl.validation.certifiedProduct.CertifiedProductValidatorFactory;
@@ -76,11 +84,17 @@ public class CertifiedProductValidationTest {
             + "or 170.315 (g)(9) was found so 170.315 (d)(9) is required but was not found.";
     private static final String G7G8G9_D2D10_MISSING_ERROR = "Certification criterion 170.315 (g)(7) or 170.315 (g)(8) "
             + "or 170.315 (g)(9) was found so 170.315 (d)(2) or 170.315 (d)(10) is required but was not found.";
+    private static final String MISSING_G1_MACRA_ERROR = "Listing has attested to G1, but no measures have been successfully tested for G1.";
+    private static final String MISSING_G2_MACRA_ERROR = "Listing has attested to G2, but no measures have been successfully tested for G2.";
+    private static final String SED_UCD_MISMATCH_ERROR = "We changed your pending listing to set the SED boolean to be true for criteria 170.314 (a)(1) because UCD processes were included for that criteria.";
     
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 
+    @Autowired
+    MacraMeasureDAO mmDao;
+    
     @Autowired
     CertifiedProductValidatorFactory validatorFactory;
 
@@ -103,7 +117,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingMissingTestToolVersionHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
@@ -125,7 +139,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingWithTestToolVersionNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
@@ -148,7 +162,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingBadTestToolNameHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO nonexistentTestTool = new PendingCertificationResultTestToolDTO();
@@ -170,7 +184,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingTestToolNameNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
         PendingCertificationResultTestToolDTO existingTestTool = new PendingCertificationResultTestToolDTO();
@@ -192,7 +206,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingRetiredTestToolNoIcsHasError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         pendingListing.setIcs(Boolean.FALSE);
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
@@ -216,7 +230,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingRetiredTestToolIcsConflictHasWarning() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         pendingListing.setIcs(Boolean.TRUE);
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (b)(4)");
@@ -240,7 +254,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingRetiredTestToolHasIcsNoError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         pendingListing.setUniqueId("15.07.07.2642.IC04.36.01.1.160402");
         pendingListing.setIcs(Boolean.TRUE);
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
@@ -265,7 +279,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingE2ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (e)(2)");
         pendingCertResults.add(pendingCertResult);
@@ -288,7 +302,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingE3ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (e)(3)");
         pendingCertResults.add(pendingCertResult);
@@ -311,7 +325,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingE2ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (e)(2)");
         pendingCertResults.add(pendingCertResult);
@@ -344,7 +358,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingE3ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (e)(3)");
         pendingCertResults.add(pendingCertResult);
@@ -377,7 +391,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingG7ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(7)");
         pendingCertResults.add(pendingCertResult);
@@ -398,7 +412,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingG8ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(8)");
         pendingCertResults.add(pendingCertResult);
@@ -419,7 +433,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingG9ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(9)");
         pendingCertResults.add(pendingCertResult);
@@ -440,7 +454,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingG7ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(7)");
         pendingCertResults.add(pendingCertResult);
@@ -467,7 +481,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingG8ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(8)");
         pendingCertResults.add(pendingCertResult);
@@ -494,7 +508,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validatePendingG9ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        PendingCertifiedProductDTO pendingListing = createPendingListing();
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
         List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
         PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(9)");
         pendingCertResults.add(pendingCertResult);
@@ -519,9 +533,64 @@ public class CertifiedProductValidationTest {
     @Transactional
     @Rollback(true)
     @Test
+    public void validatePendingSedUcdMismatchHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2014");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.314 (a)(1)");
+        pendingCertResult.setSed(Boolean.FALSE);
+        PendingCertificationResultUcdProcessDTO pendingUcd = new PendingCertificationResultUcdProcessDTO();
+        pendingUcd.setUcdProcessDetails("UCD Process Details");
+        pendingUcd.setUcdProcessName("UCD Process Name");
+        pendingCertResult.getUcdProcesses().add(pendingUcd);
+        pendingCertResults.add(pendingCertResult);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertTrue(pendingListing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSedUcdMismatchHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2014");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.314 (a)(1)");
+        certResult.setSed(Boolean.FALSE);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+        CertifiedProductSed sed = new CertifiedProductSed();
+        UcdProcess ucdProcess = new UcdProcess();
+        ucdProcess.setDetails("UCD Process Details");
+        ucdProcess.setName("UCD Process Name");
+        CertificationCriterion criteria = new CertificationCriterion();
+        criteria.setCertificationEdition("2014");
+        criteria.setCertificationEditionId(2L);
+        criteria.setNumber("170.314 (a)(1)");
+        ucdProcess.getCriteria().add(criteria);
+        sed.getUcdProcesses().add(ucdProcess);
+        listing.setSed(sed);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertTrue(listing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
     public void validateMissingTestToolVersionHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (b)(4)");
         CertificationResultTestTool existingTestTool = new CertificationResultTestTool();
@@ -543,7 +612,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateWithTestToolVersionNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (b)(4)");
         CertificationResultTestTool existingTestTool = new CertificationResultTestTool();
@@ -566,7 +635,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateBadTestToolNameHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (b)(4)");
         CertificationResultTestTool nonexistentTestTool = new CertificationResultTestTool();
@@ -588,7 +657,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateTestToolNameNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (b)(4)");
         CertificationResultTestTool existingTestTool = new CertificationResultTestTool();
@@ -610,7 +679,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateRetiredTestToolNoIcsHasError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (b)(4)");
         CertificationResultTestTool existingTestTool = new CertificationResultTestTool();
@@ -633,7 +702,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateRetiredTestToolIcsConflictHasWarning() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(Boolean.TRUE);
         listing.setIcs(ics);
@@ -659,7 +728,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateRetiredTestToolHasIcsNoError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         listing.setChplProductNumber("15.07.07.2642.IC04.36.01.1.160402");
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(Boolean.TRUE);
@@ -686,7 +755,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateE2ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (e)(2)");
         certResults.add(certResult);
@@ -709,7 +778,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateE3ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (e)(3)");
         certResults.add(certResult);
@@ -732,7 +801,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateE2ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (e)(2)");
         certResults.add(certResult);
@@ -765,7 +834,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateE3ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (e)(3)");
         certResults.add(certResult);
@@ -798,7 +867,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateG7ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (g)(7)");
         certResults.add(certResult);
@@ -819,7 +888,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateG8ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (g)(8)");
         certResults.add(certResult);
@@ -840,7 +909,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateG9ComplimentaryCertsHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (g)(9)");
         certResults.add(certResult);
@@ -861,7 +930,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateG7ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (g)(7)");
         certResults.add(certResult);
@@ -888,7 +957,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateG8ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (g)(8)");
         certResults.add(certResult);
@@ -915,7 +984,7 @@ public class CertifiedProductValidationTest {
     @Test
     public void validateG9ComplimentaryCertsNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
-        CertifiedProductSearchDetails listing = createListing();
+        CertifiedProductSearchDetails listing = createListing("2015");
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult certResult = createCertResult("170.315 (g)(9)");
         certResults.add(certResult);
@@ -937,7 +1006,199 @@ public class CertifiedProductValidationTest {
         assertFalse(listing.getErrorMessages().contains(G7G8G9_D2D10_MISSING_ERROR));
     }
     
-    private PendingCertifiedProductDTO createPendingListing() {
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG1MissingG1MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(1)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertTrue(pendingListing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG2MissingG2MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(2)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertTrue(pendingListing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG1HasG1MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(1)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        pendingCertResult2.getG1MacraMeasures().add(crmm);
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertFalse(pendingListing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingHasG2HasG2MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (g)(2)");
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO pendingCertResult2 = createPendingCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(pendingCertResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        pendingCertResult2.getG2MacraMeasures().add(crmm);
+        pendingCertResults.add(pendingCertResult2);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertFalse(pendingListing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG1MissingG1MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(1)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertTrue(listing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG2MissingG2MacrasHasExpectedErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(2)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertTrue(listing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG1HasG1MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(1)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(certResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        certResult2.getG1MacraMeasures().add(new MacraMeasure(mmDto));
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertFalse(listing.getErrorMessages().contains(MISSING_G1_MACRA_ERROR));
+    }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateHasG2HasG2MacrasNoErrors() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (g)(2)");
+        certResults.add(certResult);
+        CertificationResult certResult2 = createCertResult("170.315 (a)(3)");
+        PendingCertificationResultMacraMeasureDTO crmm = new PendingCertificationResultMacraMeasureDTO();
+        crmm.setEnteredValue("EH/CAH Stage 3");
+        crmm.setMacraMeasureId(98L);
+        MacraMeasureDTO mmDto = mmDao.getByCriteriaNumberAndValue(certResult2.getNumber(), crmm.getEnteredValue());
+        crmm.setMacraMeasure(mmDto);
+        certResult2.getG2MacraMeasures().add(new MacraMeasure(mmDto));
+        certResults.add(certResult2);
+        listing.setCertificationResults(certResults);
+        
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+
+        assertFalse(listing.getErrorMessages().contains(MISSING_G2_MACRA_ERROR));
+    }
+    
+    private PendingCertifiedProductDTO createPendingListing(String year) {
         PendingCertifiedProductDTO pendingListing = new PendingCertifiedProductDTO();
         String certDateString = "11-09-2016";
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -948,11 +1209,17 @@ public class CertifiedProductValidationTest {
             fail(ex.getMessage());
         }
         pendingListing.setId(1L); 
-        pendingListing.setCertificationEdition("2015");
-        pendingListing.setCertificationEditionId(3L);
         pendingListing.setIcs(false);
-        pendingListing.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
-        pendingListing.setPracticeType(null);
+        pendingListing.setCertificationEdition(year);
+        if(year.equals("2015")) {
+            pendingListing.setCertificationEditionId(3L);
+            pendingListing.setUniqueId("15.07.07.2642.IC04.36.00.1.160402");
+        } else if(year.equals("2014")) {
+            pendingListing.setCertificationEditionId(2L);
+            pendingListing.setUniqueId("14.07.07.2642.IC04.36.00.1.160402");
+            pendingListing.setPracticeType("Ambulatory");
+            pendingListing.setProductClassificationName("Modular EHR");
+        }
         return pendingListing;
     }
     
@@ -979,7 +1246,7 @@ public class CertifiedProductValidationTest {
         return pendingCertResult;
     }
     
-    private CertifiedProductSearchDetails createListing() {
+    private CertifiedProductSearchDetails createListing(String year) {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         String certDateString = "11-09-2016";
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -990,10 +1257,18 @@ public class CertifiedProductValidationTest {
             fail(ex.getMessage());
         }
         listing.setId(1L); 
-        listing.getCertificationEdition().put("name", "2015");
-        listing.getCertificationEdition().put("id", "3");
-        listing.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
-        listing.setPracticeType(null);
+        if(year.equals("2015")) {
+            listing.getCertificationEdition().put("name", "2015");
+            listing.getCertificationEdition().put("id", "3");
+            listing.setChplProductNumber("15.07.07.2642.IC04.36.00.1.160402");
+            listing.setPracticeType(null);
+        } else if(year.equals("2014")) {
+            listing.getCertificationEdition().put("name", "2014");
+            listing.getCertificationEdition().put("id", "2");
+            listing.setChplProductNumber("14.07.07.2642.IC04.36.00.1.160402");
+            listing.getPracticeType().put("name", "Ambulatory");
+            listing.getClassificationType().put("name", "Modular EHR");
+        }
         InheritedCertificationStatus ics = new InheritedCertificationStatus();
         ics.setInherits(Boolean.FALSE);
         listing.setIcs(ics);

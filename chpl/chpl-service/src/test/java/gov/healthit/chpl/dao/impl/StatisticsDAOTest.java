@@ -174,7 +174,7 @@ public class StatisticsDAOTest extends TestCase {
         Long totalDevelopers2015Listings = developerStatisticsDao
                 .getTotalDevelopersWithListingsByEditionAndStatus(dateRange, "2015", null);
         assertNotNull(totalDevelopers2015Listings);
-        assertEquals(3L, totalDevelopers2015Listings.longValue()); 
+        assertEquals(4L, totalDevelopers2015Listings.longValue()); 
     }
 
 
@@ -257,7 +257,7 @@ public class StatisticsDAOTest extends TestCase {
         Long totalListings = listingStatisticsDao
                 .getTotalListingsByEditionAndStatus(dateRange, null, null); 
         assertNotNull(totalListings);
-        assertEquals(16L, totalListings.longValue()); 
+        assertEquals(18L, totalListings.longValue()); 
     }
 
     @Test
@@ -266,7 +266,7 @@ public class StatisticsDAOTest extends TestCase {
         Long totalListings = listingStatisticsDao
                 .getTotalListingsByEditionAndStatus(null, null, null); 
         assertNotNull(totalListings);
-        assertEquals(16L, totalListings.longValue()); 
+        assertEquals(18L, totalListings.longValue()); 
     }
 
     @Test
@@ -278,7 +278,7 @@ public class StatisticsDAOTest extends TestCase {
         Long totalListings = listingStatisticsDao
                 .getTotalListingsByEditionAndStatus(dateRange, null, null); 
         assertNotNull(totalListings);
-        assertEquals(17L, totalListings.longValue()); 
+        assertEquals(19L, totalListings.longValue()); 
     }
 
     @Test
@@ -290,7 +290,7 @@ public class StatisticsDAOTest extends TestCase {
         Long totalListings = listingStatisticsDao
                 .getTotalListingsByEditionAndStatus(dateRange, null, null); 
         assertNotNull(totalListings);
-        assertEquals(16L, totalListings.longValue()); 
+        assertEquals(18L, totalListings.longValue()); 
     }
 
     /**
@@ -373,7 +373,7 @@ public class StatisticsDAOTest extends TestCase {
         Long total2015Listings = listingStatisticsDao
                 .getTotalListingsByEditionAndStatus(dateRange, "2015", null); 
         assertNotNull(total2015Listings);
-        assertEquals(10L, total2015Listings.longValue()); 
+        assertEquals(12L, total2015Listings.longValue()); 
     }
 
     /**

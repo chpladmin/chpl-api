@@ -1,14 +1,5 @@
 package gov.healthit.chpl.dao.impl;
 
-import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,6 +16,15 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.EntityCreationException;
+import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
+import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
+
 /**
  * Certified Product DAO.
  * @author alarned
@@ -35,8 +35,9 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductDAOImpl.class);
     private static final int CHPL_ID_LENGTH = 9;
     @Autowired
-    MessageSource messageSource;
+    private MessageSource messageSource;
 
+    @Override
     @Transactional(readOnly = false)
     public CertifiedProductDTO create(final CertifiedProductDTO dto) throws EntityCreationException {
 
@@ -126,6 +127,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         }
     }
 
+    @Override
     @Transactional(readOnly = false)
     public CertifiedProductDTO update(final CertifiedProductDTO dto) throws EntityRetrievalException {
 
@@ -167,6 +169,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return new CertifiedProductDTO(entity);
     }
 
+    @Override
     @Transactional(readOnly = false)
     public CertifiedProductDTO updateMeaningfulUseUsers(final CertifiedProductDTO dto)
             throws EntityRetrievalException, IOException {
@@ -193,6 +196,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         }
     }
 
+    @Override
     @Transactional(readOnly = false)
     public void delete(final Long productId) {
         // TODO: How to delete this without leaving orphans
@@ -202,6 +206,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         query.executeUpdate();
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findAll() {
         List<CertifiedProductDetailsEntity> entities = entityManager
@@ -218,6 +223,24 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return products;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> findByDeveloperId(final Long developerId) {
+        Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE (NOT deleted = true) " + "AND cpd.developerId = :developerId ",
+                CertifiedProductDetailsEntity.class);
+        query.setParameter("developerId", developerId);
+        List<CertifiedProductDetailsEntity> entities = query.getResultList();
+        List<CertifiedProductDetailsDTO> products = new ArrayList<>(entities.size());
+
+        for (CertifiedProductDetailsEntity entity : entities) {
+            CertifiedProductDetailsDTO product = new CertifiedProductDetailsDTO(entity);
+            products.add(product);
+        }
+        return products;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByEdition(final String edition) {
         Query query = entityManager.createQuery("SELECT cpd " + "FROM CertifiedProductDetailsEntity cpd "
@@ -233,6 +256,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return products;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findWithSurveillance() {
 
@@ -250,6 +274,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return products;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findWithInheritance() {
 
@@ -265,6 +290,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return products;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public CertifiedProductDTO getById(final Long productId) throws EntityRetrievalException {
 
@@ -277,6 +303,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dto;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public CertifiedProductDTO getByChplNumber(final String chplProductNumber) {
         CertifiedProductDTO dto = null;
@@ -288,6 +315,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dto;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public CertifiedProductDetailsDTO getByChplUniqueId(final String chplUniqueId) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = null;
@@ -304,6 +332,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dto;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDTO> getByVersionIds(final List<Long> versionIds) {
         Query query = entityManager.createQuery(
@@ -337,6 +366,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dtoResults;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public CertifiedProductDetailsDTO getDetailsById(final Long cpId) throws EntityRetrievalException {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
@@ -351,6 +381,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return new CertifiedProductDetailsDTO(results.get(0));
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByIds(final List<Long> productIds)
             throws EntityRetrievalException {
@@ -376,6 +407,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dtos;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(final List<String> chplProductNumbers) {
         if ((null == chplProductNumbers) || (chplProductNumbers.size() == 0)) {
@@ -400,6 +432,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dtos;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByVersionId(final Long versionId) {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
@@ -415,6 +448,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dtoResults;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByProductId(final Long productId) {
         Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
@@ -430,6 +464,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dtoResults;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByAcbIds(final List<Long> acbIds) {
         Query query = entityManager.createQuery(
@@ -445,6 +480,7 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
         return dtoResults;
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getDetailsByVersionAndAcbIds(final Long versionId,
             final List<Long> acbIds) {

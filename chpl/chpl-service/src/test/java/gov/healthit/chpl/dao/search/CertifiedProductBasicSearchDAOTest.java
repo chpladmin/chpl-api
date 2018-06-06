@@ -52,7 +52,7 @@ public class CertifiedProductBasicSearchDAOTest extends TestCase {
 		System.out.println("Search took " + ((endDate.getTime() - startDate.getTime())/1000) + " seconds");
 		
 		assertNotNull(results);
-		assertEquals(16, results.size());
+		assertEquals(18, results.size());
 		
 		boolean checkedCriteria = false;
 		boolean checkedCqms = false;
