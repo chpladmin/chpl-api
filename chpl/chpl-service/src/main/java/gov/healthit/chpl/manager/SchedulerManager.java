@@ -25,10 +25,12 @@ public interface SchedulerManager {
 
     /**
      * Delete an existing Trigger.
+     * @param scheduleType type of schedule
      * @param triggerId existing trigger ID
      * @throws SchedulerException if scheduler has an issue
+     * @throws ValidationException if job values aren't correct
      */
-    void deleteTrigger(String triggerId) throws SchedulerException;
+    void deleteTrigger(String scheduleType, String triggerId) throws SchedulerException, ValidationException;
 
     /**
      * Get all active Triggers.
@@ -36,4 +38,13 @@ public interface SchedulerManager {
      * @return the triggers
      */
     List<ChplTrigger> getAllTriggers() throws SchedulerException;
+
+    /**
+     * Update trigger with new data.
+     * @param trigger old trigger
+     * @return updated trigger
+     * @throws SchedulerException if scheduler has issue
+     * @throws ValidationException if job values aren't correct
+     */
+    ChplTrigger updateTrigger(ChplTrigger trigger) throws SchedulerException, ValidationException;
 }

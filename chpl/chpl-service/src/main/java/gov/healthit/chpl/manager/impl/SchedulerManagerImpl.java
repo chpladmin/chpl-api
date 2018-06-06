@@ -43,8 +43,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
         JobKey jobId;
         switch (trigger.getScheduleType()) {
         case CACHE_STATUS_AGE_NOTIFICATION:
-            triggerId = triggerKey("cacheStatusAgeTrigger-" + trigger.getEmail(), "group1");
-            jobId = jobKey("cacheStatusAgeJob", "group1");
+            triggerId = triggerKey(trigger.getEmail().replaceAll("\\.",  "_"), "cacheStatusAgeTrigger");
+            jobId = jobKey("cacheStatusAgeJob", "chplJobs");
             break;
         default:
             throw new ValidationException("invalid data");
@@ -66,9 +66,17 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public void deleteTrigger(final String triggerId) throws SchedulerException {
+    public void deleteTrigger(final String scheduleType, final String triggerId)
+            throws SchedulerException, ValidationException {
         Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-        TriggerKey triggerKey = triggerKey(triggerId);
+        TriggerKey triggerKey;
+        switch (scheduleType) {
+        case "CACHE_STATUS_AGE_NOTIFICATION":
+            triggerKey = triggerKey(triggerId, "cacheStatusAgeTrigger");
+            break;
+        default:
+            throw new ValidationException("invalid data");
+        }
         scheduler.unscheduleJob(triggerKey);
     }
 
@@ -92,5 +100,31 @@ public class SchedulerManagerImpl implements SchedulerManager {
             }
         }
         return triggers;
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
+        Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        Trigger oldTrigger;
+        switch (trigger.getScheduleType()) {
+        case CACHE_STATUS_AGE_NOTIFICATION:
+            oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), "cacheStatusAgeTrigger"));
+            break;
+        default:
+            throw new ValidationException("invalid data");
+        }
+        Trigger qzTrigger = newTrigger()
+                .withIdentity(oldTrigger.getKey())
+                .startNow()
+                .forJob(oldTrigger.getJobKey())
+                .usingJobData(oldTrigger.getJobDataMap())
+                .withSchedule(cronSchedule(trigger.getCronSchedule()))
+                .build();
+        scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
+
+        ChplTrigger newTrigger = new ChplTrigger((CronTrigger) qzTrigger);
+        newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
+        return newTrigger;
     }
 }

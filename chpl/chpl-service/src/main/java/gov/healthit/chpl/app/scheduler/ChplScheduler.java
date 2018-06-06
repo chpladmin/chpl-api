@@ -23,18 +23,18 @@ public final class ChplScheduler {
     public static void main(final String[] args) {
         try {
             Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
-            scheduler.start();
+//            scheduler.start();
 
 //                JobDetail cacheStatusAgeJob = newJob(CacheStatusAgeJob.class)
-//                        .withIdentity("cacheStatusAgeJob", "group1")
+//                        .withIdentity("cacheStatusAgeJob", "chplJobs")
 //                        .storeDurably()
 //                        .build();
 //                scheduler.addJob(cacheStatusAgeJob, true);
 //    
 //                Trigger cacheStatusAgeTrigger = newTrigger()
-//                        .withIdentity("cacheStatusAgeTrigger-alarned@ainq.com", "group1")
+//                        .withIdentity("alarned@ainq_com", "cacheStatusAgeTrigger")
 //                        .startNow()
-//                        .forJob(jobKey("cacheStatusAgeJob", "group1"))
+//                        .forJob(jobKey("cacheStatusAgeJob", "chplJobs"))
 //                        .usingJobData("email", "alarned@ainq.com")
 //                        .withSchedule(cronSchedule("0 13 * * * ?"))
 //                        .build();
