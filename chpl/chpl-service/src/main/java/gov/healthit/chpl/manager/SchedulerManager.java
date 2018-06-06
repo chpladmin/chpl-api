@@ -3,7 +3,6 @@ package gov.healthit.chpl.manager;
 import java.util.List;
 
 import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
 
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.web.controller.exception.ValidationException;

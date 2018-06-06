@@ -9,8 +9,6 @@ import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.CronTrigger;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -33,8 +31,6 @@ import gov.healthit.chpl.web.controller.exception.ValidationException;
  */
 @Service
 public class SchedulerManagerImpl implements SchedulerManager {
-    private static final Logger LOGGER = LogManager.getLogger(SchedulerManagerImpl.class);
-
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {

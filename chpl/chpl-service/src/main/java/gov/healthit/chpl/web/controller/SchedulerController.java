@@ -2,11 +2,8 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,13 +28,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/schedules")
 public class SchedulerController {
 
-    private static final Logger LOGGER = LogManager.getLogger(SchedulerController.class);
-
     @Autowired
     private SchedulerManager schedulerManager;
-
-    @Autowired
-    private MessageSource messageSource;
 
     /**
      * Create a new Trigger based on passed information.
@@ -89,7 +81,7 @@ public class SchedulerController {
 
     /**
      * Update an existing Trigger based on passed information.
-     * @param trigger input
+     * @param trigger input trigger
      * @return the updated trigger
      * @throws SchedulerException if exception is thrown
      * @throws ValidationException if job values aren't correct
