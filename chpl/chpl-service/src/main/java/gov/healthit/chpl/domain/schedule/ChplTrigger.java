@@ -1,5 +1,7 @@
 package gov.healthit.chpl.domain.schedule;
 
+import java.io.Serializable;
+
 import org.quartz.CronTrigger;
 
 import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
@@ -9,7 +11,9 @@ import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
  * @author alarned
  *
  */
-public class ChplTrigger {
+public class ChplTrigger implements Serializable {
+    private static final long serialVersionUID = -2569776712615051892L;
+
     private String name;
     private String group;
     private String jobName;

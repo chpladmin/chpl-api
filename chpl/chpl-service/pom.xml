@@ -20,15 +20,15 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!-- Core utilities used by other modules. Define this if you use 
+        <!-- Core utilities used by other modules. Define this if you use
             Spring Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
-        <!-- Spring MVC for Servlet Environments (depends on spring-core, 
-            spring-beans, spring-context, spring-web) Define this if you use Spring MVC 
+        <!-- Spring MVC for Servlet Environments (depends on spring-core,
+            spring-beans, spring-context, spring-web) Define this if you use Spring MVC
             with a Servlet Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -93,7 +93,7 @@
             <version>1.5.4</version>
         </dependency>
 
-        <!-- Optional for caching. Used to log stuff <dependency> <groupId>ch.qos.logback</groupId> 
+        <!-- Optional for caching. Used to log stuff <dependency> <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId> <version>1.0.13</version> </dependency> -->
 
         <!-- Spring caching framework inside this -->
@@ -423,16 +423,16 @@
                 </reportSets>
             </plugin>
             <plugin>
-              <groupId>org.codehaus.mojo</groupId>
-              <artifactId>findbugs-maven-plugin</artifactId>
-              <version>3.0.5</version>
-              <configuration>
-                <effort>Max</effort>
-                <!--<threshold>Low</threshold>-->
-                <threshold>High</threshold>
-                <xmlOutput>true</xmlOutput>
-                <failOnError>false</failOnError>
-              </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.5</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                    <!--<threshold>High</threshold> -->
+                    <xmlOutput>true</xmlOutput>
+                    <failOnError>false</failOnError>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>
@@ -447,7 +447,7 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- this plugin copies the correct resource into the 
+                    <!-- this plugin copies the correct resource into the
                         jar -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -473,10 +473,10 @@
                         </executions>
                     </plugin>
 
-                    <!-- this plugin will allow files in environment-specific 
-                        folders like resources-prod or resources-test to be added to the resulting 
-                        war's classpath under WEB-INF/classes to activate the profile, simply add 
-                        '-Denv=production' to your maven build command this also works fine with 
+                    <!-- this plugin will allow files in environment-specific
+                        folders like resources-prod or resources-test to be added to the resulting
+                        war's classpath under WEB-INF/classes to activate the profile, simply add
+                        '-Denv=production' to your maven build command this also works fine with
                         war:inplace and war:exploded -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -484,14 +484,14 @@
                         <version>2.4</version>
                         <configuration>
                             <webResources>
-                                <!-- note the order of the following resource 
-                                    elements are important. if there are duplicate files, the first file copied 
+                                <!-- note the order of the following resource
+                                    elements are important. if there are duplicate files, the first file copied
                                     will win -->
                                 <resource>
-                                    <!-- this is relative to the pom.xml 
+                                    <!-- this is relative to the pom.xml
                                         directory -->
                                     <directory>src/main/resources-${env}</directory>
-                                    <!-- override default destination at 
+                                    <!-- override default destination at
                                         root of war -->
                                     <targetPath>WEB-INF/classes</targetPath>
                                 </resource>
