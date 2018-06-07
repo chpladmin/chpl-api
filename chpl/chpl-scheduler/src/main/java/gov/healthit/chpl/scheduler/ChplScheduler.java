@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.scheduler;
+package gov.healthit.chpl.scheduler;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

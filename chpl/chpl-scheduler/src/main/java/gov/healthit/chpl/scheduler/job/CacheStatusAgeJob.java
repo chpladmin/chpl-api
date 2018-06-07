@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.scheduler;
+package gov.healthit.chpl.scheduler.job;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,8 +18,8 @@ import org.quartz.JobExecutionException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import gov.healthit.chpl.app.AppConfig;
-import gov.healthit.chpl.app.NotificationEmailerReportApp;
+import gov.healthit.chpl.scheduler.AppConfig;
+import gov.healthit.chpl.scheduler.NotificationEmailerReportApp;
 
 /**
  * Job run by Scheduler to send email when the cache is "too old".
