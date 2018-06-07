@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 15.13.1
+_6 June 2018_
+
+### Bug Fixes
+* Handle blank or null test tool version in listing updates.
+
+---
+
 ## Version 15.13.0
 _4 June 2018_
 
