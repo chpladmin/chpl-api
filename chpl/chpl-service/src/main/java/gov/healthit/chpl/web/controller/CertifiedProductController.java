@@ -700,7 +700,10 @@ public class CertifiedProductController {
     public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException, AccessDeniedException {
     	
     	if(!Util.isUserRoleAcbAdmin()){
-    		throw new AccessDeniedException("Pending products may only be viewed by the ACB Administrators that manage them.");
+    		throw new AccessDeniedException(String
+                    .format(messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("access.pendingCertifiedProducts"),
+                            LocaleContextHolder.getLocale())));
     	}
     	
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
