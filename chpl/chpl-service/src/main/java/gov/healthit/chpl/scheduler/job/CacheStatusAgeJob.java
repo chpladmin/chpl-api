@@ -18,15 +18,14 @@ import org.quartz.JobExecutionException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import gov.healthit.chpl.scheduler.AppConfig;
-import gov.healthit.chpl.scheduler.NotificationEmailerReportApp;
+import gov.healthit.chpl.app.AppConfig;
 
 /**
  * Job run by Scheduler to send email when the cache is "too old".
  * @author alarned
  *
  */
-public class CacheStatusAgeJob extends NotificationEmailerReportApp implements Job {
+public class CacheStatusAgeJob extends gov.healthit.chpl.app.NotificationEmailerReportApp implements Job {
     private AbstractApplicationContext context;
     /**
      * Default constructor.

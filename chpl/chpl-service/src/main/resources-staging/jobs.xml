@@ -13,7 +13,7 @@
             <group>chplJobs</group>
 
             <description>Allow subscribers to get notifications if the cache has become "too old".</description>
-            <job-class>gov.healthit.chpl.app.scheduler.CacheStatusAgeJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.CacheStatusAgeJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
