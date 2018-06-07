@@ -12,11 +12,12 @@ import javax.sql.DataSource;
 
 class LocalDataSource implements DataSource, Serializable {
 
+    private static final long serialVersionUID = -1588397337637695831L;
     private String connectionString;
     private String username;
     private String password;
 
-    LocalDataSource(String connectionString, String username, String password) {
+    LocalDataSource(final String connectionString, final String username, final String password) {
         this.connectionString = connectionString;
         this.username = username;
         this.password = password;
@@ -26,7 +27,7 @@ class LocalDataSource implements DataSource, Serializable {
         return DriverManager.getConnection(connectionString, username, password);
     }
 
-    public Connection getConnection(String username, String password) throws SQLException {
+    public Connection getConnection(final String username, final String password) throws SQLException {
         return null;
     }
 
@@ -51,13 +52,13 @@ class LocalDataSource implements DataSource, Serializable {
     }
 
     @Override
-    public <T> T unwrap(Class<T> iface) throws SQLException {
+    public <T> T unwrap(final Class<T> iface) throws SQLException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+    public boolean isWrapperFor(final Class<?> iface) throws SQLException {
         // TODO Auto-generated method stub
         return false;
     }

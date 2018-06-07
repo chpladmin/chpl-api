@@ -8,8 +8,6 @@ import java.util.Properties;
 
 import org.springframework.context.support.AbstractApplicationContext;
 
-import gov.healthit.chpl.scheduler.LocalContext;
-import gov.healthit.chpl.scheduler.LocalContextFactory;
 import gov.healthit.chpl.scheduler.job.CacheStatusAgeJob;
 
 public abstract class App {
@@ -29,7 +27,9 @@ public abstract class App {
         String downloadFolderPath = getProperties().getProperty("downloadFolderPath");
         File downloadFolder = new File(downloadFolderPath);
         if (!downloadFolder.exists()) {
-            downloadFolder.mkdirs();
+            if (!downloadFolder.mkdirs()) {
+                throw new IOException("Could not make download file path");
+            }
         }
         return downloadFolder;
     }

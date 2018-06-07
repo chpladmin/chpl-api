@@ -2,8 +2,6 @@ package gov.healthit.chpl.scheduler;
 
 import javax.naming.spi.NamingManager;
 
-import gov.healthit.chpl.scheduler.LocalContext;
-
 public class LocalContextFactory {
     /**
      * do not instantiate this class directly. Use the factory method.
@@ -11,7 +9,7 @@ public class LocalContextFactory {
     private LocalContextFactory() {
     }
 
-    public static LocalContext createLocalContext(String databaseDriver) throws Exception {
+    public static LocalContext createLocalContext(final String databaseDriver) throws Exception {
 
         try {
             LocalContext ctx = new LocalContext();

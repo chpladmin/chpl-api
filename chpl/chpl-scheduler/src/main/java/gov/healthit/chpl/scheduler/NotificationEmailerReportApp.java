@@ -6,7 +6,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import gov.healthit.chpl.scheduler.App;
 import gov.healthit.chpl.auth.SendMailUtil;
 
 public abstract class NotificationEmailerReportApp extends App {

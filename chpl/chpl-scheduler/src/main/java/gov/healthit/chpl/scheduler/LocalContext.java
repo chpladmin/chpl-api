@@ -10,8 +10,6 @@ import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
 
-import gov.healthit.chpl.scheduler.LocalDataSource;
-
 public class LocalContext extends InitialContext implements InitialContextFactoryBuilder, InitialContextFactory {
 
     Map<Object, Object> dataSources;
@@ -21,21 +19,22 @@ public class LocalContext extends InitialContext implements InitialContextFactor
         dataSources = new HashMap<Object, Object>();
     }
 
-    public void addDataSource(String name, String connectionString, String username, String password) {
+    public void addDataSource(final String name, final String connectionString,
+            final String username, final String password) {
         this.dataSources.put(name, new LocalDataSource(connectionString, username, password));
     }
 
-    public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> hsh) throws NamingException {
+    public InitialContextFactory createInitialContextFactory(final Hashtable<?, ?> hsh) throws NamingException {
         dataSources.putAll(hsh);
         return this;
     }
 
-    public Context getInitialContext(Hashtable<?, ?> arg0) throws NamingException {
+    public Context getInitialContext(final Hashtable<?, ?> arg0) throws NamingException {
         return this;
     }
 
     @Override
-    public Object lookup(String name) throws NamingException {
+    public Object lookup(final String name) throws NamingException {
         Object ret = dataSources.get(name);
         return (ret != null) ? ret : super.lookup(name);
     }
