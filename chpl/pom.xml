@@ -11,7 +11,6 @@
   	<module>chpl-api</module>
     <module>chpl-service</module>
     <module>chpl-auth</module>
-    <module>chpl-scheduler</module>
   </modules>
 
   <dependencies>
