@@ -10,6 +10,7 @@ public class TestFunctionality implements Serializable {
     private String name;
     private String description;
     private String year;
+    private PracticeType practiceType;
 
     public TestFunctionality() {
     }
@@ -19,6 +20,9 @@ public class TestFunctionality implements Serializable {
         this.name = dto.getNumber();
         this.description = dto.getName();
         this.year = dto.getYear();
+        if (dto.getPracticeType() != null) {
+            this.setPracticeType(new PracticeType(dto.getPracticeType()));
+        }
     }
 
     public Long getId() {
@@ -51,5 +55,19 @@ public class TestFunctionality implements Serializable {
 
     public void setYear(final String year) {
         this.year = year;
+    }
+
+    /**
+     * @return the practiceType
+     */
+    public PracticeType getPracticeType() {
+        return practiceType;
+    }
+
+    /**
+     * @param practiceType the practiceType to set
+     */
+    public void setPracticeType(final PracticeType practiceType) {
+        this.practiceType = practiceType;
     }
 }
