@@ -251,14 +251,16 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 PracticeType pt = new PracticeType();
                 pt.setId(product.getPracticeTypeId());
                 pt.setName(product.getPracticeType());
-
+    
                 product.getErrorMessages().addAll(
                         getPendingTestFunctionalityValidationErrors(
                                 EDITION_ID,
                                 pt,
                                 product.getCertificationCriterion()));
             } catch (EntityRetrievalException e) {
-                //TODO - what to do here???
+                product.getErrorMessages().add(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityException"),
+                        LocaleContextHolder.getLocale()));
             }
         }
         if (product.getProductClassificationId() == null) {
@@ -475,7 +477,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 product.getErrorMessages().addAll(
                         getTestFunctionalityValidationErrors(EDITION_ID, pt, product.getCertificationResults()));
             } catch (EntityRetrievalException e) {
-                // TODO - what to do here???
+                product.getErrorMessages().add(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("listing.criteria.testFunctionalityException"),
+                        LocaleContextHolder.getLocale()));
             }
         }
 
