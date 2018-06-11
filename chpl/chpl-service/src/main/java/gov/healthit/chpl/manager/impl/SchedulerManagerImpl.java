@@ -124,7 +124,6 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return newTrigger;
     }
 
-
     private Scheduler getScheduler() throws SchedulerException {
         StdSchedulerFactory sf = new StdSchedulerFactory();
         sf.initialize("quartz.manager.properties");
