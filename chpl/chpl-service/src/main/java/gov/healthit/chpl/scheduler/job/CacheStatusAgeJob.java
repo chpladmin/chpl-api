@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
@@ -15,26 +17,35 @@ import javax.mail.internet.AddressException;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
 
-import gov.healthit.chpl.app.AppConfig;
+import gov.healthit.chpl.auth.SendMailUtil;
 
 /**
  * Job run by Scheduler to send email when the cache is "too old".
  * @author alarned
  *
  */
-public class CacheStatusAgeJob extends gov.healthit.chpl.app.NotificationEmailerReportApp implements Job {
-    private AbstractApplicationContext context;
+public class CacheStatusAgeJob implements Job {
+    private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
+    private Properties properties;
+
     /**
      * Default constructor.
-     * @throws Exception if context can't be configured
+     * @throws IOException if unable to load properties
      */
-    public CacheStatusAgeJob() throws Exception {
-        this.setLocalContext();
-        context = new AnnotationConfigApplicationContext(AppConfig.class);
-        initiateSpringBeans(context);
+    public CacheStatusAgeJob() throws IOException {
+        if (properties == null || properties.isEmpty()) {
+            InputStream in = CacheStatusAgeJob.class.getClassLoader()
+                    .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+            if (in == null) {
+                properties = null;
+                throw new FileNotFoundException("Environment Properties File not found in class path.");
+            } else {
+                properties = new Properties();
+                properties.load(in);
+                in.close();
+            }
+        }
     }
 
     /**
@@ -43,7 +54,6 @@ public class CacheStatusAgeJob extends gov.healthit.chpl.app.NotificationEmailer
      * @param jobContext for context of the job
      * @throws JobExecutionException if necessary
      */
-
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         try {
@@ -58,13 +68,11 @@ public class CacheStatusAgeJob extends gov.healthit.chpl.app.NotificationEmailer
         } catch (IOException e) {
             e.printStackTrace();
         }
-        context.close();
     }
 
     private boolean isCacheOld() throws UnsupportedEncodingException, IOException {
-        Properties props = getProperties();
         Pattern agePattern = Pattern.compile("\"age\": (\\d*)");
-        URL statusUrl = new URL(props.getProperty("cacheStatusMaxAgeUrl"));
+        URL statusUrl = new URL(properties.getProperty("cacheStatusMaxAgeUrl"));
         InputStreamReader isr =  new InputStreamReader(statusUrl.openStream(), "UTF-8");
         BufferedReader in = new BufferedReader(isr);
 
@@ -80,7 +88,7 @@ public class CacheStatusAgeJob extends gov.healthit.chpl.app.NotificationEmailer
                 return false;
             }
             long age = Long.parseLong(ageMatcher.group(1));
-            return (age > Long.parseLong(props.getProperty("cacheStatusMaxAge")));
+            return (age > Long.parseLong(properties.getProperty("cacheStatusMaxAge")));
         } finally {
             in.close();
             isr.close();
@@ -89,12 +97,12 @@ public class CacheStatusAgeJob extends gov.healthit.chpl.app.NotificationEmailer
 
     private void sendEmail(final String recipient)
             throws IOException, AddressException, MessagingException {
-        Properties props = getProperties();
 
-        String subject = props.getProperty("cacheStatusMaxAgeSubject");
+        String subject = properties.getProperty("cacheStatusMaxAgeSubject");
         String htmlMessage = createHtmlEmailBody();
 
-        this.getMailUtils().sendEmail(recipient, subject, htmlMessage, null, props);
+        SendMailUtil mailUtil = new SendMailUtil();
+        mailUtil.sendEmail(recipient, subject, htmlMessage, null, properties);
     }
 
     private String createHtmlEmailBody() {
