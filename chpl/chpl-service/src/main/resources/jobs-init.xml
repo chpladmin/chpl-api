@@ -30,7 +30,20 @@
                         <value>alarned@ainq.com</value>
                     </entry>
                 </job-data-map>
-                <cron-expression>0 13 * * * ?</cron-expression>
+                <cron-expression>0 10 * * * ?</cron-expression>
+            </cron>
+            <cron>
+                <name>amore@ainq_com</name>
+                <group>cacheStatusAgeTrigger</group>
+                <job-name>cacheStatusAgeJob</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <cron-expression>0 10 10 * * ?</cron-expression>
             </cron>
         </trigger>
     </schedule>
