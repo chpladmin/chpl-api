@@ -252,6 +252,7 @@ pip-log.txt
 /chpl/chpl-service/src/main/resources/environment.properties
 /chpl/chpl-service/src/main/resources/quartz.properties
 /chpl/chpl-service/src/main/resources/quartz.init.properties
+/chpl/chpl-service/src/main/resources/quartz.manager.properties
 /chpl/chpl-service/src/main/resources-dev/environment.properties
 /chpl/chpl-service/src/main/resources-staging/environment.properties
 /chpl/chpl-service/src/main/resources-production/environment.properties

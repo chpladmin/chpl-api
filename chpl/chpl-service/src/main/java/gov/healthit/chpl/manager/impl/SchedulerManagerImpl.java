@@ -101,7 +101,9 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
-        Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        StdSchedulerFactory sf = new StdSchedulerFactory();
+            sf.initialize("quartz.manager.properties");
+        Scheduler scheduler = sf.getScheduler();
         Trigger oldTrigger;
         switch (trigger.getScheduleType()) {
         case CACHE_STATUS_AGE_NOTIFICATION:
