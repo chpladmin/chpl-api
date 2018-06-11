@@ -34,7 +34,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
-        Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        Scheduler scheduler = getScheduler();
         TriggerKey triggerId;
         JobKey jobId;
         switch (trigger.getScheduleType()) {
@@ -64,7 +64,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public void deleteTrigger(final String scheduleType, final String triggerId)
             throws SchedulerException, ValidationException {
-        Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        Scheduler scheduler = getScheduler();
         TriggerKey triggerKey;
         switch (scheduleType) {
         case "CACHE_STATUS_AGE_NOTIFICATION":
@@ -80,7 +80,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public List<ChplTrigger> getAllTriggers() throws SchedulerException {
         ArrayList<ChplTrigger> triggers = new ArrayList<ChplTrigger>();
-        Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+        Scheduler scheduler = getScheduler();
         for (String group: scheduler.getTriggerGroupNames()) {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
@@ -101,9 +101,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
-        StdSchedulerFactory sf = new StdSchedulerFactory();
-            sf.initialize("quartz.manager.properties");
-        Scheduler scheduler = sf.getScheduler();
+        Scheduler scheduler = getScheduler();
         Trigger oldTrigger;
         switch (trigger.getScheduleType()) {
         case CACHE_STATUS_AGE_NOTIFICATION:
@@ -124,5 +122,13 @@ public class SchedulerManagerImpl implements SchedulerManager {
         ChplTrigger newTrigger = new ChplTrigger((CronTrigger) qzTrigger);
         newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
         return newTrigger;
+    }
+
+
+    private Scheduler getScheduler() throws SchedulerException {
+        StdSchedulerFactory sf = new StdSchedulerFactory();
+        sf.initialize("quartz.manager.properties");
+        Scheduler scheduler = sf.getScheduler();
+        return scheduler;
     }
 }
