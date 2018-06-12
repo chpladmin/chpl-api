@@ -73,7 +73,7 @@ public class ListingsByEditionResourceCreatorApp extends CertifiedProductDownloa
             throws IOException {
         Date start = new Date();
         String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                getTimestampFormat().format(new Date()), "csv");
+                getTimestampFormat().format(new Date()), "xml");
         File xmlFile = getFile(xmlFilename);
         CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
         xmlPresenter.presentAsFile(xmlFile, results);
