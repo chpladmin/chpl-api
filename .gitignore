@@ -262,6 +262,5 @@ pip-log.txt
 /chpl/chpl-service/logs/
 /chpl/deploy-webapp.sh
 /chpl/.recommenders/
-prod-api.sh
-thaw-api.sh
-ooc-api.sh
+*-api.sh
+push-*.sh
