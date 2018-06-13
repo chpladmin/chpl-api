@@ -92,15 +92,15 @@ public class CertifiedProductValidationTest {
             + "or 170.315 (g)(9) was found so 170.315 (d)(9) is required but was not found.";
     private static final String G7G8G9_D2D10_MISSING_ERROR = "Certification criterion 170.315 (g)(7) or 170.315 (g)(8) "
             + "or 170.315 (g)(9) was found so 170.315 (d)(2) or 170.315 (d)(10) is required but was not found.";
-    private static final String MISSING_G1_MACRA_ERROR = "Listing has attested to G1, "
-            + "but no measures have been successfully tested for G1.";
-    private static final String MISSING_G2_MACRA_ERROR = "Listing has attested to G2, "
-            + "but no measures have been successfully tested for G2.";
+    private static final String MISSING_G1_MACRA_ERROR = "Listing has attested to (g)(1), "
+            + "but no measures have been successfully tested for (g)(1).";
+    private static final String MISSING_G2_MACRA_ERROR = "Listing has attested to (g)(2), "
+            + "but no measures have been successfully tested for (g)(2).";
     private static final String SED_UCD_MISMATCH_ERROR = "We changed your pending listing to set the SED boolean to "
             + "be true for criteria 170.314 (a)(1) because UCD processes were included for that criteria.";
-    private static final String SED_FOUND_WITHOUT_SED_CRITERIA_ERROR = "Listing has attested to G3, "
+    private static final String SED_FOUND_WITHOUT_SED_CRITERIA_ERROR = "Listing has attested to (g)(3), "
             + "but no criteria were found attesting to SED.";
-    private static final String SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR = "Listing has not attested to G3, "
+    private static final String SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR = "Listing has not attested to (g)(3), "
             + "but at least one criteria was found attesting to SED.";
 
     @Rule
