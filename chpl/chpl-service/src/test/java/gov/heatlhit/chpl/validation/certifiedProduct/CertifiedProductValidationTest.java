@@ -87,6 +87,10 @@ public class CertifiedProductValidationTest {
     private static final String MISSING_G1_MACRA_ERROR = "Listing has attested to G1, but no measures have been successfully tested for G1.";
     private static final String MISSING_G2_MACRA_ERROR = "Listing has attested to G2, but no measures have been successfully tested for G2.";
     private static final String SED_UCD_MISMATCH_ERROR = "We changed your pending listing to set the SED boolean to be true for criteria 170.314 (a)(1) because UCD processes were included for that criteria.";
+    private static final String SED_FOUND_WITHOUT_SED_CRITERIA_ERROR = "Listing has attested to G3, "
+            + "but no criteria were found attesting to SED.";
+    private static final String SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR = "Listing has not attested to G3, "
+            + "but at least one criteria was found attesting to SED.";
     
     @Rule
     @Autowired
@@ -584,7 +588,141 @@ public class CertifiedProductValidationTest {
 
         assertTrue(listing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
     }
-    
+
+    /**
+     * OCD-1778: SED business rule.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSedTrueAnd2015G3TrueHasNoError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (a)(1)");
+        certResult.setSed(Boolean.TRUE);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+        CertificationResult sedCertResult = createCertResult("170.315 (g)(3)");
+        certResults.add(sedCertResult);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+        assertFalse(listing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+        assertFalse(listing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSedTrueAnd2014G3TrueHasNoError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2014");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.314 (a)(1)");
+        certResult.setSed(Boolean.TRUE);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+        CertificationResult sedCertResult = createCertResult("170.314 (g)(3)");
+        certResults.add(sedCertResult);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+        assertFalse(listing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+        assertFalse(listing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSedFalseAnd2015G3TrueHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult sedCertResult = createCertResult("170.315 (g)(3)");
+        certResults.add(sedCertResult);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+        assertTrue(listing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSedFalseAnd2014G3TrueHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2014");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult sedCertResult = createCertResult("170.314 (g)(3)");
+        certResults.add(sedCertResult);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+        assertTrue(listing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSedTrueAnd2014G3FalseHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2014");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.314 (a)(1)");
+        certResult.setSed(Boolean.TRUE);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+        assertTrue(listing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validateSedTrueAnd2015G3FalseHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        CertifiedProductSearchDetails listing = createListing("2015");
+        List<CertificationResult> certResults = new ArrayList<CertificationResult>();
+        CertificationResult certResult = createCertResult("170.315 (a)(1)");
+        certResult.setSed(Boolean.TRUE);
+        certResults.add(certResult);
+        listing.setCertificationResults(certResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(listing);
+        if (validator != null) {
+            validator.validate(listing);
+        }
+        assertTrue(listing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
     @Transactional
     @Rollback(true)
     @Test
