@@ -36,10 +36,6 @@ public class TestFunctionalityEntity {
     @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
     private CertificationEditionEntity certificationEdition;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
-    private PracticeTypeEntity practiceType;
-
     public Long getId() {
         return id;
     }
@@ -126,13 +122,5 @@ public class TestFunctionalityEntity {
 
     public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
         this.certificationEdition = certificationEdition;
-    }
-
-    public PracticeTypeEntity getPracticeType() {
-        return practiceType;
-    }
-
-    public void setPracticeType(final PracticeTypeEntity practiceType) {
-        this.practiceType = practiceType;
     }
 }
