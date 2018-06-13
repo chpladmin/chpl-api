@@ -709,11 +709,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         validateDemographics(product);
         weirdCharacterCheck(product);
-        sedMismatch(product);
 
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if ((cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
-                if (cert.getGap() != null && cert.getGap().booleanValue() == true) {
+            if ((cert.getMeetsCriteria() == null || !cert.getMeetsCriteria().booleanValue())) {
+                if (cert.getGap() != null && cert.getGap().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -942,11 +941,10 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         validateDemographics(product);
         weirdCharacterCheck(product);
-        sedMismatch(product);
 
         for (CertificationResult cert : product.getCertificationResults()) {
-            if ((cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
-                if (cert.isGap() != null && cert.isGap().booleanValue() == true) {
+            if ((cert.isSuccess() == null || !cert.isSuccess().booleanValue())) {
+                if (cert.isGap() != null && cert.isGap().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -1161,11 +1159,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         // valid URL format.");
         // }
 
+        boolean foundSedCriteria = false;
+        boolean attestsToSed = false;
+
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() == null) {
                 product.getErrorMessages()
                 .add("0 or 1 is required to inidicate whether " + cert.getNumber() + " was met.");
-            } else if (cert.getMeetsCriteria() == Boolean.TRUE) {
+            } else if (cert.getMeetsCriteria().booleanValue()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() == null) {
                     product.getErrorMessages().add(String.format(
                             messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
@@ -1186,7 +1187,20 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             LocaleContextHolder.getLocale()),
                             cert.getNumber()));
                 }
+                if (cert.getSed() != null && cert.getSed().booleanValue()) {
+                    foundSedCriteria = true;
+                }
+                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
+                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
+                    attestsToSed = true;
+                }
             }
+        }
+        if (foundSedCriteria && !attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
+        }
+        if (!foundSedCriteria && attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
 
@@ -1248,26 +1262,30 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add(msg);
         }
 
+        boolean foundSedCriteria = false;
+        boolean attestsToSed = false;
+
         for (CertificationResult cert : product.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
                     product.getErrorMessages().add(String.format(
                             messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
                                     LocaleContextHolder.getLocale()), cert.getNumber()));
                 }
-                // Jennifer asked to take out the test procedure validation for
-                // existing products
-                // so that when users are on the edit screen, they are not
-                // required
-                // to have test procedures for all certifications
-                // if (certRules.hasCertOption(cert.getNumber(),
-                // CertificationResultRules.TEST_PROCEDURE_VERSION) &&
-                // (cert.getTestProcedures() == null ||
-                // cert.getTestProcedures().size() == 0)) {
-                // product.getErrorMessages().add("Test Procedures are required
-                // for certification " + cert.getNumber() + ".");
-                // }
+                if (cert.isSed() != null && cert.isSed()) {
+                    foundSedCriteria = true;
+                }
+                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
+                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
+                    attestsToSed = true;
+                }
             }
+        }
+        if (foundSedCriteria && !attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
+        }
+        if (!foundSedCriteria && attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
 
@@ -1623,64 +1641,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             ucd.getDetails(), "UCD Process Details '" + ucd.getDetails() + "'");
                 }
             }
-        }
-    }
-
-    private void sedMismatch(final PendingCertifiedProductDTO listing) {
-        boolean foundSedCriteria = false;
-        boolean attestsToSed = false;
-        for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
-                if (cert.getSed() != null && cert.getSed().booleanValue()) {
-                    foundSedCriteria = true;
-                }
-                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
-                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
-                    attestsToSed = true;
-                }
-
-            }
-        }
-        if (foundSedCriteria && !attestsToSed) {
-            listing.getErrorMessages().add(String.format(
-                    messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.foundSedCriteriaWithoutAttestingSed"),
-                            LocaleContextHolder.getLocale())));
-        }
-        if (!foundSedCriteria && attestsToSed) {
-            listing.getErrorMessages().add(String.format(
-                    messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.foundNoSedCriteriaButAttestingSed"),
-                            LocaleContextHolder.getLocale())));
-        }
-    }
-
-    private void sedMismatch(final CertifiedProductSearchDetails listing) {
-        boolean foundSedCriteria = false;
-        boolean attestsToSed = false;
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess()) {
-                if (cert.isSed() != null && cert.isSed()) {
-                    foundSedCriteria = true;
-                }
-                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
-                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
-                    attestsToSed = true;
-                }
-
-            }
-        }
-        if (foundSedCriteria && !attestsToSed) {
-            listing.getErrorMessages().add(String.format(
-                    messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.foundSedCriteriaWithoutAttestingSed"),
-                            LocaleContextHolder.getLocale())));
-        }
-        if (!foundSedCriteria && attestsToSed) {
-            listing.getErrorMessages().add(String.format(
-                    messageSource.getMessage(
-                            new DefaultMessageSourceResolvable("listing.criteria.foundNoSedCriteriaButAttestingSed"),
-                            LocaleContextHolder.getLocale())));
         }
     }
 
