@@ -61,6 +61,8 @@
                     <!--<threshold>High</threshold> -->
                     <xmlOutput>true</xmlOutput>
                     <failOnError>false</failOnError>
+                    <findbugsXmlOutput>true</findbugsXmlOutput>
+                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
                 </configuration>
             </plugin>
         </plugins>
