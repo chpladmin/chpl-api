@@ -591,7 +591,8 @@ public class CertifiedProductValidationTest {
 
     /**
      * OCD-1778: SED business rule.
-     */
+      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+    */
     @Transactional
     @Rollback(true)
     @Test
@@ -602,9 +603,9 @@ public class CertifiedProductValidationTest {
         CertificationResult certResult = createCertResult("170.315 (a)(1)");
         certResult.setSed(Boolean.TRUE);
         certResults.add(certResult);
-        listing.setCertificationResults(certResults);
         CertificationResult sedCertResult = createCertResult("170.315 (g)(3)");
         certResults.add(sedCertResult);
+        listing.setCertificationResults(certResults);
 
         CertifiedProductValidator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
@@ -616,7 +617,8 @@ public class CertifiedProductValidationTest {
 
     /**
      * OCD-1778: SED business rule.
-     */
+      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+    */
     @Transactional
     @Rollback(true)
     @Test
@@ -627,9 +629,9 @@ public class CertifiedProductValidationTest {
         CertificationResult certResult = createCertResult("170.314 (a)(1)");
         certResult.setSed(Boolean.TRUE);
         certResults.add(certResult);
-        listing.setCertificationResults(certResults);
         CertificationResult sedCertResult = createCertResult("170.314 (g)(3)");
         certResults.add(sedCertResult);
+        listing.setCertificationResults(certResults);
 
         CertifiedProductValidator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
@@ -641,6 +643,7 @@ public class CertifiedProductValidationTest {
 
     /**
      * OCD-1778: SED business rule.
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -651,6 +654,7 @@ public class CertifiedProductValidationTest {
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult sedCertResult = createCertResult("170.315 (g)(3)");
         certResults.add(sedCertResult);
+        listing.setCertificationResults(certResults);
 
         CertifiedProductValidator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
@@ -661,6 +665,7 @@ public class CertifiedProductValidationTest {
 
     /**
      * OCD-1778: SED business rule.
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -671,6 +676,7 @@ public class CertifiedProductValidationTest {
         List<CertificationResult> certResults = new ArrayList<CertificationResult>();
         CertificationResult sedCertResult = createCertResult("170.314 (g)(3)");
         certResults.add(sedCertResult);
+        listing.setCertificationResults(certResults);
 
         CertifiedProductValidator validator = validatorFactory.getValidator(listing);
         if (validator != null) {
@@ -681,6 +687,7 @@ public class CertifiedProductValidationTest {
 
     /**
      * OCD-1778: SED business rule.
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)
@@ -702,7 +709,8 @@ public class CertifiedProductValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule.
+     * OCD-1778: SED business rule. 
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
     @Rollback(true)

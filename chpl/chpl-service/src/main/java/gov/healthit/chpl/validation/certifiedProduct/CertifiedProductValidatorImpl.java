@@ -941,6 +941,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         validateDemographics(product);
         weirdCharacterCheck(product);
+        sedMismatch(product);
 
         for (CertificationResult cert : product.getCertificationResults()) {
             if ((cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
@@ -1621,6 +1622,35 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             ucd.getDetails(), "UCD Process Details '" + ucd.getDetails() + "'");
                 }
             }
+        }
+    }
+
+    private void sedMismatch(final CertifiedProductSearchDetails listing) {
+        boolean foundSedCriteria = false;
+        boolean attestsToSed = false;
+        for (CertificationResult cert : listing.getCertificationResults()) {
+            if (cert.isSuccess() != null && cert.isSuccess()) {
+                if (cert.isSed() != null && cert.isSed()) {
+                    foundSedCriteria = true;
+                }
+                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
+                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
+                    attestsToSed = true;
+                }
+
+            }
+        }
+        if (foundSedCriteria && !attestsToSed) {
+            listing.getErrorMessages().add(String.format(
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.criteria.foundSedCriteriaWithoutAttestingSed"),
+                            LocaleContextHolder.getLocale())));
+        }
+        if (!foundSedCriteria && attestsToSed) {
+            listing.getErrorMessages().add(String.format(
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.criteria.foundNoSedCriteriaButAttestingSed"),
+                            LocaleContextHolder.getLocale())));
         }
     }
 
