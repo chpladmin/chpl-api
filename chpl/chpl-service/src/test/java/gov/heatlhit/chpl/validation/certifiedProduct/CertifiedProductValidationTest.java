@@ -589,6 +589,165 @@ public class CertifiedProductValidationTest {
         assertTrue(listing.getWarningMessages().contains(SED_UCD_MISMATCH_ERROR));
     }
 
+    
+    
+    
+    
+    
+    /**
+     * OCD-1778: SED business rule.
+      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+    */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingSedTrueAnd2015G3TrueHasNoError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (a)(1)");
+        pendingCertResult.setSed(Boolean.TRUE);
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO sedCertResult = createPendingCertResult("170.315 (g)(3)");
+        pendingCertResults.add(sedCertResult);
+
+        pendingListing.setCertificationCriterion(pendingCertResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertFalse(pendingListing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+        assertFalse(pendingListing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+    */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingSedTrueAnd2014G3TrueHasNoError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2014");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.314 (a)(1)");
+        pendingCertResult.setSed(Boolean.TRUE);
+        pendingCertResults.add(pendingCertResult);
+        PendingCertificationResultDTO sedCertResult = createPendingCertResult("170.314 (g)(3)");
+        pendingCertResults.add(sedCertResult);
+
+        pendingListing.setCertificationCriterion(pendingCertResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+
+        assertFalse(pendingListing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+        assertFalse(pendingListing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingSedFalseAnd2015G3TrueHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO sedCertResult = createPendingCertResult("170.315 (g)(3)");
+        pendingCertResults.add(sedCertResult);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+        assertTrue(pendingListing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingSedFalseAnd2014G3TrueHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2014");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO sedCertResult = createPendingCertResult("170.314 (g)(3)");
+        pendingCertResults.add(sedCertResult);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+        assertTrue(pendingListing.getErrorMessages().contains(SED_FOUND_WITHOUT_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingSedTrueAnd2014G3FalseHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2014");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.314 (a)(1)");
+        pendingCertResult.setSed(Boolean.TRUE);
+        pendingCertResults.add(pendingCertResult);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+        assertTrue(pendingListing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
+    /**
+     * OCD-1778: SED business rule.
+     * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
+     */
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void validatePendingSedTrueAnd2015G3FalseHasError() {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        PendingCertifiedProductDTO pendingListing = createPendingListing("2015");
+        List<PendingCertificationResultDTO> pendingCertResults = new ArrayList<PendingCertificationResultDTO>();
+        PendingCertificationResultDTO pendingCertResult = createPendingCertResult("170.315 (a)(1)");
+        pendingCertResult.setSed(Boolean.TRUE);
+        pendingCertResults.add(pendingCertResult);
+        pendingListing.setCertificationCriterion(pendingCertResults);
+
+        CertifiedProductValidator validator = validatorFactory.getValidator(pendingListing);
+        if (validator != null) {
+            validator.validate(pendingListing);
+        }
+        assertTrue(pendingListing.getErrorMessages().contains(SED_NOT_FOUND_WITH_SED_CRITERIA_ERROR));
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
     /**
      * OCD-1778: SED business rule.
       * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
@@ -709,7 +868,7 @@ public class CertifiedProductValidationTest {
     }
 
     /**
-     * OCD-1778: SED business rule. 
+     * OCD-1778: SED business rule.
      * Listing may attest to SED criteria (g3) iff it attests SED to at least one criteria.
      */
     @Transactional
