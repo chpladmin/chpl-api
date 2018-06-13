@@ -8,6 +8,7 @@ _Date TBD_
 * Added Quartz Scheduler component
   * Includes API endpoints for GET/PUT/POST/DELETE of schedule Triggers
   * Converted Cache Status Age app to Cache Status Age Quartz Job
+* Updated validation to ensure (g)(3) certification is valid iff at least one criteria attests to SED
 
 ### Bug fixes
 * Fix a bug that allows ROLE_ADMIN to see pending certified products and surveillances

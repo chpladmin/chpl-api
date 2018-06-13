@@ -167,95 +167,95 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
      * Look for required complimentary criteria; if any one of the
      * criterionToCheck is present in allCriteriaMet then all of the
      * complimentaryCertNumbers must be present in allCriteriaMet.
-     * 
+     *
      * @param criterionToCheck
      * @param allCriteriaMet
      * @param complimentaryCertNumbers
      * @return a list of error messages
      */
-    protected List<String> checkComplimentaryCriteriaAllRequired(List<String> criterionToCheck, 
-            List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
+    protected List<String> checkComplimentaryCriteriaAllRequired(final List<String> criterionToCheck,
+            final List<String> complimentaryCertNumbers, final List<String> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
         if (hasAnyCert) {
             for (String complimentaryCert : complimentaryCertNumbers) {
                 boolean hasComplimentaryCert = hasCert(complimentaryCert, allCriteriaMet);
-                
+
                 if (!hasComplimentaryCert) {
-                    String criterionErrorString = "";
-                    for(int i = 0; i < criterionToCheck.size(); i++) {
+                    StringBuffer criteriaBuffer = new StringBuffer();
+                    for (int i = 0; i < criterionToCheck.size(); i++) {
                         String checkedCriteria = criterionToCheck.get(i);
-                        if(i > 0) {
-                            criterionErrorString += " or ";
+                        if (i > 0) {
+                            criteriaBuffer.append(" or ");
                         }
-                        criterionErrorString += checkedCriteria;
+                        criteriaBuffer.append(checkedCriteria);
                     }
-                    errors.add("Certification criterion " + criterionErrorString + " was found so "
+                    errors.add("Certification criterion " + criteriaBuffer.toString() + " was found so "
                             + complimentaryCert + " is required but was not found.");
                 }
             }
         }
         return errors;
     }
-    
+
     /**
      * Look for required complimentary criteria; if any one of the
      * criterionToCheck is present in allCriteriaMet, then any one
      * of the complimentaryCertNumbers must also be present in allCriteriaMet
-     * 
+     *
      * @param criterionToCheck
      * @param allCriteriaMet
      * @param complimentaryCertNumbers
      * @return a list of error messages
      */
-    protected List<String> checkComplimentaryCriteriaAnyRequired(List<String> criterionToCheck, 
-            List<String> complimentaryCertNumbers, List<String> allCriteriaMet) {
+    protected List<String> checkComplimentaryCriteriaAnyRequired(final List<String> criterionToCheck,
+            final List<String> complimentaryCertNumbers, final List<String> allCriteriaMet) {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCert = hasAnyCert(criterionToCheck, allCriteriaMet);
         if (hasAnyCert) {
             boolean hasAnyComplimentaryCert = hasAnyCert(complimentaryCertNumbers, allCriteriaMet);
             if (!hasAnyComplimentaryCert) {
-                String criterionErrorString = "";
-                for(int i = 0; i < criterionToCheck.size(); i++) {
+                StringBuffer criteriaBuffer = new StringBuffer();
+                for (int i = 0; i < criterionToCheck.size(); i++) {
                     String checkedCriteria = criterionToCheck.get(i);
-                    if(i > 0) {
-                        criterionErrorString += " or ";
+                    if (i > 0) {
+                        criteriaBuffer.append(" or ");
                     }
-                    criterionErrorString += checkedCriteria;
+                    criteriaBuffer.append(checkedCriteria);
                 }
-                
-                String complimentaryCriterionErrorString = "";
-                for(int i = 0; i < complimentaryCertNumbers.size(); i++) {
+
+                StringBuffer complementaryBuffer = new StringBuffer();
+                for (int i = 0; i < complimentaryCertNumbers.size(); i++) {
                     String complimentaryCriteria = complimentaryCertNumbers.get(i);
-                    if(i > 0) {
-                        complimentaryCriterionErrorString += " or ";
+                    if (i > 0) {
+                        complementaryBuffer.append(" or ");
                     }
-                    complimentaryCriterionErrorString += complimentaryCriteria;
+                    complementaryBuffer.append(complimentaryCriteria);
                 }
-                errors.add("Certification criterion " + criterionErrorString + " was found so "
-                        + complimentaryCriterionErrorString + " is required but was not found.");
+                errors.add("Certification criterion " + criteriaBuffer.toString() + " was found so "
+                        + complementaryBuffer.toString() + " is required but was not found.");
             }
         }
         return errors;
     }
-    
+
     /**
      * Returns true if any of the passed in certs are present
      * @param toCheck
      * @param allCerts
      * @return
      */
-    protected boolean hasAnyCert(List<String> certsToCheck, List<String> allCerts) {
+    protected boolean hasAnyCert(final List<String> certsToCheck, final List<String> allCerts) {
         boolean result = false;
-        for(String currCertToCheck : certsToCheck) {
-            if(hasCert(currCertToCheck, allCerts)) {
+        for (String currCertToCheck : certsToCheck) {
+            if (hasCert(currCertToCheck, allCerts)) {
                 result = true;
             }
         }
         return result;
     }
-    
-    protected boolean hasCert(String toCheck, List<String> allCerts) {
+
+    protected boolean hasCert(final String toCheck, final List<String> allCerts) {
         boolean hasCert = false;
         for (int i = 0; i < allCerts.size() && !hasCert; i++) {
             if (allCerts.get(i).equals(toCheck)) {
@@ -264,7 +264,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         }
         return hasCert;
     }
-    
+
     public int getMaxLength(final String field) {
         return Integer.parseInt(String.format(
                 messageSource.getMessage(new DefaultMessageSourceResolvable(field),
@@ -306,7 +306,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     @Override
     public boolean validateProductCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 
             // validate that these pieces match up with data
             String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
@@ -321,7 +321,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     @Override
     public boolean validateVersionCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 
             // validate that these pieces match up with data
             String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
@@ -336,7 +336,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     @Override
     public boolean validateIcsCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
             String icsCode = uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX];
             if (StringUtils.isEmpty(icsCode)
@@ -350,7 +350,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     @Override
     public boolean validateAdditionalSoftwareCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
             String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
             if (StringUtils.isEmpty(additionalSoftwareCode) || !additionalSoftwareCode.matches("^0|1$")) {
@@ -363,7 +363,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     @Override
     public boolean validateCertifiedDateCodeCharacters(final String chplProductNumber) {
         String[] uniqueIdParts = chplProductNumber.split("\\.");
-        if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             // validate that these pieces match up with data
             String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
             if (StringUtils.isEmpty(certifiedDateCode)
@@ -377,20 +377,20 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     private void updateChplProductNumber(final CertifiedProductSearchDetails product, final int productNumberIndex,
             final String newValue) {
         String[] uniqueIdParts = product.getChplProductNumber().split("\\.");
-        if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
-            String newChplProductCode = "";
+        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+            StringBuffer newCodeBuffer = new StringBuffer();
             for (int idx = 0; idx < uniqueIdParts.length; idx++) {
                 if (idx == productNumberIndex) {
-                    newChplProductCode += newValue;
+                    newCodeBuffer.append(newValue);
                 } else {
-                    newChplProductCode += uniqueIdParts[idx];
+                    newCodeBuffer.append(uniqueIdParts[idx]);
                 }
 
                 if (idx < uniqueIdParts.length - 1) {
-                    newChplProductCode += ".";
+                    newCodeBuffer.append(".");
                 }
             }
-            product.setChplProductNumber(newChplProductCode);
+            product.setChplProductNumber(newCodeBuffer.toString());
         }
     }
 
@@ -399,7 +399,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
     public void validate(final PendingCertifiedProductDTO product) {
         String uniqueId = product.getUniqueId();
         String[] uniqueIdParts = uniqueId.split("\\.");
-        if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
             product.getErrorMessages().add("The unique CHPL ID '" + uniqueId + "' must have "
                     + CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS + " parts separated by '.'");
             return;
@@ -409,8 +409,6 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         String atlCode = uniqueIdParts[CertifiedProductDTO.ATL_CODE_INDEX];
         String acbCode = uniqueIdParts[CertifiedProductDTO.ACB_CODE_INDEX];
         String developerCode = uniqueIdParts[CertifiedProductDTO.DEVELOPER_CODE_INDEX];
-        String productCode = uniqueIdParts[CertifiedProductDTO.PRODUCT_CODE_INDEX];
-        String versionCode = uniqueIdParts[CertifiedProductDTO.VERSION_CODE_INDEX];
         String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
         String certifiedDateCode = uniqueIdParts[CertifiedProductDTO.CERTIFIED_DATE_CODE_INDEX];
 
@@ -590,7 +588,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                     .equals(product.getTransparencyAttestation()))) {
                                 product.getWarningMessages().add(getMessage("transparencyAttestation.save"));
                             }
-                        } else if (mapping == null && !StringUtils.isEmpty(product.getTransparencyAttestation())) {
+                        } else if (!StringUtils.isEmpty(product.getTransparencyAttestation())) {
                             product.getWarningMessages().add(getMessage("transparencyAttestation.save"));
                         }
                     }
@@ -635,17 +633,15 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             LocaleContextHolder.getLocale()),
                     CertifiedProductDTO.ICS_CODE_LENGTH));
         } else {
-            icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+            icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
             if (icsCodeInteger != null) {
                 if (icsCodeInteger.intValue() == 0 && product.getIcs() != null
                         && product.getIcs().equals(Boolean.TRUE)) {
-                    product.getErrorMessages().add(
-                            "The unique id indicates the product does not have ICS but the ICS column in the upload file is true.");
+                    product.getErrorMessages().add(getMessage("listing.icsCodeFalseValueTrue"));
                     hasIcsConflict = true;
                 } else if (icsCodeInteger.intValue() > 0 && product.getIcs() != null
                         && product.getIcs().equals(Boolean.FALSE)) {
-                    product.getErrorMessages().add(
-                            "The unique id indicates the product does have ICS but the ICS column in the upload file is false.");
+                    product.getErrorMessages().add(getMessage("listing.icsCodeTrueValueFalse"));
                     hasIcsConflict = true;
                 }
             }
@@ -711,8 +707,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         weirdCharacterCheck(product);
 
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if ((cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
-                if (cert.getGap() != null && cert.getGap().booleanValue() == true) {
+            if ((cert.getMeetsCriteria() == null || !cert.getMeetsCriteria().booleanValue())) {
+                if (cert.getGap() != null && cert.getGap().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -817,7 +813,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         // if it's a new product, check the id parts
         String uniqueId = product.getChplProductNumber();
         String[] uniqueIdParts = uniqueId.split("\\.");
-        if (uniqueIdParts != null && uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+        if (uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
 
             // validate that these pieces match up with data
             String additionalSoftwareCode = uniqueIdParts[CertifiedProductDTO.ADDITIONAL_SOFTWARE_CODE_INDEX];
@@ -869,7 +865,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                 LocaleContextHolder.getLocale()),
                         CertifiedProductDTO.ICS_CODE_LENGTH));
             } else {
-                icsCodeInteger = new Integer(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+                icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
                 if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
                     if (product.getIcs() != null && product.getIcs().getParents() != null
                             && product.getIcs().getParents().size() > 0) {
@@ -878,15 +874,13 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
                     if (product.getIcs() != null && product.getIcs().getInherits() != null
                             && product.getIcs().getInherits().equals(Boolean.TRUE)) {
-                        product.getErrorMessages().add(
-                                "The unique id indicates the product does not have ICS but the value for Inherited Certification Status is true.");
+                        product.getErrorMessages().add(getMessage("listing.icsCodeFalseValueTrue"));
                         hasIcsConflict = true;
                     }
                 } else if (product.getIcs() == null || product.getIcs().getInherits() == null
                         || product.getIcs().getInherits().equals(Boolean.FALSE) && icsCodeInteger != null
                         && icsCodeInteger.intValue() > 0) {
-                    product.getErrorMessages().add(
-                            "The unique id indicates the product does have ICS but the value for Inherited Certification Status is false.");
+                    product.getErrorMessages().add(getMessage("listing.icsCodeTrueValueFalse"));
                     hasIcsConflict = true;
                 }
             }
@@ -943,8 +937,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         weirdCharacterCheck(product);
 
         for (CertificationResult cert : product.getCertificationResults()) {
-            if ((cert.isSuccess() == null || cert.isSuccess().booleanValue() == false)) {
-                if (cert.isGap() != null && cert.isGap().booleanValue() == true) {
+            if ((cert.isSuccess() == null || !cert.isSuccess().booleanValue())) {
+                if (cert.isGap() != null && cert.isGap().booleanValue()) {
                     product.getWarningMessages()
                     .add(String.format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("listing.criteria.falseCriteriaHasData"),
@@ -1059,7 +1053,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                 product.getErrorMessages().add("No CHPL product was found matching additional software "
                                         + asDto.getCertifiedProductNumber() + " for " + cert.getNumber());
                             }
-                        } catch (Exception ex) {
+                        } catch (EntityRetrievalException e) {
+                            LOGGER.debug("Unable to retrieve entity: " + e.getLocalizedMessage());
                         }
                     }
                 }
@@ -1159,11 +1154,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
         // valid URL format.");
         // }
 
+        boolean foundSedCriteria = false;
+        boolean attestsToSed = false;
+
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if (cert.getMeetsCriteria() == null) {
                 product.getErrorMessages()
                 .add("0 or 1 is required to inidicate whether " + cert.getNumber() + " was met.");
-            } else if (cert.getMeetsCriteria() == Boolean.TRUE) {
+            } else if (cert.getMeetsCriteria().booleanValue()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.getGap() == null) {
                     product.getErrorMessages().add(String.format(
                             messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
@@ -1172,7 +1170,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
+                        && cert.getGap() != null && cert.getGap().booleanValue()) {
                     gapEligibleAndTrue = true;
                 }
 
@@ -1184,7 +1182,20 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             LocaleContextHolder.getLocale()),
                             cert.getNumber()));
                 }
+                if (cert.getSed() != null && cert.getSed().booleanValue()) {
+                    foundSedCriteria = true;
+                }
+                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
+                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
+                    attestsToSed = true;
+                }
             }
+        }
+        if (foundSedCriteria && !attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
+        }
+        if (!foundSedCriteria && attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
 
@@ -1246,26 +1257,30 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
             product.getErrorMessages().add(msg);
         }
 
+        boolean foundSedCriteria = false;
+        boolean attestsToSed = false;
+
         for (CertificationResult cert : product.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
                     product.getErrorMessages().add(String.format(
                             messageSource.getMessage(new DefaultMessageSourceResolvable("listing.criteria.missingGap"),
                                     LocaleContextHolder.getLocale()), cert.getNumber()));
                 }
-                // Jennifer asked to take out the test procedure validation for
-                // existing products
-                // so that when users are on the edit screen, they are not
-                // required
-                // to have test procedures for all certifications
-                // if (certRules.hasCertOption(cert.getNumber(),
-                // CertificationResultRules.TEST_PROCEDURE_VERSION) &&
-                // (cert.getTestProcedures() == null ||
-                // cert.getTestProcedures().size() == 0)) {
-                // product.getErrorMessages().add("Test Procedures are required
-                // for certification " + cert.getNumber() + ".");
-                // }
+                if (cert.isSed() != null && cert.isSed()) {
+                    foundSedCriteria = true;
+                }
+                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
+                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
+                    attestsToSed = true;
+                }
             }
+        }
+        if (foundSedCriteria && !attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
+        }
+        if (!foundSedCriteria && attestsToSed) {
+            product.getErrorMessages().add(getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
         }
     }
 
@@ -1346,7 +1361,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         //check all criteria fields
         for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria().booleanValue()) {
                 addCriteriaWarningIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
                 if (cert.getAdditionalSoftware() != null) {
                     for (PendingCertificationResultAdditionalSoftwareDTO addSoft : cert.getAdditionalSoftware()) {
@@ -1404,7 +1419,8 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                                     "Test Task Rating Scale '" + testTask.getTaskRatingScale() + "'");
                         }
                         if (crTestTask.getTaskParticipants() != null) {
-                            for (PendingCertificationResultTestTaskParticipantDTO crPart : crTestTask.getTaskParticipants()) {
+                            for (PendingCertificationResultTestTaskParticipantDTO crPart
+                                    : crTestTask.getTaskParticipants()) {
                                 PendingTestParticipantDTO part = crPart.getTestParticipant();
                                 if (part != null) {
                                     //not checking age range or education level because they have to map
@@ -1537,7 +1553,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         //check all criteria fields
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
                 addCriteriaWarningIfNotValid(listing, cert, cert.getApiDocumentation(), "API Documentation");
                 if (cert.getAdditionalSoftware() != null) {
                     for (CertificationResultAdditionalSoftware addSoft : cert.getAdditionalSoftware()) {
