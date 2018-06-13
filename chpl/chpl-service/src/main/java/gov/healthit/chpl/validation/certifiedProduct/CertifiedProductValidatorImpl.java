@@ -709,6 +709,7 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
 
         validateDemographics(product);
         weirdCharacterCheck(product);
+        sedMismatch(product);
 
         for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
             if ((cert.getMeetsCriteria() == null || cert.getMeetsCriteria().booleanValue() == false)) {
@@ -1622,6 +1623,35 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                             ucd.getDetails(), "UCD Process Details '" + ucd.getDetails() + "'");
                 }
             }
+        }
+    }
+
+    private void sedMismatch(final PendingCertifiedProductDTO listing) {
+        boolean foundSedCriteria = false;
+        boolean attestsToSed = false;
+        for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+                if (cert.getSed() != null && cert.getSed().booleanValue()) {
+                    foundSedCriteria = true;
+                }
+                if (cert.getNumber().equalsIgnoreCase("170.314 (g)(3)")
+                        || cert.getNumber().equalsIgnoreCase("170.315 (g)(3)")) {
+                    attestsToSed = true;
+                }
+
+            }
+        }
+        if (foundSedCriteria && !attestsToSed) {
+            listing.getErrorMessages().add(String.format(
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.criteria.foundSedCriteriaWithoutAttestingSed"),
+                            LocaleContextHolder.getLocale())));
+        }
+        if (!foundSedCriteria && attestsToSed) {
+            listing.getErrorMessages().add(String.format(
+                    messageSource.getMessage(
+                            new DefaultMessageSourceResolvable("listing.criteria.foundNoSedCriteriaButAttestingSed"),
+                            LocaleContextHolder.getLocale())));
         }
     }
 
