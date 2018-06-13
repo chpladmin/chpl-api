@@ -636,11 +636,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                     TestFunctionality testFunctionality = getTestFunctionality(crtf.getNumber(), editionId);
                     if (testFunctionality != null && testFunctionality.getPracticeType() != null) {
                         if (testFunctionality.getPracticeType().getId() != practiceType.getId()) {
-                            errors.add(getTestFunctionalityMisMatchErrorMessage(
-                                    certResult.getNumber(), 
-                                    crtf.getNumber(), 
-                                    testFunctionality.getPracticeType().getName(), 
-                                    practiceType.getName()));
+                            errors.add(String.format(
+                                    messageSource.getMessage(
+                                            new DefaultMessageSourceResolvable(
+                                                    "listing.criteria.testFunctionalityMisMatch"),
+                                            LocaleContextHolder.getLocale()),
+                                    certResult.getNumber(), crtf.getNumber(), practiceType.getName()));
                         }
                     }
                 }
@@ -662,12 +663,12 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                     TestFunctionality testFunctionality = getTestFunctionality(crtf.getName(), editionId);
                     if (testFunctionality != null && testFunctionality.getPracticeType() != null) {
                         if (testFunctionality.getPracticeType().getId() != practiceType.getId()) {
-                            errors.add(getTestFunctionalityMisMatchErrorMessage(
-                                    certResult.getNumber(), 
-                                    crtf.getName(), 
-                                    testFunctionality.getPracticeType().getName(), 
-                                    practiceType.getName()));
-                                    
+                            errors.add(String.format(
+                                    messageSource.getMessage(
+                                            new DefaultMessageSourceResolvable(
+                                                    "listing.criteria.testFunctionalityMisMatch"),
+                                            LocaleContextHolder.getLocale()),
+                                    certResult.getNumber(), crtf.getName(), practiceType.getName()));
                         }
                     }
                 }
@@ -677,20 +678,6 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         return errors;
     }
 
-    private String getTestFunctionalityMisMatchErrorMessage(final String certificationNumber, 
-            final String testFunctionalityName, final String validPracticeTypeName,
-            final String invalidPracticeTypeName) {
-        
-        return String.format(messageSource.getMessage(
-                new DefaultMessageSourceResolvable(
-                        "listing.criteria.testFunctionalityMisMatch"),
-                LocaleContextHolder.getLocale()), 
-            certificationNumber, 
-            testFunctionalityName, 
-            validPracticeTypeName, 
-            invalidPracticeTypeName);
-    }
-    
     private TestFunctionality getTestFunctionality(final String number, final Long editionId)
             throws EntityRetrievalException {
 
