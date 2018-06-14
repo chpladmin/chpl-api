@@ -1,8 +1,10 @@
-package gov.healthit.chpl.app.presenter;
+package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -20,8 +22,13 @@ import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
+/**
+ * Present objects as CSV file.
+ * @author alarned
+ *
+ */
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductCsvPresenter.class);
+    private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
 
     /**
@@ -29,34 +36,27 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
      * of rows printed (minus the header)
      */
     @Override
-    public int presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+    public int presentAsFile(final File file, final CertifiedProductDownloadResponse cpList) {
         int numRows = 0;
-        FileWriter writer = null;
+        OutputStreamWriter writer = null;
         CSVPrinter csvPrinter = null;
         try {
-            writer = new FileWriter(file);
+            writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
             csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-            
+
             csvPrinter.printRecord(generateHeaderValues());
 
             for (CertifiedProductSearchDetails data : cpList.getListings()) {
                 List<String> rowValue = generateRowValue(data);
-                if (rowValue != null) { // a subclass could return null to skip
-                                        // a row
+                if (rowValue != null) { // a subclass could return null to skip a row
                     csvPrinter.printRecord(rowValue);
                     numRows++;
                 }
             }
+            csvPrinter.close();
+            writer.close();
         } catch (final IOException ex) {
             LOGGER.error("Could not write file " + file.getName(), ex);
-        } finally {
-            try {
-                writer.flush();
-                writer.close();
-                csvPrinter.flush();
-                csvPrinter.close();
-            } catch (Exception ignore) {
-            }
         }
         return numRows;
     }
@@ -85,7 +85,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         return result;
     }
 
-    protected List<String> generateRowValue(CertifiedProductSearchDetails data) {
+    protected List<String> generateRowValue(final CertifiedProductSearchDetails data) {
         List<String> result = new ArrayList<String>();
         result.add(data.getCertificationEdition().get("name").toString());
         result.add(data.getChplProductNumber());
@@ -107,7 +107,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         return result;
     }
 
-    protected List<String> generateCriteriaValues(CertifiedProductSearchDetails data) {
+    protected List<String> generateCriteriaValues(final CertifiedProductSearchDetails data) {
         List<String> result = new ArrayList<String>();
 
         for (CertificationCriterionDTO criteria : applicableCriteria) {
@@ -130,5 +130,4 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
     public void setApplicableCriteria(final List<CertificationCriterionDTO> applicableCriteria) {
         this.applicableCriteria = applicableCriteria;
     }
-
 }

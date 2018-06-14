@@ -17,7 +17,6 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-
         <trigger>
             <cron>
                 <name>alarned@ainq_com</name>
@@ -32,6 +31,8 @@
                 </job-data-map>
                 <cron-expression>0 10 * * * ?</cron-expression>
             </cron>
+        </trigger>
+        <trigger>
             <cron>
                 <name>amore@ainq_com</name>
                 <group>cacheStatusAgeTrigger</group>
@@ -44,6 +45,64 @@
                     </entry>
                 </job-data-map>
                 <cron-expression>0 10 10 * * ?</cron-expression>
+            </cron>
+        </trigger>
+
+        <job>
+            <name>downloadFileJob</name>
+            <group>systemJobs</group>
+
+            <description>Generate download files.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>generate2015</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>edition</key>
+                        <value>2015</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 * * * * ?</cron-expression> <!--0 3 1 * * ?: At 0103 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generate2014</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>edition</key>
+                        <value>2014</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 2 1 * * ?</cron-expression> <!-- At 0102 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generate2011</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob</job-name>
+                <job-group>systemJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>edition</key>
+                        <value>2011</value>
+                    </entry>
+                </job-data-map>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of each quarter -->
             </cron>
         </trigger>
     </schedule>

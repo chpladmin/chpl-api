@@ -27,24 +27,22 @@ import gov.healthit.chpl.auth.SendMailUtil;
  */
 public class CacheStatusAgeJob implements Job {
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
-    private Properties properties;
+    private Properties properties = null;
 
     /**
      * Default constructor.
      * @throws IOException if unable to load properties
      */
     public CacheStatusAgeJob() throws IOException {
-        if (properties == null || properties.isEmpty()) {
-            InputStream in = CacheStatusAgeJob.class.getClassLoader()
-                    .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
-            if (in == null) {
-                properties = null;
-                throw new FileNotFoundException("Environment Properties File not found in class path.");
-            } else {
-                properties = new Properties();
-                properties.load(in);
-                in.close();
-            }
+        InputStream in = CacheStatusAgeJob.class.getClassLoader()
+                .getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+        if (in == null) {
+            properties = null;
+            throw new FileNotFoundException("Environment Properties File not found in class path.");
+        } else {
+            properties = new Properties();
+            properties.load(in);
+            in.close();
         }
     }
 
