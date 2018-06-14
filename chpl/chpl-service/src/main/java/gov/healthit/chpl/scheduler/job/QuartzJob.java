@@ -38,7 +38,7 @@ public abstract class QuartzJob implements Job {
         if (!downloadFolder.exists()) {
             if (!downloadFolder.mkdirs()) {
                 throw new IOException("Can not create download folder directory");
-            };
+            }
         }
         return downloadFolder;
     }

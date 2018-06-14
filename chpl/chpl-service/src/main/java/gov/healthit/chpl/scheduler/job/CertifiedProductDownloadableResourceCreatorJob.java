@@ -205,7 +205,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         return file;
     }
 
-    private QuartzCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper() throws BeansException {
+    private QuartzCertifiedProductSearchDetailsAsync getCertifiedProductDetailsAsyncRetrievalHelper()
+            throws BeansException {
         return (QuartzCertifiedProductSearchDetailsAsync)
                 getApplicationContext().getBean("quartzCertifiedProductSearchDetailsAsync");
     }
