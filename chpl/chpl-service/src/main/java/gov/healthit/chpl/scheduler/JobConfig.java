@@ -11,8 +11,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
@@ -161,15 +159,4 @@ public class JobConfig {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-
-//    @Bean(name = "chartDataExecutor")
-//    public TaskExecutor specificTaskExecutor() {
-//        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-//        executor.setCorePoolSize(10);
-//        executor.setMaxPoolSize(20);
-//        //executor.setQueueCapacity(11);
-//        executor.setThreadNamePrefix("chartDataThread");
-//        executor.initialize();
-//        return executor;
-//    }
 }
