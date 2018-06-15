@@ -27,7 +27,6 @@ public final class ChplScheduler {
             }
             Scheduler scheduler = sf.getScheduler();
             scheduler.start();
-
         } catch (SchedulerException se) {
             se.printStackTrace();
         }

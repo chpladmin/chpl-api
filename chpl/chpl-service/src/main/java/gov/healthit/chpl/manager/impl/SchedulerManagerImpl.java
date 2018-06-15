@@ -84,15 +84,17 @@ public class SchedulerManagerImpl implements SchedulerManager {
         for (String group: scheduler.getTriggerGroupNames()) {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
-                ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerKey));
-                switch (newTrigger.getJobName()) {
-                case "cacheStatusAgeJob":
-                    newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
-                    break;
-                default:
-                    break;
+                if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
+                    ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerKey));
+                    switch (newTrigger.getJobName()) {
+                    case "cacheStatusAgeJob":
+                        newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
+                        break;
+                    default:
+                        break;
+                    }
+                    triggers.add(newTrigger);
                 }
-                triggers.add(newTrigger);
             }
         }
         return triggers;

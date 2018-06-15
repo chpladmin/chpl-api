@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.presenter;
+package gov.healthit.chpl.scheduler.presenter;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -10,6 +10,11 @@ import java.util.List;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
+/**
+ * Specific extension for 2014 CSV version of file.
+ * @author alarned
+ *
+ */
 public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresenter {
     @Override
     protected List<String> generateHeaderValues() {
@@ -37,7 +42,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
     }
 
     @Override
-    protected List<String> generateRowValue(CertifiedProductSearchDetails data) {
+    protected List<String> generateRowValue(final CertifiedProductSearchDetails data) {
         List<String> result = new ArrayList<String>();
         result.add(data.getCertificationEdition().get("name").toString());
         result.add(data.getChplProductNumber());
