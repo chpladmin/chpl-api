@@ -8,8 +8,6 @@ import java.io.Serializable;
  *
  */
 public enum NotificationTypeConcept implements Serializable {
-    /** Notification for when the cache is too old. */
-    CACHE_STATUS_AGE_NOTIFICATION("Cache Status Age Notification"),
     /** ACB specific daily surveillance broken rules. */
     ONC_ACB_DAILY_SURVEILLANCE_BROKEN_RULES("ONC-ACB Daily Surveillance Broken Rules"),
     /** ACB specific weekly surveillance broken rules. */

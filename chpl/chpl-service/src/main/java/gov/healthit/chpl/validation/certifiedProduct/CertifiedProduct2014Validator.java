@@ -346,8 +346,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     @Override
     protected void validateDemographics(final PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
-        
-        if (product.getHasQms() != null && product.getHasQms() && (product.getQmsStandards() == null || product.getQmsStandards().isEmpty())) {
+
+        if (product.getHasQms() != null && product.getHasQms()
+                && (product.getQmsStandards() == null || product.getQmsStandards().isEmpty())) {
             product.getErrorMessages().add(getMessage("listing.missingQMSStandards"));
         }
         if (product.getHasQms() != null && !product.getHasQms() && !product.getQmsStandards().isEmpty()) {
@@ -375,9 +376,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                             product.getErrorMessages().add(
                                     getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         }
-                    } else if(cert.getSed() != null && cert.getSed().booleanValue() == false && 
-                            cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
-                        product.getWarningMessages().add(
+                    } else if (cert.getSed() != null && !cert.getSed().booleanValue()
+                            && cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
+                        product.getErrorMessages().add(
                                 getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
                     }
                 }
@@ -448,17 +449,17 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                                 getMessage("listing.criteria.SEDRequired", cert.getNumber()));
                     } else if (cert.isSed() != null && cert.isSed().booleanValue()
                             && !certHasUcdProcess(cert, product.getSed().getUcdProcesses())) {
-                        if (product.getIcs() != null && product.getIcs().getInherits() != null &&
-                                product.getIcs().getInherits().booleanValue()) {
+                        if (product.getIcs() != null && product.getIcs().getInherits() != null
+                                && product.getIcs().getInherits().booleanValue()) {
                             product.getWarningMessages().add(
                                     getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         } else {
                             product.getErrorMessages().add(
                                     getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
                         }
-                    } else if(cert.isSed() != null && cert.isSed().booleanValue() == false && 
-                            certHasUcdProcess(cert, product.getSed().getUcdProcesses())) {
-                        product.getWarningMessages().add(
+                    } else if (cert.isSed() != null && !cert.isSed().booleanValue()
+                            && certHasUcdProcess(cert, product.getSed().getUcdProcesses())) {
+                        product.getErrorMessages().add(
                                 getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
                     }
                 }
@@ -484,7 +485,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
             }
         }
         if (!hasG4) {
-            product.getErrorMessages().add(getMessage("lisitng.criteria.missingG4"));
+            product.getErrorMessages().add(getMessage("listing.criteria.missingG4"));
         }
 
         // g3 check

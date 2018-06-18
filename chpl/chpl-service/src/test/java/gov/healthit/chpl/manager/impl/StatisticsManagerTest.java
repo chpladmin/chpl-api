@@ -1,5 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
+import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.manager.StatisticsManager;
-import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
+import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -40,7 +44,16 @@ public class StatisticsManagerTest extends TestCase {
     public void testStatisticsManagerCanRetrieveStats() {
         CriterionProductStatisticsResult stats = statisticsManager.getCriterionProductStatisticsResult();
         assertNotNull(stats);
-        assertEquals("170.314 (a)(14)", stats.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
+        
+        //Sort so test works consistently
+        Collections.sort(stats.getCriterionProductStatisticsResult(), new Comparator<CriterionProductStatistics>() {
+            @Override
+            public int compare(CriterionProductStatistics one, CriterionProductStatistics other) {
+                return one.getCertificationCriterionId().compareTo(other.getCertificationCriterionId());
+            }
+        }); 
+        
+        assertEquals("170.315 (d)(10)", stats.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
     }
 
     /**

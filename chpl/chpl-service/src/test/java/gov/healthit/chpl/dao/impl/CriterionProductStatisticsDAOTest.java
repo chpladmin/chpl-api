@@ -1,5 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Rule;
@@ -52,8 +54,17 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
         List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
         assertNotNull(results);
         assertEquals(STAT_LENGTH, results.size());
-        assertEquals("170.314 (a)(14)", results.get(0).getCriteria().getNumber());
-        assertEquals("2014", results.get(0).getCriteria().getCertificationEdition());
+        
+        //Sort so test works consistently
+        Collections.sort(results, new Comparator<CriterionProductStatisticsDTO>() {
+            @Override
+            public int compare(CriterionProductStatisticsDTO one, CriterionProductStatisticsDTO other) {
+                return one.getCertificationCriterionId().compareTo(other.getCertificationCriterionId());
+            }
+        });
+        
+        assertEquals("170.315 (d)(10)", results.get(0).getCriteria().getNumber());
+        assertEquals("2015", results.get(0).getCriteria().getCertificationEdition());
     }
 
     @Test

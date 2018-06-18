@@ -12,11 +12,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 
@@ -28,7 +28,6 @@ import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 public class ListingCountStatisticsCalculator {
     private static final Logger LOGGER = LogManager.getLogger(ListingCountStatisticsCalculator.class);
 
-    private ChartDataApplicationEnvironment appEnvironment;
     private ListingCountStatisticsDAO statisticsDAO;
     private CertificationEditionDAO certificationEditionDAO;
     private CertificationStatusDAO certificationStatusDAO;
@@ -36,40 +35,37 @@ public class ListingCountStatisticsCalculator {
     private TransactionTemplate txnTemplate;
 
     ListingCountStatisticsCalculator(final ChartDataApplicationEnvironment appEnvironment) {
-        this.appEnvironment = appEnvironment;
-        initialize();
+        statisticsDAO = (ListingCountStatisticsDAO)
+                appEnvironment.getSpringManagedObject("listingCountStatisticsDAO");
+        certificationEditionDAO = (CertificationEditionDAO)
+                appEnvironment.getSpringManagedObject("certificationEditionDAO");
+        certificationStatusDAO = (CertificationStatusDAO)
+                appEnvironment.getSpringManagedObject("certificationStatusDAO");
+        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
+        txnTemplate = new TransactionTemplate(txnManager);
+    }
+
+    ListingCountStatisticsCalculator(final ListingCountStatisticsDAO statisticsDAO,
+            final CertificationEditionDAO certificationEditionDAO, final CertificationStatusDAO certificationStatusDAO,
+            final JpaTransactionManager txnManager) {
+        this.statisticsDAO = statisticsDAO;
+        this.certificationEditionDAO = certificationEditionDAO;
+        this.certificationStatusDAO = certificationStatusDAO;
+        this.txnManager = txnManager;
+        this.txnTemplate = new TransactionTemplate(this.txnManager);
     }
 
     /**
-     * This method calculates the listing count and saves them to the
-     * listing_count_statistics table.
-     * @param listings List of CertifiedProductFlatSearchResult objects
+     * Loop through every Listing. For each Listing, the Developer and Product to a HashMap.
+     * The key is of the form <EDITION>-<DEVELOPER NAME> for Developer,
+     * and <EDITION>-<DEVELOPER NAME>-<PRODUCT NAME> for a Product.
+     * The key maps to a HashSet of the Statuses of all of the Listings owned.
+     *
+     * Then, loop through each item in the sets and add counts as necessary to the Statistics DTOs.
+     * @param listings incoming listings
+     * @return list of listingCountStatisticsDTOs
      */
-    public void run(final List<CertifiedProductFlatSearchResult> listings) {
-        List<ListingCountStatisticsDTO> productCounts = getCounts(listings);
-
-        logCounts(productCounts);
-
-        save(productCounts);
-    }
-
-    private void deleteExistingStatistics() throws EntityRetrievalException {
-        List<ListingCountStatisticsDTO> dtos = statisticsDAO.findAll();
-        for (ListingCountStatisticsDTO dto : dtos) {
-            statisticsDAO.delete(dto.getId());
-            LOGGER.info("Deleted: " + dto.getId());
-        }
-    }
-
-    private List<ListingCountStatisticsDTO> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
-        /**
-         * Loop through every Listing. For each Listing, the Developer and Product to a HashMap.
-         * The key is of the form <EDITION>-<DEVELOPER NAME> for Developer,
-         * and <EDITION>-<DEVELOPER NAME>-<PRODUCT NAME> for a Product.
-         * The key maps to a HashSet of the Statuses of all of the Listings owned.
-         *
-         * Then, loop through each item in the sets and add counts as necessary to the Statistics DTOs.
-         */
+    public List<ListingCountStatisticsDTO> getCounts(final List<CertifiedProductFlatSearchResult> listings) {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
         for (CertifiedProductFlatSearchResult listing: listings) {
@@ -117,24 +113,21 @@ public class ListingCountStatisticsCalculator {
         return ret;
     }
 
-    private void initialize() {
-        statisticsDAO = (ListingCountStatisticsDAO)
-                appEnvironment.getSpringManagedObject("listingCountStatisticsDAO");
-        certificationEditionDAO = (CertificationEditionDAO)
-                appEnvironment.getSpringManagedObject("certificationEditionDAO");
-        certificationStatusDAO = (CertificationStatusDAO)
-                appEnvironment.getSpringManagedObject("certificationStatusDAO");
-        txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
-        txnTemplate = new TransactionTemplate(txnManager);
-    }
-
-    private void logCounts(final List<ListingCountStatisticsDTO> dtos) {
+    /**
+     * Log counts of statistics.
+     * @param dtos statistic objects
+     */
+    public void logCounts(final List<ListingCountStatisticsDTO> dtos) {
         for (ListingCountStatisticsDTO dto : dtos) {
             LOGGER.info("Listing Count statistics: [" + dto.toString() + "]");
         }
     }
 
-    private void save(final List<ListingCountStatisticsDTO> dtos) {
+    /**
+     * Save statistics to table.
+     * @param dtos statistics objects
+     */
+    public void save(final List<ListingCountStatisticsDTO> dtos) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
@@ -157,5 +150,14 @@ public class ListingCountStatisticsCalculator {
                 }
             }
         });
+    }
+
+
+    private void deleteExistingStatistics() throws EntityRetrievalException {
+        List<ListingCountStatisticsDTO> dtos = statisticsDAO.findAll();
+        for (ListingCountStatisticsDTO dto : dtos) {
+            statisticsDAO.delete(dto.getId());
+            LOGGER.info("Deleted: " + dto.getId());
+        }
     }
 }

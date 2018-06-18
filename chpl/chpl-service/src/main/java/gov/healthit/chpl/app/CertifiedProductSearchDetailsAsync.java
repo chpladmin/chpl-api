@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.chartdata;
+package gov.healthit.chpl.app;
 
 import java.util.concurrent.Future;
 
@@ -17,9 +17,9 @@ import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
  * @author TYoung
  *
  */
-@Service("sedParticipantsStatisticsCountAsyncHelper")
-public class SedParticipantsStatisticsCountAsyncHelper {
-    private static final Logger LOGGER = LogManager.getLogger(SedParticipantsStatisticsCountAsyncHelper.class);
+@Service("certifiedProductSearchDetailsAsync")
+public class CertifiedProductSearchDetailsAsync {
+    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchDetailsAsync.class);
 
     /**
      * Retrieves the associated CertifiedProductionSearchDetails object as a Future<>.
