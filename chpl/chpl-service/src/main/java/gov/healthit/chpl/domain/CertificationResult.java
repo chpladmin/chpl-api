@@ -100,6 +100,9 @@ public class CertificationResult implements Serializable {
 
     @XmlTransient
     private List<MacraMeasure> allowedMacraMeasures;
+    
+    @XmlTransient
+    private List<TestFunctionality> allowedTestFunctionalities;
 
     /**
      * Any optional, alternative, ambulatory (2015 only), or inpatient (2015
@@ -364,6 +367,14 @@ public class CertificationResult implements Serializable {
 
     public void setG2MacraMeasures(final List<MacraMeasure> g2MacraMeasures) {
         this.g2MacraMeasures = g2MacraMeasures;
+    }
+    
+    public List<TestFunctionality> getAllowedTestFunctionalities() {
+        return allowedTestFunctionalities;
+    }
+    
+    public void setAllowedTestFunctionalities(final List<TestFunctionality> testFunctionalities) {
+        this.allowedTestFunctionalities = testFunctionalities;
     }
 
     public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework) {
