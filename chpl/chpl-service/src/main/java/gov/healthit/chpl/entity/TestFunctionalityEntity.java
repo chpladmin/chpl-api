@@ -35,6 +35,14 @@ public class TestFunctionalityEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
     private CertificationEditionEntity certificationEdition;
+    
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
+    private  PracticeTypeEntity practiceType;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private  CertificationCriterionEntity certificationCriterion;
 
     public Long getId() {
         return id;
@@ -122,5 +130,21 @@ public class TestFunctionalityEntity {
 
     public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
         this.certificationEdition = certificationEdition;
+    }
+
+    public final PracticeTypeEntity getPracticeType() {
+        return practiceType;
+    }
+
+    public final void setPracticeType(final PracticeTypeEntity practiceType) {
+        this.practiceType = practiceType;
+    }
+
+    public final CertificationCriterionEntity getCertificationCriterion() {
+        return certificationCriterion;
+    }
+
+    public final void setCertificationCriterion(final CertificationCriterionEntity certificationCriterion) {
+        this.certificationCriterion = certificationCriterion;
     }
 }
