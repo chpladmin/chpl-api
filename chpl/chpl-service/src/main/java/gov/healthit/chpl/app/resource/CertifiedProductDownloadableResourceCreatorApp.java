@@ -32,10 +32,7 @@ public abstract class CertifiedProductDownloadableResourceCreatorApp extends Dow
     @Override
     protected void runJob(final String[] args) throws Exception {
         Date start = new Date();
-        String edition = "";
         try {
-            edition = args[0].trim();
-
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
             List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
@@ -52,7 +49,7 @@ public abstract class CertifiedProductDownloadableResourceCreatorApp extends Dow
             LOGGER.error(e);
         }
         Date end = new Date();
-        LOGGER.info("Time to create file(s) for " + edition + " edition: "
+        LOGGER.info("Time to create file(s): "
                 + (end.getTime() - start.getTime()) / 1000 + " seconds");
     }
 
