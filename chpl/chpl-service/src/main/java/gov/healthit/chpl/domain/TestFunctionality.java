@@ -10,6 +10,8 @@ public class TestFunctionality implements Serializable {
     private String name;
     private String description;
     private String year;
+    private CertificationCriterion certificationCriterion;
+    private PracticeType practiceType;
 
     public TestFunctionality() {
     }
@@ -19,6 +21,12 @@ public class TestFunctionality implements Serializable {
         this.name = dto.getNumber();
         this.description = dto.getName();
         this.year = dto.getYear();
+        if (dto.getCertificationCriterion() != null) {
+            this.certificationCriterion = new CertificationCriterion(dto.getCertificationCriterion());
+        }
+        if (dto.getPracticeType() != null) {
+            this.practiceType = new PracticeType(dto.getPracticeType());
+        }
     }
 
     public Long getId() {
@@ -51,5 +59,33 @@ public class TestFunctionality implements Serializable {
 
     public void setYear(final String year) {
         this.year = year;
+    }
+
+    /**
+     * @return the certificationCriterion
+     */
+    public CertificationCriterion getCertificationCriterion() {
+        return certificationCriterion;
+    }
+
+    /**
+     * @param certificationCriterion the certificationCriterion to set
+     */
+    public void setCertificationCriterion(final CertificationCriterion certificationCriterion) {
+        this.certificationCriterion = certificationCriterion;
+    }
+
+    /**
+     * @return the practiceType
+     */
+    public PracticeType getPracticeType() {
+        return practiceType;
+    }
+
+    /**
+     * @param practiceType the practiceType to set
+     */
+    public void setPracticeType(PracticeType practiceType) {
+        this.practiceType = practiceType;
     }
 }

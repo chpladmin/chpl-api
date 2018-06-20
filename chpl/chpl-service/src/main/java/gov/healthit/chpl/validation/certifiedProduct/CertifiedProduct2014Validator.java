@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.certifiedProduct;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -21,6 +22,10 @@ import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component("certifiedProduct2014Validator")
 public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl {
+    
+    @Autowired
+    private CertifiedtProductTestFunctionalityValidator certifiedtProductTestFunctionalityValidator;
+        
     private static final String[] G1_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)",
             "170.314 (a)(9)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
@@ -44,7 +49,7 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     private static final String[] CQM_REQUIRED_CERTS = {
             "170.314 (c)(1)", "170.314 (c)(2)", "170.314 (c)(3)"
     };
-
+    
     public String[] getG1ComplimentaryCerts() {
         return G1_COMPLEMENTARY_CERTS;
     }
@@ -219,6 +224,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 
         if (product.getPracticeTypeId() == null) {
             product.getErrorMessages().add("Practice setting is required but was not found.");
+        } else {
+            product.getErrorMessages().addAll(
+                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
         }
         if (product.getProductClassificationId() == null) {
             product.getErrorMessages().add("Product classification is required but was not found.");
@@ -426,6 +434,9 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 
         if (product.getPracticeType() == null || product.getPracticeType().get("id") == null) {
             product.getErrorMessages().add("Practice setting is required but was not found.");
+        } else {
+            product.getErrorMessages().addAll(
+                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
         }
         if (product.getClassificationType() == null || product.getClassificationType().get("id") == null) {
             product.getErrorMessages().add("Product classification is required but was not found.");

@@ -30,6 +30,7 @@ import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
+import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -54,6 +55,7 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -77,6 +79,7 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
@@ -141,22 +144,38 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
 
     private CQMCriterionDAO cqmCriterionDAO;
     private MacraMeasureDAO macraDao;
+    private TestFunctionalityDAO testFunctionalityDAO;
 
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
+    private List<TestFunctionality> testFunctionalities = new ArrayList<TestFunctionality>();
+
 
     /**
      * Default constructor.
      * @param cqmCriterionDAO DAO for CQMs
      * @param macraDao DAO for Macra Measures
+     * @param testFunctionalityDAO DAO for Test Functionality
      */
     @Autowired
-    public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO, final MacraMeasureDAO macraDao) {
+    public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO,
+                                                final MacraMeasureDAO macraDao,
+                                                final TestFunctionalityDAO testFunctionalityDAO) {
         this.cqmCriterionDAO = cqmCriterionDAO;
         this.macraDao = macraDao;
+        this.testFunctionalityDAO = testFunctionalityDAO;
 
         loadCQMCriteria();
         loadCriteriaMacraMeasures();
+        loadTestFunctionalities();
+    }
+
+    private void loadTestFunctionalities() {
+        List<TestFunctionalityDTO> tfs = testFunctionalityDAO.findAll();
+        for (TestFunctionalityDTO item : tfs) {
+            TestFunctionality tf = new TestFunctionality(item);
+            testFunctionalities.add(tf);
+        }
     }
 
     @Override
@@ -690,7 +709,67 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             }
         }
 
+        result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
+
         return result;
+    }
+
+    private List<TestFunctionality> getAvailableTestFunctionalities(final CertificationResult cr,
+            final CertifiedProductSearchDetails cp) {
+
+        if (cp.getCertificationEdition().get("name").toString().equals("2014")) {
+            return get2014TestFunctionalities(cr, cp);
+        } else if (cp.getCertificationEdition().get("name").toString().equals("2015")) {
+            return get2015TestFunctionalities(cr, cp);
+        } else {
+            return new ArrayList<TestFunctionality>();
+        }
+    }
+
+    private List<TestFunctionality> get2014TestFunctionalities(final CertificationResult cr,
+            final CertifiedProductSearchDetails cp) {
+
+        List<TestFunctionality> allowedTestFunctionalities = new ArrayList<TestFunctionality>();
+
+        for (TestFunctionality tf : this.testFunctionalities) {
+            String edition = cp.getCertificationEdition().get("name").toString();
+            if (tf.getYear().equals(edition)) {
+                if (tf.getPracticeType() != null) {
+                    Long practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
+                    if (tf.getPracticeType().getId().equals(practiceTypeId)) {
+                        if (tf.getCertificationCriterion() != null) {
+                            if (tf.getCertificationCriterion().getNumber().equals(cr.getNumber())) {
+                                allowedTestFunctionalities.add(tf);
+                            }
+                        }
+                    }
+                } else {
+                    if (tf.getCertificationCriterion() != null) {
+                        if (tf.getCertificationCriterion().getNumber().equals(cr.getNumber())) {
+                            allowedTestFunctionalities.add(tf);
+                        }
+                    }
+                }
+            }
+        }
+
+        return allowedTestFunctionalities;
+    }
+
+    private List<TestFunctionality> get2015TestFunctionalities(final CertificationResult cr,
+            final CertifiedProductSearchDetails cp) {
+
+        List<TestFunctionality> allowedTestFunctionalities = new ArrayList<TestFunctionality>();
+        String edition = cp.getCertificationEdition().get("name").toString();
+
+        for (TestFunctionality tf : this.testFunctionalities) {
+            LOGGER.info(tf.getYear() + " =? " + edition + " == " + tf.getYear().equals(edition));
+            if (tf.getYear().equals(edition)) {
+                allowedTestFunctionalities.add(tf);
+            }
+        }
+
+        return allowedTestFunctionalities;
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(
