@@ -7,7 +7,7 @@
         <Property name="appName">${sys:chpl.appName}</Property>
     </Properties>
     <Appenders>
-        <RollingFile name="FILE" fileName="${logDir}/chplservice.log"
+        <RollingFile name="FILE" fileName="${logDir}/${appName}.log"
             filePattern="${logDir}/${appName}-%d{yyyyMMdd}.log">
             <PatternLayout>
                 <Pattern>%d %p %C %m%n</Pattern>
