@@ -5,6 +5,7 @@ _Date TBD_
 ### New Features
 * Converted "Downloadable Resource File" generation application to Quartz Job
   * Updated API endpoints to not return "System jobs" in regular GET call
+* Logs for individually run apps will now show up in separate files under the logs directory.
 * Validate 2014 test functionalities to ensure they are valid based on practice type and certification criterion
 * Modified certified product details to return the allowable test functionalities for each criteria
 

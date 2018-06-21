@@ -5,12 +5,4 @@
 # 15 5 * * * cd /some/directory/chpl-api/chpl/chpl-service && ./generateDailySEDDetailsDownload.sh
 # This will run it at 0515 UTC, which (depending on DST) is 0015 EST
 
-# create timestamp and filename
-TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
-log=logs/log.generateSEDDetailsDownload.$TIMESTAMP.txt
-
-# put header info into log, then output application info into log file
-echo "SED Details generation at: " $TIMESTAMP >> $log
-echo "####################################" >> $log
-java -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.resource.G3Sed2015ResourceCreatorApp 2>&1 >> $log
-echo "####################################" >> $log
+java -Dchpl.home=/opt/chpl -Dchpl.appName=generateDailySEDDetailsDownload -Dlog4j.configurationFile=log4j2-app.xml -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.resource.G3Sed2015ResourceCreatorApp

@@ -5,20 +5,12 @@
 # 15 5 * * * cd /some/directory/chpl-api/chpl/chpl-service && ./generateChartDataStatistics.sh
 # This will run it at 0515 UTC, which (depending on DST) is 0015 EST
 
-# create timestamp and filename
-TIMESTAMP=$(date "+%Y.%m.%d-%H.%M.%S")
-log=logs/log.generateChartDataStatistics.$TIMESTAMP.txt
-
 # deal with spaces in filenames by saving off the default file separator (including spaces)
 # and using a different one for this application
 SAVEIFS=$IFS
 IFS=$(echo -en "\n\b")
 
-# put header info into log, then output application info into log file
-echo "Generate Statistics Date for Charts at: " $TIMESTAMP >> $log
-echo "####################################" >> $log
-java -Xmx800m -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.chartdata.ChartData >&1 >> $log
-echo "####################################" >> $log
+java -Xmx800m -Dchpl.home=/opt/chpl -Dchpl.appName=generateChartDataStatistics -Dlog4j.configurationFile=log4j2-app.xml -cp target/chpl-service-jar-with-dependencies.jar gov.healthit.chpl.app.chartdata.ChartData
 
 # restore filename delimiters
 IFS=$SAVEIFS
