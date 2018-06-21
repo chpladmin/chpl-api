@@ -1,4 +1,4 @@
-package gov.healthit.chpl.web.controller;
+package gov.healthit.chpl.exception;
 
 public class InvalidArgumentsException extends Exception {
 

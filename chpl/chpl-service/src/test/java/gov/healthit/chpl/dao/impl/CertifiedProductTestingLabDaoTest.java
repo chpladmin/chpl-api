@@ -22,8 +22,8 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 /**

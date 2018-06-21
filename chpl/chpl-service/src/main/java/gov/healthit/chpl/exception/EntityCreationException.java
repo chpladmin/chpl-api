@@ -1,4 +1,4 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.exception;
 
 public class EntityCreationException extends Exception {
 

@@ -19,7 +19,6 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.dao.UserPermissionDAO;
 import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.domain.SurveillanceNonconformity;
@@ -43,6 +42,7 @@ import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceTypeEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("surveillanceDAO")
 public class SurveillanceDAOImpl extends BaseDAOImpl implements SurveillanceDAO {

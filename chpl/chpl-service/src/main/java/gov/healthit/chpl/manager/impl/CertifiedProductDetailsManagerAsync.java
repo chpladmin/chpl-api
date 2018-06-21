@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Service("certifiedProductDetailsManagerAsync")
 public class CertifiedProductDetailsManagerAsync {

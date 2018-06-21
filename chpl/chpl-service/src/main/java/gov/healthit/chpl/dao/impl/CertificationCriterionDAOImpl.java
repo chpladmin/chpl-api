@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("certificationCriterionDAO")
 public class CertificationCriterionDAOImpl extends BaseDAOImpl implements CertificationCriterionDAO {

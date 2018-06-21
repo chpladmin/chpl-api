@@ -16,11 +16,11 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.UcdProcessDAO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.entity.UcdProcessEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("ucdProcessDAO")
 public class UcdProcessDAOImpl extends BaseDAOImpl implements UcdProcessDAO {

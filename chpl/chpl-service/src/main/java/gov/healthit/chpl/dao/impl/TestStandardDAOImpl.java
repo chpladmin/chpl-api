@@ -17,11 +17,11 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.entity.TestStandardEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
 
 @Repository("testStandardDAO")
 public class TestStandardDAOImpl extends BaseDAOImpl implements TestStandardDAO {

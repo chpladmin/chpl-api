@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 @Service
 public class SurveillanceUploadHandlerFactoryImpl implements SurveillanceUploadHandlerFactory {

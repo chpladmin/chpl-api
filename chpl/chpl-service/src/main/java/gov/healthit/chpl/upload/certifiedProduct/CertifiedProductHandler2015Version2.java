@@ -11,9 +11,9 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductParentListingEntity;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version2;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 /**
  * Adds ICS Source (family), Removes columns G1 and G2 for 170.315(g)(7), 

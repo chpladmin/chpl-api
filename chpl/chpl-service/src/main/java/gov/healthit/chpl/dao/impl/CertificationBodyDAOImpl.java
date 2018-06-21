@@ -17,10 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AddressDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "certificationBodyDAO")
 public class CertificationBodyDAOImpl extends BaseDAOImpl implements CertificationBodyDAO {

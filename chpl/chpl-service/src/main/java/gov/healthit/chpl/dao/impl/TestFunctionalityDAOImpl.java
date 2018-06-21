@@ -7,10 +7,10 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.entity.TestFunctionalityEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("testFunctionalityDAO")
 public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctionalityDAO {

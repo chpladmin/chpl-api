@@ -34,8 +34,6 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
@@ -46,10 +44,12 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.exception.CertificationBodyAccessException;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.web.controller.CertificationBodyAccessException;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

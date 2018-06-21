@@ -4,6 +4,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ContactDAO {
 

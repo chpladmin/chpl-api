@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.AnnouncementDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.entity.AnnouncementEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "announcementDAO")
 public class AnnouncementDAOImpl extends BaseDAOImpl implements AnnouncementDAO {

@@ -12,6 +12,7 @@ import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface NotificationDAO {
     RecipientDTO createRecipientEmailAddress(String emailAddress);

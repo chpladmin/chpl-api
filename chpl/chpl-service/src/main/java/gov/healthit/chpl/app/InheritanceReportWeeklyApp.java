@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.app.presenter.InvalidInheritanceCsvPresenter;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -29,6 +28,7 @@ import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component("inheritanceReportWeeklyApp")
 public class InheritanceReportWeeklyApp extends NotificationEmailerReportApp {

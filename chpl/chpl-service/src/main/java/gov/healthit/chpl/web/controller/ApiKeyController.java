@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.ApiKey;
 import gov.healthit.chpl.domain.ApiKeyActivity;
 import gov.healthit.chpl.domain.ApiKeyRegistration;
 import gov.healthit.chpl.dto.ApiKeyDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

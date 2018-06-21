@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AgeRangeDTO;
@@ -50,9 +49,10 @@ import gov.healthit.chpl.entity.listing.pending.PendingCqmCertificationCriteriaE
 import gov.healthit.chpl.entity.listing.pending.PendingCqmCriterionEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestParticipantEntity;
 import gov.healthit.chpl.entity.listing.pending.PendingTestTaskEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap;
 import gov.healthit.chpl.upload.certifiedProduct.template.TemplateColumnIndexMap2015Version1;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component("certifiedProductHandler2015Version1")
 public class CertifiedProductHandler2015Version1 extends CertifiedProductHandler {

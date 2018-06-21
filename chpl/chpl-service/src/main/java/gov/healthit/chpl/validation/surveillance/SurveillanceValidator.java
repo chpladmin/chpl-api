@@ -17,7 +17,6 @@ import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -34,6 +33,7 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("surveillanceValidator")

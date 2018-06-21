@@ -2,10 +2,10 @@ package gov.healthit.chpl.manager;
 
 import java.util.List;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * The CertifiedProductDetailsManager class is used to retrieve data related to the certified products.

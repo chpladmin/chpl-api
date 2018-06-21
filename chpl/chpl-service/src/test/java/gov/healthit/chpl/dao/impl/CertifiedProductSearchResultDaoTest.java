@@ -27,7 +27,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -43,6 +42,7 @@ import gov.healthit.chpl.domain.search.SearchSetOperator;
 import gov.healthit.chpl.domain.search.SurveillanceSearchFilter;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

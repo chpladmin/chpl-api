@@ -8,6 +8,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface FuzzyChoicesDAO {
     FuzzyChoicesDTO create(FuzzyChoicesDTO acb) throws EntityRetrievalException, EntityCreationException, JsonParseException, JsonMappingException, IOException;

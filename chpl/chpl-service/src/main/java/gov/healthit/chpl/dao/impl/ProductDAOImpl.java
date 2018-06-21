@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ContactDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
@@ -26,6 +24,8 @@ import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.entity.ProductActiveOwnerEntity;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("productDAO")
 public class ProductDAOImpl extends BaseDAOImpl implements ProductDAO {

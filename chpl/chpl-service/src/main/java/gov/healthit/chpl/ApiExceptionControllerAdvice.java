@@ -13,20 +13,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import gov.healthit.chpl.auth.json.ErrorJSONObject;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.error.ObjectMissingValidationErrorJSONObject;
 import gov.healthit.chpl.domain.error.ObjectsMissingValidationErrorJSONObject;
 import gov.healthit.chpl.domain.error.ValidationErrorJSONObject;
+import gov.healthit.chpl.exception.CertificationBodyAccessException;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
-import gov.healthit.chpl.web.controller.CertificationBodyAccessException;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.exception.MissingReasonException;
-import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
-import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @ControllerAdvice
 public class ApiExceptionControllerAdvice {

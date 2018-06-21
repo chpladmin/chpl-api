@@ -17,8 +17,6 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -49,6 +47,8 @@ import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultUcdProcessEntity;
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "certificationResultDAO")
 public class CertificationResultDAOImpl extends BaseDAOImpl implements CertificationResultDAO {

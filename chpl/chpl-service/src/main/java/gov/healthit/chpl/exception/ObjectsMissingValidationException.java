@@ -1,4 +1,4 @@
-package gov.healthit.chpl.web.controller.exception;
+package gov.healthit.chpl.exception;
 
 import java.util.ArrayList;
 import java.util.List;

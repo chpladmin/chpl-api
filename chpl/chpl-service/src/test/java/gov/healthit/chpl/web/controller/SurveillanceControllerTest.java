@@ -43,8 +43,6 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.IdListContainer;
@@ -58,12 +56,16 @@ import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
+import gov.healthit.chpl.exception.CertificationBodyAccessException;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.exception.ObjectsMissingValidationException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.impl.SurveillanceAuthorityAccessDeniedException;
-import gov.healthit.chpl.web.controller.exception.MissingReasonException;
-import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
-import gov.healthit.chpl.web.controller.exception.ObjectsMissingValidationException;
-import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CQMResultDetailsDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "cqmResultDetailsDAO")
 public class CQMResultDetailsDAOImpl extends BaseDAOImpl implements CQMResultDetailsDAO {

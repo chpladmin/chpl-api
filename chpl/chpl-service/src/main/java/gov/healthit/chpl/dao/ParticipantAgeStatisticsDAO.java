@@ -4,6 +4,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantAgeStatisticsEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ParticipantAgeStatisticsDAO {
     /**

@@ -9,11 +9,11 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ParticipantEducationStatisticsDAO;
 import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantEducationStatisticsEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * The implementation for ParticipantEducationStatisticsDAO.

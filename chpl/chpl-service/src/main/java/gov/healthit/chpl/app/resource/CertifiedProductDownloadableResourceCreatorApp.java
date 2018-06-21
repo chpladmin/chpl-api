@@ -15,10 +15,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 
 import gov.healthit.chpl.app.CertifiedProductSearchDetailsAsync;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 public abstract class CertifiedProductDownloadableResourceCreatorApp extends DownloadableResourceCreatorApp {
