@@ -9,9 +9,8 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>chpl-service</artifactId>
-    <packaging>war</packaging>
-    <name>chpl-service Maven Webapp</name>
-    <url>http://maven.apache.org</url>
+    <packaging>jar</packaging>
+    <name>chpl-service library</name>
 
     <dependencies>
         <dependency>
@@ -190,7 +189,14 @@
         </dependency>
 
         <!-- for unit/integration testing of the dao calls -->
-
+        <dependency>
+            <groupId>gov.healthit.chpl</groupId>
+            <artifactId>chpl-resources</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>

@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
@@ -81,30 +82,6 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         return bean;
     }
 
-    @Bean
-    public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
-        LOGGER.info("get LocalEntityManagerFactoryBean");
-        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean = 
-                new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
-        bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
-        return bean;
-    }
-
-    @Bean
-    public org.springframework.orm.jpa.JpaTransactionManager transactionManager() {
-        LOGGER.info("get JpaTransactionManager");
-        org.springframework.orm.jpa.JpaTransactionManager bean = 
-                new org.springframework.orm.jpa.JpaTransactionManager();
-        bean.setEntityManagerFactory(entityManagerFactory().getObject());
-        return bean;
-    }
-
-    @Bean
-    public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
-        LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
-        return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
-    }
-
     @Bean(name = "multipartResolver")
     public CommonsMultipartResolver getResolver() throws IOException {
         LOGGER.info("get CommonsMultipartResolver");
@@ -125,32 +102,9 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
     }
 
     @Bean
-    public TaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
-        te.setCorePoolSize(10);
-        te.setMaxPoolSize(100);
-        return te;
-    }
-
-    @Bean
     public Marshaller marshaller() {
         LOGGER.info("get Marshaller");
         return new CastorMarshaller();
-    }
-    
-    @Bean
-    public CacheManager cacheManager() {
-        LOGGER.info("get CacheManager");
-        return new EhCacheCacheManager(ehCacheCacheManager().getObject());
-    }
-
-    @Bean
-    public EhCacheManagerFactoryBean ehCacheCacheManager() {
-        LOGGER.info("get EhCacheManagerFactoryBean");
-        EhCacheManagerFactoryBean cmfb = new EhCacheManagerFactoryBean();
-        cmfb.setConfigLocation(new ClassPathResource("ehCache.xml"));
-        cmfb.setShared(true);
-        return cmfb;
     }
 
     @Bean
@@ -190,10 +144,4 @@ public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAw
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-
-    @Bean
-    public MeaningfulUseUploadJob meaningfulUseUploadJob() {
-        return new MeaningfulUseUploadJob();
-    }
-
 }

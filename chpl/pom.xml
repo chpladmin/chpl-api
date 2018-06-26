@@ -11,6 +11,7 @@
     <module>chpl-api</module>
     <module>chpl-service</module>
     <module>chpl-auth</module>
+    <module>chpl-resources</module>
   </modules>
 
   <reporting>
