@@ -46,7 +46,9 @@ public class StatisticsController {
     @RequestMapping(value = "/listing_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public ListingCountStatisticsResult getListingCountStatistics() {
-        return statisticsManager.getListingCountStatisticsResult();
+        ListingCountStatisticsResult response = new ListingCountStatisticsResult();
+        response.setStatisticsResult(statisticsManager.getListingCountStatisticsResult());
+        return response;
     }
 
     /**
@@ -58,7 +60,9 @@ public class StatisticsController {
     @RequestMapping(value = "/criterion_product", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
-        return statisticsManager.getCriterionProductStatisticsResult();
+        CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
+        response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());;
+        return response;
     }
 
     /**
@@ -70,7 +74,9 @@ public class StatisticsController {
     @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
-        return statisticsManager.getIncumbentDevelopersStatisticsResult();
+        IncumbentDevelopersStatisticsResult response = new IncumbentDevelopersStatisticsResult();
+        response.setIncumbentDevelopersStatisticsResult(statisticsManager.getIncumbentDevelopersStatisticsResult());;
+        return response;
     }
 
     /**
@@ -117,7 +123,9 @@ public class StatisticsController {
     @RequestMapping(value = "/participant_age_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantAgeStatisticsResult getParticipantAgeStatistics() {
-        return statisticsManager.getParticipantAgeStatisticsResult();
+        ParticipantAgeStatisticsResult response = new ParticipantAgeStatisticsResult();
+        response.setParticipantAgeStatistics(statisticsManager.getParticipantAgeStatisticsResult());
+        return response;
     }
 
     /**
@@ -129,7 +137,9 @@ public class StatisticsController {
     @RequestMapping(value = "/participant_education_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantEducationStatisticsResult getParticipantEducationStatistics() {
-        return statisticsManager.getParticipantEducationStatisticsResult();
+        ParticipantEducationStatisticsResult response = new ParticipantEducationStatisticsResult();
+        response.setParticipantEducationStatistics(statisticsManager.getParticipantEducationStatisticsResult());
+        return response;
     }
 
     /**
@@ -141,7 +151,10 @@ public class StatisticsController {
     @RequestMapping(value = "/participant_professional_experience_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProfessionalExperienceStatistics() {
-        return statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.PROFESSIONAL_EXPERIENCE);
+        ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
+        response.setParticipantExperienceStatistics(
+                statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.PROFESSIONAL_EXPERIENCE));
+        return response;
     }
 
     /**
@@ -153,7 +166,10 @@ public class StatisticsController {
     @RequestMapping(value = "/participant_computer_experience_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantComputerExperienceStatistics() {
-        return statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.COMPUTER_EXPERIENCE);
+        ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
+        response.setParticipantExperienceStatistics(
+                statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.COMPUTER_EXPERIENCE));
+        return response;
     }
 
     /**
@@ -165,6 +181,9 @@ public class StatisticsController {
     @RequestMapping(value = "/participant_product_experience_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProductExperienceStatistics() {
-        return statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.PRODUCT_EXPERIENCE);
+        ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
+        response.setParticipantExperienceStatistics(
+                statisticsManager.getParticipantExperienceStatisticsResult(ExperienceType.PRODUCT_EXPERIENCE));
+        return response;
     }
 }

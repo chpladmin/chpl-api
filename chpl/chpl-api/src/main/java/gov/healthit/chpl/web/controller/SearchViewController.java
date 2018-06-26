@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
@@ -1164,7 +1166,9 @@ public class SearchViewController {
     @RequestMapping(value = "/decertifications/developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-        DecertifiedDeveloperResults ddr = developerManager.getDecertifiedDevelopers();
+        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
+        List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
+        ddr.setDecertifiedDeveloperResults(results);
         return ddr;
     }
 }

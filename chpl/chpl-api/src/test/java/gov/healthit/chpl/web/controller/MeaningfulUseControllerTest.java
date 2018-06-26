@@ -47,7 +47,6 @@ import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)

@@ -59,7 +59,6 @@ import com.github.springtestdbunit.bean.DatabaseDataSourceConnectionFactoryBean;
 
 import gov.healthit.chpl.caching.CacheInitializor;
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
-import gov.healthit.chpl.questionableActivity.QuestionableActivityAspect;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled=true)

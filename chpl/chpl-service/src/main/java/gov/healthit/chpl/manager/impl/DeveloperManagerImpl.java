@@ -49,7 +49,6 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 
 @Service
 public class DeveloperManagerImpl implements DeveloperManager {
@@ -460,8 +459,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.GET_DECERTIFIED_DEVELOPERS)
-    public DecertifiedDeveloperResults getDecertifiedDevelopers() throws EntityRetrievalException {
-        DecertifiedDeveloperResults ddr = new DecertifiedDeveloperResults();
+    public List<DecertifiedDeveloperResult> getDecertifiedDevelopers() throws EntityRetrievalException {
         List<DecertifiedDeveloperDTO> dtoList = new ArrayList<DecertifiedDeveloperDTO>();
         List<DecertifiedDeveloperResult> decertifiedDeveloperResults = new ArrayList<DecertifiedDeveloperResult>();
 
@@ -479,9 +477,7 @@ public class DeveloperManagerImpl implements DeveloperManager {
                     dto.getNumMeaningfulUse());
             decertifiedDeveloperResults.add(decertifiedDeveloper);
         }
-
-        ddr.setDecertifiedDeveloperResults(decertifiedDeveloperResults);
-        return ddr;
+        return decertifiedDeveloperResults;
     }
 
     private boolean isStatusHistoryUpdated(final DeveloperDTO original, final DeveloperDTO changed) {

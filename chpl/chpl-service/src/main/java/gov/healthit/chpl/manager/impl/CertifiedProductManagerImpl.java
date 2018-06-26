@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -34,7 +33,6 @@ import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.AccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
@@ -75,7 +73,6 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.MeaningfulUseUser;
 import gov.healthit.chpl.dto.AccessibilityStandardDTO;
 import gov.healthit.chpl.dto.AddressDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -154,7 +151,6 @@ import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
-import gov.healthit.chpl.web.controller.results.MeaningfulUseUserResults;
 
 @Service("certifiedProductManager")
 public class CertifiedProductManagerImpl implements CertifiedProductManager {
@@ -201,9 +197,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
 
     @Autowired
     private CQMCriterionDAO cqmCriterionDao;
-
-    @Autowired
-    private CertificationBodyDAO acbDao;
 
     @Autowired
     private TestingLabDAO atlDao;
@@ -2137,73 +2130,6 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             result.add(dto);
         }
         return result;
-    }
-
-    @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    @Transactional(readOnly = false)
-    @CacheEvict(value = {
-            CacheNames.GET_DECERTIFIED_DEVELOPERS
-    }, allEntries = true)
-    public MeaningfulUseUserResults updateMeaningfulUseUsers(final Set<MeaningfulUseUser> meaningfulUseUserSet)
-            throws EntityCreationException, EntityRetrievalException, IOException {
-        MeaningfulUseUserResults meaningfulUseUserResults = new MeaningfulUseUserResults();
-        List<MeaningfulUseUser> errors = new ArrayList<MeaningfulUseUser>();
-        List<MeaningfulUseUser> results = new ArrayList<MeaningfulUseUser>();
-
-        for (MeaningfulUseUser muu : meaningfulUseUserSet) {
-            if (StringUtils.isEmpty(muu.getError())) {
-                try {
-                    // If bad input, add error for this MeaningfulUseUser and
-                    // continue
-                    if ((muu.getProductNumber() == null || muu.getProductNumber().isEmpty())) {
-                        muu.setError("Line " + muu.getCsvLineNumber()
-                        + ": Field \"chpl_product_number\" has invalid value: \"" + muu.getProductNumber()
-                        + "\".");
-                    } else if (muu.getNumberOfUsers() == null) {
-                        muu.setError("Line " + muu.getCsvLineNumber()
-                        + ": Field \"num_meaningful_users\" has invalid value: \"" + muu.getNumberOfUsers()
-                        + "\".");
-                    } else {
-                        CertifiedProductDTO dto = new CertifiedProductDTO();
-                        // check if 2014 edition CHPL Product Number exists
-                        if (cpDao.getByChplNumber(muu.getProductNumber()) != null) {
-                            dto.setChplProductNumber(muu.getProductNumber());
-                            dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
-                        } else if (cpDao.getByChplUniqueId(muu.getProductNumber()) != null) {
-                            // check if 2015 edition CHPL Product Number exists
-                            dto.setChplProductNumber(muu.getProductNumber());
-                            dto.setMeaningfulUseUsers(muu.getNumberOfUsers());
-                        } else {
-                            // If neither exist, add error
-                            throw new EntityRetrievalException();
-                        }
-
-                        try {
-                            CertifiedProductDTO returnDto = cpDao.updateMeaningfulUseUsers(dto);
-                            muu.setCertifiedProductId(returnDto.getId());
-                            results.add(muu);
-                        } catch (final EntityRetrievalException e) {
-                            muu.setError("Line " + muu.getCsvLineNumber()
-                            + ": Field \"chpl_product_number\" with value \"" + muu.getProductNumber()
-                            + "\" is invalid. " + "The provided \"chpl_product_number\" does not exist.");
-                            errors.add(muu);
-                        }
-                    }
-                } catch (Exception e) {
-                    muu.setError("Line " + muu.getCsvLineNumber() + ": Field \"chpl_product_number\" with value \""
-                            + muu.getProductNumber() + "\" is invalid. "
-                            + "The provided \"chpl_product_number\" does not exist.");
-                    errors.add(muu);
-                }
-            } else {
-                errors.add(muu);
-            }
-        }
-
-        meaningfulUseUserResults.setMeaningfulUseUsers(results);
-        meaningfulUseUserResults.setErrors(errors);
-        return meaningfulUseUserResults;
     }
 
     private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(
