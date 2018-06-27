@@ -78,7 +78,7 @@ public class ApiKeyController {
 
         Date now = new Date();
 
-        String apiKey = gov.healthit.chpl.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
+        String apiKey = gov.healthit.chpl.util.Util.md5(registration.getName() + registration.getEmail() + now.getTime());
         ApiKeyDTO toCreate = new ApiKeyDTO();
 
         toCreate.setApiKey(apiKey);

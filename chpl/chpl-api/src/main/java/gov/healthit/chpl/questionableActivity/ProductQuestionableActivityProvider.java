@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.Util;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class ProductQuestionableActivityProvider {

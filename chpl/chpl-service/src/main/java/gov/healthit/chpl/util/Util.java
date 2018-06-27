@@ -1,4 +1,4 @@
-package gov.healthit.chpl;
+package gov.healthit.chpl.util;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;

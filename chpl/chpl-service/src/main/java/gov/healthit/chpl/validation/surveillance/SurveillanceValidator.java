@@ -271,7 +271,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                     if (req.getType().getName().equalsIgnoreCase(CRITERION_REQUIREMENT_TYPE)
                             && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
 
-                        req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
+                        req.setRequirement(gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
                         CertificationCriterionDTO criterion = null;
                         // see if the nonconformity type is a criterion that the
                         // product has attested to
@@ -297,7 +297,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                         }
                     } else if (req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
                         // requirement has to be one of 170.523 (k)(1) or (k)(2)
-                        req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
+                        req.setRequirement(gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
                         if (!RequirementTypeEnum.K1.getName().equals(req.getRequirement())
                                 && !RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
                             surv.getErrorMessages()
@@ -385,7 +385,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                             // certification criteria or just a string?
                             CertificationCriterionDTO criterion = null;
                             if (surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
-                                nc.setNonconformityType(gov.healthit.chpl.Util
+                                nc.setNonconformityType(gov.healthit.chpl.util.Util
                                         .coerceToCriterionNumberFormat(nc.getNonconformityType()));
                                 // see if the nonconformity type is a criterion
                                 // that the product has attested to
@@ -404,7 +404,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                             // it has to be one of a few other values
                             if (surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null
                                     && criterion == null) {
-                                nc.setNonconformityType(gov.healthit.chpl.Util
+                                nc.setNonconformityType(gov.healthit.chpl.util.Util
                                         .coerceToCriterionNumberFormat(nc.getNonconformityType()));
                                 if (!NonconformityType.K1.getName().equals(nc.getNonconformityType())
                                         && !NonconformityType.K2.getName().equals(nc.getNonconformityType())
