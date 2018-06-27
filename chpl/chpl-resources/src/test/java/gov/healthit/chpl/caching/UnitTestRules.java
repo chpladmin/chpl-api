@@ -12,12 +12,7 @@ import net.sf.ehcache.CacheManager;
 @Service
 public class UnitTestRules extends ExternalResource {
 	private static final Logger logger = LogManager.getLogger(UnitTestRules.class);
-	private final CacheManager cacheManager;
-	
-	@Autowired
-	public UnitTestRules(CacheManager cacheManager) {
-		this.cacheManager = cacheManager;
-	}
+	@Autowired private CacheManager cacheManager;
 	
 	@Override
 	protected void before() {

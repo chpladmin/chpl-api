@@ -3,6 +3,11 @@ package gov.healthit.chpl.manager.impl;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,11 +47,12 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
 public class ApiKeyManagerTest extends TestCase {
+    @PersistenceContext
+    @Autowired
+    EntityManager entityManager;
+    
 	@Autowired
 	private ApiKeyManager apiKeyManager;
-	
-	@Autowired
-	private ApiKeyTestHelper apiKeyActivityTestHelper;
 	
 	@Autowired
 	private ApiKeyActivityDAOImpl apiKeyActivityDAOImpl;
@@ -517,7 +523,7 @@ public class ApiKeyManagerTest extends TestCase {
 	public void test_getApiKeyActivity_apiKeyFilter_exclamationWithoutApiKeyReturnsAllResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		ApiKeyActivityEntity newestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(false);
+		ApiKeyActivityEntity newestApiKeyActivity = getNewestOrOldestApiKeyActivityByCreationDate(false);
 		int totalNumberOfApiKeyActivityEntities = apiKeyActivityDAOImpl.getAllEntities().size();
 		
 		// Simulate API inputs
@@ -552,7 +558,7 @@ public class ApiKeyManagerTest extends TestCase {
 		Long currentActivityTime = null;
 		int counter = 0;
 		
-		ApiKeyActivityEntity newestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(false);
+		ApiKeyActivityEntity newestApiKeyActivity = getNewestOrOldestApiKeyActivityByCreationDate(false);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null; 
@@ -626,7 +632,7 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
-		ApiKeyActivityEntity apiKeyActivity = apiKeyActivityTestHelper.getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
+		ApiKeyActivityEntity apiKeyActivity = getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
 		
 		// Simulate API inputs
 		String apiKeyFilter = null;
@@ -661,7 +667,7 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
-		ApiKeyActivityEntity oldestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(true);
+		ApiKeyActivityEntity oldestApiKeyActivity = getNewestOrOldestApiKeyActivityByCreationDate(true);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null;
@@ -698,7 +704,7 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
-		ApiKeyActivityEntity apiKeyActivity = apiKeyActivityTestHelper.getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
+		ApiKeyActivityEntity apiKeyActivity = getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
 		
 		// Simulate API inputs
 		String apiKeyFilter = null;
@@ -799,5 +805,38 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
+	
+	/* Gets the oldest or newest API key activity based on creation_date
+     * If isOldest = true, returns the oldest API key activity; if false, returns the newest API key activity
+     * Returns the ApiKeyActivityEntity
+     */
+    private ApiKeyActivityEntity getNewestOrOldestApiKeyActivityByCreationDate(boolean isOldest) {
+        String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER BY creationDate ";
+        if(isOldest){
+            sql += "ASC";
+        }
+        else{
+            sql += "DESC";
+        }
+        Query query = entityManager.createQuery
+                (sql, ApiKeyActivityEntity.class);
+        query.setMaxResults(1);
+        ApiKeyActivityEntity apiKeyActivityEntity = (gov.healthit.chpl.entity.ApiKeyActivityEntity) query.getSingleResult();
+        return apiKeyActivityEntity;
+    }
+    
+    /* Gets an API key activity entity from the database with a creation_date that is not the oldest or newest 
+     * Returns the API key activity entity
+     * Assumes there must be at least 3 api key activities in testData.xml
+     */ 
+    private ApiKeyActivityEntity getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest(){
+        String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER BY creationDate ASC";
+        Query query = entityManager.createQuery
+                (sql, ApiKeyActivityEntity.class);
+        List<ApiKeyActivityEntity> ApiKeyActivityEntityList = query.getResultList();
+        Assert.assertTrue("There should be a list of API key activity entitites returned from the database, but there are only " + ApiKeyActivityEntityList.size(), 
+                ApiKeyActivityEntityList.size() > 3);
+        return ApiKeyActivityEntityList.get(3);
+    }
 	
 }

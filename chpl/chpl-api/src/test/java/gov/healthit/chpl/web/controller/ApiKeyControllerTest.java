@@ -6,6 +6,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -33,7 +37,6 @@ import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.impl.ApiKeyTestHelper;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
@@ -43,11 +46,13 @@ import gov.healthit.chpl.manager.impl.ApiKeyTestHelper;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
 public class ApiKeyControllerTest {
+    
+    @PersistenceContext
+    @Autowired
+    EntityManager entityManager;
+    
 	@Autowired
 	ApiKeyController apiKeyController;
-	
-	@Autowired
-	private ApiKeyTestHelper apiKeyActivityTestHelper;
 	
 	@Rule
     @Autowired
@@ -79,7 +84,7 @@ public class ApiKeyControllerTest {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
 		// Get the oldest API key id
-		ApiKeyActivityEntity oldestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(true);
+		ApiKeyActivityEntity oldestApiKeyActivity = getNewestOrOldestApiKeyActivityByCreationDate(true);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
@@ -111,7 +116,7 @@ public class ApiKeyControllerTest {
 		long newestApiKeyActivityCreationDate = 0;
 		
 		// Get the newest API key id
-		ApiKeyActivityEntity newestApiKeyActivityEntity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(false);
+		ApiKeyActivityEntity newestApiKeyActivityEntity = getNewestOrOldestApiKeyActivityByCreationDate(false);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null; // Valid API Key in openchpl_test DB
@@ -183,4 +188,23 @@ public class ApiKeyControllerTest {
 		apiKeyController.listActivityByKey("BADKEY", 0, 10);
 	}
 	
+	   
+    /* Gets the oldest or newest API key activity based on creation_date
+     * If isOldest = true, returns the oldest API key activity; if false, returns the newest API key activity
+     * Returns the ApiKeyActivityEntity
+     */
+    private ApiKeyActivityEntity getNewestOrOldestApiKeyActivityByCreationDate(boolean isOldest) {
+        String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER BY creationDate ";
+        if(isOldest){
+            sql += "ASC";
+        }
+        else{
+            sql += "DESC";
+        }
+        Query query = entityManager.createQuery
+                (sql, ApiKeyActivityEntity.class);
+        query.setMaxResults(1);
+        ApiKeyActivityEntity apiKeyActivityEntity = (gov.healthit.chpl.entity.ApiKeyActivityEntity) query.getSingleResult();
+        return apiKeyActivityEntity;
+    }
 }

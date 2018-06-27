@@ -3,9 +3,7 @@ package gov.healthit.chpl.questionableActivity;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -30,7 +28,6 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
-import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -38,7 +35,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityCertificationResultDTO;
-import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
