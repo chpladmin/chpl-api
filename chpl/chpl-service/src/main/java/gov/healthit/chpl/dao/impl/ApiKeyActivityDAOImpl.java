@@ -182,7 +182,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
         ApiKeyActivityEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from ApiKeyActivityEntity where (NOT deleted = true) AND (api_activity_id = :entityid) ",
+                "from ApiKeyActivityEntity where (NOT deleted = true) AND (id = :entityid) ",
                 ApiKeyActivityEntity.class);
         query.setParameter("entityid", entityId);
         List<ApiKeyActivityEntity> result = query.getResultList();

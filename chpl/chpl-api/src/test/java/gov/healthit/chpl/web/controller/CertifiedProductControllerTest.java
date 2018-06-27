@@ -51,6 +51,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.PendingCertifiedProductDAO;
+import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -67,6 +68,7 @@ import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -95,6 +97,9 @@ public class CertifiedProductControllerTest {
 
     @Autowired
     PendingCertifiedProductDAO pcpDAO;
+    
+    @Autowired
+    TestToolDAO ttDao;
 
     @Autowired
     CertifiedProductValidatorFactory validatorFactory;
@@ -197,6 +202,18 @@ public class CertifiedProductControllerTest {
             throws EntityRetrievalException, EntityCreationException, IOException,
             MissingReasonException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
+        
+        //insert a retired test tool
+        TestToolDTO retiredTestTool = new TestToolDTO();
+        retiredTestTool.setName("Retired Test Tool");
+        retiredTestTool.setDescription("A retired test tool for unit testing.");
+        ttDao.create(retiredTestTool);
+        //create only creates un-retired test tools
+        //so update to retire it
+        retiredTestTool = ttDao.getByName("Retired Test Tool");
+        retiredTestTool.setRetired(true);
+        ttDao.update(retiredTestTool);
+        
         CertifiedProductSearchDetails updateRequest = new CertifiedProductSearchDetails();
         updateRequest.setCertificationDate(1440090840000L);
         updateRequest.setId(1L); // Certified_product_id = 1 has icsCode = true and is associated with TestTool with id=2 & id = 3 that have retired = true
@@ -229,9 +246,11 @@ public class CertifiedProductControllerTest {
         cr.setTestStandards(null);
         List<CertificationResultTestTool> crttList = new ArrayList<CertificationResultTestTool>();
         CertificationResultTestTool crtt = new CertificationResultTestTool();
-        crtt.setId(2L);
+        crtt.setId(retiredTestTool.getId());
         crtt.setRetired(true);
-        crtt.setTestToolName("Transport Test Tool");
+        crtt.setTestToolId(retiredTestTool.getId());
+        crtt.setTestToolName(retiredTestTool.getName());
+        crtt.setTestToolVersion("1.1.0");
         crttList.add(crtt);
         cr.setTestToolsUsed(crttList);
         cr.setTitle("Inpatient setting only - transmission of electronic laboratory tests and values/results to ambulatory providers");
@@ -282,7 +301,7 @@ public class CertifiedProductControllerTest {
         } catch (ValidationException e) {
             assertNotNull(e);
             // ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-            assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
+            assertTrue(e.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                     + "as it is a retired tool, and this Certified Product does not carry ICS."));
         }
 
@@ -320,7 +339,7 @@ public class CertifiedProductControllerTest {
         } catch (ValidationException e) {
             assertNotNull(e);
             // 2014 certEdition; ICS is false, 15.07.07.2642.IC04.36.0.1.160402 shows false ICS. No mismatch = error message
-            assertTrue(e.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
+            assertTrue(e.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                     + "as it is a retired tool, and this Certified Product does not carry ICS."));
         }
 
@@ -386,6 +405,18 @@ public class CertifiedProductControllerTest {
     @Test
     public void test_updatePendingCertifiedProductDTO_icsAndRetiredTTs_warningvsError() throws EntityRetrievalException, EntityCreationException, IOException, ParseException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
+        
+        //insert a retired test tool
+        TestToolDTO retiredTestTool = new TestToolDTO();
+        retiredTestTool.setName("Retired Test Tool");
+        retiredTestTool.setDescription("A retired test tool for unit testing.");
+        ttDao.create(retiredTestTool);
+        //create only creates un-retired test tools
+        //so update to retire it
+        retiredTestTool = ttDao.getByName("Retired Test Tool");
+        retiredTestTool.setRetired(true);
+        ttDao.update(retiredTestTool);
+        
         PendingCertifiedProductDTO pcpDTO = new PendingCertifiedProductDTO();
         String certDateString = "11-09-2016";
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
@@ -414,10 +445,11 @@ public class CertifiedProductControllerTest {
         pcpCertResultDTO1.setMeetsCriteria(true);
         List<PendingCertificationResultTestToolDTO> pcprttdtoList = new ArrayList<PendingCertificationResultTestToolDTO>();
         PendingCertificationResultTestToolDTO pcprttdto1 = new PendingCertificationResultTestToolDTO();
-        pcprttdto1.setId(2L);
-        pcprttdto1.setName("Transport Test Tool");
+        pcprttdto1.setId(retiredTestTool.getId());
+        pcprttdto1.setName("Retired Test Tool");
+        pcprttdto1.setTestToolId(retiredTestTool.getId());
         pcprttdto1.setPendingCertificationResultId(1L);
-        pcprttdto1.setVersion(null);
+        pcprttdto1.setVersion("test tool version");
         pcprttdtoList.add(pcprttdto1);
         pcpCertResultDTO1.setTestTools(pcprttdtoList);
         pcrDTOs.add(pcpCertResultDTO1);
@@ -469,7 +501,7 @@ public class CertifiedProductControllerTest {
         // test 1
         // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
         assertTrue(pcpDTO.getErrorMessages().contains(
-                "Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
+                "Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 2
@@ -481,7 +513,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is true, 15.07.07.2642.IC04.36.00.1.160402 shows true ICS. ICS Mismatch = warning message
-        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getWarningMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 3
@@ -496,7 +528,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
 
         // test 4
@@ -506,7 +538,7 @@ public class CertifiedProductControllerTest {
             validator.validate(pcpDTO);
         }
         // ICS is false, 15.07.07.2642.IC04.36.00.1.160402 shows false ICS. No mismatch = error message
-        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Transport Test Tool' can not be used for criteria '170.315 (b)(6)', "
+        assertTrue(pcpDTO.getErrorMessages().contains("Test Tool 'Retired Test Tool' can not be used for criteria '170.315 (b)(6)', "
                 + "as it is a retired tool, and this Certified Product does not carry ICS."));
     }
 
