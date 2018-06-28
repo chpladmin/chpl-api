@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,9 +58,10 @@ public class ListingCountStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void deleteOneStat() throws EntityRetrievalException {
         final int expectedCount = 0;
-        lcDao.delete(1L);
+        lcDao.delete(-1L);
         List<ListingCountStatisticsDTO> results = lcDao.findAll();
         assertNotNull(results);
         assertEquals(expectedCount, results.size());
@@ -67,6 +69,7 @@ public class ListingCountStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void createOneStat() throws EntityCreationException, EntityRetrievalException {
         final int expectedCount = 2;
         ListingCountStatisticsDTO dto = new ListingCountStatisticsDTO();

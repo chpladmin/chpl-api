@@ -125,7 +125,7 @@ public class NotificationDAOTest extends TestCase {
     @Transactional
     @Rollback(true)
     public void getAllNotificationTypes() {
-        final int expectedCount = 9;
+        final int expectedCount = 8;
         List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(null);
         assertNotNull(types);
         assertTrue(types.size() > 0);
@@ -146,7 +146,7 @@ public class NotificationDAOTest extends TestCase {
     @Transactional
     @Rollback(true)
     public void getOncAdminNotificationTypes() {
-        final int expectedCount = 9;
+        final int expectedCount = 8;
         List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(adminUser.getPermissions());
         assertNotNull(types);
         assertTrue(types.size() > 0);

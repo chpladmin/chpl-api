@@ -64,7 +64,7 @@ public class IncumbentDevelopersStatisticsChartDataAppTest extends TestCase {
 
     @Test
     @Transactional
-    public void buildListingCountStatistics() {
+    public void buildIncumbentDeveloperStatistics() {
         IncumbentDevelopersStatisticsCalculator calc = new IncumbentDevelopersStatisticsCalculator(
                 statisticsDAO, certificationEditionDAO, certificationStatusDAO, txnManager);
         List<IncumbentDevelopersStatisticsDTO> dtos = statisticsDAO.findAll();
@@ -78,7 +78,17 @@ public class IncumbentDevelopersStatisticsChartDataAppTest extends TestCase {
 
         assertNotNull(dtos);
         assertEquals(ENDING_LENGTH, dtos.size());
-        assertEquals(ENDING_INCUMBENT_COUNT, dtos.get(0).getIncumbentCount());
-        assertEquals(ENDING_NEW_COUNT, dtos.get(0).getNewCount());
+        for(IncumbentDevelopersStatisticsDTO dto : dtos) {
+            if(dto.getNewCertificationEditionId().longValue() == 3 && dto.getOldCertificationEditionId().longValue() == 2) {
+                assertEquals(3, dto.getNewCount().longValue());
+                assertEquals(1, dto.getIncumbentCount().longValue());
+            } else if(dto.getNewCertificationEditionId().longValue() == 3 && dto.getOldCertificationEditionId().longValue() == 1) {
+                assertEquals(2, dto.getNewCount().longValue());
+                assertEquals(2, dto.getIncumbentCount().longValue());
+            } else if(dto.getNewCertificationEditionId().longValue() == 2 && dto.getOldCertificationEditionId().longValue() == 1) {
+                assertEquals(0, dto.getNewCount().longValue());
+                assertEquals(1, dto.getIncumbentCount().longValue());
+            }
+        }
     }
 }

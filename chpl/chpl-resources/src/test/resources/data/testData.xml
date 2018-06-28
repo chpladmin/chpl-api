@@ -1816,22 +1816,22 @@
         creation_date="2016-08-28 13:13:24.528" last_modified_date="2016-08-22 13:12:23.525"
         last_modified_user="-2" deleted="false" />
 
-    <criterion_product_statistics id="1"
+    <criterion_product_statistics id="-1"
         product_count="34" certification_criterion_id="74"
         creation_date="2016-08-28 13:13:24.528" last_modified_date="2016-08-22 13:12:23.525"
         last_modified_user="-3" deleted="false" />
-    <criterion_product_statistics id="2"
+    <criterion_product_statistics id="-2"
         product_count="31" certification_criterion_id="38"
         creation_date="2016-08-28 13:13:24.528" last_modified_date="2016-08-22 13:12:23.525"
         last_modified_user="-3" deleted="false" />
 
-    <incumbent_developers_statistics id="1"
+    <incumbent_developers_statistics id="-1"
         new_count="3" incumbent_count="4" new_certification_edition_id="1"
         old_certification_edition_id="2" creation_date="2017-08-28 13:13:24.528"
         last_modified_date="2017-08-22 13:12:23.525" last_modified_user="-3"
         deleted="false" />
 
-    <listing_count_statistics id="1"
+    <listing_count_statistics id="-1"
         developer_count="4" product_count="3" certification_edition_id="2"
         certification_status_id="1" creation_date="2017-08-28 13:13:24.528"
         last_modified_date="2017-08-22 13:12:23.525" last_modified_user="-3"

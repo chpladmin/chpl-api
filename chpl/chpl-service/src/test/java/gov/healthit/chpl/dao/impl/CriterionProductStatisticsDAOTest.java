@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -69,8 +70,9 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void deleteOneStat() throws EntityRetrievalException {
-        cpsDao.delete(1L);
+        cpsDao.delete(-1L);
         List<CriterionProductStatisticsDTO> results = cpsDao.findAll();
         assertNotNull(results);
         assertEquals(STAT_LENGTH - 1, results.size());
@@ -78,6 +80,7 @@ public class CriterionProductStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void createOneStat() throws EntityCreationException, EntityRetrievalException {
         CriterionProductStatisticsDTO dto = new CriterionProductStatisticsDTO();
         dto.setCertificationCriterionId(2L);
