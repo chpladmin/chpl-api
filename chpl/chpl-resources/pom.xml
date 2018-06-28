@@ -7,7 +7,7 @@
   </parent>
   <artifactId>chpl-resources</artifactId>
   <packaging>jar</packaging>
-  <name>resources</name>
+  <name>chpl-resources</name>
   <description>shared resource files</description>
   
   <dependencies>
