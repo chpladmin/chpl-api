@@ -763,7 +763,6 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         String edition = cp.getCertificationEdition().get("name").toString();
 
         for (TestFunctionality tf : this.testFunctionalities) {
-            LOGGER.info(tf.getYear() + " =? " + edition + " == " + tf.getYear().equals(edition));
             if (tf.getYear().equals(edition)) {
                 allowedTestFunctionalities.add(tf);
             }

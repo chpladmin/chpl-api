@@ -40,7 +40,6 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import gov.healthit.chpl.job.MeaningfulUseUploadJob;
-import gov.healthit.chpl.manager.ApiKeyManager;
 
 @Configuration
 @EnableWebMvc
@@ -53,21 +52,16 @@ import gov.healthit.chpl.manager.ApiKeyManager;
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
-}, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })
+})
 public class CHPLServiceConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLServiceConfig.class);
-
-    @Autowired
-    private ApiKeyManager apiKeyManager;
 
     @Autowired
     private Environment env;
 
     @Override
     public void setEnvironment(final Environment environment) {
-        LOGGER.info("setEnvironment");
         this.env = environment;
     }
 

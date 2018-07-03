@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -32,7 +31,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import junit.framework.TestCase;
 
 
@@ -48,9 +46,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
-	
-	@Autowired
-	private CertifiedProductManager certifiedProductManager;
+
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;

@@ -8,29 +8,19 @@ import java.util.Locale;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.castor.CastorMarshaller;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -40,14 +30,11 @@ import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import gov.healthit.chpl.job.MeaningfulUseUploadJob;
 import gov.healthit.chpl.manager.ApiKeyManager;
-import gov.healthit.chpl.questionableActivity.QuestionableActivityAspect;
 import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 
 @Configuration
 @EnableWebMvc
-@EnableTransactionManagement(proxyTargetClass = true)
 @EnableWebSecurity
 @EnableAsync
 @EnableAspectJAutoProxy
@@ -56,21 +43,12 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 @ComponentScan(basePackages = {
         "gov.healthit.chpl.**"
 })
-public class CHPLConfig extends WebMvcConfigurerAdapter implements EnvironmentAware {
+public class CHPLConfig extends WebMvcConfigurerAdapter {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
 
     @Autowired
     private ApiKeyManager apiKeyManager;
-
-    @Autowired
-    private Environment env;
-
-    @Override
-    public void setEnvironment(final Environment environment) {
-        LOGGER.info("setEnvironment");
-        this.env = environment;
-    }
 
     @Bean
     public MappingJackson2HttpMessageConverter jsonConverter() {
