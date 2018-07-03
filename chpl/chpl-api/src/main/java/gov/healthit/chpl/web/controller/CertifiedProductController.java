@@ -698,15 +698,16 @@ public class CertifiedProductController {
             notes = "Pending certified products are created via CSV file upload and are left in the 'pending' state "
                     + " until validated and approved by an appropriate ACB administrator.")
     @RequestMapping(value = "/pending", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts() throws EntityRetrievalException, AccessDeniedException {
-    	
-    	if(!Util.isUserRoleAcbAdmin()){
-    		throw new AccessDeniedException(String
+    public @ResponseBody PendingCertifiedProductResults getPendingCertifiedProducts()
+            throws EntityRetrievalException, AccessDeniedException {
+
+        if (!Util.isUserRoleAcbAdmin()) {
+            throw new AccessDeniedException(String
                     .format(messageSource.getMessage(
                             new DefaultMessageSourceResolvable("access.pendingCertifiedProducts"),
                             LocaleContextHolder.getLocale())));
-    	}
-    	
+        }
+
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         List<PendingCertifiedProductDTO> allProductDtos = new ArrayList<PendingCertifiedProductDTO>();
 
@@ -728,6 +729,7 @@ public class CertifiedProductController {
             PendingCertifiedProductDetails pcpDetails = new PendingCertifiedProductDetails(product);
             pcpManager.addAllVersionsToCmsCriterion(pcpDetails);
             pcpManager.addAllMeasuresToCertificationCriteria(pcpDetails);
+            pcpManager.addAvailableTestFunctionalities(pcpDetails);
             result.add(pcpDetails);
         }
         PendingCertifiedProductResults results = new PendingCertifiedProductResults();
