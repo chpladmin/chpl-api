@@ -42,4 +42,5 @@ public interface PendingCertifiedProductManager {
 
     void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails);
 
+    void addAvailableTestFunctionalities(PendingCertifiedProductDetails pcpDetails);
 }
