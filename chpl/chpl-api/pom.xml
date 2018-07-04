@@ -179,32 +179,6 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- this plugin copies the correct resource into the
-                        jar -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.7</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <!-- here the phase you need -->
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/main/resources-${env}</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
                     <!-- this plugin will allow files in environment-specific
                         folders like resources-prod or resources-test to be added to the resulting
                         war's classpath under WEB-INF/classes to activate the profile, simply add
@@ -222,7 +196,11 @@
                                 <resource>
                                     <!-- this is relative to the pom.xml
                                         directory -->
-                                    <directory>src/main/resources-${env}</directory>
+                                    <directory>../chpl-resources/src/main/resources-${env}</directory>
+                                    <excludes>
+                                        <exclude>log4j2-app.xml</exclude>
+                                        <exclude>jobs.xml</exclude>
+                                    </excludes>
                                     <!-- override default destination at
                                         root of war -->
                                     <targetPath>WEB-INF/classes</targetPath>

@@ -258,6 +258,7 @@ pip-log.txt
 /chpl/chpl-service/src/main/resources-production/environment.properties
 /chpl/chpl-service/src/test/resources/environment.test.properties
 /chpl/chpl-resources/src/test/resources/environment.test.properties
+/chpl/chpl-resources/src/main/resources/environment.properties
 /chpl/chpl-auth/src/test/resources/environment.auth.test.properties
 /chpl/chpl-auth/src/main/resources/environment.auth.properties
 /chpl/chpl-service/test-target/
