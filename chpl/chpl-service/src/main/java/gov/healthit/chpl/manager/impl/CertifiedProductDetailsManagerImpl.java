@@ -710,7 +710,7 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
         String edition = cp.getCertificationEdition().get("name").toString();
         Long practiceTypeId = null;
         if (cp.getPracticeType().containsKey("id")) {
-            if (cp.getPracticeType().get("id") instanceof String) {
+            if (cp.getPracticeType().get("id") != null) {
                 practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
             }
         }
