@@ -54,6 +54,7 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.MacraMeasure;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
@@ -80,6 +81,7 @@ import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
+import gov.healthit.chpl.manager.TestingFunctionalityManager;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 /**
@@ -137,21 +139,28 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
     private CertifiedProductDetailsManagerAsync async;
 
     @Autowired
+    private TestingFunctionalityManager testFunctionalityManager;
+    
+    @Autowired
     private Environment env;
 
     private CQMCriterionDAO cqmCriterionDAO;
     private MacraMeasureDAO macraDao;
-
+    
     private List<CQMCriterion> cqmCriteria = new ArrayList<CQMCriterion>();
     private List<MacraMeasure> macraMeasures = new ArrayList<MacraMeasure>();
+
 
     /**
      * Default constructor.
      * @param cqmCriterionDAO DAO for CQMs
      * @param macraDao DAO for Macra Measures
+     * @param testFunctionalityDAO DAO for Test Functionality
      */
     @Autowired
-    public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO, final MacraMeasureDAO macraDao) {
+    public CertifiedProductDetailsManagerImpl(final CQMCriterionDAO cqmCriterionDAO,
+                                                final MacraMeasureDAO macraDao) {
+                                                //final TestFunctionalityDAO testFunctionalityDAO) {
         this.cqmCriterionDAO = cqmCriterionDAO;
         this.macraDao = macraDao;
 
@@ -690,7 +699,19 @@ public class CertifiedProductDetailsManagerImpl implements CertifiedProductDetai
             }
         }
 
+        result.setAllowedTestFunctionalities(getAvailableTestFunctionalities(result, searchDetails));
+
         return result;
+    }
+
+    private List<TestFunctionality> getAvailableTestFunctionalities(final CertificationResult cr,
+            final CertifiedProductSearchDetails cp) {
+
+        String edition = cp.getCertificationEdition().get("name").toString();
+        Long practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
+        String criteriaNumber = cr.getNumber();
+        
+        return testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId);
     }
 
     private CertifiedProductSearchDetails getCertifiedProductSearchDetails(

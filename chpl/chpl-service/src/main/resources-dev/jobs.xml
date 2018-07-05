@@ -14,6 +14,21 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        <trigger>
+            <cron>
+                <name>alarned@ainq_com</name>
+                <group>cacheStatusAgeTrigger</group>
+                <job-name>cacheStatusAgeJob</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>alarned@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <cron-expression>0 10 * * * ?</cron-expression>
+            </cron>
+        </trigger>
 
         <job>
             <name>downloadFileJob2015</name>
@@ -22,7 +37,7 @@
             <description>Generate download files for 2015.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
-            <recover>false</recover>
+            <recover>true</recover>
             <job-data-map>
                 <entry>
                     <key>edition</key>
@@ -37,7 +52,7 @@
             <description>Generate download files for 2014.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
-            <recover>false</recover>
+            <recover>true</recover>
             <job-data-map>
                 <entry>
                     <key>edition</key>
@@ -66,7 +81,7 @@
                 <group>downloadFileTrigger</group>
                 <job-name>downloadFileJob2015</job-name>
                 <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
                 <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
             </cron>
         </trigger>
@@ -76,7 +91,7 @@
                 <group>downloadFileTrigger</group>
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
                 <cron-expression>0 2 1 * * ?</cron-expression> <!-- At 0102 UTC every day -->
             </cron>
         </trigger>

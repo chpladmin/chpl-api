@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.presenter;
+package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,14 +10,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
-import gov.healthit.chpl.app.resource.DownloadableResourceCreatorApp;
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
+import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
 
+/**
+ * Present objects as XML file.
+ * @author alarned
+ *
+ */
 public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(DownloadableResourceCreatorApp.class);
+    private static final Logger LOGGER = LogManager.getLogger(DownloadableResourceCreatorJob.class);
 
     @Override
-    public int presentAsFile(File file, CertifiedProductDownloadResponse cpList) {
+    public int presentAsFile(final File file, final CertifiedProductDownloadResponse cpList) {
         int numRecords = 0;
         FileOutputStream os = null;
         try {
@@ -38,5 +43,4 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
         }
         return numRecords;
     }
-
 }

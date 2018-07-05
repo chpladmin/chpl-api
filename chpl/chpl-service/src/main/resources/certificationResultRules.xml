@@ -651,7 +651,7 @@
             <g1Macra>false</g1Macra>
             <g2Macra>false</g2Macra>
             <additionalSoftware>true</additionalSoftware>
-            <testTool>false</testTool>
+            <testTool>true</testTool>
             <testProcedure>true</testProcedure>
             <testData>true</testData>
             <sed>false</sed>
@@ -1394,7 +1394,7 @@
         <number>170.315 (a)(7)</number>
         <properties>
             <gap />
-            <privacySecurity>false</privacySecurity>
+            <privacySecurity>true</privacySecurity>
             <standardsTested>false</standardsTested>
             <functionalityTested>true</functionalityTested>
             <apiDocumentation>false</apiDocumentation>
