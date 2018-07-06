@@ -4,6 +4,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CorrectiveActionPlanDTO;
 import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface CorrectiveActionPlanDAO {
     CorrectiveActionPlanDTO create(CorrectiveActionPlanDTO toCreate)

@@ -8,10 +8,10 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.SurveillanceOversightRule;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public abstract class SurveillanceOversightReportApp extends NotificationEmailerReportApp {
     private static final Logger LOGGER = LogManager.getLogger(SurveillanceOversightReportApp.class);

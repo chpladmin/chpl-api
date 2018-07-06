@@ -25,7 +25,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.Util;
 import gov.healthit.chpl.app.App;
 import gov.healthit.chpl.app.AppConfig;
 import gov.healthit.chpl.auth.SendMailUtil;
@@ -41,6 +40,7 @@ import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityListingDTO
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityProductDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityTriggerDTO;
 import gov.healthit.chpl.dto.questionableActivity.QuestionableActivityVersionDTO;
+import gov.healthit.chpl.util.Util;
 
 /**
  * Application to generate and send email with Questionable Activity.

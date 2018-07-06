@@ -25,13 +25,13 @@ import gov.healthit.chpl.domain.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.SurveillanceManager;
 import gov.healthit.chpl.manager.SurveillanceUploadManager;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandler;
 import gov.healthit.chpl.upload.surveillance.SurveillanceUploadHandlerFactory;
 import gov.healthit.chpl.validation.surveillance.SurveillanceValidator;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
 
 @Component
 @Scope("prototype") // tells spring to make a new instance of this class every

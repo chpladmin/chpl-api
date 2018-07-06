@@ -11,9 +11,12 @@
     <module>chpl-api</module>
     <module>chpl-service</module>
     <module>chpl-auth</module>
+    <module>chpl-resources</module>
   </modules>
 
-  <reporting>
+<!--  putting this here breaks the jenkins build due to some kind of conflicting
+maven version... need to revisit later if we want to have these plugins in the parent pom -->
+  <!-- reporting>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -37,7 +40,6 @@
         <configuration>
           <effort>Max</effort>
           <threshold>Low</threshold>
-          <!--<threshold>High</threshold> -->
           <xmlOutput>true</xmlOutput>
           <failOnError>false</failOnError>
           <findbugsXmlOutput>true</findbugsXmlOutput>
@@ -45,7 +47,7 @@
         </configuration>
       </plugin>
     </plugins>
-  </reporting>
+  </reporting-->
 
   <dependencies>
     <dependency>

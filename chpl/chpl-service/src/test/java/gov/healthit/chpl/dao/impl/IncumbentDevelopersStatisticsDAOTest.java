@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,10 +19,10 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -55,8 +56,9 @@ public class IncumbentDevelopersStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void deleteOneStat() throws EntityRetrievalException {
-        idDao.delete(1L);
+        idDao.delete(-1L);
         List<IncumbentDevelopersStatisticsDTO> results = idDao.findAll();
         assertNotNull(results);
         assertEquals(STAT_LENGTH - 1, results.size());
@@ -64,6 +66,7 @@ public class IncumbentDevelopersStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void createOneStat() throws EntityCreationException, EntityRetrievalException {
         IncumbentDevelopersStatisticsDTO dto = new IncumbentDevelopersStatisticsDTO();
         dto.setIncumbentCount(2L);

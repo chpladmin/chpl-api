@@ -30,7 +30,6 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
@@ -38,6 +37,7 @@ import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.notification.SubscriptionDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 
@@ -125,7 +125,7 @@ public class NotificationDAOTest extends TestCase {
     @Transactional
     @Rollback(true)
     public void getAllNotificationTypes() {
-        final int expectedCount = 9;
+        final int expectedCount = 8;
         List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(null);
         assertNotNull(types);
         assertTrue(types.size() > 0);
@@ -146,7 +146,7 @@ public class NotificationDAOTest extends TestCase {
     @Transactional
     @Rollback(true)
     public void getOncAdminNotificationTypes() {
-        final int expectedCount = 9;
+        final int expectedCount = 8;
         List<NotificationTypeDTO> types = notificationDao.getAllNotificationTypes(adminUser.getPermissions());
         assertNotNull(types);
         assertTrue(types.size() > 0);

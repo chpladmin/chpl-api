@@ -20,7 +20,6 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -30,8 +29,8 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.MacraMeasure;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.manager.CertifiedProductManager;
 import junit.framework.TestCase;
 
 
@@ -47,9 +46,7 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 	
 	@Autowired
 	private CertifiedProductDetailsManager certifiedProductDetailsManager;
-	
-	@Autowired
-	private CertifiedProductManager certifiedProductManager;
+
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;

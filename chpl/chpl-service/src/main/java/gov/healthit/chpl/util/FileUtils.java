@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.multipart.MultipartFile;
 
-import gov.healthit.chpl.web.controller.exception.ValidationException;
+import gov.healthit.chpl.exception.ValidationException;
 
 
 public class FileUtils {

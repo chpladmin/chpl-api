@@ -19,7 +19,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.domain.concept.UploadTemplateVersion;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 @Service
 public class CertifiedProductUploadHandlerFactoryImpl implements CertifiedProductUploadHandlerFactory {

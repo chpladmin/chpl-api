@@ -7,6 +7,8 @@ import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobStatusDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.entity.job.JobStatusType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface JobDAO {
 

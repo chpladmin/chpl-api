@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.EntityCreationException;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
 
 @Repository(value = "listingGraphDao")
 public class ListingGraphDAOImpl extends BaseDAOImpl implements ListingGraphDAO {

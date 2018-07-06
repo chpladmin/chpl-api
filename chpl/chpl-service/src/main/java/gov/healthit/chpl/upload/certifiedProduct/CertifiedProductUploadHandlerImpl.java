@@ -36,7 +36,7 @@ import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProductUploadHandler {
     @Autowired

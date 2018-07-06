@@ -3,6 +3,8 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface CertifiedProductAccessibilityStandardDAO {
 

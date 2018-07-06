@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * The implementation for CriterionProductStatisticsDAO.

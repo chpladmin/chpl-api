@@ -5,7 +5,7 @@ import java.util.List;
 import org.quartz.SchedulerException;
 
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
-import gov.healthit.chpl.web.controller.exception.ValidationException;
+import gov.healthit.chpl.exception.ValidationException;
 
 /**
  * Interface for managing schedules.

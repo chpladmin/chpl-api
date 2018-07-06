@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager.impl;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,10 +19,9 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.domain.CriterionProductStatistics;
+import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
+import gov.healthit.chpl.domain.ListingCountStatistics;
 import gov.healthit.chpl.manager.StatisticsManager;
-import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
-import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
-import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -42,18 +42,18 @@ public class StatisticsManagerTest extends TestCase {
     @Test
     @Transactional
     public void testStatisticsManagerCanRetrieveStats() {
-        CriterionProductStatisticsResult stats = statisticsManager.getCriterionProductStatisticsResult();
+        List<CriterionProductStatistics> stats = statisticsManager.getCriterionProductStatisticsResult();
         assertNotNull(stats);
         
         //Sort so test works consistently
-        Collections.sort(stats.getCriterionProductStatisticsResult(), new Comparator<CriterionProductStatistics>() {
+        Collections.sort(stats, new Comparator<CriterionProductStatistics>() {
             @Override
             public int compare(CriterionProductStatistics one, CriterionProductStatistics other) {
                 return one.getCertificationCriterionId().compareTo(other.getCertificationCriterionId());
             }
         }); 
         
-        assertEquals("170.315 (d)(10)", stats.getCriterionProductStatisticsResult().get(0).getCriterion().getNumber());
+        assertEquals("170.315 (d)(10)", stats.get(0).getCriterion().getNumber());
     }
 
     /**
@@ -63,9 +63,9 @@ public class StatisticsManagerTest extends TestCase {
     @Transactional
     public void retrieveNewVsIncumbentDeveloperStats() {
         final Long expectedCount = 3L;
-        IncumbentDevelopersStatisticsResult stats = statisticsManager.getIncumbentDevelopersStatisticsResult();
+        List<IncumbentDevelopersStatistics> stats = statisticsManager.getIncumbentDevelopersStatisticsResult();
         assertNotNull(stats);
-        assertEquals(expectedCount, stats.getIncumbentDevelopersStatisticsResult().get(0).getNewCount());
+        assertEquals(expectedCount, stats.get(0).getNewCount());
     }
 
     /**
@@ -75,8 +75,8 @@ public class StatisticsManagerTest extends TestCase {
     @Transactional
     public void retrieveListingCountStats() {
         final Long expectedCount = 3L;
-        ListingCountStatisticsResult stats = statisticsManager.getListingCountStatisticsResult();
+        List<ListingCountStatistics> stats = statisticsManager.getListingCountStatisticsResult();
         assertNotNull(stats);
-        assertEquals(expectedCount, stats.getStatisticsResult().get(0).getProductCount());
+        assertEquals(expectedCount, stats.get(0).getProductCount());
     }
 }

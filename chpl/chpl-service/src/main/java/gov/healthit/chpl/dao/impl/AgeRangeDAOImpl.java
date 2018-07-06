@@ -8,9 +8,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.AgeRangeDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.entity.AgeRangeEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("ageRangeDao")
 public class AgeRangeDAOImpl extends BaseDAOImpl implements AgeRangeDAO {

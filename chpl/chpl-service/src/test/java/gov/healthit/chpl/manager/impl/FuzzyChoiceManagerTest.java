@@ -1,8 +1,8 @@
 package gov.healthit.chpl.manager.impl;
 
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.FuzzyChoicesManager;
 
 import java.io.IOException;

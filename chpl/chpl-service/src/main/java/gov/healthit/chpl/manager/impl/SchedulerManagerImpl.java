@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.web.controller.exception.ValidationException;
 
 /**
  * Implementation of Scheduler Manager.

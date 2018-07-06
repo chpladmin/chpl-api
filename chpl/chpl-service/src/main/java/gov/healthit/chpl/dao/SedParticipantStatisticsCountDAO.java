@@ -4,6 +4,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.entity.SedParticipantStatisticsCountEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * Data access object for the sed_participant_statistics_count table.
