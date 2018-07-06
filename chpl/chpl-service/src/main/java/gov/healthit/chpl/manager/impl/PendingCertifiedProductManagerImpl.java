@@ -422,7 +422,12 @@ public class PendingCertifiedProductManagerImpl implements PendingCertifiedProdu
         // now add allMeasures for criteria
         for (CertificationResult cert : pcpDetails.getCertificationResults()) {
             String edition = pcpDetails.getCertificationEdition().get("name").toString();
-            Long practiceTypeId = Long.valueOf(pcpDetails.getPracticeType().get("id").toString());
+            Long practiceTypeId = null;
+            if (pcpDetails.getPracticeType().containsKey("id")) {
+                if (pcpDetails.getPracticeType().get("id") != null) {
+                    practiceTypeId = Long.valueOf(pcpDetails.getPracticeType().get("id").toString());
+                }
+            }  
             String criteriaNumber =  cert.getNumber();
             cert.setAllowedTestFunctionalities(
                     testFunctionalityManager.getTestFunctionalities(criteriaNumber, edition, practiceTypeId));
