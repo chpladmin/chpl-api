@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager.impl;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -346,6 +345,45 @@ public class CertifiedProductDetailsManagerTest extends TestCase {
 		}
 		assertTrue(foundA1);
 	}
+	
+	@Test
+	@Transactional
+	public void testCertifiedProductDetails2015AllowedTestFunctionality() throws EntityRetrievalException{
+	    CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(5L);
+        assertNotNull(detail);
+        assertNotNull(detail.getCertificationResults());
+        assertTrue(detail.getCertificationResults().size() > 0);
+        
+        boolean foundA1 = false;
+        for(CertificationResult cr : detail.getCertificationResults()) {
+            if(cr.getNumber().equals("170.315 (a)(1)")) {
+                foundA1 = true;
+                assertNotNull(cr.getAllowedTestFunctionalities());
+                assertTrue(cr.getAllowedTestFunctionalities().size() == 53);
+            }
+        }
+        assertTrue(foundA1);
+	}
+	
+	@Test
+    @Transactional
+    public void testCertifiedProductDetails2014AllowedTestFunctionality() throws EntityRetrievalException{
+        CertifiedProductSearchDetails detail = certifiedProductDetailsManager.getCertifiedProductDetails(1L);
+        assertNotNull(detail);
+        
+        assertNotNull(detail.getCertificationResults());
+        assertTrue(detail.getCertificationResults().size() > 0);
+        
+        boolean foundA5 = false;
+        for(CertificationResult cr : detail.getCertificationResults()) {
+            if(cr.getNumber().equals("170.314 (a)(5)")) {
+                foundA5 = true;
+                assertNotNull(cr.getAllowedTestFunctionalities());
+                assertTrue(cr.getAllowedTestFunctionalities().size() == 1);
+            }
+        }
+        assertTrue(foundA5);
+    }
 	
 	@Test
 	@Transactional
