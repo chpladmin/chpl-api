@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 15.15.1
+_5 July 2018_
+
+### Bugs Fixed
+* Fix display of 2015 products due to problems with getting test functionalities
+
+---
+
 ## Version 15.15.0
 _5 July 2018_
 
