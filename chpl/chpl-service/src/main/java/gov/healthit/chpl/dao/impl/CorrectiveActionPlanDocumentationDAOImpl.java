@@ -12,11 +12,11 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CorrectiveActionPlanDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanDocumentationDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CorrectiveActionPlanDocumentationDTO;
 import gov.healthit.chpl.entity.CorrectiveActionPlanDocumentationEntity;
 import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("correctiveActionPlanDocumentationDAO")
 public class CorrectiveActionPlanDocumentationDAOImpl extends BaseDAOImpl

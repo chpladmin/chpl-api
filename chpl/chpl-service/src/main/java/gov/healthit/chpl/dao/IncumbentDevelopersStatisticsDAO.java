@@ -4,6 +4,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.entity.IncumbentDevelopersStatisticsEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * Data access object for the incumbent_developers_statistics table.

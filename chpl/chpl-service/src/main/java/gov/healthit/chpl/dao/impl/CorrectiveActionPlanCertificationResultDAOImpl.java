@@ -14,12 +14,12 @@ import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanCertificationResultDAO;
 import gov.healthit.chpl.dao.CorrectiveActionPlanDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CorrectiveActionPlanCertificationResultDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.CorrectiveActionPlanCertificationEntity;
 import gov.healthit.chpl.entity.CorrectiveActionPlanEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("correctiveActionPlanCertificationResultDAO")
 public class CorrectiveActionPlanCertificationResultDAOImpl extends BaseDAOImpl

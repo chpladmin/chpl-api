@@ -15,11 +15,11 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.entity.TestToolEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("testToolDAO")
 public class TestToolDAOImpl extends BaseDAOImpl implements TestToolDAO {

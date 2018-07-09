@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.Surveillance;
-import gov.healthit.chpl.web.controller.exception.ValidationException;
+import gov.healthit.chpl.exception.ValidationException;
 
 public interface SurveillanceUploadManager {
     static final String HEADING_CELL_INDICATOR = "RECORD_STATUS__C";

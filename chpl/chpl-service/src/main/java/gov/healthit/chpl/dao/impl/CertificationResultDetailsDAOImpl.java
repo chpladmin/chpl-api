@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "certificationResultDetailsDAO")
 public class CertificationResultDetailsDAOImpl extends BaseDAOImpl implements CertificationResultDetailsDAO {

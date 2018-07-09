@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface CertificationResultDetailsDAO {
 

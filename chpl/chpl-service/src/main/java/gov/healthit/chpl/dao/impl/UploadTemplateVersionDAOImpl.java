@@ -9,11 +9,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.entity.UcdProcessEntity;
 import gov.healthit.chpl.entity.listing.pending.UploadTemplateVersionEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("uploadTemplateVersionDao")
 public class UploadTemplateVersionDAOImpl extends BaseDAOImpl implements UploadTemplateVersionDAO {

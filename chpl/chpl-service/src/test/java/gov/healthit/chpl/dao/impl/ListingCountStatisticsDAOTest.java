@@ -6,6 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -19,9 +20,9 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -57,9 +58,10 @@ public class ListingCountStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void deleteOneStat() throws EntityRetrievalException {
         final int expectedCount = 0;
-        lcDao.delete(1L);
+        lcDao.delete(-1L);
         List<ListingCountStatisticsDTO> results = lcDao.findAll();
         assertNotNull(results);
         assertEquals(expectedCount, results.size());
@@ -67,6 +69,7 @@ public class ListingCountStatisticsDAOTest extends TestCase {
 
     @Test
     @Transactional
+    @Rollback(true)
     public void createOneStat() throws EntityCreationException, EntityRetrievalException {
         final int expectedCount = 2;
         ListingCountStatisticsDTO dto = new ListingCountStatisticsDTO();

@@ -4,6 +4,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.AnnouncementDTO;
 import gov.healthit.chpl.entity.AnnouncementEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface AnnouncementDAO {
 

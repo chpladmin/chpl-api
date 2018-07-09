@@ -8,9 +8,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.entity.EducationTypeEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("educationTypeDao")
 public class EducationTypeDAOImpl extends BaseDAOImpl implements EducationTypeDAO {

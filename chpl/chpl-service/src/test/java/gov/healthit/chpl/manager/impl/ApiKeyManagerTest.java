@@ -25,12 +25,12 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.impl.ApiKeyActivityDAOImpl;
 import gov.healthit.chpl.domain.ApiKeyActivity;
+import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.dto.ApiKeyDTO;
-import gov.healthit.chpl.entity.ApiKeyActivityEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ApiKeyManager;
 import junit.framework.TestCase;
 
@@ -42,11 +42,9 @@ import junit.framework.TestCase;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
 public class ApiKeyManagerTest extends TestCase {
+    
 	@Autowired
 	private ApiKeyManager apiKeyManager;
-	
-	@Autowired
-	private ApiKeyTestHelper apiKeyActivityTestHelper;
 	
 	@Autowired
 	private ApiKeyActivityDAOImpl apiKeyActivityDAOImpl;
@@ -83,7 +81,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
@@ -112,7 +110,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
@@ -142,7 +140,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
@@ -173,7 +171,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
@@ -200,7 +198,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		ApiKeyDTO created = apiKeyManager.createKey(toCreate);
@@ -228,7 +226,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		Integer countAll = apiKeyManager.findAll().size();
@@ -260,7 +258,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		// create key
@@ -290,7 +288,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		// create key
@@ -323,7 +321,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		// create key
@@ -361,7 +359,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		// create key
@@ -517,7 +515,7 @@ public class ApiKeyManagerTest extends TestCase {
 	public void test_getApiKeyActivity_apiKeyFilter_exclamationWithoutApiKeyReturnsAllResults() throws EntityRetrievalException, JsonProcessingException, EntityCreationException{
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		
-		ApiKeyActivityEntity newestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(false);
+		ApiKeyActivityDTO newestApiKeyActivity = apiKeyActivityDAOImpl.getById(-7L);
 		int totalNumberOfApiKeyActivityEntities = apiKeyActivityDAOImpl.getAllEntities().size();
 		
 		// Simulate API inputs
@@ -552,7 +550,7 @@ public class ApiKeyManagerTest extends TestCase {
 		Long currentActivityTime = null;
 		int counter = 0;
 		
-		ApiKeyActivityEntity newestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(false);
+		ApiKeyActivityDTO newestApiKeyActivity = apiKeyActivityDAOImpl.getById(-7L);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null; 
@@ -626,7 +624,7 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
-		ApiKeyActivityEntity apiKeyActivity = apiKeyActivityTestHelper.getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
+		ApiKeyActivityDTO apiKeyActivity = apiKeyActivityDAOImpl.getById(-6L);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null;
@@ -661,7 +659,7 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
-		ApiKeyActivityEntity oldestApiKeyActivity = apiKeyActivityTestHelper.getNewestOrOldestApiKeyActivityByCreationDate(true);
+		ApiKeyActivityDTO oldestApiKeyActivity = apiKeyActivityDAOImpl.getById(-1L);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null;
@@ -698,7 +696,7 @@ public class ApiKeyManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
 		Long currentActivityTime = null;
 		
-		ApiKeyActivityEntity apiKeyActivity = apiKeyActivityTestHelper.getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest();
+		ApiKeyActivityDTO apiKeyActivity = apiKeyActivityDAOImpl.getById(-6L);
 		
 		// Simulate API inputs
 		String apiKeyFilter = null;
@@ -777,7 +775,7 @@ public class ApiKeyManagerTest extends TestCase {
 		toCreate.setLastModifiedUser(-3L);
 		toCreate.setDeleted(false);
 		
-		String apiKey = gov.healthit.chpl.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
+		String apiKey = gov.healthit.chpl.util.Util.md5(toCreate.getNameOrganization() + toCreate.getEmail() + now.getTime() );
 		toCreate.setApiKey(apiKey);
 		
 		// create key
@@ -799,5 +797,38 @@ public class ApiKeyManagerTest extends TestCase {
 		apiKeyManager.deleteKey(created.getId());
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
-	
+//	
+//	/* Gets the oldest or newest API key activity based on creation_date
+//     * If isOldest = true, returns the oldest API key activity; if false, returns the newest API key activity
+//     * Returns the ApiKeyActivityEntity
+//     */
+//    private ApiKeyActivityEntity getNewestOrOldestApiKeyActivityByCreationDate(boolean isOldest) {
+//        String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER BY creationDate ";
+//        if(isOldest){
+//            sql += "ASC";
+//        }
+//        else{
+//            sql += "DESC";
+//        }
+//        Query query = entityManager.createQuery
+//                (sql, ApiKeyActivityEntity.class);
+//        query.setMaxResults(1);
+//        ApiKeyActivityEntity apiKeyActivityEntity = (gov.healthit.chpl.entity.ApiKeyActivityEntity) query.getSingleResult();
+//        return apiKeyActivityEntity;
+//    }
+//    
+//    /* Gets an API key activity entity from the database with a creation_date that is not the oldest or newest 
+//     * Returns the API key activity entity
+//     * Assumes there must be at least 3 api key activities in testData.xml
+//     */ 
+//    private ApiKeyActivityEntity getAnApiKeyActivityByCreationDateThatIsNotNewestOrOldest(){
+//        String sql = "FROM ApiKeyActivityEntity WHERE (NOT deleted = true) ORDER BY creationDate ASC";
+//        Query query = entityManager.createQuery
+//                (sql, ApiKeyActivityEntity.class);
+//        List<ApiKeyActivityEntity> ApiKeyActivityEntityList = query.getResultList();
+//        Assert.assertTrue("There should be a list of API key activity entitites returned from the database, but there are only " + ApiKeyActivityEntityList.size(), 
+//                ApiKeyActivityEntityList.size() > 3);
+//        return ApiKeyActivityEntityList.get(3);
+//    }
+//	
 }

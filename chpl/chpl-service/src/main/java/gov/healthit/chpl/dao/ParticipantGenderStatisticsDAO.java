@@ -4,6 +4,8 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.entity.ParticipantGenderStatisticsEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 /**
  * Data access object for the participant_gender_statistics table.

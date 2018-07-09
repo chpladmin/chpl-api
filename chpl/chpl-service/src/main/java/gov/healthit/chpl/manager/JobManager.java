@@ -3,10 +3,10 @@ package gov.healthit.chpl.manager;
 import java.util.List;
 
 import gov.healthit.chpl.auth.dto.UserDTO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface JobManager {
     JobDTO getJobById(Long id);

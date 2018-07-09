@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ApiKeyActivityDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("apiKeyActivityDAO")
 public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivityDAO {
@@ -182,7 +182,7 @@ public class ApiKeyActivityDAOImpl extends BaseDAOImpl implements ApiKeyActivity
         ApiKeyActivityEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from ApiKeyActivityEntity where (NOT deleted = true) AND (api_activity_id = :entityid) ",
+                "from ApiKeyActivityEntity where (NOT deleted = true) AND (id = :entityid) ",
                 ApiKeyActivityEntity.class);
         query.setParameter("entityid", entityId);
         List<ApiKeyActivityEntity> result = query.getResultList();

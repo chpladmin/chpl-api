@@ -8,13 +8,13 @@ import org.springframework.security.access.AccessDeniedException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
-import gov.healthit.chpl.web.controller.exception.ObjectMissingValidationException;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ObjectMissingValidationException;
 
 public interface PendingCertifiedProductManager {
     PendingCertifiedProductDetails getById(List<CertificationBodyDTO> userAcbs, Long id)
@@ -42,4 +42,5 @@ public interface PendingCertifiedProductManager {
 
     void addAllMeasuresToCertificationCriteria(PendingCertifiedProductDetails pcpDetails);
 
+    void addAvailableTestFunctionalities(PendingCertifiedProductDetails pcpDetails);
 }

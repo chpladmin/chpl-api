@@ -16,11 +16,11 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.entity.TargetedUserEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("targetedUserDao")
 public class TargetedUserDAOImpl extends BaseDAOImpl implements TargetedUserDAO {

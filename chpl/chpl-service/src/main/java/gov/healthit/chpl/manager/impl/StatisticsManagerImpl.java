@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantEducationStatisticsDAO;
@@ -33,13 +33,8 @@ import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.dto.TestParticipantAgeDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.StatisticsManager;
-import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
-import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
-import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
-import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
-import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
-import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
 
 /**
  * Implementation of the StatisticsManager interface.
@@ -85,38 +80,38 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     }
 
     @Override
-    public CriterionProductStatisticsResult getCriterionProductStatisticsResult() {
-        CriterionProductStatisticsResult result = new CriterionProductStatisticsResult();
+    public List<CriterionProductStatistics> getCriterionProductStatisticsResult() {
+        List<CriterionProductStatistics> result = new ArrayList<CriterionProductStatistics>();
         List<CriterionProductStatisticsDTO> dtos = criterionProductStatisticsDAO.findAll();
 
         for (CriterionProductStatisticsDTO dto : dtos) {
             CriterionProductStatistics cps = new CriterionProductStatistics(dto);
-            result.getCriterionProductStatisticsResult().add(cps);
+            result.add(cps);
         }
         return result;
     }
 
     @Override
-    public IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatisticsResult() {
-        IncumbentDevelopersStatisticsResult result = new IncumbentDevelopersStatisticsResult();
+    public List<IncumbentDevelopersStatistics> getIncumbentDevelopersStatisticsResult() {
+        List<IncumbentDevelopersStatistics> result = new ArrayList<IncumbentDevelopersStatistics>();
         List<IncumbentDevelopersStatisticsDTO> dtos = incumbentDevelopersStatisticsDAO.findAll();
 
         for (IncumbentDevelopersStatisticsDTO dto : dtos) {
             IncumbentDevelopersStatistics ids = new IncumbentDevelopersStatistics(dto);
-            result.getIncumbentDevelopersStatisticsResult().add(ids);
+            result.add(ids);
         }
 
         return result;
     }
 
     @Override
-    public ListingCountStatisticsResult getListingCountStatisticsResult() {
-        ListingCountStatisticsResult result = new ListingCountStatisticsResult();
+    public List<ListingCountStatistics> getListingCountStatisticsResult() {
+        List<ListingCountStatistics> result = new ArrayList<ListingCountStatistics>();
         List<ListingCountStatisticsDTO> dtos = listingCountStatisticsDAO.findAll();
 
         for (ListingCountStatisticsDTO dto : dtos) {
             ListingCountStatistics cps = new ListingCountStatistics(dto);
-            result.getStatisticsResult().add(cps);
+            result.add(cps);
         }
         return result;
     }
@@ -133,8 +128,8 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     }
 
     @Override
-    public ParticipantAgeStatisticsResult getParticipantAgeStatisticsResult() {
-        ParticipantAgeStatisticsResult result = new ParticipantAgeStatisticsResult();
+    public List<ParticipantAgeStatistics> getParticipantAgeStatisticsResult() {
+        List<ParticipantAgeStatistics> result = new ArrayList<ParticipantAgeStatistics>();
         List<ParticipantAgeStatisticsDTO> dtos = participantAgeStatisticsDAO.findAll();
 
         for (ParticipantAgeStatisticsDTO dto : dtos) {
@@ -143,14 +138,14 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
             if (testParticipantAgeDTO != null && testParticipantAgeDTO.getAge() != null) {
                 pas.setAgeRange(testParticipantAgeDTO.getAge());
             }
-            result.getParticipantAgeStatistics().add(pas);
+            result.add(pas);
         }
         return result;
     }
 
     @Override
-    public ParticipantEducationStatisticsResult getParticipantEducationStatisticsResult() {
-        ParticipantEducationStatisticsResult result = new ParticipantEducationStatisticsResult();
+    public List<ParticipantEducationStatistics> getParticipantEducationStatisticsResult() {
+        List<ParticipantEducationStatistics> result = new ArrayList<ParticipantEducationStatistics>();
         List<ParticipantEducationStatisticsDTO> dtos = participantEducationStatisticsDAO.findAll();
 
         for (ParticipantEducationStatisticsDTO dto : dtos) {
@@ -163,19 +158,19 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
             } catch (EntityRetrievalException e) {
                 pes.setEducation("Unknown");
             }
-            result.getParticipantEducationStatistics().add(pes);
+            result.add(pes);
         }
         return result;
     }
 
     @Override
-    public ParticipantExperienceStatisticsResult getParticipantExperienceStatisticsResult(final Long experienceTypeId) {
-        ParticipantExperienceStatisticsResult result = new ParticipantExperienceStatisticsResult();
+    public List<ParticipantExperienceStatistics> getParticipantExperienceStatisticsResult(final Long experienceTypeId) {
+        List<ParticipantExperienceStatistics> result = new ArrayList<ParticipantExperienceStatistics>();
         List<ParticipantExperienceStatisticsDTO> dtos = participantExperienceStatisticsDAO.findAll(experienceTypeId);
 
         for (ParticipantExperienceStatisticsDTO dto : dtos) {
             ParticipantExperienceStatistics pes = new ParticipantExperienceStatistics(dto);
-            result.getParticipantExperienceStatistics().add(pes);
+            result.add(pes);
         }
         return result;
     }

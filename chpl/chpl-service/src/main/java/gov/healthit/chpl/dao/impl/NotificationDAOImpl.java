@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
@@ -29,6 +28,7 @@ import gov.healthit.chpl.entity.notification.NotificationRecipientEntity;
 import gov.healthit.chpl.entity.notification.NotificationTypeEntity;
 import gov.healthit.chpl.entity.notification.NotificationTypeRecipientMapEntity;
 import gov.healthit.chpl.entity.notification.RecipientWithSubscriptionsEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("notificationDAO")
 public class NotificationDAOImpl extends BaseDAOImpl implements NotificationDAO {
