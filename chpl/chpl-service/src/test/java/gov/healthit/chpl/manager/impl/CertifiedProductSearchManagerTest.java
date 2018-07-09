@@ -124,8 +124,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(8, response.getRecordCount().intValue());
-		assertEquals(8, response.getResults().size());
+		assertEquals(7, response.getRecordCount().intValue());
+		assertEquals(7, response.getResults().size());
 		
 		for (CertifiedProductBasicSearchResult result : response.getResults() ){
 			assertTrue(result.getPracticeType().startsWith("Ambulatory"));
