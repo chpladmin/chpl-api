@@ -11,14 +11,14 @@ import net.sf.ehcache.CacheManager;
 
 @Service
 public class UnitTestRules extends ExternalResource {
-	private static final Logger logger = LogManager.getLogger(UnitTestRules.class);
-	@Autowired private CacheManager cacheManager;
-	
-	@Override
-	protected void before() {
-		logger.info("Clearing all caches before running @Test");
-		cacheManager.clearAll();
-		logger.info("Setting security context authentication to null before running @Test");
-		SecurityContextHolder.getContext().setAuthentication(null);
-	}
+    private static final Logger LOGGER = LogManager.getLogger(UnitTestRules.class);
+    @Autowired private CacheManager cacheManager;
+
+    @Override
+    protected void before() {
+        LOGGER.info("Clearing all caches before running @Test");
+        cacheManager.clearAll();
+        LOGGER.info("Setting security context authentication to null before running @Test");
+        SecurityContextHolder.getContext().setAuthentication(null);
+    }
 }

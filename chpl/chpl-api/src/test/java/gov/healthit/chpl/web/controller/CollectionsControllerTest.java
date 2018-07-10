@@ -52,6 +52,7 @@ public class CollectionsControllerTest extends TestCase {
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
     private static final int EXPECTED_LISTING_COUNT = 18;
+    private static final Set<Long> LISTINGS_WITH_PRACTICE_TYPES = new HashSet<Long>(Arrays.asList(1L, 2L, 3L, 4L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L));
     private static final Set<Long> LISTINGS_WITH_PREV_DEVS = new HashSet<Long>(Arrays.asList(1L, 2L, 3L, 9L));
     private static final Set<Long> LISTINGS_WITH_CRITERIA = new HashSet<Long>(Arrays.asList(1L, 2L, 3L, 5L, 10L));
 
@@ -108,7 +109,10 @@ public class CollectionsControllerTest extends TestCase {
             assertNotNull(result.getSurveillanceCount());
             assertNotNull(result.getOpenNonconformityCount());
             assertNotNull(result.getClosedNonconformityCount());
-            assertNotNull(result.getPracticeType());
+            
+            if(LISTINGS_WITH_PRACTICE_TYPES.contains(result.getId())) {
+                assertNotNull(result.getPracticeType());
+            }
             if (LISTINGS_WITH_PREV_DEVS.contains(result.getId())) {
                 assertNotNull(result.getPreviousDevelopers());
             }
