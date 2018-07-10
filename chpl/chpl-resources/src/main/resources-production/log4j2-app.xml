@@ -30,6 +30,9 @@
             additivity="false">
             <AppenderRef ref="FILE" />
         </Logger>
+        <Logger name="org.quartz" level="ERROR" additivity="false">
+            <AppenderRef ref="FILE" />
+        </Logger>
         <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
             <AppenderRef ref="FILE" />
         </Logger>
