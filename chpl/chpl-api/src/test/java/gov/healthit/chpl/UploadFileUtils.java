@@ -1,4 +1,4 @@
-package gov.healthit.chpl.util;
+package gov.healthit.chpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,10 +6,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UploadFileUtils {
+    private static final Logger LOGGER = LogManager.getLogger(UploadFileUtils.class);
 
     private static final String UPLOAD_2014 = "2014_V11_hasGAP.csv";
     private static final String UPLOAD_2015_V12 = "2015_v12_TPTD2_error_free.csv";
@@ -37,6 +40,7 @@ public class UploadFileUtils {
         try {
             content = Files.readAllBytes(filePath);
         } catch (final IOException e) {
+            LOGGER.error("Could not read file " + filePath + ". " + e.getMessage(), e);
         }
         MultipartFile result = new MockMultipartFile(name, originalFileName, contentType, content);
         return result;
