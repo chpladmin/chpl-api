@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -274,8 +275,10 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals("Tue Oct 20 13:14:00 EDT 2015", activity.getBefore());
-        assertEquals("Wed Feb 14 00:00:00 EST 2018", activity.getAfter());
+        String timezoneDisplayStd = TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT);
+        String timezoneDisplayDst = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
+        assertEquals("Tue Oct 20 13:14:00 " + timezoneDisplayDst + " 2015", activity.getBefore());
+        assertEquals("Wed Feb 14 00:00:00 " + timezoneDisplayStd + " 2018", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_DATE_EDITED_CURRENT.getName(),
                 activity.getTrigger().getName());
@@ -322,8 +325,9 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:13:59 EDT 2015)]", activity.getAfter());
+        String timezoneDisplay = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 " + timezoneDisplay + " 2015)]", activity.getBefore());
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:13:59 " + timezoneDisplay + " 2015)]", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
                 activity.getTrigger().getName());
@@ -371,8 +375,10 @@ public class ListingTest extends TestCase {
         assertEquals(1, activities.size());
         QuestionableActivityListingDTO activity = activities.get(0);
         assertEquals(1, activity.getListingId().longValue());
-        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 EDT 2015)]", activity.getBefore());
-        assertEquals("[Withdrawn by ONC-ACB (Sun Sep 20 13:14:00 EDT 2015)]", activity.getAfter());
+        
+        String timezoneDisplayDst = TimeZone.getDefault().getDisplayName(true, TimeZone.SHORT);
+        assertEquals("[Withdrawn by Developer (Sun Sep 20 13:14:00 " + timezoneDisplayDst + " 2015)]", activity.getBefore());
+        assertEquals("[Withdrawn by ONC-ACB (Sun Sep 20 13:14:00 " + timezoneDisplayDst + " 2015)]", activity.getAfter());
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CERTIFICATION_STATUS_EDITED_HISTORY.getName(),
                 activity.getTrigger().getName());
