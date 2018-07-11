@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,6 +20,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -29,8 +31,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.QuestionableActivityDAO;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.concept.QuestionableActivityTriggerConcept;
@@ -41,7 +41,9 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
+import gov.healthit.chpl.util.UploadFileUtils;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
+import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import junit.framework.TestCase;
 
 
@@ -59,20 +61,21 @@ public class CertificationResultTest extends TestCase {
 	@Autowired private CertifiedProductController cpController;
 	@Autowired private CertifiedProductDetailsManager cpdManager;
 	private static JWTAuthenticatedUser adminUser;
-	
+    private static final long ADMIN_ID = -2L;
+
 	@Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
 	
-	
 	@BeforeClass
 	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+	    adminUser = new JWTAuthenticatedUser();
+        adminUser.setFirstName("Administrator");
+        adminUser.setId(ADMIN_ID);
+        adminUser.setLastName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 	}
 	
 	@Test
@@ -122,42 +125,42 @@ public class CertificationResultTest extends TestCase {
         MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        //make the certification date be now
-        //and update the listing so the last updated date minus certification date is
-        //within the questionable activity threshold
-        Date now = new Date();
-        CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(1L);
-        existingListing.setCertificationDate(now.getTime());
-        existingListing.getCertificationEvents().clear();
-        CertificationStatusEvent statusEvent = new CertificationStatusEvent();
-        CertificationStatus status = new CertificationStatus();
-        status.setId(1L);
-        status.setName("Active");
-        statusEvent.setStatus(status);
-        statusEvent.setEventDate(now.getTime());
-        existingListing.getCertificationEvents().add(statusEvent);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
-        updateRequest.setListing(existingListing);
-        cpController.updateCertifiedProduct(updateRequest);
+        //upload a new listing to pending
+        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12");
+        ResponseEntity<PendingCertifiedProductResults> response = null;
+        try {
+            response = cpController.upload(file);
+        } catch (ValidationException e) {
+            fail(e.getMessage());
+        }
+        assertNotNull(response);
         
-        //confirm the certification date was changed properly
-        CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetails(1L);
-        assertEquals(now.getTime(), updatedListing.getCertificationDate().longValue());
+        //confirm the listing so it exists to update
+        CertifiedProductSearchDetails confirmedListing = null;
+        try {
+            ResponseEntity<CertifiedProductSearchDetails> confirmedListingResponse = 
+                    cpController.confirmPendingCertifiedProduct(
+                            response.getBody().getPendingCertifiedProducts().get(0));
+            confirmedListing = confirmedListingResponse.getBody();
+        } catch(ValidationException ex) {
+            fail(ex.getMessage());
+        }
         
         //perform an update that would generate questionable activity outside
         //of the threshold but make sure that no questionable activity was entered.
         Date beforeActivity = new Date();
-        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
-        for(CertificationResult certResult : listing.getCertificationResults()) {
-            if(certResult.getId().longValue() == 1) {
-                certResult.setGap(Boolean.FALSE);
+        boolean changedGap = false;
+        for(CertificationResult certResult : confirmedListing.getCertificationResults()) {
+            if(certResult.getNumber().equals("170.315 (a)(1)")) {
+                certResult.setGap(Boolean.TRUE);
+                changedGap = true;
             }
         }
-        updateRequest = new ListingUpdateRequest();
+        assertTrue(changedGap);
+        
+        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
         updateRequest.setBanDeveloper(false);
-        updateRequest.setListing(listing);
+        updateRequest.setListing(confirmedListing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
 
