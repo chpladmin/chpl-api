@@ -46,7 +46,9 @@ import gov.healthit.chpl.registration.APIKeyAuthenticationFilter;
 public class CHPLConfig extends WebMvcConfigurerAdapter {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLConfig.class);
-
+    private static final long MAX_UPLOAD_FILE_SIZE = 5242880;
+    private static final int MAX_COOKIE_AGE = 3600;
+    
     @Autowired
     private ApiKeyManager apiKeyManager;
 
@@ -66,7 +68,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
         CommonsMultipartResolver resolver = new CommonsMultipartResolver();
 
         // Set the maximum allowed size (in bytes) for each individual file.
-        resolver.setMaxUploadSize(5242880);// 5MB
+        resolver.setMaxUploadSize(MAX_UPLOAD_FILE_SIZE); // 5MB
 
         // You may also set other available properties.
 
@@ -98,7 +100,7 @@ public class CHPLConfig extends WebMvcConfigurerAdapter {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         localeResolver.setCookieName("my-locale-cookie");
-        localeResolver.setCookieMaxAge(3600);
+        localeResolver.setCookieMaxAge(MAX_COOKIE_AGE);
         return localeResolver;
     }
 
