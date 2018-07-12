@@ -25,6 +25,12 @@
             <artifactId>chpl-auth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        
+        <dependency>
+            <groupId>gov.healthit.chpl</groupId>
+            <artifactId>chpl-resources</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
 
         <!-- Core utilities used by other modules. Define this if you use
             Spring Utility APIs (org.springframework.core.*/org.springframework.util.*) -->

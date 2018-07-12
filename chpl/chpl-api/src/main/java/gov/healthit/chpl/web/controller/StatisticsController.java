@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.app.chartdata.ExperienceType;
+import gov.healthit.chpl.domain.NonconformityTypeStatistics;
 import gov.healthit.chpl.domain.ParticipantGenderStatistics;
 import gov.healthit.chpl.domain.SedParticipantStatisticsCount;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
@@ -17,6 +18,7 @@ import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
+import gov.healthit.chpl.web.controller.results.NonconformityTypeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantAgeStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantEducationStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ParticipantExperienceStatisticsResult;
@@ -36,6 +38,20 @@ public class StatisticsController {
 
     @Autowired
     private StatisticsManager statisticsManager;
+    
+    /**
+     * Retrieves and returns the Listing counts.
+     * @return a JSON representation of an NonconformityTypeStatisticsResult object
+     */
+    @ApiOperation(value = "Get count of nonconformities by citeria.",
+            notes = "Retrieves and returns the counts.")
+    @RequestMapping(value = "/nonconformity_criteria_count", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public NonconformityTypeStatisticsResult getNonconformityCountByCriteria() {
+    	NonconformityTypeStatisticsResult response = new NonconformityTypeStatisticsResult();
+        response.setStatisticsResult(statisticsManager.getAllNonconformitiesByCriterion());
+        return response;
+    }
 
     /**
      * Retrieves and returns the Listing counts.

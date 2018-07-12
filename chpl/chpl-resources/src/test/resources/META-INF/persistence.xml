@@ -140,6 +140,7 @@
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>

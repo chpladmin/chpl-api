@@ -1,11 +1,15 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements SurveillanceStatisticsDAO {
@@ -148,4 +152,36 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
         }
         return (Long) query.getSingleResult();
     }
+    
+    @Override
+	public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion(
+			DateRange dateRange) {
+		String hql = "SELECT COUNT(DISTINCT type), type FROM SurveillanceNonconformityEntity WHERE";
+		
+		if(dateRange == null) {
+            hql += " deleted = false GROUP BY type";
+		} else {
+			hql += "(deleted = false AND creationDate <= :endDate) "
+                + " OR "
+                + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) GROUP BY type";
+		}
+		Query query = entityManager.createQuery(hql);
+        
+        if(dateRange != null) {
+            query.setParameter("endDate", dateRange.getEndDate());
+        }
+        
+        List<Object[]> entities = query.getResultList();
+        
+        List<NonconformityTypeStatisticsDTO> dtos =  new ArrayList<NonconformityTypeStatisticsDTO>();
+        for(Object[] entity : entities){
+        	NonconformityTypeStatisticsDTO dto = new NonconformityTypeStatisticsDTO();
+        	dto.setNonconformityCount(Long.valueOf(entity[0].toString()));
+        	dto.setNonconformityType(entity[1].toString());
+        	dtos.add(dto);
+        }
+        
+        return dtos;
+	}
+    
 }

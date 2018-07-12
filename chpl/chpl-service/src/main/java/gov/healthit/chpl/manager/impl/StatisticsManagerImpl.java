@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,12 @@ import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dao.TestParticipantAgeDAO;
+import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
+import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.ListingCountStatistics;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
+import gov.healthit.chpl.domain.NonconformityTypeStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
@@ -27,6 +31,7 @@ import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
@@ -55,6 +60,9 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
     @Autowired
     private ListingCountStatisticsDAO listingCountStatisticsDAO;
+    
+    @Autowired
+    private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
 
     @Autowired
     private ParticipantAgeStatisticsDAO participantAgeStatisticsDAO;
@@ -73,6 +81,20 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
     @Autowired
     private TestParticipantAgeDAO testParticipantAgeDAO;
+    
+    @Override
+    public List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion() {
+    	DateRange dateRange = new DateRange(new Date(), new Date());
+        List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics(dateRange);
+        
+        List<NonconformityTypeStatistics> ret = new ArrayList<NonconformityTypeStatistics>();
+        for(NonconformityTypeStatisticsDTO dto : dtos){
+        	NonconformityTypeStatistics stat = new NonconformityTypeStatistics(dto);
+        	ret.add(stat);
+        }
+        
+        return ret;
+    }
 
     @Override
     public List<SedParticipantStatisticsCountDTO> getAllSedParticipantCounts() {
