@@ -324,8 +324,10 @@ public class ProductController {
 
             for (CertifiedProductDetailsDTO filterCp : filteredResults) {
                 //Add it to the list of duplicates
-                duplicateChplProductNumbers.add(new DuplicateChplProdNumber(
-                    cpDTO.getChplProductNumber(), filterCp.getChplProductNumber(), filterCp.getChplProductNumber()));
+                if (!cpDTO.getChplProductNumber().equals(filterCp.getChplProductNumber())) {
+                    duplicateChplProductNumbers.add(new DuplicateChplProdNumber(
+                        cpDTO.getChplProductNumber(), filterCp.getChplProductNumber(), filterCp.getChplProductNumber()));
+                }
             }
         }
 

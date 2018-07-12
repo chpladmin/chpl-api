@@ -30,6 +30,7 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
+import gov.healthit.chpl.domain.Contact;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -110,5 +111,32 @@ public class ProductControllerTest {
         request.setProductIds(productIds);
         
         productController.updateProduct(request);
+    }
+	
+	@Transactional
+	@Test
+	@Rollback(true)
+	public void testUpdateProductContactInformation() throws EntityRetrievalException, JsonProcessingException, EntityCreationException, InvalidArgumentsException, ValidationException {
+	    SecurityContextHolder.getContext().setAuthentication(adminUser);
+        UpdateProductsRequest request = new UpdateProductsRequest();
+        request.setNewDeveloperId(-1l);
+        request.setProductIds(new ArrayList<Long>());
+        request.getProductIds().add(-1l);
+        
+        request.setProduct(productController.getProductById(-1l));
+        request.getProduct().setProductId(1L);
+        
+        request.getProduct().setContact(new Contact());
+        request.getProduct().getContact().setContactId(1l);
+        request.getProduct().getContact().setFirstName("FName");
+        request.getProduct().getContact().setLastName("LName");
+        request.getProduct().getContact().setEmail("abc@xyz.com");
+        request.getProduct().getContact().setPhoneNumber("7175551212");
+        productController.updateProduct(request);
+        
+        Product p = productController.getProductById(-1l);
+        
+        assertEquals("FName", p.getContact().getFirstName());
+        
     }
 }

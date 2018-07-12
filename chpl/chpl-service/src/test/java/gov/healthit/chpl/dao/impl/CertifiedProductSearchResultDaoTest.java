@@ -19,6 +19,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
@@ -51,6 +52,7 @@ import junit.framework.TestCase;
     DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class,
     DbUnitTestExecutionListener.class})
+@DatabaseSetup("classpath:data/testData.xml")
 public class CertifiedProductSearchResultDaoTest extends TestCase {
     @Autowired private CertifiedProductSearchResultDAO searchResultDao;
 	@Autowired
@@ -217,7 +219,7 @@ public class CertifiedProductSearchResultDaoTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		Collection<CertifiedProductBasicSearchResult> products = searchDao.search(searchRequest);
-		assertEquals(8, products.size());
+		assertEquals(7, products.size());
 		
 		for (CertifiedProductBasicSearchResult dto : products ){
 			assertTrue(dto.getPracticeType().startsWith("Ambulatory"));
