@@ -174,7 +174,7 @@ public class QuestionableActivityAspect implements EnvironmentAware {
                         newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
 
                     //all cert results are in the details so find matches based on the 
-                    //original and new criteira number fields
+                    //original and new criteria number fields
                     for (CertificationResult origCertResult : origListing.getCertificationResults()) {
                         for (CertificationResult newCertResult : newListing.getCertificationResults()) {
                             if (origCertResult.getNumber().equals(newCertResult.getNumber())) {

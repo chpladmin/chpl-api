@@ -5,16 +5,11 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,13 +19,11 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.UploadFileUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -47,7 +40,6 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
-import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import junit.framework.TestCase;
 
 
@@ -61,13 +53,12 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class CertificationResultTest extends TestCase {
 
-    @PersistenceContext EntityManager entityManager;
-    @Autowired private QuestionableActivityDAO qaDao;	
+    @Autowired private QuestionableActivityDAO qaDao;
     @Autowired private CertifiedProductController cpController;
     @Autowired private CertifiedProductDetailsManager cpdManager;
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
-
+    
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -116,49 +107,6 @@ public class CertificationResultTest extends TestCase {
         assertEquals(Boolean.FALSE.toString(), activity.getAfter());
         assertEquals(QuestionableActivityTriggerConcept.GAP_EDITED.getName(), activity.getTrigger().getName());
 
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-
-    @Test
-    @Transactional
-    @Rollback
-    public void testUpdateGapInsideActivityThreshold_DoesNotRecordActivity()
-            throws EntityCreationException, EntityRetrievalException, ValidationException, InvalidArgumentsException,
-            JsonProcessingException, MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-        //set the creation date of our listing to today so that
-        //it is inside the activity threshold
-        CertifiedProductSearchDetails confirmedListing = cpdManager.getCertifiedProductDetails(1L);
-        Query updateCreationDateQuery = 
-                entityManager.createNativeQuery("UPDATE openchpl.certified_product "
-                        + "SET creation_date = NOW() "
-                        + "WHERE certified_product_id = " + confirmedListing.getId());
-        updateCreationDateQuery.executeUpdate();
-        entityManager.flush();
-        
-        // perform an update that would generate questionable activity outside
-        // of the threshold but make sure that no questionable activity was
-        // entered.
-        Date beforeActivity = new Date();
-        boolean changedGap = false;
-        for (CertificationResult certResult : confirmedListing.getCertificationResults()) {
-            if (certResult.getNumber().equals("170.314 (a)(1)")) {
-                certResult.setGap(Boolean.TRUE);
-                changedGap = true;
-            }
-        }
-        assertTrue(changedGap);
-
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
-        updateRequest.setListing(confirmedListing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityCertificationResultDTO> activities = qaDao
-                .findCertificationResultActivityBetweenDates(beforeActivity, afterActivity);
-        assertTrue(activities == null || activities.size() == 0);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 

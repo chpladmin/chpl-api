@@ -7,16 +7,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,13 +21,11 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
-import gov.healthit.chpl.UploadFileUtils;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
@@ -52,7 +45,6 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.web.controller.CertifiedProductController;
-import gov.healthit.chpl.web.controller.results.PendingCertifiedProductResults;
 import junit.framework.TestCase;
 
 /**
@@ -69,7 +61,6 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class ListingTest extends TestCase {
 
-    @PersistenceContext EntityManager entityManager;
     @Autowired private QuestionableActivityDAO qaDao;
     @Autowired private CertifiedProductController cpController;
     @Autowired private CertifiedProductDetailsManager cpdManager;
@@ -96,7 +87,7 @@ public class ListingTest extends TestCase {
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
-
+    
     @Test
     @Transactional
     @Rollback
@@ -428,49 +419,6 @@ public class ListingTest extends TestCase {
         assertNull(activity.getReason());
         assertEquals(QuestionableActivityTriggerConcept.CQM_ADDED.getName(), activity.getTrigger().getName());
 
-        SecurityContextHolder.getContext().setAuthentication(null);
-    }
-    
-    @Test
-    @Transactional
-    @Rollback
-    public void testAddCqmInsideActivityThreshold_DoesNotRecordActivity() throws
-        EntityCreationException, EntityRetrievalException,
-        ValidationException, InvalidArgumentsException, JsonProcessingException,
-        MissingReasonException, IOException {
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-
-      //set the creation date of our listing to today so that
-        //it is inside the activity threshold
-        CertifiedProductSearchDetails confirmedListing = cpdManager.getCertifiedProductDetails(1L);
-        Query updateCreationDateQuery = 
-                entityManager.createNativeQuery("UPDATE openchpl.certified_product "
-                        + "SET creation_date = NOW() "
-                        + "WHERE certified_product_id = " + confirmedListing.getId());
-        updateCreationDateQuery.executeUpdate();
-        entityManager.flush();
-        
-        //perform an update that would generate questionable activity outside
-        //of the threshold but make sure that no questionable activity was entered.
-        final long cms82Id = 60L;
-        Date beforeActivity = new Date();
-        CQMResultDetails addedCqm = new CQMResultDetails();
-        addedCqm.setId(cms82Id);
-        addedCqm.setCmsId("CMS82");
-        addedCqm.setSuccess(Boolean.TRUE);
-        Set<String> successVersions = new HashSet<String>();
-        successVersions.add("v0");
-        addedCqm.setSuccessVersions(successVersions);
-        confirmedListing.getCqmResults().add(addedCqm);
-        ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
-        updateRequest.setListing(confirmedListing);
-        cpController.updateCertifiedProduct(updateRequest);
-        Date afterActivity = new Date();
-
-        List<QuestionableActivityListingDTO> activities =
-                qaDao.findListingActivityBetweenDates(beforeActivity, afterActivity);
-        assertTrue(activities == null || activities.size() == 0);
         SecurityContextHolder.getContext().setAuthentication(null);
     }
     
