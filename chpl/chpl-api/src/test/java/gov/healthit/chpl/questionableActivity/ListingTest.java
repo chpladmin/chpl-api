@@ -168,13 +168,20 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        CertificationStatusEvent currentStatus = listing.getCurrentStatus();
+        int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        CertificationStatusEvent statusEvent = events.get(0);
+        for(int i = 0; i < events.size(); i++) {
+            CertificationStatusEvent currEvent = events.get(i);
+            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+                currStatusIndex = i;
+            }
+        }
         CertificationStatus status = new CertificationStatus();
         status.setId(2L);
         status.setName("Retired");
-        statusEvent.setStatus(status);
-        events.set(0, statusEvent);
+        currentStatus.setStatus(status);
+        events.set(currStatusIndex, currentStatus);
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
@@ -211,13 +218,20 @@ public class ListingTest extends TestCase {
 
         Date beforeActivity = new Date();
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        CertificationStatusEvent currentStatus = listing.getCurrentStatus();
+        int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        CertificationStatusEvent statusEvent = events.get(0);
+        for(int i = 0; i < events.size(); i++) {
+            CertificationStatusEvent currEvent = events.get(i);
+            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+                currStatusIndex = i;
+            }
+        }
         CertificationStatus status = new CertificationStatus();
         status.setId(2L);
         status.setName("Retired");
-        statusEvent.setStatus(status);
-        events.set(0, statusEvent);
+        currentStatus.setStatus(status);
+        events.set(currStatusIndex, currentStatus);
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
@@ -253,10 +267,17 @@ public class ListingTest extends TestCase {
         Date beforeActivity = new Date();
         Date eventDate = new Date("2/14/2018");
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(1L);
+        CertificationStatusEvent currentStatus = listing.getCurrentStatus();
+        int currStatusIndex = 0;
         List<CertificationStatusEvent> events = listing.getCertificationEvents();
-        CertificationStatusEvent statusEvent = events.get(0);
-        statusEvent.setEventDate(eventDate.getTime());
-        events.set(0, statusEvent);
+        for(int i = 0; i < events.size(); i++) {
+            CertificationStatusEvent currEvent = events.get(i);
+            if(currEvent.getId().longValue() == currentStatus.getId().longValue()) {
+                currStatusIndex = i;
+            }
+        }
+        currentStatus.setEventDate(eventDate.getTime());
+        events.set(currStatusIndex, currentStatus);
         listing.setCertificationEvents(events);
 
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
