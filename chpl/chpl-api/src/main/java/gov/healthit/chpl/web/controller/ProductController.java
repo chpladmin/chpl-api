@@ -171,12 +171,12 @@ public class ProductController {
             throw new InvalidArgumentsException("At least one product id must be provided in the request.");
         }
 
-        if (productInfo.getProduct() == null && productInfo.newDeveloperId() != null) {
+        if (productInfo.getProduct() == null && productInfo.getNewDeveloperId() != null) {
             // no new product is specified, so we just need to update the
             // developer id
             for (Long productId : productInfo.getProductIds()) {
                 List<DuplicateChplProdNumber> duplicateChplProdNbrs =
-                        getDuplcateChplProdNumbersCasuedByDeveloperChange(productId, productInfo.newDeveloperId());
+                        getDuplcateChplProdNumbersCasuedByDeveloperChange(productId, productInfo.getNewDeveloperId());
 
                 if (duplicateChplProdNbrs.size() != 0) {
                     throw new ValidationException(
@@ -184,7 +184,7 @@ public class ProductController {
                 }
 
                 ProductDTO toUpdate = productManager.getById(productId);
-                toUpdate.setDeveloperId(productInfo.newDeveloperId());
+                toUpdate.setDeveloperId(productInfo.getNewDeveloperId());
                 result = productManager.update(toUpdate);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             }
@@ -197,8 +197,8 @@ public class ProductController {
                 ProductDTO newProduct = new ProductDTO();
                 newProduct.setName(productInfo.getProduct().getName());
                 newProduct.setReportFileLocation(productInfo.getProduct().getReportFileLocation());
-                if (productInfo.newDeveloperId() != null) {
-                    newProduct.setDeveloperId(productInfo.newDeveloperId());
+                if (productInfo.getNewDeveloperId() != null) {
+                    newProduct.setDeveloperId(productInfo.getNewDeveloperId());
                 }
                 // new product could be created with ownership history
                 if (productInfo.getProduct().getOwnerHistory() != null) {
@@ -215,13 +215,15 @@ public class ProductController {
                 result = productManager.merge(productInfo.getProductIds(), newProduct);
                 responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
             } else if (productInfo.getProductIds().size() == 1) {
-                List<DuplicateChplProdNumber> duplicateChplProdNbrs =
-                        getDuplcateChplProdNumbersCasuedByDeveloperChange(
-                                productInfo.getProductIds().get(0), productInfo.newDeveloperId());
-
-                if (duplicateChplProdNbrs.size() != 0) {
-                    throw new ValidationException(
-                            getDuplicateChplProductNumberErrorMessages(duplicateChplProdNbrs), null);
+                if(productInfo.getNewDeveloperId() != null) {
+                    List<DuplicateChplProdNumber> duplicateChplProdNbrs =
+                            getDuplcateChplProdNumbersCasuedByDeveloperChange(
+                                    productInfo.getProductIds().get(0), productInfo.getNewDeveloperId());
+    
+                    if (duplicateChplProdNbrs.size() != 0) {
+                        throw new ValidationException(
+                                getDuplicateChplProductNumberErrorMessages(duplicateChplProdNbrs), null);
+                    }
                 }
                 // update the given product id with new data
                 ProductDTO toUpdate = new ProductDTO();
@@ -239,8 +241,8 @@ public class ProductController {
                     toUpdate.setContact(contact);
                 }
                 // update the developer if an id is supplied
-                if (productInfo.newDeveloperId() != null) {
-                    toUpdate.setDeveloperId(productInfo.newDeveloperId());
+                if (productInfo.getNewDeveloperId() != null) {
+                    toUpdate.setDeveloperId(productInfo.getNewDeveloperId());
                 } else {
                     toUpdate.setDeveloperId(productInfo.getProduct().getOwner().getDeveloperId());
                 }
@@ -288,7 +290,7 @@ public class ProductController {
     }
 
     private List<DuplicateChplProdNumber> getDuplcateChplProdNumbersCasuedByDeveloperChange(
-            final Long productId, final long newDeveloperId) throws EntityRetrievalException {
+            final Long productId, final Long newDeveloperId) throws EntityRetrievalException {
 
         List<DuplicateChplProdNumber> duplicateChplProductNumbers = new ArrayList<DuplicateChplProdNumber>();
         DeveloperDTO newDeveloper = developerManager.getById(newDeveloperId);

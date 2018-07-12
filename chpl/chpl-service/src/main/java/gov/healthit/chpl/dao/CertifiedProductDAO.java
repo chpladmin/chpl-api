@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDTO;
@@ -39,6 +40,8 @@ public interface CertifiedProductDAO {
 
     CertifiedProductDetailsDTO getByChplUniqueId(String chplUniqueId) throws EntityRetrievalException;
 
+    Date getConfirmDate(final Long listingId);
+    
     List<CertifiedProductDetailsDTO> getDetailsByChplNumbers(List<String> chplProductNumbers);
 
     List<CertifiedProductDetailsDTO> getDetailsByVersionId(Long versionId);

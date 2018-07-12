@@ -350,6 +350,24 @@ public class CertifiedProductDAOImpl extends BaseDAOImpl implements CertifiedPro
 
     @Override
     @Transactional(readOnly = true)
+    public Date getConfirmDate(final Long listingId) {
+        Date confirmDate = null;
+        CertifiedProductEntity entity = null;
+        
+        try {
+            entity = getEntityById(listingId);
+            if (entity != null) {
+                confirmDate = entity.getCreationDate();
+            }
+        } catch(EntityRetrievalException ex) {
+            LOGGER.error("Could not get entity with ID " + listingId, ex);
+        }
+
+        return confirmDate;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
     public List<CertifiedProductDTO> getCertifiedProductsForDeveloper(final Long developerId) {
         Query getCertifiedProductsQuery = entityManager.createQuery(
                 "FROM CertifiedProductEntity cpe, ProductVersionEntity pve," + "ProductEntity pe, DeveloperEntity ve "
