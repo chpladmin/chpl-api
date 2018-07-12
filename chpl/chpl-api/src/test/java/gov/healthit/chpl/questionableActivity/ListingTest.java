@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -65,6 +69,7 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class ListingTest extends TestCase {
 
+    @PersistenceContext EntityManager entityManager;
     @Autowired private QuestionableActivityDAO qaDao;
     @Autowired private CertifiedProductController cpController;
     @Autowired private CertifiedProductDetailsManager cpdManager;
@@ -435,28 +440,15 @@ public class ListingTest extends TestCase {
         MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
-        //upload a new listing to pending
-        MultipartFile file = UploadFileUtils.getUploadFile("2015", "v12");
-        ResponseEntity<PendingCertifiedProductResults> response = null;
-        try {
-            response = cpController.upload(file);
-        } catch (ValidationException e) {
-            fail(e.getMessage());
-        }
-        assertNotNull(response);
-        
-        //confirm the listing so it exists to update
-        CertifiedProductSearchDetails confirmedListing = null;
-        try {
-            ResponseEntity<CertifiedProductSearchDetails> confirmedListingResponse = 
-                    cpController.confirmPendingCertifiedProduct(
-                            response.getBody().getPendingCertifiedProducts().get(0));
-            confirmedListing = confirmedListingResponse.getBody();
-        } catch(ValidationException ex) {
-            fail(ex.getMessage());
-        }
-        
-        assertNotNull(confirmedListing);
+      //set the creation date of our listing to today so that
+        //it is inside the activity threshold
+        CertifiedProductSearchDetails confirmedListing = cpdManager.getCertifiedProductDetails(1L);
+        Query updateCreationDateQuery = 
+                entityManager.createNativeQuery("UPDATE openchpl.certified_product "
+                        + "SET creation_date = NOW() "
+                        + "WHERE certified_product_id = " + confirmedListing.getId());
+        updateCreationDateQuery.executeUpdate();
+        entityManager.flush();
         
         //perform an update that would generate questionable activity outside
         //of the threshold but make sure that no questionable activity was entered.
