@@ -5,10 +5,15 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.TestProcedureEntity;
 
 @Entity
 @Table(name = "pending_certification_result_test_procedure")
@@ -16,7 +21,7 @@ public class PendingCertificationResultTestProcedureEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "pending_certification_result_test_procedure_id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Basic(optional = false)
@@ -26,24 +31,28 @@ public class PendingCertificationResultTestProcedureEntity {
     @Column(name = "test_procedure_id")
     private Long testProcedureId;
 
-    @Column(name = "test_procedure_version")
-    private String testProcedureVersion;
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_procedure_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private TestProcedureEntity testProcedure;
+    
+    @Column(name = "test_procedure_name")
+    private String testProcedureName;
+    
+    @Column(name = "version")
+    private String version;
 
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
+    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
+    protected Date creationDate;
 
-    @Basic(optional = false)
+    @Column(nullable = false)
+    protected Boolean deleted;
+
+    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
+    protected Date lastModifiedDate;
+
     @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
+    protected Long lastModifiedUser;
 
     public Long getId() {
         return id;
@@ -101,11 +110,27 @@ public class PendingCertificationResultTestProcedureEntity {
         this.testProcedureId = testProcedureId;
     }
 
-    public String getTestProcedureVersion() {
-        return testProcedureVersion;
+    public TestProcedureEntity getTestProcedure() {
+        return testProcedure;
     }
 
-    public void setTestProcedureVersion(final String testProcedureVersion) {
-        this.testProcedureVersion = testProcedureVersion;
+    public void setTestProcedure(TestProcedureEntity testProcedure) {
+        this.testProcedure = testProcedure;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getTestProcedureName() {
+        return testProcedureName;
+    }
+
+    public void setTestProcedureName(String testProcedureName) {
+        this.testProcedureName = testProcedureName;
     }
 }

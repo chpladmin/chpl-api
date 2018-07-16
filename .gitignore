@@ -29,6 +29,8 @@ target/
 # PDT-specific
 .buildpath
 
+# Checkstyle on the fly configuration
+.checkstyle
 
 #################
 ## Visual Studio
@@ -247,13 +249,21 @@ pip-log.txt
 /chpl/chpl-etl/parse.sh
 /chpl/chpl-etl/log_checksum-analysis-finallines.txt
 /openchpl-sql/openchpl-role.sql
+/chpl/chpl-api/src/main/resources/environment.properties
 /chpl/chpl-service/src/main/resources/environment.properties
+/chpl/chpl-service/src/main/resources/quartz.properties
+/chpl/chpl-service/src/main/resources/quartz.init.properties
 /chpl/chpl-service/src/main/resources-dev/environment.properties
 /chpl/chpl-service/src/main/resources-staging/environment.properties
 /chpl/chpl-service/src/main/resources-production/environment.properties
 /chpl/chpl-service/src/test/resources/environment.test.properties
+/chpl/chpl-resources/src/test/resources/environment.test.properties
+/chpl/chpl-resources/src/main/resources/environment.properties
 /chpl/chpl-auth/src/test/resources/environment.auth.test.properties
 /chpl/chpl-auth/src/main/resources/environment.auth.properties
 /chpl/chpl-service/test-target/
 /chpl/chpl-service/logs/
 /chpl/deploy-webapp.sh
+/chpl/.recommenders/
+*-api.sh
+push-*.sh

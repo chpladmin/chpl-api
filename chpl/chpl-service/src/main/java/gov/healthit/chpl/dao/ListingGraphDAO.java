@@ -4,6 +4,7 @@ import java.util.List;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 
 public interface ListingGraphDAO {
     ListingToListingMapDTO createListingMap(ListingToListingMapDTO toCreate) throws EntityCreationException;

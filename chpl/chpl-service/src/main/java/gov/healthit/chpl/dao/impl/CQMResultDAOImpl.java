@@ -10,12 +10,12 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CQMResultDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
 import gov.healthit.chpl.entity.listing.CQMResultEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "cqmResultDAO")
 public class CQMResultDAOImpl extends BaseDAOImpl implements CQMResultDAO {

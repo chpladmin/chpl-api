@@ -20,8 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -33,6 +31,8 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
@@ -90,7 +90,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -127,7 +127,7 @@ public class ProductManagerImpl implements ProductManager {
 
     @Override
     @Transactional(readOnly = false)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN') or hasRole('ROLE_ACB_STAFF')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)
@@ -230,7 +230,7 @@ public class ProductManagerImpl implements ProductManager {
             EntityRetrievalException.class, EntityCreationException.class, JsonProcessingException.class,
             AccessDeniedException.class
     })
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN', 'ROLE_ACB_STAFF')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @CacheEvict(value = {
             CacheNames.PRODUCT_NAMES
     }, allEntries = true)

@@ -25,6 +25,7 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -35,7 +36,7 @@ import gov.healthit.chpl.dao.search.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.entity.listing.pending.PendingCertifiedProductEntity;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 
 public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProductUploadHandler {
     @Autowired
@@ -78,6 +79,8 @@ public abstract class CertifiedProductUploadHandlerImpl implements CertifiedProd
     protected TestFunctionalityDAO testFunctionalityDao;
     @Autowired
     protected TestProcedureDAO testProcedureDao;
+    @Autowired
+    protected TestDataDAO testDataDao;
     @Autowired
     protected TestStandardDAO testStandardDao;
     @Autowired

@@ -21,7 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(CertifiedProduct2014CsvPresenter.class);
+    private static final Logger LOGGER = LogManager.getLogger(CertifiedProductCsvPresenter.class);
     private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
 
     /**
@@ -93,7 +93,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter {
         LocalDateTime date = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.getCertificationDate()),
                 ZoneId.systemDefault());
         result.add(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
-        result.add(data.getCertificationStatus().get("name").toString());
+        result.add(data.getCurrentStatus().getStatus().getName());
         result.add(data.getCertifyingBody().get("name").toString());
         result.add(data.getOtherAcb());
         result.add(data.getDeveloper().getName());

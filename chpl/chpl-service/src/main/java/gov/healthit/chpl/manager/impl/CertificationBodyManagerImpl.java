@@ -34,12 +34,12 @@ import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.ClearAllCaches;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.TestingLabDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.PendingCertifiedProductManager;
@@ -260,7 +260,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
 
     @Transactional
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_INVITED_USER_CREATOR') or "
-            + "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+            + "(hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     public void addPermission(CertificationBodyDTO acb, Long userId, Permission permission)
             throws UserRetrievalException {
         MutableAcl acl;
@@ -288,7 +288,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     public void deletePermission(CertificationBodyDTO acb, Sid recipient, Permission permission) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -313,7 +313,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
     }
 
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB_ADMIN') and hasPermission(#acb, admin))")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or (hasRole('ROLE_ACB') and hasPermission(#acb, admin))")
     public void deleteAllPermissionsOnAcb(CertificationBodyDTO acb, Sid recipient) {
         ObjectIdentity oid = new ObjectIdentityImpl(CertificationBodyDTO.class, acb.getId());
         MutableAcl acl = (MutableAcl) mutableAclService.readAclById(oid);
@@ -337,7 +337,7 @@ public class CertificationBodyManagerImpl extends ApplicationObjectSupport imple
         LOGGER.debug("Deleted all acb " + acb + " ACL permissions for recipient " + recipient);
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ACB')")
     public void deletePermissionsForUser(UserDTO userDto) throws UserRetrievalException {
         if (userDto.getSubjectName() == null) {
             userDto = userDAO.getById(userDto.getId());

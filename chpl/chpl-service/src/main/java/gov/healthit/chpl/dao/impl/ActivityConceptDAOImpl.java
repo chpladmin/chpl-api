@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.ActivityConceptDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.ActivityConceptDTO;
 import gov.healthit.chpl.entity.ActivityConceptEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("activityClassDAO")
 public class ActivityConceptDAOImpl extends BaseDAOImpl implements ActivityConceptDAO {

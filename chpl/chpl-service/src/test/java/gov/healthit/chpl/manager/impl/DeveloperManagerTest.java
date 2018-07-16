@@ -27,8 +27,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.domain.DecertifiedDeveloperResult;
 import gov.healthit.chpl.domain.DeveloperTransparency;
 import gov.healthit.chpl.dto.DeveloperACBMapDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -37,9 +36,11 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
-import gov.healthit.chpl.web.controller.results.DecertifiedDeveloperResults;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -75,7 +76,7 @@ public class DeveloperManagerTest extends TestCase {
 		testUser3.setId(3L);
 		testUser3.setLastName("User3");
 		testUser3.setSubjectName("testUser3");
-		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 	}
 	
 	@Test
@@ -187,7 +188,7 @@ public class DeveloperManagerTest extends TestCase {
 		DeveloperDTO merged = null;
 		try {
 			merged = developerManager.merge(idsToMerge, toCreate);
-		} catch(EntityCreationException | JsonProcessingException | EntityRetrievalException ex) {
+		} catch(EntityCreationException | JsonProcessingException | EntityRetrievalException | ValidationException ex) {
 			fail(ex.getMessage());
 		}
 		
@@ -224,9 +225,27 @@ public class DeveloperManagerTest extends TestCase {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 	
-	@Test
+	@Test(expected = ValidationException.class) 
 	@Transactional
 	@Rollback
+	public void testMergeDeveloperDuplicateChplProductNumberValidatioError() throws JsonProcessingException, EntityRetrievalException, EntityCreationException, ValidationException {
+	    SecurityContextHolder.getContext().setAuthentication(adminUser);
+
+	    List<Long> idsToMerge = new ArrayList<Long>();
+        idsToMerge.add(-1L);
+        idsToMerge.add(-2L);
+        
+        DeveloperDTO toCreate = new DeveloperDTO();
+        toCreate.setName("dev name");
+        
+        DeveloperDTO merged = null;
+        merged = developerManager.merge(idsToMerge, toCreate);
+        
+	}
+	
+	@Test
+	@Transactional
+	@Rollback(true)
 	public void testNoUpdatesAllowedByNonAdminIfDeveloperIsNotActive() 
 			throws EntityRetrievalException, JsonProcessingException {
 		SecurityContextHolder.getContext().setAuthentication(testUser3);
@@ -288,8 +307,8 @@ public class DeveloperManagerTest extends TestCase {
 	@Rollback(true) 
 	@Test
 	public void testGetDecertifiedDevelopers() throws EntityRetrievalException {
-		DecertifiedDeveloperResults results = developerManager.getDecertifiedDevelopers();
-		assertEquals(1, results.getDecertifiedDeveloperResults().size());
+		List<DecertifiedDeveloperResult> results = developerManager.getDecertifiedDevelopers();
+		assertEquals(1, results.size());
 	}
 	
 }

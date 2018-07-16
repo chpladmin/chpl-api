@@ -39,17 +39,24 @@ public class CertifiedProductTargetedUser implements Serializable {
     @XmlElement(required = true)
     private String targetedUserName;
 
+    /**
+     * Default constructor.
+     */
     public CertifiedProductTargetedUser() {
         super();
     }
 
-    public CertifiedProductTargetedUser(CertifiedProductTargetedUserDTO dto) {
+    /**
+     * Constructor from DTO.
+     * @param dto
+     */
+    public CertifiedProductTargetedUser(final CertifiedProductTargetedUserDTO dto) {
         this.id = dto.getId();
         this.targetedUserId = dto.getTargetedUserId();
         this.targetedUserName = dto.getTargetedUserName();
     }
 
-    public boolean matches(CertifiedProductTargetedUser other) {
+    public boolean matches(final CertifiedProductTargetedUser other) {
         boolean result = false;
         if (this.getTargetedUserId() != null && other.getTargetedUserId() != null
                 && this.getTargetedUserId().longValue() == other.getTargetedUserId().longValue()) {

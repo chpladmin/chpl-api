@@ -52,7 +52,6 @@ import gov.healthit.chpl.auth.filter.JWTAuthenticationFilter;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@EnableCaching
 @PropertySource("classpath:/environment.properties")
 @ComponentScan(basePackages = { "gov.healthit.chpl.auth.**" }, excludeFilters = {
 		@ComponentScan.Filter(type = FilterType.ANNOTATION, value = Configuration.class) })

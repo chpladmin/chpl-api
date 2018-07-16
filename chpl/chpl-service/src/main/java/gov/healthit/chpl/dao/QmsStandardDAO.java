@@ -3,10 +3,10 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.QmsStandardDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface QmsStandardDAO {
-
-    QmsStandardDTO create(QmsStandardDTO dto) throws EntityCreationException;
 
     QmsStandardDTO update(QmsStandardDTO dto) throws EntityRetrievalException;
 

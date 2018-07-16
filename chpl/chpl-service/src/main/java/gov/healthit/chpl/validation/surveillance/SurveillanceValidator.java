@@ -17,7 +17,6 @@ import gov.healthit.chpl.auth.domain.Authority;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -34,6 +33,8 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.ValidationUtils;
 
 @Component("surveillanceValidator")
 public class SurveillanceValidator implements MessageSourceAware {
@@ -204,6 +205,10 @@ public class SurveillanceValidator implements MessageSourceAware {
                         ex);
             }
         }
+        
+        if(surv.getType() != null) {
+            addSurveillanceWarningIfNotValid(surv, surv.getType().getName(), "Surveillance Type");
+        }
 
         validateSurveillanceAuthority(surv);
         validateSurveillanceRequirements(surv, certResults);
@@ -266,7 +271,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                     if (req.getType().getName().equalsIgnoreCase(CRITERION_REQUIREMENT_TYPE)
                             && surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
 
-                        req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
+                        req.setRequirement(gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
                         CertificationCriterionDTO criterion = null;
                         // see if the nonconformity type is a criterion that the
                         // product has attested to
@@ -292,7 +297,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                         }
                     } else if (req.getType().getName().equals(TRANSPARENCY_REQUIREMENT_TYPE)) {
                         // requirement has to be one of 170.523 (k)(1) or (k)(2)
-                        req.setRequirement(gov.healthit.chpl.Util.coerceToCriterionNumberFormat(req.getRequirement()));
+                        req.setRequirement(gov.healthit.chpl.util.Util.coerceToCriterionNumberFormat(req.getRequirement()));
                         if (!RequirementTypeEnum.K1.getName().equals(req.getRequirement())
                                 && !RequirementTypeEnum.K2.getName().equals(req.getRequirement())) {
                             surv.getErrorMessages()
@@ -345,6 +350,8 @@ public class SurveillanceValidator implements MessageSourceAware {
                         req.setResult(resType);
                     }
                 }
+                
+                addSurveillanceWarningIfNotValid(surv, req.getRequirement(), "Requirement '" + req.getRequirement() + "'");
             }
         }
     }
@@ -378,7 +385,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                             // certification criteria or just a string?
                             CertificationCriterionDTO criterion = null;
                             if (surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
-                                nc.setNonconformityType(gov.healthit.chpl.Util
+                                nc.setNonconformityType(gov.healthit.chpl.util.Util
                                         .coerceToCriterionNumberFormat(nc.getNonconformityType()));
                                 // see if the nonconformity type is a criterion
                                 // that the product has attested to
@@ -397,7 +404,7 @@ public class SurveillanceValidator implements MessageSourceAware {
                             // it has to be one of a few other values
                             if (surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null
                                     && criterion == null) {
-                                nc.setNonconformityType(gov.healthit.chpl.Util
+                                nc.setNonconformityType(gov.healthit.chpl.util.Util
                                         .coerceToCriterionNumberFormat(nc.getNonconformityType()));
                                 if (!NonconformityType.K1.getName().equals(nc.getNonconformityType())
                                         && !NonconformityType.K2.getName().equals(nc.getNonconformityType())
@@ -599,6 +606,17 @@ public class SurveillanceValidator implements MessageSourceAware {
                             }
                             requiresCloseDate = false;
                         }
+                        
+                        addSurveillanceWarningIfNotValid(surv, nc.getDeveloperExplanation(), 
+                                "Developer Explanation '" + nc.getDeveloperExplanation() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getFindings(), 
+                                "Findings '" + nc.getFindings() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getNonconformityType(), 
+                                "Nonconformity Type '" + nc.getNonconformityType() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getResolution(), 
+                                "Resolution '" + nc.getResolution() + "'");
+                        addSurveillanceWarningIfNotValid(surv, nc.getSummary(), 
+                                "Summary '" + nc.getSummary() + "'");
                     }
                 }
             } else {
@@ -619,16 +637,14 @@ public class SurveillanceValidator implements MessageSourceAware {
     }
 
     public void validateSurveillanceAuthority(Surveillance surv) {
-        // non-null surveillance must be ROLE_ADMIN, ROLE_ACB_ADMIN, or
-        // ROLE_ACB_STAFF
+        // non-null surveillance must be ROLE_ADMIN, ROLE_ACB
         if (!StringUtils.isEmpty(surv.getAuthority())) {
             if (!surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN)
-                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_ADMIN)
-                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB_STAFF)) {
+                    && !surv.getAuthority().equalsIgnoreCase(Authority.ROLE_ACB)) {
                 surv.getErrorMessages().add(String.format(
                         messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.authorityRequired"),
                                 LocaleContextHolder.getLocale()),
-                        Authority.ROLE_ADMIN, Authority.ROLE_ACB_ADMIN, Authority.ROLE_ACB_STAFF));
+                        Authority.ROLE_ADMIN, Authority.ROLE_ACB));
             }
         }
     }
@@ -636,5 +652,18 @@ public class SurveillanceValidator implements MessageSourceAware {
     @Override
     public void setMessageSource(final MessageSource messageSource) {
         this.messageSource = messageSource;
+    }
+    
+    private void addSurveillanceWarningIfNotValid(Surveillance surv, String input, String fieldName) {
+        if(!ValidationUtils.isValidUtf8(input)) {
+            surv.getWarningMessages().add(String.format(
+                            messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.badCharacterFound"),
+                                    LocaleContextHolder.getLocale()), fieldName));
+        }
+        if(ValidationUtils.hasNewline(input)) {
+            surv.getWarningMessages().add(String.format(
+                    messageSource.getMessage(new DefaultMessageSourceResolvable("surveillance.newlineCharacterFound"),
+                            LocaleContextHolder.getLocale()), fieldName));
+        }
     }
 }

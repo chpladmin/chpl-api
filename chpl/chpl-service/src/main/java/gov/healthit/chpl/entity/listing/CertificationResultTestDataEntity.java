@@ -5,10 +5,15 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import gov.healthit.chpl.entity.TestDataEntity;
 
 @Entity
 @Table(name = "certification_result_test_data")
@@ -24,6 +29,13 @@ public class CertificationResultTestDataEntity {
     @Column(name = "certification_result_id", nullable = false)
     private Long certificationResultId;
 
+    @Column(name = "test_data_id")
+    private Long testDataId;
+
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_data_id", insertable = false, updatable = false)
+    private TestDataEntity testData;
+    
     @Column(name = "version")
     private String testDataVersion;
 
@@ -108,5 +120,21 @@ public class CertificationResultTestDataEntity {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public Long getTestDataId() {
+        return testDataId;
+    }
+
+    public void setTestDataId(Long testDataId) {
+        this.testDataId = testDataId;
+    }
+
+    public TestDataEntity getTestData() {
+        return testData;
+    }
+
+    public void setTestData(TestDataEntity testData) {
+        this.testData = testData;
     }
 }

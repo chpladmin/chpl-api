@@ -1,10 +1,10 @@
 package gov.healthit.chpl.app.resource;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public abstract class SEDDownloadableResourceCreatorApp extends DownloadableResourceCreatorApp{
 	

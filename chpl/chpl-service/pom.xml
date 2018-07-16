@@ -8,29 +8,33 @@
         <artifactId>chpl</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <groupId>gov.healthit.chpl</groupId>
     <artifactId>chpl-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
-    <name>chpl-service Maven Webapp</name>
-    <url>http://maven.apache.org</url>
+    <packaging>jar</packaging>
+    <name>chpl-service library</name>
 
     <dependencies>
+        <!-- for referencing shared properties -->
+        <dependency>
+            <groupId>gov.healthit.chpl</groupId>
+            <artifactId>chpl-resources</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        
         <dependency>
             <groupId>gov.healthit.chpl</groupId>
             <artifactId>chpl-auth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
-        <!-- Core utilities used by other modules. Define this if you use 
+        <!-- Core utilities used by other modules. Define this if you use
             Spring Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>${org.springframework.version}</version>
         </dependency>
-        <!-- Spring MVC for Servlet Environments (depends on spring-core, 
-            spring-beans, spring-context, spring-web) Define this if you use Spring MVC 
+        <!-- Spring MVC for Servlet Environments (depends on spring-core,
+            spring-beans, spring-context, spring-web) Define this if you use Spring MVC
             with a Servlet Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -95,7 +99,7 @@
             <version>1.5.4</version>
         </dependency>
 
-        <!-- Optional for caching. Used to log stuff <dependency> <groupId>ch.qos.logback</groupId> 
+        <!-- Optional for caching. Used to log stuff <dependency> <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId> <version>1.0.13</version> </dependency> -->
 
         <!-- Spring caching framework inside this -->
@@ -174,6 +178,12 @@
         </dependency>
 
         <dependency>
+            <groupId>me.xdrop</groupId>
+            <artifactId>fuzzywuzzy</artifactId>
+            <version>1.1.9</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>5.2.1.Final</version>
@@ -184,9 +194,79 @@
             <artifactId>castor-xml</artifactId>
             <version>1.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>4.2.2.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thoughtworks.xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.4.8</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-spring-web</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-core</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xerces</artifactId>
+            <version>2.4.0</version>
+        </dependency>
 
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.el</groupId>
+            <artifactId>javax.el-api</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <version>8.5.14</version>
+            <artifactId>tomcat-jasper-el</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.19.0</version>
+            <scope>test</scope>
+        </dependency>
+        
         <!-- for unit/integration testing of the dao calls -->
-
+        <dependency>
+            <groupId>gov.healthit.chpl</groupId>
+            <artifactId>chpl-resources</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <classifier>tests</classifier>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -229,48 +309,19 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-oxm</artifactId>
-            <version>4.2.2.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thoughtworks.xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.4.8</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-spring-web</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-core</artifactId>
-            <version>2.3.0</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xerces</artifactId>
-            <version>2.4.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.7</version>
-        </dependency>
-
     </dependencies>
+    
     <build>
         <finalName>chpl-service</finalName>
-
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <configuration>
+                    <rules><dependencyConvergence/></rules>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -280,12 +331,12 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
+                    <!-- add the main class App to the manifest for the created jar -->
                     <archive>
                         <manifest>
                             <mainClass>gov.healthit.chpl.app.App</mainClass>
@@ -305,7 +356,6 @@
                     </execution>
                 </executions>
                 <configuration>
-
                     <archive>
                         <manifest>
                             <mainClass>gov.healthit.chpl.app.App</mainClass>
@@ -316,7 +366,6 @@
                     </descriptorRefs>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
@@ -372,10 +421,49 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>                    
         </plugins>
     </build>
-
+    
+    <profiles>
+        <profile>
+            <id>environment-specific</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                </property>
+            </activation>
+            
+            <build>
+                <plugins>
+                    <!-- this plugin copies the correct resource into the jar for the environment -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <version>2.7</version>
+                        <executions>
+                            <execution>
+                                <id>copy-resources</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>../chpl-resources/src/main/resources-${env}</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+    
     <reporting>
         <plugins>
             <plugin>
@@ -398,76 +486,20 @@
                     </reportSet>
                 </reportSets>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
+                <version>3.0.5</version>
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                    <!--<threshold>High</threshold> -->
+                    <xmlOutput>true</xmlOutput>
+                    <failOnError>false</failOnError>
+                    <findbugsXmlOutput>true</findbugsXmlOutput>
+                    <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+                </configuration>
+            </plugin>
         </plugins>
     </reporting>
-
-    <profiles>
-        <profile>
-            <id>environment-specific</id>
-            <activation>
-                <property>
-                    <name>env</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <!-- this plugin copies the correct resource into the 
-                        jar -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <version>2.7</version>
-                        <executions>
-                            <execution>
-                                <id>copy-resources</id>
-                                <!-- here the phase you need -->
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>src/main/resources-${env}</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- this plugin will allow files in environment-specific 
-                        folders like resources-prod or resources-test to be added to the resulting 
-                        war's classpath under WEB-INF/classes to activate the profile, simply add 
-                        '-Denv=production' to your maven build command this also works fine with 
-                        war:inplace and war:exploded -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-war-plugin</artifactId>
-                        <version>2.4</version>
-                        <configuration>
-                            <webResources>
-                                <!-- note the order of the following resource 
-                                    elements are important. if there are duplicate files, the first file copied 
-                                    will win -->
-                                <resource>
-                                    <!-- this is relative to the pom.xml 
-                                        directory -->
-                                    <directory>src/main/resources-${env}</directory>
-                                    <!-- override default destination at 
-                                        root of war -->
-                                    <targetPath>WEB-INF/classes</targetPath>
-                                </resource>
-                                <resource>
-                                    <directory>src/main/resources</directory>
-                                    <targetPath>WEB-INF/classes</targetPath>
-                                </resource>
-                            </webResources>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

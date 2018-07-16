@@ -172,4 +172,39 @@ public class TemplateColumnIndexMap2014Version1 extends TemplateColumnIndexMap {
         return 711;
     }
    
+    public String getPrivacySecurityFrameworkColumnLabel() {
+        return null;
+    }
+    
+    public int getPrivacySecurityFrameworkColumnCount() {
+        return 0;
+    }
+    
+    public String getApiDocumentationColumnLabel() {
+        return null;
+    }
+    
+    public int getApiDocumentationColumnCount() {
+        return 0;
+    }
+
+    public int getAdditionalSoftwareColumnCount() {
+        return 4;
+    }
+
+    public String getUcdColumnLabel() {
+        return "SED";
+    }
+    
+    public int getUcdColumnCount() {
+        return 3;
+    }
+    
+    public String getTestTasksColumnLabel() {
+        return null;
+    }
+    
+    public int getTestTasksColumnCount() {
+        return 0;
+    }
 }

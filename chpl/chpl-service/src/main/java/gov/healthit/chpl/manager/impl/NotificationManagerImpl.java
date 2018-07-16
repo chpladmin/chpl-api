@@ -12,14 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.notification.SubscriptionDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.NotificationManager;
 
@@ -32,7 +32,7 @@ public class NotificationManagerImpl implements NotificationManager {
     @Autowired
     NotificationDAO notificationDao;
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @Transactional
     public RecipientDTO createRecipient(RecipientDTO toCreate) throws EntityCreationException {
         RecipientDTO result = null;
@@ -54,7 +54,7 @@ public class NotificationManagerImpl implements NotificationManager {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
+            + "(hasRole('ROLE_ACB') and hasPermission(#mapping.subscription.acb, admin))")
     @Transactional
     public NotificationTypeRecipientMapDTO addRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping)
             throws EntityRetrievalException {
@@ -79,7 +79,7 @@ public class NotificationManagerImpl implements NotificationManager {
         return result;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @Transactional
     public RecipientDTO updateRecipient(Long recipientId, String newEmailAddress) throws EntityRetrievalException {
         RecipientDTO recipToUpdate = notificationDao.getRecipientById(recipientId);
@@ -87,13 +87,13 @@ public class NotificationManagerImpl implements NotificationManager {
         return updateRecipient(recipToUpdate);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @Transactional
     public RecipientDTO updateRecipient(RecipientDTO toUpdate) {
         return notificationDao.updateRecipient(toUpdate);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @Transactional
     public boolean recipientEmailExists(String email) {
         RecipientDTO recip = null;
@@ -104,7 +104,7 @@ public class NotificationManagerImpl implements NotificationManager {
         return (recip == null ? false : true);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @Transactional
     public List<RecipientWithSubscriptionsDTO> getAll() {
         List<CertificationBodyDTO> acbs = null;
@@ -116,7 +116,7 @@ public class NotificationManagerImpl implements NotificationManager {
         return result;
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @Transactional
     public RecipientWithSubscriptionsDTO getAllForRecipient(Long recipientId) throws EntityRetrievalException {
         List<CertificationBodyDTO> acbs = null;
@@ -128,7 +128,7 @@ public class NotificationManagerImpl implements NotificationManager {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN') or "
-            + "(hasRole('ROLE_ACB_ADMIN') and hasPermission(#mapping.subscription.acb, admin))")
+            + "(hasRole('ROLE_ACB') and hasPermission(#mapping.subscription.acb, admin))")
     @Transactional
     public void deleteRecipientNotificationMap(NotificationTypeRecipientMapDTO mapping) {
         if (!notificationDao.hasNotificationType(mapping.getSubscription().getNotificationType(),
@@ -152,7 +152,7 @@ public class NotificationManagerImpl implements NotificationManager {
      * 
      * @param recipientId
      */
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     @Transactional
     public void deleteRecipient(Long recipientId) throws EntityRetrievalException {
         RecipientDTO recip = notificationDao.getRecipientById(recipientId);

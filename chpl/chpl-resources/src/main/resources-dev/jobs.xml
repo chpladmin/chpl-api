@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<job-scheduling-data
+    xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="2.0">
+    <schedule>
+        <job>
+            <name>cacheStatusAgeJob</name>
+            <group>chplJobs</group>
+
+            <description>Allow subscribers to get notifications if the cache has become "too old".</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CacheStatusAgeJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        <trigger>
+            <cron>
+                <name>alarned@ainq_com</name>
+                <group>cacheStatusAgeTrigger</group>
+                <job-name>cacheStatusAgeJob</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>alarned@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <cron-expression>0 10 * * * ?</cron-expression>
+            </cron>
+        </trigger>
+
+        <job>
+            <name>downloadFileJob2015</name>
+            <group>systemJobs</group>
+
+            <description>Generate download files for 2015.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2015</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>downloadFileJob2014</name>
+            <group>systemJobs</group>
+
+            <description>Generate download files for 2014.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2014</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <job>
+            <name>downloadFileJob2011</name>
+            <group>systemJobs</group>
+
+            <description>Generate download files for 2011.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2011</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <trigger>
+            <cron>
+                <name>generate2015</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2015</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generate2014</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2014</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 2 1 * * ?</cron-expression> <!-- At 0102 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generate2011</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJob2011</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of the quarter -->
+            </cron>
+        </trigger>
+    </schedule>
+</job-scheduling-data>

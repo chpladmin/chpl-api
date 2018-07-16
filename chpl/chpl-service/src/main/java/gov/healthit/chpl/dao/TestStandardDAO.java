@@ -3,6 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 
 import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 
 public interface TestStandardDAO {
 

@@ -19,6 +19,9 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
     private static final String[] g2ComplementaryCerts = {
             "170.314 (b)(5)(B)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(6)"
     };
+    private static final String[] g1g2TestToolCheckCerts = {
+    	"170.314 (g)(1)", "170.314 (g)(2)"
+    };
 
     @Autowired
     CertifiedProductDetailsManager cpdManager;
@@ -63,25 +66,7 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
     @Override
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
-
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
-
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
-                    gapEligibleAndTrue = true;
-                }
-
-                if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && !cert.getNumber().equals("170.314 (g)(1)") && !cert.getNumber().equals("170.314 (g)(2)")
-                        && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    product.getErrorMessages()
-                            .add("Test Tools are required for certification " + cert.getNumber() + ".");
-                }
-            }
-        }
+        super.g1g2TestToolCheck(g1g2TestToolCheckCerts, product);
     }
 
     @Override
@@ -107,7 +92,7 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasG1Complement) {
-                product.getWarningMessages().add("(g)(1) was found without a required related certification.");
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -130,12 +115,12 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasG2Complement) {
-                product.getWarningMessages().add("(g)(2) was found without a required related certification.");
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
+            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
         }
     }
 
@@ -170,7 +155,7 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasAtLeastOneCertPartner) {
-                product.getWarningMessages().add("(g)(1) was found without a required related certification.");
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -193,12 +178,12 @@ public class InpatientModular2014Validator extends CertifiedProduct2014Validator
             }
 
             if (!hasG2Complement) {
-                product.getWarningMessages().add("(g)(2) was found without a required related certification.");
+                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
             }
         }
 
         if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add("Both (g)(1) and (g)(2) were found which is not typically permitted.");
+            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
         }
     }
 }

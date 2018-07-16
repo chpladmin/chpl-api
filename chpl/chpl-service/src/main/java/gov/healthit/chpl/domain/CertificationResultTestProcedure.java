@@ -27,10 +27,11 @@ public class CertificationResultTestProcedure implements Serializable {
     private Long id;
 
     /**
-     * Test procedure internal ID
+     * This variable explains the test procedure being used to test
+     * the associated criteria. It is applicable for 2015 Edition.
      */
     @XmlElement(required = true)
-    private Long testProcedureId;
+    private TestProcedure testProcedure;
 
     /**
      * The test procedure version used for a given certification criteria. This
@@ -46,16 +47,23 @@ public class CertificationResultTestProcedure implements Serializable {
 
     public CertificationResultTestProcedure(CertificationResultTestProcedureDTO dto) {
         this.id = dto.getId();
-        this.testProcedureId = dto.getTestProcedureId();
-        this.testProcedureVersion = dto.getTestProcedureVersion();
+        TestProcedure tp = new TestProcedure();
+        if(dto.getTestProcedure() == null) {
+            tp.setId(dto.getTestProcedureId());
+        } else {
+            tp.setId(dto.getTestProcedure().getId());
+            tp.setName(dto.getTestProcedure().getName());
+        }
+        this.testProcedure = tp;
+        this.testProcedureVersion = dto.getVersion();
     }
 
     public boolean matches(CertificationResultTestProcedure anotherProc) {
         boolean result = false;
-        if (this.getTestProcedureId() != null && anotherProc.getTestProcedureId() != null
-                && this.getTestProcedureId().longValue() == anotherProc.getTestProcedureId().longValue()) {
-            result = true;
-        } else if (!StringUtils.isEmpty(this.getTestProcedureVersion())
+        if (this.getTestProcedure() != null && anotherProc.getTestProcedure() != null && 
+                this.getTestProcedure().getId() != null && anotherProc.getTestProcedure().getId() != null && 
+                this.getTestProcedure().getId().longValue() == anotherProc.getTestProcedure().getId().longValue() && 
+                !StringUtils.isEmpty(this.getTestProcedureVersion())
                 && !StringUtils.isEmpty(anotherProc.getTestProcedureVersion())
                 && this.getTestProcedureVersion().equalsIgnoreCase(anotherProc.getTestProcedureVersion())) {
             result = true;
@@ -70,20 +78,20 @@ public class CertificationResultTestProcedure implements Serializable {
     public void setId(final Long id) {
         this.id = id;
     }
-
-    public Long getTestProcedureId() {
-        return testProcedureId;
-    }
-
-    public void setTestProcedureId(final Long testProcedureId) {
-        this.testProcedureId = testProcedureId;
-    }
-
+    
     public String getTestProcedureVersion() {
         return testProcedureVersion;
     }
 
     public void setTestProcedureVersion(final String testProcedureVersion) {
         this.testProcedureVersion = testProcedureVersion;
+    }
+
+    public TestProcedure getTestProcedure() {
+        return testProcedure;
+    }
+
+    public void setTestProcedure(TestProcedure testProcedure) {
+        this.testProcedure = testProcedure;
     }
 }

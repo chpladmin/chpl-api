@@ -6,17 +6,19 @@ import gov.healthit.chpl.entity.TestProcedureEntity;
 
 public class TestProcedureDTO implements Serializable {
     private static final long serialVersionUID = 1794582282532931394L;
+    public static final String DEFAULT_TEST_PROCEDURE = "ONC Test Method";
+    
     private Long id;
-    private String version;
-
+    private String name;
+    
     public TestProcedureDTO() {
     }
 
     public TestProcedureDTO(TestProcedureEntity entity) {
         this.id = entity.getId();
-        this.version = entity.getVersion();
+        this.name = entity.getName();
     }
-
+    
     public Long getId() {
         return id;
     }
@@ -25,12 +27,11 @@ public class TestProcedureDTO implements Serializable {
         this.id = id;
     }
 
-    public String getVersion() {
-        return version;
+    public String getName() {
+        return name;
     }
 
-    public void setVersion(final String version) {
-        this.version = version;
+    public void setName(String name) {
+        this.name = name;
     }
-
 }

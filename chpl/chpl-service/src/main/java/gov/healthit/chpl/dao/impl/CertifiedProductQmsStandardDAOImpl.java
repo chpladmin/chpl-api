@@ -10,10 +10,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "certifiedProductQmsStandardDao")
 public class CertifiedProductQmsStandardDAOImpl extends BaseDAOImpl implements CertifiedProductQmsStandardDAO {

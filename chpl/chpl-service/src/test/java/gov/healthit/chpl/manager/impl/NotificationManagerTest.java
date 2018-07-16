@@ -27,8 +27,6 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
@@ -36,6 +34,8 @@ import gov.healthit.chpl.dto.notification.NotificationTypeRecipientMapDTO;
 import gov.healthit.chpl.dto.notification.RecipientDTO;
 import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 import gov.healthit.chpl.dto.notification.SubscriptionDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.NotificationManager;
 import junit.framework.TestCase;
 
@@ -77,21 +77,21 @@ public class NotificationManagerTest extends TestCase {
 		acbUser.setId(3L);
 		acbUser.setLastName("User3");
 		acbUser.setSubjectName("testUser3");
-		acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		acbUser2 = new JWTAuthenticatedUser();
 		acbUser2.setFirstName("Test");
 		acbUser2.setId(3L);
 		acbUser2.setLastName("User");
 		acbUser2.setSubjectName("TESTUSER");
-		acbUser2.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		acbUser2.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		atlUser = new JWTAuthenticatedUser();
 		atlUser.setFirstName("ATL");
 		atlUser.setId(3L);
 		atlUser.setLastName("User");
 		atlUser.setSubjectName("atlUser");
-		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL_ADMIN"));
+		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
 	}
 	
 	@Before

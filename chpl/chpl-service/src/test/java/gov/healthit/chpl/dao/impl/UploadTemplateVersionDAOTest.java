@@ -21,9 +21,9 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -63,7 +63,7 @@ public class UploadTemplateVersionDAOTest extends TestCase {
 	@Test
 	@Transactional
 	public void findById() throws EntityRetrievalException {
-		Long id = 1L;
+		Long id = 5L;
 		UploadTemplateVersionDTO template = templateDao.getById(id);
 		assertNotNull(template);
 		assertEquals(id.longValue(), template.getId().longValue());

@@ -8,6 +8,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Certification Status Event domain object.
+ * @author alarned
+ *
+ */
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationStatusEvent implements Serializable {
@@ -26,16 +31,16 @@ public class CertificationStatusEvent implements Serializable {
     private Long eventDate;
 
     /**
-     * Internal certification status ID.
+     * The certification status for the listing on the eventDate.
      */
     @XmlElement(required = true)
-    private Long certificationStatusId;
+    private CertificationStatus status;
 
     /**
-     * Certification status name.
+     * The user-provided reason that a change of certification status occurred.
      */
     @XmlElement(required = true)
-    private String certificationStatusName;
+    private String reason;
 
     @XmlTransient
     private Long lastModifiedUser;
@@ -43,6 +48,9 @@ public class CertificationStatusEvent implements Serializable {
     @XmlTransient
     private Long lastModifiedDate;
 
+    /**
+     * Constructor.
+     */
     public CertificationStatusEvent() {
     }
 
@@ -78,19 +86,34 @@ public class CertificationStatusEvent implements Serializable {
         this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Long getCertificationStatusId() {
-        return certificationStatusId;
+    public CertificationStatus getStatus() {
+        return status;
     }
 
-    public void setCertificationStatusId(final Long certificationStatusId) {
-        this.certificationStatusId = certificationStatusId;
+    public void setStatus(final CertificationStatus status) {
+        this.status = status;
     }
 
-    public String getCertificationStatusName() {
-        return certificationStatusName;
+    /**
+     * Check to see if this CSE matches another one.
+     * @param other CSE to check against
+     * @return true if the IDs match
+     */
+    public boolean matches(final CertificationStatusEvent other) {
+        boolean result = false;
+
+        if (this.getId() != null && other.getId() != null
+                && this.getId().longValue() == other.getId().longValue()) {
+            result = true;
+        }
+        return result;
     }
 
-    public void setCertificationStatusName(final String certificationStatusName) {
-        this.certificationStatusName = certificationStatusName;
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(final String reason) {
+        this.reason = reason;
     }
 }

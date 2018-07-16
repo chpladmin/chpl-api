@@ -1,8 +1,13 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,7 +27,7 @@ import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.NotificationDAO;
@@ -32,7 +37,9 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.QmsStandardDAO;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
+import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
+import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.dao.UcdProcessDAO;
@@ -40,6 +47,7 @@ import gov.healthit.chpl.dao.UploadTemplateVersionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
+import gov.healthit.chpl.domain.FuzzyChoices;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -64,19 +72,24 @@ import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.dto.DeveloperStatusDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.QmsStandardDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
+import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
 import gov.healthit.chpl.dto.UploadTemplateVersionDTO;
 import gov.healthit.chpl.dto.job.JobTypeDTO;
 import gov.healthit.chpl.dto.notification.NotificationTypeDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @Service("searchMenuManager")
@@ -107,6 +120,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private TestStandardDAO testStandardDao;
     @Autowired
     private TestToolDAO testToolsDao;
+    @Autowired private TestProcedureDAO testProcedureDao;
+    @Autowired private TestDataDAO testDataDao;
+    
     @Autowired
     private AccessibilityStandardDAO asDao;
     @Autowired
@@ -131,6 +147,9 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private JobDAO jobDao;
 
     @Autowired
+    private FuzzyChoicesDAO fuzzyChoicesDAO;
+
+    @Autowired
     private PracticeTypeDAO practiceTypeDAO;
 
     @Autowired
@@ -142,7 +161,7 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
     private NotificationDAO notificationDao;
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public Set<NotificationType> getNotificationTypes() {
         List<NotificationTypeDTO> notificationTypes = notificationDao
                 .getAllNotificationTypes(Util.getCurrentUser().getPermissions());
@@ -163,6 +182,28 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
             results.add(new KeyValueModel(dto.getId(), dto.getName(), dto.getDescription()));
         }
         return results;
+    }
+
+    @Transactional
+    @Override
+    public Set<FuzzyChoices> getFuzzyChoices() throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
+        List<FuzzyChoicesDTO> fuzzyChoices = fuzzyChoicesDAO.findAllTypes();
+        Set<FuzzyChoices> results = new HashSet<FuzzyChoices>();
+        for (FuzzyChoicesDTO dto : fuzzyChoices) {
+            results.add(new FuzzyChoices(dto));
+        }
+        return results;
+    }
+
+    @Transactional
+    @Override
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public FuzzyChoices updateFuzzyChoices(FuzzyChoicesDTO fuzzyChoicesDTO)
+        throws EntityRetrievalException, JsonProcessingException, EntityCreationException, IOException {
+
+        FuzzyChoices result = null;
+        result = new FuzzyChoices(fuzzyChoicesDAO.update(fuzzyChoicesDTO));
+        return result;
     }
 
     @Transactional
@@ -516,6 +557,36 @@ public class SearchMenuManagerImpl implements SearchMenuManager {
         return measures;
     }
 
+    @Transactional
+    @Override
+    @Cacheable(CacheNames.TEST_PROCEDURES)
+    public Set<CriteriaSpecificDescriptiveModel> getTestProcedures() {
+        List<TestProcedureCriteriaMapDTO> testProcedureDtos = testProcedureDao.findAllWithMappedCriteria();
+        Set<CriteriaSpecificDescriptiveModel> testProcedures = new HashSet<CriteriaSpecificDescriptiveModel>();
+
+        for (TestProcedureCriteriaMapDTO dto : testProcedureDtos) {
+            testProcedures.add(new CriteriaSpecificDescriptiveModel(
+                    dto.getTestProcedureId(), dto.getTestProcedure().getName(), null,
+                    null, new CertificationCriterion(dto.getCriteria())));
+        }
+        return testProcedures;
+    }
+    
+    @Transactional
+    @Override
+    @Cacheable(CacheNames.TEST_DATA)
+    public Set<CriteriaSpecificDescriptiveModel> getTestData() {
+        List<TestDataCriteriaMapDTO> testDataDtos = testDataDao.findAllWithMappedCriteria();
+        Set<CriteriaSpecificDescriptiveModel> testData = new HashSet<CriteriaSpecificDescriptiveModel>();
+
+        for (TestDataCriteriaMapDTO dto : testDataDtos) {
+            testData.add(new CriteriaSpecificDescriptiveModel(
+                    dto.getTestDataId(), dto.getTestData().getName(), null,
+                    null, new CertificationCriterion(dto.getCriteria())));
+        }
+        return testData;
+    }
+    
     @Transactional
     @Override
     @Cacheable(CacheNames.CERTIFICATION_CRITERION_NUMBERS)

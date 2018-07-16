@@ -15,6 +15,7 @@ import gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity;
 import gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface SurveillanceDAO {
     Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException;

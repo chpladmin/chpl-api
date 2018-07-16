@@ -49,8 +49,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setDeveloper("Test Developer 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(9, response.getRecordCount().intValue());
-		assertEquals(9, response.getResults().size());
+		assertEquals(10, response.getRecordCount().intValue());
+		assertEquals(10, response.getResults().size());
 		
 		for (CertifiedProductBasicSearchResult result : response.getResults() ){
 			assertTrue(result.getDeveloper().startsWith("Test Developer 1"));
@@ -64,8 +64,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setProduct("Test Product 1");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(5, response.getRecordCount().intValue());
-		assertEquals(5, response.getResults().size());
+		assertEquals(6, response.getRecordCount().intValue());
+		assertEquals(6, response.getResults().size());
 		
 		for (CertifiedProductBasicSearchResult result : response.getResults() ){
 			assertTrue(result.getProduct().startsWith("Test Product 1"));
@@ -124,8 +124,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setPracticeType("Ambulatory");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(8, response.getRecordCount().intValue());
-		assertEquals(8, response.getResults().size());
+		assertEquals(7, response.getRecordCount().intValue());
+		assertEquals(7, response.getResults().size());
 		
 		for (CertifiedProductBasicSearchResult result : response.getResults() ){
 			assertTrue(result.getPracticeType().startsWith("Ambulatory"));
@@ -139,8 +139,8 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		SearchRequest searchRequest = new SearchRequest();
 		searchRequest.setCertificationDateStart("2015-08-20");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(14, response.getRecordCount().intValue());
-		assertEquals(14, response.getResults().size());
+		assertEquals(16, response.getRecordCount().intValue());
+		assertEquals(16, response.getResults().size());
 		
 		boolean foundFirstProduct = false;
 		boolean foundSecondProduct = false;
@@ -173,7 +173,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		searchRequest.setCertificationDateStart("2015-08-01");
 		searchRequest.setCertificationDateEnd("2015-10-31");
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(16, response.getResults().size());
+		assertEquals(18, response.getResults().size());
 	}
 	
 	@Test
@@ -202,7 +202,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		SearchRequest searchRequest = new SearchRequest();
 		SearchResponse response = certifiedProductSearchManager.search(searchRequest);
-		assertEquals(16, response.getResults().size());
+		assertEquals(18, response.getResults().size());
 	}
 	
 	@Test
@@ -234,7 +234,7 @@ public class CertifiedProductSearchManagerTest extends TestCase {
 		
 		assertNotNull(response);
 		assertNotNull(response);
-		assertEquals(16, response.size());
+		assertEquals(18, response.size());
 		
 		boolean checkedCriteria = false;
 		boolean checkedCqms = false;

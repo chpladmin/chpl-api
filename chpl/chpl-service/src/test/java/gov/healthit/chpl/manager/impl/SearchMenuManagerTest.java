@@ -29,9 +29,8 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
@@ -40,6 +39,8 @@ import gov.healthit.chpl.domain.TestFunctionality;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.UploadTemplateVersion;
 import gov.healthit.chpl.domain.notification.NotificationType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SearchMenuManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -75,7 +76,7 @@ public class SearchMenuManagerTest {
         testUser3.setId(3L);
         testUser3.setLastName("User3");
         testUser3.setSubjectName("testUser3");
-        testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+        testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
     }
 
     /**
@@ -579,10 +580,11 @@ public class SearchMenuManagerTest {
     @Transactional
     @Test
     public void testGetNotificationTypesForAdminUser() {
+        final int expectedCount = 8;
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         Set<NotificationType> results = searchMenuManager.getNotificationTypes();
         assertNotNull(results);
-        assertEquals(8, results.size());
+        assertEquals(expectedCount, results.size());
         for (NotificationType nt : results) {
             assertNotNull(nt.getId());
             assertNotNull(nt.getName());
@@ -639,7 +641,41 @@ public class SearchMenuManagerTest {
             assertTrue(testStandard.getYear().equals("2014") || testStandard.getYear().equals("2015"));
         }
     }
+    
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void getTestData() {
+        Set<CriteriaSpecificDescriptiveModel> testData = searchMenuManager.getTestData();
+        assertNotNull(testData);
+        assertTrue(testData.size() > 0);
+        for (CriteriaSpecificDescriptiveModel td : testData) {
+            assertNotNull(td.getCriteria());
+            assertNotNull(td.getCriteria().getNumber());
+            assertNotNull(td.getId());
+            assertNotNull(td.getName());
+            assertTrue(td.getCriteria().getCertificationEdition().equals("2014") 
+                    || td.getCriteria().getCertificationEdition().equals("2015"));
+        }
+    }
 
+    @Transactional
+    @Rollback(true)
+    @Test
+    public void getTestProcedures() {
+        Set<CriteriaSpecificDescriptiveModel> testProcs = searchMenuManager.getTestProcedures();
+        assertNotNull(testProcs);
+        assertTrue(testProcs.size() > 0);
+        for (CriteriaSpecificDescriptiveModel tp : testProcs) {
+            assertNotNull(tp.getCriteria());
+            assertNotNull(tp.getCriteria().getNumber());
+            assertNotNull(tp.getId());
+            assertNotNull(tp.getName());
+            assertTrue(tp.getCriteria().getCertificationEdition().equals("2014") 
+                    || tp.getCriteria().getCertificationEdition().equals("2015"));
+        }
+    }
+    
     @Transactional
     @Rollback(true)
     @Test

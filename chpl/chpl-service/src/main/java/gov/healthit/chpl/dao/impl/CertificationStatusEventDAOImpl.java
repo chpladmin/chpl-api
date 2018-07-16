@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationStatusEventDTO;
-import gov.healthit.chpl.entity.CertificationStatusEventEntity;
+import gov.healthit.chpl.entity.listing.CertificationStatusEventEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("certificationStatusEventDAO")
 public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements CertificationStatusEventDAO {
@@ -37,6 +37,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
             entity.setCertifiedProductId(dto.getCertifiedProductId());
             entity.setCertificationStatusId(dto.getStatus().getId());
             entity.setEventDate(dto.getEventDate());
+            entity.setReason(dto.getReason());
             entity.setLastModifiedUser(Util.getCurrentUser().getId());
             entity.setDeleted(false);
             create(entity);
@@ -55,6 +56,7 @@ public class CertificationStatusEventDAOImpl extends BaseDAOImpl implements Cert
         entity.setCertifiedProductId(dto.getCertifiedProductId());
         entity.setCertificationStatusId(dto.getStatus().getId());
         entity.setEventDate(dto.getEventDate());
+        entity.setReason(dto.getReason());
         entity.setLastModifiedUser(Util.getCurrentUser().getId());
 
         update(entity);

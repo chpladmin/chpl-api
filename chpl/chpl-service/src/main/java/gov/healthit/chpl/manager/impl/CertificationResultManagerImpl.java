@@ -1,5 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,12 +20,10 @@ import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
+import gov.healthit.chpl.dao.FuzzyChoicesDAO;
 import gov.healthit.chpl.dao.MacraMeasureDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
-import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
@@ -56,14 +55,17 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import gov.healthit.chpl.dto.FuzzyChoicesDTO;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestProcedureDTO;
 import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.dto.UcdProcessDTO;
+import gov.healthit.chpl.entity.FuzzyType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertificationResultManager;
 
 @Service
@@ -83,8 +85,6 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     @Autowired
     private TestToolDAO testToolDAO;
     @Autowired
-    private TestProcedureDAO testProcedureDAO;
-    @Autowired
     private TestFunctionalityDAO testFunctionalityDAO;
     @Autowired
     private TestParticipantDAO testParticipantDAO;
@@ -98,16 +98,18 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     private UcdProcessDAO ucdDao;
     @Autowired
     private MacraMeasureDAO mmDao;
-
+    @Autowired
+    private FuzzyChoicesDAO fuzzyChoicesDao;
+    
     @Override
-    @PreAuthorize("hasRole('ROLE_ADMIN') or " + "( (hasRole('ROLE_ACB_STAFF') or hasRole('ROLE_ACB_ADMIN'))"
-            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin)" + ")")
+    @PreAuthorize("(hasRole('ROLE_ADMIN') or " + "(hasRole('ROLE_ACB'))"
+            + "  and hasPermission(#acbId, 'gov.healthit.chpl.dto.CertificationBodyDTO', admin))")
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })
     public int update(Long acbId, CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, CertificationResult orig, CertificationResult updated)
-            throws EntityCreationException, EntityRetrievalException {
+            throws EntityCreationException, EntityRetrievalException, IOException {
         int numChanges = 0;
         // does the cert result need updated?
         boolean hasChanged = false;
@@ -133,7 +135,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             }
             toUpdate.setSuccessful(updated.isSuccess());
 
-            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
+            
+            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == false 
+                    && (!ObjectUtils.equals(orig.isG1Success(), updated.isG1Success()) 
+                            || !ObjectUtils.equals(orig.isG2Success(), updated.isG2Success()))) {
+                toUpdate.setG1Success(updated.isG1Success());
+                toUpdate.setG2Success(updated.isG2Success());
+            } else if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue() == true) {
                 toUpdate.setApiDocumentation(updated.getApiDocumentation());
                 toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
                 toUpdate.setG1Success(updated.isG1Success());
@@ -143,8 +151,6 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             } else {
                 toUpdate.setApiDocumentation(null);
                 toUpdate.setPrivacySecurityFramework(null);
-                toUpdate.setG1Success(null);
-                toUpdate.setG2Success(null);
                 toUpdate.setGap(null);
                 toUpdate.setSed(null);
             }
@@ -153,11 +159,16 @@ public class CertificationResultManagerImpl implements CertificationResultManage
             numChanges++;
         }
 
+        if (!updated.isSuccess() && 
+                (haveMacraMeasuresChanged(orig.getG1MacraMeasures(), updated.getG1MacraMeasures()) || 
+                        haveMacraMeasuresChanged(orig.getG2MacraMeasures(), updated.getG2MacraMeasures()))) {
+            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), updated.getG1MacraMeasures(), G1_MEASURE);
+            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), updated.getG2MacraMeasures(), G2_MEASURE);
+        }
+        
         if (updated.isSuccess() == null || updated.isSuccess() == Boolean.FALSE) {
             // similar to delete - remove all related items
             numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
-            numChanges += updateMacraMeasures(updated, orig.getG1MacraMeasures(), null, G1_MEASURE);
-            numChanges += updateMacraMeasures(updated, orig.getG2MacraMeasures(), null, G2_MEASURE);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
             numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
@@ -314,7 +325,19 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         return numChanges;
     }
-
+    
+    private Boolean haveMacraMeasuresChanged(List<MacraMeasure> orig, List<MacraMeasure> updated) {
+        if (orig == null && updated == null)  {
+            return false;
+        } else if (orig != null && updated == null) {
+            return true;
+        } else if (orig == null && updated != null) {
+            return true;
+        } else {
+            return !orig.equals(updated);
+        }
+    }
+    
     private int updateAdditionalSoftware(CertificationResult certResult,
             List<CertificationResultAdditionalSoftware> existingAdditionalSoftware,
             List<CertificationResultAdditionalSoftware> updatedAdditionalSoftware)
@@ -500,7 +523,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
     }
 
     private int updateUcdProcesses(CertificationResult certResult, List<UcdProcess> existingUcdProcesses,
-            List<UcdProcess> updatedUcdProcesses) throws EntityCreationException, EntityRetrievalException {
+            List<UcdProcess> updatedUcdProcesses) throws EntityCreationException, EntityRetrievalException,
+            IOException {
         int numChanges = 0;
         List<UcdProcess> ucdToAdd = new ArrayList<UcdProcess>();
         List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();
@@ -510,17 +534,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         if (updatedUcdProcesses != null && updatedUcdProcesses.size() > 0) {
             // fill in potentially missing ucd process id
             for (UcdProcess updatedItem : updatedUcdProcesses) {
-                if (updatedItem.getId() == null && !StringUtils.isEmpty(updatedItem.getName())) {
-                    UcdProcessDTO foundUcd = ucdDao.getByName(updatedItem.getName());
-                    if (foundUcd == null) {
-                        UcdProcessDTO ucdToCreate = new UcdProcessDTO();
-                        ucdToCreate.setName(updatedItem.getName());
-                        UcdProcessDTO created = ucdDao.create(ucdToCreate);
-                        updatedItem.setId(created.getId());
-                    } else {
-                        updatedItem.setId(foundUcd.getId());
-                    }
-                }
+                UcdProcessDTO foundUcd = ucdDao.findOrCreate(updatedItem.getId(), updatedItem.getName());
+                updatedItem.setId(foundUcd.getId());
             }
 
             if (existingUcdProcesses == null || existingUcdProcesses.size() == 0) {
@@ -568,7 +583,17 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         }
 
         numChanges = ucdToAdd.size() + idsToRemove.size();
+        
+        List<String> fuzzyQmsChoices = fuzzyChoicesDao.getByType(FuzzyType.UCD_PROCESS).getChoices();
         for (UcdProcess toAdd : ucdToAdd) {
+            if(!fuzzyQmsChoices.contains(toAdd.getName())){
+                fuzzyQmsChoices.add(toAdd.getName());
+                FuzzyChoicesDTO dto = new FuzzyChoicesDTO();
+                dto.setFuzzyType(FuzzyType.UCD_PROCESS);
+                dto.setChoices(fuzzyQmsChoices);
+                fuzzyChoicesDao.update(dto);
+            }
+            
             CertificationResultUcdProcessDTO toAddDto = new CertificationResultUcdProcessDTO();
             toAddDto.setCertificationResultId(certResult.getId());
             toAddDto.setUcdProcessId(toAdd.getId());
@@ -702,6 +727,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                                 + certResult.getId() + ", criteria " + certResult.getNumber());
                     } else {
                         updatedItem.setTestToolId(foundTool.getId());
+                        updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
                     }
                 }
             }
@@ -713,6 +739,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                         CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
                         toAdd.setCertificationResultId(certResult.getId());
                         toAdd.setTestToolId(updatedItem.getTestToolId());
+                        toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
                         testToolsToAdd.add(toAdd);
                     }
                 }
@@ -730,6 +757,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                             CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
                             toAdd.setCertificationResultId(certResult.getId());
                             toAdd.setTestToolId(updatedItem.getTestToolId());
+                            toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
                             testToolsToAdd.add(toAdd);
                         }
                     }
@@ -826,6 +854,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
         for (CertificationResultTestData toAdd : testDataToAdd) {
             CertificationResultTestDataDTO toAddDto = new CertificationResultTestDataDTO();
             toAddDto.setCertificationResultId(certResult.getId());
+            toAddDto.setTestDataId(toAdd.getTestData().getId());
             toAddDto.setAlteration(toAdd.getAlteration());
             toAddDto.setVersion(toAdd.getVersion());
             certResultDAO.addTestDataMapping(toAddDto);
@@ -833,7 +862,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         for (CertificationResultTestDataPair toUpdate : testDataToUpdate) {
             boolean hasChanged = false;
-            if (!ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
+            if (!ObjectUtils.equals(toUpdate.getOrig().getTestData().getId(), toUpdate.getUpdated().getTestData().getId())
+                    || !ObjectUtils.equals(toUpdate.getOrig().getAlteration(), toUpdate.getUpdated().getAlteration())
                     || !ObjectUtils.equals(toUpdate.getOrig().getVersion(), toUpdate.getUpdated().getVersion())) {
                 hasChanged = true;
             }
@@ -842,6 +872,7 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                 CertificationResultTestDataDTO toUpdateDto = new CertificationResultTestDataDTO();
                 toUpdateDto.setId(toUpdate.getOrig().getId());
                 toUpdateDto.setCertificationResultId(certResult.getId());
+                toUpdateDto.setTestDataId(toUpdate.getUpdated().getTestData().getId());
                 toUpdateDto.setAlteration(toUpdate.getUpdated().getAlteration());
                 toUpdateDto.setVersion(toUpdate.getUpdated().getVersion());
                 certResultDAO.updateTestDataMapping(toUpdateDto);
@@ -864,28 +895,13 @@ public class CertificationResultManagerImpl implements CertificationResultManage
 
         // figure out which test procedures to add
         if (updatedTestProcedures != null && updatedTestProcedures.size() > 0) {
-            // fill in potentially missing test procedure id
-            for (CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
-                if (updatedItem.getTestProcedureId() == null
-                        && !StringUtils.isEmpty(updatedItem.getTestProcedureVersion())) {
-                    TestProcedureDTO foundProcedure = testProcedureDAO.getByName(updatedItem.getTestProcedureVersion());
-                    if (foundProcedure == null) {
-                        TestProcedureDTO procToCreate = new TestProcedureDTO();
-                        procToCreate.setVersion(updatedItem.getTestProcedureVersion());
-                        TestProcedureDTO createdProc = testProcedureDAO.create(procToCreate);
-                        updatedItem.setTestProcedureId(createdProc.getId());
-                    } else {
-                        updatedItem.setTestProcedureId(foundProcedure.getId());
-                    }
-                }
-            }
-
             if (existingTestProcedures == null || existingTestProcedures.size() == 0) {
                 // existing listing has none, add all from the update
                 for (CertificationResultTestProcedure updatedItem : updatedTestProcedures) {
                     CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
                     toAdd.setCertificationResultId(certResult.getId());
-                    toAdd.setTestProcedureId(updatedItem.getTestProcedureId());
+                    toAdd.setVersion(updatedItem.getTestProcedureVersion());
+                    toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
                     testProceduresToAdd.add(toAdd);
                 }
             } else if (existingTestProcedures.size() > 0) {
@@ -900,7 +916,8 @@ public class CertificationResultManagerImpl implements CertificationResultManage
                     if (!inExistingListing) {
                         CertificationResultTestProcedureDTO toAdd = new CertificationResultTestProcedureDTO();
                         toAdd.setCertificationResultId(certResult.getId());
-                        toAdd.setTestProcedureId(updatedItem.getTestProcedureId());
+                        toAdd.setVersion(updatedItem.getTestProcedureVersion());
+                        toAdd.setTestProcedureId(updatedItem.getTestProcedure().getId());
                         testProceduresToAdd.add(toAdd);
                     }
                 }

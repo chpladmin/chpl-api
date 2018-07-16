@@ -31,8 +31,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ContactDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ContactDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -42,6 +40,8 @@ import gov.healthit.chpl.dto.ProductDTO;
 import gov.healthit.chpl.dto.ProductOwnerDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
@@ -82,14 +82,14 @@ public class ProductManagerTest extends TestCase {
 		testUser2.setId(2L);
 		testUser2.setLastName("User2");
 		testUser2.setSubjectName("testUser2");
-		testUser2.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		testUser2.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		testUser3 = new JWTAuthenticatedUser();
 		testUser3.setFirstName("Test");
 		testUser3.setId(3L);
 		testUser3.setLastName("User3");
 		testUser3.setSubjectName("testUser3");
-		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		testUser3.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 	}
 	
 	@Test

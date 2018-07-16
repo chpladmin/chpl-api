@@ -1,5 +1,293 @@
 # Release Notes
 
+## Version 15.15.2
+_16 July 2018_
+
+### Bugs Fixed
+* Fixed bug where user erroneously receives a Duplicate CHPL Product Number error when editing a product
+
+---
+
+## Version 15.15.1
+_5 July 2018_
+
+### Bugs Fixed
+* Fix display of 2015 products due to problems with getting test functionalities
+
+---
+
+## Version 15.15.0
+_5 July 2018_
+
+### New Features
+* Converted "Downloadable Resource File" generation application to Quartz Job
+  * Updated API endpoints to not return "System jobs" in regular GET call
+* Logs for individually run apps will now show up in separate files under the logs directory.
+* Validate 2014 test functionalities to ensure they are valid based on practice type and certification criterion
+* Modified certified product details to return the allowable test functionalities for each criteria
+
+### Bugs Fixed
+* Save and display test tool name and test tool version for criteria 170.314 (c)(1)
+* Save and display privacy and security framework for 170.315 (a)(7)
+
+---
+
+## Version 15.14.0
+_18 June 2018_
+
+### New Features
+* Updated the XML and CSV file creation batch process to retrieve data asynchronously
+* Added check for 2015 listings to ensure if they have attested to G1 or G2 that they also have listed G1 or G2 macra measures for at least one criteria.
+* Added Quartz Scheduler component
+  * Includes API endpoints for GET/PUT/POST/DELETE of schedule Triggers
+  * Converted Cache Status Age app to Cache Status Age Quartz Job
+* Updated validation to ensure (g)(3) certification is valid iff at least one criteria attests to SED
+
+### Bug fixes
+* Fix a bug that allows ROLE_ADMIN to see pending certified products and surveillances
+
+---
+
+## Version 15.13.1
+_6 June 2018_
+
+### Bug Fixes
+* Handle blank or null test tool version in listing updates.
+
+---
+
+## Version 15.13.0
+_4 June 2018_
+
+### New Features
+* Added new service /activity/corrective_action_plans to return just legacy corrective action plan activities.
+* Add new chart: New vs. Incumbent Developer chart
+  * Update chart data generation application
+  * Add API endpoint to retrieve chart data
+  * Refactored other Chart data generation to increase speed
+* Updated URLs and verbs for several REST endpoints
+  * Old endpoints have been deprecated
+* Add new chart: Count of Developers & Products by Edition & Status
+  * Update chart data generation application
+  * Add API endpoint to retrieve chart data
+
+### Bug Fixes
+* Handle SED boolean parsing and UCD Process existence mistmatch for 2014 upload.
+
+---
+
+## Version 15.12.0
+_21 May 2018_
+
+### Minor Features
+* Add endpoint /certified_product/{chpl_product_number} to return basic information about a certified product
+* Add endpoint /certified_product/{chpl_product_number}/cqm_results to return CQM results information about a certified product based on a CHPL Product Number
+* Add endpoint /certified_product/{chpl_product_number}certificationtion_results to return certification results information about a certified product based on a CHPL Product Number
+* Add endpoint /certified_product/{chpl_product_number}/certificationtion_results to return certification results information about a certified product based on a CHPL Product Number
+* Add endpoint /certified_product/{chpl_product_number}/ics_relationships to return relationship tree information about a certified product based on a CHPL Product Number
+* Add endpoint /activity/certified_product/{chpl_product_number} to return activity information about a certified product based on a CHPL Product Number
+* Add new chart: Criterion / Product statistics
+  * Update chart data generation application
+  * Add API endpoint to retrieve chart data
+
+### Bugs Fixed
+* Fix Summary Statistics Report missing ISCA count under the Total # of Unique Products with Active 2015 Listings section
+* Respect configured questionable activity window to allow a user to make edits that do not get logged as questionable activity for a short amount of time after a listing's certification date.
+* Fix bug restricting add/edit of Versions of Test Data
+
+---
+
+## Version 15.11.0
+_7 May 2018_
+
+### Minor Features
+* Added error on upload for qms to be true but have empty standards and vice versa
+* Restrict CMS IDs from using deleted Listings for /search or /create
+* Added endpoint /certified_product/{certified_product} to return basic information about a certified product
+* Added endpoint /certified_product/{certified_product}/cqm_results to return CQM results information about a certified product
+* Added endpoint /certified_product/{certified_product}/certification_results to return certification results information about a certified product
+
+### Bugs Fixed
+* Fixed bug with searching for Listings with lower case CHPL ID values
+* Fix bug where uploaded Listings file with bad B1 cell isn't treated correctly
+
+---
+
+## Version 15.10.0
+_23 April 2018_
+
+### Major Features
+* Add support for Multiple ATLs
+  * Upload / confirm workflow
+  * Edit Listing validation & questionable activity
+
+### Minor Features
+* Add counts of 2015 Listings with Alternate Test methods to Summary email
+* Wide variety of linting changes
+* Enhanced performance when retrieving Certified Product Details
+* Fixed counts for Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings) in the Summary email
+
+---
+
+## Version 15.9.0
+_9 April 2018_
+
+### Minor Features
+* Add ability to add G1/G2 measures for non-attested criteria
+* Fixed bug that allowed duplicate Chpl Product Numbers during upload
+
+---
+
+## Version 15.8.0
+_26 March 2018_
+
+### Minor features
+* Charting endpoints
+  * Participant/Age counts
+  * Participant/Education counts
+  * Participant/Ender counts
+  * Participant/Professional Experience
+  * Participant/Product Experience
+  * Participant/Computer Experience
+* Charting application updates
+  * Participant/Age counts
+  * Participant/Education counts
+  * Participant/Gender counts
+  * Participant/Professional Experience
+  * Participant/Product Experience
+  * Participant/Computer Experience
+
+---
+
+## Version 15.7.0
+_12 March 2018_
+
+### Minor features
+* Add endpoint for retrieving SED/Participant counts to be used for charting
+* Add application to generate SED/Participant counts to support charting
+
+### Bug fixed
+* No longer show errant error messages for missing g1/g2 values if criteria not attested to
+
+---
+
+## Version 15.6.0
+_26 February 2018_
+
+### Minor features
+* Enhanced certification status change questionable activity abilities to support
+  * Change of current status date
+  * Any modification of certification status history
+
+### Bug fixed
+* Enabled questionable activity window
+
+---
+
+## Version 15.5.0
+_18 February 2018_
+
+### Major features
+* Add fuzzy match functionality for uploading of UCD Process, QMS Standard and Accessibility Standard names
+* Add warning messages that name values have changed for certain Processes or Standard names
+* Add /data/fuzzy_choices controller for getting and updating fuzzy match choices
+
+### Minor features
+* Look for required reason for certain questionable activities; error on those actions if a reason is not found.
+* Add reason to questionable activity report.
+* Add reference of pending listing to confirmed listings to enable tracking between pending and confirmed.
+* Add certification status change reason to listing activity entities and to questionable activity report.
+* Use most recently generated CMS ID if multiple exist with same product list set
+
+---
+
+## Version 15.4.3
+_1 February 2018_
+
+### Tiny features
+* Do not require UCD Processes for 2014 criteria with SED true if the listing ICS is false.
+* Do not require a reason for listing certification status change
+
+---
+
+## Version 15.4.2
+_25 January 2018_
+
+* Do not allow users to update listings certification status history if they remove the original Active status.
+
+---
+
+## Version 15.4.1
+_19 January 2018_
+
+### Bugs Fixed
+* Save g1 and g2 success values for new 2014 listings with 170.314 (a)(4) criteria.
+
+---
+
+## Version 15.4.0
+_17 January 2018_
+
+### Major features
+* Add new surveillance upload job type; process large upload files as background jobs.
+
+### Minor features
+* Allow reason for certification status change for any listing. Require reason for certification status change if new status is Withdrawn by ONC-ACB.
+* Stop using 'certificationStatus' field; instead use "latest" of the certificationEvents array for current status
+
+### Bugs Fixed
+* Statistics correctly account for deleted listings/unique products.
+
+---
+
+## Version 15.3.0
+_2 January 2018_
+
+### Minor features
+* Made ICS Source required for 2015 w/ICS on upload/confirm/edit
+* Test tools are required for 170.315 (b)(8)
+* GAP is required for 170.314 (b)(5)(B)
+* Add warning messages to uploaded listings and surveillance regarding invalid characters found.
+* Do not include 'deleted' field in listing update generated sql
+
+### Bugs fixed
+* Allow Listings to have CHPL IDs that match "deleted" Listings
+* Allow ROLE_ADMIN to edit listings
+* Allow ROLE_ADMIN to create and edit surveillance
+
+---
+
+## Version 15.2.0
+_18 December 2017_
+
+### Major feature
+* Update ROLES
+  * Change ROLE_ACB_ADMIN to ROLE_ACB
+  * Change ROLE_ATL_ADMIN to ROLE_ATL
+  * Remove ROLE_ACB_STAFF
+  * Remove ROLE_ATL_STAFF
+
+### Minor Features
+* Do not allow duplicate QMS Standards or UCD Processes to be added.
+* If GAP is not specified for 170.314 (b)(5)(B) a warning will be returned instead of an error.
+
+---
+
+## Version 15.1.0
+_5 December 2017_
+
+### Minor Features
+* Added /data/test_data service to get all criteria with allowable test data
+* Added /data/test_procedure service to get all criteria with allowable test procedure
+* Use new test data values for upload and validation of listings.
+* Use new test procedure values for upload and validation of listings.
+* Support 2015 upload template v12.
+
+### Bugs Fixed
+* Surveillance upload fixed to match on criteria number without space between number and letters.
+
+---
+
 ## Version 15.0.0
 _20 November 2017_
 

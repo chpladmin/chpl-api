@@ -6,8 +6,12 @@ import java.util.Date;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 
+/**
+ * Certified Product Details DTO.
+ * @author alarned
+ *
+ */
 public class CertifiedProductDetailsDTO implements Serializable {
     private static final long serialVersionUID = 6238278848984479683L;
     private Long id;
@@ -62,14 +66,22 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String transparencyAttestationUrl;
     private Long numMeaningfulUse;
 
+    private static final int FOUR_DIGIT_YEAR = 4;
+
+    /**
+     * Default constructor.
+     */
     public CertifiedProductDetailsDTO() {
     }
 
-    public CertifiedProductDetailsDTO(CertifiedProductDetailsEntity entity) {
+    /**
+     * Constructed from entity.
+     * @param entity the entity
+     */
+    public CertifiedProductDetailsDTO(final CertifiedProductDetailsEntity entity) {
         this();
 
         this.id = entity.getId();
-        this.testingLabCode = entity.getTestingLabCode();
         this.productCode = entity.getProductCode();
         this.versionCode = entity.getVersionCode();
         this.icsCode = entity.getIcsCode();
@@ -94,8 +106,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.sedReportFileLocation = entity.getSedReportFileLocation();
         this.sedIntendedUserDescription = entity.getSedIntendedUserDescription();
         this.sedTestingEnd = entity.getSedTestingEnd();
-        this.testingLabId = entity.getTestingLabId();
-        this.testingLabName = entity.getTestingLabName();
         this.numMeaningfulUse = entity.getMeaningfulUseUsers();
 
         this.developer = new DeveloperDTO();
@@ -168,7 +178,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.countClosedNonconformities = entity.getCountClosedNonconformities();
         this.lastModifiedDate = entity.getLastModifiedDate();
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -337,12 +347,16 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.certificationStatusName = certificationStatusName;
     }
 
+    /**
+     * Return two digit year of Listing.
+     * @return two digit year
+     */
     public String getYearCode() {
         if (StringUtils.isEmpty(this.getYear())) {
             return "";
         } else if (this.getYear().length() == 2) {
             return this.getYear();
-        } else if (this.getYear().length() == 4) {
+        } else if (this.getYear().length() == FOUR_DIGIT_YEAR) {
             return this.getYear().substring(this.getYear().length() - 2);
         }
         return "??";

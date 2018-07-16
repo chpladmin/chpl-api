@@ -16,8 +16,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.Util;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.JobDAO;
 import gov.healthit.chpl.dto.job.JobDTO;
 import gov.healthit.chpl.dto.job.JobStatusDTO;
@@ -27,6 +25,8 @@ import gov.healthit.chpl.entity.job.JobMessageEntity;
 import gov.healthit.chpl.entity.job.JobStatusEntity;
 import gov.healthit.chpl.entity.job.JobStatusType;
 import gov.healthit.chpl.entity.job.JobTypeEntity;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("jobDAO")
 public class JobDAOImpl extends BaseDAOImpl implements JobDAO {

@@ -14,9 +14,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
 
+/**
+ * Initializes statistics retrieval.
+ * @author alarned
+ *
+ */
 @Repository("asynchronousStatisticsInitializor")
 @EnableAsync
 public class AsynchronousStatisticsInitializor {
@@ -24,12 +30,24 @@ public class AsynchronousStatisticsInitializor {
     @Autowired
     private AsynchronousStatistics asyncStats;
 
+    /**
+     * Actual call to get the statistics.
+     * @param dateRange range to find statistics in
+     * @return a Future of type Statistics
+     * @throws InterruptedException if retrieval is interrupted
+     * @throws ExecutionException if execution fails
+     */
     @Transactional
     @Async
-    public Future<Statistics> getStatistics(DateRange dateRange, Boolean includeActiveStatistics)
+    public Future<Statistics> getStatistics(final DateRange dateRange)
             throws InterruptedException, ExecutionException {
-        LOGGER.info("Getting statistics for start date " + dateRange.getStartDate() + " end date "
-                + dateRange.getEndDate());
+        if (dateRange == null) {
+            LOGGER.info("Getting all current statistics.");
+        } else {
+            LOGGER.info("Getting statistics for start date " + dateRange.getStartDate() + " end date "
+                    + dateRange.getEndDate());
+        }
+
         Statistics stats = new Statistics();
         stats.setDateRange(dateRange);
         Future<Long> totalActive2014Listings = null;
@@ -43,8 +61,10 @@ public class AsynchronousStatisticsInitializor {
         Future<Long> totalCPs2015Listings = null;
         Future<Long> totalCPsSuspended2014Listings = null;
         Future<Long> totalCPsSuspended2015Listings = null;
+        Future<Long> totalListingsWithAlternateTestMethods = null;
+        Future<List<CertifiedBodyAltTestStatistics>> totalListingsWithCertifiedBodyAndAlternativeTestMethods = null;
 
-        if (includeActiveStatistics) {
+        if (dateRange == null) {
             totalActive2014Listings = asyncStats.getTotalActive2014Listings(dateRange);
             totalActive2015Listings = asyncStats.getTotalActive2015Listings(dateRange);
             totalActiveListingsByCertifiedBody = asyncStats.getTotalActiveListingsByCertifiedBody(dateRange);
@@ -57,6 +77,9 @@ public class AsynchronousStatisticsInitializor {
             totalCPs2015Listings = asyncStats.getTotalCPs2015Listings(dateRange);
             totalCPsSuspended2014Listings = asyncStats.getTotalCPsSuspended2014Listings(dateRange);
             totalCPsSuspended2015Listings = asyncStats.getTotalCPsSuspended2015Listings(dateRange);
+            totalListingsWithAlternateTestMethods = asyncStats.getTotalListingsWithAlternateTestMethods();
+            totalListingsWithCertifiedBodyAndAlternativeTestMethods
+            = asyncStats.getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
         }
 
         // developers
@@ -65,8 +88,8 @@ public class AsynchronousStatisticsInitializor {
 
         Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsEachYear = asyncStats
                 .getTotalDevelopersByCertifiedBodyWithListingsEachYear(dateRange);
-        Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear = asyncStats
-                .getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
+        Future<List<CertifiedBodyStatistics>> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear
+        = asyncStats.getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(dateRange);
         Future<Long> totalDeveloperswith2015Listings = asyncStats.getTotalDevelopersWith2015Listings(dateRange);
 
         // listings
@@ -89,7 +112,7 @@ public class AsynchronousStatisticsInitializor {
         Future<Long> totalOpenNonConformities = asyncStats.getTotalOpenNonconformities(dateRange);
         Future<Long> totalClosedNonConformities = asyncStats.getTotalClosedNonconformities(dateRange);
 
-        if (includeActiveStatistics) {
+        if (dateRange == null) {
             stats.setTotalActive2014Listings(totalActive2014Listings.get());
             stats.setTotalActive2015Listings(totalActive2015Listings.get());
             stats.setTotalActiveListingsByCertifiedBody(totalActiveListingsByCertifiedBody.get());
@@ -102,6 +125,9 @@ public class AsynchronousStatisticsInitializor {
             stats.setTotalCPs2015Listings(totalCPs2015Listings.get());
             stats.setTotalCPsSuspended2014Listings(totalCPsSuspended2014Listings.get());
             stats.setTotalCPsSuspended2015Listings(totalCPsSuspended2015Listings.get());
+            stats.setTotalListingsWithAlternativeTestMethods(totalListingsWithAlternateTestMethods.get());
+            stats.setTotalListingsWithCertifiedBodyAndAlternativeTestMethods(
+                    totalListingsWithCertifiedBodyAndAlternativeTestMethods.get());
         }
 
         // developers

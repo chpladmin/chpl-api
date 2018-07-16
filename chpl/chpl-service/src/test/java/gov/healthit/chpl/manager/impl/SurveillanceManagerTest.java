@@ -34,8 +34,6 @@ import gov.healthit.chpl.auth.permission.UserPermissionRetrievalException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.EntityCreationException;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.SurveillanceDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.Surveillance;
@@ -46,10 +44,12 @@ import gov.healthit.chpl.domain.SurveillanceRequirementType;
 import gov.healthit.chpl.domain.SurveillanceResultType;
 import gov.healthit.chpl.domain.SurveillanceType;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.exception.CertificationBodyAccessException;
+import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SurveillanceManager;
-import gov.healthit.chpl.web.controller.CertificationBodyAccessException;
-import gov.healthit.chpl.web.controller.InvalidArgumentsException;
-import gov.healthit.chpl.web.controller.exception.ValidationException;
 import junit.framework.TestCase;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -93,21 +93,21 @@ public class SurveillanceManagerTest extends TestCase {
 		acbUser.setId(3L);
 		acbUser.setLastName("User3");
 		acbUser.setSubjectName("testUser3");
-		acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		acbUser2 = new JWTAuthenticatedUser();
 		acbUser2.setFirstName("Test");
 		acbUser2.setId(3L);
 		acbUser2.setLastName("User");
 		acbUser2.setSubjectName("TESTUSER");
-		acbUser2.getPermissions().add(new GrantedPermission("ROLE_ACB_ADMIN"));
+		acbUser2.getPermissions().add(new GrantedPermission("ROLE_ACB"));
 		
 		atlUser = new JWTAuthenticatedUser();
 		atlUser.setFirstName("ATL");
 		atlUser.setId(3L);
 		atlUser.setLastName("User");
 		atlUser.setSubjectName("atlUser");
-		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL_ADMIN"));
+		atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
 	}
 	
 	@Test
@@ -389,7 +389,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
 		req.setResult(resType);
 		surv.getRequirements().add(req);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);
@@ -431,7 +431,6 @@ public class SurveillanceManagerTest extends TestCase {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_STAFF);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");
@@ -490,7 +489,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
 		req.setResult(resType);
 		surv.getRequirements().add(req);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);
@@ -563,7 +562,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceNonconformityStatus ncStatus = survDao.findSurveillanceNonconformityStatusType("Open");
 		nc.setStatus(ncStatus);
 		req.getNonconformities().add(nc);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);
@@ -613,7 +612,7 @@ public class SurveillanceManagerTest extends TestCase {
 		SurveillanceResultType resType = survDao.findSurveillanceResultType("No Non-Conformity");
 		req.setResult(resType);
 		surv.getRequirements().add(req);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		Long insertedId = survManager.createSurveillance(-1L, surv);
 		assertNotNull(insertedId);
@@ -650,7 +649,7 @@ public class SurveillanceManagerTest extends TestCase {
 		surv.setRandomizedSitesUsed(10);
 		SurveillanceType type = survDao.findSurveillanceType("Randomized");
 		surv.setType(type);
-		surv.setAuthority(Authority.ROLE_ACB_ADMIN);
+		surv.setAuthority(Authority.ROLE_ACB);
 		
 		SurveillanceRequirement req = new SurveillanceRequirement();
 		req.setRequirement("170.314 (a)(1)");

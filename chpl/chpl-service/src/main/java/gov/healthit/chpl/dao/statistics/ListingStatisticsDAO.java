@@ -3,45 +3,58 @@ package gov.healthit.chpl.dao.statistics;
 import java.util.List;
 
 import gov.healthit.chpl.domain.DateRange;
+import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 
+/**
+ * Interface for getting statistics about Listings.
+ * @author alarned
+ *
+ */
 public interface ListingStatisticsDAO {
-    Long getTotalListings(DateRange dateRange);
-
+    /**
+     * Retrieve a filtered count of listings.
+     * @param dateRange date range to search in
+     * @param edition edition to filter on
+     * @param statuses statuses to filter on
+     * @return a number
+     */
+    Long getTotalListingsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses);
+    /**
+     * Return counts of active listings broken up by ACB.
+     * @param dateRange range to search in
+     * @return counts of listings
+     */
     List<CertifiedBodyStatistics> getTotalActiveListingsByCertifiedBody(DateRange dateRange);
-
+    /**
+     * Return total unique products filtered.
+     * @param dateRange range to search in
+     * @param edition edition to filter on
+     * @param statuses status to filter on
+     * @return the count
+     */
+    Long getTotalUniqueProductsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses);
+    /**
+     * Retrieve the total counts of Listings broken out by ACB & edition.
+     * @param dateRange range to search in
+     * @return statistics
+     */
     List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBody(DateRange dateRange);
-
+    /**
+     * Retrieve the total counts of Listings broken out by ACB, edition, and status.
+     * @param dateRange range to search in
+     * @return statistics
+     */
     List<CertifiedBodyStatistics> getTotalCPListingsEachYearByCertifiedBodyAndCertificationStatus(
             DateRange dateRange);
-
-    Long getTotalCertifiedProducts(DateRange dateRange);
-
-    Long getTotalCPsActiveListings(DateRange dateRange);
-
-    // 2011
-    Long getTotal2011Listings(DateRange dateRange);
-
-    // 2014
-    Long getTotalCPs2014Listings(DateRange dateRange);
-
-    Long getTotalActive2014Listings(DateRange dateRange);
-
-    Long getTotalCPsSuspended2014Listings(DateRange dateRange);
-
-    Long getTotal2014Listings(DateRange dateRange);
-
-    Long getTotalCPsActive2014Listings(DateRange dateRange);
-
-    // 2015
-    Long getTotalCPs2015Listings(DateRange dateRange);
-
-    Long getTotal2015Listings(DateRange dateRange);
-
-    Long getTotalActive2015Listings(DateRange dateRange);
-
-    Long getTotalCPsSuspended2015Listings(DateRange dateRange);
-
-    Long getTotalCPsActive2015Listings(DateRange dateRange);
-
+    /**
+     * Retrieve the count of Listings that have Alternate Test Methods.
+     * @return the count
+     */
+    Long getTotalListingsWithAlternateTestMethods();
+    /**
+     * Retrieve the count of Listings with Alternate Test Methods broken out by ACB.
+     * @return statistics
+     */
+    List<CertifiedBodyAltTestStatistics> getTotalListingsWithCertifiedBodyAndAlternativeTestMethods();
 }

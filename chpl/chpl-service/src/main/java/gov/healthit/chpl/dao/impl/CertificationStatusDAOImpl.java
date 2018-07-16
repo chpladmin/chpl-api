@@ -8,9 +8,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dto.CertificationStatusDTO;
 import gov.healthit.chpl.entity.CertificationStatusEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("certificationStatusDAO")
 public class CertificationStatusDAOImpl extends BaseDAOImpl implements CertificationStatusDAO {

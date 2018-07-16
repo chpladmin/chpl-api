@@ -7,10 +7,10 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.dao.EntityRetrievalException;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.entity.TestFunctionalityEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("testFunctionalityDAO")
 public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctionalityDAO {
@@ -55,8 +55,12 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 
     private List<TestFunctionalityEntity> getAllEntities() {
         return entityManager
-                .createQuery("SELECT tf " + "FROM TestFunctionalityEntity tf " + "JOIN FETCH tf.certificationEdition "
-                        + "WHERE (NOT tf.deleted = true) ", TestFunctionalityEntity.class)
+                .createQuery("SELECT tf " 
+                            + "FROM TestFunctionalityEntity tf " 
+                            + "LEFT OUTER JOIN FETCH tf.certificationEdition "
+                            + "LEFT OUTER JOIN FETCH tf.practiceType "
+                            + "LEFT OUTER JOIN FETCH tf.certificationCriterion "
+                            + "WHERE (NOT tf.deleted = true) ", TestFunctionalityEntity.class)
                 .getResultList();
     }
 
@@ -65,9 +69,12 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
         TestFunctionalityEntity entity = null;
 
         Query query = entityManager
-                .createQuery(
-                        "SELECT tf " + "FROM TestFunctionalityEntity tf " + "JOIN FETCH tf.certificationEdition "
-                                + "WHERE (NOT tf.deleted = true) " + "AND (tf.id = :entityid) ",
+                .createQuery("SELECT tf " 
+                        + "FROM TestFunctionalityEntity tf " 
+                        + "LEFT OUTER JOIN FETCH tf.certificationEdition "
+                        + "LEFT OUTER JOIN FETCH tf.practiceType "
+                        + "LEFT OUTER JOIN FETCH tf.certificationCriterion "
+                        + "WHERE (NOT tf.deleted = true) " + "AND (tf.id = :entityid) ",
                         TestFunctionalityEntity.class);
         query.setParameter("entityid", id);
         List<TestFunctionalityEntity> result = query.getResultList();
@@ -87,9 +94,14 @@ public class TestFunctionalityDAOImpl extends BaseDAOImpl implements TestFunctio
 
         TestFunctionalityEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tf " + "FROM TestFunctionalityEntity tf "
-                + "JOIN FETCH tf.certificationEdition edition " + "WHERE tf.deleted <> true "
-                + "AND UPPER(tf.number) = :number " + "AND edition.id = :editionId ", TestFunctionalityEntity.class);
+        Query query = entityManager.createQuery("SELECT tf " 
+                        + "FROM TestFunctionalityEntity tf " 
+                        + "LEFT OUTER JOIN FETCH tf.certificationEdition "
+                        + "LEFT OUTER JOIN FETCH tf.practiceType "
+                        + "LEFT OUTER JOIN FETCH tf.certificationCriterion "
+                        + "WHERE tf.deleted <> true "
+                        + "AND UPPER(tf.number) = :number " 
+                        + "AND tf.certificationEdition.id = :editionId ", TestFunctionalityEntity.class);
         query.setParameter("number", number.toUpperCase());
         query.setParameter("editionId", editionId);
 

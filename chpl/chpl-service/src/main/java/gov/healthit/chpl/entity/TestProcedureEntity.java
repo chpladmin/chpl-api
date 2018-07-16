@@ -17,12 +17,24 @@ public class TestProcedureEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "test_procedure_id")
+    @Column(name = "id")
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "version", nullable = false)
-    private String version;
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
+    protected Date creationDate;
+
+    @Column(nullable = false)
+    protected Boolean deleted;
+
+    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
+    protected Date lastModifiedDate;
+
+    @Column(name = "last_modified_user", nullable = false)
+    protected Long lastModifiedUser;
 
     public Long getId() {
         return id;
@@ -31,30 +43,6 @@ public class TestProcedureEntity {
     public void setId(final Long id) {
         this.id = id;
     }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    protected Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    protected Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    protected Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
 
     public Date getCreationDate() {
         return creationDate;
@@ -86,5 +74,13 @@ public class TestProcedureEntity {
 
     public void setLastModifiedUser(final Long lastModifiedUser) {
         this.lastModifiedUser = lastModifiedUser;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

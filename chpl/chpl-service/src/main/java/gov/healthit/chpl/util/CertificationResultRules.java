@@ -34,7 +34,7 @@ public class CertificationResultRules {
     public static final String G2_MACRA = "g2Macra";
     public static final String ADDITIONAL_SOFTWARE = "additionalSoftware";
     public static final String TEST_TOOLS_USED = "testTool";
-    public static final String TEST_PROCEDURE_VERSION = "testProcedure";
+    public static final String TEST_PROCEDURE = "testProcedure";
     public static final String TEST_DATA = "testData";
     public static final String SED = "sed";
     public static final String UCD_FIELDS = "ucd";
@@ -88,7 +88,11 @@ public class CertificationResultRules {
                             boolean canHaveProperty = new Boolean(propValue).booleanValue();
                             CertificationResultOption option = new CertificationResultOption();
                             option.setOptionName(propName);
-                            option.setCanHaveOption(canHaveProperty);
+                            if(propName.equals("gap")){
+                            	option.setCanHaveOption(true);
+                            }else{
+                            	option.setCanHaveOption(canHaveProperty);
+                            }
                             if (rules.get(certNumber) == null) {
                                 List<CertificationResultOption> options = new ArrayList<CertificationResultOption>();
                                 options.add(option);
