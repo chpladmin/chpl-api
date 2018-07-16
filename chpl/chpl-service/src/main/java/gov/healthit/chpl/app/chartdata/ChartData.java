@@ -35,13 +35,13 @@ public final class ChartData {
         try {
             appEnvironment = new ChartDataApplicationEnvironment();
 
-            //List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts(appEnvironment);
-            //LOGGER.info("Certified Product Count: " + certifiedProducts.size());
+            List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts(appEnvironment);
+            LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-            //analyzeSed(appEnvironment, certifiedProducts);
-            //analyzeProducts(appEnvironment, certifiedProducts);
-            //analyzeDevelopers(appEnvironment, certifiedProducts);
-            //analyzeListingCounts(appEnvironment, certifiedProducts);
+            analyzeSed(appEnvironment, certifiedProducts);
+            analyzeProducts(appEnvironment, certifiedProducts);
+            analyzeDevelopers(appEnvironment, certifiedProducts);
+            analyzeListingCounts(appEnvironment, certifiedProducts);
             analyzeNonconformity(appEnvironment);
 
         } catch (Exception e) {
