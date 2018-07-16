@@ -133,6 +133,7 @@
         <class>gov.healthit.chpl.entity.questionableActivity.QuestionableActivityVersionEntity</class>
         <class>gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity</class>
         <class>gov.healthit.chpl.entity.search.CertifiedProductListingSearchResultEntity</class>
+        <class>gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceNonconformityEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.PendingSurveillanceRequirementEntity</class>
@@ -140,7 +141,6 @@
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityDocumentationEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceNonconformityEntity</class>
-        <class>gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceRequirementTypeEntity</class>
         <class>gov.healthit.chpl.entity.surveillance.SurveillanceResultTypeEntity</class>
