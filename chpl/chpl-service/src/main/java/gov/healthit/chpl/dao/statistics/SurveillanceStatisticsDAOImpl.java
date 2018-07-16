@@ -156,7 +156,7 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
     @Override
 	public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion(
 			DateRange dateRange) {
-		String hql = "SELECT COUNT(DISTINCT type), type FROM SurveillanceNonconformityEntity WHERE";
+		String hql = "SELECT COUNT(type), type FROM SurveillanceNonconformityEntity WHERE";
 		
 		if(dateRange == null) {
             hql += " deleted = false GROUP BY type";

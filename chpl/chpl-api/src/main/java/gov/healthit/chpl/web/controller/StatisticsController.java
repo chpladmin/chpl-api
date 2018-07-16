@@ -49,7 +49,7 @@ public class StatisticsController {
             produces = "application/json; charset=utf-8")
     public NonconformityTypeStatisticsResult getNonconformityCountByCriteria() {
     	NonconformityTypeStatisticsResult response = new NonconformityTypeStatisticsResult();
-        response.setStatisticsResult(statisticsManager.getAllNonconformitiesByCriterion());
+        response.setNonconformityStatisticsResult(statisticsManager.getAllNonconformitiesByCriterion());
         return response;
     }
 

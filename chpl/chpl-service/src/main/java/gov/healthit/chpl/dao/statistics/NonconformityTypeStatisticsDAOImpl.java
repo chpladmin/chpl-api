@@ -6,6 +6,7 @@ import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,9 +35,15 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
             query.setParameter("endDate", dateRange.getEndDate());
         }
         
-        List<NonconformityTypeStatisticsDTO> entities = query.getResultList();
+        List<NonconformityTypeStatisticsEntity> entities = query.getResultList();
         
-        return entities;
+        List<NonconformityTypeStatisticsDTO> dtos = new ArrayList<NonconformityTypeStatisticsDTO>();
+        for(NonconformityTypeStatisticsEntity entity : entities){
+        	NonconformityTypeStatisticsDTO dto = new NonconformityTypeStatisticsDTO(entity);
+        	dtos.add(dto);
+        }
+        
+        return dtos;
 	}
 	
 	public void create(NonconformityTypeStatisticsDTO dto){
@@ -50,7 +57,7 @@ public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements N
         }
 		
 		if (dto.getLastModifiedUser() == null) {
-            entity.setLastModifiedUser(Util.getCurrentUser().getId());
+            entity.setLastModifiedUser(-2L);
         } else {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         }

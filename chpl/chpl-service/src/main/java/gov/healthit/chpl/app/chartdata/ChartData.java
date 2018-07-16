@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.search.CertifiedProductFlatSearchResult;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
+import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 
 /**
  * This is the starting point for populating statistics tables that will be used for the
@@ -34,13 +35,14 @@ public final class ChartData {
         try {
             appEnvironment = new ChartDataApplicationEnvironment();
 
-            List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts(appEnvironment);
-            LOGGER.info("Certified Product Count: " + certifiedProducts.size());
+            //List<CertifiedProductFlatSearchResult> certifiedProducts = getCertifiedProducts(appEnvironment);
+            //LOGGER.info("Certified Product Count: " + certifiedProducts.size());
 
-            analyzeSed(appEnvironment, certifiedProducts);
-            analyzeProducts(appEnvironment, certifiedProducts);
-            analyzeDevelopers(appEnvironment, certifiedProducts);
-            analyzeListingCounts(appEnvironment, certifiedProducts);
+            //analyzeSed(appEnvironment, certifiedProducts);
+            //analyzeProducts(appEnvironment, certifiedProducts);
+            //analyzeDevelopers(appEnvironment, certifiedProducts);
+            //analyzeListingCounts(appEnvironment, certifiedProducts);
+            analyzeNonconformity(appEnvironment);
 
         } catch (Exception e) {
             LOGGER.error("Fatal Error Running ChartData! " + e.getMessage(), e);
@@ -67,6 +69,14 @@ public final class ChartData {
         List<ListingCountStatisticsDTO> dtos = listingCountStatisticsCalculator.getCounts(filteredListings);
         listingCountStatisticsCalculator.logCounts(dtos);
         listingCountStatisticsCalculator.save(dtos);
+    }
+    
+    private static void analyzeNonconformity(final ChartDataApplicationEnvironment appEnvironment) {
+        NonconformityTypeChartCalculator nonconformityStatisticsCalculator =
+                new NonconformityTypeChartCalculator(appEnvironment);
+        List<NonconformityTypeStatisticsDTO> dtos = nonconformityStatisticsCalculator.getCounts();
+        nonconformityStatisticsCalculator.logCounts(dtos);
+        nonconformityStatisticsCalculator.saveCounts(dtos);
     }
 
     private static void analyzeProducts(final ChartDataApplicationEnvironment appEnvironment,
