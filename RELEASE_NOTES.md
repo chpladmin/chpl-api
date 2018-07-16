@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 15.15.2
+_16 July 2018_
+
+### Bugs Fixed
+* Fixed bug where user erroneously receives a Duplicate CHPL Product Number error when editing a product
+
+---
+
 ## Version 15.15.1
 _5 July 2018_
 
