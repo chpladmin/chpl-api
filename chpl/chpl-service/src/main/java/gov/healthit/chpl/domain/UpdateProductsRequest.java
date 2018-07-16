@@ -25,7 +25,7 @@ public class UpdateProductsRequest implements Serializable {
         this.product = product;
     }
 
-    public Long newDeveloperId() {
+    public Long getNewDeveloperId() {
         return newDeveloperId;
     }
 
