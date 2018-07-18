@@ -47,8 +47,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         
-        //TODO - What should the trigger group name be??
-        TriggerKey triggerId = triggerKey(trigger.getEmail().replaceAll("\\.",  "_"), "chplJobTrigger");
+        TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger));
         JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
 
         Trigger qzTrigger = newTrigger()
@@ -175,5 +174,15 @@ public class SchedulerManagerImpl implements SchedulerManager {
         }
         //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
         return false;
+    }
+    
+    private String createTriggerGroup(ChplTrigger trigger) {
+        String group = trigger.getJob().getName().replaceAll(" ", "");
+        group += "Trigger";
+        return group;
+    }
+    
+    private String createTriggerName(ChplTrigger trigger) {
+        return trigger.getEmail().replaceAll("\\.",  "_"); 
     }
 }
