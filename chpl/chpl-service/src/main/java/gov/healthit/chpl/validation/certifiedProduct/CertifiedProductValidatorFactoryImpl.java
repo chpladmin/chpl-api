@@ -14,6 +14,8 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
 
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductValidatorFactoryImpl.class);
 
+    private static final int OLD_STYLE_ID_LENGTH = 11;
+    private static final String OLD_STYLE_ID_BEGIN_STR = "CHP-";
     private static final String PRACTICE_TYPE_AMBULATORY = "AMBULATORY";
     private static final String PRACTICE_TYPE_INPATIENT = "INPATIENT";
     private static final String PRODUCT_CLASSIFICATION_MODULAR = "Modular EHR";
@@ -66,7 +68,7 @@ public class CertifiedProductValidatorFactoryImpl implements CertifiedProductVal
             return cp2015Validator;
         } else {
             LOGGER.error(
-                    "Cannot find validator for certificatoin edition '" + product.getCertificationEdition() + "'.");
+                    "Cannot find validator for certification edition '" + product.getCertificationEdition() + "'.");
             return allowedValidator;
         }
         return null;
