@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.web.controller.results.ScheduleJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -94,5 +96,15 @@ public class SchedulerController {
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
         return results;
+    }
+    
+    @ApiOperation(value = "Get the list of all jobs that are applicable to the currently loged in user")
+    @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ScheduleJobsResults getAllJobs() throws SchedulerException {
+        List<ChplJob> jobs = schedulerManager.getAllJobs();
+        ScheduleJobsResults results = new ScheduleJobsResults();
+        results.setResults(jobs);
+        return results;
+        
     }
 }

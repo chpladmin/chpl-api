@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +45,8 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
     @Override
     public Long getTotalDevelopersWithListingsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses) {
         String hql = "SELECT count(DISTINCT developerCode) "
-                + "FROM CertifiedProductDetailsEntity ";
+                + "FROM CertifiedProductSummaryEntity ";
+        
         boolean hasWhere = false;
         if(edition != null) {
             hql += " WHERE year = :edition ";
@@ -57,7 +59,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
             } else {
                 hql += " AND ";
             }
-            hql += " UPPER(certificationStatusName) IN (:statuses) ";
+            hql += " UPPER(certificationStatus) IN (:statuses) ";
         }
         
         if(dateRange == null) {

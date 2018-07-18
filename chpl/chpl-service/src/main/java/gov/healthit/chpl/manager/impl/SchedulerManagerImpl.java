@@ -7,9 +7,12 @@ import static org.quartz.TriggerKey.triggerKey;
 import static org.quartz.impl.matchers.GroupMatcher.groupEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.quartz.CronTrigger;
+import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -19,7 +22,10 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
+import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -31,6 +37,8 @@ import gov.healthit.chpl.manager.SchedulerManager;
  */
 @Service
 public class SchedulerManagerImpl implements SchedulerManager {
+    public static final String AUTHORITY_DELIMITER = ";";
+    
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
@@ -126,10 +134,57 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return newTrigger;
     }
 
+    
+    /* (non-Javadoc)
+     * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs()
+     * As new jobs are added that have authorities other than ROLE_ADMIN, those authorities
+     * will need to be added to the list. 
+     */
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public List<ChplJob> getAllJobs() throws SchedulerException {
+        List<ChplJob> jobs = new ArrayList<ChplJob>();
+        Scheduler scheduler = getScheduler();
+        for (String group : scheduler.getJobGroupNames()) {
+            if (group.equals("chplJobs")) {
+                for (JobKey jobKey : scheduler.getJobKeys(groupEquals(group))) {
+                    JobDetail jobDetail = scheduler.getJobDetail(jobKey);
+                    if (doesUserHavePermissionToJob(jobDetail)) {
+                        jobs.add(new ChplJob(jobDetail));
+                    }
+                }
+            }
+        }
+        return jobs;
+    }
+
     private Scheduler getScheduler() throws SchedulerException {
         StdSchedulerFactory sf = new StdSchedulerFactory();
         sf.initialize("quartz.properties");
         Scheduler scheduler = sf.getScheduler();
         return scheduler;
+    }
+    
+    private Boolean doesUserHavePermissionToJob(JobDetail jobDetail) {
+        //Get the authorities from the job
+        if (jobDetail.getJobDataMap().containsKey("authorities")) {
+            List<String> authorities = new ArrayList<String>(
+                    Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
+            Set<GrantedPermission> userRoles = Util.getCurrentUser().getPermissions();
+            for (GrantedPermission permission : userRoles) {
+                for (String authority : authorities) {
+                    if (permission.getAuthority().equalsIgnoreCase(authority)) {
+                        return true;
+                    }
+                }
+            }
+            
+        } else {
+            //If no authorities are present, we assume there are no permissions on the job
+            //and everyone has access
+            return true;
+        }
+        //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
+        return false;
     }
 }
