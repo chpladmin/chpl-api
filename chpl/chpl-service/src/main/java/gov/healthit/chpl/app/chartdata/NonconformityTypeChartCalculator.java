@@ -2,11 +2,8 @@ package gov.healthit.chpl.app.chartdata;
 
 import java.util.List;
 
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +17,7 @@ public class NonconformityTypeChartCalculator {
 	
 	private static final Logger LOGGER = LogManager.getLogger(NonconformityTypeChartCalculator.class);
 	
-	private SurveillanceStatisticsDAO statisticsDAO;
+    private SurveillanceStatisticsDAO statisticsDAO;
     private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
@@ -34,6 +31,14 @@ public class NonconformityTypeChartCalculator {
         txnTemplate = new TransactionTemplate(txnManager);
     }
     
+    NonconformityTypeChartCalculator(final SurveillanceStatisticsDAO statisticsDAO,
+    		NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO,
+    		TransactionTemplate txnTemplate) {
+    	this.statisticsDAO = (SurveillanceStatisticsDAO) statisticsDAO;
+    	this.nonconformityTypeStatisticsDAO = nonconformityTypeStatisticsDAO;
+        this.txnTemplate = txnTemplate;
+    }
+    
     public void logCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         for (NonconformityTypeStatisticsDTO dto : dtos) {
             LOGGER.info("Crtieria: " + dto.getNonconformityType() + " Number of NCs: " + dto.getNonconformityCount());
@@ -41,7 +46,7 @@ public class NonconformityTypeChartCalculator {
     }
     
     public List<NonconformityTypeStatisticsDTO> getCounts() {
-    	List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion(null);
+    	List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion();
     	return dtos;
     }
     

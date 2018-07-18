@@ -43,7 +43,7 @@ public class StatisticsController {
      * Retrieves and returns the Listing counts.
      * @return a JSON representation of an NonconformityTypeStatisticsResult object
      */
-    @ApiOperation(value = "Get count of nonconformities by citeria.",
+    @ApiOperation(value = "Get count of nonconformities by criteria.",
             notes = "Retrieves and returns the counts.")
     @RequestMapping(value = "/nonconformity_criteria_count", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")

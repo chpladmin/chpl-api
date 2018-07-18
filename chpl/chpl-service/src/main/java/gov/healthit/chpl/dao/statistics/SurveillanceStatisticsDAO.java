@@ -18,6 +18,5 @@ public interface SurveillanceStatisticsDAO {
 
     Long getTotalClosedNonconformities(DateRange dateRange);
 
-	List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion(
-			DateRange dateRange);
+	List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion();
 }

@@ -1,8 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.entity.surveillance.NonconformityTypeStatisticsEntity;
 
@@ -18,22 +16,9 @@ import org.springframework.stereotype.Repository;
 public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements NonconformityTypeStatisticsDAO {
 
 	@Override
-	public List<NonconformityTypeStatisticsDTO> getAllNonconformityStatistics(
-			DateRange dateRange) {
-		String hql = "FROM NonconformityTypeStatisticsEntity WHERE";
-		
-		if(dateRange == null) {
-            hql += " deleted = false";
-		} else {
-			hql += "(deleted = false AND creationDate <= :endDate) "
-                + " OR "
-                + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)";
-		}
+	public List<NonconformityTypeStatisticsDTO> getAllNonconformityStatistics() {
+		String hql = "FROM NonconformityTypeStatisticsEntity WHERE deleted = false";
 		Query query = entityManager.createQuery(hql);
-        
-        if(dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
-        }
         
         List<NonconformityTypeStatisticsEntity> entities = query.getResultList();
         

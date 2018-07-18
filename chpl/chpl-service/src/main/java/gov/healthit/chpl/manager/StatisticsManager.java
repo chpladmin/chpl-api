@@ -71,6 +71,6 @@ public interface StatisticsManager {
      */
     List<ParticipantExperienceStatistics> getParticipantExperienceStatisticsResult(Long experienceTypeId);
 
-	List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion();
+    List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion();
 
 }

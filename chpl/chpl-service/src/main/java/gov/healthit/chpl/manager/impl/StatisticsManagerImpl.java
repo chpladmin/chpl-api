@@ -1,7 +1,6 @@
 package gov.healthit.chpl.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
 import gov.healthit.chpl.dao.TestParticipantAgeDAO;
 import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
-import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.ListingCountStatistics;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
@@ -84,8 +82,7 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     
     @Override
     public List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion() {
-    	DateRange dateRange = new DateRange(new Date(), new Date());
-        List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics(dateRange);
+        List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics();
         
         List<NonconformityTypeStatistics> ret = new ArrayList<NonconformityTypeStatistics>();
         for(NonconformityTypeStatisticsDTO dto : dtos){

@@ -154,22 +154,9 @@ public class SurveillanceStatisticsDAOImpl extends BaseDAOImpl implements Survei
     }
     
     @Override
-	public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion(
-			DateRange dateRange) {
-		String hql = "SELECT COUNT(type), type FROM SurveillanceNonconformityEntity WHERE";
-		
-		if(dateRange == null) {
-            hql += " deleted = false GROUP BY type";
-		} else {
-			hql += "(deleted = false AND creationDate <= :endDate) "
-                + " OR "
-                + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) GROUP BY type";
-		}
+	public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion() {
+		String hql = "SELECT COUNT(type), type FROM SurveillanceNonconformityEntity WHERE deleted = false GROUP BY type";
 		Query query = entityManager.createQuery(hql);
-        
-        if(dateRange != null) {
-            query.setParameter("endDate", dateRange.getEndDate());
-        }
         
         List<Object[]> entities = query.getResultList();
         
