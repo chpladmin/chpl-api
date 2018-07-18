@@ -27,42 +27,44 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { gov.healthit.chpl.CHPLTestConfig.class })
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class,
-    DirtiesContextTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class })
+@ContextConfiguration(classes = {
+    gov.healthit.chpl.CHPLTestConfig.class
+})
+@TestExecutionListeners({
+        DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
+        TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class
+})
 @DatabaseSetup("classpath:data/testData.xml")
 public class NonconformityTypeStatisticsDAOTest extends TestCase {
 
     @Autowired
     private SurveillanceStatisticsDAO statisticsDAO;
-    
-    @Autowired 
+
+    @Autowired
     private NonconformityTypeStatisticsDAO nonconformStatDAO;
-    
+
     private static JWTAuthenticatedUser adminUser;
-	
-	@BeforeClass
-	public static void setUpClass() throws Exception {
-		adminUser = new JWTAuthenticatedUser();
-		adminUser.setFirstName("Administrator");
-		adminUser.setId(-2L);
-		adminUser.setLastName("Administrator");
-		adminUser.setSubjectName("admin");
-		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-	}
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        adminUser = new JWTAuthenticatedUser();
+        adminUser.setFirstName("Administrator");
+        adminUser.setId(-2L);
+        adminUser.setLastName("Administrator");
+        adminUser.setSubjectName("admin");
+        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+    }
 
     @Test
     @Transactional
     public void buildNonconformityTypeStatistics() {
-    	SecurityContextHolder.getContext().setAuthentication(adminUser);
-    	
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+
         List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion();
         assertNotNull(dtos);
         assertEquals(1, dtos.size());
-        for(NonconformityTypeStatisticsDTO dto : dtos){
-        	nonconformStatDAO.create(dto);
+        for (NonconformityTypeStatisticsDTO dto : dtos) {
+            nonconformStatDAO.create(dto);
         }
         List<NonconformityTypeStatisticsDTO> created = nonconformStatDAO.getAllNonconformityStatistics();
         assertNotNull(created);

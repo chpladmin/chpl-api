@@ -14,50 +14,48 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 public class NonconformityTypeChartCalculator {
-	
-	private static final Logger LOGGER = LogManager.getLogger(NonconformityTypeChartCalculator.class);
-	
+
+    private static final Logger LOGGER = LogManager.getLogger(NonconformityTypeChartCalculator.class);
+
     private SurveillanceStatisticsDAO statisticsDAO;
     private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
     private JpaTransactionManager txnManager;
     private TransactionTemplate txnTemplate;
-    
+
     NonconformityTypeChartCalculator(final ChartDataApplicationEnvironment appEnvironment) {
-    	statisticsDAO = (SurveillanceStatisticsDAO) appEnvironment
-                .getSpringManagedObject("surveillanceStatisticsDAO");
-    	nonconformityTypeStatisticsDAO = (NonconformityTypeStatisticsDAO) appEnvironment
+        statisticsDAO = (SurveillanceStatisticsDAO) appEnvironment.getSpringManagedObject("surveillanceStatisticsDAO");
+        nonconformityTypeStatisticsDAO = (NonconformityTypeStatisticsDAO) appEnvironment
                 .getSpringManagedObject("nonconformityTypeStatisticsDAO");
         txnManager = (JpaTransactionManager) appEnvironment.getSpringManagedObject("transactionManager");
         txnTemplate = new TransactionTemplate(txnManager);
     }
-    
+
     NonconformityTypeChartCalculator(final SurveillanceStatisticsDAO statisticsDAO,
-    		NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO,
-    		TransactionTemplate txnTemplate) {
-    	this.statisticsDAO = (SurveillanceStatisticsDAO) statisticsDAO;
-    	this.nonconformityTypeStatisticsDAO = nonconformityTypeStatisticsDAO;
+            NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO, TransactionTemplate txnTemplate) {
+        this.statisticsDAO = (SurveillanceStatisticsDAO) statisticsDAO;
+        this.nonconformityTypeStatisticsDAO = nonconformityTypeStatisticsDAO;
         this.txnTemplate = txnTemplate;
     }
-    
+
     public void logCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         for (NonconformityTypeStatisticsDTO dto : dtos) {
             LOGGER.info("Crtieria: " + dto.getNonconformityType() + " Number of NCs: " + dto.getNonconformityCount());
         }
     }
-    
+
     public List<NonconformityTypeStatisticsDTO> getCounts() {
-    	List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion();
-    	return dtos;
+        List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion();
+        return dtos;
     }
-    
-   public void saveCounts(List<NonconformityTypeStatisticsDTO> dtos) {
+
+    public void saveCounts(List<NonconformityTypeStatisticsDTO> dtos) {
         txnTemplate.execute(new TransactionCallbackWithoutResult() {
 
             @Override
             protected void doInTransactionWithoutResult(final TransactionStatus arg0) {
-            	for(NonconformityTypeStatisticsDTO dto : dtos){
-            		nonconformityTypeStatisticsDAO.create(dto);
-            	}
+                for (NonconformityTypeStatisticsDTO dto : dtos) {
+                    nonconformityTypeStatisticsDAO.create(dto);
+                }
             }
         });
     }

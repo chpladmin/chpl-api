@@ -41,6 +41,7 @@ import gov.healthit.chpl.manager.StatisticsManager;
 
 /**
  * Implementation of the StatisticsManager interface.
+ * 
  * @author TYoung
  *
  */
@@ -58,7 +59,7 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
     @Autowired
     private ListingCountStatisticsDAO listingCountStatisticsDAO;
-    
+
     @Autowired
     private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
 
@@ -79,17 +80,17 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
     @Autowired
     private TestParticipantAgeDAO testParticipantAgeDAO;
-    
+
     @Override
     public List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion() {
         List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics();
-        
+
         List<NonconformityTypeStatistics> ret = new ArrayList<NonconformityTypeStatistics>();
-        for(NonconformityTypeStatisticsDTO dto : dtos){
-        	NonconformityTypeStatistics stat = new NonconformityTypeStatistics(dto);
-        	ret.add(stat);
+        for (NonconformityTypeStatisticsDTO dto : dtos) {
+            NonconformityTypeStatistics stat = new NonconformityTypeStatistics(dto);
+            ret.add(stat);
         }
-        
+
         return ret;
     }
 
@@ -137,7 +138,7 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
     @Override
     public ParticipantGenderStatisticsDTO getParticipantGenderStatisticsDTO() {
-        //There should only ever be one active record.
+        // There should only ever be one active record.
         List<ParticipantGenderStatisticsDTO> stats = participantGenderStatisticsCountDAO.findAll();
         if (stats != null && stats.size() > 0) {
             return stats.get(0);

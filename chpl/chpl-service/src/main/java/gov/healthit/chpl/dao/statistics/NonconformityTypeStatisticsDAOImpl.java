@@ -15,44 +15,44 @@ import org.springframework.stereotype.Repository;
 @Repository("nonconformityTypeStatisticsDAO")
 public class NonconformityTypeStatisticsDAOImpl extends BaseDAOImpl implements NonconformityTypeStatisticsDAO {
 
-	@Override
-	public List<NonconformityTypeStatisticsDTO> getAllNonconformityStatistics() {
-		String hql = "FROM NonconformityTypeStatisticsEntity WHERE deleted = false";
-		Query query = entityManager.createQuery(hql);
-        
+    @Override
+    public List<NonconformityTypeStatisticsDTO> getAllNonconformityStatistics() {
+        String hql = "FROM NonconformityTypeStatisticsEntity WHERE deleted = false";
+        Query query = entityManager.createQuery(hql);
+
         List<NonconformityTypeStatisticsEntity> entities = query.getResultList();
-        
+
         List<NonconformityTypeStatisticsDTO> dtos = new ArrayList<NonconformityTypeStatisticsDTO>();
-        for(NonconformityTypeStatisticsEntity entity : entities){
-        	NonconformityTypeStatisticsDTO dto = new NonconformityTypeStatisticsDTO(entity);
-        	dtos.add(dto);
+        for (NonconformityTypeStatisticsEntity entity : entities) {
+            NonconformityTypeStatisticsDTO dto = new NonconformityTypeStatisticsDTO(entity);
+            dtos.add(dto);
         }
-        
+
         return dtos;
-	}
-	
-	public void create(NonconformityTypeStatisticsDTO dto){
-		NonconformityTypeStatisticsEntity entity = new NonconformityTypeStatisticsEntity();
-		entity.setNonconformityCount(dto.getNonconformityCount());
-		entity.setNonconformityType(dto.getNonconformityType());
-		if (dto.getLastModifiedDate() == null) {
+    }
+
+    public void create(NonconformityTypeStatisticsDTO dto) {
+        NonconformityTypeStatisticsEntity entity = new NonconformityTypeStatisticsEntity();
+        entity.setNonconformityCount(dto.getNonconformityCount());
+        entity.setNonconformityType(dto.getNonconformityType());
+        if (dto.getLastModifiedDate() == null) {
             entity.setLastModifiedDate(new Date());
         } else {
             entity.setLastModifiedDate(dto.getLastModifiedDate());
         }
-		
-		if (dto.getLastModifiedUser() == null) {
+
+        if (dto.getLastModifiedUser() == null) {
             entity.setLastModifiedUser(-2L);
         } else {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         }
-		
-		if (dto.getDeleted() == null) {
+
+        if (dto.getDeleted() == null) {
             entity.setDeleted(false);
         } else {
             entity.setDeleted(dto.getDeleted());
         }
-		entityManager.persist(entity);
-		entityManager.flush();
-	}
+        entityManager.persist(entity);
+        entityManager.flush();
+    }
 }
