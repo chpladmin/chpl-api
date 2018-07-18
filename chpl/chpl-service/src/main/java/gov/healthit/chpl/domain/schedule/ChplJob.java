@@ -13,6 +13,8 @@ public class ChplJob implements Serializable{
     private String name;
     private ScheduleFrequencyConcept frequency;
     
+    public ChplJob() { }
+    
     public ChplJob(JobDetail jobDetails) {
         this.description = jobDetails.getDescription();
         this.group = jobDetails.getKey().getGroup();

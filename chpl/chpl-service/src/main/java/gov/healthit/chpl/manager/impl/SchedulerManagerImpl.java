@@ -18,17 +18,17 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
-import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.domain.concept.ScheduleTypeConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 
 /**
  * Implementation of Scheduler Manager.
@@ -39,20 +39,17 @@ import gov.healthit.chpl.manager.SchedulerManager;
 public class SchedulerManagerImpl implements SchedulerManager {
     public static final String AUTHORITY_DELIMITER = ";";
     
+    @Autowired
+    private ChplSchedulerReference chplScheduler;
+    
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
-        TriggerKey triggerId;
-        JobKey jobId;
-        switch (trigger.getScheduleType()) {
-        case CACHE_STATUS_AGE_NOTIFICATION:
-            triggerId = triggerKey(trigger.getEmail().replaceAll("\\.",  "_"), "cacheStatusAgeTrigger");
-            jobId = jobKey("cacheStatusAgeJob", "chplJobs");
-            break;
-        default:
-            throw new ValidationException("invalid data");
-        }
+        
+        //TODO - What should the trigger group name be??
+        TriggerKey triggerId = triggerKey(trigger.getEmail().replaceAll("\\.",  "_"), "chplJobTrigger");
+        JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
 
         Trigger qzTrigger = newTrigger()
                 .withIdentity(triggerId)
@@ -64,7 +61,6 @@ public class SchedulerManagerImpl implements SchedulerManager {
         scheduler.scheduleJob(qzTrigger);
 
         ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerId));
-        newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
         return newTrigger;
     }
 
@@ -94,13 +90,6 @@ public class SchedulerManagerImpl implements SchedulerManager {
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
                     ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerKey));
-                    switch (newTrigger.getJobName()) {
-                    case "cacheStatusAgeJob":
-                        newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
-                        break;
-                    default:
-                        break;
-                    }
                     triggers.add(newTrigger);
                 }
             }
@@ -111,6 +100,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
+        /*
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger;
         switch (trigger.getScheduleType()) {
@@ -132,6 +122,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
         ChplTrigger newTrigger = new ChplTrigger((CronTrigger) qzTrigger);
         newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
         return newTrigger;
+        */
+        return null;
     }
 
     
@@ -159,10 +151,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     }
 
     private Scheduler getScheduler() throws SchedulerException {
-        StdSchedulerFactory sf = new StdSchedulerFactory();
-        sf.initialize("quartz.properties");
-        Scheduler scheduler = sf.getScheduler();
-        return scheduler;
+        return chplScheduler.getScheduler();
     }
     
     private Boolean doesUserHavePermissionToJob(JobDetail jobDetail) {

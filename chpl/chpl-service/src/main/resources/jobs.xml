@@ -6,7 +6,7 @@
     version="2.0">
     <schedule>
         <job>
-            <name>cacheStatusAgeJob</name>
+            <name>Cache Status Age</name>
             <group>chplJobs</group>
 
             <description>Allow subscribers to get notifications if the cache has become "too old".</description>
@@ -87,7 +87,7 @@
         </job>
         
         <job>
-            <name>summaryStatisticsEmail</name>
+            <name>Summary Statistics Email</name>
             <group>chplJobs</group>
             <description>Sends the Summary Statistics Report</description>
             <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsEmailJob</job-class>
@@ -100,7 +100,7 @@
                 </entry>
                 <entry>
                     <key>frequency</key>
-                    <value>HOURLY</value>
+                    <value>HOURLY</value><!--  NEEDS TO BE DAILY -->
                 </entry>
                 
             </job-data-map>
@@ -147,15 +147,7 @@
                 <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
             </cron>
         </trigger>
-        <trigger>
-            <cron>
-                <name>generateSummaryStatisticsEmail</name>
-                <group>summaryStatisticsEmailTrigger</group>
-                <job-name>summaryStatisticsEmail</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 0/5 * * * ?</cron-expression> <!-- Every 10 minutes -->
-            </cron>
-        </trigger>
+        
+        
     </schedule>
 </job-scheduling-data>
