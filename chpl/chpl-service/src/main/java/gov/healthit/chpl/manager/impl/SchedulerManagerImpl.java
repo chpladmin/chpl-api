@@ -88,7 +88,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
             // enumerate each trigger in group
             for (TriggerKey triggerKey : scheduler.getTriggerKeys(groupEquals(group))) {
                 if (scheduler.getTrigger(triggerKey).getJobKey().getGroup().equalsIgnoreCase("chplJobs")) {
-                    ChplTrigger newTrigger = new ChplTrigger((CronTrigger) scheduler.getTrigger(triggerKey));
+                    ChplTrigger newTrigger = getChplTrigger(triggerKey);
                     triggers.add(newTrigger);
                 }
             }
@@ -99,16 +99,9 @@ public class SchedulerManagerImpl implements SchedulerManager {
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
-        /*
         Scheduler scheduler = getScheduler();
-        Trigger oldTrigger;
-        switch (trigger.getScheduleType()) {
-        case CACHE_STATUS_AGE_NOTIFICATION:
-            oldTrigger = scheduler.getTrigger(triggerKey(trigger.getName(), "cacheStatusAgeTrigger"));
-            break;
-        default:
-            throw new ValidationException("invalid data");
-        }
+        Trigger oldTrigger  = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
+        
         Trigger qzTrigger = newTrigger()
                 .withIdentity(oldTrigger.getKey())
                 .startNow()
@@ -118,11 +111,8 @@ public class SchedulerManagerImpl implements SchedulerManager {
                 .build();
         scheduler.rescheduleJob(oldTrigger.getKey(), qzTrigger);
 
-        ChplTrigger newTrigger = new ChplTrigger((CronTrigger) qzTrigger);
-        newTrigger.setScheduleType(ScheduleTypeConcept.CACHE_STATUS_AGE_NOTIFICATION);
+        ChplTrigger newTrigger = getChplTrigger(qzTrigger.getKey());
         return newTrigger;
-        */
-        return null;
     }
 
     
@@ -151,6 +141,16 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     private Scheduler getScheduler() throws SchedulerException {
         return chplScheduler.getScheduler();
+    }
+    
+    
+    private ChplTrigger getChplTrigger(TriggerKey triggerKey) throws SchedulerException {
+        ChplTrigger chplTrigger = new ChplTrigger((CronTrigger) getScheduler().getTrigger(triggerKey));
+        
+        JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
+        ChplJob chplJob = new ChplJob(jobDetail);
+        chplTrigger.setJob(chplJob);
+        return chplTrigger; 
     }
     
     private Boolean doesUserHavePermissionToJob(JobDetail jobDetail) {
