@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import gov.healthit.chpl.dto.CertifiedProductDTO;
+
 /**
  * Certified Product Search Details entity.
  * @author alarned
@@ -704,5 +706,25 @@ public class CertifiedProductSearchDetails implements Serializable {
             }
         }
         return oldest;
+    }
+    
+    public boolean hasIcsConflict() {
+        boolean hasIcsConflict = false;
+        String[] uniqueIdParts = getChplProductNumber().split("\\.");
+        if(uniqueIdParts != null && 
+                uniqueIdParts.length == CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {
+            Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+            if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
+                if (getIcs() != null && getIcs().getInherits() != null
+                        && getIcs().getInherits().equals(Boolean.TRUE)) {
+                    hasIcsConflict = true;
+                }
+            } else if (getIcs() == null || getIcs().getInherits() == null
+                    || getIcs().getInherits().equals(Boolean.FALSE) && icsCodeInteger != null
+                    && icsCodeInteger.intValue() > 0) {
+                hasIcsConflict = true;
+            }
+        }
+        return hasIcsConflict;
     }
 }

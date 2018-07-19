@@ -3,11 +3,8 @@ package gov.healthit.chpl.validation.listing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.validation.listing.review.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.review.Reviewer;
 
 /**
@@ -16,7 +13,7 @@ import gov.healthit.chpl.validation.listing.review.Reviewer;
  * @author kekey
  *
  */
-@Component("allowedListingValidator")
+@Component
 public class AllowedListingValidator {
 
     private List<Reviewer> reviewers;

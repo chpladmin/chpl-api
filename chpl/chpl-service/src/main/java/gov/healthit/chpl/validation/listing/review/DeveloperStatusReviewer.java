@@ -10,7 +10,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-@Component("chplNumberReviewer")
+@Component
 public class DeveloperStatusReviewer implements Reviewer {
 
     @Autowired private DeveloperDAO developerDao;

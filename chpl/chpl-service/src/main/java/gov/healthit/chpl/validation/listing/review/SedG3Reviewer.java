@@ -5,15 +5,13 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component("sedG3Reviewer")
+@Component
 public class SedG3Reviewer implements Reviewer {
     private static final String G3_2014 = "170.314 (g)(3)";
     private static final String G3_2015 = "170.315 (g)(3)";
     @Autowired private ErrorMessageUtil msgUtil;
-    @Autowired private CertificationResultRules certRules;
     
     @Override
     public void review(CertifiedProductSearchDetails listing) {
@@ -22,10 +20,6 @@ public class SedG3Reviewer implements Reviewer {
 
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
-                    listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber())); 
-                }
                 if (cert.isSed() != null && cert.isSed()) {
                     foundSedCriteria = true;
                 }

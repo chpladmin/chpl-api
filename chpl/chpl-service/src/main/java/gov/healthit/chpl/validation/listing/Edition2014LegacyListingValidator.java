@@ -11,42 +11,45 @@ import gov.healthit.chpl.validation.listing.review.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.review.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.review.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.review.FieldLengthReviewer;
-import gov.healthit.chpl.validation.listing.review.RequiredFieldReviewer;
+import gov.healthit.chpl.validation.listing.review.LegacyTestToolReviewer;
+import gov.healthit.chpl.validation.listing.review.RequiredField2014Reviewer;
 import gov.healthit.chpl.validation.listing.review.Reviewer;
-import gov.healthit.chpl.validation.listing.review.SedG3Reviewer;
+import gov.healthit.chpl.validation.listing.review.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.review.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.review.UnsupportedCharacterReviewer;
 
 /**
- * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
+ * Validation interface for any 2014 listing with CHPL number beginning with CHP-
  * @author kekey
  *
  */
-@Component("listingValidator")
-public class ListingValidator extends Validator {
+@Component
+public class Edition2014LegacyListingValidator {
     @Autowired ChplNumberReviewer chplNumberReviewer;
     @Autowired DeveloperStatusReviewer devStatusReviewer;
     @Autowired UnsupportedCharacterReviewer unsupportedCharacterReviewer;
     @Autowired FieldLengthReviewer fieldLengthReviewer;
-    @Autowired RequiredFieldReviewer requiredFieldReviewer;
-    @Autowired SedG3Reviewer sedG3Reviewer;
+    @Autowired RequiredField2014Reviewer requiredFieldReviewer;
     @Autowired CertificationStatusReviewer certStatusReviewer;
     @Autowired CertificationDateReviewer certDateReviewer;
     @Autowired UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
-    
+    @Autowired LegacyTestToolReviewer ttReviewer;
+    @Autowired TestFunctionalityReviewer tfReviewer;
+
     private List<Reviewer> reviewers;
 
-    public ListingValidator() {
+    public Edition2014LegacyListingValidator() {
         reviewers = new ArrayList<Reviewer>();
         reviewers.add(chplNumberReviewer);
         reviewers.add(devStatusReviewer);
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredFieldReviewer);
-        reviewers.add(sedG3Reviewer);
         reviewers.add(certStatusReviewer);
         reviewers.add(certDateReviewer);
         reviewers.add(unattestedCriteriaWithDataReviewer);
+        reviewers.add(ttReviewer);
+        reviewers.add(tfReviewer);
     }
 
     public List<Reviewer> getReviewers() {

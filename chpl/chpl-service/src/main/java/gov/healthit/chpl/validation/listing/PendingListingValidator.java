@@ -16,7 +16,7 @@ import gov.healthit.chpl.validation.pendingListing.review.UnsupportedCharacterRe
  * @author kekey
  *
  */
-@Component("pendingListingValidator")
+@Component
 public class PendingListingValidator {
     @Autowired UnsupportedCharacterReviewer unsupportedCharacterReviewer;
     @Autowired FieldLengthReviewer fieldLengthReviewer;

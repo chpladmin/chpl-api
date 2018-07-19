@@ -4,13 +4,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component("requiredFieldReviewer")
+@Component
 public class RequiredFieldReviewer implements Reviewer {
-    @Autowired private ErrorMessageUtil msgUtil;
-    
+    @Autowired protected ErrorMessageUtil msgUtil;
+    @Autowired protected CertificationResultRules certRules;
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationEdition() == null || listing.getCertificationEdition().get("id") == null) {
@@ -36,6 +39,15 @@ public class RequiredFieldReviewer implements Reviewer {
         }
         if(listing.getOldestStatus() == null) {
             listing.getErrorMessages().add(msgUtil.getMessage("listing.noStatusProvided"));
+        }
+        
+        for (CertificationResult cert : listing.getCertificationResults()) {
+            if (cert.isSuccess() != null && cert.isSuccess().booleanValue()) {
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP) && cert.isGap() == null) {
+                    listing.getErrorMessages().add(
+                            msgUtil.getMessage("listing.criteria.missingGap", cert.getNumber())); 
+                }
+            }
         }
     }
 }

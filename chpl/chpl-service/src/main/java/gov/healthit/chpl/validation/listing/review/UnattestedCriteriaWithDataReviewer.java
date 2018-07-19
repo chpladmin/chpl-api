@@ -11,7 +11,7 @@ import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component("unattestedCriteriaWithDataReviewer")
+@Component
 public class UnattestedCriteriaWithDataReviewer implements Reviewer {
     
     @Autowired ErrorMessageUtil msgUtil;
