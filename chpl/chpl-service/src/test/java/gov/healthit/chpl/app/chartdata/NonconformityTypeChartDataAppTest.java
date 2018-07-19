@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -41,13 +42,13 @@ public class NonconformityTypeChartDataAppTest extends TestCase {
     private NonconformityTypeStatisticsDAO nonconformStatDAO;
 
     @Autowired
-    private TransactionTemplate txnTemplate;
+    private JpaTransactionManager txnManager;
 
     @Test
     @Transactional
     public void buildNonconformityTypeStatistics() {
         NonconformityTypeChartCalculator calc = new NonconformityTypeChartCalculator(statisticsDAO, nonconformStatDAO,
-                txnTemplate);
+                txnManager);
         List<NonconformityTypeStatisticsDTO> dtos = calc.getCounts();
         assertNotNull(dtos);
         assertEquals(1, dtos.size());

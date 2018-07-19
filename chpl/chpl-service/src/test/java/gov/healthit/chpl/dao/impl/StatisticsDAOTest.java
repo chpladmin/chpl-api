@@ -478,7 +478,7 @@ public class StatisticsDAOTest extends TestCase {
         DateRange dateRange = new DateRange(new Date(0), new Date());
         Long totalOpenSurveillanceNonconformities = surveillanceStatisticsDao.getTotalOpenNonconformities(dateRange);
         assertNotNull(totalOpenSurveillanceNonconformities);
-        assertEquals(9L, totalOpenSurveillanceNonconformities.longValue());
+        assertEquals(3L, totalOpenSurveillanceNonconformities.longValue());
     }
 
     /**

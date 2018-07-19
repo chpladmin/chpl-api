@@ -31,10 +31,11 @@ public class NonconformityTypeChartCalculator {
     }
 
     NonconformityTypeChartCalculator(final SurveillanceStatisticsDAO statisticsDAO,
-            NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO, TransactionTemplate txnTemplate) {
+            NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO, JpaTransactionManager txnManager) {
         this.statisticsDAO = (SurveillanceStatisticsDAO) statisticsDAO;
         this.nonconformityTypeStatisticsDAO = nonconformityTypeStatisticsDAO;
-        this.txnTemplate = txnTemplate;
+        this.txnManager = txnManager;
+        this.txnTemplate = new TransactionTemplate(this.txnManager);
     }
 
     public void logCounts(List<NonconformityTypeStatisticsDTO> dtos) {
