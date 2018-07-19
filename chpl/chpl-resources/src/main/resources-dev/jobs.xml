@@ -105,5 +105,13 @@
                 <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
+        <job>
+            <name>triggerDeveloperBan</name>
+            <group>chplJobs</group>
+            <description>Send warnings to subscribers when an ONC-ACB has changed status of a listing to a state that might warrant a Developer Ban.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
