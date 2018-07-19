@@ -67,7 +67,7 @@
                 <job-name>downloadFileJob2015</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
+                <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
             </cron>
         </trigger>
         <trigger>
@@ -77,7 +77,7 @@
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 2 1 * * ?</cron-expression> <!-- At 0102 UTC every day -->
+                <cron-expression>0 35 4 * * ?</cron-expression> <!-- At 0435 UTC every day -->
             </cron>
         </trigger>
         <trigger>
@@ -87,7 +87,7 @@
                 <job-name>downloadFileJob2011</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of the quarter -->
+                <cron-expression>0 45 4 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
         <job>
