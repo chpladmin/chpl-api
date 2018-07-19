@@ -65,17 +65,11 @@ public class SchedulerManagerImpl implements SchedulerManager {
 
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
-    public void deleteTrigger(final String scheduleType, final String triggerId)
+    public void deleteTrigger(final String triggerGroup, final String triggerName)
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
-        TriggerKey triggerKey;
-        switch (scheduleType) {
-        case "CACHE_STATUS_AGE_NOTIFICATION":
-            triggerKey = triggerKey(triggerId, "cacheStatusAgeTrigger");
-            break;
-        default:
-            throw new ValidationException("invalid data");
-        }
+        TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
+        
         scheduler.unscheduleJob(triggerKey);
     }
 

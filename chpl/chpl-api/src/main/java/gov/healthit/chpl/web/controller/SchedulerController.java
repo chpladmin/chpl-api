@@ -58,11 +58,11 @@ public class SchedulerController {
      * @throws ValidationException if job values aren't correct
      */
     @ApiOperation(value = "Delete an existing trigger")
-    @RequestMapping(value = "/triggers/{scheduleType}/{triggerKey}", method = RequestMethod.DELETE)
-    public void deleteTrigger(@PathVariable("scheduleType") final String scheduleType,
-            @PathVariable("triggerKey") final String triggerKey)
+    @RequestMapping(value = "/triggers/{triggerGroup}/{triggerName}", method = RequestMethod.DELETE)
+    public void deleteTrigger(@PathVariable("triggerGroup") final String triggerGroup,
+            @PathVariable("triggerName") final String triggerName)
                     throws SchedulerException, ValidationException {
-        schedulerManager.deleteTrigger(scheduleType, triggerKey);
+        schedulerManager.deleteTrigger(triggerGroup, triggerName);
     }
 
     /**

@@ -30,7 +30,7 @@ public interface SchedulerManager {
      * @throws SchedulerException if scheduler has an issue
      * @throws ValidationException if job values aren't correct
      */
-    void deleteTrigger(String scheduleType, String triggerId) throws SchedulerException, ValidationException;
+    void deleteTrigger(String triggerGroup, String  triggerName) throws SchedulerException, ValidationException;
 
     /**
      * Get all active Triggers.
