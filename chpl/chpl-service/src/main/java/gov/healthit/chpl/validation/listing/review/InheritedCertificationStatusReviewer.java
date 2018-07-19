@@ -6,10 +6,12 @@ import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class InheritedCertificationStatusReviewer implements Reviewer {
+    @Autowired private ChplProductNumberUtil productNumUtil;
     @Autowired private ErrorMessageUtil msgUtil;
     
 
@@ -18,9 +20,7 @@ public class InheritedCertificationStatusReviewer implements Reviewer {
             listing.getErrorMessages().add(
                     msgUtil.getMessage("listing.badIcsCodeChars", CertifiedProductDTO.ICS_CODE_LENGTH));
         } else {
-            String uniqueId = listing.getChplProductNumber();
-            String[] uniqueIdParts = uniqueId.split("\\.");
-            Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+            Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
             if (icsCodeInteger != null && icsCodeInteger.intValue() == 0) {
                 if (listing.getIcs() != null && listing.getIcs().getParents() != null
                         && listing.getIcs().getParents().size() > 0) {

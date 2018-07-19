@@ -159,6 +159,15 @@ public class ChplProductNumberUtil {
         return false;
     }
 
+    public Integer getIcsCode(String chplProductNumber) {
+        Integer icsCode = null;
+        if(!isLegacy(chplProductNumber)) {
+            String[] uniqueIdParts = chplProductNumber.split("\\.");
+            icsCode = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+        }
+        return icsCode;
+    }
+    
     private String[] splitUniqueIdParts(final String uniqueId) {
         String[] uniqueIdParts = uniqueId.split("\\.");
         if (uniqueIdParts == null || uniqueIdParts.length != CertifiedProductDTO.CHPL_PRODUCT_ID_PARTS) {

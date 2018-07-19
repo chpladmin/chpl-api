@@ -46,21 +46,21 @@ public class AmbulatoryComplete2014Validator extends AmbulatoryModular2014Valida
     @Override
     public void validate(CertifiedProductSearchDetails product) {
         super.validate(product);
-        super.checkA1OrA18A19A20(product);
-        super.checkB1B2B8H1(product);
-
-        List<CertificationResult> certificationCriterion = product.getCertificationResults();
-        for (int i = 0; i < requiredCriteria.length; i++) {
-            boolean hasCert = false;
-            for (CertificationResult certCriteria : certificationCriterion) {
-                if (certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.isSuccess()) {
-                    hasCert = true;
-                }
-            }
-            if (!hasCert) {
-                product.getErrorMessages()
-                        .add("Required certification criteria " + requiredCriteria[i] + " was not found.");
-            }
-        }
+//        super.checkA1OrA18A19A20(product);
+//        super.checkB1B2B8H1(product);
+//
+//        List<CertificationResult> certificationCriterion = product.getCertificationResults();
+//        for (int i = 0; i < requiredCriteria.length; i++) {
+//            boolean hasCert = false;
+//            for (CertificationResult certCriteria : certificationCriterion) {
+//                if (certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.isSuccess()) {
+//                    hasCert = true;
+//                }
+//            }
+//            if (!hasCert) {
+//                product.getErrorMessages()
+//                        .add("Required certification criteria " + requiredCriteria[i] + " was not found.");
+//            }
+//        }
     }
 }

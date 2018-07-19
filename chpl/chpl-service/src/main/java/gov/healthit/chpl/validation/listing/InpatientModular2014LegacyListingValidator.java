@@ -7,17 +7,14 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.listing.review.Reviewer;
 import gov.healthit.chpl.validation.listing.review.edition2014.InpatientG1G2RequiredData2014Reviewer;
-import gov.healthit.chpl.validation.listing.review.edition2014.InpatientRequiredTestToolReviewer;
 
 @Component
-public class InpatientModular2014ListingValidator extends Edition2014ListingValidator {
+public class InpatientModular2014LegacyListingValidator extends Edition2014ListingValidator {
     @Autowired protected InpatientG1G2RequiredData2014Reviewer g1g2Reviewer;
-    @Autowired protected InpatientRequiredTestToolReviewer ttReviewer;
     
-    public InpatientModular2014ListingValidator() {
+    public InpatientModular2014LegacyListingValidator() {
         super();
         reviewers.add(g1g2Reviewer);
-        reviewers.add(ttReviewer);
     }
     
     @Override

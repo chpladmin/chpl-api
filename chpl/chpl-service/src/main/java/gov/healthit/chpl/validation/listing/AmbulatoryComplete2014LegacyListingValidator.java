@@ -11,11 +11,11 @@ import gov.healthit.chpl.validation.listing.review.edition2014.AmbulatoryComplet
  *
  */
 @Component
-public class AmbulatoryComplete2014ListingValidator extends AmbulatoryModular2014ListingValidator {
+public class AmbulatoryComplete2014LegacyListingValidator extends AmbulatoryModular2014LegacyListingValidator {
 
     @Autowired AmbulatoryCompleteRequiredCriteriaReviewer criteriaReviewer;
     
-    public AmbulatoryComplete2014ListingValidator() {
+    public AmbulatoryComplete2014LegacyListingValidator() {
         super();
         getReviewers().add(criteriaReviewer);
     }

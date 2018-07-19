@@ -96,30 +96,30 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
         } else {
-            CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
-            for (CertificationResult certCriteria : productCasted.getCertificationResults()) {
-                if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.isSuccess()) {
-                    hasB1 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.isSuccess()) {
-                    hasB2 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.isSuccess()) {
-                    hasB8 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.isSuccess()) {
-                    hasH1 = true;
-                }
-            }
-            if (!hasB1 && !hasB2) {
-                if (!hasB1 && !hasB8) {
-                    if (!hasB8 && !hasH1) {
-                        productCasted.getErrorMessages()
-                        .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
-                        return false;
-                    }
-                }
-            }
+//            CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
+//            for (CertificationResult certCriteria : productCasted.getCertificationResults()) {
+//                if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.isSuccess()) {
+//                    hasB1 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.isSuccess()) {
+//                    hasB2 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.isSuccess()) {
+//                    hasB8 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.isSuccess()) {
+//                    hasH1 = true;
+//                }
+//            }
+//            if (!hasB1 && !hasB2) {
+//                if (!hasB1 && !hasB8) {
+//                    if (!hasB8 && !hasH1) {
+//                        productCasted.getErrorMessages()
+//                        .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
+//                        return false;
+//                    }
+//                }
+//            }
         }
         return true;
     }
@@ -153,27 +153,27 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
                 }
             }
         } else {
-            CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
-            for (CertificationResult certCriteria : productCasted.getCertificationResults()) {
-                if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.isSuccess()) {
-                    hasA1 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.isSuccess()) {
-                    hasA18 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.isSuccess()) {
-                    hasA19 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.isSuccess()) {
-                    hasA20 = true;
-                }
-            } if (!hasA1) {
-                if (!hasA18 || !hasA19 || !hasA20) {
-                    productCasted.getErrorMessages()
-                    .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
-                    return false;
-                }
-            }
+//            CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
+//            for (CertificationResult certCriteria : productCasted.getCertificationResults()) {
+//                if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.isSuccess()) {
+//                    hasA1 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.isSuccess()) {
+//                    hasA18 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.isSuccess()) {
+//                    hasA19 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.isSuccess()) {
+//                    hasA20 = true;
+//                }
+//            } if (!hasA1) {
+//                if (!hasA18 || !hasA19 || !hasA20) {
+//                    productCasted.getErrorMessages()
+//                    .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
+//                    return false;
+//                }
+//            }
         }
         return true;
     }
@@ -184,39 +184,39 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
      * @param certs array to check
      * @return true if...wait, what does this do?
      */
-    public boolean certCheck(final PendingCertificationResultDTO certToCompare, final String[] certs){
-        for (String cert : certs) {
-            if (!certToCompare.getNumber().equals(cert)){
-                return false;
-            }
-        }
-        return true;
-    }
+//    public boolean certCheck(final PendingCertificationResultDTO certToCompare, final String[] certs){
+//        for (String cert : certs) {
+//            if (!certToCompare.getNumber().equals(cert)){
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     /**
      * Check for G1/G2 tools.
      * @param certs certs to check
      * @param product product to check
      */
-    public void g1g2TestToolCheck(final String[] certs, final PendingCertifiedProductDTO product){
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
-                    gapEligibleAndTrue = true;
-                }
-
-                if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && certCheck(cert, certs)
-                        && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    product.getErrorMessages()
-                    .add("Test Tools are required for certification " + cert.getNumber() + ".");
-                }
-            }
-        }
-    }
+//    public void g1g2TestToolCheck(final String[] certs, final PendingCertifiedProductDTO product){
+//        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+//            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+//                boolean gapEligibleAndTrue = false;
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+//                        && cert.getGap() == Boolean.TRUE) {
+//                    gapEligibleAndTrue = true;
+//                }
+//
+//                if (!gapEligibleAndTrue
+//                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+//                        && certCheck(cert, certs)
+//                        && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+//                    product.getErrorMessages()
+//                    .add("Test Tools are required for certification " + cert.getNumber() + ".");
+//                }
+//            }
+//        }
+//    }
 
     @Override
     public void validate(final PendingCertifiedProductDTO product) {

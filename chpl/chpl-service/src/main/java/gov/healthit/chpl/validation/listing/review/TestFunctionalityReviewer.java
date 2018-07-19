@@ -17,6 +17,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class TestFunctionalityReviewer implements Reviewer {
+    private static final String EDITION_2014 = "2014";
+    
     @Autowired private TestFunctionalityDAO testFunctionalityDAO;
     @Autowired private CertificationCriterionDAO certificationCriterionDAO;
     @Autowired private ErrorMessageUtil msgUtil;
@@ -58,7 +60,7 @@ public class TestFunctionalityReviewer implements Reviewer {
 
         if (tf.getCertificationCriterion() != null) {
             CertificationCriterionDTO cc =
-                    certificationCriterionDAO.getByNameAndYear(certificationCriterionName, "2014");
+                    certificationCriterionDAO.getByNameAndYear(certificationCriterionName, EDITION_2014);
             if (!tf.getCertificationCriterion().getId().equals(cc.getId())) {
                 return false;
             }

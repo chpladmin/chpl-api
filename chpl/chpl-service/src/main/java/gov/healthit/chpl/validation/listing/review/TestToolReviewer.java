@@ -8,17 +8,17 @@ import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.util.ChplProductNumberUtil;
 
 @Component
 public class TestToolReviewer implements Reviewer {
     @Autowired TestToolDAO testToolDao;
-    
+    @Autowired private ChplProductNumberUtil productNumUtil;
+
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        String[] uniqueIdParts = listing.getChplProductNumber().split("\\.");
-        Integer icsCodeInteger = Integer.valueOf(uniqueIdParts[CertifiedProductDTO.ICS_CODE_INDEX]);
+        Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
 
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {

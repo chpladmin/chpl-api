@@ -12,13 +12,13 @@ import gov.healthit.chpl.validation.listing.review.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.review.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.review.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.review.InheritedCertificationStatusReviewer;
-import gov.healthit.chpl.validation.listing.review.RequiredField2014Reviewer;
 import gov.healthit.chpl.validation.listing.review.Reviewer;
 import gov.healthit.chpl.validation.listing.review.SedG3Reviewer;
 import gov.healthit.chpl.validation.listing.review.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.review.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.review.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.review.UnsupportedCharacterReviewer;
+import gov.healthit.chpl.validation.listing.review.edition2014.RequiredData2014Reviewer;
 
 /**
  * Validation interface for any listing that is already uploaded and confirmed on the CHPL.
@@ -26,21 +26,21 @@ import gov.healthit.chpl.validation.listing.review.UnsupportedCharacterReviewer;
  *
  */
 @Component
-public class Edition2014ListingValidator extends Validator {
-    @Autowired ChplNumberReviewer chplNumberReviewer;
-    @Autowired DeveloperStatusReviewer devStatusReviewer;
-    @Autowired UnsupportedCharacterReviewer unsupportedCharacterReviewer;
-    @Autowired FieldLengthReviewer fieldLengthReviewer;
-    @Autowired RequiredField2014Reviewer requiredFieldReviewer;
-    @Autowired SedG3Reviewer sedG3Reviewer;
-    @Autowired CertificationStatusReviewer certStatusReviewer;
-    @Autowired CertificationDateReviewer certDateReviewer;
-    @Autowired UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
-    @Autowired InheritedCertificationStatusReviewer icsReviewer;
-    @Autowired TestToolReviewer ttReviewer;
-    @Autowired TestFunctionalityReviewer tfReviewer;
+public abstract class Edition2014ListingValidator extends Validator {
+    @Autowired protected ChplNumberReviewer chplNumberReviewer;
+    @Autowired protected DeveloperStatusReviewer devStatusReviewer;
+    @Autowired protected UnsupportedCharacterReviewer unsupportedCharacterReviewer;
+    @Autowired protected FieldLengthReviewer fieldLengthReviewer;
+    @Autowired protected RequiredData2014Reviewer requiredFieldReviewer;
+    @Autowired protected SedG3Reviewer sedG3Reviewer;
+    @Autowired protected CertificationStatusReviewer certStatusReviewer;
+    @Autowired protected CertificationDateReviewer certDateReviewer;
+    @Autowired protected UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
+    @Autowired protected InheritedCertificationStatusReviewer icsReviewer;
+    @Autowired protected TestToolReviewer ttReviewer;
+    @Autowired protected TestFunctionalityReviewer tfReviewer;
     
-    private List<Reviewer> reviewers;
+    protected List<Reviewer> reviewers;
 
     public Edition2014ListingValidator() {
         reviewers = new ArrayList<Reviewer>();
@@ -56,9 +56,5 @@ public class Edition2014ListingValidator extends Validator {
         reviewers.add(icsReviewer);
         reviewers.add(ttReviewer);
         reviewers.add(tfReviewer);
-    }
-
-    public List<Reviewer> getReviewers() {
-        return reviewers;
     }
 }

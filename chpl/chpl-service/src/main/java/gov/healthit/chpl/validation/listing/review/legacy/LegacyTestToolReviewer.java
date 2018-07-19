@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.review;
+package gov.healthit.chpl.validation.listing.review.legacy;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,6 +9,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestToolDTO;
+import gov.healthit.chpl.validation.listing.review.Reviewer;
 
 @Component
 public class LegacyTestToolReviewer implements Reviewer {

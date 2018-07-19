@@ -67,7 +67,7 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
     @Override
     protected void validateDemographics(PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
-        super.g1g2TestToolCheck(g1g2TestToolCheckCerts, product);
+//        super.g1g2TestToolCheck(g1g2TestToolCheckCerts, product);
     }
 
     @Override
@@ -75,54 +75,54 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
         super.validate(product);
 
         // check (g)(1)
-        boolean hasG1Cert = false;
-        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
-                hasG1Cert = true;
-            }
-        }
-        if (hasG1Cert) {
-            String[] g1Certs = getG1ComplimentaryCerts();
-            boolean hasG1Complement = false;
-            for (int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
-                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-                    if (certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
-                        hasG1Complement = true;
-                    }
-                }
-            }
-
-            if (!hasG1Complement) {
-                product.getErrorMessages().add(getMessage("listing.criteria.missingG1Related"));
-            }
-        }
-
-        // check (g)(2)
-        boolean hasG2Cert = false;
-        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
-                hasG2Cert = true;
-            }
-        }
-        if (hasG2Cert) {
-            String[] g2Certs = getG2ComplimentaryCerts();
-            boolean hasG2Complement = false;
-            for (int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
-                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-                    if (certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
-                        hasG2Complement = true;
-                    }
-                }
-            }
-
-            if (!hasG2Complement) {
-                product.getErrorMessages().add(getMessage("listing.criteria.missingG2Related"));
-            }
-        }
-
-        if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
-        }
+//        boolean hasG1Cert = false;
+//        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//            if (certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
+//                hasG1Cert = true;
+//            }
+//        }
+//        if (hasG1Cert) {
+//            String[] g1Certs = getG1ComplimentaryCerts();
+//            boolean hasG1Complement = false;
+//            for (int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
+//                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//                    if (certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
+//                        hasG1Complement = true;
+//                    }
+//                }
+//            }
+//
+//            if (!hasG1Complement) {
+//                product.getErrorMessages().add(getMessage("listing.criteria.missingG1Related"));
+//            }
+//        }
+//
+//        // check (g)(2)
+//        boolean hasG2Cert = false;
+//        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//            if (certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
+//                hasG2Cert = true;
+//            }
+//        }
+//        if (hasG2Cert) {
+//            String[] g2Certs = getG2ComplimentaryCerts();
+//            boolean hasG2Complement = false;
+//            for (int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
+//                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//                    if (certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
+//                        hasG2Complement = true;
+//                    }
+//                }
+//            }
+//
+//            if (!hasG2Complement) {
+//                product.getErrorMessages().add(getMessage("listing.criteria.missingG2Related"));
+//            }
+//        }
+//
+//        if (hasG1Cert && hasG2Cert) {
+//            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
+//        }
     }
 
     @Override
@@ -135,56 +135,56 @@ public class AmbulatoryModular2014Validator extends CertifiedProduct2014Validato
 
     @Override
     public void validate(CertifiedProductSearchDetails product) {
-        super.validate(product);
-
-        // check (g)(1)
-        boolean hasG1Cert = false;
-        for (CertificationResult certCriteria : product.getCertificationResults()) {
-            if (certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isSuccess()) {
-                hasG1Cert = true;
-            }
-        }
-        if (hasG1Cert) {
-            String[] g1Certs = getG1ComplimentaryCerts();
-            boolean hasAtLeastOneCertPartner = false;
-            for (int i = 0; i < g1Certs.length && !hasAtLeastOneCertPartner; i++) {
-                for (CertificationResult certCriteria : product.getCertificationResults()) {
-                    if (certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.isSuccess()) {
-                        hasAtLeastOneCertPartner = true;
-                    }
-                }
-            }
-
-            if (!hasAtLeastOneCertPartner) {
-                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
-            }
-        }
-
-        // check (g)(2)
-        boolean hasG2Cert = false;
-        for (CertificationResult certCriteria : product.getCertificationResults()) {
-            if (certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isSuccess()) {
-                hasG2Cert = true;
-            }
-        }
-        if (hasG2Cert) {
-            String[] g2Certs = getG2ComplimentaryCerts();
-            boolean hasAtLeastOneCertPartner = false;
-            for (int i = 0; i < g2Certs.length && !hasAtLeastOneCertPartner; i++) {
-                for (CertificationResult certCriteria : product.getCertificationResults()) {
-                    if (certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.isSuccess()) {
-                        hasAtLeastOneCertPartner = true;
-                    }
-                }
-            }
-
-            if (!hasAtLeastOneCertPartner) {
-                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
-            }
-        }
-
-        if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
-        }
+//        super.validate(product);
+//
+//        // check (g)(1)
+//        boolean hasG1Cert = false;
+//        for (CertificationResult certCriteria : product.getCertificationResults()) {
+//            if (certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.isSuccess()) {
+//                hasG1Cert = true;
+//            }
+//        }
+//        if (hasG1Cert) {
+//            String[] g1Certs = getG1ComplimentaryCerts();
+//            boolean hasAtLeastOneCertPartner = false;
+//            for (int i = 0; i < g1Certs.length && !hasAtLeastOneCertPartner; i++) {
+//                for (CertificationResult certCriteria : product.getCertificationResults()) {
+//                    if (certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.isSuccess()) {
+//                        hasAtLeastOneCertPartner = true;
+//                    }
+//                }
+//            }
+//
+//            if (!hasAtLeastOneCertPartner) {
+//                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
+//            }
+//        }
+//
+//        // check (g)(2)
+//        boolean hasG2Cert = false;
+//        for (CertificationResult certCriteria : product.getCertificationResults()) {
+//            if (certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.isSuccess()) {
+//                hasG2Cert = true;
+//            }
+//        }
+//        if (hasG2Cert) {
+//            String[] g2Certs = getG2ComplimentaryCerts();
+//            boolean hasAtLeastOneCertPartner = false;
+//            for (int i = 0; i < g2Certs.length && !hasAtLeastOneCertPartner; i++) {
+//                for (CertificationResult certCriteria : product.getCertificationResults()) {
+//                    if (certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.isSuccess()) {
+//                        hasAtLeastOneCertPartner = true;
+//                    }
+//                }
+//            }
+//
+//            if (!hasAtLeastOneCertPartner) {
+//                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
+//            }
+//        }
+//
+//        if (hasG1Cert && hasG2Cert) {
+//            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
+//        }
     }
 }
