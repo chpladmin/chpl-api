@@ -75,23 +75,26 @@ public class TriggerDeveloperBanJob implements Job {
 
     private String createHtmlEmailBody(final JobExecutionContext jobContext) {
         String url = properties.getProperty("chplUrlBegin");
-        String htmlMessage = "<p>The CHPL Listing <a href=\"" + url + "/#/product/"
-                + jobContext.getMergedJobDataMap().getLong("dbId") + "\">"
-                + jobContext.getMergedJobDataMap().getString("chplId") + "</a>, owned by \""
-                + jobContext.getMergedJobDataMap().getString("developer") + "\", and certified by \""
-                + jobContext.getMergedJobDataMap().getString("acb") + "\" has been set on \""
-                + Util.getDateFormatter().format(new Date(jobContext.getMergedJobDataMap().getLong("changeDate")))
-                + "\" by \"" + jobContext.getMergedJobDataMap().getString("firstName") + " "
-                + jobContext.getMergedJobDataMap().getString("lastName") + "\" to a Certification Status of \""
-                + jobContext.getMergedJobDataMap().getString("status") + "\" with an effective date of \""
-                + Util.getDateFormatter().format(new Date(jobContext.getMergedJobDataMap().getLong("effectiveDate")))
-                + "\".</p><p>There " + (jobContext.getMergedJobDataMap().getInt("openNcs") != 1 ? "were" : "was")
-                + " \"" + jobContext.getMergedJobDataMap().getInt("openNcs") + "\" Open Nonconformit"
-                + (jobContext.getMergedJobDataMap().getInt("openNcs") != 1 ? "ies" : "y") + " and \""
-                + jobContext.getMergedJobDataMap().getInt("closedNcs") + "\" Closed Nonconformit"
-                + (jobContext.getMergedJobDataMap().getInt("closedNcs") != 1 ? "ies" : "y") + ".</p><p>"
-                + "ONC should review the activity and all details of the listing to determine if it warrants a ban "
-                + "on the Developer.</p>";
-        return htmlMessage;
+        int openNcs = jobContext.getMergedJobDataMap().getInt("openNcs");
+        int closedNcs = jobContext.getMergedJobDataMap().getInt("closedNcs");
+        String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/product/%d\">%s</a>, owned by \"%s\" "
+                + "and certified by \"%s\" has been set on \"%s\" by \"%s\" to a Certification Status of \"%s\" with "
+                + "an effective date of\"%s\".</p>"
+                + "<p>There %s %d Open Nonconformit%s and %d Closed Nonconformit%s.</p>"
+                + "<p>ONC should review the activity and all details of the listing to determine if it warrants a ban "
+                + "on the Developer.</p>",
+                url,
+                jobContext.getMergedJobDataMap().getLong("dbId"),
+                jobContext.getMergedJobDataMap().getString("chplId"),
+                jobContext.getMergedJobDataMap().getString("developer"),
+                jobContext.getMergedJobDataMap().getString("acb"),
+                Util.getDateFormatter().format(new Date(jobContext.getMergedJobDataMap().getLong("changeDate"))),
+                jobContext.getMergedJobDataMap().getString("firstName") + " "
+                + jobContext.getMergedJobDataMap().getString("lastName"),
+                jobContext.getMergedJobDataMap().getString("status"),
+                Util.getDateFormatter().format(new Date(jobContext.getMergedJobDataMap().getLong("effectiveDate"))),
+                (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"),
+                closedNcs, (closedNcs != 1 ? "ies" : "y"));
+                return htmlMessage;
     }
 }
