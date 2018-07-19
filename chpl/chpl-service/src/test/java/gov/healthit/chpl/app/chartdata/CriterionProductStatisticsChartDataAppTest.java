@@ -35,7 +35,7 @@ import junit.framework.TestCase;
 @DatabaseSetup("classpath:data/testData.xml")
 public class CriterionProductStatisticsChartDataAppTest extends TestCase {
 
-    private static final int EXPECTED_LENGTH = 12;
+    private static final int EXPECTED_LENGTH = 5;
     private static final Long EXPECTED_PRODUCT_COUNT = 2L;
     private static final String CRITERIA = "170.315 (a)(1)";
 
