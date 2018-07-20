@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.quartz.SchedulerException;
 
+import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 
@@ -29,7 +30,7 @@ public interface SchedulerManager {
      * @throws SchedulerException if scheduler has an issue
      * @throws ValidationException if job values aren't correct
      */
-    void deleteTrigger(String scheduleType, String triggerId) throws SchedulerException, ValidationException;
+    void deleteTrigger(String triggerGroup, String  triggerName) throws SchedulerException, ValidationException;
 
     /**
      * Get all active Triggers.
@@ -46,4 +47,6 @@ public interface SchedulerManager {
      * @throws ValidationException if job values aren't correct
      */
     ChplTrigger updateTrigger(ChplTrigger trigger) throws SchedulerException, ValidationException;
+    
+    List<ChplJob> getAllJobs() throws SchedulerException;
 }

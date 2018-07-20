@@ -28,7 +28,7 @@ public class QuartzCertifiedProductSearchDetailsAsync {
      * @return CertifiedProductionSearchDetails object
      * @throws EntityRetrievalException when the CertifiedProductionSearchDetails object could not be retrieved
      */
-    @Async("chartDataExecutor")
+    @Async("jobAsyncDataExecutor")
     public Future<CertifiedProductSearchDetails> getCertifiedProductDetail(
             final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
                 throws EntityRetrievalException {

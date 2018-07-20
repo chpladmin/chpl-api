@@ -2161,7 +2161,7 @@ public class CertifiedProductManagerImpl implements CertifiedProductManager {
             scheduler = getScheduler();
 
             TriggerKey triggerId = triggerKey("triggerBanNow_" + new Date().getTime(), "triggerDeveloperBanTrigger");
-            JobKey jobId = jobKey("triggerDeveloperBan", "chplJobs");
+            JobKey jobId = jobKey("Trigger Developer Ban Notification", "chplJobs");
 
             Trigger qzTrigger = newTrigger()
                     .withIdentity(triggerId)

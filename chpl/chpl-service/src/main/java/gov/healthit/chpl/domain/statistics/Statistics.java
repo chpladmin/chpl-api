@@ -241,7 +241,7 @@ public class Statistics implements Serializable {
         return totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;
     }
 
-    public void setTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(final
+    public void setTotalDevsByCertifiedBodyWithListingsInEachCertificationStatusAndYear(final
             List<CertifiedBodyStatistics> totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear) {
         this.totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear =
                 totalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear;

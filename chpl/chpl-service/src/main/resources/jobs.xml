@@ -6,19 +6,27 @@
     version="2.0">
     <schedule>
         <job>
-            <name>cacheStatusAgeJob</name>
+            <name>Cache Status Age</name>
             <group>chplJobs</group>
-
             <description>Allow subscribers to get notifications if the cache has become "too old".</description>
             <job-class>gov.healthit.chpl.scheduler.job.CacheStatusAgeJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>frequency</key>
+                    <value>HOURLY</value>
+                </entry>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
+            </job-data-map>
         </job>
 
         <job>
             <name>downloadFileJob2015</name>
             <group>systemJobs</group>
-
             <description>Generate download files for 2015.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
@@ -27,36 +35,6 @@
                 <entry>
                     <key>edition</key>
                     <value>2015</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <job>
-            <name>downloadFileJob2014</name>
-            <group>systemJobs</group>
-
-            <description>Generate download files for 2014.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>edition</key>
-                    <value>2014</value>
-                </entry>
-            </job-data-map>
-        </job>
-        <job>
-            <name>downloadFileJob2011</name>
-            <group>systemJobs</group>
-
-            <description>Generate download files for 2011.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>true</recover>
-            <job-data-map>
-                <entry>
-                    <key>edition</key>
-                    <value>2011</value>
                 </entry>
             </job-data-map>
         </job>
@@ -70,6 +48,21 @@
                 <cron-expression>0 30 4 * * ?</cron-expression> <!-- At 0430 UTC every day -->
             </cron>
         </trigger>
+
+        <job>
+            <name>downloadFileJob2014</name>
+            <group>systemJobs</group>
+            <description>Generate download files for 2014.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2014</value>
+                </entry>
+            </job-data-map>
+        </job>
         <trigger>
             <cron>
                 <name>generate2014</name>
@@ -80,6 +73,21 @@
                 <cron-expression>0 35 4 * * ?</cron-expression> <!-- At 0435 UTC every day -->
             </cron>
         </trigger>
+
+        <job>
+            <name>downloadFileJob2011</name>
+            <group>systemJobs</group>
+            <description>Generate download files for 2011.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>edition</key>
+                    <value>2011</value>
+                </entry>
+            </job-data-map>
+        </job>
         <trigger>
             <cron>
                 <name>generate2011</name>
@@ -90,13 +98,62 @@
                 <cron-expression>0 45 4 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0445 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
+
         <job>
-            <name>triggerDeveloperBan</name>
+            <name>summaryStatisticsCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the summary statistics report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>true</recover>
+            <job-data-map>
+                <entry>
+                    <key>generateCsvFile</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+        <trigger>
+            <cron>
+                <name>generateSummaryStatistics</name>
+                <group>summaryStatisticsTrigger</group>
+                <job-name>summaryStatisticsCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
+            </cron>
+        </trigger>
+
+        <job>
+            <name>Summary Statistics Email</name>
+            <group>chplJobs</group>
+            <description>Sends the Summary Statistics Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>HOURLY</value><!--  NEEDS TO BE DAILY -->
+                </entry>
+            </job-data-map>
+        </job>
+
+        <job>
+            <name>Trigger Developer Ban Notification</name>
             <group>chplJobs</group>
             <description>Send warnings to subscribers when an ONC-ACB has changed status of a listing to a state that might warrant a Developer Ban.</description>
             <job-class>gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob</job-class>
             <durability>true</durability>
             <recover>false</recover><job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
                 <entry>
                     <key>email</key>
                     <value>alarned@ainq.com</value>
