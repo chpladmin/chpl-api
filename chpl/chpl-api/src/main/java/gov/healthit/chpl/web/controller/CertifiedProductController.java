@@ -656,6 +656,9 @@ public class CertifiedProductController {
         }
 
         if (updatedListing.getErrorMessages() != null && updatedListing.getErrorMessages().size() > 0) {
+            for(String err : updatedListing.getErrorMessages()) {
+                LOGGER.error("Error updating listing " + updatedListing.getChplProductNumber() + ": " + err);
+            }
             throw new ValidationException(updatedListing.getErrorMessages(), updatedListing.getWarningMessages());
         }
 

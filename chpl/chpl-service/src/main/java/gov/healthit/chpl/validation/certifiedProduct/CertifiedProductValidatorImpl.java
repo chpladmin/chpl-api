@@ -1276,11 +1276,14 @@ public class CertifiedProductValidatorImpl implements CertifiedProductValidator 
                 }
             }
         }
-        if (foundSedCriteria && !attestsToSed) {
-            product.getErrorMessages().add(getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
-        }
-        if (!foundSedCriteria && attestsToSed) {
-            product.getErrorMessages().add(getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
+        
+        if(!chplProductNumberUtil.isLegacy(product.getChplProductNumber())) {
+            if (foundSedCriteria && !attestsToSed) {
+                product.getErrorMessages().add(getMessage("listing.criteria.foundSedCriteriaWithoutAttestingSed"));
+            }
+            if (!foundSedCriteria && attestsToSed) {
+                product.getErrorMessages().add(getMessage("listing.criteria.foundNoSedCriteriaButAttestingSed"));
+            }
         }
     }
 
