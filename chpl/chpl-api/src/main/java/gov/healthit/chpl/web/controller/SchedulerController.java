@@ -107,4 +107,20 @@ public class SchedulerController {
         return results;
         
     }
+
+    /**
+     * Update an existing Job based on passed in information.
+     * @param job the CHPL job
+     * @return the updated job
+     * @throws SchedulerException if scheduler has issues
+     */
+    @ApiOperation(value = "Update a given job")
+    @RequestMapping(value = "/jobs", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public @ResponseBody ScheduleJobsResults updateJob(@RequestBody(required = true)
+    final ChplJob job) throws SchedulerException {
+        ChplJob result = schedulerManager.updateJob(job);
+        ScheduleJobsResults results = new ScheduleJobsResults();
+        results.getResults().add(result);
+        return results;
+    }
 }

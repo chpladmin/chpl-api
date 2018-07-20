@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.impl;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
 import static org.quartz.JobKey.jobKey;
 import static org.quartz.TriggerBuilder.newTrigger;
 import static org.quartz.TriggerKey.triggerKey;
@@ -38,15 +39,15 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 @Service
 public class SchedulerManagerImpl implements SchedulerManager {
     public static final String AUTHORITY_DELIMITER = ";";
-    
+
     @Autowired
     private ChplSchedulerReference chplScheduler;
-    
+
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public ChplTrigger createTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
-        
+
         TriggerKey triggerId = triggerKey(createTriggerName(trigger), createTriggerGroup(trigger));
         JobKey jobId = jobKey(trigger.getJob().getName(), trigger.getJob().getGroup());
 
@@ -69,7 +70,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
             throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
-        
+
         scheduler.unscheduleJob(triggerKey);
     }
 
@@ -95,7 +96,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
     public ChplTrigger updateTrigger(final ChplTrigger trigger) throws SchedulerException, ValidationException {
         Scheduler scheduler = getScheduler();
         Trigger oldTrigger  = scheduler.getTrigger(triggerKey(trigger.getName(), trigger.getGroup()));
-        
+
         Trigger qzTrigger = newTrigger()
                 .withIdentity(oldTrigger.getKey())
                 .startNow()
@@ -109,7 +110,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return newTrigger;
     }
 
-    
+
     /* (non-Javadoc)
      * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs()
      * As new jobs are added that have authorities other than ROLE_ADMIN, those authorities
@@ -133,20 +134,36 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return jobs;
     }
 
+    @Override
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public ChplJob updateJob(final ChplJob job) throws SchedulerException {
+        Scheduler scheduler = getScheduler();
+        JobKey jobId = jobKey(job.getName(), job.getGroup());
+        JobDetail oldJob = scheduler.getJobDetail(jobId);
+        JobDetail newJob = newJob(oldJob.getJobClass())
+                .withIdentity(jobId)
+                .usingJobData(job.getJobDataMap())
+                .build();
+
+        scheduler.addJob(newJob, true);
+        ChplJob newChplJob = new ChplJob(newJob);
+        return newChplJob;
+    }
+
     private Scheduler getScheduler() throws SchedulerException {
         return chplScheduler.getScheduler();
     }
-    
-    
+
+
     private ChplTrigger getChplTrigger(TriggerKey triggerKey) throws SchedulerException {
         ChplTrigger chplTrigger = new ChplTrigger((CronTrigger) getScheduler().getTrigger(triggerKey));
-        
+
         JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
         ChplJob chplJob = new ChplJob(jobDetail);
         chplTrigger.setJob(chplJob);
         return chplTrigger; 
     }
-    
+
     private Boolean doesUserHavePermissionToJob(JobDetail jobDetail) {
         //Get the authorities from the job
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
@@ -160,7 +177,7 @@ public class SchedulerManagerImpl implements SchedulerManager {
                     }
                 }
             }
-            
+
         } else {
             //If no authorities are present, we assume there are no permissions on the job
             //and everyone has access
@@ -169,13 +186,13 @@ public class SchedulerManagerImpl implements SchedulerManager {
         //At this point we have fallen through all of the logic, and the user does not have the appropriate rights
         return false;
     }
-    
+
     private String createTriggerGroup(ChplTrigger trigger) {
         String group = trigger.getJob().getName().replaceAll(" ", "");
         group += "Trigger";
         return group;
     }
-    
+
     private String createTriggerName(ChplTrigger trigger) {
         return trigger.getEmail().replaceAll("\\.",  "_"); 
     }

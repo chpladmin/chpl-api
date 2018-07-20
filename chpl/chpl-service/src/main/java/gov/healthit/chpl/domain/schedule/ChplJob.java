@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain.schedule;
 
 import java.io.Serializable;
 
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 
 import gov.healthit.chpl.domain.concept.ScheduleFrequencyConcept;
@@ -12,15 +13,19 @@ public class ChplJob implements Serializable{
     private String group;
     private String name;
     private ScheduleFrequencyConcept frequency;
-    
+    private JobDataMap jobDataMap;
+
     public ChplJob() { }
-    
-    public ChplJob(JobDetail jobDetails) {
+
+    public ChplJob(final JobDetail jobDetails) {
         this.description = jobDetails.getDescription();
         this.group = jobDetails.getKey().getGroup();
         this.name = jobDetails.getKey().getName();
         if (jobDetails.getJobDataMap().containsKey("frequency")) {
             this.frequency = ScheduleFrequencyConcept.valueOf(jobDetails.getJobDataMap().get("frequency").toString());
+        }
+        if (jobDetails.getJobDataMap() != null) {
+            this.jobDataMap = jobDetails.getJobDataMap();
         }
     }
 
@@ -28,7 +33,7 @@ public class ChplJob implements Serializable{
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -36,7 +41,7 @@ public class ChplJob implements Serializable{
         return group;
     }
 
-    public void setGroup(String group) {
+    public void setGroup(final String group) {
         this.group = group;
     }
 
@@ -44,7 +49,7 @@ public class ChplJob implements Serializable{
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -52,8 +57,15 @@ public class ChplJob implements Serializable{
         return frequency;
     }
 
-    public void setFrequency(ScheduleFrequencyConcept frequency) {
+    public void setFrequency(final ScheduleFrequencyConcept frequency) {
         this.frequency = frequency;
     }
 
+    public JobDataMap getJobDataMap() {
+        return jobDataMap;
+    }
+
+    public void setJobDataMap(final JobDataMap jobDataMap) {
+        this.jobDataMap = jobDataMap;
+    }
 }
