@@ -12,6 +12,7 @@ import javax.mail.internet.AddressException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -74,27 +75,26 @@ public class TriggerDeveloperBanJob implements Job {
     }
 
     private String createHtmlEmailBody(final JobExecutionContext jobContext) {
-        String url = properties.getProperty("chplUrlBegin");
-        int openNcs = jobContext.getMergedJobDataMap().getInt("openNcs");
-        int closedNcs = jobContext.getMergedJobDataMap().getInt("closedNcs");
+        JobDataMap jdm = jobContext.getMergedJobDataMap();
+        int openNcs = jdm.getInt("openNcs");
+        int closedNcs = jdm.getInt("closedNcs");
         String htmlMessage = String.format("<p>The CHPL Listing <a href=\"%s/#/product/%d\">%s</a>, owned by \"%s\" "
                 + "and certified by \"%s\" has been set on \"%s\" by \"%s\" to a Certification Status of \"%s\" with "
                 + "an effective date of\"%s\".</p>"
                 + "<p>There %s %d Open Nonconformit%s and %d Closed Nonconformit%s.</p>"
                 + "<p>ONC should review the activity and all details of the listing to determine if it warrants a ban "
                 + "on the Developer.</p>",
-                url,
-                jobContext.getMergedJobDataMap().getLong("dbId"),
-                jobContext.getMergedJobDataMap().getString("chplId"),
-                jobContext.getMergedJobDataMap().getString("developer"),
-                jobContext.getMergedJobDataMap().getString("acb"),
-                Util.getDateFormatter().format(new Date(jobContext.getMergedJobDataMap().getLong("changeDate"))),
-                jobContext.getMergedJobDataMap().getString("firstName") + " "
-                + jobContext.getMergedJobDataMap().getString("lastName"),
-                jobContext.getMergedJobDataMap().getString("status"),
-                Util.getDateFormatter().format(new Date(jobContext.getMergedJobDataMap().getLong("effectiveDate"))),
-                (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"),
-                closedNcs, (closedNcs != 1 ? "ies" : "y"));
+                properties.getProperty("chplUrlBegin"),                                 // root of URL
+                jdm.getLong("dbId"),                                                    // for URL to product page
+                jdm.getString("chplId"),                                                // visible link
+                jdm.getString("developer"),                                             // developer name
+                jdm.getString("acb"),                                                   // ACB name
+                Util.getDateFormatter().format(new Date(jdm.getLong("changeDate"))),    // date of change
+                jdm.getString("firstName") + " " + jdm.getString("lastName"),           // user making change
+                jdm.getString("status"),                                                // target status
+                Util.getDateFormatter().format(new Date(jdm.getLong("effectiveDate"))), // effective date of change
+                (openNcs != 1 ? "were" : "was"), openNcs, (openNcs != 1 ? "ies" : "y"), // formatted counts of open
+                closedNcs, (closedNcs != 1 ? "ies" : "y"));    // and closed nonconformities, with English word endings
                 return htmlMessage;
     }
 }
