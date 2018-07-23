@@ -8,23 +8,28 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * A Spring singleton object object that provides a reference to the Quartz Scheduler.
+ * @author TYoung
+ *
+ */
 @Scope(value = "singleton")
 @Component
 public class ChplSchedulerReference {
     private Scheduler scheduler;
-    
+
+    /**
+     * Initializes the Quartz Scheduler when this object is created.
+     * @throws SchedulerException if thrown
+     */
     @PostConstruct
     public void init() throws SchedulerException {
         StdSchedulerFactory sf = new StdSchedulerFactory();
         sf.initialize("quartz.properties");
-        setScheduler(sf.getScheduler());
+        this.scheduler = sf.getScheduler();
     }
 
     public Scheduler getScheduler() {
         return scheduler;
-    }
-
-    public void setScheduler(Scheduler scheduler) {
-        this.scheduler = scheduler;
     }
 }

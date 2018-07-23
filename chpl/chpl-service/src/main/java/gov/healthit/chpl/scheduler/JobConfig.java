@@ -161,7 +161,11 @@ public class JobConfig {
         viewResolver.setSuffix(".jsp");
         return viewResolver;
     }
-    
+
+    /**
+     * Get a task executor.
+     * @return TaskExecutor object
+     */
     @Bean(name = "jobAsyncDataExecutor")
     public TaskExecutor specificTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

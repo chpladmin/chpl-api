@@ -6,16 +6,28 @@ import org.quartz.JobDetail;
 
 import gov.healthit.chpl.domain.concept.ScheduleFrequencyConcept;
 
+/**
+ * Represents the data for a Quartz job, along with other meta data for the job.
+ * @author TYoung
+ *
+ */
 public class ChplJob implements Serializable{
     private static final long serialVersionUID = -7634197357525761051L;
     private String description;
     private String group;
     private String name;
     private ScheduleFrequencyConcept frequency;
-    
+
+    /**
+     * Default (empty) constructor.
+     */
     public ChplJob() { }
-    
-    public ChplJob(JobDetail jobDetails) {
+
+    /**
+     * Constructor that build a ChplJob based on a Quartz Job object.
+     * @param jobDetails the Quartz JobDetail
+     */
+    public ChplJob(final JobDetail jobDetails) {
         this.description = jobDetails.getDescription();
         this.group = jobDetails.getKey().getGroup();
         this.name = jobDetails.getKey().getName();
@@ -28,7 +40,7 @@ public class ChplJob implements Serializable{
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
@@ -36,7 +48,7 @@ public class ChplJob implements Serializable{
         return group;
     }
 
-    public void setGroup(String group) {
+    public void setGroup(final String group) {
         this.group = group;
     }
 
@@ -44,7 +56,7 @@ public class ChplJob implements Serializable{
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -52,7 +64,7 @@ public class ChplJob implements Serializable{
         return frequency;
     }
 
-    public void setFrequency(ScheduleFrequencyConcept frequency) {
+    public void setFrequency(final ScheduleFrequencyConcept frequency) {
         this.frequency = frequency;
     }
 

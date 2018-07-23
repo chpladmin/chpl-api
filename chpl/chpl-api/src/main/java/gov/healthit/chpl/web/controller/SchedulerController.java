@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.web.controller.results.ScheduleJobsResults;
+import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -52,8 +52,8 @@ public class SchedulerController {
 
     /**
      * Remove a new Trigger based on passed information.
-     * @param scheduleType the schedule type name
-     * @param triggerKey the trigger to delete
+     * @param triggerGroup The group that identifies the trigger to remove
+     * @param triggerName The name that identifies the trigger to remove
      * @throws SchedulerException if exception is thrown
      * @throws ValidationException if job values aren't correct
      */
@@ -90,21 +90,25 @@ public class SchedulerController {
      */
     @ApiOperation(value = "Update an existing trigger and return it")
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true)
-    final ChplTrigger trigger) throws SchedulerException, ValidationException {
+    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplTrigger trigger)
+            throws SchedulerException, ValidationException {
         ChplTrigger result = schedulerManager.updateTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
         return results;
     }
-    
-    @ApiOperation(value = "Get the list of all jobs that are applicable to the currently loged in user")
+
+    /**
+     * Returns a list of all jobs that are applicable to the currently logged in user.
+     * @return List of ChplJob objects
+     * @throws SchedulerException if exception is thrown
+     */
+    @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user")
     @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleJobsResults getAllJobs() throws SchedulerException {
+    public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
         List<ChplJob> jobs = schedulerManager.getAllJobs();
-        ScheduleJobsResults results = new ScheduleJobsResults();
+        ChplJobsResults results = new ChplJobsResults();
         results.setResults(jobs);
         return results;
-        
     }
 }

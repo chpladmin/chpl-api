@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.statistics;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,21 +18,20 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
      * Total # of Unique Developers (Regardless of Edition)
      */
     @Override
-    public Long getTotalDevelopers(DateRange dateRange) {
+    public Long getTotalDevelopers(final DateRange dateRange) {
         String hql = "SELECT count(DISTINCT developerCode) "
                 + "FROM DeveloperEntity "
                 + " WHERE ";
-        if(dateRange == null) {
+        if (dateRange == null) {
                 hql += " deleted = false";
         } else {
             hql += "(deleted = false AND creationDate <= :endDate) "
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
         }
-
         Query query = entityManager.createQuery(hql);
-        
-        if(dateRange != null) {
+
+        if (dateRange != null) {
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -43,17 +41,18 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
      * Total # of Developers with Active 2014 Listings
      */
     @Override
-    public Long getTotalDevelopersWithListingsByEditionAndStatus(DateRange dateRange, String edition, List<String> statuses) {
+    public Long getTotalDevelopersWithListingsByEditionAndStatus(final DateRange dateRange,
+            final String edition, final List<String> statuses) {
         String hql = "SELECT count(DISTINCT developerCode) "
                 + "FROM CertifiedProductSummaryEntity ";
-        
+
         boolean hasWhere = false;
-        if(edition != null) {
+        if (edition != null) {
             hql += " WHERE year = :edition ";
             hasWhere = true;
         }
-        if(statuses != null && statuses.size() > 0) {
-            if(!hasWhere) {
+        if (statuses != null && statuses.size() > 0) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -61,9 +60,9 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
             }
             hql += " UPPER(certificationStatus) IN (:statuses) ";
         }
-        
-        if(dateRange == null) {
-            if(!hasWhere) {
+
+        if (dateRange == null) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -71,7 +70,7 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
             }
             hql += " deleted = false ";
         } else {
-            if(!hasWhere) {
+            if (!hasWhere) {
                 hql += " WHERE ";
                 hasWhere = true;
             } else {
@@ -82,14 +81,14 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
         Query query = entityManager.createQuery(hql);
-        
-        if(edition != null) {
+
+        if (edition != null) {
             query.setParameter("edition", edition);
         }
-        if(statuses != null && statuses.size() > 0) {
+        if (statuses != null && statuses.size() > 0) {
             query.setParameter("statuses", statuses);
         }
-        if(dateRange != null) {
+        if (dateRange != null) {
             query.setParameter("endDate", dateRange.getEndDate());
         }
         return (Long) query.getSingleResult();
@@ -99,27 +98,28 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
      * Total # of Developers with listings by certified body in each year
      */
     @Override
-    public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(DateRange dateRange) {
+    public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsEachYear(
+            final DateRange dateRange) {
         String hql = "SELECT certificationBodyName, year, count(DISTINCT developerCode) "
                 + "FROM CertifiedProductDetailsEntity "
                 + "WHERE ";
-        if(dateRange == null) {
+        if (dateRange == null) {
             hql += " deleted = false ";
         } else {
             hql += "(deleted = false AND creationDate <= :endDate) "
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
         }
-        hql += " GROUP BY certificationBodyName, year " 
+        hql += " GROUP BY certificationBodyName, year "
                 + " ORDER BY certificationBodyName ";
-        
+
         Query query = entityManager.createQuery(hql);
-        
-        if(dateRange != null) {
+
+        if (dateRange != null) {
             //query.setParameter("creationStartDate", dateRange.getStartDate());
             query.setParameter("endDate", dateRange.getEndDate());
         }
-        
+
         List<Object[]> results = query.getResultList();
         List<CertifiedBodyStatistics> cbStats = new ArrayList<CertifiedBodyStatistics>();
         for (Object[] obj : results) {
@@ -138,23 +138,22 @@ public class DeveloperStatisticsDAOImpl extends BaseDAOImpl implements Developer
      */
     @Override
     public List<CertifiedBodyStatistics> getTotalDevelopersByCertifiedBodyWithListingsInEachCertificationStatusAndYear(
-            DateRange dateRange) {
+            final DateRange dateRange) {
         String hql = "SELECT certificationBodyName, year, count(DISTINCT developerCode), certificationStatusName "
                 + "FROM CertifiedProductDetailsEntity "
                 + "WHERE ";
-        if(dateRange == null) {
+        if (dateRange == null) {
             hql += " deleted = false ";
         } else {
             hql += "(deleted = false AND creationDate <= :endDate) "
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate) ";
         }
-        hql += " GROUP BY certificationBodyName, year, certificationStatusName " 
+        hql += " GROUP BY certificationBodyName, year, certificationStatusName "
                 + " ORDER BY certificationBodyName ";
-        
         Query query = entityManager.createQuery(hql);
-        
-        if(dateRange != null) {
+
+        if (dateRange != null) {
             query.setParameter("endDate", dateRange.getEndDate());
         }
 

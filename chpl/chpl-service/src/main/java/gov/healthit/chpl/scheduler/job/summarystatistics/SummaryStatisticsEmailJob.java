@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,13 +35,23 @@ import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
+/**
+ * The SummaryStatisticsEmailJob implements a Quartz job and is schedulable by ADMINs.  When the job is triggered,
+ * it will send the recipient an email with summary statistics of the CHPL data.
+ * @author TYoung
+ *
+ */
 public class SummaryStatisticsEmailJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger(SummaryStatisticsEmailJob.class);
     private static final String DEFAULT_PROPERTIES_FILE = "environment.properties";
     private SummaryStatisticsDAO summaryStatisticsDAO;
     private Properties props;
     private AbstractApplicationContext context;
-    
+
+    /**
+     * Constructor that initializes the SummaryStatisticsEmailJob object.
+     * @throws Exception if thrown
+     */
     public SummaryStatisticsEmailJob() throws Exception{
         super();
         setLocalContext();
@@ -48,9 +59,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         initiateSpringBeans(context);
         loadProperties();
     }
-    
+
     @Override
-    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         try {
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getMostRecent();
             Statistics stats = getStatistics(summaryStatistics);
@@ -66,24 +77,34 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     @Override
-    protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
+    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
         setSummaryStatisticsDAO((SummaryStatisticsDAO) context.getBean("summaryStatisticsDAO"));
 
     }
 
-    private void sendEmail(String message, String address) throws AddressException, MessagingException {
+    private void sendEmail(final String message, final String address) throws AddressException, MessagingException {
         SendMailUtil mailUtil = new SendMailUtil();
         String subject = props.getProperty("summaryEmailSubject").toString();
-        //TODO: Add the stats file
-        mailUtil.sendEmail(address, subject, message, null, props);
+        mailUtil.sendEmail(address, subject, message, getSummaryStatisticsFile(), props);
     }
+
     
-    private Statistics getStatistics(SummaryStatisticsEntity summaryStatistics) throws JsonParseException, JsonMappingException, IOException {
+    private List<File> getSummaryStatisticsFile() {
+        List<File> files = new ArrayList<File>();
+        File file = new File( 
+                        props.getProperty("downloadFolderPath") + File.separator
+                        + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
+        files.add(file);
+        return files;
+    }
+
+    private Statistics getStatistics(final SummaryStatisticsEntity summaryStatistics)
+            throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(summaryStatistics.getSummaryStatistics(), Statistics.class);
     }
-    
-    private String createHtmlMessage(final Statistics stats, Date endDate) {
+
+    private String createHtmlMessage(final Statistics stats, final Date endDate) {
         StringBuilder emailMessage = new StringBuilder();
 
         emailMessage.append(createMessageHeader(endDate));
@@ -103,7 +124,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         return emailMessage.toString();
     }
 
-    private String createMessageHeader(Date endDate) {
+    private String createMessageHeader(final Date endDate) {
         Calendar currDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         Calendar endDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         endDateCal.setTime(endDate);
@@ -301,7 +322,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         ret.append("</ul>");
 
         uniqueAcbList.clear();
-        
+
         ret.append("<li>Total # of Unique Products with Active 2015 Listings -  "
                 + stats.getTotalCPsActive2015Listings() + "</li>");
         ret.append("<ul>");
@@ -454,7 +475,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     }
 
     private Properties loadProperties() throws IOException {
-        InputStream in = SummaryStatisticsCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+        InputStream in =
+                SummaryStatisticsCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
         if (in == null) {
             props = null;
             throw new FileNotFoundException("Environment Properties File not found in class path.");
@@ -465,8 +487,8 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         }
         return props;
     }
-    
-    public void setSummaryStatisticsDAO(SummaryStatisticsDAO summaryStatisticsDAO) {
+
+    public void setSummaryStatisticsDAO(final SummaryStatisticsDAO summaryStatisticsDAO) {
         this.summaryStatisticsDAO = summaryStatisticsDAO;
     }
 }

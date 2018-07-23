@@ -10,10 +10,8 @@ import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.Future;
 
@@ -26,15 +24,11 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.app.AppConfig;
 import gov.healthit.chpl.app.LocalContext;
 import gov.healthit.chpl.app.LocalContextFactory;
-import gov.healthit.chpl.auth.SendMailUtil;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dao.NotificationDAO;
 import gov.healthit.chpl.domain.DateRange;
-import gov.healthit.chpl.domain.concept.NotificationTypeConcept;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyAltTestStatistics;
 import gov.healthit.chpl.domain.statistics.CertifiedBodyStatistics;
 import gov.healthit.chpl.domain.statistics.Statistics;
-import gov.healthit.chpl.dto.notification.RecipientWithSubscriptionsDTO;
 
 /**
  * Generates summary statistics.
@@ -97,7 +91,8 @@ public class SummaryStatistics {
             while (endDate.compareTo(endDateCal.getTime()) >= 0) {
                 LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                         + endDateCal.getTime().toString());
-                System.out.println("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
+                System.out.println("Getting csvRecord for start date "
+                        + startDateCal.getTime().toString() + " end date "
                         + endDateCal.getTime().toString());
                 DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
                 Statistics historyStat = new Statistics();
@@ -466,7 +461,7 @@ public class SummaryStatistics {
         ret.append("</ul>");
 
         uniqueAcbList.clear();
-        
+
         ret.append("<li>Total # of Unique Products with Active 2015 Listings -  "
                 + stats.getTotalCPsActive2015Listings() + "</li>");
         ret.append("<ul>");
