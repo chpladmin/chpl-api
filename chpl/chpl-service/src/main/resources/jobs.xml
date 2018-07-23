@@ -24,7 +24,25 @@
                 </entry>
             </job-data-map>
         </job>
-
+        <job>
+            <name>Summary Statistics Email</name>
+            <group>chplJobs</group>
+            <description>Sends the Summary Statistics Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                
+            </job-data-map>
+        </job>
         <job>
             <name>downloadFileJob2015</name>
             <group>systemJobs</group>
@@ -86,27 +104,6 @@
             </job-data-map>
         </job>
         
-        <job>
-            <name>Summary Statistics Email</name>
-            <group>chplJobs</group>
-            <description>Sends the Summary Statistics Report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
-                </entry>
-                <entry>
-                    <key>frequency</key>
-                    <value>HOURLY</value><!--  NEEDS TO BE DAILY -->
-                </entry>
-                
-            </job-data-map>
-        </job>
-        
-        
         <trigger>
             <cron>
                 <name>generate2015</name>
@@ -144,7 +141,7 @@
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
+                <cron-expression>0 0 0,3 ? * * *</cron-expression> 
             </cron>
         </trigger>
         
