@@ -173,6 +173,14 @@
                     <key>authorities</key>
                     <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
                 </entry>
+                <entry>
+                    <key>email</key>
+                    <value>amore@ainq.com</value>
+                </entry>
+                <entry>
+                    <key>editableJobFields</key>
+                    <value>email-Subscribers</value>
+                </entry>
             </job-data-map>
         </job>
     </schedule>
