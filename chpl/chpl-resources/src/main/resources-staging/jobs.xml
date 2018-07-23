@@ -147,10 +147,24 @@
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression> 0 0 3 1/1 * ? *</cron-expression> 
+                <cron-expression>0 0 3 1/1 * ? *</cron-expression> 
             </cron>
         </trigger>
         
-        
+        <trigger>
+            <cron>
+                <name>amore@ainq_com</name>
+                <group>CacheStatusAgeTrigger</group>
+                <job-name>Cache Status Age</job-name>
+                <job-group>chplJobs</job-group>
+                <job-data-map>
+                    <entry>
+                        <key>email</key>
+                        <value>amore@ainq.com</value>
+                    </entry>
+                </job-data-map>
+                <cron-expression>0 10 10 * * ?</cron-expression>
+            </cron>
+        </trigger>
     </schedule>
 </job-scheduling-data>

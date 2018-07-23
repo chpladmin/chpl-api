@@ -141,7 +141,7 @@
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression> 0 0 3 1/1 * ? *</cron-expression> 
+                <cron-expression>0 0 3 1/1 * ? *</cron-expression> 
             </cron>
         </trigger>
         
