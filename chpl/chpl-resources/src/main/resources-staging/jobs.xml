@@ -101,7 +101,7 @@
             <description>Generates the summary statistics report</description>
             <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsCreatorJob</job-class>
             <durability>true</durability>
-            <recover>true</recover>
+            <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>generateCsvFile</key>
@@ -146,8 +146,8 @@
                 <group>summaryStatisticsTrigger</group>
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
-                <cron-expression>0 0 0,3 ? * * *</cron-expression> 
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression> 0 0 3 1/1 * ? *</cron-expression> 
             </cron>
         </trigger>
         
