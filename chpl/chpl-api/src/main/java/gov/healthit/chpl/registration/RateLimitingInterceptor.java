@@ -7,13 +7,7 @@ import javax.annotation.PreDestroy;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
-
-
-
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -29,11 +23,12 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
  
     private static final Logger logger = LogManager.getLogger(RateLimitingInterceptor.class);
     
+    @Autowired
     private Environment env;
     
-    private String timeUnit = env.getProperty("rate.limit.timeUnit");
+    private String timeUnit;
     
-    private int limit = Integer.valueOf(this.env.getProperty("rate.limit.limit"));;
+    private int limit;
  
     private Map<String, SimpleRateLimiter> limiters = new ConcurrentHashMap<>();
     
@@ -43,6 +38,8 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
     public void setEnvironment(Environment env) {
         logger.info("setEnvironment");
         this.env = env;
+        this.timeUnit = env.getProperty("rateLimitTimeUnit");
+        this.limit = Integer.valueOf(env.getProperty("rateTokenLimit"));
     }
      
     @Override
@@ -51,7 +48,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
         String clientId = request.getParameter("api_key");
         
         // let non-API requests pass
-        if (clientId.equals("12909a978483dfb8ecd0596c98ae9094")) {
+        if (clientId == null) {
             return true;
         }
         SimpleRateLimiter rateLimiter = getRateLimiter(clientId);
@@ -59,7 +56,7 @@ public class RateLimitingInterceptor extends HandlerInterceptorAdapter implement
      
         if (!allowRequest) {
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-            logger.info("Client with API KEY:" + clientId +  "went over API KEY limit.");
+            logger.info("Client with API KEY: " + clientId +  " went over API KEY limit of " + limit + ".");
         }
         response.addHeader("X-RateLimit-Limit", String.valueOf(limit));
         return allowRequest;

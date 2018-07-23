@@ -17,6 +17,12 @@ surveillanceThresholdToProcessAsJob=50
 #file name that daily SED details will be written to
 SEDDownloadName=chpl-sed-all-details.csv
 
+# number of tokens per API Key per time unit below
+rateTokenLimit=5
+# time unit where tokens above will be used
+# values are: second, minute, hour
+rateLimitTimeUnit=minute
+
 fuzzyChoiceThreshold=80
 fuzzyChoiceLimit=1
 
