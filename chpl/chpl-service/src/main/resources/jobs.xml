@@ -4,6 +4,16 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="2.0">
+    <pre-processing-commands>
+        <delete-job>
+            <name>cacheStatusAgeJob</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>triggerDeveloperBan</name>
+            <group>chplJobs</group>
+        </delete-job>
+    </pre-processing-commands>
     <schedule>
         <job>
             <name>Cache Status Age</name>
@@ -138,7 +148,7 @@
                 </entry>
                 <entry>
                     <key>frequency</key>
-                    <value>HOURLY</value><!--  NEEDS TO BE DAILY -->
+                    <value>HOURLY</value><!-- NEEDS TO BE DAILY -->
                 </entry>
             </job-data-map>
         </job>
@@ -149,7 +159,8 @@
             <description>Send warnings to subscribers when an ONC-ACB has changed status of a listing to a state that might warrant a Developer Ban.</description>
             <job-class>gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob</job-class>
             <durability>true</durability>
-            <recover>false</recover><job-data-map>
+            <recover>false</recover>
+            <job-data-map>
                 <entry>
                     <key>authorities</key>
                     <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
@@ -157,6 +168,10 @@
                 <entry>
                     <key>email</key>
                     <value>alarned@ainq.com</value>
+                </entry>
+                <entry>
+                    <key>editableJobFields</key>
+                    <value>email-Subscribers</value>
                 </entry>
             </job-data-map>
         </job>

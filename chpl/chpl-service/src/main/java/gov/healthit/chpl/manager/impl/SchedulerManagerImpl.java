@@ -142,7 +142,10 @@ public class SchedulerManagerImpl implements SchedulerManager {
         JobDetail oldJob = scheduler.getJobDetail(jobId);
         JobDetail newJob = newJob(oldJob.getJobClass())
                 .withIdentity(jobId)
+                .withDescription(oldJob.getDescription())
                 .usingJobData(job.getJobDataMap())
+                .storeDurably(oldJob.isDurable())
+                .requestRecovery(oldJob.requestsRecovery())
                 .build();
 
         scheduler.addJob(newJob, true);
