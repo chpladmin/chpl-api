@@ -58,7 +58,7 @@ public class CertificationResultTest extends TestCase {
     @Autowired private CertifiedProductDetailsManager cpdManager;
     private static JWTAuthenticatedUser adminUser;
     private static final long ADMIN_ID = -2L;
-    
+
     @Rule
     @Autowired
     public UnitTestRules cacheInvalidationRule;
@@ -72,13 +72,13 @@ public class CertificationResultTest extends TestCase {
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
-	}
+    }
 
     @Test
     @Transactional
     @Rollback
     public void testUpdateGap() throws EntityCreationException, EntityRetrievalException, ValidationException,
-            InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -89,7 +89,6 @@ public class CertificationResultTest extends TestCase {
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -127,7 +126,6 @@ public class CertificationResultTest extends TestCase {
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -152,7 +150,7 @@ public class CertificationResultTest extends TestCase {
     @Transactional
     @Rollback
     public void testUpdateG2Success() throws EntityCreationException, EntityRetrievalException, ValidationException,
-            InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
+    InvalidArgumentsException, JsonProcessingException, MissingReasonException, IOException {
         SecurityContextHolder.getContext().setAuthentication(adminUser);
 
         Date beforeActivity = new Date();
@@ -163,7 +161,6 @@ public class CertificationResultTest extends TestCase {
             }
         }
         ListingUpdateRequest updateRequest = new ListingUpdateRequest();
-        updateRequest.setBanDeveloper(false);
         updateRequest.setListing(listing);
         cpController.updateCertifiedProduct(updateRequest);
         Date afterActivity = new Date();
@@ -183,8 +180,8 @@ public class CertificationResultTest extends TestCase {
 
         SecurityContextHolder.getContext().setAuthentication(null);
     }
-	
-	//TODO: add test for g1 and g2 macra measures added/removed.
-	//Need a 2015 listing that passes validation that also certifies to 
-	//a criteria that can have g1 and g2 macra measures
+
+    //TODO: add test for g1 and g2 macra measures added/removed.
+    //Need a 2015 listing that passes validation that also certifies to 
+    //a criteria that can have g1 and g2 macra measures
 }
