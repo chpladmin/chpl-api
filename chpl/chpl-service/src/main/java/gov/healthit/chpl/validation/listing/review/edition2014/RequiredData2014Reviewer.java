@@ -11,10 +11,10 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.validation.listing.review.RequiredFieldReviewer;
+import gov.healthit.chpl.validation.listing.review.RequiredDataReviewer;
 
 @Component
-public class RequiredData2014Reviewer extends RequiredFieldReviewer {
+public class RequiredData2014Reviewer extends RequiredDataReviewer {
 
     private static final String[] G3_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(2)", "170.314 (a)(6)", "170.314 (a)(7)", "170.314 (a)(8)", "170.314 (a)(16)",

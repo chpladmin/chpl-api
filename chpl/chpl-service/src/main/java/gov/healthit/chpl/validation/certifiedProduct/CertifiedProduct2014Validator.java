@@ -222,18 +222,19 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     public void validate(final PendingCertifiedProductDTO product) {
         super.validate(product);
 
-        if (product.getPracticeTypeId() == null) {
-            product.getErrorMessages().add("Practice setting is required but was not found.");
-        } else {
+//        if (product.getPracticeTypeId() == null) {
+//            product.getErrorMessages().add("Practice setting is required but was not found.");
+//        } 
+        else {
             product.getErrorMessages().addAll(
                     certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
         }
-        if (product.getProductClassificationId() == null) {
-            product.getErrorMessages().add("Product classification is required but was not found.");
-        }
-        if (StringUtils.isEmpty(product.getReportFileLocation())) {
-            product.getErrorMessages().add("Test Report URL is required but was not found.");
-        }
+//        if (product.getProductClassificationId() == null) {
+//            product.getErrorMessages().add("Product classification is required but was not found.");
+//        }
+//        if (StringUtils.isEmpty(product.getReportFileLocation())) {
+//            product.getErrorMessages().add("Test Report URL is required but was not found.");
+//        }
         // else if(urlRegex.matcher(product.getReportFileLocation()).matches()
         // == false) {
         // product.getErrorMessages().add("Test Report URL provided is not a
@@ -241,114 +242,114 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         // }
 
         // check cqms
-        boolean isCqmRequired = false;
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria()) {
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS)
-                        && cert.getG1Success() == null) {
-                    product.getErrorMessages().add(
-                            getMessage("listing.criteria.missingG1Success", cert.getNumber()));
-                }
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS)
-                        && cert.getG2Success() == null) {
-                    product.getErrorMessages().add(
-                            getMessage("listing.criteria.missingG2Success", cert.getNumber()));
-                }
-                for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
-                    if (cert.getNumber().equals(CQM_REQUIRED_CERTS[i])) {
-                        isCqmRequired = true;
-                    }
-                }
-            }
-        }
-        if (isCqmRequired) {
-            boolean hasOneCqmWithVersion = false;
-            for (PendingCqmCriterionDTO cqm : product.getCqmCriterion()) {
-                if (cqm.isMeetsCriteria() && !StringUtils.isEmpty(cqm.getVersion())) {
-                    hasOneCqmWithVersion = true;
-                }
-            }
-            if (!hasOneCqmWithVersion) {
-                product.getErrorMessages().add(getMessage("listing.criteria.missingCQM"));
-            }
-        }
-
-        // g4, g3 and g3 complement check
-        boolean hasG4 = false;
-        boolean hasG3 = false;
-        boolean hasG3Complement = false;
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if (cert.getNumber().equals("170.314 (g)(4)") && cert.getMeetsCriteria()) {
-                hasG4 = true;
-            }
-            if (cert.getNumber().equals("170.314 (g)(3)") && cert.getMeetsCriteria()) {
-                hasG3 = true;
-            }
-            for (int i = 0; i < G3_COMPLEMENTARY_CERTS.length; i++) {
-                if (cert.getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.getMeetsCriteria()) {
-                    hasG3Complement = true;
-                }
-            }
-        }
-        if (!hasG4) {
-            product.getErrorMessages().add(getMessage("listing.criteria.missing170314g4"));
-        }
-        if (hasG3 && !hasG3Complement) {
-            product.getErrorMessages().add(getMessage("listing.criteria.missingG3complement"));
-        }
-        if (hasG3Complement && !hasG3) {
-            product.getErrorMessages().add(getMessage("listing.criteria.missingComplementG3"));
-        }
-
-        // check (g)(1)
-        boolean hasG1Cert = false;
-        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
-                hasG1Cert = true;
-            }
-        }
-        if (hasG1Cert) {
-            String[] g1Certs = getG1ComplimentaryCerts();
-            boolean hasG1Complement = false;
-            for (int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
-                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-                    if (certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
-                        hasG1Complement = true;
-                    }
-                }
-            }
-
-            if (!hasG1Complement) {
-                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
-            }
-        }
-
-        // check (g)(2)
-        boolean hasG2Cert = false;
-        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-            if (certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
-                hasG2Cert = true;
-            }
-        }
-        if (hasG2Cert) {
-            String[] g2Certs = getG2ComplimentaryCerts();
-            boolean hasG2Complement = false;
-            for (int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
-                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-                    if (certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
-                        hasG2Complement = true;
-                    }
-                }
-            }
-
-            if (!hasG2Complement) {
-                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
-            }
-        }
-
-        if (hasG1Cert && hasG2Cert) {
-            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
-        }
+//        boolean isCqmRequired = false;
+//        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+//            if (cert.getMeetsCriteria()) {
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_SUCCESS)
+//                        && cert.getG1Success() == null) {
+//                    product.getErrorMessages().add(
+//                            getMessage("listing.criteria.missingG1Success", cert.getNumber()));
+//                }
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_SUCCESS)
+//                        && cert.getG2Success() == null) {
+//                    product.getErrorMessages().add(
+//                            getMessage("listing.criteria.missingG2Success", cert.getNumber()));
+//                }
+//                for (int i = 0; i < CQM_REQUIRED_CERTS.length; i++) {
+//                    if (cert.getNumber().equals(CQM_REQUIRED_CERTS[i])) {
+//                        isCqmRequired = true;
+//                    }
+//                }
+//            }
+//        }
+//        if (isCqmRequired) {
+//            boolean hasOneCqmWithVersion = false;
+//            for (PendingCqmCriterionDTO cqm : product.getCqmCriterion()) {
+//                if (cqm.isMeetsCriteria() && !StringUtils.isEmpty(cqm.getVersion())) {
+//                    hasOneCqmWithVersion = true;
+//                }
+//            }
+//            if (!hasOneCqmWithVersion) {
+//                product.getErrorMessages().add(getMessage("listing.criteria.missingCQM"));
+//            }
+//        }
+//
+//        // g4, g3 and g3 complement check
+//        boolean hasG4 = false;
+//        boolean hasG3 = false;
+//        boolean hasG3Complement = false;
+//        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+//            if (cert.getNumber().equals("170.314 (g)(4)") && cert.getMeetsCriteria()) {
+//                hasG4 = true;
+//            }
+//            if (cert.getNumber().equals("170.314 (g)(3)") && cert.getMeetsCriteria()) {
+//                hasG3 = true;
+//            }
+//            for (int i = 0; i < G3_COMPLEMENTARY_CERTS.length; i++) {
+//                if (cert.getNumber().equals(G3_COMPLEMENTARY_CERTS[i]) && cert.getMeetsCriteria()) {
+//                    hasG3Complement = true;
+//                }
+//            }
+//        }
+//        if (!hasG4) {
+//            product.getErrorMessages().add(getMessage("listing.criteria.missing170314g4"));
+//        }
+//        if (hasG3 && !hasG3Complement) {
+//            product.getErrorMessages().add(getMessage("listing.criteria.missingG3complement"));
+//        }
+//        if (hasG3Complement && !hasG3) {
+//            product.getErrorMessages().add(getMessage("listing.criteria.missingComplementG3"));
+//        }
+//
+//        // check (g)(1)
+//        boolean hasG1Cert = false;
+//        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//            if (certCriteria.getNumber().equals("170.314 (g)(1)") && certCriteria.getMeetsCriteria()) {
+//                hasG1Cert = true;
+//            }
+//        }
+//        if (hasG1Cert) {
+//            String[] g1Certs = getG1ComplimentaryCerts();
+//            boolean hasG1Complement = false;
+//            for (int i = 0; i < g1Certs.length && !hasG1Complement; i++) {
+//                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//                    if (certCriteria.getNumber().equals(g1Certs[i]) && certCriteria.getMeetsCriteria()) {
+//                        hasG1Complement = true;
+//                    }
+//                }
+//            }
+//
+//            if (!hasG1Complement) {
+//                product.getWarningMessages().add(getMessage("listing.criteria.missingG1Related"));
+//            }
+//        }
+//
+//        // check (g)(2)
+//        boolean hasG2Cert = false;
+//        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//            if (certCriteria.getNumber().equals("170.314 (g)(2)") && certCriteria.getMeetsCriteria()) {
+//                hasG2Cert = true;
+//            }
+//        }
+//        if (hasG2Cert) {
+//            String[] g2Certs = getG2ComplimentaryCerts();
+//            boolean hasG2Complement = false;
+//            for (int i = 0; i < g2Certs.length && !hasG2Complement; i++) {
+//                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//                    if (certCriteria.getNumber().equals(g2Certs[i]) && certCriteria.getMeetsCriteria()) {
+//                        hasG2Complement = true;
+//                    }
+//                }
+//            }
+//
+//            if (!hasG2Complement) {
+//                product.getWarningMessages().add(getMessage("listing.criteria.missingG2Related"));
+//            }
+//        }
+//
+//        if (hasG1Cert && hasG2Cert) {
+//            product.getWarningMessages().add(getMessage("listing.criteria.G1G2Found"));
+//        }
     }
 
     @Override

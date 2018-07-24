@@ -11,13 +11,13 @@ import gov.healthit.chpl.validation.listing.review.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.review.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.review.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.review.FieldLengthReviewer;
+import gov.healthit.chpl.validation.listing.review.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.review.Reviewer;
 import gov.healthit.chpl.validation.listing.review.SedG3Reviewer;
 import gov.healthit.chpl.validation.listing.review.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.listing.review.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.review.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.review.UnsupportedCharacterReviewer;
-import gov.healthit.chpl.validation.listing.review.edition2015.InheritedCertificationStatus2015Reviewer;
 import gov.healthit.chpl.validation.listing.review.edition2015.RequiredData2015Reviewer;
 
 /**
@@ -38,7 +38,7 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired protected UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     @Autowired protected TestToolReviewer ttReviewer;
     @Autowired protected TestFunctionalityReviewer tfReviewer;
-    @Autowired protected InheritedCertificationStatus2015Reviewer icsReviewer;
+    @Autowired protected InheritedCertificationStatusReviewer icsReviewer;
     
     private List<Reviewer> reviewers;
 

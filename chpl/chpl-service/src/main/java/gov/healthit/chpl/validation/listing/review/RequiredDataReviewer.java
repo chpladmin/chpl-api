@@ -10,7 +10,7 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class RequiredFieldReviewer implements Reviewer {
+public class RequiredDataReviewer implements Reviewer {
     @Autowired protected ErrorMessageUtil msgUtil;
     @Autowired protected CertificationResultRules certRules;
 

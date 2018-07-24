@@ -36,10 +36,10 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.review.RequiredFieldReviewer;
+import gov.healthit.chpl.validation.listing.review.RequiredDataReviewer;
 
 @Component
-public class RequiredData2015Reviewer extends RequiredFieldReviewer {
+public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String[] A_RELATED_CERTS = {
             "170.315 (d)(1)", "170.315 (d)(2)", "170.315 (d)(3)", "170.315 (d)(4)", "170.315 (d)(5)", "170.315 (d)(6)",
             "170.315 (d)(7)"

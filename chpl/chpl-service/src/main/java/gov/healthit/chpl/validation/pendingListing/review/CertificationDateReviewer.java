@@ -8,6 +8,11 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+/**
+ * Confirms that the certification date of the listing is not in the future.
+ * @author kekey
+ *
+ */
 @Component
 public class CertificationDateReviewer implements Reviewer {
     @Autowired private ErrorMessageUtil msgUtil;

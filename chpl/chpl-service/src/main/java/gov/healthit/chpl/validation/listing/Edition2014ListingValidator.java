@@ -28,6 +28,7 @@ import gov.healthit.chpl.validation.listing.review.edition2014.RequiredData2014R
 @Component
 public abstract class Edition2014ListingValidator extends Validator {
     @Autowired protected ChplNumberReviewer chplNumberReviewer;
+    @Autowired protected InheritedCertificationStatusReviewer icsReviewer;
     @Autowired protected DeveloperStatusReviewer devStatusReviewer;
     @Autowired protected UnsupportedCharacterReviewer unsupportedCharacterReviewer;
     @Autowired protected FieldLengthReviewer fieldLengthReviewer;
@@ -36,7 +37,6 @@ public abstract class Edition2014ListingValidator extends Validator {
     @Autowired protected CertificationStatusReviewer certStatusReviewer;
     @Autowired protected CertificationDateReviewer certDateReviewer;
     @Autowired protected UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
-    @Autowired protected InheritedCertificationStatusReviewer icsReviewer;
     @Autowired protected TestToolReviewer ttReviewer;
     @Autowired protected TestFunctionalityReviewer tfReviewer;
     
@@ -45,6 +45,7 @@ public abstract class Edition2014ListingValidator extends Validator {
     public Edition2014ListingValidator() {
         reviewers = new ArrayList<Reviewer>();
         reviewers.add(chplNumberReviewer);
+        reviewers.add(icsReviewer);
         reviewers.add(devStatusReviewer);
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
@@ -53,7 +54,6 @@ public abstract class Edition2014ListingValidator extends Validator {
         reviewers.add(certStatusReviewer);
         reviewers.add(certDateReviewer);
         reviewers.add(unattestedCriteriaWithDataReviewer);
-        reviewers.add(icsReviewer);
         reviewers.add(ttReviewer);
         reviewers.add(tfReviewer);
     }
