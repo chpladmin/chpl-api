@@ -23,24 +23,24 @@ public class InpatientComplete2014Validator extends InpatientModular2014Validato
     };
 
     @Override
-    public void validate(PendingCertifiedProductDTO product) {
+    public void validate(PendingCertifiedProductDTO l) {
         super.validate(product);
-        super.checkA1OrA18A19A20(product);
-        super.checkB1B2B8H1(product);
-
-        List<PendingCertificationResultDTO> certificationCriterion = product.getCertificationCriterion();
-        for (int i = 0; i < requiredCriteria.length; i++) {
-            boolean hasCert = false;
-            for (PendingCertificationResultDTO certCriteria : certificationCriterion) {
-                if (certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.getMeetsCriteria()) {
-                    hasCert = true;
-                }
-            }
-            if (!hasCert) {
-                product.getErrorMessages()
-                        .add("Required certification criteria " + requiredCriteria[i] + " was not found.");
-            }
-        }
+//        super.checkA1OrA18A19A20(product);
+//        super.checkB1B2B8H1(product);
+//
+//        List<PendingCertificationResultDTO> certificationCriterion = product.getCertificationCriterion();
+//        for (int i = 0; i < requiredCriteria.length; i++) {
+//            boolean hasCert = false;
+//            for (PendingCertificationResultDTO certCriteria : certificationCriterion) {
+//                if (certCriteria.getNumber().equals(requiredCriteria[i]) && certCriteria.getMeetsCriteria()) {
+//                    hasCert = true;
+//                }
+//            }
+//            if (!hasCert) {
+//                product.getErrorMessages()
+//                        .add("Required certification criteria " + requiredCriteria[i] + " was not found.");
+//            }
+//        }
     }
 
     @Override

@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.pendingListing.review.Reviewer;
 import gov.healthit.chpl.validation.pendingListing.review.UnattestedCriteriaWithDataReviewer;
-import gov.healthit.chpl.validation.pendingListing.review.RequiredDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.review.TestFunctionalityReviewer;
+import gov.healthit.chpl.validation.pendingListing.review.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.CertificationDateReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.ChplNumberReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.FieldLengthReviewer;
@@ -16,6 +17,7 @@ import gov.healthit.chpl.validation.pendingListing.review.FuzzyMatchReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.InheritedCertificationStatusReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.ValidDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.review.edition2015.RequiredData2015Reviewer;
 
 /**
  * Validation interface for 2015 listings in the pending stage of upload to the CHPL.
@@ -31,7 +33,9 @@ public class Edition2015PendingListingValidator {
     @Autowired UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
     @Autowired ValidDataReviewer validDataReviewer;
     @Autowired FieldLengthReviewer fieldLengthReviewer;
-    @Autowired RequiredDataReviewer requiredDataReviewer;
+    @Autowired RequiredData2015Reviewer requiredDataReviewer;
+    @Autowired TestToolReviewer ttReviewer;
+    @Autowired TestFunctionalityReviewer tfReviewer;
     @Autowired InheritedCertificationStatusReviewer icsReviewer;
     
     private List<Reviewer> reviewers;
@@ -46,6 +50,8 @@ public class Edition2015PendingListingValidator {
         reviewers.add(validDataReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredDataReviewer);
+        reviewers.add(ttReviewer);
+        reviewers.add(tfReviewer);
         reviewers.add(icsReviewer);
     }
 

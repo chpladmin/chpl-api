@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.listing.review.edition2015;
+package gov.healthit.chpl.validation.pendingListing.review.edition2015;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,22 +13,20 @@ import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestFunctionalityDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestToolDAO;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestData;
-import gov.healthit.chpl.domain.CertificationResultTestFunctionality;
-import gov.healthit.chpl.domain.CertificationResultTestProcedure;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
-import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
-import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.MacraMeasure;
-import gov.healthit.chpl.domain.TestData;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.UcdProcess;
 import gov.healthit.chpl.dto.MacraMeasureDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultMacraMeasureDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestDataDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestFunctionalityDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestProcedureDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestTaskParticipantDTO;
+import gov.healthit.chpl.dto.PendingCertificationResultTestToolDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
+import gov.healthit.chpl.dto.PendingCertifiedProductQmsStandardDTO;
+import gov.healthit.chpl.dto.PendingCqmCertificationCriterionDTO;
+import gov.healthit.chpl.dto.PendingCqmCriterionDTO;
+import gov.healthit.chpl.dto.PendingTestTaskDTO;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.dto.TestFunctionalityDTO;
 import gov.healthit.chpl.dto.TestProcedureDTO;
@@ -36,7 +34,7 @@ import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.review.RequiredDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.review.RequiredDataReviewer;
 
 @Component
 public class RequiredData2015Reviewer extends RequiredDataReviewer {
@@ -109,18 +107,13 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         d2d10Criterion.add("170.315 (d)(2)");
         d2d10Criterion.add("170.315 (d)(10)");    
     }
-
+    
     @Override
-    public void review(CertifiedProductSearchDetails listing) {
+    public void review(final PendingCertifiedProductDTO listing) {
         super.review(listing);
-        
-        if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {
-            listing.getErrorMessages().add(msgUtil.getMessage("listing.missingIcs"));
-        }
-        
         List<String> allMetCerts = new ArrayList<String>();
-        for (CertificationResult certCriteria : listing.getCertificationResults()) {
-            if (certCriteria.isSuccess()) {
+        for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
+            if (certCriteria.getMeetsCriteria()) {
                 allMetCerts.add(certCriteria.getNumber());
             }
         }
@@ -143,7 +136,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
         errors = ValidationUtils.checkSpecificCriteriaForErrors("170.315 (e)(1)", allMetCerts, Arrays.asList(E1_RELATED_CERTS));
         listing.getErrorMessages().addAll(errors);
-        
+
         // check for (c)(1), (c)(2), (c)(3), (c)(4)
         boolean meetsC1Criterion = ValidationUtils.hasCert("170.315 (c)(1)", allMetCerts);
         boolean meetsC2Criterion = ValidationUtils.hasCert("170.315 (c)(2)", allMetCerts);
@@ -153,46 +146,46 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         boolean hasC2Cqm = false;
         boolean hasC3Cqm = false;
         boolean hasC4Cqm = false;
-
-        for (CQMResultDetails cqm : listing.getCqmResults()) {
-            List<String> certifications = new ArrayList<String>();
-            for (CQMResultCertification criteria : cqm.getCriteria()) {
-                certifications.add(criteria.getCertificationNumber());
+        for (PendingCqmCriterionDTO cqm : listing.getCqmCriterion()) {
+            List<String> cqmCerts = new ArrayList<String>();
+            for (PendingCqmCertificationCriterionDTO criteria : cqm.getCertifications()) {
+                cqmCerts.add(criteria.getCertificationCriteriaNumber());
             }
-            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCert("170.315 (c)(1)", certifications);
-            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCert("170.315 (c)(2)", certifications);
-            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCert("170.315 (c)(3)", certifications);
-            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCert("170.315 (c)(4)", certifications);
+            hasC1Cqm = hasC1Cqm || ValidationUtils.hasCert("170.315 (c)(1)", cqmCerts);
+            hasC2Cqm = hasC2Cqm || ValidationUtils.hasCert("170.315 (c)(2)", cqmCerts);
+            hasC3Cqm = hasC3Cqm || ValidationUtils.hasCert("170.315 (c)(3)", cqmCerts);
+            hasC4Cqm = hasC4Cqm || ValidationUtils.hasCert("170.315 (c)(4)", cqmCerts);
         }
         if (meetsC1Criterion && !hasC1Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(1)"));
+                    "Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
         } else if (!meetsC1Criterion && hasC1Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(1)"));
+                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(1), but the product does not attest to that criterion.");
         }
         if (meetsC2Criterion && !hasC2Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(2)"));
+                    "Certification criterion 170.315 (c)(2) was found but no matching Clinical Quality Measurement was found.");
+        } else if (!meetsC2Criterion && hasC2Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(2)"));
+                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(2), but the product does not attest to that criterion.");
         }
         if (meetsC3Criterion && !hasC3Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(3)"));
+                    "Certification criterion 170.315 (c)(3) was found but no matching Clinical Quality Measurement was found.");
         } else if (!meetsC3Criterion && hasC3Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(3)"));
+                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(3), but the product does not attest to that criterion.");
         }
         if (meetsC4Criterion && !hasC4Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missingCqmFor170315c", "170.315 (c)(4)"));
+                    "Certification criterion 170.315 (c)(4) was found but no matching Clinical Quality Measurement was found.");
         } else if (!meetsC4Criterion && hasC4Cqm) {
             listing.getErrorMessages().add(
-                    msgUtil.getMessage("listing.criteria.missing170315cForCqm", "170.315 (c)(4)"));
+                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(4), but the product does not attest to that criterion.");
         }
 
-        // check for (e)(2) or (e)(3) certs
+        // check for (e)(2) or (e)(3) required complimentary certs
         List<String> e2e3ComplimentaryErrors = 
                 ValidationUtils.checkComplimentaryCriteriaAllRequired(e2e3Criterion, Arrays.asList(E2E3_RELATED_CERTS), allMetCerts);
         listing.getErrorMessages().addAll(e2e3ComplimentaryErrors);
@@ -211,8 +204,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         if(ValidationUtils.hasCert(G1_CRITERIA_NUMBER, allMetCerts)) {
             //must have at least one criteria with g1 macras listed
             boolean hasG1Macra = false;
-            for(int i = 0; i < listing.getCertificationResults().size() && !hasG1Macra; i++) {
-                CertificationResult cert = listing.getCertificationResults().get(i);
+            for(int i = 0; i < listing.getCertificationCriterion().size() && !hasG1Macra; i++) {
+                PendingCertificationResultDTO cert = listing.getCertificationCriterion().get(i);
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) && 
                         cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
                     hasG1Macra = true;
@@ -220,7 +213,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             }
             
             if(!hasG1Macra) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG1Macras"));
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.missingG1Macras"));
             }
         }
         
@@ -228,8 +222,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         if(ValidationUtils.hasCert(G2_CRITERIA_NUMBER, allMetCerts)) {
           //must have at least one criteria with g2 macras listed
             boolean hasG2Macra = false;
-            for(int i = 0; i < listing.getCertificationResults().size() && !hasG2Macra; i++) {
-                CertificationResult cert = listing.getCertificationResults().get(i);
+            for(int i = 0; i < listing.getCertificationCriterion().size() && !hasG2Macra; i++) {
+                PendingCertificationResultDTO cert = listing.getCertificationCriterion().get(i);
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) && 
                         cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
                     hasG2Macra = true;
@@ -237,7 +231,8 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             }
             
             if(!hasG2Macra) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.missingG2Macras"));
+                listing.getErrorMessages().add(
+                        msgUtil.getMessage("listing.missingG2Macras"));
             }
         }
         
@@ -248,144 +243,144 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 needsG3 = true;
 
                 // check for full set of UCD data
-                for (CertificationResult certCriteria : listing.getCertificationResults()) {
+                for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
                     if (certCriteria.getNumber().equals(UCD_RELATED_CERTS[i])) {
-                        // make sure at least one UCD process has this criteria
-                        // number
-                        if (listing.getSed() == null || listing.getSed().getUcdProcesses() == null
-                                || listing.getSed().getUcdProcesses().size() == 0) {
+                        if (certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
                             listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
                                     + " requires at least one UCD process.");
-                        } else {
-                            boolean foundCriteria = false;
-                            for (UcdProcess ucd : listing.getSed().getUcdProcesses()) {
-                                for (CertificationCriterion criteria : ucd.getCriteria()) {
-                                    if (criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
-                                        foundCriteria = true;
-                                    }
-                                }
-                            }
-                            if (!foundCriteria) {
-                                listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                        + " requires at least one UCD process.");
-                            }
                         }
-
-                        if (listing.getSed() == null || listing.getSed().getTestTasks() == null
-                                || listing.getSed().getTestTasks().size() == 0) {
+                        if (certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
                             listing.getErrorMessages().add(
                                     "Certification " + certCriteria.getNumber() + " requires at least one test task.");
-                        } else {
-                            boolean foundCriteria = false;
-                            for (TestTask tt : listing.getSed().getTestTasks()) {
-                                for (CertificationCriterion criteria : tt.getCriteria()) {
-                                    if (criteria.getNumber().equalsIgnoreCase(certCriteria.getNumber())) {
-                                        foundCriteria = true;
-                                    }
-                                }
-                            }
-                            if (!foundCriteria) {
-                                listing.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                        + " requires at least one test task.");
-                            }
                         }
 
-                        if (listing.getSed() != null && listing.getSed().getTestTasks() != null) {
-                            for (TestTask task : listing.getSed().getTestTasks()) {
-                                String description = StringUtils.isEmpty(task.getDescription()) ? "unknown"
-                                        : task.getDescription();
-                                if (task.getTestParticipants() == null || task.getTestParticipants().size() < 10) {
+                        if (certCriteria.getTestTasks() != null) {
+                            for (PendingCertificationResultTestTaskDTO certResultTask : certCriteria.getTestTasks()) {
+                                PendingTestTaskDTO task = certResultTask.getPendingTestTask();
+                                if (certResultTask.getTaskParticipants() == null
+                                        || certResultTask.getTaskParticipants().size() < 10) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskParticipantsSize", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskParticipantsSize",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (StringUtils.isEmpty(task.getDescription())) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestDescription", description));
+                                            msgUtil.getMessage("listing.criteria.badTestDescription",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskSuccessAverage() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskSuccessAverage", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskSuccessAverage",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskSuccessStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskSuccessStddev", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskSuccessStddev",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskPathDeviationObserved() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskPathDeviationObserved", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationObserved",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskPathDeviationOptimal() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskPathDeviationOptimal", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskPathDeviationOptimal",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskTimeAvg() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskTimeAvg", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeAvg",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskTimeStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskTimeStddev", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeStddev",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskTimeDeviationObservedAvg() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskTimeDeviationObservedAvg", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationObservedAvg",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskTimeDeviationOptimalAvg() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskTimeDeviationOptimalAvg", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskTimeDeviationOptimalAvg",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskErrors() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskErrors", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskErrors",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskErrorsStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskErrorsStddev", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskErrorsStddev",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (StringUtils.isEmpty(task.getTaskRatingScale())) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskRatingScale", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskRatingScale",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskRating() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskRating", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskRating",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
                                 if (task.getTaskRatingStddev() == null) {
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.sed.badTestTaskRatingStddev", description));
+                                            msgUtil.getMessage("listing.criteria.badTestTaskRatingStddev",
+                                                    task.getUniqueId(), certCriteria.getNumber()));
                                 }
-                                for (TestParticipant part : task.getTestParticipants()) {
-                                    if (part.getEducationTypeId() == null) {
+                                for (PendingCertificationResultTestTaskParticipantDTO part : certResultTask
+                                        .getTaskParticipants()) {
+                                    if (part.getTestParticipant().getEducationTypeId() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantEducationLevel", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantEducationLevel",
+                                                        (part.getTestParticipant().getUserEnteredEducationType() == null
+                                                                ? "'unknown'"
+                                                                : part.getTestParticipant()
+                                                                        .getUserEnteredEducationType()),
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
-                                    if (part.getAgeRangeId() == null) {
+                                    if (part.getTestParticipant().getAgeRangeId() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantAgeRange", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantAgeRange",
+                                                        (part.getTestParticipant().getUserEnteredAgeRange() == null
+                                                                ? "'unknown'"
+                                                                : part.getTestParticipant().getUserEnteredAgeRange()),
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
-                                    if (StringUtils.isEmpty(part.getGender())) {
+                                    if (StringUtils.isEmpty(part.getTestParticipant().getGender())) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantGender", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantGender",
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
-                                    if (StringUtils.isEmpty(part.getOccupation())) {
+                                    if (StringUtils.isEmpty(part.getTestParticipant().getOccupation())) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantOccupation", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantOccupation",
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
-                                    if (StringUtils.isEmpty(part.getAssistiveTechnologyNeeds())) {
+                                    if (StringUtils.isEmpty(part.getTestParticipant().getAssistiveTechnologyNeeds())) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantAssistiveTechnologyNeeds", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantAssistiveTechnologyNeeds",
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
-                                    if (part.getProfessionalExperienceMonths() == null) {
+                                    if (part.getTestParticipant().getProfessionalExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantProfessionalExperienceMonths", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantProfessionalExperienceMonths",
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
-                                    if (part.getProductExperienceMonths() == null) {
+                                    if (part.getTestParticipant().getProductExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantProductExperienceMonths", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantProductExperienceMonths",
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
-                                    if (part.getComputerExperienceMonths() == null) {
+                                    if (part.getTestParticipant().getComputerExperienceMonths() == null) {
                                         listing.getErrorMessages().add(
-                                                msgUtil.getMessage("listing.sed.badParticipantComputerExperienceMonths", description));
+                                                msgUtil.getMessage("listing.criteria.badParticipantComputerExperienceMonths",
+                                                        part.getTestParticipant().getUniqueId()));
                                     }
                                 }
                             }
@@ -394,6 +389,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
             }
         }
+        
         if (needsG3) {
             boolean hasG3 = ValidationUtils.hasCert("170.315 (g)(3)", allMetCerts);
             if (!hasG3) {
@@ -442,7 +438,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
             }
         }
 
-        // TODO: detailed G6 check
+        // reverse g6 check
+        boolean hasG6 = ValidationUtils.hasCert("170.315 (g)(6)", allMetCerts);
+        if (hasG6) {
+            boolean hasG6ComplimentaryCerts = false;
+            for (int i = 0; i < CERTS_REQUIRING_G6.length; i++) {
+                if (ValidationUtils.hasCert(CERTS_REQUIRING_G6[i], allMetCerts)) {
+                    hasG6ComplimentaryCerts = true;
+                }
+            }
+
+            if (!hasG6ComplimentaryCerts) {
+                listing.getErrorMessages().add("170.315 (g)(6) was found but a related required cert was not found.");
+            }
+        }
+
+        // TODO: detailed G6 check; waiting on rule from ONC
 
         // h1 plus b1
         boolean hasH1 = ValidationUtils.hasCert("170.315 (h)(1)", allMetCerts);
@@ -457,22 +468,23 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
         if (listing.getQmsStandards() == null || listing.getQmsStandards().size() == 0) {
             listing.getErrorMessages().add("QMS Standards are required.");
         } else {
-            for (CertifiedProductQmsStandard qms : listing.getQmsStandards()) {
+            for (PendingCertifiedProductQmsStandardDTO qms : listing.getQmsStandards()) {
                 if (StringUtils.isEmpty(qms.getApplicableCriteria())) {
                     listing.getErrorMessages().add("Applicable criteria is required for each QMS Standard listed.");
                 }
             }
         }
-        
+
         if (listing.getAccessibilityStandards() == null || listing.getAccessibilityStandards().size() == 0) {
             listing.getErrorMessages().add("Accessibility standards are required.");
-        }
-        
-        for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess() == Boolean.TRUE) {
+        } // accessibility standards do not have to match the set list of
+          // standards.
+
+        for (PendingCertificationResultDTO cert : listing.getCertificationCriterion()) {
+            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.isGap() == Boolean.TRUE) {
+                        && cert.getGap() == Boolean.TRUE) {
                     gapEligibleAndTrue = true;
                 }
 
@@ -486,54 +498,67 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     listing.getErrorMessages()
                             .add("API Documentation is required for certification " + cert.getNumber() + ".");
                 }
-
+                // jennifer asked to not make functionality tested be a required
+                // field
+                // if(certRules.hasCertOption(cert.getNumber(),
+                // CertificationResultRules.FUNCTIONALITY_TESTED) &&
+                // (cert.getTestFunctionality() == null ||
+                // cert.getTestFunctionality().size() == 0)) {
+                // listing.getErrorMessages().add("Functionality Tested is
+                // required for certification " + cert.getNumber() + ".");
+                // }
+                
+                //a test tool is required to exist if the criteria is not gap
                 if (!gapEligibleAndTrue
                         && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && (cert.getTestToolsUsed() == null || cert.getTestToolsUsed().size() == 0)) {
+                        && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
                     listing.getErrorMessages().add(
                             msgUtil.getMessage("listing.criteria.missingTestTool", cert.getNumber()));
                 }
 
-                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
-                    for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
+                //check all the supplied test tools for validity and completeness
+                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+                        && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+                    for (PendingCertificationResultTestToolDTO pendingTestTool : cert.getTestTools()) {
                         TestToolDTO foundTestTool = null;
                         //no new test tools are allowed to be added 
                         //so make sure a test tool by this name exists
-                        if (testTool.getTestToolId() == null) {
-                            foundTestTool = testToolDao.getByName(testTool.getTestToolName());
+                        if (pendingTestTool.getTestToolId() == null) {
+                            foundTestTool = testToolDao.getByName(pendingTestTool.getName());
                             if (foundTestTool == null || foundTestTool.getId() == null) {
                                 listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidTestToolName", cert.getNumber(), testTool.getTestToolName()));
+                                        msgUtil.getMessage("listing.criteria.invalidTestToolName", cert.getNumber(), pendingTestTool.getName()));
                             }
                         } else {
-                            foundTestTool = testToolDao.getById(testTool.getTestToolId());
+                            foundTestTool = testToolDao.getById(pendingTestTool.getTestToolId());
                             if (foundTestTool == null || foundTestTool.getId() == null) {
                                 listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.invalidTestToolId", cert.getNumber(), testTool.getTestToolId()));
+                                        msgUtil.getMessage("listing.criteria.invalidTestToolId", cert.getNumber(), pendingTestTool.getTestToolId()));
                             }
                         }
                         
                         if(foundTestTool != null) {
                             //require test tool version
-                            if(StringUtils.isEmpty(testTool.getTestToolVersion())) {
+                            if(StringUtils.isEmpty(pendingTestTool.getVersion())) {
                                 listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.missingTestToolVersion", testTool.getTestToolName(), cert.getNumber()));
+                                        msgUtil.getMessage("listing.criteria.missingTestToolVersion", pendingTestTool.getName(), cert.getNumber()));
                             }
                             
-                            //Allow retired test tool only if listing ICS = true
-                            Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getChplProductNumber());
+                            // Allow retired test tool only if listing ICS = true
+                            Integer icsCodeInteger = productNumUtil.getIcsCode(listing.getUniqueId());
                             if (foundTestTool.isRetired() && icsCodeInteger.intValue() == 0) {
                                 if (listing.hasIcsConflict()) {
                                     //the ics code is 0 but we can't be sure that's what the user meant
-                                    //because the ICS value of the listing is TRUE (hence the conflict), 
+                                    //because the ICS value in the file is 1 (hence the conflict), 
                                     //so issue a warning since the listing may or may not truly have ICS
                                     listing.getWarningMessages().add(
-                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed", foundTestTool.getName(), cert.getNumber()));
+                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed", 
+                                                    foundTestTool.getName(), cert.getNumber()));
                                 } else {
                                     //the listing does not have ICS so retired tools are definitely not allowed - error
                                     listing.getErrorMessages().add(
-                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed", foundTestTool.getName(), cert.getNumber()));
+                                            msgUtil.getMessage("listing.criteria.retiredTestToolNotAllowed", 
+                                                    foundTestTool.getName(), cert.getNumber()));
                                 }
                             }
                         }
@@ -542,47 +567,39 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
                         && cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
-                    for (CertificationResultTestFunctionality funcMap : cert.getTestFunctionality()) {
-                        if (funcMap.getTestFunctionalityId() == null) {
-                            TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(funcMap.getName(),
-                                    new Long(listing.getCertificationEdition().get("id").toString()));
+                    for (PendingCertificationResultTestFunctionalityDTO pendingFuncMap : cert.getTestFunctionality()) {
+                        if (pendingFuncMap.getTestFunctionalityId() == null) {
+                            TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
+                                    pendingFuncMap.getNumber(), listing.getCertificationEditionId());
                             if (foundTestFunc == null || foundTestFunc.getId() == null) {
-                                listing.getErrorMessages().add("Certification " + cert.getNumber()
-                                        + " contains invalid test functionality: '" + funcMap.getName() + "'.");
+                                listing.getErrorMessages()
+                                        .add("Certification " + cert.getNumber()
+                                                + " contains invalid test functionality: '" + pendingFuncMap.getNumber()
+                                                + "'.");
                             }
                         }
                     }
                 }
 
-                //require at least one test procedure where gap does not exist or is false
-                if (!gapEligibleAndTrue
-                    && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                    && (cert.getTestProcedures() == null || cert.getTestProcedures().size() == 0)) {
-                    listing.getErrorMessages().add(
-                            msgUtil.getMessage("listing.criteria.missingTestProcedure", cert.getNumber()));
-                }
-
-                //if the criteria can and does have test procedures, make sure they are each valid
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
                         && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
-                    for (CertificationResultTestProcedure crTestProc : cert.getTestProcedures()) {
-                        if(crTestProc.getTestProcedure() == null) {
+                    for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
+                        if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
                             listing.getErrorMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestProcedureName", cert.getNumber()));
-                        } if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
+                                    msgUtil.getMessage("listing.criteria.badTestProcedureName", cert.getNumber(), crTestProc.getEnteredName()));
+                        } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
                             TestProcedureDTO foundTestProc = 
                                     testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
                             if(foundTestProc == null || foundTestProc.getId() == null) {
                                 listing.getErrorMessages().add(
-                                        msgUtil.getMessage("listing.criteria.badTestProcedureName", cert.getNumber(), crTestProc.getTestProcedure().getName()));
+                                        msgUtil.getMessage("listing.criteria.badTestProcedureName", 
+                                                cert.getNumber(), crTestProc.getTestProcedure().getName()));
                             } else {
                                 crTestProc.getTestProcedure().setId(foundTestProc.getId());
                             }
                         }
                         
-                        if(crTestProc.getTestProcedure() != null && 
-                                !StringUtils.isEmpty(crTestProc.getTestProcedure().getName()) && 
-                                StringUtils.isEmpty(crTestProc.getTestProcedureVersion())) {
+                        if(!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingTestProcedureVersion", cert.getNumber()));
                         }
@@ -590,21 +607,22 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 }
                 
                 if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
-                        && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
-                    for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {
-                        if (crTestData.getTestData() == null) {
+                        && cert.getTestData() != null && cert.getTestData().size() > 0) {
+                    for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
+                        if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
                             listing.getWarningMessages().add(
-                                    msgUtil.getMessage("listing.criteria.missingTestDataName", cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                                    msgUtil.getMessage("listing.criteria.badTestDataName", 
+                                            crTestData.getEnteredName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
-                            TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
-                            crTestData.setTestData(foundTestDataDomain);
+                            crTestData.setTestData(foundTestData);
                         } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
                             TestDataDTO foundTestData = 
                                     testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
                             if(foundTestData == null || foundTestData.getId() == null) {
                                 listing.getWarningMessages().add(
-                                        msgUtil.getMessage("listing.criteria.badTestDataName", crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+                                        msgUtil.getMessage("listing.criteria.badTestDataName", 
+                                                crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
                                 foundTestData = 
                                         testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
                                 crTestData.getTestData().setId(foundTestData.getId());
@@ -613,9 +631,7 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                             }
                         }
                         
-                        if(crTestData.getTestData() != null && 
-                                !StringUtils.isEmpty(crTestData.getTestData().getName()) && 
-                                StringUtils.isEmpty(crTestData.getVersion())) {
+                        if(!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
                             listing.getErrorMessages().add(
                                     msgUtil.getMessage("listing.criteria.missingTestDataVersion", cert.getNumber()));
                         }
@@ -624,26 +640,15 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA)
                         && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    for (int i = 0; i < cert.getG1MacraMeasures().size(); i++) {
-                        MacraMeasure measure = cert.getG1MacraMeasures().get(i);
-                        if (measure == null || measure.getId() == null) {
-                            listing.getErrorMessages()
-                                    .add("Certification " + cert.getNumber() + " contains invalid G1 Macra Measure.");
-                        } else {
-                            // confirm the measure id is valid
-                            MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
+                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
+                        if (pendingMeasureMap.getMacraMeasureId() == null) {
+                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                                    pendingMeasureMap.getEnteredValue());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages()
-                                        .add("Certification " + cert.getNumber()
-                                                + " contains invalid G1 Macra Measure. No measure found with ID '"
-                                                + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
-                                listing.getErrorMessages().add("Certification " + cert.getNumber()
-                                        + " contains an invalid G1 Macra Measure. Measure with ID '" + measure.getId()
-                                        + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"
-                                        + foundMeasure.getCriteria().getNumber() + "'.");
+                                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.invalidG1MacraMeasure", 
+                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else {
-                                cert.getG1MacraMeasures().set(i, new MacraMeasure(foundMeasure));
+                                pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
                         }
                     }
@@ -651,37 +656,33 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
 
                 if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA)
                         && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    for (int i = 0; i < cert.getG2MacraMeasures().size(); i++) {
-                        MacraMeasure measure = cert.getG2MacraMeasures().get(i);
-                        if (measure == null || measure.getId() == null) {
-                            listing.getErrorMessages()
-                                    .add("Certification " + cert.getNumber() + " contains invalid G2 Macra Measure.");
-                        } else {
-                            // confirm the measure id is valid
-                            MacraMeasureDTO foundMeasure = macraDao.getById(measure.getId());
+                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
+                        if (pendingMeasureMap.getMacraMeasureId() == null) {
+                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(),
+                                    pendingMeasureMap.getEnteredValue());
                             if (foundMeasure == null || foundMeasure.getId() == null) {
-                                listing.getErrorMessages()
-                                        .add("Certification " + cert.getNumber()
-                                                + " contains invalid G2 Macra Measure. No measure found with ID '"
-                                                + measure.getId() + "'.");
-                            } else if (!foundMeasure.getCriteria().getNumber().equals(cert.getNumber())) {
-                                listing.getErrorMessages().add("Certification " + cert.getNumber()
-                                        + " contains an invalid G2 Macra Measure. Measure with ID '" + measure.getId()
-                                        + "' is the measure '" + foundMeasure.getName() + "' and is for criteria '"
-                                        + foundMeasure.getCriteria().getNumber() + "'.");
+                                listing.getErrorMessages().add(
+                                        msgUtil.getMessage("listing.criteria.invalidG2MacraMeasure", 
+                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
                             } else {
-                                cert.getG2MacraMeasures().set(i, new MacraMeasure(foundMeasure));
+                                pendingMeasureMap.setMacraMeasure(foundMeasure);
                             }
                         }
                     }
                 }
 
+                // g1 and g2 are the only criteria that ONC supplies test data for
+                // other criteria probably should have test data but do not have to
                 if (!gapEligibleAndTrue
-                        && (cert.getNumber().equals(G1_CRITERIA_NUMBER) || cert.getNumber().equals(G2_CRITERIA_NUMBER))
-                        && (cert.getTestDataUsed() == null || cert.getTestDataUsed().size() == 0)) {
+                        && (cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)"))
+                        && (cert.getTestData() == null || cert.getTestData().size() == 0)) {
                     listing.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
                 }
             }
+        }
+
+        if (listing.getIcs() == null) {
+            listing.getErrorMessages().add("ICS is required.");
         }
     }
 }

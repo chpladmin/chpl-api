@@ -71,30 +71,30 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         boolean hasB8 = false;
         boolean hasH1 = false;
         if (product instanceof PendingCertifiedProductDTO) {
-            PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
-            for (PendingCertificationResultDTO certCriteria : productCasted.getCertificationCriterion()){
-                if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.getMeetsCriteria()) {
-                    hasB1 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.getMeetsCriteria()) {
-                    hasB2 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.getMeetsCriteria()) {
-                    hasB8 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.getMeetsCriteria()) {
-                    hasH1 = true;
-                }
-            }
-            if (!hasB1 && !hasB2) {
-                if (!hasB1 && !hasB8) {
-                    if (!hasB8 && !hasH1) {
-                        productCasted.getErrorMessages()
-                        .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
-                        return false;
-                    }
-                }
-            }
+//            PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
+//            for (PendingCertificationResultDTO certCriteria : productCasted.getCertificationCriterion()){
+//                if (certCriteria.getNumber().equals("170.314 (b)(1)") && certCriteria.getMeetsCriteria()) {
+//                    hasB1 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (b)(2)") && certCriteria.getMeetsCriteria()) {
+//                    hasB2 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (b)(8)") && certCriteria.getMeetsCriteria()) {
+//                    hasB8 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (h)(1)") && certCriteria.getMeetsCriteria()) {
+//                    hasH1 = true;
+//                }
+//            }
+//            if (!hasB1 && !hasB2) {
+//                if (!hasB1 && !hasB8) {
+//                    if (!hasB8 && !hasH1) {
+//                        productCasted.getErrorMessages()
+//                        .add("An allowed combination of (b)(1), (b)(2), (b)(8), and (h)(1) was not found.");
+//                        return false;
+//                    }
+//                }
+//            }
         } else {
 //            CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
 //            for (CertificationResult certCriteria : productCasted.getCertificationResults()) {
@@ -130,28 +130,28 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
         boolean hasA19 = false;
         boolean hasA20 = false;
         if (product instanceof PendingCertifiedProductDTO) {
-            PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
-            for (PendingCertificationResultDTO certCriteria : productCasted.getCertificationCriterion()) {
-                if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.getMeetsCriteria()) {
-                    hasA1 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.getMeetsCriteria()) {
-                    hasA18 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.getMeetsCriteria()) {
-                    hasA19 = true;
-                }
-                if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.getMeetsCriteria()) {
-                    hasA20 = true;
-                }
-            }
-            if (!hasA1) {
-                if (!hasA18 || !hasA19 || !hasA20) {
-                    productCasted.getErrorMessages()
-                    .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
-                    return false;
-                }
-            }
+//            PendingCertifiedProductDTO productCasted = (PendingCertifiedProductDTO) product;
+//            for (PendingCertificationResultDTO certCriteria : productCasted.getCertificationCriterion()) {
+//                if (certCriteria.getNumber().equals("170.314 (a)(1)") && certCriteria.getMeetsCriteria()) {
+//                    hasA1 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (a)(18)") && certCriteria.getMeetsCriteria()) {
+//                    hasA18 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (a)(19)") && certCriteria.getMeetsCriteria()) {
+//                    hasA19 = true;
+//                }
+//                if (certCriteria.getNumber().equals("170.314 (a)(20)") && certCriteria.getMeetsCriteria()) {
+//                    hasA20 = true;
+//                }
+//            }
+//            if (!hasA1) {
+//                if (!hasA18 || !hasA19 || !hasA20) {
+//                    productCasted.getErrorMessages()
+//                    .add("Neither (a)(1) nor the combination of (a)(18), (a)(19), and (a)(20) were found.");
+//                    return false;
+//                }
+//            }
         } else {
 //            CertifiedProductSearchDetails productCasted = (CertifiedProductSearchDetails) product;
 //            for (CertificationResult certCriteria : productCasted.getCertificationResults()) {
@@ -225,10 +225,10 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
 //        if (product.getPracticeTypeId() == null) {
 //            product.getErrorMessages().add("Practice setting is required but was not found.");
 //        } 
-        else {
-            product.getErrorMessages().addAll(
-                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
-        }
+//        else {
+//            product.getErrorMessages().addAll(
+//                    certifiedtProductTestFunctionalityValidator.getTestFunctionalityValidationErrors(product));
+//        }
 //        if (product.getProductClassificationId() == null) {
 //            product.getErrorMessages().add("Product classification is required but was not found.");
 //        }
@@ -356,74 +356,74 @@ public class CertifiedProduct2014Validator extends CertifiedProductValidatorImpl
     protected void validateDemographics(final PendingCertifiedProductDTO product) {
         super.validateDemographics(product);
 
-        if (product.getHasQms() != null && product.getHasQms()
-                && (product.getQmsStandards() == null || product.getQmsStandards().isEmpty())) {
-            product.getErrorMessages().add(getMessage("listing.missingQMSStandards"));
-        }
-        if (product.getHasQms() != null && !product.getHasQms() && !product.getQmsStandards().isEmpty()) {
-            product.getErrorMessages().add(getMessage("listing.missingQMSBoolean"));
-        }
+//        if (product.getHasQms() != null && product.getHasQms()
+//                && (product.getQmsStandards() == null || product.getQmsStandards().isEmpty())) {
+//            product.getErrorMessages().add(getMessage("listing.missingQMSStandards"));
+//        }
+//        if (product.getHasQms() != null && !product.getHasQms() && !product.getQmsStandards().isEmpty()) {
+//            product.getErrorMessages().add(getMessage("listing.missingQMSBoolean"));
+//        }
 
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
-                    gapEligibleAndTrue = true;
-                }
+//        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+//            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+//                boolean gapEligibleAndTrue = false;
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+//                        && cert.getGap() == Boolean.TRUE) {
+//                    gapEligibleAndTrue = true;
+//                }
+//
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
+//                    if (cert.getSed() == null) {
+//                        product.getErrorMessages().add(
+//                                getMessage("listing.criteria.SEDRequired", cert.getNumber()));
+//                    } else if (cert.getSed() != null && cert.getSed().booleanValue()
+//                            && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
+//                        if (product.getIcs() != null && product.getIcs().booleanValue()) {
+//                            product.getWarningMessages().add(
+//                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+//                        } else {
+//                            product.getErrorMessages().add(
+//                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
+//                        }
+//                    } else if (cert.getSed() != null && !cert.getSed().booleanValue()
+//                            && cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
+//                        product.getWarningMessages().add(
+//                                getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
+//                    }
+//                }
+//
+//                if (!gapEligibleAndTrue && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
+//                        && (cert.getTestData() == null || cert.getTestData().size() == 0)) {
+//                    product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+//                }
 
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.SED)) {
-                    if (cert.getSed() == null) {
-                        product.getErrorMessages().add(
-                                getMessage("listing.criteria.SEDRequired", cert.getNumber()));
-                    } else if (cert.getSed() != null && cert.getSed().booleanValue()
-                            && (cert.getUcdProcesses() == null || cert.getUcdProcesses().size() == 0)) {
-                        if (product.getIcs() != null && product.getIcs().booleanValue()) {
-                            product.getWarningMessages().add(
-                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
-                        } else {
-                            product.getErrorMessages().add(
-                                    getMessage("listing.criteria.missingUcdProccesses", cert.getNumber()));
-                        }
-                    } else if (cert.getSed() != null && !cert.getSed().booleanValue()
-                            && cert.getUcdProcesses() != null && cert.getUcdProcesses().size() > 0) {
-                        product.getWarningMessages().add(
-                                getMessage("listing.criteria.sedUcdMismatch", cert.getNumber()));
-                    }
-                }
-
-                if (!gapEligibleAndTrue && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
-                        && (cert.getTestData() == null || cert.getTestData().size() == 0)) {
-                    product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
-                }
-
-                if (cert.getTestTools() != null && cert.getTestTools().size() > 0) {
-                    for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
-                        if (StringUtils.isEmpty(testTool.getName())) {
-                            product.getErrorMessages().add(
-                                    "There was no test tool name found for certification " + cert.getNumber() + ".");
-                        } else {
-                            TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
-                            if (tt == null) {
-                                product.getErrorMessages().add("No test tool with " + testTool.getName()
-                                + " was found for criteria " + cert.getNumber() + ".");
-                            } else if (tt.isRetired() && super.icsCodeInteger != null
-                                    && super.icsCodeInteger.intValue() == 0) {
-                                if (super.hasIcsConflict) {
-                                    product.getWarningMessages().add("Test Tool '" + testTool.getName()
-                                    + "' can not be used for criteria '" + cert.getNumber()
-                                    + "', as it is a retired tool, and this Certified Product does not carry ICS.");
-                                } else {
-                                    product.getErrorMessages().add("Test Tool '" + testTool.getName()
-                                    + "' can not be used for criteria '" + cert.getNumber()
-                                    + "', as it is a retired tool, and this Certified Product does not carry ICS.");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//                if (cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+//                    for (PendingCertificationResultTestToolDTO testTool : cert.getTestTools()) {
+//                        if (StringUtils.isEmpty(testTool.getName())) {
+//                            product.getErrorMessages().add(
+//                                    "There was no test tool name found for certification " + cert.getNumber() + ".");
+//                        } else {
+//                            TestToolDTO tt = super.testToolDao.getByName(testTool.getName());
+//                            if (tt == null) {
+//                                product.getErrorMessages().add("No test tool with " + testTool.getName()
+//                                + " was found for criteria " + cert.getNumber() + ".");
+//                            } else if (tt.isRetired() && super.icsCodeInteger != null
+//                                    && super.icsCodeInteger.intValue() == 0) {
+//                                if (super.hasIcsConflict) {
+//                                    product.getWarningMessages().add("Test Tool '" + testTool.getName()
+//                                    + "' can not be used for criteria '" + cert.getNumber()
+//                                    + "', as it is a retired tool, and this Certified Product does not carry ICS.");
+//                                } else {
+//                                    product.getErrorMessages().add("Test Tool '" + testTool.getName()
+//                                    + "' can not be used for criteria '" + cert.getNumber()
+//                                    + "', as it is a retired tool, and this Certified Product does not carry ICS.");
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     /**

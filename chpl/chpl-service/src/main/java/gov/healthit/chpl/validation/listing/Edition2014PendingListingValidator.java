@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.validation.pendingListing.review.Reviewer;
+import gov.healthit.chpl.validation.pendingListing.review.TestFunctionalityReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.UnattestedCriteriaWithDataReviewer;
+import gov.healthit.chpl.validation.pendingListing.review.TestToolReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.CertificationDateReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.ChplNumberReviewer;
 import gov.healthit.chpl.validation.pendingListing.review.FieldLengthReviewer;
@@ -31,8 +33,10 @@ public class Edition2014PendingListingValidator {
     @Autowired ValidDataReviewer validDataReviewer;
     @Autowired FieldLengthReviewer fieldLengthReviewer;
     @Autowired RequiredData2014Reviewer requiredDataReviewer;
+    @Autowired TestToolReviewer ttReviewer;
+    @Autowired TestFunctionalityReviewer tfReviewer;
     
-    private List<Reviewer> reviewers;
+    protected List<Reviewer> reviewers;
 
     public Edition2014PendingListingValidator() {
         reviewers = new ArrayList<Reviewer>();
@@ -44,6 +48,8 @@ public class Edition2014PendingListingValidator {
         reviewers.add(validDataReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredDataReviewer);
+        reviewers.add(ttReviewer);
+        reviewers.add(tfReviewer);
     }
 
     public List<Reviewer> getReviewers() {

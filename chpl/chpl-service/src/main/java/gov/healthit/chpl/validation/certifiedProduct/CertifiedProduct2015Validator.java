@@ -142,457 +142,457 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
     public void validate(PendingCertifiedProductDTO product) {
         super.validate(product);
 
-        List<String> allMetCerts = new ArrayList<String>();
-        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-            if (certCriteria.getMeetsCriteria()) {
-                allMetCerts.add(certCriteria.getNumber());
-            }
-        }
-
-        List<String> errors = checkClassOfCriteriaForErrors("170.315 (a)", allMetCerts,
-                Arrays.asList(aComplimentaryCerts));
-        product.getErrorMessages().addAll(errors);
-
-        errors = checkClassOfCriteriaForErrors("170.315 (b)", allMetCerts, Arrays.asList(bComplimentaryCerts));
-        product.getErrorMessages().addAll(errors);
-
-        errors = checkClassOfCriteriaForErrors("170.315 (c)", allMetCerts, Arrays.asList(cComplimentaryCerts));
-        product.getErrorMessages().addAll(errors);
-
-        errors = checkClassOfCriteriaForErrors("170.315 (f)", allMetCerts, Arrays.asList(fComplimentaryCerts));
-        product.getErrorMessages().addAll(errors);
-
-        errors = checkClassOfCriteriaForErrors("170.315 (h)", allMetCerts, Arrays.asList(hComplimentaryCerts));
-        product.getErrorMessages().addAll(errors);
-
-        errors = checkSpecificCriteriaForErrors("170.315 (e)(1)", allMetCerts, Arrays.asList(e1ComplimentaryCerts));
-        product.getErrorMessages().addAll(errors);
-
-        // check for (c)(1), (c)(2), (c)(3), (c)(4)
-        boolean meetsC1Criterion = hasCert("170.315 (c)(1)", allMetCerts);
-        boolean meetsC2Criterion = hasCert("170.315 (c)(2)", allMetCerts);
-        boolean meetsC3Criterion = hasCert("170.315 (c)(3)", allMetCerts);
-        boolean meetsC4Criterion = hasCert("170.315 (c)(4)", allMetCerts);
-        boolean hasC1Cqm = false;
-        boolean hasC2Cqm = false;
-        boolean hasC3Cqm = false;
-        boolean hasC4Cqm = false;
-        for (PendingCqmCriterionDTO cqm : product.getCqmCriterion()) {
-            List<String> cqmCerts = new ArrayList<String>();
-            for (PendingCqmCertificationCriterionDTO criteria : cqm.getCertifications()) {
-                cqmCerts.add(criteria.getCertificationCriteriaNumber());
-            }
-            hasC1Cqm = hasC1Cqm || hasCert("170.315 (c)(1)", cqmCerts);
-            hasC2Cqm = hasC2Cqm || hasCert("170.315 (c)(2)", cqmCerts);
-            hasC3Cqm = hasC3Cqm || hasCert("170.315 (c)(3)", cqmCerts);
-            hasC4Cqm = hasC4Cqm || hasCert("170.315 (c)(4)", cqmCerts);
-        }
-        if (meetsC1Criterion && !hasC1Cqm) {
-            product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC1Criterion && hasC1Cqm) {
-            product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(1), but the product does not attest to that criterion.");
-        }
-        if (meetsC2Criterion && !hasC2Cqm) {
-            product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(2) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC2Criterion && hasC2Cqm) {
-            product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(2), but the product does not attest to that criterion.");
-        }
-        if (meetsC3Criterion && !hasC3Cqm) {
-            product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(3) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC3Criterion && hasC3Cqm) {
-            product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(3), but the product does not attest to that criterion.");
-        }
-        if (meetsC4Criterion && !hasC4Cqm) {
-            product.getErrorMessages().add(
-                    "Certification criterion 170.315 (c)(4) was found but no matching Clinical Quality Measurement was found.");
-        } else if (!meetsC4Criterion && hasC4Cqm) {
-            product.getErrorMessages().add(
-                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(4), but the product does not attest to that criterion.");
-        }
-
-        // check for (e)(2) or (e)(3) required complimentary certs
-        List<String> e2e3ComplimentaryErrors = 
-                checkComplimentaryCriteriaAllRequired(e2e3Criterion, Arrays.asList(e2Ore3ComplimentaryCerts), allMetCerts);
-        product.getErrorMessages().addAll(e2e3ComplimentaryErrors);
-
-        // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
-        List<String> g7g8g9ComplimentaryErrors = 
-                checkComplimentaryCriteriaAllRequired(g7g8g9Criterion, Arrays.asList(g7Org8Org9ComplimentaryCerts), allMetCerts);
-        product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
-        
-        //if g7, g8, or g9 is found then one of d2 or d10 is required
-        g7g8g9ComplimentaryErrors = 
-                checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, allMetCerts);
-        product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
-
-        //g1 macra check
-        if(hasCert(G1, allMetCerts)) {
-            //must have at least one criteria with g1 macras listed
-            boolean hasG1Macra = false;
-            for(int i = 0; i < product.getCertificationCriterion().size() && !hasG1Macra; i++) {
-                PendingCertificationResultDTO cert = product.getCertificationCriterion().get(i);
-                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) && 
-                        cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    hasG1Macra = true;
-                }
-            }
-            
-            if(!hasG1Macra) {
-                product.getErrorMessages().add(String.format(
-                        messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "listing.missingG1Macras"),
-                                LocaleContextHolder.getLocale())));
-            }
-        }
-        
-        //g2 macra check
-        if(hasCert(G2, allMetCerts)) {
-          //must have at least one criteria with g2 macras listed
-            boolean hasG2Macra = false;
-            for(int i = 0; i < product.getCertificationCriterion().size() && !hasG2Macra; i++) {
-                PendingCertificationResultDTO cert = product.getCertificationCriterion().get(i);
-                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) && 
-                        cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    hasG2Macra = true;
-                }
-            }
-            
-            if(!hasG2Macra) {
-                product.getErrorMessages().add(String.format(
-                        messageSource.getMessage(
-                                new DefaultMessageSourceResolvable(
-                                        "listing.missingG2Macras"),
-                                LocaleContextHolder.getLocale())));
-            }
-        }
-        
-        // g3 checks
-        boolean needsG3 = false;
-        for (int i = 0; i < ucdRequiredCerts.length; i++) {
-            if (hasCert(ucdRequiredCerts[i], allMetCerts)) {
-                needsG3 = true;
-
-                // check for full set of UCD data
-                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
-                    if (certCriteria.getNumber().equals(ucdRequiredCerts[i])) {
-                        if (certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
-                            product.getErrorMessages().add("Certification " + certCriteria.getNumber()
-                                    + " requires at least one UCD process.");
-                        }
-                        if (certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
-                            product.getErrorMessages().add(
-                                    "Certification " + certCriteria.getNumber() + " requires at least one test task.");
-                        }
-
-                        if (certCriteria.getTestTasks() != null) {
-                            for (PendingCertificationResultTestTaskDTO certResultTask : certCriteria.getTestTasks()) {
-                                PendingTestTaskDTO task = certResultTask.getPendingTestTask();
-                                if (certResultTask.getTaskParticipants() == null
-                                        || certResultTask.getTaskParticipants().size() < 10) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskParticipantsSize"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (StringUtils.isEmpty(task.getDescription())) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestDescription"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskSuccessAverage() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskSuccessAverage"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskSuccessStddev() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskSuccessStddev"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskPathDeviationObserved() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskPathDeviationObserved"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskPathDeviationOptimal() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskPathDeviationOptimal"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskTimeAvg() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskTimeAvg"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskTimeStddev() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskTimeStddev"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskTimeDeviationObservedAvg() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskTimeDeviationObservedAvg"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskTimeDeviationOptimalAvg() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskTimeDeviationOptimalAvg"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskErrors() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskErrors"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskErrorsStddev() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskErrorsStddev"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (StringUtils.isEmpty(task.getTaskRatingScale())) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskRatingScale"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskRating() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskRating"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                if (task.getTaskRatingStddev() == null) {
-                                    product.getErrorMessages()
-                                            .add(String.format(
-                                                    messageSource.getMessage(
-                                                            new DefaultMessageSourceResolvable(
-                                                                    "listing.criteria.badTestTaskRatingStddev"),
-                                                            LocaleContextHolder.getLocale()),
-                                                    task.getUniqueId(), certCriteria.getNumber()));
-                                }
-                                for (PendingCertificationResultTestTaskParticipantDTO part : certResultTask
-                                        .getTaskParticipants()) {
-                                    if (part.getTestParticipant().getEducationTypeId() == null) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantEducationLevel"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        (part.getTestParticipant().getUserEnteredEducationType() == null
-                                                                ? "'unknown'"
-                                                                : part.getTestParticipant()
-                                                                        .getUserEnteredEducationType()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                    if (part.getTestParticipant().getAgeRangeId() == null) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantAgeRange"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        (part.getTestParticipant().getUserEnteredAgeRange() == null
-                                                                ? "'unknown'"
-                                                                : part.getTestParticipant().getUserEnteredAgeRange()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                    if (StringUtils.isEmpty(part.getTestParticipant().getGender())) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantGender"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                    if (StringUtils.isEmpty(part.getTestParticipant().getOccupation())) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantOccupation"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                    if (StringUtils.isEmpty(part.getTestParticipant().getAssistiveTechnologyNeeds())) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantAssistiveTechnologyNeeds"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                    if (part.getTestParticipant().getProfessionalExperienceMonths() == null) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantProfessionalExperienceMonths"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                    if (part.getTestParticipant().getProductExperienceMonths() == null) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantProductExperienceMonths"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                    if (part.getTestParticipant().getComputerExperienceMonths() == null) {
-                                        product.getErrorMessages()
-                                                .add(String.format(
-                                                        messageSource.getMessage(
-                                                                new DefaultMessageSourceResolvable(
-                                                                        "listing.criteria.badParticipantComputerExperienceMonths"),
-                                                                LocaleContextHolder.getLocale()),
-                                                        part.getTestParticipant().getUniqueId()));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        if (needsG3) {
-            boolean hasG3 = hasCert("170.315 (g)(3)", allMetCerts);
-            if (!hasG3) {
-                product.getErrorMessages().add("170.315 (g)(3) is required but was not found.");
-            }
-        }
-
-        // g3 inverse check
-        boolean hasG3ComplimentaryCerts = false;
-        for (int i = 0; i < ucdRequiredCerts.length; i++) {
-            if (hasCert(ucdRequiredCerts[i], allMetCerts)) {
-                hasG3ComplimentaryCerts = true;
-            }
-        }
-        if (!hasG3ComplimentaryCerts) {
-            // make sure it doesn't have g3
-            boolean hasG3 = hasCert("170.315 (g)(3)", allMetCerts);
-            if (hasG3) {
-                product.getErrorMessages().add("170.315 (g)(3) is not allowed but was found.");
-            }
-        }
-
-        // g4 check
-        boolean hasG4 = hasCert("170.315 (g)(4)", allMetCerts);
-        if (!hasG4) {
-            product.getErrorMessages().add("170.315 (g)(4) is required but was not found.");
-        }
-
-        // g5 check
-        boolean hasG5 = hasCert("170.315 (g)(5)", allMetCerts);
-        if (!hasG5) {
-            product.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
-        }
-
-        // g6 checks
-        boolean needsG6 = false;
-        for (int i = 0; i < g6CertsToCheck.length && !needsG6; i++) {
-            if (hasCert(g6CertsToCheck[i], allMetCerts)) {
-                needsG6 = true;
-            }
-        }
-        if (needsG6) {
-            boolean hasG6 = hasCert("170.315 (g)(6)", allMetCerts);
-            if (!hasG6) {
-                product.getErrorMessages().add("170.315 (g)(6) is required but was not found.");
-            }
-        }
-
-        // reverse g6 check
-        boolean hasG6 = hasCert("170.315 (g)(6)", allMetCerts);
-        if (hasG6) {
-            boolean hasG6ComplimentaryCerts = false;
-            for (int i = 0; i < g6CertsToCheck.length; i++) {
-                if (hasCert(g6CertsToCheck[i], allMetCerts)) {
-                    hasG6ComplimentaryCerts = true;
-                }
-            }
-
-            if (!hasG6ComplimentaryCerts) {
-                product.getErrorMessages().add("170.315 (g)(6) was found but a related required cert was not found.");
-            }
-        }
-
-        // TODO: detailed G6 check; waiting on rule from ONC
-
-        // h1 plus b1
-        boolean hasH1 = hasCert("170.315 (h)(1)", allMetCerts);
-        if (hasH1) {
-            boolean hasB1 = hasCert("170.315 (b)(1)", allMetCerts);
-            if (!hasB1) {
-                product.getErrorMessages()
-                        .add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
-            }
-        }
+//        List<String> allMetCerts = new ArrayList<String>();
+//        for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//            if (certCriteria.getMeetsCriteria()) {
+//                allMetCerts.add(certCriteria.getNumber());
+//            }
+//        }
+//
+//        List<String> errors = checkClassOfCriteriaForErrors("170.315 (a)", allMetCerts,
+//                Arrays.asList(aComplimentaryCerts));
+//        product.getErrorMessages().addAll(errors);
+//
+//        errors = checkClassOfCriteriaForErrors("170.315 (b)", allMetCerts, Arrays.asList(bComplimentaryCerts));
+//        product.getErrorMessages().addAll(errors);
+//
+//        errors = checkClassOfCriteriaForErrors("170.315 (c)", allMetCerts, Arrays.asList(cComplimentaryCerts));
+//        product.getErrorMessages().addAll(errors);
+//
+//        errors = checkClassOfCriteriaForErrors("170.315 (f)", allMetCerts, Arrays.asList(fComplimentaryCerts));
+//        product.getErrorMessages().addAll(errors);
+//
+//        errors = checkClassOfCriteriaForErrors("170.315 (h)", allMetCerts, Arrays.asList(hComplimentaryCerts));
+//        product.getErrorMessages().addAll(errors);
+//
+//        errors = checkSpecificCriteriaForErrors("170.315 (e)(1)", allMetCerts, Arrays.asList(e1ComplimentaryCerts));
+//        product.getErrorMessages().addAll(errors);
+//
+//        // check for (c)(1), (c)(2), (c)(3), (c)(4)
+//        boolean meetsC1Criterion = hasCert("170.315 (c)(1)", allMetCerts);
+//        boolean meetsC2Criterion = hasCert("170.315 (c)(2)", allMetCerts);
+//        boolean meetsC3Criterion = hasCert("170.315 (c)(3)", allMetCerts);
+//        boolean meetsC4Criterion = hasCert("170.315 (c)(4)", allMetCerts);
+//        boolean hasC1Cqm = false;
+//        boolean hasC2Cqm = false;
+//        boolean hasC3Cqm = false;
+//        boolean hasC4Cqm = false;
+//        for (PendingCqmCriterionDTO cqm : product.getCqmCriterion()) {
+//            List<String> cqmCerts = new ArrayList<String>();
+//            for (PendingCqmCertificationCriterionDTO criteria : cqm.getCertifications()) {
+//                cqmCerts.add(criteria.getCertificationCriteriaNumber());
+//            }
+//            hasC1Cqm = hasC1Cqm || hasCert("170.315 (c)(1)", cqmCerts);
+//            hasC2Cqm = hasC2Cqm || hasCert("170.315 (c)(2)", cqmCerts);
+//            hasC3Cqm = hasC3Cqm || hasCert("170.315 (c)(3)", cqmCerts);
+//            hasC4Cqm = hasC4Cqm || hasCert("170.315 (c)(4)", cqmCerts);
+//        }
+//        if (meetsC1Criterion && !hasC1Cqm) {
+//            product.getErrorMessages().add(
+//                    "Certification criterion 170.315 (c)(1) was found but no matching Clinical Quality Measurement was found.");
+//        } else if (!meetsC1Criterion && hasC1Cqm) {
+//            product.getErrorMessages().add(
+//                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(1), but the product does not attest to that criterion.");
+//        }
+//        if (meetsC2Criterion && !hasC2Cqm) {
+//            product.getErrorMessages().add(
+//                    "Certification criterion 170.315 (c)(2) was found but no matching Clinical Quality Measurement was found.");
+//        } else if (!meetsC2Criterion && hasC2Cqm) {
+//            product.getErrorMessages().add(
+//                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(2), but the product does not attest to that criterion.");
+//        }
+//        if (meetsC3Criterion && !hasC3Cqm) {
+//            product.getErrorMessages().add(
+//                    "Certification criterion 170.315 (c)(3) was found but no matching Clinical Quality Measurement was found.");
+//        } else if (!meetsC3Criterion && hasC3Cqm) {
+//            product.getErrorMessages().add(
+//                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(3), but the product does not attest to that criterion.");
+//        }
+//        if (meetsC4Criterion && !hasC4Cqm) {
+//            product.getErrorMessages().add(
+//                    "Certification criterion 170.315 (c)(4) was found but no matching Clinical Quality Measurement was found.");
+//        } else if (!meetsC4Criterion && hasC4Cqm) {
+//            product.getErrorMessages().add(
+//                    "A Clinical Quality Measurement was found under Certification criterion 170.315 (c)(4), but the product does not attest to that criterion.");
+//        }
+//
+//        // check for (e)(2) or (e)(3) required complimentary certs
+//        List<String> e2e3ComplimentaryErrors = 
+//                checkComplimentaryCriteriaAllRequired(e2e3Criterion, Arrays.asList(e2Ore3ComplimentaryCerts), allMetCerts);
+//        product.getErrorMessages().addAll(e2e3ComplimentaryErrors);
+//
+//        // check for (g)(7) or (g)(8) or (g)(9) required complimentary certs
+//        List<String> g7g8g9ComplimentaryErrors = 
+//                checkComplimentaryCriteriaAllRequired(g7g8g9Criterion, Arrays.asList(g7Org8Org9ComplimentaryCerts), allMetCerts);
+//        product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
+//        
+//        //if g7, g8, or g9 is found then one of d2 or d10 is required
+//        g7g8g9ComplimentaryErrors = 
+//                checkComplimentaryCriteriaAnyRequired(g7g8g9Criterion, d2d10Criterion, allMetCerts);
+//        product.getErrorMessages().addAll(g7g8g9ComplimentaryErrors);
+//
+//        //g1 macra check
+//        if(hasCert(G1, allMetCerts)) {
+//            //must have at least one criteria with g1 macras listed
+//            boolean hasG1Macra = false;
+//            for(int i = 0; i < product.getCertificationCriterion().size() && !hasG1Macra; i++) {
+//                PendingCertificationResultDTO cert = product.getCertificationCriterion().get(i);
+//                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA) && 
+//                        cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+//                    hasG1Macra = true;
+//                }
+//            }
+//            
+//            if(!hasG1Macra) {
+//                product.getErrorMessages().add(String.format(
+//                        messageSource.getMessage(
+//                                new DefaultMessageSourceResolvable(
+//                                        "listing.missingG1Macras"),
+//                                LocaleContextHolder.getLocale())));
+//            }
+//        }
+//        
+//        //g2 macra check
+//        if(hasCert(G2, allMetCerts)) {
+//          //must have at least one criteria with g2 macras listed
+//            boolean hasG2Macra = false;
+//            for(int i = 0; i < product.getCertificationCriterion().size() && !hasG2Macra; i++) {
+//                PendingCertificationResultDTO cert = product.getCertificationCriterion().get(i);
+//                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA) && 
+//                        cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+//                    hasG2Macra = true;
+//                }
+//            }
+//            
+//            if(!hasG2Macra) {
+//                product.getErrorMessages().add(String.format(
+//                        messageSource.getMessage(
+//                                new DefaultMessageSourceResolvable(
+//                                        "listing.missingG2Macras"),
+//                                LocaleContextHolder.getLocale())));
+//            }
+//        }
+//        
+//        // g3 checks
+//        boolean needsG3 = false;
+//        for (int i = 0; i < ucdRequiredCerts.length; i++) {
+//            if (hasCert(ucdRequiredCerts[i], allMetCerts)) {
+//                needsG3 = true;
+//
+//                // check for full set of UCD data
+//                for (PendingCertificationResultDTO certCriteria : product.getCertificationCriterion()) {
+//                    if (certCriteria.getNumber().equals(ucdRequiredCerts[i])) {
+//                        if (certCriteria.getUcdProcesses() == null || certCriteria.getUcdProcesses().size() == 0) {
+//                            product.getErrorMessages().add("Certification " + certCriteria.getNumber()
+//                                    + " requires at least one UCD process.");
+//                        }
+//                        if (certCriteria.getTestTasks() == null || certCriteria.getTestTasks().size() == 0) {
+//                            product.getErrorMessages().add(
+//                                    "Certification " + certCriteria.getNumber() + " requires at least one test task.");
+//                        }
+//
+//                        if (certCriteria.getTestTasks() != null) {
+//                            for (PendingCertificationResultTestTaskDTO certResultTask : certCriteria.getTestTasks()) {
+//                                PendingTestTaskDTO task = certResultTask.getPendingTestTask();
+//                                if (certResultTask.getTaskParticipants() == null
+//                                        || certResultTask.getTaskParticipants().size() < 10) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskParticipantsSize"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (StringUtils.isEmpty(task.getDescription())) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestDescription"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskSuccessAverage() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskSuccessAverage"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskSuccessStddev() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskSuccessStddev"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskPathDeviationObserved() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskPathDeviationObserved"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskPathDeviationOptimal() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskPathDeviationOptimal"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskTimeAvg() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskTimeAvg"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskTimeStddev() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskTimeStddev"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskTimeDeviationObservedAvg() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskTimeDeviationObservedAvg"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskTimeDeviationOptimalAvg() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskTimeDeviationOptimalAvg"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskErrors() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskErrors"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskErrorsStddev() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskErrorsStddev"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (StringUtils.isEmpty(task.getTaskRatingScale())) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskRatingScale"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskRating() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskRating"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                if (task.getTaskRatingStddev() == null) {
+//                                    product.getErrorMessages()
+//                                            .add(String.format(
+//                                                    messageSource.getMessage(
+//                                                            new DefaultMessageSourceResolvable(
+//                                                                    "listing.criteria.badTestTaskRatingStddev"),
+//                                                            LocaleContextHolder.getLocale()),
+//                                                    task.getUniqueId(), certCriteria.getNumber()));
+//                                }
+//                                for (PendingCertificationResultTestTaskParticipantDTO part : certResultTask
+//                                        .getTaskParticipants()) {
+//                                    if (part.getTestParticipant().getEducationTypeId() == null) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantEducationLevel"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        (part.getTestParticipant().getUserEnteredEducationType() == null
+//                                                                ? "'unknown'"
+//                                                                : part.getTestParticipant()
+//                                                                        .getUserEnteredEducationType()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                    if (part.getTestParticipant().getAgeRangeId() == null) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantAgeRange"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        (part.getTestParticipant().getUserEnteredAgeRange() == null
+//                                                                ? "'unknown'"
+//                                                                : part.getTestParticipant().getUserEnteredAgeRange()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                    if (StringUtils.isEmpty(part.getTestParticipant().getGender())) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantGender"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                    if (StringUtils.isEmpty(part.getTestParticipant().getOccupation())) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantOccupation"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                    if (StringUtils.isEmpty(part.getTestParticipant().getAssistiveTechnologyNeeds())) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantAssistiveTechnologyNeeds"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                    if (part.getTestParticipant().getProfessionalExperienceMonths() == null) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantProfessionalExperienceMonths"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                    if (part.getTestParticipant().getProductExperienceMonths() == null) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantProductExperienceMonths"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                    if (part.getTestParticipant().getComputerExperienceMonths() == null) {
+//                                        product.getErrorMessages()
+//                                                .add(String.format(
+//                                                        messageSource.getMessage(
+//                                                                new DefaultMessageSourceResolvable(
+//                                                                        "listing.criteria.badParticipantComputerExperienceMonths"),
+//                                                                LocaleContextHolder.getLocale()),
+//                                                        part.getTestParticipant().getUniqueId()));
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        
+//        if (needsG3) {
+//            boolean hasG3 = hasCert("170.315 (g)(3)", allMetCerts);
+//            if (!hasG3) {
+//                product.getErrorMessages().add("170.315 (g)(3) is required but was not found.");
+//            }
+//        }
+//
+//        // g3 inverse check
+//        boolean hasG3ComplimentaryCerts = false;
+//        for (int i = 0; i < ucdRequiredCerts.length; i++) {
+//            if (hasCert(ucdRequiredCerts[i], allMetCerts)) {
+//                hasG3ComplimentaryCerts = true;
+//            }
+//        }
+//        if (!hasG3ComplimentaryCerts) {
+//            // make sure it doesn't have g3
+//            boolean hasG3 = hasCert("170.315 (g)(3)", allMetCerts);
+//            if (hasG3) {
+//                product.getErrorMessages().add("170.315 (g)(3) is not allowed but was found.");
+//            }
+//        }
+//
+//        // g4 check
+//        boolean hasG4 = hasCert("170.315 (g)(4)", allMetCerts);
+//        if (!hasG4) {
+//            product.getErrorMessages().add("170.315 (g)(4) is required but was not found.");
+//        }
+//
+//        // g5 check
+//        boolean hasG5 = hasCert("170.315 (g)(5)", allMetCerts);
+//        if (!hasG5) {
+//            product.getErrorMessages().add("170.315 (g)(5) is required but was not found.");
+//        }
+//
+//        // g6 checks
+//        boolean needsG6 = false;
+//        for (int i = 0; i < g6CertsToCheck.length && !needsG6; i++) {
+//            if (hasCert(g6CertsToCheck[i], allMetCerts)) {
+//                needsG6 = true;
+//            }
+//        }
+//        if (needsG6) {
+//            boolean hasG6 = hasCert("170.315 (g)(6)", allMetCerts);
+//            if (!hasG6) {
+//                product.getErrorMessages().add("170.315 (g)(6) is required but was not found.");
+//            }
+//        }
+//
+//        // reverse g6 check
+//        boolean hasG6 = hasCert("170.315 (g)(6)", allMetCerts);
+//        if (hasG6) {
+//            boolean hasG6ComplimentaryCerts = false;
+//            for (int i = 0; i < g6CertsToCheck.length; i++) {
+//                if (hasCert(g6CertsToCheck[i], allMetCerts)) {
+//                    hasG6ComplimentaryCerts = true;
+//                }
+//            }
+//
+//            if (!hasG6ComplimentaryCerts) {
+//                product.getErrorMessages().add("170.315 (g)(6) was found but a related required cert was not found.");
+//            }
+//        }
+//
+//        // TODO: detailed G6 check; waiting on rule from ONC
+//
+//        // h1 plus b1
+//        boolean hasH1 = hasCert("170.315 (h)(1)", allMetCerts);
+//        if (hasH1) {
+//            boolean hasB1 = hasCert("170.315 (b)(1)", allMetCerts);
+//            if (!hasB1) {
+//                product.getErrorMessages()
+//                        .add("170.315 (h)(1) was found so 170.315 (b)(1) is required but was not found.");
+//            }
+//        }
     }
 
     protected void validateDemographics(PendingCertifiedProductDTO product) {
@@ -669,256 +669,256 @@ public class CertifiedProduct2015Validator extends CertifiedProductValidatorImpl
 //            }
 //        }
         
-        if (product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
-            product.getErrorMessages().add("QMS Standards are required.");
-        } else {
-            for (PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()) {
-                if (StringUtils.isBlank(qms.getApplicableCriteria())) {
-                    product.getErrorMessages().add("Applicable criteria is required for each QMS Standard listed.");
-                }
-            }
-        }
-
-        if (product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
-            product.getErrorMessages().add("Accessibility standards are required.");
-        } // accessibility standards do not have to match the set list of
-          // standards.
-
-        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
-            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
-                boolean gapEligibleAndTrue = false;
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
-                        && cert.getGap() == Boolean.TRUE) {
-                    gapEligibleAndTrue = true;
-                }
-
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY)
-                        && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    product.getErrorMessages().add(
-                            "Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
-                }
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION)
-                        && StringUtils.isEmpty(cert.getApiDocumentation())) {
-                    product.getErrorMessages()
-                            .add("API Documentation is required for certification " + cert.getNumber() + ".");
-                }
-                // jennifer asked to not make functionality tested be a required
-                // field
-                // if(certRules.hasCertOption(cert.getNumber(),
-                // CertificationResultRules.FUNCTIONALITY_TESTED) &&
-                // (cert.getTestFunctionality() == null ||
-                // cert.getTestFunctionality().size() == 0)) {
-                // product.getErrorMessages().add("Functionality Tested is
-                // required for certification " + cert.getNumber() + ".");
-                // }
-                
-                //a test tool is required to exist if the criteria is not gap
-                if (!gapEligibleAndTrue
-                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
-                    product.getErrorMessages().add(String.format(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("listing.criteria.missingTestTool"),
-                        LocaleContextHolder.getLocale()),
-                        cert.getNumber()));
-                }
-
-                //check all the supplied test tools for validity and completeness
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
-                        && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
-                    for (PendingCertificationResultTestToolDTO pendingTestTool : cert.getTestTools()) {
-                        TestToolDTO foundTestTool = null;
-                        //no new test tools are allowed to be added 
-                        //so make sure a test tool by this name exists
-                        if (pendingTestTool.getTestToolId() == null) {
-                            foundTestTool = testToolDao.getByName(pendingTestTool.getName());
-                            if (foundTestTool == null || foundTestTool.getId() == null) {
-                                product.getErrorMessages().add(String.format(messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "listing.criteria.invalidTestToolName"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getName()));
-                            }
-                        } else {
-                            foundTestTool = testToolDao.getById(pendingTestTool.getTestToolId());
-                            if (foundTestTool == null || foundTestTool.getId() == null) {
-                                product.getErrorMessages().add(String.format(messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "listing.criteria.invalidTestToolId"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getTestToolId()));
-                            }
-                        }
-                        
-                        if(foundTestTool != null) {
-                            //require test tool version
-                            if(StringUtils.isEmpty(pendingTestTool.getVersion())) {
-                                product.getErrorMessages().add(String.format(messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "listing.criteria.missingTestToolVersion"),
-                                        LocaleContextHolder.getLocale()), pendingTestTool.getName(), cert.getNumber()));
-                            }
-                            
-                            // Allow retired test tool only if listing ICS = true
-                            if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
-                                if (super.hasIcsConflict) {
-                                    //the ics code is 0 but we can't be sure that's what the user meant
-                                    //because the ICS value in the file is 1 (hence the conflict), 
-                                    //so issue a warning since the listing may or may not truly have ICS
-                                    product.getWarningMessages().add(String.format(messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "listing.criteria.retiredTestToolNotAllowed"),
-                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
-                                } else {
-                                    //the listing does not have ICS so retired tools are definitely not allowed - error
-                                    product.getErrorMessages().add(String.format(messageSource.getMessage(
-                                            new DefaultMessageSourceResolvable(
-                                                    "listing.criteria.retiredTestToolNotAllowed"),
-                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
-                        && cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
-                    for (PendingCertificationResultTestFunctionalityDTO pendingFuncMap : cert.getTestFunctionality()) {
-                        if (pendingFuncMap.getTestFunctionalityId() == null) {
-                            TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
-                                    pendingFuncMap.getNumber(), product.getCertificationEditionId());
-                            if (foundTestFunc == null || foundTestFunc.getId() == null) {
-                                product.getErrorMessages()
-                                        .add("Certification " + cert.getNumber()
-                                                + " contains invalid test functionality: '" + pendingFuncMap.getNumber()
-                                                + "'.");
-                            }
-                        }
-                    }
-                }
-
-                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
-                        && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
-                    for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
-                        if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
-                            product.getErrorMessages().add(
-                                    String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "listing.criteria.badTestProcedureName"),
-                                    LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getEnteredName()));
-                        } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
-                            TestProcedureDTO foundTestProc = 
-                                    testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
-                            if(foundTestProc == null || foundTestProc.getId() == null) {
-                                product.getErrorMessages().add(
-                                        String.format(messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "listing.criteria.badTestProcedureName"),
-                                        LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getTestProcedure().getName()));
-                            } else {
-                                crTestProc.getTestProcedure().setId(foundTestProc.getId());
-                            }
-                        }
-                        
-                        if(!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
-                            product.getErrorMessages().add(
-                                    String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "listing.criteria.missingTestProcedureVersion"),
-                                    LocaleContextHolder.getLocale()), cert.getNumber()));
-                        }
-                    }
-                }
-                
-                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
-                        && cert.getTestData() != null && cert.getTestData().size() > 0) {
-                    for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
-                        if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
-                            product.getWarningMessages().add(
-                                    String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "listing.criteria.badTestDataName"),
-                                    LocaleContextHolder.getLocale()), crTestData.getEnteredName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
-                            TestDataDTO foundTestData = 
-                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
-                            crTestData.setTestData(foundTestData);
-                        } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
-                            TestDataDTO foundTestData = 
-                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
-                            if(foundTestData == null || foundTestData.getId() == null) {
-                                product.getWarningMessages().add(
-                                        String.format(messageSource.getMessage(
-                                        new DefaultMessageSourceResolvable(
-                                                "listing.criteria.badTestDataName"),
-                                        LocaleContextHolder.getLocale()), crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
-                                foundTestData = 
-                                        testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
-                                crTestData.getTestData().setId(foundTestData.getId());
-                            } else {
-                                crTestData.getTestData().setId(foundTestData.getId());
-                            }
-                        }
-                        
-                        if(!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
-                            product.getErrorMessages().add(
-                                    String.format(messageSource.getMessage(
-                                    new DefaultMessageSourceResolvable(
-                                            "listing.criteria.missingTestDataVersion"),
-                                    LocaleContextHolder.getLocale()), cert.getNumber()));
-                        }
-                    }
-                }
-                
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA)
-                        && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
-                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
-                        if (pendingMeasureMap.getMacraMeasureId() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(),
-                                    pendingMeasureMap.getEnteredValue());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                product.getErrorMessages()
-                                        .add(String.format(messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "listing.criteria.invalidG1MacraMeasure"),
-                                                LocaleContextHolder.getLocale()), 
-                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
-                            } else {
-                                pendingMeasureMap.setMacraMeasure(foundMeasure);
-                            }
-                        }
-                    }
-                }
-
-                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA)
-                        && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
-                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
-                        if (pendingMeasureMap.getMacraMeasureId() == null) {
-                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(),
-                                    pendingMeasureMap.getEnteredValue());
-                            if (foundMeasure == null || foundMeasure.getId() == null) {
-                                product.getErrorMessages()
-                                        .add(String.format(messageSource.getMessage(
-                                                new DefaultMessageSourceResolvable(
-                                                        "listing.criteria.invalidG2MacraMeasure"),
-                                                LocaleContextHolder.getLocale()), 
-                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
-                            } else {
-                                pendingMeasureMap.setMacraMeasure(foundMeasure);
-                            }
-                        }
-                    }
-                }
-
-                // g1 and g2 are the only criteria that ONC supplies test data for
-                // other criteria probably should have test data but do not have to
-                if (!gapEligibleAndTrue
-                        && (cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)"))
-                        && (cert.getTestData() == null || cert.getTestData().size() == 0)) {
-                    product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
-                }
-            }
-        }
-
-        if (product.getIcs() == null) {
-            product.getErrorMessages().add("ICS is required.");
-        }
+//        if (product.getQmsStandards() == null || product.getQmsStandards().size() == 0) {
+//            product.getErrorMessages().add("QMS Standards are required.");
+//        } else {
+//            for (PendingCertifiedProductQmsStandardDTO qms : product.getQmsStandards()) {
+//                if (StringUtils.isBlank(qms.getApplicableCriteria())) {
+//                    product.getErrorMessages().add("Applicable criteria is required for each QMS Standard listed.");
+//                }
+//            }
+//        }
+//
+//        if (product.getAccessibilityStandards() == null || product.getAccessibilityStandards().size() == 0) {
+//            product.getErrorMessages().add("Accessibility standards are required.");
+//        } // accessibility standards do not have to match the set list of
+//          // standards.
+//
+//        for (PendingCertificationResultDTO cert : product.getCertificationCriterion()) {
+//            if (cert.getMeetsCriteria() != null && cert.getMeetsCriteria() == Boolean.TRUE) {
+//                boolean gapEligibleAndTrue = false;
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.GAP)
+//                        && cert.getGap() == Boolean.TRUE) {
+//                    gapEligibleAndTrue = true;
+//                }
+//
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.PRIVACY_SECURITY)
+//                        && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
+//                    product.getErrorMessages().add(
+//                            "Privacy and Security Framework is required for certification " + cert.getNumber() + ".");
+//                }
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.API_DOCUMENTATION)
+//                        && StringUtils.isEmpty(cert.getApiDocumentation())) {
+//                    product.getErrorMessages()
+//                            .add("API Documentation is required for certification " + cert.getNumber() + ".");
+//                }
+//                // jennifer asked to not make functionality tested be a required
+//                // field
+//                // if(certRules.hasCertOption(cert.getNumber(),
+//                // CertificationResultRules.FUNCTIONALITY_TESTED) &&
+//                // (cert.getTestFunctionality() == null ||
+//                // cert.getTestFunctionality().size() == 0)) {
+//                // product.getErrorMessages().add("Functionality Tested is
+//                // required for certification " + cert.getNumber() + ".");
+//                // }
+//                
+//                //a test tool is required to exist if the criteria is not gap
+//                if (!gapEligibleAndTrue
+//                        && certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+//                        && (cert.getTestTools() == null || cert.getTestTools().size() == 0)) {
+//                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+//                        new DefaultMessageSourceResolvable("listing.criteria.missingTestTool"),
+//                        LocaleContextHolder.getLocale()),
+//                        cert.getNumber()));
+//                }
+//
+//                //check all the supplied test tools for validity and completeness
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_TOOLS_USED)
+//                        && cert.getTestTools() != null && cert.getTestTools().size() > 0) {
+//                    for (PendingCertificationResultTestToolDTO pendingTestTool : cert.getTestTools()) {
+//                        TestToolDTO foundTestTool = null;
+//                        //no new test tools are allowed to be added 
+//                        //so make sure a test tool by this name exists
+//                        if (pendingTestTool.getTestToolId() == null) {
+//                            foundTestTool = testToolDao.getByName(pendingTestTool.getName());
+//                            if (foundTestTool == null || foundTestTool.getId() == null) {
+//                                product.getErrorMessages().add(String.format(messageSource.getMessage(
+//                                        new DefaultMessageSourceResolvable(
+//                                                "listing.criteria.invalidTestToolName"),
+//                                        LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getName()));
+//                            }
+//                        } else {
+//                            foundTestTool = testToolDao.getById(pendingTestTool.getTestToolId());
+//                            if (foundTestTool == null || foundTestTool.getId() == null) {
+//                                product.getErrorMessages().add(String.format(messageSource.getMessage(
+//                                        new DefaultMessageSourceResolvable(
+//                                                "listing.criteria.invalidTestToolId"),
+//                                        LocaleContextHolder.getLocale()), cert.getNumber(), pendingTestTool.getTestToolId()));
+//                            }
+//                        }
+//                        
+//                        if(foundTestTool != null) {
+//                            //require test tool version
+//                            if(StringUtils.isEmpty(pendingTestTool.getVersion())) {
+//                                product.getErrorMessages().add(String.format(messageSource.getMessage(
+//                                        new DefaultMessageSourceResolvable(
+//                                                "listing.criteria.missingTestToolVersion"),
+//                                        LocaleContextHolder.getLocale()), pendingTestTool.getName(), cert.getNumber()));
+//                            }
+//                            
+//                            // Allow retired test tool only if listing ICS = true
+//                            if (foundTestTool.isRetired() && super.icsCodeInteger.intValue() == 0) {
+//                                if (super.hasIcsConflict) {
+//                                    //the ics code is 0 but we can't be sure that's what the user meant
+//                                    //because the ICS value in the file is 1 (hence the conflict), 
+//                                    //so issue a warning since the listing may or may not truly have ICS
+//                                    product.getWarningMessages().add(String.format(messageSource.getMessage(
+//                                            new DefaultMessageSourceResolvable(
+//                                                    "listing.criteria.retiredTestToolNotAllowed"),
+//                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
+//                                } else {
+//                                    //the listing does not have ICS so retired tools are definitely not allowed - error
+//                                    product.getErrorMessages().add(String.format(messageSource.getMessage(
+//                                            new DefaultMessageSourceResolvable(
+//                                                    "listing.criteria.retiredTestToolNotAllowed"),
+//                                            LocaleContextHolder.getLocale()), foundTestTool.getName(), cert.getNumber()));
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.FUNCTIONALITY_TESTED)
+//                        && cert.getTestFunctionality() != null && cert.getTestFunctionality().size() > 0) {
+//                    for (PendingCertificationResultTestFunctionalityDTO pendingFuncMap : cert.getTestFunctionality()) {
+//                        if (pendingFuncMap.getTestFunctionalityId() == null) {
+//                            TestFunctionalityDTO foundTestFunc = testFuncDao.getByNumberAndEdition(
+//                                    pendingFuncMap.getNumber(), product.getCertificationEditionId());
+//                            if (foundTestFunc == null || foundTestFunc.getId() == null) {
+//                                product.getErrorMessages()
+//                                        .add("Certification " + cert.getNumber()
+//                                                + " contains invalid test functionality: '" + pendingFuncMap.getNumber()
+//                                                + "'.");
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_PROCEDURE)
+//                        && cert.getTestProcedures() != null && cert.getTestProcedures().size() > 0) {
+//                    for (PendingCertificationResultTestProcedureDTO crTestProc : cert.getTestProcedures()) {
+//                        if (crTestProc.getTestProcedure() == null || crTestProc.getTestProcedureId() == null) {
+//                            product.getErrorMessages().add(
+//                                    String.format(messageSource.getMessage(
+//                                    new DefaultMessageSourceResolvable(
+//                                            "listing.criteria.badTestProcedureName"),
+//                                    LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getEnteredName()));
+//                        } else if(crTestProc.getTestProcedure() != null && crTestProc.getTestProcedure().getId() == null) {
+//                            TestProcedureDTO foundTestProc = 
+//                                    testProcDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestProc.getTestProcedure().getName());
+//                            if(foundTestProc == null || foundTestProc.getId() == null) {
+//                                product.getErrorMessages().add(
+//                                        String.format(messageSource.getMessage(
+//                                        new DefaultMessageSourceResolvable(
+//                                                "listing.criteria.badTestProcedureName"),
+//                                        LocaleContextHolder.getLocale()), cert.getNumber(), crTestProc.getTestProcedure().getName()));
+//                            } else {
+//                                crTestProc.getTestProcedure().setId(foundTestProc.getId());
+//                            }
+//                        }
+//                        
+//                        if(!StringUtils.isEmpty(crTestProc.getEnteredName()) && StringUtils.isEmpty(crTestProc.getVersion())) {
+//                            product.getErrorMessages().add(
+//                                    String.format(messageSource.getMessage(
+//                                    new DefaultMessageSourceResolvable(
+//                                            "listing.criteria.missingTestProcedureVersion"),
+//                                    LocaleContextHolder.getLocale()), cert.getNumber()));
+//                        }
+//                    }
+//                }
+//                
+//                if(certRules.hasCertOption(cert.getNumber(), CertificationResultRules.TEST_DATA)
+//                        && cert.getTestData() != null && cert.getTestData().size() > 0) {
+//                    for (PendingCertificationResultTestDataDTO crTestData : cert.getTestData()) {
+//                        if (crTestData.getTestData() == null || crTestData.getTestDataId() == null) {
+//                            product.getWarningMessages().add(
+//                                    String.format(messageSource.getMessage(
+//                                    new DefaultMessageSourceResolvable(
+//                                            "listing.criteria.badTestDataName"),
+//                                    LocaleContextHolder.getLocale()), crTestData.getEnteredName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+//                            TestDataDTO foundTestData = 
+//                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+//                            crTestData.setTestData(foundTestData);
+//                        } else if(crTestData.getTestData() != null && crTestData.getTestData().getId() == null) {
+//                            TestDataDTO foundTestData = 
+//                                    testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), crTestData.getTestData().getName());
+//                            if(foundTestData == null || foundTestData.getId() == null) {
+//                                product.getWarningMessages().add(
+//                                        String.format(messageSource.getMessage(
+//                                        new DefaultMessageSourceResolvable(
+//                                                "listing.criteria.badTestDataName"),
+//                                        LocaleContextHolder.getLocale()), crTestData.getTestData().getName(), cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA));
+//                                foundTestData = 
+//                                        testDataDao.getByCriteriaNumberAndValue(cert.getNumber(), TestDataDTO.DEFALUT_TEST_DATA);
+//                                crTestData.getTestData().setId(foundTestData.getId());
+//                            } else {
+//                                crTestData.getTestData().setId(foundTestData.getId());
+//                            }
+//                        }
+//                        
+//                        if(!StringUtils.isEmpty(crTestData.getEnteredName()) && StringUtils.isEmpty(crTestData.getVersion())) {
+//                            product.getErrorMessages().add(
+//                                    String.format(messageSource.getMessage(
+//                                    new DefaultMessageSourceResolvable(
+//                                            "listing.criteria.missingTestDataVersion"),
+//                                    LocaleContextHolder.getLocale()), cert.getNumber()));
+//                        }
+//                    }
+//                }
+//                
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G1_MACRA)
+//                        && cert.getG1MacraMeasures() != null && cert.getG1MacraMeasures().size() > 0) {
+//                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG1MacraMeasures()) {
+//                        if (pendingMeasureMap.getMacraMeasureId() == null) {
+//                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(),
+//                                    pendingMeasureMap.getEnteredValue());
+//                            if (foundMeasure == null || foundMeasure.getId() == null) {
+//                                product.getErrorMessages()
+//                                        .add(String.format(messageSource.getMessage(
+//                                                new DefaultMessageSourceResolvable(
+//                                                        "listing.criteria.invalidG1MacraMeasure"),
+//                                                LocaleContextHolder.getLocale()), 
+//                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
+//                            } else {
+//                                pendingMeasureMap.setMacraMeasure(foundMeasure);
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                if (certRules.hasCertOption(cert.getNumber(), CertificationResultRules.G2_MACRA)
+//                        && cert.getG2MacraMeasures() != null && cert.getG2MacraMeasures().size() > 0) {
+//                    for (PendingCertificationResultMacraMeasureDTO pendingMeasureMap : cert.getG2MacraMeasures()) {
+//                        if (pendingMeasureMap.getMacraMeasureId() == null) {
+//                            MacraMeasureDTO foundMeasure = macraDao.getByCriteriaNumberAndValue(cert.getNumber(),
+//                                    pendingMeasureMap.getEnteredValue());
+//                            if (foundMeasure == null || foundMeasure.getId() == null) {
+//                                product.getErrorMessages()
+//                                        .add(String.format(messageSource.getMessage(
+//                                                new DefaultMessageSourceResolvable(
+//                                                        "listing.criteria.invalidG2MacraMeasure"),
+//                                                LocaleContextHolder.getLocale()), 
+//                                                cert.getNumber(), pendingMeasureMap.getEnteredValue()));
+//                            } else {
+//                                pendingMeasureMap.setMacraMeasure(foundMeasure);
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                // g1 and g2 are the only criteria that ONC supplies test data for
+//                // other criteria probably should have test data but do not have to
+//                if (!gapEligibleAndTrue
+//                        && (cert.getNumber().equals("170.315 (g)(1)") || cert.getNumber().equals("170.315 (g)(2)"))
+//                        && (cert.getTestData() == null || cert.getTestData().size() == 0)) {
+//                    product.getErrorMessages().add("Test Data is required for certification " + cert.getNumber() + ".");
+//                }
+//            }
+//        }
+//
+//        if (product.getIcs() == null) {
+//            product.getErrorMessages().add("ICS is required.");
+//        }
     }
 
     @Override

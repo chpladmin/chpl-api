@@ -1,4 +1,4 @@
-package gov.healthit.chpl.validation.pendingListing.review;
+package gov.healthit.chpl.validation.pendingListing.review.edition2014;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -6,15 +6,16 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dto.PendingCertificationResultDTO;
 import gov.healthit.chpl.dto.PendingCertifiedProductDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.pendingListing.review.Reviewer;
 
 @Component
-public class G1G2RelatedCriteria2014Reviewer implements Reviewer {
+public class InpatientG1G2RequiredData2014Reviewer implements Reviewer {
     private static final String[] G1_COMPLEMENTARY_CERTS = {
             "170.314 (a)(1)", "170.314 (a)(3)", "170.314 (a)(4)", "170.314 (a)(5)", "170.314 (a)(6)", "170.314 (a)(7)",
             "170.314 (a)(9)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
             "170.314 (a)(15)", "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
             "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)",
-            "170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"
+            "170.314 (b)(5)(B)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(6)"
     };
 
     private static final String[] G2_COMPLEMENTARY_CERTS = {
@@ -22,7 +23,7 @@ public class G1G2RelatedCriteria2014Reviewer implements Reviewer {
             "170.314 (a)(9)", "170.314 (a)(11)", "170.314 (a)(12)", "170.314 (a)(13)", "170.314 (a)(14)",
             "170.314 (a)(15)", "170.314 (a)(18)", "170.314 (a)(19)", "170.314 (a)(20)", "170.314 (b)(2)",
             "170.314 (b)(3)", "170.314 (b)(4)", "170.314 (e)(1)", 
-            "170.314 (b)(5)(A)", "170.314 (e)(2)", "170.314 (e)(3)"
+            "170.314 (b)(5)(B)", "170.314 (a)(16)", "170.314 (a)(17)", "170.314 (b)(6)"
     };
     
     private static final String G1_2014 = "170.314 (g)(1)";
@@ -31,6 +32,7 @@ public class G1G2RelatedCriteria2014Reviewer implements Reviewer {
     
     @Override
     public void review(PendingCertifiedProductDTO listing) {
+     // check (g)(1)
         boolean hasG1Cert = false;
         for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
             if (certCriteria.getNumber().equals(G1_2014) && certCriteria.getMeetsCriteria()) {
@@ -38,17 +40,17 @@ public class G1G2RelatedCriteria2014Reviewer implements Reviewer {
             }
         }
         if (hasG1Cert) {
-            boolean hasG1Complement = false;
-            for (int i = 0; i < G1_COMPLEMENTARY_CERTS.length && !hasG1Complement; i++) {
+            boolean hasAtLeastOneCertPartner = false;
+            for (int i = 0; i < G1_COMPLEMENTARY_CERTS.length && !hasAtLeastOneCertPartner; i++) {
                 for (PendingCertificationResultDTO certCriteria : listing.getCertificationCriterion()) {
                     if (certCriteria.getNumber().equals(G1_COMPLEMENTARY_CERTS[i]) && certCriteria.getMeetsCriteria()) {
-                        hasG1Complement = true;
+                        hasAtLeastOneCertPartner = true;
                     }
                 }
             }
 
-            if (!hasG1Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
+            if (!hasAtLeastOneCertPartner) {
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG1Related"));
             }
         }
 
@@ -70,11 +72,10 @@ public class G1G2RelatedCriteria2014Reviewer implements Reviewer {
             }
 
             if (!hasG2Complement) {
-                listing.getErrorMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
+                listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.missingG2Related"));
             }
         }
 
-        //listings don't normally have both g1 and g2
         if (hasG1Cert && hasG2Cert) {
             listing.getWarningMessages().add(msgUtil.getMessage("listing.criteria.G1G2Found"));
         }
