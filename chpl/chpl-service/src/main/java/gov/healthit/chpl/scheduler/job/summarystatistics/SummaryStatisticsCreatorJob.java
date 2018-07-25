@@ -25,7 +25,6 @@ import org.springframework.context.support.AbstractApplicationContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.app.statistics.StatsCsvFileWriter;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.Statistics;
@@ -107,8 +106,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
-            System.out.println("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
-                    + endDateCal.getTime().toString());
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             Statistics historyStat = new Statistics();
             historyStat.setDateRange(csvRange);
@@ -118,15 +115,11 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             LOGGER.info("Finished getting csvRecord for start date "
                     + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
-            System.out.println("Finished getting csvRecord for start date "
-                    + startDateCal.getTime().toString() + " end date "
-                    + endDateCal.getTime().toString());
             startDateCal.add(Calendar.DATE, numDaysInPeriod);
             endDateCal.setTime(startDateCal.getTime());
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
         LOGGER.info("Finished getting statistics");
-        System.out.println("Finished getting statistics");
         StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 

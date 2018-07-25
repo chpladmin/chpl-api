@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -14,16 +13,15 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository("summaryStatisticsDAO")
 public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStatisticsDAO {
-    private static final long MODIFIED_USER_ID = -3L;
     
     @Override
     @Transactional
     public SummaryStatisticsEntity create(SummaryStatisticsEntity summaryStatistics)
             throws EntityCreationException, EntityRetrievalException {
-        
+
         summaryStatistics.setCreationDate(new Date());
         summaryStatistics.setLastModifiedDate(new Date());
-        summaryStatistics.setLastModifiedUser(getUserId());
+        summaryStatistics.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
         summaryStatistics.setDeleted(false);
         entityManager.persist(summaryStatistics);
         entityManager.flush();
@@ -46,16 +44,6 @@ public class SummaryStatisticsDAOImpl extends BaseDAOImpl implements SummaryStat
             return entities.get(0);
         } else {
             return null;
-        }
-    }
-
-    private Long getUserId() {
-        // If there is no user the current context, assume this is a system
-        // process
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
-            return MODIFIED_USER_ID;
-        } else {
-            return Util.getCurrentUser().getId();
         }
     }
 }
