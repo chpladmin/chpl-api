@@ -10,6 +10,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.env.Environment;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -81,6 +84,8 @@ public class ActivityController {
     @Autowired
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
 
+    @Autowired private MessageSource messageSource;
+
     @ApiOperation(value = "Get auditable data for certification bodies.",
             notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true. "
@@ -97,7 +102,9 @@ public class ActivityController {
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
             if(start == null || end == null) {
-                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                        LocaleContextHolder.getLocale()));
             }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
@@ -122,7 +129,9 @@ public class ActivityController {
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
             if(start == null || end == null) {
-                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                        LocaleContextHolder.getLocale()));
             }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
@@ -139,7 +148,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForAnnoucements(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));        
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -157,7 +168,9 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         announcementManager.getById(id); // throws 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));        
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -180,7 +193,9 @@ public class ActivityController {
             throw new AccessDeniedException("Only Admins can see deleted ATL's");
         } else {
             if(start == null || end == null) {
-                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                        LocaleContextHolder.getLocale()));
             }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
@@ -205,7 +220,9 @@ public class ActivityController {
             throw new AccessDeniedException("Only Admins can see deleted ATL's");
         } else {
             if(start == null || end == null) {
-                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+                throw new IllegalArgumentException(messageSource.getMessage(
+                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                        LocaleContextHolder.getLocale()));
             }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
@@ -221,7 +238,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForApiKeys(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -237,7 +256,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForCertifiedProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -253,7 +274,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForCorrectiveActionPlans(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -271,7 +294,9 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         cpManager.getById(id); // throws 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -311,7 +336,9 @@ public class ActivityController {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -341,7 +368,9 @@ public class ActivityController {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -357,7 +386,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForCertifications(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -375,7 +406,9 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         certificationIdManager.getById(id); // throws 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -391,7 +424,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -410,7 +445,9 @@ public class ActivityController {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.getById(acbs, id); // returns 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -425,7 +462,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -443,7 +482,9 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         productManager.getById(id); // returns 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -458,7 +499,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForVersions(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -476,7 +519,9 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         versionManager.getById(id); // returns 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -491,7 +536,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForUsers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -508,7 +555,9 @@ public class ActivityController {
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         userManager.getById(id); // throws 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -523,7 +572,9 @@ public class ActivityController {
     public List<ActivityEvent> activityForDevelopers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -541,7 +592,9 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         developerManager.getById(id); // returns 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -559,7 +612,9 @@ public class ActivityController {
             @RequestParam Long end)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
@@ -578,7 +633,9 @@ public class ActivityController {
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         userManager.getById(id); // throws 404 if bad id
         if(start == null || end == null) {
-            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            throw new IllegalArgumentException(messageSource.getMessage(
+                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
+                    LocaleContextHolder.getLocale()));
         }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
