@@ -546,7 +546,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return getActivityEventsForUsers(startDate, endDate);
+        return activityManager.getUserActivity(false, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data about a specific CHPL user account",
@@ -565,7 +565,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return getActivityEventsForUsers(id, startDate, endDate);
+        return activityManager.getUserActivity(false, id, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data about all developers",
@@ -673,15 +673,6 @@ public class ActivityController {
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForUsers(Long id, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
-        events = getActivityEventsForObject(false, concept, id, startDate, endDate);
-        return events;
-    }
-
     private List<ActivityEvent> getActivityEventsForDevelopers(Long id, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
@@ -743,17 +734,6 @@ public class ActivityController {
 
         List<ActivityEvent> events = null;
         ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PRODUCT;
-        events = getActivityEventsForConcept(false, concept, startDate, endDate);
-
-        return events;
-    }
-
-    private List<ActivityEvent> getActivityEventsForUsers(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info("User " + Util.getUsername() + " requested user activity between " + startDate + " and " + endDate);
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_USER;
         events = getActivityEventsForConcept(false, concept, startDate, endDate);
 
         return events;
