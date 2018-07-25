@@ -50,7 +50,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/activity")
 public class ActivityController {
     private static final Logger LOGGER = LogManager.getLogger(ActivityController.class);
-    private static final int DEFAULT_MAX_ACTIVITY_RANGE_DAYS = 30;
+    public static final int DEFAULT_MAX_ACTIVITY_RANGE_DAYS = 30;
     
     @Autowired 
     Environment env;
@@ -87,7 +87,8 @@ public class ActivityController {
                     + "Those users are allowed to see activity for all certification bodies including that have been deleted. "
                     + "The default behavior is to show all activity for non-deleted ACBs.")
     @RequestMapping(value = "/acbs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForACBs(@RequestParam Long start, Long end,
+    public List<ActivityEvent> activityForACBs(@RequestParam(required = true) Long start, 
+            @RequestParam(required = true) Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
             throws JsonParseException, IOException, ValidationException {
 
@@ -95,6 +96,9 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACBs");
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
+            if(start == null || end == null) {
+                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
@@ -117,6 +121,9 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
+            if(start == null || end == null) {
+                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
@@ -131,7 +138,9 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForAnnoucements(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -147,7 +156,9 @@ public class ActivityController {
             @RequestParam Long start, @RequestParam Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         announcementManager.getById(id); // throws 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -168,6 +179,9 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATLs");
             throw new AccessDeniedException("Only Admins can see deleted ATL's");
         } else {
+            if(start == null || end == null) {
+                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
@@ -190,6 +204,9 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
             throw new AccessDeniedException("Only Admins can see deleted ATL's");
         } else {
+            if(start == null || end == null) {
+                throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+            }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
@@ -203,7 +220,9 @@ public class ActivityController {
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForApiKeys(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -217,7 +236,9 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertifiedProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -231,7 +252,9 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCorrectiveActionPlans(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -247,7 +270,9 @@ public class ActivityController {
             @RequestParam Long start, @RequestParam Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         cpManager.getById(id); // throws 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -285,7 +310,9 @@ public class ActivityController {
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
-        
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -313,7 +340,9 @@ public class ActivityController {
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -327,7 +356,9 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertifications(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -343,7 +374,9 @@ public class ActivityController {
             @RequestParam Long start, @RequestParam Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         certificationIdManager.getById(id); // throws 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -357,7 +390,9 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -374,7 +409,9 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.getById(acbs, id); // returns 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -387,7 +424,9 @@ public class ActivityController {
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -403,7 +442,9 @@ public class ActivityController {
             @RequestParam Long start, @RequestParam Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         productManager.getById(id); // returns 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -416,7 +457,9 @@ public class ActivityController {
     @RequestMapping(value = "/versions", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForVersions(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -432,7 +475,9 @@ public class ActivityController {
             @RequestParam Long start, @RequestParam Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         versionManager.getById(id); // returns 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -445,7 +490,9 @@ public class ActivityController {
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForUsers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -460,7 +507,9 @@ public class ActivityController {
             @RequestParam Long end)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         userManager.getById(id); // throws 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -473,7 +522,9 @@ public class ActivityController {
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForDevelopers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -489,7 +540,9 @@ public class ActivityController {
             @RequestParam Long start, @RequestParam Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         developerManager.getById(id); // returns 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -505,7 +558,9 @@ public class ActivityController {
     public List<UserActivity> activityByUser(@RequestParam Long start,
             @RequestParam Long end)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -522,7 +577,9 @@ public class ActivityController {
             @RequestParam Long end)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         userManager.getById(id); // throws 404 if bad id
-
+        if(start == null || end == null) {
+            throw new IllegalArgumentException("Start and end date are required for all activity requests.");
+        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -771,21 +828,21 @@ public class ActivityController {
         return activityManager.getActivityForObject(showDeleted, concept, objectId, startDate, endDate);
     }
 
-    private void validateActivityDates(Long startDate, Long endDate) throws ValidationException {
+    private void validateActivityDates(Long startDate, Long endDate) throws IllegalArgumentException {
         LocalDate startDateUtc = 
                 Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();
         LocalDate endDateUtc = 
                 Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();
 
         if(startDateUtc.isAfter(endDateUtc)) {
-            throw new ValidationException("Cannot search for activity with the start date after the end date");
+            throw new IllegalArgumentException("Cannot search for activity with the start date after the end date");
         }
 
         Integer maxActivityRangeInDays = Integer.getInteger(
                 env.getProperty("maxActivityRangeInDays"), DEFAULT_MAX_ACTIVITY_RANGE_DAYS);
         endDateUtc = endDateUtc.minusDays(maxActivityRangeInDays);
         if(startDateUtc.isBefore(endDateUtc)) {
-            throw new ValidationException(
+            throw new IllegalArgumentException(
                     "Cannot search for activity with a date range more than " + maxActivityRangeInDays + " days.");
         }
     }
