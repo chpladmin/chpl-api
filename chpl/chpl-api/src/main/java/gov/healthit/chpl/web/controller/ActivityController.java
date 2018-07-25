@@ -109,7 +109,7 @@ public class ActivityController {
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
-            return getActivityEventsForACBs(showDeleted, startDate, endDate);
+            return activityManager.getAcbActivity(showDeleted, startDate, endDate);
         }
     }
 
@@ -136,7 +136,7 @@ public class ActivityController {
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
-            return getActivityEventsForACBs(showDeleted, id, startDate, endDate);
+            return activityManager.getAcbActivity(showDeleted, id, startDate, endDate);
         }
     }
 
@@ -200,7 +200,7 @@ public class ActivityController {
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
-            return getActivityEventsForATLs(showDeleted, startDate, endDate);
+            return activityManager.getAtlActivity(showDeleted, startDate, endDate);
         }
     }
 
@@ -227,7 +227,7 @@ public class ActivityController {
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
-            return getActivityEventsForATLs(showDeleted, id, startDate, endDate);
+            return activityManager.getAtlActivity(showDeleted, id, startDate, endDate);
         }
     }
 
@@ -245,7 +245,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return getActivityEventsForApiKeys(startDate, endDate);
+        return activityManager.getApiKeyActivity(false, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for certified products",
@@ -267,10 +267,11 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for corrective action plans",
-            notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
+            notes = "Deprecated. Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return corrective action plan activity across all dates.")
     @RequestMapping(value = "/corrective_action_plans", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @Deprecated
     public List<ActivityEvent> activityForCorrectiveActionPlans(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
@@ -379,10 +380,11 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for all certifications",
-            notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
+            notes = "Deprecated. Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for all certifications across all dates.")
     @RequestMapping(value = "/certifications", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @Deprecated
     public List<ActivityEvent> activityForCertifications(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
         if(start == null || end == null) {
@@ -397,10 +399,11 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific certification",
-            notes = "Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
+            notes = "Deprecated. Users can optionally specify 'start' and 'end' parameters to restrict the date range of the results. "
                     + "The default behavior is to return activity for the specified certification across all dates.")
     @RequestMapping(value = "/certifications/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @Deprecated
     public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id,
             @RequestParam Long start, @RequestParam Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -431,7 +434,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return getActivityEventsForPendingCertifiedProducts(startDate, endDate);
+        return activityManager.getPendingListingActivity(false, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for a specific pending certified product",
@@ -452,7 +455,7 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return getActivityEventsForPendingCertifiedProducts(id, startDate, endDate);
+        return activityManager.getPendingListingActivity(false, id, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for all products",
@@ -643,24 +646,6 @@ public class ActivityController {
         return activityManager.getActivityForUserInDateRange(id, startDate, endDate);
     }
 
-    private List<ActivityEvent> getActivityEventsForACBs(boolean showDeleted, Long id, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
-        events = getActivityEventsForObject(showDeleted, concept, id, startDate, endDate);
-        return events;
-    }
-
-    private List<ActivityEvent> getActivityEventsForATLs(boolean showDeleted, Long id, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
-        events = getActivityEventsForObject(showDeleted, concept, id, startDate, endDate);
-        return events;
-    }
-
     private List<ActivityEvent> getActivityEventsForCertifications(Long id, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
@@ -675,15 +660,6 @@ public class ActivityController {
 
         List<ActivityEvent> events = null;
         ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
-        events = getActivityEventsForObject(false, concept, id, startDate, endDate);
-        return events;
-    }
-
-    private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Long id, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
         events = getActivityEventsForObject(false, concept, id, startDate, endDate);
         return events;
     }
@@ -725,28 +701,6 @@ public class ActivityController {
 
     }
 
-    private List<ActivityEvent> getActivityEventsForACBs(boolean showDeleted, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info("User " + Util.getUsername() + " requested ACB activity between " + startDate + " and " + endDate);
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY;
-        events = getActivityEventsForConcept(showDeleted, concept, startDate, endDate);
-
-        return events;
-    }
-
-    private List<ActivityEvent> getActivityEventsForATLs(boolean showDeleted, Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info("User " + Util.getUsername() + " requested ATL activity between " + startDate + " and " + endDate);
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ATL;
-        events = getActivityEventsForConcept(showDeleted, concept, startDate, endDate);
-
-        return events;
-    }
-
     private List<ActivityEvent> getActivityEventsForCertifications(Date startDate, Date endDate)
             throws JsonParseException, IOException {
         LOGGER.info("User " + Util.getUsername() + " requested certification activity between " + startDate + " and "
@@ -778,18 +732,6 @@ public class ActivityController {
 
         List<ActivityEvent> events = null;
         events = getActivityEventsForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CORRECTIVE_ACTION_PLAN, startDate, endDate);
-
-        return events;
-    }
-    
-    private List<ActivityEvent> getActivityEventsForPendingCertifiedProducts(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info("User " + Util.getUsername() + " requested pending certified product activity between " + startDate
-                + " and " + endDate);
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT;
-        events = getActivityEventsForConcept(false, concept, startDate, endDate);
 
         return events;
     }
@@ -839,18 +781,6 @@ public class ActivityController {
         events = getActivityEventsForConcept(false, concept, startDate, endDate);
         return events;
 
-    }
-
-    private List<ActivityEvent> getActivityEventsForApiKeys(Date startDate, Date endDate)
-            throws JsonParseException, IOException {
-        LOGGER.info(
-                "User " + Util.getUsername() + " requested API key activity between " + startDate + " and " + endDate);
-
-        List<ActivityEvent> events = null;
-        ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_API_KEY;
-        events = getActivityEventsForConcept(false, concept, startDate, endDate);
-
-        return events;
     }
 
     private List<ActivityEvent> getActivityEventsForAnnouncements(Date startDate, Date endDate)
