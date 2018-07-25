@@ -22,8 +22,9 @@ import gov.healthit.chpl.auth.user.User;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
 	
-	
-	private JWTUserConverter userConverter;
+    private static final String[] ALLOWED_REQUEST_PATHS = { "/monitoring" };
+
+    private JWTUserConverter userConverter;
 	
 	public JWTAuthenticationFilter(JWTUserConverter userConverter){
 		this.userConverter = userConverter;
@@ -34,7 +35,15 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 		
+	    
 		HttpServletRequest request = (HttpServletRequest) req;
+		
+		for (int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
+            if (request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
+                chain.doFilter(req, res); // continue
+                return;
+            }
+        }
 		
 		String authorization = null;
 		String authorizationFromHeader = request.getHeader("Authorization");
