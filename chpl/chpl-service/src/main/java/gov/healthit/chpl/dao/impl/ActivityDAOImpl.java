@@ -207,6 +207,72 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
     }
 
     @Override
+    public List<ActivityDTO> findPublicAnnouncementActivity(Date startDate, Date endDate) {
+        String sqlStr = "SELECT * " + 
+            "FROM " + SCHEMA_NAME + ".activity a " +
+            "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
+            "WHERE a.activity_object_concept_id = :conceptId "  +
+            "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' " + 
+            "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' ";
+        if (startDate != null) {
+            sqlStr += "AND (a.activity_date >= :startDate) ";
+        }
+        if (endDate != null) {
+            sqlStr += "AND (a.activity_date <= :endDate) ";
+        }
+        Query query = entityManager.createNativeQuery(sqlStr);
+        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT.getId());
+        if (startDate != null) {
+            query.setParameter("startDate", startDate);
+        }
+        if (endDate != null) {
+            query.setParameter("endDate", endDate);
+        }
+        
+        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+        List<ActivityEntity> entities = query.getResultList();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = new ActivityDTO(entity);
+            results.add(result);
+        }
+        return results;
+    }
+
+    @Override
+    public List<ActivityDTO> findPublicAnnouncementActivityById(Long announcementId, Date startDate, Date endDate) {
+        String sqlStr = "SELECT * " + 
+                "FROM " + SCHEMA_NAME + ".activity a " +
+                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
+                "WHERE a.activity_object_id = :announcementId " +
+                "AND a.activity_object_concept_id = :conceptId "  +
+                "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' " + 
+                "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' ";
+            if (startDate != null) {
+                sqlStr += "AND (a.activity_date >= :startDate) ";
+            }
+            if (endDate != null) {
+                sqlStr += "AND (a.activity_date <= :endDate) ";
+            }
+            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
+            query.setParameter("announcementId", announcementId);
+            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT.getId());
+            if (startDate != null) {
+                query.setParameter("startDate", startDate);
+            }
+            if (endDate != null) {
+                query.setParameter("endDate", endDate);
+            }
+            
+            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+            List<ActivityEntity> entities = query.getResultList();
+            for (ActivityEntity entity : entities) {
+                ActivityDTO result = new ActivityDTO(entity);
+                results.add(result);
+            }
+            return results;
+    }
+    
+    @Override
     public List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate) {
 
         List<ActivityEntity> entities = this.getEntitiesByUserId(false, userId, startDate, endDate);

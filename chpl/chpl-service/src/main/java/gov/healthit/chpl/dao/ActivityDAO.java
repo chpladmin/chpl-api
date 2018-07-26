@@ -32,6 +32,10 @@ public interface ActivityDAO {
     List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate,
             Date endDate);
 
+    List<ActivityDTO> findPublicAnnouncementActivity(Date startDate, Date endDate);
+
+    List<ActivityDTO> findPublicAnnouncementActivityById(Long announcementId, Date startDate, Date endDate);
+
     List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate);
 
     List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate);

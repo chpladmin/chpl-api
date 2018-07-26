@@ -2,8 +2,10 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -29,7 +31,6 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.ActivityEvent;
-import gov.healthit.chpl.domain.ProductActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.DeveloperDTO;
@@ -73,7 +74,7 @@ public class ActivityManagerTest extends TestCase {
 	public void testAddActivity() throws EntityCreationException, EntityRetrievalException, IOException{
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		
+		Date startDate = new Date();
 		DeveloperDTO developer = new DeveloperDTO();
 		developer.setCreationDate(new Date());
 		developer.setId(-1L);
@@ -86,8 +87,10 @@ public class ActivityManagerTest extends TestCase {
 				null,
 				developer
 				);
-		
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, -1L);	
+		Date endDate = new Date();
+		List<ActivityEvent> events = activityManager.getActivityForObject(
+		        ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, -1L,
+		        startDate, endDate);	
 		
 		ActivityEvent event = events.get(events.size()-1);
 		
@@ -122,8 +125,10 @@ public class ActivityManagerTest extends TestCase {
 				developer,
 				timestamp
 				);
-		
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, -1L);	
+		Date endDate = new Date();
+		List<ActivityEvent> events = activityManager.getActivityForObject(
+		        ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, -1L,
+		        timestamp, endDate);	
 		
 		ActivityEvent event = events.get(events.size()-1);
 		
@@ -136,15 +141,6 @@ public class ActivityManagerTest extends TestCase {
 		activityManager.deleteActivity(event.getId());
 	}
 	
-	
-	@Test
-	@Transactional
-	public void testGetAllActivity() throws JsonParseException, IOException{
-		
-		List<ActivityEvent> events = activityManager.getAllActivity(false);
-		assertEquals(7, events.size());
-		
-	}
 	
 	
 	@Test
@@ -174,13 +170,18 @@ public class ActivityManagerTest extends TestCase {
 	
 	@Test
 	@Transactional
-	public void testGetActivityForObject() throws JsonParseException, IOException{
-		
+	public void testGetActivityForListingLoggedIn() throws JsonParseException, IOException{
+	    SecurityContextHolder.getContext().setAuthentication(adminUser);
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
 		Long objectId = 1L;
-		
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, concept, objectId);
-		assertEquals(4, events.size());
+		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+        
+		List<ActivityEvent> events = activityManager.getActivityForObject(
+		        concept, objectId, start.getTime(), end.getTime());
+		assertEquals(3, events.size());
 		
 		for (ActivityEvent event : events){
 			assertEquals(concept, event.getConcept());
@@ -189,6 +190,20 @@ public class ActivityManagerTest extends TestCase {
 		
 	}
 	
+    @Test
+    @Transactional
+    public void testGetActivityForAcbsUnauthenticated() throws JsonParseException, IOException{
+        Long objectId = 1L;
+        Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        start.set(2015, 9, 1, 0, 0);
+        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        end.set(2015, 9, 20, 0, 0);
+        
+        List<ActivityEvent> events = activityManager.getAcbActivity(
+                false, objectId, start.getTime(), end.getTime());
+        assertEquals(0, events.size());
+    }
+	   
 	@Test
 	@Transactional
 	public void testGetActivityForObjectDateRange() throws EntityCreationException, EntityRetrievalException, IOException{
@@ -212,7 +227,7 @@ public class ActivityManagerTest extends TestCase {
 				"Test",
 				timestamp
 				);
-		List<ActivityEvent> events = activityManager.getActivityForObject(false, 
+		List<ActivityEvent> events = activityManager.getActivityForObject(
 				ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, developer.getId() , 
 				fiveDaysAgo, null);
 		
@@ -222,46 +237,12 @@ public class ActivityManagerTest extends TestCase {
 	
 	@Test
 	@Transactional
-	public void testGetActivityForConcept() throws JsonParseException, IOException{
-		
-		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
-		assertEquals(4, events.size());
-		
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
-		assertEquals(3, events2.size());
-		
-		List<ActivityEvent> events3 = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
-		assertEquals(0, events3.size());
-		
-		List<ActivityEvent> capEvents = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CORRECTIVE_ACTION_PLAN);
-        assertEquals(0, capEvents.size());
-	}
-	
-	@Test
-	@Transactional
-	public void testGetActivityForConcept_developerNameIsFetched() throws JsonParseException, IOException{
-		List<ActivityEvent> events = activityManager.getActivityForConcept(false, ActivityConcept.ACTIVITY_CONCEPT_PRODUCT);
-		assertEquals(3, events.size());
-		assertTrue(events.get(0) instanceof ProductActivityEvent);
-		ProductActivityEvent myEvent = null;
-		for(ActivityEvent event : events){
-			if(event.getId().equals(-5L)){
-				myEvent = (ProductActivityEvent) event;
-			}
-		}
-		assertNotNull(myEvent.getDeveloper());
-		assertNotNull(myEvent.getDeveloper().getName());
-		assertEquals("Test Developer 1", myEvent.getDeveloper().getName());
-	}
-	
-	@Test
-	@Transactional
 	public void testGetActivityForConceptLastNDays() throws EntityCreationException, EntityRetrievalException, JsonParseException, IOException{
 		
 		ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT;
 		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
 
-		List<ActivityEvent> events = activityManager.getActivityForConcept(false, concept, fiveDaysAgo, null);
+		List<ActivityEvent> events = activityManager.getActivityForConcept(concept, fiveDaysAgo, null);
 		assertEquals(0, events.size());
 		
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
@@ -298,7 +279,7 @@ public class ActivityManagerTest extends TestCase {
 				timestamp2
 				);
 		
-		List<ActivityEvent> events2 = activityManager.getActivityForConcept(false, 
+		List<ActivityEvent> events2 = activityManager.getActivityForConcept(
 				ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER, fiveDaysAgo, new Date());
 		
 		assertEquals(1, events2.size());

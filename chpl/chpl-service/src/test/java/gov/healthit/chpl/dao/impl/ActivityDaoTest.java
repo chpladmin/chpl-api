@@ -230,6 +230,22 @@ public class ActivityDaoTest extends TestCase {
 	}
 	
 	@Test
+    @Transactional
+    public void testFindPublicAnnouncementActivityNativeSqlWorks(){
+        
+        List<ActivityDTO> results = activityDAO.findPublicAnnouncementActivity(new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+	
+	@Test
+    @Transactional
+    public void testFindPublicAnnouncementByIdActivityNativeSqlWorks(){
+        
+        List<ActivityDTO> results = activityDAO.findPublicAnnouncementActivityById(1L, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+	
+	@Test
 	@Transactional
 	public void testFindAllInLastNDays() throws EntityCreationException, EntityRetrievalException{
 		

@@ -33,10 +33,22 @@ public interface ActivityManager {
     List<ActivityEvent> getAllActivityInDateRange(boolean showDeleted, Date startDate, Date endDate)
             throws JsonParseException, IOException;
 
-    List<ActivityEvent> getActivityForObject(boolean showDeleted, ActivityConcept concept, Long objectId,
+    List<ActivityEvent> getActivityForObject(ActivityConcept concept, Long objectId,
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getActivityForConcept(boolean showDeleted, ActivityConcept concept, Date startDate,
+    List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Date startDate,
+            Date endDate) throws JsonParseException, IOException;
+    
+    List<ActivityEvent> getAnnouncementActivity(Date startDate,
+            Date endDate) throws JsonParseException, IOException;
+    
+    List<ActivityEvent> getAnnouncementActivity(Long id, Date startDate,
+            Date endDate) throws JsonParseException, IOException;
+    
+    List<ActivityEvent> getPublicAnnouncementActivity(Date startDate,
+            Date endDate) throws JsonParseException, IOException;
+    
+    public List<ActivityEvent> getPublicAnnouncementActivity(Long id,Date startDate,
             Date endDate) throws JsonParseException, IOException;
     
     List<ActivityEvent> getAcbActivity(boolean showDeleted, Date startDate,
@@ -51,19 +63,19 @@ public interface ActivityManager {
     List<ActivityEvent> getAtlActivity(boolean showDeleted, Long atlId, Date startDate,
             Date endDate) throws JsonParseException, IOException;
     
-    List<ActivityEvent> getPendingListingActivity(boolean showDeleted, Date startDate,
+    List<ActivityEvent> getPendingListingActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
     
-    List<ActivityEvent> getPendingListingActivity(boolean showDeleted, Long pendingListingId, 
+    List<ActivityEvent> getPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getUserActivity(boolean showDeleted, Date startDate,
+    List<ActivityEvent> getUserActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
     
-    List<ActivityEvent> getUserActivity(boolean showDeleted, Long userId, 
+    List<ActivityEvent> getUserActivity(Long userId, 
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
-    List<ActivityEvent> getApiKeyActivity(boolean showDeleted, Date startDate,
+    List<ActivityEvent> getApiKeyActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
     void deleteActivity(Long toDelete) throws EntityRetrievalException;
