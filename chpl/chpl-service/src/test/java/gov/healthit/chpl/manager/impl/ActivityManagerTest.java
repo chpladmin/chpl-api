@@ -192,7 +192,8 @@ public class ActivityManagerTest extends TestCase {
 	
     @Test
     @Transactional
-    public void testGetActivityForAcbsUnauthenticated() throws JsonParseException, IOException{
+    public void testGetActivityForAcbsUnauthenticated() 
+            throws JsonParseException, IOException, EntityRetrievalException {
         Long objectId = 1L;
         Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         start.set(2015, 9, 1, 0, 0);

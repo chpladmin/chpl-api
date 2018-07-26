@@ -26,8 +26,12 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.dao.ActivityDAO;
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import junit.framework.TestCase;
@@ -46,6 +50,11 @@ public class ActivityDaoTest extends TestCase {
 	@Autowired
 	private ActivityDAO activityDAO;
 	
+	@Autowired
+	private CertificationBodyDAO acbDao;
+	
+	@Autowired
+    private TestingLabDAO atlDao;
 	
 	private static JWTAuthenticatedUser adminUser;
 	
@@ -242,6 +251,37 @@ public class ActivityDaoTest extends TestCase {
     public void testFindPublicAnnouncementByIdActivityNativeSqlWorks(){
         
         List<ActivityDTO> results = activityDAO.findPublicAnnouncementActivityById(1L, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+	
+	@Test
+    @Transactional
+    public void testFindAcbActivityNativeSqlWorks(){
+        List<CertificationBodyDTO> allAcbs = acbDao.findAll(false);
+        List<ActivityDTO> results = activityDAO.findAcbActivity(allAcbs, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+
+	@Test
+    @Transactional
+    public void testFindAtlActivityNativeSqlWorks(){
+        List<TestingLabDTO> atllAtls = atlDao.findAll(false);
+        List<ActivityDTO> results = activityDAO.findAtlActivity(atllAtls, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+	
+	@Test
+    @Transactional
+    public void testFindPendingListingActivityNativeSqlWorks(){
+        List<ActivityDTO> results = activityDAO.findPendingListingActivity(1L, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+	
+	@Test
+    @Transactional
+    public void testFindPendingListingActivityByAcbNativeSqlWorks(){
+        List<CertificationBodyDTO> allAcbs = acbDao.findAll(false);
+        List<ActivityDTO> results = activityDAO.findPendingListingActivity(allAcbs, new Date(0L), new Date());
         assertEquals(0, results.size());
     }
 	

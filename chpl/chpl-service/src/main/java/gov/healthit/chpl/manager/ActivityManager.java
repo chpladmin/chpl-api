@@ -55,19 +55,19 @@ public interface ActivityManager {
             Date endDate) throws JsonParseException, IOException;
     
     List<ActivityEvent> getAcbActivity(boolean showDeleted, Long acbId, Date startDate,
-            Date endDate) throws JsonParseException, IOException;
+            Date endDate) throws JsonParseException, IOException, EntityRetrievalException;
     
     List<ActivityEvent> getAtlActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException;
     
     List<ActivityEvent> getAtlActivity(boolean showDeleted, Long atlId, Date startDate,
-            Date endDate) throws JsonParseException, IOException;
+            Date endDate) throws JsonParseException, IOException, EntityRetrievalException;
     
     List<ActivityEvent> getPendingListingActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
     
     List<ActivityEvent> getPendingListingActivity(Long pendingListingId, 
-            Date startDate, Date endDate) throws JsonParseException, IOException;
+            Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException;
 
     List<ActivityEvent> getUserActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
