@@ -447,7 +447,11 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
                 sqlStr += "AND (a.activity_date <= :endDate) ";
             }
             Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
-            query.setParameter("userIds", userIds);
+            List<String> userIdParams = new ArrayList<String>();
+            for(Long userId : userIds) {
+                userIdParams.add(userId.toString());
+            }
+            query.setParameter("userIds", userIdParams);
             query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_USER.getId());
             if (startDate != null) {
                 query.setParameter("startDate", startDate);
