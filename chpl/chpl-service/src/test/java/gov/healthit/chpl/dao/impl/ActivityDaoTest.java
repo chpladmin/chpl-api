@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -282,6 +283,16 @@ public class ActivityDaoTest extends TestCase {
     public void testFindPendingListingActivityByAcbNativeSqlWorks(){
         List<CertificationBodyDTO> allAcbs = acbDao.findAll(false);
         List<ActivityDTO> results = activityDAO.findPendingListingActivity(allAcbs, new Date(0L), new Date());
+        assertEquals(0, results.size());
+    }
+	
+	@Test
+    @Transactional
+    public void testFindUserActivityNativeSqlWorks(){
+	    List<Long> userIds = new ArrayList<Long>();
+	    userIds.add(-1L);
+	    userIds.add(-2L);
+        List<ActivityDTO> results = activityDAO.findUserActivity(userIds, new Date(0L), new Date());
         assertEquals(0, results.size());
     }
 	

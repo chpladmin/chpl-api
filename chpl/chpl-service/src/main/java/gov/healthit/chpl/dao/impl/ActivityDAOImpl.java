@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -413,6 +414,41 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
             Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
             query.setParameter("pendingListingId", pendingListingId.toString());
             query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT.getId());
+            if (startDate != null) {
+                query.setParameter("startDate", startDate);
+            }
+            if (endDate != null) {
+                query.setParameter("endDate", endDate);
+            }
+            
+            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+            List<ActivityEntity> entities = query.getResultList();
+            for (ActivityEntity entity : entities) {
+                ActivityDTO result = new ActivityDTO(entity);
+                results.add(result);
+            }
+            return results;        
+    }
+    
+    @Override
+    public List<ActivityDTO> findUserActivity(Collection<Long> userIds, Date startDate, Date endDate) {
+        String sqlStr = "SELECT * " + 
+                "FROM " + SCHEMA_NAME + ".activity a " +
+                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
+                "WHERE a.activity_object_concept_id = :conceptId "  +
+                "AND ( " +
+                "cast(a.original_data as json)->>'id' IN (:userIds) "
+                + "OR cast(a.new_data as json)->>'id' IN (:userIds) "
+                + ")";
+            if (startDate != null) {
+                sqlStr += "AND (a.activity_date >= :startDate) ";
+            }
+            if (endDate != null) {
+                sqlStr += "AND (a.activity_date <= :endDate) ";
+            }
+            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
+            query.setParameter("userIds", userIds);
+            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_USER.getId());
             if (startDate != null) {
                 query.setParameter("startDate", startDate);
             }

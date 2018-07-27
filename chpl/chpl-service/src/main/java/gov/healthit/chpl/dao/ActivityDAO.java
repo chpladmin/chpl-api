@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,8 @@ public interface ActivityDAO {
 
     List<ActivityDTO> findPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate);
+    
+    public List<ActivityDTO> findUserActivity(Collection<Long> userIds, Date startDate, Date endDate);
     
     List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate);
 

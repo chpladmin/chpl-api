@@ -2,13 +2,17 @@ package gov.healthit.chpl.manager.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +56,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @Autowired private CertificationBodyManager acbManager;
     @Autowired private TestingLabManager atlManager;
     @Autowired private PendingCertifiedProductDAO pcpDao;
+    @Autowired private UserDAO userDao;
     @Autowired
     ActivityDAO activityDAO;
 
@@ -430,9 +435,9 @@ public class ActivityManagerImpl implements ActivityManager {
             Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException {
         List<ActivityDTO> pendingListingActivity = null;
         if(Util.isUserRoleAdmin()) {
-            getActivityForObject(ActivityConcept.
-                    ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, 
-                    pendingListingId, startDate, endDate);
+            pendingListingActivity = activityDAO.findByObjectId(false, pendingListingId,
+                    ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT, 
+                    startDate, endDate);
         } else if(Util.isUserRoleAcbAdmin()) {
             PendingCertifiedProductDTO pendingListing = pcpDao.findById(pendingListingId, true);
             if(pendingListing != null) {
@@ -459,8 +464,21 @@ public class ActivityManagerImpl implements ActivityManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
     public List<ActivityEvent> getUserActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException {
-        return getActivityForConcept(
-                ActivityConcept.ACTIVITY_CONCEPT_USER, startDate, endDate);
+        List<ActivityDTO> userActivity = null;
+        if(Util.isUserRoleAdmin()) {
+            userActivity = activityDAO.findByConcept(false, 
+                    ActivityConcept.ACTIVITY_CONCEPT_USER, startDate, endDate);
+        } else {
+            Collection<Long> allowedUserIds = getAllowedUsersForActivitySearch();
+            userActivity = activityDAO.findUserActivity(allowedUserIds, startDate, endDate);
+        }
+
+        List<ActivityEvent> events = new ArrayList<ActivityEvent>();
+        for (ActivityDTO dto : userActivity) {
+            ActivityEvent event = getActivityEventFromDTO(dto);
+            events.add(event);
+        }
+        return events;
     }
     
     @Override
@@ -468,8 +486,22 @@ public class ActivityManagerImpl implements ActivityManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
     public List<ActivityEvent> getUserActivity(Long userId, 
             Date startDate, Date endDate) throws JsonParseException, IOException {
-        return getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_USER, 
+        List<ActivityEvent> userActivity = null;
+        if(Util.isUserRoleAdmin()) {
+            userActivity = getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_USER, 
                 userId, startDate, endDate);
+        } else {
+            //make sure this user has permission to get activity for this user id
+            Collection<Long> allowedUserIds = getAllowedUsersForActivitySearch();
+            if(allowedUserIds.contains(userId)) {
+                userActivity = getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_USER, 
+                        userId, startDate, endDate);
+            } else {
+                throw new AccessDeniedException(null);
+            }
+        }
+        
+        return userActivity;
     }
 
     @Override
@@ -571,6 +603,41 @@ public class ActivityManagerImpl implements ActivityManager {
         return userActivityEvents;
     }
 
+    private Collection<Long> getAllowedUsersForActivitySearch() {
+        Set<Long> allowedUserIds = new HashSet<Long>();
+        //user can see their own activity
+        allowedUserIds.add(Util.getCurrentUser().getId());
+        
+        //user can see activity for other users in the same acb
+        if(Util.isUserRoleAcbAdmin()) {
+            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+            for(CertificationBodyDTO acb : allowedAcbs) {
+                List<UserDTO> acbUsers = acbManager.getAllUsersOnAcb(acb);
+                for(UserDTO user : acbUsers) {
+                    allowedUserIds.add(user.getId());
+                }
+            }
+        }
+        //user can see activity for other users in the same atl
+        if(Util.isUserRoleAtlAdmin()) {
+            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(false);
+            for(TestingLabDTO atl : allowedAtls) {
+                List<UserDTO> atlUsers = atlManager.getAllUsersOnAtl(atl);
+                for(UserDTO user : atlUsers) {
+                    allowedUserIds.add(user.getId());
+                }
+            }
+        }
+        //user can see activity for other users with role cms_staff
+        if(Util.isUserRoleCmsStaff()) {
+            List<UserDTO> cmsStaffUsers = userDao.getUsersWithPermission("ROLE_CMS_STAFF");
+            for(UserDTO user : cmsStaffUsers) {
+                allowedUserIds.add(user.getId());
+            }
+        }
+        return allowedUserIds;
+    }
+    
     private ActivityEvent getActivityEventFromDTO(ActivityDTO dto) throws JsonParseException, IOException {
         ActivityEvent event = null;
         if (dto.getConcept() == ActivityConcept.ACTIVITY_CONCEPT_PRODUCT) {
