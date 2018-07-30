@@ -252,8 +252,10 @@ public class ApiKeyController {
         String htmlMessage = "<p>Thank you for registering to use the CHPL API.</p>" + "<p>Your unique API key is: "
                 + apiKey + " .</p>"
                 + "<p>You'll need to use this unique key each time you access data through our open APIs."
-                + "<p>For more information about how to use the API, please visit " + env.getProperty("chplUrlBegin")
-                + "/#/resources </p>" + "<p>Thanks, <br/>The CHPL Team</p>";
+                + "<p>For more information about how to use the API, please visit <a href=\""
+                + env.getProperty("chplUrlBegin") + "/#/resources/chpl_api\">"
+                + env.getProperty("chplUrlBegin") + "/#/resources/chpl_api</a></p>"
+                + "<p>Thanks, <br/>The CHPL Team</p>";
 
         String[] toEmails = {
                 email
