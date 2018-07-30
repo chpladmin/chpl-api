@@ -6,15 +6,43 @@
     version="2.0">
     <schedule>
         <job>
-            <name>cacheStatusAgeJob</name>
+            <name>Cache Status Age</name>
             <group>chplJobs</group>
 
             <description>Allow subscribers to get notifications if the cache has become "too old".</description>
             <job-class>gov.healthit.chpl.scheduler.job.CacheStatusAgeJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>frequency</key>
+                    <value>HOURLY</value>
+                </entry>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
+            </job-data-map>
         </job>
-
+        <job>
+            <name>Summary Statistics Email</name>
+            <group>chplJobs</group>
+            <description>Sends the Summary Statistics Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN</value> <!-- Semi-colon delimited string -->
+                </entry>
+                <entry>
+                    <key>frequency</key>
+                    <value>DAILY</value>
+                </entry>
+                
+            </job-data-map>
+        </job>
         <job>
             <name>downloadFileJob2015</name>
             <group>systemJobs</group>
@@ -60,6 +88,22 @@
                 </entry>
             </job-data-map>
         </job>
+        
+        <job>
+            <name>summaryStatisticsCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the summary statistics report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>generateCsvFile</key>
+                    <value>true</value>
+                </entry>
+            </job-data-map>
+        </job>
+        
         <trigger>
             <cron>
                 <name>generate2015</name>
@@ -90,5 +134,17 @@
                 <cron-expression>0 1 1 ? JAN,APR,JUL,OCT 7#1</cron-expression> <!-- At 0101 UTC on the first Saturday of the quarter -->
             </cron>
         </trigger>
+        <trigger>
+            <cron>
+                <name>generateSummaryStatistics</name>
+                <group>summaryStatisticsTrigger</group>
+                <job-name>summaryStatisticsCreator</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 0 3 1/1 * ? *</cron-expression> 
+            </cron>
+        </trigger>
+        
+        
     </schedule>
 </job-scheduling-data>

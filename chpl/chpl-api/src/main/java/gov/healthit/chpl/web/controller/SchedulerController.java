@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplTrigger;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.web.controller.results.ChplJobsResults;
 import gov.healthit.chpl.web.controller.results.ScheduleTriggersResults;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,17 +52,17 @@ public class SchedulerController {
 
     /**
      * Remove a new Trigger based on passed information.
-     * @param scheduleType the schedule type name
-     * @param triggerKey the trigger to delete
+     * @param triggerGroup The group that identifies the trigger to remove
+     * @param triggerName The name that identifies the trigger to remove
      * @throws SchedulerException if exception is thrown
      * @throws ValidationException if job values aren't correct
      */
     @ApiOperation(value = "Delete an existing trigger")
-    @RequestMapping(value = "/triggers/{scheduleType}/{triggerKey}", method = RequestMethod.DELETE)
-    public void deleteTrigger(@PathVariable("scheduleType") final String scheduleType,
-            @PathVariable("triggerKey") final String triggerKey)
+    @RequestMapping(value = "/triggers/{triggerGroup}/{triggerName}", method = RequestMethod.DELETE)
+    public void deleteTrigger(@PathVariable("triggerGroup") final String triggerGroup,
+            @PathVariable("triggerName") final String triggerName)
                     throws SchedulerException, ValidationException {
-        schedulerManager.deleteTrigger(scheduleType, triggerKey);
+        schedulerManager.deleteTrigger(triggerGroup, triggerName);
     }
 
     /**
@@ -88,11 +90,25 @@ public class SchedulerController {
      */
     @ApiOperation(value = "Update an existing trigger and return it")
     @RequestMapping(value = "/triggers", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true)
-    final ChplTrigger trigger) throws SchedulerException, ValidationException {
+    public @ResponseBody ScheduleTriggersResults updateTrigger(@RequestBody(required = true) final ChplTrigger trigger)
+            throws SchedulerException, ValidationException {
         ChplTrigger result = schedulerManager.updateTrigger(trigger);
         ScheduleTriggersResults results = new ScheduleTriggersResults();
         results.getResults().add(result);
+        return results;
+    }
+
+    /**
+     * Returns a list of all jobs that are applicable to the currently logged in user.
+     * @return List of ChplJob objects
+     * @throws SchedulerException if exception is thrown
+     */
+    @ApiOperation(value = "Get the list of all jobs that are applicable to the currently logged in user")
+    @RequestMapping(value = "/jobs", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ChplJobsResults getAllJobs() throws SchedulerException {
+        List<ChplJob> jobs = schedulerManager.getAllJobs();
+        ChplJobsResults results = new ChplJobsResults();
+        results.setResults(jobs);
         return results;
     }
 }

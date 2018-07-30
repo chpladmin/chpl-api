@@ -1,4 +1,4 @@
-package gov.healthit.chpl.app.statistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.io.FileWriter;
 import java.io.IOException;
