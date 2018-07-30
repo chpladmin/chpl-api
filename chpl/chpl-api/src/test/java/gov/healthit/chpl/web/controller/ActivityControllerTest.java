@@ -83,11 +83,11 @@ public class ActivityControllerTest {
         end.set(2015, 9, 20, 0, 0);
         
 		List<ActivityEvent> cpActivityEvents = activityController.
-		        activityForCertifiedProductById(cpId, start.getTimeInMillis(), end.getTimeInMillis());
+		        activityForCertifiedProductById(cpId);
 		assertEquals(3, cpActivityEvents.size());
 		
 		List<ActivityEvent> cp2ActivityEvents = activityController.
-		        activityForCertifiedProductById(cpId2, start.getTimeInMillis(), end.getTimeInMillis());
+		        activityForCertifiedProductById(cpId2);
 		assertEquals(0, cp2ActivityEvents.size());
 	}
 	
@@ -211,7 +211,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForACBById(-100L, start.getTimeInMillis(), end.getTimeInMillis(), false);
+		activityController.activityForACBById(-100L, false);
 	}
 	
 	@Transactional
@@ -223,7 +223,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForAnnouncementById(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForAnnouncementById(-100L);
 	}
 	
 	@Transactional
@@ -235,7 +235,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForATLById(-100L, start.getTimeInMillis(), end.getTimeInMillis(), false);
+		activityController.activityForATLById(-100L, false);
 	}
 	
 	@Transactional
@@ -247,7 +247,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForCertificationById(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForCertificationById(-100L);
 	}
 	
 	@Transactional
@@ -259,7 +259,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForCertifiedProductById(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForCertifiedProductById(-100L);
 	}
 	
 	@Transactional
@@ -271,7 +271,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForDeveloperById(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForDeveloperById(-100L);
 	}
 	
 	@Transactional
@@ -283,7 +283,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForPendingCertifiedProductById(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForPendingCertifiedProductById(-100L);
 	}
 	
 	@Transactional
@@ -295,7 +295,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForProducts(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForProducts(start.getTimeInMillis(), end.getTimeInMillis());
 	}
 	
 	@Transactional
@@ -307,7 +307,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForUsers(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForUsers(start.getTimeInMillis(), end.getTimeInMillis());
 	}
 	
 	@Transactional
@@ -319,7 +319,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityByUser(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityByUser(-100L);
 	}
 	
 	@Transactional
@@ -331,7 +331,7 @@ public class ActivityControllerTest {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-		activityController.activityForVersions(-100L, start.getTimeInMillis(), end.getTimeInMillis());
+		activityController.activityForVersions(start.getTimeInMillis(), end.getTimeInMillis());
 	}
 	
 	@Test

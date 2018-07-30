@@ -364,8 +364,7 @@ public class ActivityController {
     @ApiOperation(value = "Get auditable data for a specific pending certified product")
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end)
+    public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") Long id)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.getById(acbs, id); // returns 404 if bad id
