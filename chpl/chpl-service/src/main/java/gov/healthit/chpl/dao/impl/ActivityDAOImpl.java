@@ -183,8 +183,8 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
     }
 
     @Override
-    public List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate,
-            Date endDate) {
+    public List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, 
+            Date startDate, Date endDate) {
 
         List<ActivityEntity> entities = this.getEntitiesByObjectId(showDeleted, objectId, concept, startDate, endDate);
         List<ActivityDTO> activities = new ArrayList<>();
@@ -211,26 +211,11 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
     @Override
     public List<ActivityDTO> findPublicAnnouncementActivity(Date startDate, Date endDate) {
-        String sqlStr = "SELECT * " + 
-            "FROM " + SCHEMA_NAME + ".activity a " +
-            "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
-            "WHERE a.activity_object_concept_id = :conceptId "  +
-            "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' " + 
-            "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' ";
-        if (startDate != null) {
-            sqlStr += "AND (a.activity_date >= :startDate) ";
-        }
-        if (endDate != null) {
-            sqlStr += "AND (a.activity_date <= :endDate) ";
-        }
-        Query query = entityManager.createNativeQuery(sqlStr);
+        Query query = entityManager.createNamedQuery("getPublicAnnouncementActivityByDate",
+                ActivityEntity.class);
         query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT.getId());
-        if (startDate != null) {
-            query.setParameter("startDate", startDate);
-        }
-        if (endDate != null) {
-            query.setParameter("endDate", endDate);
-        }
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
         
         List<ActivityDTO> results = new ArrayList<ActivityDTO>();
         List<ActivityEntity> entities = query.getResultList();
@@ -243,230 +228,131 @@ public class ActivityDAOImpl extends BaseDAOImpl implements ActivityDAO {
 
     @Override
     public List<ActivityDTO> findPublicAnnouncementActivityById(Long announcementId, Date startDate, Date endDate) {
-        String sqlStr = "SELECT * " + 
-                "FROM " + SCHEMA_NAME + ".activity a " +
-                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
-                "WHERE a.activity_object_id = :announcementId " +
-                "AND a.activity_object_concept_id = :conceptId "  +
-                "AND a.original_data IS NOT NULL AND cast(a.original_data as json)->>'isPublic'= 'true' " + 
-                "AND a.new_data IS NOT NULL AND cast(a.new_data as json)->>'isPublic' = 'true' ";
-            if (startDate != null) {
-                sqlStr += "AND (a.activity_date >= :startDate) ";
-            }
-            if (endDate != null) {
-                sqlStr += "AND (a.activity_date <= :endDate) ";
-            }
-            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
-            query.setParameter("announcementId", announcementId);
-            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT.getId());
-            if (startDate != null) {
-                query.setParameter("startDate", startDate);
-            }
-            if (endDate != null) {
-                query.setParameter("endDate", endDate);
-            }
-            
-            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-            List<ActivityEntity> entities = query.getResultList();
-            for (ActivityEntity entity : entities) {
-                ActivityDTO result = new ActivityDTO(entity);
-                results.add(result);
-            }
-            return results;
+        Query query = entityManager.createNamedQuery("getPublicAnnouncementActivityByIdAndDate",
+                ActivityEntity.class);
+        query.setParameter("announcementId", announcementId);
+        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT.getId());
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+    
+        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+        List<ActivityEntity> entities = query.getResultList();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = new ActivityDTO(entity);
+            results.add(result);
+        }
+        return results;
     }
     
     @Override
     public List<ActivityDTO> findAcbActivity(List<CertificationBodyDTO> acbs, Date startDate, Date endDate) {
-        String sqlStr = "SELECT * " + 
-                "FROM " + SCHEMA_NAME + ".activity a " +
-                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
-                "WHERE a.activity_object_concept_id = :conceptId "  +
-                "AND ( " +
-                "cast(a.original_data as json)->>'id' IN (:acbIds) "
-                + "OR cast(a.new_data as json)->>'id' IN (:acbIds) "
-                + ")";
-            if (startDate != null) {
-                sqlStr += "AND (a.activity_date >= :startDate) ";
-            }
-            if (endDate != null) {
-                sqlStr += "AND (a.activity_date <= :endDate) ";
-            }
-            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
-            List<String> acbIdParams = new ArrayList<String>();
-            for(CertificationBodyDTO acb : acbs) {
-                acbIdParams.add(acb.getId().toString());
-            }
-            query.setParameter("acbIds", acbIdParams);
-            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY.getId());
-            if (startDate != null) {
-                query.setParameter("startDate", startDate);
-            }
-            if (endDate != null) {
-                query.setParameter("endDate", endDate);
-            }
-            
-            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-            List<ActivityEntity> entities = query.getResultList();
-            for (ActivityEntity entity : entities) {
-                ActivityDTO result = new ActivityDTO(entity);
-                results.add(result);
-            }
-            return results;
+        Query query = entityManager.createNamedQuery("getConceptActivityByIdsAndDate",
+                ActivityEntity.class);
+        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_CERTIFICATION_BODY.getId());
+        List<String> acbIdParams = new ArrayList<String>();
+        for(CertificationBodyDTO acb : acbs) {
+            acbIdParams.add(acb.getId().toString());
+        }
+        query.setParameter("ids", acbIdParams);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        
+        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+        List<ActivityEntity> entities = query.getResultList();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = new ActivityDTO(entity);
+            results.add(result);
+        }
+        return results;
     }
     
     @Override
     public List<ActivityDTO> findAtlActivity(List<TestingLabDTO> atls, Date startDate, Date endDate) {
-        String sqlStr = "SELECT * " + 
-                "FROM " + SCHEMA_NAME + ".activity a " +
-                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
-                "WHERE a.activity_object_concept_id = :conceptId "  +
-                "AND ( " +
-                "cast(a.original_data as json)->>'id' IN (:atlIds) "
-                + "OR cast(a.new_data as json)->>'id' IN (:atlIds) "
-                + ")";
-            if (startDate != null) {
-                sqlStr += "AND (a.activity_date >= :startDate) ";
-            }
-            if (endDate != null) {
-                sqlStr += "AND (a.activity_date <= :endDate) ";
-            }
-            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
-            //parameters need to be strings
-            List<String> atlIdParams = new ArrayList<String>();
-            for(TestingLabDTO atl : atls) {
-                atlIdParams.add(atl.getId().toString());
-            }
-            query.setParameter("atlIds", atlIdParams);
-            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_ATL.getId());
-            if (startDate != null) {
-                query.setParameter("startDate", startDate);
-            }
-            if (endDate != null) {
-                query.setParameter("endDate", endDate);
-            }
-            
-            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-            List<ActivityEntity> entities = query.getResultList();
-            for (ActivityEntity entity : entities) {
-                ActivityDTO result = new ActivityDTO(entity);
-                results.add(result);
-            }
-            return results;
+        Query query = entityManager.createNamedQuery("getConceptActivityByIdsAndDate",
+                ActivityEntity.class);
+        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_ATL.getId());
+        //parameters need to be strings
+        List<String> atlIdParams = new ArrayList<String>();
+        for(TestingLabDTO atl : atls) {
+            atlIdParams.add(atl.getId().toString());
+        }
+        query.setParameter("ids", atlIdParams);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        
+        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+        List<ActivityEntity> entities = query.getResultList();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = new ActivityDTO(entity);
+            results.add(result);
+        }
+        return results;
     }
     
     @Override
     public List<ActivityDTO> findPendingListingActivity(List<CertificationBodyDTO> pendingListingAcbs, 
             Date startDate, Date endDate) {
-        String sqlStr = "SELECT * " + 
-                "FROM " + SCHEMA_NAME + ".activity a " +
-                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
-                "WHERE a.activity_object_concept_id = :conceptId "  +
-                "AND ( " +
-                "cast(a.original_data as json)->>'certificationBodyId' IN (:acbIds) "
-                + "OR cast(a.new_data as json)->>'certificationBodyId' IN (:acbIds) "
-                + ")";
-            if (startDate != null) {
-                sqlStr += "AND (a.activity_date >= :startDate) ";
-            }
-            if (endDate != null) {
-                sqlStr += "AND (a.activity_date <= :endDate) ";
-            }
-            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
-            List<String> acbIdParams = new ArrayList<String>();
-            for(CertificationBodyDTO acb : pendingListingAcbs) {
-                acbIdParams.add(acb.getId().toString());
-            }
-            query.setParameter("acbIds", acbIdParams);
-            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT.getId());
-            if (startDate != null) {
-                query.setParameter("startDate", startDate);
-            }
-            if (endDate != null) {
-                query.setParameter("endDate", endDate);
-            }
-            
-            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-            List<ActivityEntity> entities = query.getResultList();
-            for (ActivityEntity entity : entities) {
-                ActivityDTO result = new ActivityDTO(entity);
-                results.add(result);
-            }
-            return results;
+        Query query = entityManager.createNamedQuery("getPendingListingActivityByAcbIdsAndDate",
+                ActivityEntity.class);
+        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT.getId());
+        //parameters need to be strings
+        List<String> acbIdParams = new ArrayList<String>();
+        for(CertificationBodyDTO acb : pendingListingAcbs) {
+            acbIdParams.add(acb.getId().toString());
+        }
+        query.setParameter("acbIds", acbIdParams);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+
+        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+        List<ActivityEntity> entities = query.getResultList();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = new ActivityDTO(entity);
+            results.add(result);
+        }
+        return results;
     }
 
     @Override
     public List<ActivityDTO> findPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate) {
-        String sqlStr = "SELECT * " + 
-                "FROM " + SCHEMA_NAME + ".activity a " +
-                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
-                "WHERE a.activity_object_concept_id = :conceptId "  +
-                "AND ( " +
-                "cast(a.original_data as json)->>'id' = :pendingListingId "
-                + "OR cast(a.new_data as json)->>'id' = :pendingListingId "
-                + ")";
-            if (startDate != null) {
-                sqlStr += "AND (a.activity_date >= :startDate) ";
-            }
-            if (endDate != null) {
-                sqlStr += "AND (a.activity_date <= :endDate) ";
-            }
-            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
-            query.setParameter("pendingListingId", pendingListingId.toString());
-            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT.getId());
-            if (startDate != null) {
-                query.setParameter("startDate", startDate);
-            }
-            if (endDate != null) {
-                query.setParameter("endDate", endDate);
-            }
-            
-            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-            List<ActivityEntity> entities = query.getResultList();
-            for (ActivityEntity entity : entities) {
-                ActivityDTO result = new ActivityDTO(entity);
-                results.add(result);
-            }
-            return results;        
+        Query query = entityManager.createNamedQuery("getPendingListingActivityByIdAndDate",
+                ActivityEntity.class);
+        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_PENDING_CERTIFIED_PRODUCT.getId());
+        query.setParameter("pendingListingId", pendingListingId.toString());
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+
+        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+        List<ActivityEntity> entities = query.getResultList();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = new ActivityDTO(entity);
+            results.add(result);
+        }
+        return results;        
     }
     
     @Override
     public List<ActivityDTO> findUserActivity(Collection<Long> userIds, Date startDate, Date endDate) {
-        String sqlStr = "SELECT * " + 
-                "FROM " + SCHEMA_NAME + ".activity a " +
-                "LEFT OUTER JOIN " + SCHEMA_NAME + ".user u ON a.last_modified_user = u.user_id " +
-                "WHERE a.activity_object_concept_id = :conceptId "  +
-                "AND ( " +
-                "cast(a.original_data as json)->>'id' IN (:userIds) "
-                + "OR cast(a.new_data as json)->>'id' IN (:userIds) "
-                + ")";
-            if (startDate != null) {
-                sqlStr += "AND (a.activity_date >= :startDate) ";
-            }
-            if (endDate != null) {
-                sqlStr += "AND (a.activity_date <= :endDate) ";
-            }
-            Query query = entityManager.createNativeQuery(sqlStr, ActivityEntity.class);
-            List<String> userIdParams = new ArrayList<String>();
-            for(Long userId : userIds) {
-                userIdParams.add(userId.toString());
-            }
-            query.setParameter("userIds", userIdParams);
-            query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_USER.getId());
-            if (startDate != null) {
-                query.setParameter("startDate", startDate);
-            }
-            if (endDate != null) {
-                query.setParameter("endDate", endDate);
-            }
-            
-            List<ActivityDTO> results = new ArrayList<ActivityDTO>();
-            List<ActivityEntity> entities = query.getResultList();
-            for (ActivityEntity entity : entities) {
-                ActivityDTO result = new ActivityDTO(entity);
-                results.add(result);
-            }
-            return results;        
+        Query query = entityManager.createNamedQuery("getConceptActivityByIdsAndDate",
+                ActivityEntity.class);
+        query.setParameter("conceptId", ActivityConcept.ACTIVITY_CONCEPT_USER.getId());
+        //parameters need to be strings
+        List<String> userIdParams = new ArrayList<String>();
+        for(Long userId : userIds) {
+            userIdParams.add(userId.toString());
+        }
+        query.setParameter("ids", userIdParams);
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+       
+        List<ActivityDTO> results = new ArrayList<ActivityDTO>();
+        List<ActivityEntity> entities = query.getResultList();
+        for (ActivityEntity entity : entities) {
+            ActivityDTO result = new ActivityDTO(entity);
+            results.add(result);
+        }
+        return results;        
     }
     
     @Override

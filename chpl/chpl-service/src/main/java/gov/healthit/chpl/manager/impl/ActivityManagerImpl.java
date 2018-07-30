@@ -311,7 +311,7 @@ public class ActivityManagerImpl implements ActivityManager {
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> getAcbActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException {
-        
+
         List<ActivityDTO> acbActivity = null;
         if(Util.isUserRoleAdmin()) {
             acbActivity = activityDAO.findByConcept(

@@ -97,7 +97,7 @@ public class ActivityController {
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
             throws JsonParseException, IOException, ValidationException {
 
-        if (!Util.isUserRoleAdmin() && showDeleted) {
+        if(!Util.isUserRoleAdmin() && showDeleted) {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACBs");
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
@@ -114,12 +114,10 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific certification body.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
+            notes = "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
                     + "do so if the certification body specified in the path has been deleted. ")
     @RequestMapping(value = "/acbs/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForACBById(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         acbManager.getById(id, showDeleted); // throws 404 if ACB doesn't exist
@@ -128,20 +126,14 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
-            if(start == null || end == null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                        LocaleContextHolder.getLocale()));
-            }
-            Date startDate = new Date(start);
-            Date endDate = new Date(end);
-            validateActivityDates(start, end);
-            return activityManager.getAcbActivity(showDeleted, id, startDate, endDate);
+            return activityManager.getAcbActivity(showDeleted, id, new Date(0), new Date());
         }
     }
 
     @ApiOperation(value = "Get auditable data for all announcements",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Users must specify 'start' and 'end' parameters to restrict the date "
+                    + "range of the results. Anonymous users will only receive activity for public "
+                    + "announcements.")
     @RequestMapping(value = "/announcements", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForAnnoucements(@RequestParam Long start,
@@ -158,22 +150,13 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific announcement",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Anonymous users are only allowed to see activity for public announcements.")
     @RequestMapping(value = "/announcements/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end)
+    public List<ActivityEvent> activityForAnnouncementById(@PathVariable("id") Long id)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
-        announcementManager.getById(id); // throws 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));        
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForAnnouncements(id, startDate, endDate);
+        announcementManager.getById(id, true); // throws 404 if bad id
+        return getActivityEventsForAnnouncement(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for testing labs.",
@@ -203,12 +186,10 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific testing lab.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
+            notes = "Only users calling this API with ROLE_ADMIN may set the 'showDeleted' flag to true and should "
                     + "do so if the testing lab specified in the path has been deleted. ")
     @RequestMapping(value = "/atls/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForATLById(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end,
             @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         atlManager.getById(id, showDeleted); // throws 404 if bad id
@@ -217,15 +198,7 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
             throw new AccessDeniedException("Only Admins can see deleted ATL's");
         } else {
-            if(start == null || end == null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                        LocaleContextHolder.getLocale()));
-            }
-            Date startDate = new Date(start);
-            Date endDate = new Date(end);
-            validateActivityDates(start, end);
-            return activityManager.getAtlActivity(showDeleted, id, startDate, endDate);
+            return activityManager.getAtlActivity(showDeleted, id, new Date(0), new Date());
         }
     }
 
@@ -280,28 +253,17 @@ public class ActivityController {
         return getActivityEventsForCorrectiveActionPlans(startDate, endDate);
     }
     
-    @ApiOperation(value = "Get auditable data for a specific certified product",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @ApiOperation(value = "Get auditable data for a specific certified product")
     @RequestMapping(value = "/certified_products/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end)
+    public List<ActivityEvent> activityForCertifiedProductById(@PathVariable("id") Long id)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         cpManager.getById(id); // throws 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForCertifiedProductsByIdAndDateRange(id, startDate, endDate);
+        return getActivityEventsForCertifiedProductsByIdAndDateRange(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for a specific certified product based on CHPL Product Number.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
+            notes = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode} " 
                     + "represents a valid CHPL Product Number.  A valid call to this service would look like "
                     + "activity/certified_products/YY.99.99.9999.XXXX.99.99.9.YYMMDD.")
     @RequestMapping(value = "/certified_products/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}", 
@@ -316,9 +278,8 @@ public class ActivityController {
             @PathVariable("versionCode") final String versionCode,
             @PathVariable("icsCode") final String icsCode,
             @PathVariable("addlSoftwareCode") final String addlSoftwareCode,
-            @PathVariable("certDateCode") final String certDateCode,
-            @RequestParam final Long start, 
-            @RequestParam final Long end) throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            @PathVariable("certDateCode") final String certDateCode) 
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         
         String chplProductNumber = 
                 chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode, 
@@ -329,20 +290,11 @@ public class ActivityController {
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
+        return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for a specific certified product based on a legacy CHPL Product Number.",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results. "
-                    + "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
+            notes = "{chplPrefix}-{identifier} represents a valid CHPL Product Number.  "
                     + "A valid call to this service "
                     + "would look like activity/certified_products/CHP-999999.")
     @RequestMapping(value = "/certified_products/{chplPrefix}-{identifier}", 
@@ -350,9 +302,8 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertifiedProductByChplProductNumber(
             @PathVariable("chplPrefix") final String chplPrefix,
-            @PathVariable("identifier") final String identifier,
-            @RequestParam final Long start, 
-            @RequestParam final Long end) throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
+            @PathVariable("identifier") final String identifier) 
+                    throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
 
@@ -361,15 +312,7 @@ public class ActivityController {
         if (dtos.size() == 0) {
             throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
         }
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), startDate, endDate);
+        return getActivityEventsForCertifiedProductsByIdAndDateRange(dtos.get(0).getId(), new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for all certifications",
@@ -391,23 +334,14 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Get auditable data for a specific certification",
-            notes = "Deprecated. Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "Deprecated.")
     @RequestMapping(value = "/certifications/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @Deprecated
-    public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end)
+    public List<ActivityEvent> activityForCertificationById(@PathVariable("id") Long id)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         certificationIdManager.getById(id); // throws 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForCertifications(id, startDate, endDate);
+        return getActivityEventsForCertifications(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for all pending certified products",
@@ -427,8 +361,7 @@ public class ActivityController {
         return activityManager.getPendingListingActivity(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific pending certified product",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @ApiOperation(value = "Get auditable data for a specific pending certified product")
     @RequestMapping(value = "/pending_certified_products/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProductById(@PathVariable("id") Long id,
@@ -436,15 +369,7 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.getById(acbs, id); // returns 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return activityManager.getPendingListingActivity(id, startDate, endDate);
+        return activityManager.getPendingListingActivity(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for all products",
@@ -463,23 +388,13 @@ public class ActivityController {
         return getActivityEventsForProducts(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific product",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @ApiOperation(value = "Get auditable data for a specific product")
     @RequestMapping(value = "/products/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end)
+    public List<ActivityEvent> activityForProducts(@PathVariable("id") Long id)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         productManager.getById(id); // returns 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForProducts(id, startDate, endDate);
+        return getActivityEventsForProducts(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for all versions",
@@ -498,23 +413,13 @@ public class ActivityController {
         return getActivityEventsForVersions(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific version",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @ApiOperation(value = "Get auditable data for a specific version")
     @RequestMapping(value = "/versions/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForVersions(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end)
+    public List<ActivityEvent> activityForVersions(@PathVariable("id") Long id)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         versionManager.getById(id); // returns 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForVersions(id, startDate, endDate);
+        return getActivityEventsForVersions(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data about all CHPL user accounts",
@@ -533,22 +438,12 @@ public class ActivityController {
         return activityManager.getUserActivity(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data about a specific CHPL user account",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @ApiOperation(value = "Get auditable data about a specific CHPL user account.")
     @RequestMapping(value = "/users/{id}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id, @RequestParam Long start,
-            @RequestParam Long end)
+    public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         userManager.getById(id); // throws 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return activityManager.getUserActivity(id, startDate, endDate);
+        return activityManager.getUserActivity(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data about all developers",
@@ -567,23 +462,13 @@ public class ActivityController {
         return getActivityEventsForDevelopers(startDate, endDate);
     }
 
-    @ApiOperation(value = "Get auditable data for a specific developer",
-            notes = "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+    @ApiOperation(value = "Get auditable data for a specific developer.")
     @RequestMapping(value = "/developers/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityForDeveloperById(@PathVariable("id") Long id,
-            @RequestParam Long start, @RequestParam Long end)
+    public List<ActivityEvent> activityForDeveloperById(@PathVariable("id") Long id)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         developerManager.getById(id); // returns 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return getActivityEventsForDevelopers(id, startDate, endDate);
+        return getActivityEventsForDevelopers(id, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Track the actions of all users in the system",
@@ -606,23 +491,13 @@ public class ActivityController {
     }
 
     @ApiOperation(value = "Track the actions of a specific user in the system",
-            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC_STAFF."
-                    + "Users must specify 'start' and 'end' parameters to restrict the date range of the results.")
+            notes = "The authenticated user calling this method must have ROLE_ADMIN or ROLE_ONC_STAFF.")
     @RequestMapping(value = "/user_activities/{id}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public List<ActivityEvent> activityByUser(@PathVariable("id") Long id, @RequestParam Long start,
-            @RequestParam Long end)
+    public List<ActivityEvent> activityByUser(@PathVariable("id") Long id)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         userManager.getById(id); // throws 404 if bad id
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
-        Date startDate = new Date(start);
-        Date endDate = new Date(end);
-        validateActivityDates(start, end);
-        return activityManager.getActivityForUserInDateRange(id, startDate, endDate);
+        return activityManager.getActivityForUserInDateRange(id, new Date(0), new Date());
     }
 
     private List<ActivityEvent> getActivityEventsForCertifications(Long id, Date startDate, Date endDate)
@@ -745,12 +620,13 @@ public class ActivityController {
     private List<ActivityEvent> getActivityEventsForAnnouncements(Date startDate, Date endDate)
             throws JsonParseException, IOException {
         if(Util.getCurrentUser() == null) {
+            LOGGER.info("Anonymous user requested public announcement activity between " + startDate + " and "
+                    + endDate);
             return activityManager.getPublicAnnouncementActivity(startDate, endDate);
         }
-        
+
         LOGGER.info("User " + Util.getUsername() + " requested all announcement activity between " + startDate + " and "
                 + endDate);
-
         List<ActivityEvent> events = null;
         ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
         events = getActivityEventsForConcept(concept, startDate, endDate);
@@ -758,12 +634,19 @@ public class ActivityController {
         return events;
     }
 
-    private List<ActivityEvent> getActivityEventsForAnnouncements(Long id, Date startDate, Date endDate)
+    private List<ActivityEvent> getActivityEventsForAnnouncement(Long id, Date startDate, Date endDate)
             throws JsonParseException, IOException {
         if(Util.getCurrentUser() == null) {
+            LOGGER.info("Anonymous user requested public announcement activity "
+                    + "for announcement id " + id + " between " + startDate + " and "
+                    + endDate);
             return activityManager.getPublicAnnouncementActivity(id, startDate, endDate);
         }
-        
+
+        LOGGER.info("User " + Util.getUsername() + " requested all announcement activity "
+                + "for announcement id " + id + " between " + startDate + " and "
+                + endDate);
+
         List<ActivityEvent> events = null;
         ActivityConcept concept = ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT;
         events = getActivityEventsForObject(concept, id, startDate, endDate);

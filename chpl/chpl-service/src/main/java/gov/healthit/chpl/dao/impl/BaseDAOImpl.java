@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
 public class BaseDAOImpl {
-    protected static final String SCHEMA_NAME = "openchpl";
+    public static final String SCHEMA_NAME = "openchpl";
     
     @PersistenceContext
     protected EntityManager entityManager;
