@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
@@ -39,6 +40,9 @@ public class ChplProductNumberUtil {
     private static final int CERTIFICATION_EDITION_BEGIN_INDEX = 2;
 
     private static final int CERTIFICATION_EDITION_END_INDEX = 4;
+    
+    private static final int LEGACY_ID_LENGTH = 10;
+    private static final String LEGACY_ID_BEGIN = "CHP-";
 
     /**
      * Determines what the derived CHPL Product Number will be based on the values passed.
@@ -145,6 +149,14 @@ public class ChplProductNumberUtil {
         parts.setCertifiedDateCode(cpnParts[8]);
 
         return parts;
+    }
+    
+    public boolean isLegacy(String chplProductNumber) {
+        if(!StringUtils.isEmpty(chplProductNumber) && chplProductNumber.length() == LEGACY_ID_LENGTH
+                && chplProductNumber.startsWith(LEGACY_ID_BEGIN)) {
+            return true;
+        }
+        return false;
     }
 
     private String[] splitUniqueIdParts(final String uniqueId) {
