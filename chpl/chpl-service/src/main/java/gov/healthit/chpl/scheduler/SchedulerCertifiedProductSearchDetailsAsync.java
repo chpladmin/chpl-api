@@ -13,13 +13,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
 
 /**
- * Provides asynchronous support to SedParticipantsStatisticsCount class for retrieving certified product details.
+ * Provides asynchronous support to scheduler classes for retrieving certified product details.
  * @author TYoung
  *
  */
-@Service("quartzCertifiedProductSearchDetailsAsync")
-public class QuartzCertifiedProductSearchDetailsAsync {
-    private static final Logger LOGGER = LogManager.getLogger(QuartzCertifiedProductSearchDetailsAsync.class);
+@Service("schedulerCertifiedProductSearchDetailsAsync")
+public class SchedulerCertifiedProductSearchDetailsAsync {
+    private static final Logger LOGGER = LogManager.getLogger(SchedulerCertifiedProductSearchDetailsAsync.class);
 
     /**
      * Retrieves the associated CertifiedProductionSearchDetails object as a Future<>.

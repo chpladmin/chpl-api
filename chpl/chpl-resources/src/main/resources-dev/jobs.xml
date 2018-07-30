@@ -4,7 +4,14 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
     version="2.0">
+    <pre-processing-commands>
+        <delete-job>
+            <name>cacheStatusAgeJob</name>
+            <group>chplJobs</group>
+        </delete-job>
+    </pre-processing-commands>
     <schedule>
+        <!-- Cache status age notification -->
         <job>
             <name>Cache Status Age</name>
             <group>chplJobs</group>
@@ -26,8 +33,8 @@
         <trigger>
             <cron>
                 <name>alarned@ainq_com</name>
-                <group>cacheStatusAgeTrigger</group>
-                <job-name>cacheStatusAgeJob</job-name>
+                <group>CacheStatusAgeTrigger</group>
+                <job-name>Cache Status Age</job-name>
                 <job-group>chplJobs</job-group>
                 <job-data-map>
                     <entry>
@@ -39,14 +46,14 @@
             </cron>
         </trigger>
 
+        <!-- Download file generation: 2015, 2014, 2011 -->
         <job>
             <name>downloadFileJob2015</name>
             <group>systemJobs</group>
-
             <description>Generate download files for 2015.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
-            <recover>true</recover>
+            <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>edition</key>
@@ -68,11 +75,10 @@
         <job>
             <name>downloadFileJob2014</name>
             <group>systemJobs</group>
-
             <description>Generate download files for 2014.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
-            <recover>true</recover>
+            <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>edition</key>
@@ -94,7 +100,6 @@
         <job>
             <name>downloadFileJob2011</name>
             <group>systemJobs</group>
-
             <description>Generate download files for 2011.</description>
             <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
@@ -117,13 +122,14 @@
             </cron>
         </trigger>
 
+        <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
             <group>systemJobs</group>
             <description>Generates the summary statistics report</description>
             <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsCreatorJob</job-class>
             <durability>true</durability>
-            <recover>true</recover>
+            <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>generateCsvFile</key>
@@ -137,11 +143,12 @@
                 <group>summaryStatisticsTrigger</group>
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
             </cron>
         </trigger>
 
+        <!-- Summary statistics emailer -->
         <job>
             <name>Summary Statistics Email</name>
             <group>chplJobs</group>
@@ -156,11 +163,12 @@
                 </entry>
                 <entry>
                     <key>frequency</key>
-                    <value>HOURLY</value><!-- NEEDS TO BE DAILY -->
+                    <value>DAILY</value><!-- NEEDS TO BE DAILY -->
                 </entry>
             </job-data-map>
         </job>
 
+        <!-- Job fired when developer ban notification needs to happen -->
         <job>
             <name>Trigger Developer Ban Notification</name>
             <group>chplJobs</group>
@@ -175,7 +183,7 @@
                 </entry>
                 <entry>
                     <key>email</key>
-                    <value>amore@ainq.com</value>
+                    <value>alarned@ainq.com</value>
                 </entry>
                 <entry>
                     <key>editableJobFields</key>
@@ -183,5 +191,6 @@
                 </entry>
             </job-data-map>
         </job>
+
     </schedule>
 </job-scheduling-data>

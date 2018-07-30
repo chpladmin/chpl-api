@@ -7,6 +7,11 @@ import org.quartz.JobDetail;
 
 import gov.healthit.chpl.domain.concept.ScheduleFrequencyConcept;
 
+/**
+ * Represents the data for a Quartz job, along with other meta data for the job.
+ * @author TYoung
+ *
+ */
 public class ChplJob implements Serializable{
     private static final long serialVersionUID = -7634197357525761051L;
     private String description;
@@ -15,8 +20,15 @@ public class ChplJob implements Serializable{
     private ScheduleFrequencyConcept frequency;
     private JobDataMap jobDataMap;
 
+    /**
+     * Default (empty) constructor.
+     */
     public ChplJob() { }
 
+    /**
+     * Constructor that build a ChplJob based on a Quartz Job object.
+     * @param jobDetails the Quartz JobDetail
+     */
     public ChplJob(final JobDetail jobDetails) {
         this.description = jobDetails.getDescription();
         this.group = jobDetails.getKey().getGroup();

@@ -1,13 +1,11 @@
 package gov.healthit.chpl.dao.statistics;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Query;
 
-import org.hibernate.SQLQuery;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -64,8 +62,7 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
                     + " OR "
                     + "(deleted = true AND creationDate <= :endDate AND lastModifiedDate > :endDate)) ";
         }
-        
-        
+
         Query query = entityManager.createQuery(hql);
         if (edition != null) {
             query.setParameter("edition", edition);
@@ -240,7 +237,6 @@ public class ListingStatisticsDAOImpl extends BaseDAOImpl implements ListingStat
         }
         hql += " GROUP BY certificationBodyName, year "
                 + " ORDER BY certificationBodyName ";
-        
         Query query = entityManager.createQuery(hql);
         if (dateRange != null) {
             query.setParameter("startDate", dateRange.getStartDate());

@@ -6,15 +6,22 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
 
-public class ScheduleJobsResults implements Serializable{
+
+
+/**
+ * Represents a list of ChplJob domain objects.
+ * @author TYoung
+ *
+ */
+public class ChplJobsResults implements Serializable {
     private static final long serialVersionUID = -2991204404213846766L;
 
     private List<ChplJob> results;
-    
+
     /**
      * Default constructor.
      */
-    public ScheduleJobsResults() {
+    public ChplJobsResults() {
         results = new ArrayList<ChplJob>();
     }
 

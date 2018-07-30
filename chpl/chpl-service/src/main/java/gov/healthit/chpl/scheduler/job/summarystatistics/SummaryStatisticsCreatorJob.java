@@ -25,7 +25,6 @@ import org.springframework.context.support.AbstractApplicationContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.app.statistics.StatsCsvFileWriter;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.DateRange;
 import gov.healthit.chpl.domain.statistics.Statistics;
@@ -35,6 +34,12 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 
+/**
+ * Initiates and runs the the Quartz job that generates the data that is used to to create the Summary Statistics
+ * Email.
+ * @author TYoung
+ *
+ */
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger(SummaryStatisticsCreatorJob.class);
@@ -44,6 +49,10 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     private Properties props;
     private AbstractApplicationContext context;
 
+    /**
+     * Constructor to initialize SummaryStatisticsJobCreator object.
+     * @throws Exception is thrown
+     */
     public SummaryStatisticsCreatorJob() throws Exception{
         super();
         setLocalContext();
@@ -51,30 +60,28 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         initiateSpringBeans(context);
         loadProperties();
     }
-    
+
     @Override
-    protected void initiateSpringBeans(AbstractApplicationContext context) throws IOException {
+    protected void initiateSpringBeans(final AbstractApplicationContext context) throws IOException {
         setAsynchronousStatisticsInitializor(
                 (AsynchronousSummaryStatisticsInitializor) context.getBean("asynchronousStatisticsSummaryInitializor"));
         setSummaryStatisticsDAO((SummaryStatisticsDAO) context.getBean("summaryStatisticsDAO"));
     }
-    
+
     @Override
-    public void execute(JobExecutionContext jobContext) throws JobExecutionException {
+    public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         try {
             Boolean generateCsv = Boolean.valueOf(jobContext.getMergedJobDataMap().getString("generateCsvFile"));
-            Calendar cal = Calendar.getInstance();
-            cal.set(2016, Calendar.MARCH, 31);
             Date startDate = getStartDate();
             if (startDate == null) {
                 throw new RuntimeException("Could not obtain the startDate.");
             }
             Date endDate = new Date();
             Integer numDaysInPeriod = Integer.valueOf(props.getProperty("summaryEmailSubject").toString());
-            
+
             Future<Statistics> futureEmailBodyStats = asynchronousStatisticsInitializor.getStatistics(null);
             Statistics emailBodyStats = futureEmailBodyStats.get();
-            
+
             if (generateCsv) {
                 createSummaryStatisticsFile(startDate, endDate, numDaysInPeriod);
             }
@@ -87,8 +94,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         }
     }
 
-    private void createSummaryStatisticsFile(Date startDate, Date endDate, Integer numDaysInPeriod)
-            throws InterruptedException, ExecutionException {
+    private void createSummaryStatisticsFile(final Date startDate, final Date endDate,
+            final Integer numDaysInPeriod) throws InterruptedException, ExecutionException {
         List<Statistics> csvStats = new ArrayList<Statistics>();
         Calendar startDateCal = Calendar.getInstance(TimeZone.getTimeZone(ZoneOffset.UTC));
         startDateCal.setTime(startDate);
@@ -99,8 +106,6 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         while (endDate.compareTo(endDateCal.getTime()) >= 0) {
             LOGGER.info("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
-            System.out.println("Getting csvRecord for start date " + startDateCal.getTime().toString() + " end date "
-                    + endDateCal.getTime().toString());
             DateRange csvRange = new DateRange(startDateCal.getTime(), new Date(endDateCal.getTimeInMillis()));
             Statistics historyStat = new Statistics();
             historyStat.setDateRange(csvRange);
@@ -110,15 +115,11 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             LOGGER.info("Finished getting csvRecord for start date "
                     + startDateCal.getTime().toString() + " end date "
                     + endDateCal.getTime().toString());
-            System.out.println("Finished getting csvRecord for start date "
-                    + startDateCal.getTime().toString() + " end date "
-                    + endDateCal.getTime().toString());
             startDateCal.add(Calendar.DATE, numDaysInPeriod);
             endDateCal.setTime(startDateCal.getTime());
             endDateCal.add(Calendar.DATE, numDaysInPeriod);
         }
         LOGGER.info("Finished getting statistics");
-        System.out.println("Finished getting statistics");
         StatsCsvFileWriter.writeCsvFile(props.getProperty("downloadFolderPath") + File.separator
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"), csvStats);
 
@@ -126,21 +127,22 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                 + props.getProperty("summaryEmailName", "summaryStatistics.csv"));
     }
 
-    private String getJson(Statistics statistics) throws JsonProcessingException {
+    private String getJson(final Statistics statistics) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(statistics);
     }
-    
-    private void saveSummaryStatistics(Statistics statistics, Date endDate) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+
+    private void saveSummaryStatistics(final Statistics statistics, final Date endDate)
+            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
         SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
         entity.setEndDate(endDate);
         entity.setSummaryStatistics(getJson(statistics));
         getSummaryStatisticsDAO().create(entity);
     }
-    
-    
+
     private Properties loadProperties() throws IOException {
-        InputStream in = SummaryStatisticsCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
+        InputStream in =
+                SummaryStatisticsCreatorJob.class.getClassLoader().getResourceAsStream(DEFAULT_PROPERTIES_FILE);
         if (in == null) {
             props = null;
             throw new FileNotFoundException("Environment Properties File not found in class path.");
@@ -151,11 +153,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         }
         return props;
     }
-    
+
     private Date getStartDate() {
         Calendar startDateCalendar = Calendar.getInstance();
+        //This is a constant date, which marks the beginning of time for 
+        //retrieving statistics;
         startDateCalendar.set(2016, 3, 1);
-        
+
         //What DOW is today?
         Calendar now = Calendar.getInstance();
         Integer dow = now.get(Calendar.DAY_OF_WEEK);
@@ -175,7 +179,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return asynchronousStatisticsInitializor;
     }
 
-    public void setAsynchronousStatisticsInitializor(AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor) {
+    public void setAsynchronousStatisticsInitializor(
+            final AsynchronousSummaryStatisticsInitializor asynchronousStatisticsInitializor) {
         this.asynchronousStatisticsInitializor = asynchronousStatisticsInitializor;
     }
 
@@ -183,8 +188,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         return summaryStatisticsDAO;
     }
 
-    public void setSummaryStatisticsDAO(SummaryStatisticsDAO summaryStatisticsDAO) {
+    public void setSummaryStatisticsDAO(final SummaryStatisticsDAO summaryStatisticsDAO) {
         this.summaryStatisticsDAO = summaryStatisticsDAO;
     }
-   
 }

@@ -25,8 +25,8 @@ public interface SchedulerManager {
 
     /**
      * Delete an existing Trigger.
-     * @param scheduleType type of schedule
-     * @param triggerId existing trigger ID
+     * @param triggerGroup group name of trigger
+     * @param triggerName trigger name of trigger
      * @throws SchedulerException if scheduler has an issue
      * @throws ValidationException if job values aren't correct
      */
@@ -47,7 +47,13 @@ public interface SchedulerManager {
      * @throws ValidationException if job values aren't correct
      */
     ChplTrigger updateTrigger(ChplTrigger trigger) throws SchedulerException, ValidationException;
-    
+
+
+    /**
+     * Get all jobs which the current logged in user has access to.
+     * @return List of ChplJob objects
+     * @throws SchedulerException is thrown
+     */
     List<ChplJob> getAllJobs() throws SchedulerException;
 
     /**

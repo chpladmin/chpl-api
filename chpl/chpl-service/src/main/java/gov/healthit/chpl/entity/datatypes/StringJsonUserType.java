@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
-import org.hibernate.engine.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 public class StringJsonUserType implements UserType {
@@ -21,7 +20,7 @@ public class StringJsonUserType implements UserType {
      */
     @Override
     public int[] sqlTypes() {
-        return new int[] { Types.JAVA_OBJECT};
+        return new int[] {Types.JAVA_OBJECT};
     }
 
     /**
@@ -43,21 +42,19 @@ public class StringJsonUserType implements UserType {
      * @return boolean
      */
     @Override
-    public boolean equals(Object x, Object y) throws HibernateException {
+    public boolean equals(final Object x, final Object y) throws HibernateException {
 
-        if( x== null){
-
-            return y== null;
+        if (x == null) {
+            return y == null;
         }
-
-        return x.equals( y);
+        return x.equals(y);
     }
 
     /**
-     * Get a hashcode for the instance, consistent with persistence "equality"
+     * Get a hashcode for the instance, consistent with persistence "equality".
      */
     @Override
-    public int hashCode(Object x) throws HibernateException {
+    public int hashCode(final Object x) throws HibernateException {
 
         return x.hashCode();
     }
@@ -71,7 +68,7 @@ public class StringJsonUserType implements UserType {
      * @return Object a copy
      */
     @Override
-    public Object deepCopy(Object value) throws HibernateException {
+    public Object deepCopy(final Object value) throws HibernateException {
 
         return value;
     }
@@ -98,8 +95,8 @@ public class StringJsonUserType implements UserType {
      *
      */
     @Override
-    public Serializable disassemble(Object value) throws HibernateException {
-        return (String)this.deepCopy( value);
+    public Serializable disassemble(final Object value) throws HibernateException {
+        return (String) this.deepCopy(value);
     }
 
     /**
@@ -113,8 +110,8 @@ public class StringJsonUserType implements UserType {
      *
      */
     @Override
-    public Object assemble(Serializable cached, Object owner) throws HibernateException {
-        return this.deepCopy( cached);
+    public Object assemble(final Serializable cached, final Object owner) throws HibernateException {
+        return this.deepCopy(cached);
     }
 
     /**
@@ -129,7 +126,8 @@ public class StringJsonUserType implements UserType {
      * @return the value to be merged
      */
     @Override
-    public Object replace(Object original, Object target, Object owner) throws HibernateException {
+    public Object replace(final Object original, final Object target,
+            final Object owner) throws HibernateException {
         return original;
     }
 
@@ -146,8 +144,9 @@ public class StringJsonUserType implements UserType {
      * @throws java.sql.SQLException
      */
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
-        if(rs.getString(names[0]) == null){
+    public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner)
+            throws HibernateException, SQLException {
+        if (rs.getString(names[0]) == null) {
             return null;
         }
         return rs.getString(names[0]);
@@ -167,7 +166,8 @@ public class StringJsonUserType implements UserType {
      * @throws java.sql.SQLException
      */
     @Override
-    public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
+    public void nullSafeSet(final PreparedStatement st, final Object value, final int index)
+            throws HibernateException, SQLException {
         if (value == null) {
             st.setNull(index, Types.OTHER);
             return;

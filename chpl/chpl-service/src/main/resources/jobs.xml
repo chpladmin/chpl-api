@@ -15,6 +15,7 @@
         </delete-job>
     </pre-processing-commands>
     <schedule>
+        <!-- Cache status age notification -->
         <job>
             <name>Cache Status Age</name>
             <group>chplJobs</group>
@@ -34,6 +35,7 @@
             </job-data-map>
         </job>
 
+        <!-- Download file generation: 2015, 2014, 2011 -->
         <job>
             <name>downloadFileJob2015</name>
             <group>systemJobs</group>
@@ -109,13 +111,14 @@
             </cron>
         </trigger>
 
+        <!-- Summary statistics generator -->
         <job>
             <name>summaryStatisticsCreator</name>
             <group>systemJobs</group>
             <description>Generates the summary statistics report</description>
             <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsCreatorJob</job-class>
             <durability>true</durability>
-            <recover>true</recover>
+            <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>generateCsvFile</key>
@@ -129,11 +132,12 @@
                 <group>summaryStatisticsTrigger</group>
                 <job-name>summaryStatisticsCreator</job-name>
                 <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 3 1 * * ?</cron-expression> <!-- At 0103 UTC every day -->
             </cron>
         </trigger>
 
+        <!-- Summary statistics emailer -->
         <job>
             <name>Summary Statistics Email</name>
             <group>chplJobs</group>
@@ -148,11 +152,12 @@
                 </entry>
                 <entry>
                     <key>frequency</key>
-                    <value>HOURLY</value><!-- NEEDS TO BE DAILY -->
+                    <value>DAILY</value><!-- NEEDS TO BE DAILY -->
                 </entry>
             </job-data-map>
         </job>
 
+        <!-- Job fired when developer ban notification needs to happen -->
         <job>
             <name>Trigger Developer Ban Notification</name>
             <group>chplJobs</group>
@@ -175,5 +180,6 @@
                 </entry>
             </job-data-map>
         </job>
+
     </schedule>
 </job-scheduling-data>

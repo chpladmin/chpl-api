@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.Util;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.CriterionProductStatisticsEntity;
@@ -22,8 +21,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
  */
 @Repository("criterionProductStatisticsDAO")
 public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements CriterionProductStatisticsDAO {
-    private static final long MODIFIED_USER_ID = -3L;
-
+    
     @Override
     public List<CriterionProductStatisticsDTO> findAll() {
         List<CriterionProductStatisticsEntity> result = this.findAllEntities();
@@ -40,7 +38,7 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId());
+            toDelete.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
             entityManager.merge(toDelete);
         }
     }
@@ -60,7 +58,7 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
         if (dto.getLastModifiedUser() != null) {
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
-            entity.setLastModifiedUser(getUserId());
+            entity.setLastModifiedUser(getUserId(SYSTEM_USER_ID));
         }
         if (dto.getLastModifiedDate() != null) {
             entity.setLastModifiedDate(dto.getLastModifiedDate());
@@ -107,13 +105,4 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
         return entity;
     }
 
-    private Long getUserId() {
-        // If there is no user the current context, assume this is a system
-        // process
-        if (Util.getCurrentUser() == null || Util.getCurrentUser().getId() == null) {
-            return MODIFIED_USER_ID;
-        } else {
-            return Util.getCurrentUser().getId();
-        }
-    }
 }

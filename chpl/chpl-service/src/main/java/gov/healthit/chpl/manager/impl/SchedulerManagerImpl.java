@@ -38,7 +38,8 @@ import gov.healthit.chpl.scheduler.ChplSchedulerReference;
  */
 @Service
 public class SchedulerManagerImpl implements SchedulerManager {
-    public static final String AUTHORITY_DELIMITER = ";";
+
+    private static final String AUTHORITY_DELIMITER = ";";
 
     @Autowired
     private ChplSchedulerReference chplScheduler;
@@ -110,11 +111,10 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return newTrigger;
     }
 
-
     /* (non-Javadoc)
      * @see gov.healthit.chpl.manager.SchedulerManager#getAllJobs()
      * As new jobs are added that have authorities other than ROLE_ADMIN, those authorities
-     * will need to be added to the list. 
+     * will need to be added to the list.
      */
     @Override
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
@@ -157,17 +157,16 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return chplScheduler.getScheduler();
     }
 
-
-    private ChplTrigger getChplTrigger(TriggerKey triggerKey) throws SchedulerException {
+    private ChplTrigger getChplTrigger(final TriggerKey triggerKey) throws SchedulerException {
         ChplTrigger chplTrigger = new ChplTrigger((CronTrigger) getScheduler().getTrigger(triggerKey));
 
         JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
         ChplJob chplJob = new ChplJob(jobDetail);
         chplTrigger.setJob(chplJob);
-        return chplTrigger; 
+        return chplTrigger;
     }
 
-    private Boolean doesUserHavePermissionToJob(JobDetail jobDetail) {
+    private Boolean doesUserHavePermissionToJob(final JobDetail jobDetail) {
         //Get the authorities from the job
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
@@ -190,13 +189,13 @@ public class SchedulerManagerImpl implements SchedulerManager {
         return false;
     }
 
-    private String createTriggerGroup(ChplTrigger trigger) {
+    private String createTriggerGroup(final ChplTrigger trigger) {
         String group = trigger.getJob().getName().replaceAll(" ", "");
         group += "Trigger";
         return group;
     }
 
-    private String createTriggerName(ChplTrigger trigger) {
-        return trigger.getEmail().replaceAll("\\.",  "_"); 
+    private String createTriggerName(final ChplTrigger trigger) {
+        return trigger.getEmail().replaceAll("\\.",  "_");
     }
 }
