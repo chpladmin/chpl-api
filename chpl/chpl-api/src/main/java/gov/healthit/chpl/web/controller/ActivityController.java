@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,14 +27,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 
 import gov.healthit.chpl.auth.Util;
+import gov.healthit.chpl.auth.dto.UserDTO;
 import gov.healthit.chpl.auth.manager.UserManager;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.PendingCertifiedProductDetails;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
 import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.dto.TestingLabDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -109,7 +115,11 @@ public class ActivityController {
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
-            return activityManager.getAcbActivity(showDeleted, startDate, endDate);
+            if(Util.isUserRoleAdmin()) {
+                return activityManager.getAllAcbActivity(showDeleted, startDate, endDate);
+            }
+            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(showDeleted);
+            return activityManager.getAcbActivity(allowedAcbs, startDate, endDate);
         }
     }
 
@@ -126,7 +136,20 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACB " + id);
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
-            return activityManager.getAcbActivity(showDeleted, id, new Date(0), new Date());
+            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(showDeleted);
+            CertificationBodyDTO acb = null;
+            for(CertificationBodyDTO allowedAcb : allowedAcbs) {
+                if(allowedAcb.getId().longValue() == id.longValue()) {
+                    acb = allowedAcb;
+                }
+            }
+            if(acb == null) {
+                throw new AccessDeniedException("User " + Util.getUsername() + " does not have access to " +
+                        "activity for certification body with ID " + id);
+            }
+            List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+            acbs.add(acb);
+            return activityManager.getAcbActivity(acbs, new Date(0), new Date());
         }
     }
 
@@ -181,7 +204,11 @@ public class ActivityController {
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
-            return activityManager.getAtlActivity(showDeleted, startDate, endDate);
+            if(Util.isUserRoleAdmin()) {
+                return activityManager.getAllAtlActivity(showDeleted, startDate, endDate);
+            }
+            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(showDeleted);
+            return activityManager.getAtlActivity(allowedAtls, startDate, endDate);
         }
     }
 
@@ -198,7 +225,20 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATL " + id);
             throw new AccessDeniedException("Only Admins can see deleted ATL's");
         } else {
-            return activityManager.getAtlActivity(showDeleted, id, new Date(0), new Date());
+            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(showDeleted);
+            TestingLabDTO atl = null;
+            for(TestingLabDTO allowedAtl : allowedAtls) {
+                if(allowedAtl.getId().longValue() == id.longValue()) {
+                    atl = allowedAtl;
+                }
+            }
+            if(atl == null) {
+                throw new AccessDeniedException("User " + Util.getUsername() + " does not have access to " +
+                        "activity for testing lab with ID " + id);
+            }
+            List<TestingLabDTO> atls = new ArrayList<TestingLabDTO>();
+            atls.add(atl);
+            return activityManager.getAtlActivity(atls, new Date(0), new Date());
         }
     }
 
@@ -358,7 +398,11 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return activityManager.getPendingListingActivity(startDate, endDate);
+        if(Util.isUserRoleAdmin()) {
+            return activityManager.getAllPendingListingActivity(startDate, endDate);
+        }
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+        return activityManager.getPendingListingActivityByAcb(allowedAcbs, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data for a specific pending certified product")
@@ -368,7 +412,14 @@ public class ActivityController {
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
         List<CertificationBodyDTO> acbs = acbManager.getAllForUser(false);
         pcpManager.getById(acbs, id); // returns 404 if bad id
-        return activityManager.getPendingListingActivity(id, new Date(0), new Date());
+        //admin can get anything
+        if(Util.isUserRoleAdmin()) {
+            return activityManager.getPendingListingActivity(id, new Date(0), new Date());
+        }
+        List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+        //pcpManager will return 404 if the user is not allowed to access it b/c of acb permissions
+        PendingCertifiedProductDetails pendingListing = pcpManager.getById(allowedAcbs, id);
+        return activityManager.getPendingListingActivity(pendingListing.getId(), new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data for all products",
@@ -434,7 +485,8 @@ public class ActivityController {
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
-        return activityManager.getUserActivity(startDate, endDate);
+        Set<Long> userIdsToSearch = getAllowedUsersForActivitySearch();
+        return activityManager.getUserActivity(userIdsToSearch, startDate, endDate);
     }
 
     @ApiOperation(value = "Get auditable data about a specific CHPL user account.")
@@ -442,7 +494,19 @@ public class ActivityController {
     public List<ActivityEvent> activityForUsers(@PathVariable("id") Long id)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
         userManager.getById(id); // throws 404 if bad id
-        return activityManager.getUserActivity(id, new Date(0), new Date());
+        
+        //ROLE_ADMIN can get user activity on any user; other roles must
+        //have some association to the user so check if this request is allowed.
+        if(!Util.isUserRoleAdmin()) {
+            Set<Long> allowedUserIds = getAllowedUsersForActivitySearch();
+            if(!allowedUserIds.contains(id)) {
+                throw new AccessDeniedException("User " + Util.getUsername() + 
+                        " does not have permission to get activity for user with ID " + id);
+            }
+        }
+        Set<Long> userIdsToSearch = new HashSet<Long>();
+        userIdsToSearch.add(id);
+        return activityManager.getUserActivity(userIdsToSearch, new Date(0), new Date());
     }
 
     @ApiOperation(value = "Get auditable data about all developers",
@@ -499,6 +563,41 @@ public class ActivityController {
         return activityManager.getActivityForUserInDateRange(id, new Date(0), new Date());
     }
 
+    private Set<Long> getAllowedUsersForActivitySearch() {
+        Set<Long> allowedUserIds = new HashSet<Long>();
+        //user can see their own activity
+        allowedUserIds.add(Util.getCurrentUser().getId());
+        
+        //user can see activity for other users in the same acb
+        if(Util.isUserRoleAcbAdmin()) {
+            List<CertificationBodyDTO> allowedAcbs = acbManager.getAllForUser(false);
+            for(CertificationBodyDTO acb : allowedAcbs) {
+                List<UserDTO> acbUsers = acbManager.getAllUsersOnAcb(acb);
+                for(UserDTO user : acbUsers) {
+                    allowedUserIds.add(user.getId());
+                }
+            }
+        }
+        //user can see activity for other users in the same atl
+        if(Util.isUserRoleAtlAdmin()) {
+            List<TestingLabDTO> allowedAtls = atlManager.getAllForUser(false);
+            for(TestingLabDTO atl : allowedAtls) {
+                List<UserDTO> atlUsers = atlManager.getAllUsersOnAtl(atl);
+                for(UserDTO user : atlUsers) {
+                    allowedUserIds.add(user.getId());
+                }
+            }
+        }
+        //user can see activity for other users with role cms_staff
+        if(Util.isUserRoleCmsStaff()) {
+            List<UserDTO> cmsStaffUsers = userManager.getUsersWithPermission("ROLE_CMS_STAFF");
+            for(UserDTO user : cmsStaffUsers) {
+                allowedUserIds.add(user.getId());
+            }
+        }
+        return allowedUserIds;
+    }
+    
     private List<ActivityEvent> getActivityEventsForCertifications(Long id, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 

@@ -33,6 +33,7 @@ import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.ActivityEvent;
 import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.domain.concept.ActivityConcept;
+import gov.healthit.chpl.dto.CertificationBodyDTO;
 import gov.healthit.chpl.dto.DeveloperDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -199,9 +200,12 @@ public class ActivityManagerTest extends TestCase {
         start.set(2015, 9, 1, 0, 0);
         Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         end.set(2015, 9, 20, 0, 0);
-        
+        CertificationBodyDTO acb = new CertificationBodyDTO();
+        acb.setId(objectId);
+        List<CertificationBodyDTO> acbs = new ArrayList<CertificationBodyDTO>();
+        acbs.add(acb);
         List<ActivityEvent> events = activityManager.getAcbActivity(
-                false, objectId, start.getTime(), end.getTime());
+                acbs, start.getTime(), end.getTime());
         assertEquals(0, events.size());
     }
 	   
