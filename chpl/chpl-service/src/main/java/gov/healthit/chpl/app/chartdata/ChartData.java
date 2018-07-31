@@ -70,7 +70,7 @@ public final class ChartData {
         listingCountStatisticsCalculator.logCounts(dtos);
         listingCountStatisticsCalculator.save(dtos);
     }
-    
+
     private static void analyzeNonconformity(final ChartDataApplicationEnvironment appEnvironment) {
         NonconformityTypeChartCalculator nonconformityStatisticsCalculator =
                 new NonconformityTypeChartCalculator(appEnvironment);

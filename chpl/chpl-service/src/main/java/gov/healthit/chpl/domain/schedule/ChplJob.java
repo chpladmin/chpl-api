@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain.schedule;
 
 import java.io.Serializable;
 
+import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 
 import gov.healthit.chpl.domain.concept.ScheduleFrequencyConcept;
@@ -17,6 +18,7 @@ public class ChplJob implements Serializable{
     private String group;
     private String name;
     private ScheduleFrequencyConcept frequency;
+    private JobDataMap jobDataMap;
 
     /**
      * Default (empty) constructor.
@@ -33,6 +35,9 @@ public class ChplJob implements Serializable{
         this.name = jobDetails.getKey().getName();
         if (jobDetails.getJobDataMap().containsKey("frequency")) {
             this.frequency = ScheduleFrequencyConcept.valueOf(jobDetails.getJobDataMap().get("frequency").toString());
+        }
+        if (jobDetails.getJobDataMap() != null) {
+            this.jobDataMap = jobDetails.getJobDataMap();
         }
     }
 
@@ -68,4 +73,11 @@ public class ChplJob implements Serializable{
         this.frequency = frequency;
     }
 
+    public JobDataMap getJobDataMap() {
+        return jobDataMap;
+    }
+
+    public void setJobDataMap(final JobDataMap jobDataMap) {
+        this.jobDataMap = jobDataMap;
+    }
 }
