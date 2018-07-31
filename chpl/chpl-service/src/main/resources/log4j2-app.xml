@@ -33,7 +33,7 @@
             additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
-        <Logger name="gov.healthit.chpl" level="INFO" additivity="false">
+        <Logger name="gov.healthit.chpl" level="DEBUG" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
         <Root level="DEBUG">
