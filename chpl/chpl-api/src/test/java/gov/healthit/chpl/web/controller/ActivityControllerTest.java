@@ -261,14 +261,6 @@ public class ActivityControllerTest {
     }
 	
 	@Transactional
-    @Test(expected=AccessDeniedException.class)
-    public void testGetAcbActivityAsAnonymousUser() 
-        throws EntityRetrievalException, IOException, ValidationException {
-        SecurityContextHolder.getContext().setAuthentication(null);
-        activityController.activityForACBById(-1L, null, null, false);
-    }
-	
-	@Transactional
 	@Test(expected=EntityRetrievalException.class)
 	public void testGetAnnouncementActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
