@@ -8,53 +8,64 @@ import javax.xml.stream.XMLStreamWriter;
 
 public class XmlGenerator {
     public static void createSimpleElement(Long value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
-        sw.writeStartElement(nodeName);
         if (value != null) {
+            sw.writeStartElement(nodeName);
             sw.writeCharacters(value.toString());
+            sw.writeEndElement();
         }
-        sw.writeEndElement();
+        
     }
     
     public static void createSimpleElement(String value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
-        sw.writeStartElement(nodeName);
         if (value != null) {
+            sw.writeStartElement(nodeName);
             sw.writeCharacters(value);
+            sw.writeEndElement();
         }
-        sw.writeEndElement();
     }
     
     public static void createSimpleElement(Integer value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
-        sw.writeStartElement(nodeName);
         if (value != null) {
+            sw.writeStartElement(nodeName);
             sw.writeCharacters(value.toString());
+            sw.writeEndElement();
         }
-        sw.writeEndElement();
     }
     
     public static void createSimpleElement(Boolean value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
-        sw.writeStartElement(nodeName);
         if (value != null) {
+            sw.writeStartElement(nodeName);
             sw.writeCharacters(value.toString());
+            sw.writeEndElement();
         }
-        sw.writeEndElement();
+        
     }
     
     public static void createSimpleElement(Date value, String format, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
-        SimpleDateFormat sdf = new SimpleDateFormat(format);
-        sw.writeStartElement(nodeName);
         if (value != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat(format);
+            sw.writeStartElement(nodeName);
             sw.writeCharacters(sdf.format(value));
+            sw.writeEndElement();
         }
-        sw.writeEndElement();
     }
     
     public static void createSimpleElement(Date value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
-        sw.writeStartElement(nodeName);
         if (value != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
+            sw.writeStartElement(nodeName);
             sw.writeCharacters(sdf.format(value));
+            sw.writeEndElement();
         }
-        sw.writeEndElement();
+        
     }
 
+    public static void createSimpleElement(Float value, String nodeName, XMLStreamWriter sw) throws XMLStreamException {
+        if (value != null) {
+            sw.writeStartElement(nodeName);
+            sw.writeCharacters(Float.toString(value));
+            sw.writeEndElement();
+        }
+        
+    }
 }

@@ -121,7 +121,7 @@
                 <job-name>downloadFileJob2014</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0,33 * ? * * *</cron-expression> <!-- At 0102 UTC every day -->
+                <cron-expression>0 15 13/4 ? * * *</cron-expression> <!-- At 0102 UTC every day -->
             </cron>
         </trigger>
         <trigger>

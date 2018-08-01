@@ -1,18 +1,17 @@
 package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.FileWriter;
 
-import javax.xml.transform.stream.StreamResult;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import gov.healthit.chpl.domain.CertifiedProductDownloadResponse;
 import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
+import gov.healthit.chpl.scheduler.job.xmlgenerator.CertifiedProductSerchDetailsXmlGenerator;
 
 /**
  * Present objects as XML file.
@@ -24,24 +23,31 @@ public class CertifiedProductXmlPresenter implements CertifiedProductPresenter {
 
     @Override
     public int presentAsFile(final File file, final CertifiedProductDownloadResponse cpList) {
-        int numRecords = 0;
-        FileOutputStream os = null;
         try {
-            os = new FileOutputStream(file);
-            Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-            marshaller.setClassesToBeBound(cpList.getClass());
-            marshaller.marshal(cpList, new StreamResult(os));
-            numRecords = (cpList.getListings() == null ? 0 : cpList.getListings().size());
-        } catch (final FileNotFoundException ex) {
-            LOGGER.error("file not found " + file);
-        } finally {
-            if (os != null) {
-                try {
-                    os.close();
-                } catch (final IOException ignore) {
+            FileWriter fw = null;
+            XMLStreamWriter writer = null;
+            try {
+                XMLOutputFactory factory = XMLOutputFactory.newInstance();
+                fw = new FileWriter(file);
+                writer = factory.createXMLStreamWriter(fw);
+                writer.writeStartDocument();
+                CertifiedProductSerchDetailsXmlGenerator.add(cpList.getListings(), "listings", writer);
+                writer.writeEndDocument();
+                                
+            } catch(Exception e) {
+                e.printStackTrace();
+                LOGGER.error(e);
+            } finally {
+                if (writer != null) {
+                    writer.close();
+                }
+                if (fw != null) {
+                    fw.close();
                 }
             }
+        } catch (Exception e) {
+            LOGGER.error("Error while writing XML file.", e);
         }
-        return numRecords;
+        return cpList.getListings().size();
     }
 }

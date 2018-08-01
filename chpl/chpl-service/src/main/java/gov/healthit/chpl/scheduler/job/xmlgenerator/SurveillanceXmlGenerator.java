@@ -23,6 +23,7 @@ public class SurveillanceXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);;
             createSimpleElement(surveillance.getId(), "id", sw);
             createSimpleElement(surveillance.getFriendlyId(), "friendlyId", sw);
+            CertifiedProductXmlGenerator.add(surveillance.getCertifiedProduct(), "certifiedProduct", sw);
             createSimpleElement(surveillance.getStartDate(), "startDate", sw);
             createSimpleElement(surveillance.getEndDate(), "endDate", sw);
             createSimpleElement(surveillance.getStartDate(), "startDate", sw);

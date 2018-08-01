@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,9 +25,8 @@ import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductDetailsManager;
-import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
-import gov.healthit.chpl.scheduler.job.xmlgenerator.CertifiedProductSerchDetailsXmlGenerator;
+import gov.healthit.chpl.scheduler.JobConfig;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
@@ -67,53 +62,15 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
             List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
-            //Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
+            Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
 
-            XMLOutputFactory factory = XMLOutputFactory.newInstance();
-            FileWriter fw = null;
-            XMLStreamWriter writer = null;
-            try {
-                fw = new FileWriter(
-                                getFileName(
-                                        getProperties().getProperty("downloadFolderPath"), 
-                                        getTimestampFormat().format(new Date()), 
-                                        "xml"));
-                writer = factory.createXMLStreamWriter(fw);
-                
-                writer.writeStartDocument();
-                
-                writer.writeStartElement("listings");
-                
-                LOGGER.info("starting the loop to output XML");
-                CertifiedProductSerchDetailsXmlGenerator xxx = new CertifiedProductSerchDetailsXmlGenerator();
-                for (Future<CertifiedProductSearchDetails> future : futures) {
-                    writer = xxx.writeCertifiecProduct(future.get(), writer);
-                        
-                }
-                LOGGER.info("finished the loop to output XML");
-                
-                writer.writeEndElement();
-                writer.writeEndDocument();
-                
-                LOGGER.info("Flushing document");
-                writer.flush();
-            } catch(Exception e) {
-                e.printStackTrace();
-                LOGGER.error(e);
-            } finally {
-                LOGGER.info("Closing document");
-                writer.close();
-                LOGGER.info("Done");
-                fw.close();
-            }
-            
-            //CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
-            //results.setListings(createOrderedListOfCertifiedProducts(
-            //        cpMap,
-            //        getOriginalCertifiedProductOrder(listings)));
+            CertifiedProductDownloadResponse results = new CertifiedProductDownloadResponse();
+            results.setListings(createOrderedListOfCertifiedProducts(
+                    cpMap,
+                    getOriginalCertifiedProductOrder(listings)));
 
-            //File downloadFolder = getDownloadFolder();
-            //writeToFile(downloadFolder, results);
+            File downloadFolder = getDownloadFolder();
+            writeToFile(downloadFolder, results);
         } catch (Exception e) {
             LOGGER.error(e);
         }
@@ -139,19 +96,14 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
         SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
 
-        int i = 1;
         for (CertifiedProductDetailsDTO currListing : listings) {
-            i++;
             try {
                 futures.add(cpsdAsync.getCertifiedProductDetail(currListing.getId(),
                         getCertifiedProductDetailsManager()));
             } catch (EntityRetrievalException e) {
                 LOGGER.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
             }
-            if (i == 10)
-                break;
         }
-        
         return futures;
     }
 
