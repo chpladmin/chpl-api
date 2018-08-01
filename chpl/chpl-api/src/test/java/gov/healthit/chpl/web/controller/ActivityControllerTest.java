@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -34,6 +35,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.UserRetrievalException;
 import gov.healthit.chpl.caching.UnitTestRules;
 import gov.healthit.chpl.domain.ActivityEvent;
+import gov.healthit.chpl.domain.UserActivity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -46,7 +48,7 @@ import gov.healthit.chpl.exception.ValidationException;
     DbUnitTestExecutionListener.class })
 @DatabaseSetup("classpath:data/testData.xml") 
 public class ActivityControllerTest {
-	private static JWTAuthenticatedUser adminUser;
+	private static JWTAuthenticatedUser adminUser, acbUser, atlUser;
 
 	@Autowired Environment env;
 	@Autowired ActivityController activityController;
@@ -63,6 +65,20 @@ public class ActivityControllerTest {
 		adminUser.setLastName("Administrator");
 		adminUser.setSubjectName("admin");
 		adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+		
+		acbUser = new JWTAuthenticatedUser();
+        acbUser.setFirstName("Test");
+        acbUser.setId(3L);
+        acbUser.setLastName("User3");
+        acbUser.setSubjectName("testUser3");
+        acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+
+        atlUser = new JWTAuthenticatedUser();
+        atlUser.setFirstName("ATL");
+        atlUser.setId(3L);
+        atlUser.setLastName("User");
+        atlUser.setSubjectName("atlUser");
+        atlUser.getPermissions().add(new GrantedPermission("ROLE_ATL"));
 	}
 	
 	/** 
@@ -219,6 +235,40 @@ public class ActivityControllerTest {
 	}
 	
 	@Transactional
+    @Test
+    public void testGetAcbActivityAsAdmin() 
+        throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null, false);
+        assertEquals(0, userActivity.size());
+    }
+	
+	@Transactional
+    @Test
+    public void testGetAcbActivityAsAcbUser() 
+        throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        List<ActivityEvent> userActivity = activityController.activityForACBById(-1L, null, null, false);
+        assertEquals(0, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetAcbActivityAsAtlUser() 
+        throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        activityController.activityForACBById(-1L, null, null, false);
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetAcbActivityAsAnonymousUser() 
+        throws EntityRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(null);
+        activityController.activityForACBById(-1L, null, null, false);
+    }
+	
+	@Transactional
 	@Test(expected=EntityRetrievalException.class)
 	public void testGetAnnouncementActivityWithBadId() 
 		throws EntityRetrievalException, IOException, ValidationException {
@@ -319,12 +369,61 @@ public class ActivityControllerTest {
 	public void testGetUserActivitesWithBadId() 
 		throws UserRetrievalException, IOException, ValidationException {
 		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Calendar start = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        start.set(2015, 9, 1, 0, 0);
-        Calendar end = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        end.set(2015, 9, 20, 0, 0);
 		activityController.activityByUser(-100L, null, null);
 	}
+	
+	@Transactional
+    @Test
+    public void testGetActivityByUsersAsAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<UserActivity> userActivity = activityController.activityByUser(
+                1504224000000L, 1504424000000L);
+        assertEquals(0, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUsersAsAcbAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        activityController.activityByUser(1504224000000L, 1504424000000L);
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUsersAsAtlAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        activityController.activityByUser(1504224000000L, 1504424000000L);
+    }
+	
+	@Transactional
+    @Test
+    public void testGetActivityByUserIdAsAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(adminUser);
+        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        assertEquals(5, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUserIdAsAcbAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(acbUser);
+        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        assertEquals(5, userActivity.size());
+    }
+	
+	@Transactional
+    @Test(expected=AccessDeniedException.class)
+    public void testGetActivityByUserIdAsAtlAdmin() 
+        throws UserRetrievalException, IOException, ValidationException {
+        SecurityContextHolder.getContext().setAuthentication(atlUser);
+        List<ActivityEvent> userActivity = activityController.activityByUser(1L, null, null);
+        assertEquals(5, userActivity.size());
+    }
 	
 	@Transactional
 	@Test(expected=EntityRetrievalException.class)

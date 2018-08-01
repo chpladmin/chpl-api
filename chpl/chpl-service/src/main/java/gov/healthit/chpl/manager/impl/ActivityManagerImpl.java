@@ -42,7 +42,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.util.JSONUtils;
 
-@Service
+@Service("activityManager")
 public class ActivityManagerImpl implements ActivityManager {
     private static final Logger LOGGER = LogManager.getLogger(ActivityManagerImpl.class);
 
@@ -224,30 +224,6 @@ public class ActivityManagerImpl implements ActivityManager {
         return events;
     }
 
-    /**
-     * get all announcement activity; restricted to logged in users
-     */
-    @Override
-    @Transactional
-    @PreAuthorize("isAuthenticated()")
-    public List<ActivityEvent> getAnnouncementActivity(Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, 
-                startDate, endDate);
-    }
-    
-    /**
-     * get all activity for a specific announcement id; restricted to logged in users
-     */
-    @Override
-    @Transactional
-    @PreAuthorize("isAuthenticated()")
-    public List<ActivityEvent> getAnnouncementActivity(Long id, Date startDate,
-            Date endDate) throws JsonParseException, IOException {
-        return getActivityForObject(ActivityConcept.ACTIVITY_CONCEPT_ANNOUNCEMENT, 
-                id, startDate, endDate);
-    }
-    
     /**
      * Get activity only for public announcements.
      * This will return activity where the isPublic flag is true on both the
@@ -443,35 +419,6 @@ public class ActivityManagerImpl implements ActivityManager {
     @Override
     @Transactional(readOnly = true)
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException {
-
-        Map<Long, List<ActivityDTO>> activity = activityDAO.findAllByUser();
-        List<UserActivity> userActivities = new ArrayList<UserActivity>();
-
-        for (Map.Entry<Long, List<ActivityDTO>> userEntry : activity.entrySet()) {
-            UserDTO activityUser = userEntry.getValue().get(0).getUser();
-            if (activityUser != null) {
-                User userObj = new User(activityUser);
-
-                List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-
-                for (ActivityDTO userEventDTO : userEntry.getValue()) {
-                    ActivityEvent event = getActivityEventFromDTO(userEventDTO);
-                    userActivityEvents.add(event);
-                }
-
-                UserActivity userActivity = new UserActivity();
-                userActivity.setUser(userObj);
-                userActivity.setEvents(userActivityEvents);
-                userActivities.add(userActivity);
-            }
-        }
-        return userActivities;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
             throws JsonParseException, IOException, UserRetrievalException {
 
@@ -497,20 +444,6 @@ public class ActivityManagerImpl implements ActivityManager {
             }
         }
         return userActivities;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
-    public List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException {
-
-        List<ActivityEvent> userActivityEvents = new ArrayList<ActivityEvent>();
-
-        for (ActivityDTO userEventDTO : activityDAO.findByUserId(userId)) {
-            ActivityEvent event = getActivityEventFromDTO(userEventDTO);
-            userActivityEvents.add(event);
-        }
-        return userActivityEvents;
     }
 
     @Override

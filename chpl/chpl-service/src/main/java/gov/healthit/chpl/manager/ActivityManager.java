@@ -41,31 +41,25 @@ public interface ActivityManager {
 
     List<ActivityEvent> getActivityForConcept(ActivityConcept concept, Date startDate,
             Date endDate) throws JsonParseException, IOException;
-    
-    List<ActivityEvent> getAnnouncementActivity(Date startDate,
-            Date endDate) throws JsonParseException, IOException;
-    
-    List<ActivityEvent> getAnnouncementActivity(Long id, Date startDate,
-            Date endDate) throws JsonParseException, IOException;
-    
+
     List<ActivityEvent> getPublicAnnouncementActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
-    
+
     public List<ActivityEvent> getPublicAnnouncementActivity(Long id,Date startDate,
             Date endDate) throws JsonParseException, IOException;
-    
+
     List<ActivityEvent> getAllAcbActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException;
-    
+
     public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs, 
             Date startDate, Date endDate) throws JsonParseException, IOException;
-    
+
     public List<ActivityEvent> getAllAtlActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException;
-    
+
     public List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
             Date endDate) throws JsonParseException, IOException;
-    
+
     public List<ActivityEvent> getAllPendingListingActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException;
 
@@ -74,10 +68,10 @@ public interface ActivityManager {
 
     public List<ActivityEvent> getPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException;
-    
+
     List<ActivityEvent> getAllUserActivity(Date startDate, Date endDate)
             throws JsonParseException, IOException;
-    
+
     List<ActivityEvent> getUserActivity(Set<Long> userIds, 
             Date startDate, Date endDate) throws JsonParseException, IOException;
 
@@ -86,13 +80,9 @@ public interface ActivityManager {
 
     void deleteActivity(Long toDelete) throws EntityRetrievalException;
 
-    List<UserActivity> getActivityByUser() throws JsonParseException, IOException, UserRetrievalException;
-
     List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
             throws JsonParseException, IOException, UserRetrievalException;
-
-    List<ActivityEvent> getActivityForUser(Long userId) throws JsonParseException, IOException;
-
+    
     List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
             throws JsonParseException, IOException;
 
