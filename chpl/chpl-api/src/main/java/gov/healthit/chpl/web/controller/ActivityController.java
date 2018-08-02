@@ -107,11 +107,6 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ACBs");
             throw new AccessDeniedException("Only Admins can see deleted ACB's");
         } else {
-            if(start == null || end == null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                        LocaleContextHolder.getLocale()));
-            }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
@@ -183,11 +178,6 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForAnnoucements(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));        
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -239,11 +229,6 @@ public class ActivityController {
             LOGGER.warn("Non-admin user " + Util.getUsername() + " tried to see activity for deleted ATLs");
             throw new AccessDeniedException("Only Admins can see deleted ATL's");
         } else {
-            if(start == null || end == null) {
-                throw new IllegalArgumentException(messageSource.getMessage(
-                        new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                        LocaleContextHolder.getLocale()));
-            }
             Date startDate = new Date(start);
             Date endDate = new Date(end);
             validateActivityDates(start, end);
@@ -310,11 +295,6 @@ public class ActivityController {
     @RequestMapping(value = "/api_keys", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForApiKeys(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -327,11 +307,6 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForCertifiedProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -345,11 +320,6 @@ public class ActivityController {
     @Deprecated
     public List<ActivityEvent> activityForCorrectiveActionPlans(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -490,11 +460,6 @@ public class ActivityController {
     @Deprecated
     public List<ActivityEvent> activityForCertifications(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -539,11 +504,6 @@ public class ActivityController {
             produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForPendingCertifiedProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -598,11 +558,6 @@ public class ActivityController {
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForProducts(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -644,11 +599,6 @@ public class ActivityController {
     @RequestMapping(value = "/versions", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForVersions(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -690,11 +640,6 @@ public class ActivityController {
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForUsers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -748,11 +693,7 @@ public class ActivityController {
     @RequestMapping(value = "/developers", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityEvent> activityForDevelopers(@RequestParam Long start,
             @RequestParam Long end) throws JsonParseException, IOException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
+
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);
@@ -797,11 +738,6 @@ public class ActivityController {
     public List<UserActivity> activityByUser(@RequestParam Long start,
             @RequestParam Long end)
             throws JsonParseException, IOException, UserRetrievalException, ValidationException {
-        if(start == null || end == null) {
-            throw new IllegalArgumentException(messageSource.getMessage(
-                    new DefaultMessageSourceResolvable("activity.missingStartEnd"),
-                    LocaleContextHolder.getLocale()));
-        }
         Date startDate = new Date(start);
         Date endDate = new Date(end);
         validateActivityDates(start, end);

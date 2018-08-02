@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -22,16 +21,6 @@ public interface ActivityDAO {
 
     ActivityDTO getById(Long id) throws EntityRetrievalException;
 
-    ActivityDTO getById(boolean showDeleted, Long id) throws EntityRetrievalException;
-
-    List<ActivityDTO> findAll(boolean showDeleted);
-
-    List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept);
-
-    List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept);
-
-    List<ActivityDTO> findAllInDateRange(boolean showDeleted, Date startDate, Date endDate);
-
     List<ActivityDTO> findByObjectId(boolean showDeleted, Long objectId, ActivityConcept concept, Date startDate,
             Date endDate);
 
@@ -49,15 +38,11 @@ public interface ActivityDAO {
     List<ActivityDTO> findPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate);
     
-    public List<ActivityDTO> findUserActivity(Collection<Long> userIds, Date startDate, Date endDate);
+    public List<ActivityDTO> findUserActivity(List<Long> userIds, Date startDate, Date endDate);
     
     List<ActivityDTO> findByConcept(boolean showDeleted, ActivityConcept concept, Date startDate, Date endDate);
 
     List<ActivityDTO> findByUserId(Long userId, Date startDate, Date endDate);
-
-    List<ActivityDTO> findByUserId(Long userId);
-
-    Map<Long, List<ActivityDTO>> findAllByUser();
 
     Map<Long, List<ActivityDTO>> findAllByUserInDateRange(Date startDate, Date endDate);
 

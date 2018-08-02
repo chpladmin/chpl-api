@@ -157,33 +157,6 @@ public class ActivityManagerTest extends TestCase {
 		activityManager.deleteActivity(event.getId());
 	}
 	
-	
-	
-	@Test
-	@Transactional
-	public void testGetAllActivityInLastNDays() throws EntityCreationException, EntityRetrievalException, IOException{
-		Date fiveDaysAgo = new Date(System.currentTimeMillis() - (5*24*60*60*1000));
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		DeveloperDTO developer = new DeveloperDTO();
-		developer.setCreationDate(new Date());
-		developer.setId(1L);
-		developer.setName("Test");
-		developer.setWebsite("www.zombo.com");
-		Date timestamp = new Date();
-		activityManager.addActivity(ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER,
-				developer.getId(),
-				"Test Activity",
-				"Before",
-				"Test",
-				timestamp
-				);
-		List<ActivityEvent> events = activityManager.getAllActivityInDateRange(false, fiveDaysAgo, null);
-		assertEquals(1, events.size());
-		activityManager.deleteActivity(events.get(0).getId());
-		events = activityManager.getAllActivityInDateRange(false, fiveDaysAgo, null);
-		assertEquals(0, events.size());
-	}
-	
 	@Test
 	@Transactional
 	public void testGetActivityForListingLoggedIn() throws JsonParseException, IOException{

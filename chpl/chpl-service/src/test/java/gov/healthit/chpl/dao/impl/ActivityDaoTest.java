@@ -194,51 +194,7 @@ public class ActivityDaoTest extends TestCase {
 		assertEquals((long) dto.getId(), -1L);
 		
 	}
-	
-	@Test
-	@Transactional
-	public void testFindAll(){
-		
-		List<ActivityDTO> results = activityDAO.findAll(false);
-		assertEquals(7, results.size());
-	}
-	
-	@Test
-	@Transactional
-	public void testFindOne_userExists(){
-		
-		List<ActivityDTO> results = activityDAO.findAll(false);
-		assertTrue(results.size() > 0);
-		ActivityDTO result = results.get(1);
-		assertNotNull(result.getUser());
-		assertNotNull(result.getUser().getFirstName());
-		assertNotNull(result.getUser().getLastName());
-	}
-	
-	@Test
-	@Transactional
-	public void testFindByObjectId(){
-		
-		List<ActivityDTO> results = activityDAO.findByObjectId(false, 1L, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
-		assertEquals(4, results.size());
-		
-	}
-	
-	@Test
-	@Transactional
-	public void testFindByConcept(){
-		
-		List<ActivityDTO> results = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
-		assertEquals(4, results.size());
-		for(ActivityDTO dto : results){
-			assertEquals(dto.getConcept(), ActivityConcept.ACTIVITY_CONCEPT_CERTIFIED_PRODUCT);
-		}
-		
-		List<ActivityDTO> developerResults = activityDAO.findByConcept(false, ActivityConcept.ACTIVITY_CONCEPT_DEVELOPER);
-		assertEquals(0, developerResults.size());
-		
-	}
-	
+
 	@Test
     @Transactional
     public void testFindPublicAnnouncementActivityNativeSqlWorks(){
