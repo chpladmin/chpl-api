@@ -10,7 +10,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -264,7 +264,7 @@ public class ActivityManagerImpl implements ActivityManager {
     
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityEvent> getApiKeyActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException {
         return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_API_KEY, 
@@ -273,7 +273,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityEvent> getAllAcbActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException {
         List<ActivityDTO> acbActivity = activityDAO.findByConcept(
@@ -289,7 +289,7 @@ public class ActivityManagerImpl implements ActivityManager {
     
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    // TODO: Fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> getAcbActivity(List<CertificationBodyDTO> acbs, 
             Date startDate, Date endDate) throws JsonParseException, IOException {
 
@@ -304,7 +304,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityEvent> getAllAtlActivity(boolean showDeleted, Date startDate,
             Date endDate) throws JsonParseException, IOException {
         List<ActivityDTO> atlActivity = activityDAO.findByConcept(
@@ -320,7 +320,7 @@ public class ActivityManagerImpl implements ActivityManager {
     
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL')")
+    // TODO: Fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ATL')")
     public List<ActivityEvent> getAtlActivity(List<TestingLabDTO> atls, Date startDate,
             Date endDate) throws JsonParseException, IOException {
         List<ActivityDTO> atlActivity = activityDAO.findAtlActivity(atls, startDate, endDate);
@@ -335,7 +335,7 @@ public class ActivityManagerImpl implements ActivityManager {
     
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityEvent> getAllPendingListingActivity(Date startDate,
             Date endDate) throws JsonParseException, IOException {
         List<ActivityDTO> pendingListingActivity = activityDAO.findByConcept(false,
@@ -351,7 +351,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    // TODO: Fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> getPendingListingActivityByAcb(List<CertificationBodyDTO> acbs,
             Date startDate, Date endDate) throws JsonParseException, IOException {
         List<ActivityDTO> pendingListingActivity = 
@@ -367,7 +367,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
+    // TODO: Fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB')")
     public List<ActivityEvent> getPendingListingActivity(Long pendingListingId, 
             Date startDate, Date endDate) throws JsonParseException, IOException, EntityRetrievalException {
         List<ActivityDTO> pendingListingActivity = activityDAO.findPendingListingActivity(
@@ -383,7 +383,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<ActivityEvent> getAllUserActivity(Date startDate, Date endDate)
             throws JsonParseException, IOException {
         return getActivityForConcept(ActivityConcept.ACTIVITY_CONCEPT_USER, startDate, endDate);
@@ -391,7 +391,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
+    // TODO: Fix the @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ACB', 'ROLE_ATL', 'ROLE_CMS_STAFF')")
     public List<ActivityEvent> getUserActivity(Set<Long> userIds, 
             Date startDate, Date endDate) throws JsonParseException, IOException {
         List<ActivityDTO> userActivity = 
@@ -407,7 +407,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteActivity(Long toDelete) throws EntityRetrievalException {
 
         ActivityDTO dto = activityDAO.getById(toDelete);
@@ -418,7 +418,8 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+    @Secured("ROLE_ADMIN")
     public List<UserActivity> getActivityByUserInDateRange(Date startDate, Date endDate)
             throws JsonParseException, IOException, UserRetrievalException {
 
@@ -448,7 +449,7 @@ public class ActivityManagerImpl implements ActivityManager {
 
     @Override
     @Transactional(readOnly = true)
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
+    // TODO: Fix the @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_ONC_STAFF')")
     public List<ActivityEvent> getActivityForUserInDateRange(Long userId, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
