@@ -251,39 +251,7 @@ public class ActivityDaoTest extends TestCase {
         List<ActivityDTO> results = activityDAO.findUserActivity(userIds, new Date(0L), new Date());
         assertEquals(0, results.size());
     }
-	
-	@Test
-	@Transactional
-	public void testFindAllInLastNDays() throws EntityCreationException, EntityRetrievalException{
-		
-		SecurityContextHolder.getContext().setAuthentication(adminUser);
-		Date fiveDaysAgo = new Date(1489699376931L - (5*24*60*60*1000)); // 3/16/2017 in millis - 5 days in millis
-		List<ActivityDTO> results = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date(1489699376931L));
-		assertEquals(2,results.size());
-		
-		List<ActivityDTO> results2 = activityDAO.findAllInDateRange(false, null, new Date());
-		assertEquals(7 ,results2.size());
-		
-		ActivityDTO recent = new ActivityDTO();
-		recent.setActivityDate(new Date());
-		recent.setActivityObjectId(100L);
-		recent.setConcept(ActivityConcept.ACTIVITY_CONCEPT_ATL);
-		recent.setDescription("Description");
-		recent.setOriginalData("Original");
-		recent.setNewData("New");
-		
-		ActivityDTO created = activityDAO.create(recent);
-		
-		List<ActivityDTO> results3 = activityDAO.findAllInDateRange(false, fiveDaysAgo, new Date());
-		assertEquals(3, results3.size());
-		activityDAO.delete(created.getId());
-		ActivityDTO deleted = activityDAO.getById(created.getId());
-		assertNull(deleted);
-		
-		SecurityContextHolder.getContext().setAuthentication(null);
-		
-	}
-	
+
 	@Test
 	@Transactional
 	public void testFindByObjectIdInLastNDays() throws EntityCreationException, EntityRetrievalException{
